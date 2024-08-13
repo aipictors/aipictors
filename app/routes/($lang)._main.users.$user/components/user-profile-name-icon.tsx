@@ -3,7 +3,6 @@ import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fiel
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
-import { UserActionShare } from "~/routes/($lang)._main.users.$user/components/user-action-share"
 
 type Props = {
   user: FragmentOf<typeof userProfileIconFragment>
@@ -48,9 +47,6 @@ export const UserProfileNameIcon = (props: Props) => {
                 <div className="white mt-4 text-md opacity-50">{"いいね"}</div>
               </div>
             </div>
-          </div>
-          <div className="absolute right-0 bottom-0 md:hidden">
-            <UserActionShare login={props.user.login} name={props.user.name} />
           </div>
         </div>
         <div className="block md:hidden">

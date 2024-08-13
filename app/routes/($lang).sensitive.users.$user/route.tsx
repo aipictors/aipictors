@@ -32,12 +32,16 @@ export async function loader(props: LoaderFunctionArgs) {
     query: userQuery,
     variables: {
       userId: decodeURIComponent(props.params.user),
-      worksWhere: {},
+      worksWhere: {
+        isSensitive: true,
+      },
       followeesWorksWhere: {},
       followersWorksWhere: {},
       bookmarksOffset: 0,
       bookmarksLimit: 0,
-      bookmarksWhere: {},
+      bookmarksWhere: {
+        isSensitive: true,
+      },
       worksOffset: 0,
       worksLimit: 0,
       followeesOffset: 0,
@@ -83,7 +87,8 @@ export default function UserLayout() {
             <div className="relative">
               {data.user.headerImageUrl ? (
                 <div className="relative min-h-[168px] md:min-h-[320px]">
-                  {data.user.headerImageUrl ? (
+                  {data.user.headerImageUrl &&
+                  !data.user.headerImageUrl.includes("wp-content") ? (
                     <>
                       <div
                         className="absolute top-0 left-0 z-10 z-standard flex h-full min-h-[168px] w-full items-center justify-center md:min-h-[320px]"
@@ -150,11 +155,15 @@ export default function UserLayout() {
               )}
             </div>
             <Suspense>
-              <UserHomeMain user={data.user} userId={data.user.id} />
+              <UserHomeMain
+                user={data.user}
+                userId={data.user.id}
+                isSensitive={true}
+              />
             </Suspense>
           </div>
           <Suspense>
-            <UserContents user={data.user} />
+            <UserContents isSensitive={true} user={data.user} />
           </Suspense>
         </div>
       </Suspense>

@@ -4,23 +4,15 @@ import type { FragmentOf } from "gql.tada"
 
 type Props = {
   userPickupWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
-  userPickupSensitiveWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
 export const UserPickupContents = (props: Props) => {
-  // 結合
-  // const combinedWorks = props.userPickupWorks.concat(
-  //   props.userPickupSensitiveWorks,
-  // )
-
-  const combinedWorks = props.userPickupWorks
-
   return (
     <div className="items-center">
-      {combinedWorks && combinedWorks.length > 0 && (
+      {props.userPickupWorks && props.userPickupWorks.length > 0 && (
         <HomeWorkSection
           title="ピックアップ"
-          works={combinedWorks}
+          works={props.userPickupWorks}
           isCropped={false}
         />
       )}

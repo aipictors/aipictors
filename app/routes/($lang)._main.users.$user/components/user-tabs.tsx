@@ -9,6 +9,7 @@ type Props = {
   activeTab: string
   setActiveTab: (value: string) => void
   userId: string
+  isSensitive?: boolean
 }
 
 export const UserTabs = (props: Props) => {
@@ -24,7 +25,8 @@ export const UserTabs = (props: Props) => {
       where: {
         userId: props.userId,
         isNowCreatedAt: true,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
         workType: "WORK",
       },
     },
@@ -38,7 +40,8 @@ export const UserTabs = (props: Props) => {
       where: {
         userId: props.userId,
         isNowCreatedAt: true,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
         workType: "NOVEL",
       },
     },
@@ -52,7 +55,8 @@ export const UserTabs = (props: Props) => {
       where: {
         userId: props.userId,
         isNowCreatedAt: true,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
         workType: "COLUMN",
       },
     },
@@ -66,7 +70,8 @@ export const UserTabs = (props: Props) => {
       where: {
         userId: props.userId,
         isNowCreatedAt: true,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
         workType: "VIDEO",
       },
     },
@@ -79,8 +84,8 @@ export const UserTabs = (props: Props) => {
     variables: {
       where: {
         ownerUserId: props.userId,
-        isSensitiveAndAllRating: true,
-        isSensitive: true,
+        isSensitiveAndAllRating: !props.isSensitive,
+        isSensitive: props.isSensitive,
         needInspected: false,
         needsThumbnailImage: false,
       },
@@ -95,6 +100,7 @@ export const UserTabs = (props: Props) => {
       where: {
         userId: props.userId,
         isPrivate: false,
+        isSensitive: props.isSensitive,
       },
     },
   })

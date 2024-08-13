@@ -17,7 +17,7 @@ type Props = {
   setPage(page: number): void
   userId: string
   orderBy: IntrospectionEnum<"AlbumOrderBy">
-  rating: IntrospectionEnum<"AlbumRating"> | null
+  rating: IntrospectionEnum<"AlbumRating">
   sort: SortType
 }
 
@@ -32,7 +32,7 @@ export const UserAlbumsContents = (props: Props) => {
       where: {
         ownerUserId: props.userId,
         isSensitiveAndAllRating: props.rating === null,
-        isSensitive: props.rating !== "G",
+        isSensitive: props.rating === "R18",
         needInspected: false,
         needsThumbnailImage: false,
         orderBy: props.orderBy,
@@ -49,7 +49,7 @@ export const UserAlbumsContents = (props: Props) => {
       where: {
         ownerUserId: props.userId,
         isSensitiveAndAllRating: props.rating === null,
-        isSensitive: props.rating !== "G",
+        isSensitive: props.rating === "R18",
         needInspected: false,
         needsThumbnailImage: false,
         orderBy: props.orderBy,

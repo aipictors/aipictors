@@ -13,6 +13,7 @@ type Props = {
   setPage(page: number): void
   userId: string
   workType: "NOVEL" | "COLUMN"
+  isSensitive?: boolean
 }
 
 export const UserNovelsContents = (props: Props) => {
@@ -31,7 +32,8 @@ export const UserNovelsContents = (props: Props) => {
       where: {
         userId: props.userId,
         isNowCreatedAt: true,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
         orderBy: "DATE_CREATED",
         workType: props.workType,
       },
@@ -44,7 +46,8 @@ export const UserNovelsContents = (props: Props) => {
       where: {
         userId: props.userId,
         isNowCreatedAt: true,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
         workType: props.workType,
       },
     },

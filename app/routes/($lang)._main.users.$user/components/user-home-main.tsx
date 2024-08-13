@@ -8,10 +8,14 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user/components/profile-edit-dialog"
 import { UserActionShare } from "~/routes/($lang)._main.users.$user/components/user-action-share"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user/components/user-action-other"
+import { RefreshCcwIcon } from "lucide-react"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { useNavigate } from "@remix-run/react"
 
 type Props = {
   user: FragmentOf<typeof userHomeMainFragment>
   userId: string
+  isSensitive?: boolean
 }
 
 export const UserHomeMain = (props: Props) => {
@@ -28,10 +32,49 @@ export const UserHomeMain = (props: Props) => {
 
   const isMute = userInfo?.user?.isMuted ?? false
 
+  const navigate = useNavigate()
+
+  console.log(props.isSensitive)
+
   return (
     <div className="relative m-auto h-72 w-full md:h-24">
+      <div className="absolute top-0 right-0 md:hidden">
+        <UserActionShare login={props.user.login} name={props.user.name} />
+      </div>
       <div className="absolute top-2 right-0 hidden md:block">
         <div className="flex w-full items-center justify-end space-x-4">
+          {props.isSensitive ? (
+            <Button
+              onClick={() => {
+                navigate(`/users/${props.user.login}`)
+              }}
+              variant={"secondary"}
+            >
+              <div className="flex cursor-pointer items-center">
+                <RefreshCcwIcon className="mr-1 w-3" />
+                <p className="text-sm">{"全年齢"}</p>
+              </div>
+            </Button>
+          ) : (
+            <AppConfirmDialog
+              title={"確認"}
+              description={
+                "センシティブな作品を表示します、あなたは18歳以上ですか？"
+              }
+              onNext={() => {
+                navigate(`/sensitive/users/${props.user.login}`)
+              }}
+              cookieKey={"check-sensitive-ranking"}
+              onCancel={() => {}}
+            >
+              <Button variant={"secondary"}>
+                <div className="flex cursor-pointer items-center">
+                  <RefreshCcwIcon className="mr-1 w-3" />
+                  <p className="text-sm">{"対象年齢"}</p>
+                </div>
+              </Button>
+            </AppConfirmDialog>
+          )}
           <UserActionOther id={props.user.id} isMuted={isMute} />
           <UserActionShare login={props.user.login} name={props.user.name} />
           <FollowButton

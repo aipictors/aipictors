@@ -36,7 +36,7 @@ export const ThemeArticle = (props: Props) => {
       limit: 32,
       where: {
         subjectId: Number(props.themeId),
-        ratings: props.isSensitive ? ["G", "R15"] : ["R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
         isSensitive: props.isSensitive,
       },

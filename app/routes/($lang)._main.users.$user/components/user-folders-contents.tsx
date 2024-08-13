@@ -17,6 +17,7 @@ type Props = {
   orderBy: IntrospectionEnum<"AlbumOrderBy">
   rating: IntrospectionEnum<"AlbumRating"> | null
   sort: SortType
+  isSensitive?: boolean
 }
 
 export const UserFoldersContents = (props: Props) => {
@@ -30,6 +31,7 @@ export const UserFoldersContents = (props: Props) => {
       where: {
         userId: props.userId,
         isPrivate: false,
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -42,6 +44,7 @@ export const UserFoldersContents = (props: Props) => {
       where: {
         userId: props.userId,
         isPrivate: false,
+        isSensitive: props.isSensitive,
       },
     },
   })

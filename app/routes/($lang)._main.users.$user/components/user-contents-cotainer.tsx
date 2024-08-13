@@ -10,6 +10,7 @@ import { useContext } from "react"
 type Props = {
   userId: string
   userLogin: string
+  isSensitive?: boolean
 }
 
 export const UserContentsContainer = (props: Props) => {
@@ -23,8 +24,9 @@ export const UserContentsContainer = (props: Props) => {
       limit: 16,
       where: {
         userId: props.userId,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -34,7 +36,8 @@ export const UserContentsContainer = (props: Props) => {
     variables: {
       where: {
         userId: authContext.userId,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -48,8 +51,9 @@ export const UserContentsContainer = (props: Props) => {
       where: {
         userId: props.userId,
         workType: "NOVEL",
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -60,7 +64,8 @@ export const UserContentsContainer = (props: Props) => {
       where: {
         workType: "NOVEL",
         userId: authContext.userId,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -74,8 +79,9 @@ export const UserContentsContainer = (props: Props) => {
       where: {
         userId: props.userId,
         workType: "COLUMN",
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -86,7 +92,8 @@ export const UserContentsContainer = (props: Props) => {
       where: {
         workType: "COLUMN",
         userId: authContext.userId,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -100,8 +107,9 @@ export const UserContentsContainer = (props: Props) => {
       where: {
         userId: props.userId,
         workType: "VIDEO",
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
+        isSensitive: props.isSensitive,
       },
     },
   })
@@ -112,7 +120,8 @@ export const UserContentsContainer = (props: Props) => {
       where: {
         workType: "VIDEO",
         userId: authContext.userId,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
       },
     },
   })
