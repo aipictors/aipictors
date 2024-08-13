@@ -85,15 +85,15 @@ export const FeedContents = (props: Props) => {
     }))
   }
 
-  // postsのworkのcreated_atで降順にソート
   const works = posts
+    .filter(
+      // biome-ignore lint/complexity/useOptionalChain: <explanation>
+      (post) => post && post.work,
+    )
     .map((post) => post.work)
-    .sort((a, b) => {
-      if (a?.createdAt && b?.createdAt) {
-        return a.createdAt < b.createdAt ? 1 : -1
-      }
-      return 0
-    })
+    .map((work) => work)
+
+  console.log(works)
 
   return (
     <div className="m-auto w-full space-y-4">
@@ -193,7 +193,7 @@ export const FeedContents = (props: Props) => {
                       <WorkCommentList
                         workId={work.id}
                         comments={work.comments}
-                        defaultShowCommentCount={2}
+                        defaultShowCommentCount={3}
                       />
                     )}
                   </div>
@@ -206,35 +206,40 @@ export const FeedContents = (props: Props) => {
   )
 }
 
+export const workFieldsFragment = graphql(
+  `fragment PartialWorkFields on WorkNode @_unmask {
+    id
+    title
+    largeThumbnailImageURL
+    description
+    tagNames
+    isLiked
+    likesCount
+    createdAt
+    commentsCount
+    isCommentsEditable
+    user {
+      id
+      name
+      login
+      iconUrl
+    }
+  }`,
+)
+
 const feedQuery = graphql(
   `query Feed($userId: ID!, $limit: Int!, $offset: Int!, $where: FeedPostsWhereInput) {
     feed(userId: $userId) {
       posts(limit: $limit, offset: $offset, where: $where) {
         id
         work {
-          id
-          title
-          largeThumbnailImageURL
-          description
-          tagNames
-          isLiked
-          likesCount
-          createdAt
-          commentsCount
-          isCommentsEditable
-          user {
-            id
-            name
-            login
-            iconUrl
-          }
+          ...PartialWorkFields
           comments(offset: 0, limit: 128) {
             ...Comment
           }
         }
-
       }
     }
   }`,
-  [CommentListItemFragment],
+  [CommentListItemFragment, workFieldsFragment],
 )

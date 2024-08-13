@@ -233,6 +233,8 @@ export const WorkCommentList = (props: Props) => {
     props.defaultShowCommentCount ? props.defaultShowCommentCount : 8,
   )
 
+  console.log(showCommentsAfterMore)
+
   const { data = null } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading,
   })
@@ -244,7 +246,7 @@ export const WorkCommentList = (props: Props) => {
   return (
     <>
       {/* コメント一覧 */}
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-auto">
         <p>{`コメント (${showComments.length + (showNewComments?.length ?? 0)})`}</p>
         {stickers.length > 0 && (
           <div className="flex space-x-2 overflow-x-auto">
@@ -478,11 +480,11 @@ export const WorkCommentList = (props: Props) => {
             </div>
           ))}
           {/* もっと見るで確認できる既にコメント済みのコメント一覧 */}
-          {showCommentsAfterMore.length > 8 && (
+          {showCommentsAfterMore.length > 0 && (
             <ExpansionTransition
               triggerChildren={
                 <Button className="w-full" variant={"secondary"}>
-                  もっと見る({showComments.length - 8})
+                  もっと見る({showCommentsAfterMore.length})
                 </Button>
               }
               oneTimeExpand={true}
@@ -537,7 +539,7 @@ export const WorkCommentList = (props: Props) => {
                   {comment.responses !== null &&
                     comment.responses?.length !== 0 &&
                     comment.responses
-                      .sort((a, b) => a.createdAt - b.createdAt)
+                      // .sort((a, b) => a.createdAt - b.createdAt)
                       .filter((reply) => !hideCommentIds.includes(reply.id))
                       .map((reply) => (
                         <WorkCommentResponse
