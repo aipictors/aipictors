@@ -23,7 +23,7 @@ type Props = {
 /**
  * スマホ向けブックマーク作品一覧
  */
-export const BookmarkWorksSpList = (props: Props) => {
+export function BookmarkWorksSpList(props: Props) {
   return (
     <>
       {props.works.map((work, index) => (
