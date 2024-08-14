@@ -10,7 +10,7 @@ type Props = {
  * スワイプエリア
  * childrenで指定された領域についてスマホ、PCでスワイプ操作可能にする
  */
-export function SwipeArea({ onPrev, onNext, children }: Props) {
+export function SwipeArea(props: Props) {
   const [startPosition, setStartPosition] = useState<number | null>(null)
 
   const handleTouchStart = useCallback(
@@ -30,14 +30,14 @@ export function SwipeArea({ onPrev, onNext, children }: Props) {
       const distance = endPosition - startPosition
 
       if (distance > 50) {
-        onPrev()
+        props.onPrev()
       } else if (distance < -50) {
-        onNext()
+        props.onNext()
       }
 
       setStartPosition(null)
     },
-    [onPrev, onNext, startPosition],
+    [props.onPrev, props.onNext, startPosition],
   )
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -52,14 +52,14 @@ export function SwipeArea({ onPrev, onNext, children }: Props) {
       const distance = endPosition - startPosition
 
       if (distance > 50) {
-        onPrev()
+        props.onPrev()
       } else if (distance < -50) {
-        onNext()
+        props.onNext()
       }
 
       setStartPosition(null)
     },
-    [onPrev, onNext, startPosition],
+    [props.onPrev, props.onNext, startPosition],
   )
 
   return (
@@ -70,7 +70,7 @@ export function SwipeArea({ onPrev, onNext, children }: Props) {
       onMouseUp={handleMouseUp}
       style={{ touchAction: "none" }} // Prevents scrolling during swipe on touch devices
     >
-      {children}
+      {props.children}
     </div>
   )
 }
