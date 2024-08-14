@@ -33,7 +33,7 @@ type Props = {
 /**
  * 作品一覧コンテナ
  */
-export const WorksListContainer = (props: Props) => {
+export function WorksListContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   if (

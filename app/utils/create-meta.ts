@@ -1,4 +1,4 @@
-export const createMeta = (data: MetaData) => {
+export function createMeta(data: MetaData) {
   const {
     title: metaTitle,
     description: metaDescription = "",

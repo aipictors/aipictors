@@ -10,7 +10,7 @@ import { Link } from "@remix-run/react"
 /**
  * 画像生成についての説明
  */
-export const GenerationAbout = () => {
+export function GenerationAbout() {
   return (
     <main className="relative w-full">
       <div

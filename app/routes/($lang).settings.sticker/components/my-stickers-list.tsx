@@ -13,7 +13,7 @@ import { toast } from "sonner"
 import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post/components/add-sticker-dialog"
 import { StickerChangeAccessTypeDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-dialog"
 
-export const MyStickersList = () => {
+export function MyStickersList() {
   const authContext = useContext(AuthContext)
 
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)

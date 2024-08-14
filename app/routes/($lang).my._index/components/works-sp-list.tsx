@@ -68,7 +68,7 @@ const postUrl = (work: {
 /**
  * スマホ向け作品一覧
  */
-export const WorksSpList = (props: Props) => {
+export function WorksSpList(props: Props) {
   return (
     <>
       {props.works.map((work, index) => (

@@ -11,7 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 
-export const SettingsNavigation = () => {
+export function SettingsNavigation() {
   return (
     <div className="w-full space-y-1 md:w-auto">
       <HomeNavigationButton href={"/"} icon={ArrowLeftIcon}>

@@ -12,7 +12,7 @@ import {
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
 
-export const MutedTagList = () => {
+export function MutedTagList() {
   const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery(viewerMutedTagsQuery, {

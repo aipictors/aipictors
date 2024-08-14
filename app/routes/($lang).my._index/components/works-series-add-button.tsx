@@ -9,7 +9,7 @@ type Props = {
 /**
  * シリーズ追加ボタン
  */
-export const WorksSeriesAddButton = (props: Props) => {
+export function WorksSeriesAddButton(props: Props) {
   return (
     <>
       <CreateAlbumDialog refetch={props.refetch}>

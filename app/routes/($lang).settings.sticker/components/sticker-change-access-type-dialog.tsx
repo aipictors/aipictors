@@ -26,7 +26,7 @@ type Props = {
 /**
  * スタンプ公開状態変更ダイアログ
  */
-export const StickerChangeAccessTypeDialog = (props: Props) => {
+export function StickerChangeAccessTypeDialog(props: Props) {
   const [updateSticker, { loading: isChangeStickerAccessType }] = useMutation(
     updateStickerMutation,
   )

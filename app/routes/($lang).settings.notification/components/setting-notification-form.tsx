@@ -13,7 +13,7 @@ import { toast } from "sonner"
 /**
  * 通知設定フォーム
  */
-export const SettingNotificationForm = () => {
+export function SettingNotificationForm() {
   const authContext = useContext(AuthContext)
 
   const { data: userSetting, refetch: refetchSetting } = useQuery(

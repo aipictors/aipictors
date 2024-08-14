@@ -11,7 +11,7 @@ import { toast } from "sonner"
 /**
  * WebFCMTokenを更新するフォーム
  */
-export const SettingFcmForm = () => {
+export function SettingFcmForm() {
   const [mutation, { loading: isLoading }] = useMutation(
     updateAccountWebFcmTokenMutation,
   )
