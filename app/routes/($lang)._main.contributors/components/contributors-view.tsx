@@ -17,9 +17,7 @@ export const ContributorsView = () => {
             <div className="relative">
               <img
                 alt={"コントリビュータ一覧ページトップ"}
-                src={
-                  "https://www.aipictors.com/wp-content/uploads/2024/03/60f40ea7-ab71-496e-9e88-cb16f655a230-1.webp"
-                }
+                src={"https://assets.aipictors.com/geometric_shapes.webp"}
                 className="w-full rounded-t-md rounded-br-3xl rounded-bl-md object-cover object-top"
               />
               <Link

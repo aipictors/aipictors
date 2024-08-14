@@ -7,7 +7,7 @@ export const contributors: Contributor[] = [
     message:
       "主にnijijourneyでイラストを生成されています。Flutterアプリの開発、拡張機能の開発を頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/05/gFkuYzxctXbrajWTiHR09SZ7Ah3QV8.webp",
+      "https://files.aipictors.com/50c773fd-982a-4f4f-bf06-6c7f7940141c",
     xId: null,
     aipictorsId: "Stella",
     homeUrl: null,
@@ -17,7 +17,7 @@ export const contributors: Contributor[] = [
     name: "haruka(Rutei)",
     message: "アナリティクス分析などにコントリビュート頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/05/nQGdYD8vgMhKjirPZ6X25Va4A7eRxS.webp",
+      "https://files.aipictors.com/cc0ba14c-7291-4f6c-b32a-5c4229c87bd2",
     xId: "haruka_68003558",
     aipictorsId: "haruka",
     homeUrl: null,
@@ -27,7 +27,7 @@ export const contributors: Contributor[] = [
     name: "zzz",
     message: "サイト方針のご相談、公開モデルの搭載などさせて頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/01/yBRPZXQ4WTtpm7FU650dSaHAez2fkr.webp",
+      "https://files.aipictors.com/a69229a7-01ae-4391-911a-44e9be922beb",
     xId: "zzzAI19",
     aipictorsId: "zzzai19@ymail.ne.jp",
     homeUrl: "https://ai-drawing.net/",
@@ -38,7 +38,7 @@ export const contributors: Contributor[] = [
     message:
       "広報、ぴくたーちゃんLoRAの開発などにコントリビュート頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/03/3YJ5FxArmLXe70SEa6VbHCwiyp8cNk.webp",
+      "https://files.aipictors.com/ac901589-da4a-451c-a643-9187c8ad5f05",
     xId: "swingwings",
     aipictorsId: "swingwings",
     homeUrl: "https://civitai.com/user/swingwings/models",
@@ -48,7 +48,7 @@ export const contributors: Contributor[] = [
     name: "L4Ph",
     message: "インフラ整備、開発頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2024/03/noProfile.webp",
+      "https://files.aipictors.com/282f5a84-5ccc-405b-bd80-607216a8fc11",
     xId: null,
     aipictorsId: "L4Ph",
     homeUrl: null,
@@ -58,7 +58,7 @@ export const contributors: Contributor[] = [
     name: "syuribox",
     message: "広報などにコントリビュート頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/01/zvQGcNU7FrVpqD1StneuTkEZ39My2P.webp",
+      "https://files.aipictors.com/b65192f5-eebf-4cd4-98b6-9d9d7d5a1a51",
     xId: "syuribox",
     aipictorsId: "syuribox",
     homeUrl: "https://kakuyomu.jp/users/syuribox",
@@ -68,7 +68,7 @@ export const contributors: Contributor[] = [
     name: "ねこねこにゃんにゃん",
     message: "サイト運営を手伝って頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/01/i5FTRkr30J8sx7g2h9CY41KD6jbSVQ.webp",
+      "https://files.aipictors.com/f865f43f-85e0-4bcb-a44d-949a80f53acb",
     xId: null,
     aipictorsId: "@yYP7HoSnADQoYzx",
     homeUrl: null,
@@ -78,7 +78,7 @@ export const contributors: Contributor[] = [
     name: "エルセンナ",
     message: "アプリの翻訳などにコントリビュート頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/10/W2HGgK0AjFUDBYTs1hMEqXRifPQ79Z.webp",
+      "https://files.aipictors.com/b65192f5-eebf-4cd4-98b6-9d9d7d5a1a51",
     xId: "elessenar",
     aipictorsId: "elessenar",
     homeUrl: null,
@@ -88,7 +88,7 @@ export const contributors: Contributor[] = [
     name: "Kakko",
     message: "イベント、イラスト本などの整備、フォローなど頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/03/C0ZRP83zurijeapfLhHtwcQk7NxTAV.webp",
+      "https://files.aipictors.com/910f462a-8cb8-4394-96c1-eae466c1f69b",
     xId: "kakowara365",
     aipictorsId: "kakowara365",
     homeUrl: "https://prompton.io/kakowara",
@@ -108,7 +108,7 @@ export const contributors: Contributor[] = [
     name: "shirotaka",
     message: "サイト運営を手伝って頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/01/ZQGwRmj50LhA9CygerMd8pH6suz2Ev.webp",
+      "https://assets.aipictors.com/ZQGwRmj50LhA9CygerMd8pH6suz2Ev%20(1).webp",
     xId: "WhiteRICEsub",
     aipictorsId: "@WhiteRICEsub",
     homeUrl: "https://lit.link/WhiteRICEsub",
@@ -118,7 +118,7 @@ export const contributors: Contributor[] = [
     name: "忙海AI",
     message: "サイト運営を手伝って頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/08/mY1MJBdaWAitVjfrneLwSH7RUGCsxX.webp",
+      "https://files.aipictors.com/ab4d4ac5-1d5d-4e80-9aec-367dabd4bf12",
     xId: "AIdaisuki774",
     aipictorsId: "@AIdaisuki774",
     homeUrl: null,
@@ -128,7 +128,7 @@ export const contributors: Contributor[] = [
     name: "thumbnailstorie",
     message: "作品画面の開発などにコントリビュート頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/10/0GcPh2qrQMSBdEn1Webtix3VXK4auZ.webp",
+      "https://assets.aipictors.com/ykDwUE4TB7sK52tp1RSvfhGCWiMzdJ.webp",
     xId: "thumbnailstorie",
     aipictorsId: "@thumbnailstorie",
     homeUrl: "https://thumbnailstories.com/",
