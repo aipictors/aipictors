@@ -7,14 +7,16 @@ import {
   SenderMessageFragment,
 } from "~/routes/($lang)._main.support.chat/components/sender-message"
 import { graphql, type FragmentOf } from "gql.tada"
+
 import { useEffect, useRef } from "react"
+import { IconUrl } from "~/components/icon-url"
 
 type Props = {
   messages: FragmentOf<typeof MessageListItemFragment>[]
-  recipientIconImageURL: string
+  recipient: FragmentOf<typeof MessageThreadRecipientFragment>
 }
 
-export const SupportMessageList = (props: Props) => {
+export function ChatMessageList(props: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -40,7 +42,7 @@ export const SupportMessageList = (props: Props) => {
           <RecipientMessage
             key={message.id}
             message={message}
-            recipientIconImageURL={props.recipientIconImageURL}
+            recipientIconImageURL={IconUrl(props.recipient.iconUrl)}
           />
         ),
       )}

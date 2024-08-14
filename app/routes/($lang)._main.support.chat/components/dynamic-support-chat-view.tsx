@@ -1,25 +1,22 @@
-import { messageFieldsFragment } from "~/graphql/fragments/message-fields"
 import { MessageInput } from "~/routes/($lang)._main.support.chat/components/message-input"
-import { SupportMessageList } from "~/routes/($lang)._main.support.chat/components/support-message-list"
+import {
+  MessageListItemFragment,
+  MessageThreadRecipientFragment,
+  SupportMessageList,
+} from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { startTransition } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 
-/**
- * use Dynamic Import
- */
 export function SupportChatView() {
-  const { data: supportMessages, refetch } = useQuery(
-    viewerSupportMessagesQuery,
-    {
-      variables: {
-        limit: 124,
-        offset: 0,
-      },
+  const { data: supportMessages, refetch } = useQuery(MessagesQuery, {
+    variables: {
+      limit: 124,
+      offset: 0,
     },
-  )
+  })
 
   const [createMessage, { loading: isLoading }] = useMutation(
     createMessageMutation,
@@ -62,24 +59,24 @@ export function SupportChatView() {
   )
 }
 
-const viewerSupportMessagesQuery = graphql(
+const MessagesQuery = graphql(
   `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
     viewer {
       id
       supportMessages(offset: $offset, limit: $limit) {
         id
-        ...MessageFields
+        ...MessageListItem
       }
     }
   }`,
-  [messageFieldsFragment],
+  [MessageThreadRecipientFragment, MessageListItemFragment],
 )
 
 const createMessageMutation = graphql(
   `mutation CreateMessage($input: CreateMessageInput!) {
     createMessage(input: $input) {
-      ...MessageFields
+      ...MessageListItem
     }
   }`,
-  [messageFieldsFragment],
+  [MessageListItemFragment],
 )
