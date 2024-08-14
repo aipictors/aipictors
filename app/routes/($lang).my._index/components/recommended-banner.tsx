@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react"
 /**
  * 推薦バナー
  */
-export const RecommendedBanner = () => {
+export function RecommendedBanner() {
   return (
     <>
       <Link to="/plus">

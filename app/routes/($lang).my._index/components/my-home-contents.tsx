@@ -7,7 +7,7 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
-export const DashboardHomeContents = () => {
+export function DashboardHomeContents() {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {
