@@ -20,7 +20,7 @@ type Props = {
 /**
  * 指定した画像ファイルの切り抜き開始領域
  */
-export function CropImageField  (props: Props) {
+export function CropImageField(props: Props) {
   const [image, setImage] = useState<string | undefined>(undefined)
   const [croppedImage, setCroppedImage] = useState<string>("")
   const [isOpen, setIsOpen] = useState<boolean>(false)
