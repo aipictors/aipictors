@@ -244,7 +244,7 @@ export const WorkCommentList = (props: Props) => {
   return (
     <>
       {/* コメント一覧 */}
-      <div className="space-y-4 overflow-auto">
+      <div className="space-y-4">
         <p>{`コメント (${showComments.length + (showNewComments?.length ?? 0)})`}</p>
         {stickers.length > 0 && (
           <div className="flex space-x-2 overflow-x-auto">
