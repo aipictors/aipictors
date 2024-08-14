@@ -274,7 +274,7 @@ export const config = {
       generation: 16,
       promotion: 16,
       award: 16,
-      tag: 16,
+      tag: 12,
     },
   },
   /**

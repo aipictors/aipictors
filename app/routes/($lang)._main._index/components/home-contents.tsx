@@ -50,6 +50,7 @@ type homeParticles = {
 type Props = {
   homeParticles?: homeParticles
   isSensitive?: boolean
+  isCropped?: boolean
 }
 
 const useUpdateQueryParams = () => {
@@ -212,11 +213,13 @@ export const HomeContents = (props: Props) => {
               tag={props.homeParticles.firstTag}
               works={props.homeParticles.firstTagWorks}
               isSensitive={props.isSensitive}
+              isCropped={props.isCropped}
             />
             <HomeWorksTagSection
               tag={props.homeParticles.secondTag}
               works={props.homeParticles.secondTagWorks}
               isSensitive={props.isSensitive}
+              isCropped={props.isCropped}
             />
             <HomeAwardWorkSection
               awardDateText={props.homeParticles.awardDateText}

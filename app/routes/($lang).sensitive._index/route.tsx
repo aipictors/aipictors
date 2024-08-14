@@ -176,6 +176,7 @@ export default function Index() {
           promotionWorks: data.promotionWorks,
         }}
         isSensitive={true}
+        isCropped={false}
       />
     </>
   )

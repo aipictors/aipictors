@@ -24,7 +24,7 @@ export const HomeCroppedWorkList = (props: Props) => {
             style={{ paddingBottom: "100%" }}
           >
             <img
-              src={work.largeThumbnailImageURL}
+              src={work.smallThumbnailImageURL}
               alt={work.title}
               className="absolute top-0 left-0 h-full w-full rounded-md object-cover"
             />

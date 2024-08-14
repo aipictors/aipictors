@@ -45,13 +45,7 @@ export const dateToText = (date: Date) => {
 
 export async function loader() {
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = [
-    "メスガキ",
-    "ダークファンタジー",
-    "ゆめかわ",
-    "イケメン",
-    "コスプレ",
-  ]
+  const categories = ["ゆめかわ", "きれい", "コスプレ"]
 
   const getRandomCategories = () => {
     const currentTime = new Date()
@@ -179,6 +173,7 @@ export default function Index() {
           recommendedTags: data.recommendedTags,
           promotionWorks: data.promotionWorks,
         }}
+        isCropped={true}
       />
     </>
   )
@@ -243,7 +238,7 @@ const query = graphql(
       where: {
         ratings: [G],
         search: $categoryFirst
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
       }
     ) {
       ...HomeTagWork
@@ -254,7 +249,7 @@ const query = graphql(
       where: {
         ratings: [G],
         search: $categorySecond
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
       }
     ) {
       ...HomeTagWork

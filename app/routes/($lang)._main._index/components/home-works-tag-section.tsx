@@ -14,6 +14,7 @@ type Props = {
   works: FragmentOf<typeof HomeTagWorkFragment>[]
   tag: string
   style?: IntrospectionEnum<"ImageStyle">
+  isCropped?: boolean
 }
 
 /**
@@ -31,7 +32,7 @@ export const HomeWorksTagSection = (props: Props) => {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
         isSensitive: props.isSensitive,
         search: props.tag, // タグによるフィルタリングを追加
-        orderBy: "VIEWS_COUNT",
+        orderBy: "LIKES_COUNT",
         ...(props.style && {
           style: props.style,
         }),
@@ -43,7 +44,11 @@ export const HomeWorksTagSection = (props: Props) => {
 
   return (
     <>
-      <HomeWorkSection title={""} works={workDisplayed} isCropped={true} />
+      <HomeWorkSection
+        title={""}
+        works={workDisplayed}
+        isCropped={props.isCropped}
+      />
     </>
   )
 }
