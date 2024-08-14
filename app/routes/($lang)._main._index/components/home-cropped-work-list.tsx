@@ -1,9 +1,6 @@
-import { CarouselWithGradation } from "~/components/carousel-with-gradation"
-import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { graphql, type FragmentOf } from "gql.tada"
-import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { Link } from "@remix-run/react"
 
 type Props = {
   works: FragmentOf<typeof HomeCoppedWorkFragment>[]
@@ -14,51 +11,47 @@ type Props = {
  * クロップ済み作品一覧
  */
 export const HomeCroppedWorkList = (props: Props) => {
-  if (props.works === null || props.works.length === 0) {
+  if (!props.works || props.works.length === 0) {
     return null
   }
 
   return (
-    <section className="relative space-y-4">
-      <CarouselWithGradation
-        items={props.works.map((work, index) => (
-          <div key={work.id} className="flex flex-col space-y-2">
-            <div className="relative">
-              <CroppedWorkSquare
-                workId={work.id}
-                subWorksCount={work.subWorksCount}
-                imageUrl={work.smallThumbnailImageURL}
-                thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                size="lg"
-                imageWidth={work.smallThumbnailImageWidth}
-                imageHeight={work.smallThumbnailImageHeight}
-                ranking={props.isRanking ? index + 1 : undefined}
-              />
-              <div className="absolute right-0 bottom-0">
-                <LikeButton
-                  size={56}
-                  targetWorkId={work.id}
-                  targetWorkOwnerUserId={work.user.id}
-                  defaultLiked={work.isLiked}
-                  defaultLikedCount={0}
-                  isBackgroundNone={true}
-                  strokeWidth={2}
-                  isParticle={true}
-                />
-              </div>
-            </div>
-            <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
-              {work.title}
-            </p>
-            <UserNameBadge
-              userId={work.user.id}
-              userIconImageURL={IconUrl(work.user.iconUrl)}
-              name={work.user.name}
-              width={"lg"}
+    <section className="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-6">
+      {props.works.map((work) => (
+        <Link to={`/posts/${work.id}`} key={work.id} className="relative">
+          <div
+            className="w-full overflow-hidden"
+            style={{ paddingBottom: "100%" }}
+          >
+            <img
+              src={work.largeThumbnailImageURL}
+              alt={work.title}
+              className="absolute top-0 left-0 h-full w-full rounded-md object-cover"
             />
+            <div className="absolute right-2 bottom-2">
+              <LikeButton
+                size={56}
+                targetWorkId={work.id}
+                targetWorkOwnerUserId={work.user.id}
+                defaultLiked={work.isLiked}
+                defaultLikedCount={0}
+                isBackgroundNone={true}
+                strokeWidth={2}
+                isParticle={true}
+              />
+            </div>
           </div>
-        ))}
-      />
+          {/* <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
+            {work.title}
+          </p>
+          <UserNameBadge
+            userId={work.user.id}
+            userIconImageURL={IconUrl(work.user.iconUrl)}
+            name={work.user.name}
+            width={"lg"}
+          /> */}
+        </Link>
+      ))}
     </section>
   )
 }

@@ -19,6 +19,7 @@ import {
 
 type Props = {
   isSensitive?: boolean
+  isCropped?: boolean
   page: number
   setPage: (page: number) => void
   workType: IntrospectionEnum<"WorkType"> | null
@@ -67,7 +68,7 @@ export const HomeWorksSection = (props: Props) => {
         <HomeWorkSection
           title={""}
           works={worksResp?.works || []}
-          isCropped={false}
+          isCropped={props.isCropped}
         />
       )}
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (

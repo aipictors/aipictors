@@ -43,7 +43,7 @@ export const HomeWorksTagSection = (props: Props) => {
 
   return (
     <>
-      <HomeWorkSection title={""} works={workDisplayed} isCropped={false} />
+      <HomeWorkSection title={""} works={workDisplayed} isCropped={true} />
     </>
   )
 }

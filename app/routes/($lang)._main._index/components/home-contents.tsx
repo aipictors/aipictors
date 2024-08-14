@@ -199,7 +199,6 @@ export const HomeContents = (props: Props) => {
           </div>
         </TabsTrigger>
       </TabsList>
-
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
         {props.homeParticles && (
           <>
