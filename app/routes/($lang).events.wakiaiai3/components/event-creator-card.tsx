@@ -12,7 +12,7 @@ type Props = {
   user: EventUser
 }
 
-export const EventCreatorCard = (props: Props) => {
+export function EventCreatorCard(props: Props) {
   return (
     <Card>
       <div className="flex space-x-2">

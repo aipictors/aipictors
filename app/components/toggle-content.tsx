@@ -7,12 +7,12 @@ type Props = {
   initialOpen?: boolean
 }
 
-export const ToggleContent = ({
+export function ToggleContent({
   trigger,
   children,
   maxHeight = "480px",
   initialOpen = false,
-}: Props) => {
+}: Props) {
   const [isOpen, setIsOpen] = useState(initialOpen)
   const [contentHeight, setContentHeight] = useState(isOpen ? maxHeight : "0px")
   const [contentOpacity, setContentOpacity] = useState(isOpen ? 1 : 0)

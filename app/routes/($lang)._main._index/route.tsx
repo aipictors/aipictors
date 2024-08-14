@@ -38,7 +38,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export const dateToText = (date: Date) => {
+export function dateToText(date: Date) {
   return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join("/")
 }
 
