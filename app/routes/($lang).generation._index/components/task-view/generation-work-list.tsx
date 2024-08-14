@@ -20,7 +20,7 @@ type Props = {
 /**
  * 画像生成作品の一覧
  */
-export const GenerationWorkList = (props: Props) => {
+export function GenerationWorkList(props: Props) {
   if (props.works === undefined && !props.loading) {
     return null
   }

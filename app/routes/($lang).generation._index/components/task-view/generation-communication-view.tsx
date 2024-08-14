@@ -12,7 +12,7 @@ import { useInterval } from "usehooks-ts"
 /**
  * 連絡画面
  */
-export const GenerationCommunicationView = () => {
+export function GenerationCommunicationView() {
   const { data: supportMessages, refetch } = useQuery(
     viewerSupportMessagesQuery,
     {

@@ -8,7 +8,7 @@ type Props = {
   setIsDrawing?(value: boolean): void
 }
 
-export const PrivateImagePaintCanvas = (props: Props) => {
+export function PrivateImagePaintCanvas(props: Props) {
   const [base64Image, setBase64Image] = useState<string>("")
 
   useEffect(() => {

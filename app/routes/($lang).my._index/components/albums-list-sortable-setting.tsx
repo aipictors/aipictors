@@ -16,7 +16,7 @@ type Props = {
 /**
  * シリーズソート
  */
-export const AlbumsListSortableSetting = (props: Props) => {
+export function AlbumsListSortableSetting(props: Props) {
   const getLabel = (nowOrderBy: IntrospectionEnum<"AlbumOrderBy">) => {
     switch (nowOrderBy) {
       case "DATE_CREATED":

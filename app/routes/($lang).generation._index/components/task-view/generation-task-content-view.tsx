@@ -10,7 +10,7 @@ import { useContext } from "react"
 /**
  * タスク内容
  */
-export const GenerationTaskContentPreview = () => {
+export function GenerationTaskContentPreview() {
   const context = useGenerationContext()
 
   if (context.config.previewTaskId === null) {
