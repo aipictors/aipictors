@@ -19,7 +19,6 @@ import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post/components/post-acess-type-banner"
-import { subWorkFieldsFragment } from "~/graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post/components/work-markdown-view"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/components/work-action-container"
@@ -285,7 +284,8 @@ export const workArticleFragment = graphql(
     viewsCount
     commentsCount
     subWorks {
-      ...SubWorkFields
+      id
+      imageUrl
     }
     nextWork {
       id
@@ -335,7 +335,7 @@ export const workArticleFragment = graphql(
     relatedUrl
     nanoid
   }`,
-  [userFieldsFragment, subWorkFieldsFragment],
+  [userFieldsFragment],
 )
 
 export const sensitiveWorkArticleFragment = graphql(
@@ -405,7 +405,8 @@ export const sensitiveWorkArticleFragment = graphql(
     viewsCount
     commentsCount
     subWorks {
-      ...SubWorkFields
+      id
+      imageUrl
     }
     nextWork {
       id
@@ -455,5 +456,5 @@ export const sensitiveWorkArticleFragment = graphql(
     relatedUrl
     nanoid
   }`,
-  [userFieldsFragment, subWorkFieldsFragment],
+  [userFieldsFragment],
 )

@@ -4,8 +4,6 @@ import { AuthContext } from "~/contexts/auth-context"
 import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
-import { subWorkFieldsFragment } from "~/graphql/fragments/sub-work-fields"
-import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
@@ -714,11 +712,11 @@ const workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       id
+      uuid
       isMyRecommended
       title
       accessType
       type
-      adminAccessType
       promptAccessType
       rating
       description
@@ -734,74 +732,15 @@ const workQuery = graphql(
       smallThumbnailImageHeight
       thumbnailImagePosition
       subWorksCount
-      user {
-        id
-        promptonUser {
-          id
-        }
-        ...UserFields
-        isFollower
-        isFollowee
-        isMuted
-        works(offset: 0, limit: 16) {
-          id
-          userId
-          largeThumbnailImageURL
-          largeThumbnailImageWidth
-          largeThumbnailImageHeight
-          smallThumbnailImageURL
-          smallThumbnailImageWidth
-          smallThumbnailImageHeight
-          thumbnailImagePosition
-          subWorksCount
-        }
-      }
-      likedUsers(offset: 0, limit: 32) {
-        id
-        name
-        iconUrl
-        login
-      }
-      album {
-        id
-        title
-        description
-      }
-      dailyTheme {
-        id
-        title
-      }
+      ogpThumbnailImageUrl
       tagNames
       createdAt
-      likesCount
-      viewsCount
-      commentsCount
-      subWorks {
-        ...SubWorkFields
-      }
-      nextWork {
-        id
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-      }
-      previousWork {
-        id
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-      }
       model
       modelHash
       generationModelId
       workModelId
       isTagEditable
       isCommentsEditable
-      isLiked
-      isBookmarked
-      isInCollection
       isPromotion
       isGeneration
       ogpThumbnailImageUrl
@@ -820,15 +759,37 @@ const workQuery = graphql(
       style
       url
       html
-      updatedAt
-      dailyRanking
-      weeklyRanking
-      monthlyRanking
       relatedUrl
-      nanoid
+      user {
+        id
+        works(offset: 0, limit: 16) {
+          id
+          userId
+          largeThumbnailImageURL
+          largeThumbnailImageWidth
+          largeThumbnailImageHeight
+          smallThumbnailImageURL
+          smallThumbnailImageWidth
+          smallThumbnailImageHeight
+          thumbnailImagePosition
+          subWorksCount
+        }
+      }
+      album {
+        id
+        title
+        description
+      }
+      dailyTheme {
+        id
+        title
+      }
+      subWorks {
+        id
+        imageUrl
+      }
     }
   }`,
-  [userFieldsFragment, subWorkFieldsFragment],
 )
 
 const updateWorkMutation = graphql(

@@ -1,6 +1,5 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import { subWorkFieldsFragment } from "~/graphql/fragments/sub-work-fields"
 import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { config } from "~/config"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
@@ -222,7 +221,8 @@ export const workQuery = graphql(
       viewsCount
       commentsCount
       subWorks {
-        ...SubWorkFields
+        id
+        imageUrl
       }
       nextWork {
         id
@@ -273,5 +273,5 @@ export const workQuery = graphql(
       nanoid
     }
   }`,
-  [userFieldsFragment, subWorkFieldsFragment],
+  [userFieldsFragment],
 )
