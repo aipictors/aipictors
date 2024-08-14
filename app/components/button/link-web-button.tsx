@@ -6,7 +6,7 @@ type Props = ButtonProps
 /**
  * 外部リンク
  */
-export const LinkWebButton = (props: Props) => {
+export function LinkWebButton(props: Props) {
   return (
     <Button aria-label={"email"} size={"icon"} {...props}>
       <ExternalLinkIcon />

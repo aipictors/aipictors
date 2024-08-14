@@ -10,7 +10,7 @@ type Props = FragmentOf<typeof appEventItemFragment>
  * @param props
  * @returns
  */
-export const EventItem = (props: Props) => {
+export function EventItem(props: Props) {
   if (
     !props.title ||
     !props.thumbnailImageUrl ||

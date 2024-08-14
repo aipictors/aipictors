@@ -16,7 +16,7 @@ type Props = {
 /**
  * フォロー
  */
-export const FollowButton = (props: Props) => {
+export function FollowButton(props: Props) {
   const authContext = useContext(AuthContext)
 
   const [isFollow, setIsFollow] = useState(props.isFollow)

@@ -12,7 +12,7 @@ type Props = {
 /**
  * ノベル作品をプレビューして表示するコンポーネント
  */
-export const NovelWorkPreviewItem = (props: Props) => {
+export function NovelWorkPreviewItem(props: Props) {
   return (
     <Link
       to={`/posts/${props.workId}`}

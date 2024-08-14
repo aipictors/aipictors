@@ -12,7 +12,7 @@ type Props = {
   userLogin: string
 }
 
-export const UserContentsContainer = (props: Props) => {
+export function UserContentsContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   // 人気画像作品

@@ -16,7 +16,7 @@ type Props = {
 /**
  * タグ関連の作品
  */
-export const WorkTagsWorks = (props: Props) => {
+export function WorkTagsWorks(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: suggestedWorkResp } = useQuery(query, {

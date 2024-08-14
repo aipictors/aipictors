@@ -10,7 +10,7 @@ type Props = {
 /**
  * ヘッダーのランキングのお知らせ内容
  */
-export const HomeNotificationsContentAwardItem = (props: Props) => {
+export function HomeNotificationsContentAwardItem(props: Props) {
   return (
     <>
       <Link

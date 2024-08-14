@@ -17,7 +17,7 @@ type Props = {
 /**
  * レスポンシブ対応の作品一覧
  */
-export const ResponsivePhotoWorksAlbum = (props: Props) => {
+export function ResponsivePhotoWorksAlbum(props: Props) {
   return (
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum

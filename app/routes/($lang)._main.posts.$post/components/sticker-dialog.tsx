@@ -21,7 +21,7 @@ type Props = {
 /**
  * スタンプ送信ダイアログ
  */
-export const StickerDialog = (props: Props) => {
+export function StickerDialog(props: Props) {
   const appContext = useContext(AuthContext)
 
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)

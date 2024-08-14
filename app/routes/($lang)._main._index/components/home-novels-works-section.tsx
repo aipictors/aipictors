@@ -17,7 +17,7 @@ type Props = {
 /**
  * 小説作品一覧
  */
-export const HomeNovelsWorksSection = (props: Props) => {
+export function HomeNovelsWorksSection(props: Props) {
   if (!props.works) {
     return null
   }

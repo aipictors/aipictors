@@ -8,7 +8,7 @@ type Props = {
   usesCount?: number
 }
 
-export const StickerCard = (props: Props) => {
+export function StickerCard(props: Props) {
   return (
     <article>
       <Card className="h-full">

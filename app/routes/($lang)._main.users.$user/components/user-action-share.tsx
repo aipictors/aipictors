@@ -13,7 +13,7 @@ type Props = {
   name: string
 }
 
-export const UserActionShare = (props: Props) => {
+export function UserActionShare(props: Props) {
   const currentUrl = `${"https://www.aipictors.com/users/"}${props.login}`
 
   return (

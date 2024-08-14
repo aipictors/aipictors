@@ -14,7 +14,7 @@ type Props = {
   isRecommended: boolean
 }
 
-export const RecommendButton = (props: Props) => {
+export function RecommendButton(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {

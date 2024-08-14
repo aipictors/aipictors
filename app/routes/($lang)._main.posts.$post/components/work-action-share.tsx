@@ -14,7 +14,7 @@ type Props = {
   isDisabledShare?: boolean
 }
 
-export const SharePopover = (props: Props) => {
+export function SharePopover(props: Props) {
   const { pathname } = useLocation()
 
   const currentUrl = `${"https://www.aipictors.com"}${pathname}`

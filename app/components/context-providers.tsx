@@ -15,7 +15,7 @@ const client = createClient()
 
 const queryClient = new QueryClient()
 
-export const ContextProviders = (props: Props) => {
+export function ContextProviders  (props: Props)  {
   return (
     <QueryClientProvider client={queryClient}>
       <ApolloProvider client={client}>

@@ -14,7 +14,7 @@ type Props = {
   work: FragmentOf<typeof workArticleFragment>
 }
 
-export const WorkNextAndPrevious = (props: Props) => {
+export function WorkNextAndPrevious(props: Props) {
   if (props.work === null) return null
 
   useEffect(() => {

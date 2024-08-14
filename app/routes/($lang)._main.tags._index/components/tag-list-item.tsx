@@ -1,4 +1,4 @@
-export const TagListItem = () => {
+export function TagListItem() {
   return (
     <div>
       <p>{"TagListItem"}</p>

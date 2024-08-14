@@ -24,7 +24,7 @@ type Props = {
   themeId: string
 }
 
-export const ThemeArticle = (props: Props) => {
+export function ThemeArticle(props: Props) {
   const navigate = useNavigate()
 
   const authContext = useContext(AuthContext)

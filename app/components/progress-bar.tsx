@@ -3,7 +3,7 @@ import { useNavigation } from "@remix-run/react"
 /**
  * プログレスバー
  */
-export const ProgressBar = () => {
+export function ProgressBar  ()  {
   const navigation = useNavigation()
 
   if (navigation.state !== "loading") {

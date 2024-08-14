@@ -12,7 +12,7 @@ type Props = {
   userId: string
 }
 
-export const UserStickersContents = (props: Props) => {
+export function UserStickersContents(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: stickersResp, refetch } = useSuspenseQuery(stickersQuery, {

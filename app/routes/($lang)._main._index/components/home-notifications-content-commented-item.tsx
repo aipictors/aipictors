@@ -34,7 +34,7 @@ const stickerSizeClasses = {
 /**
  * ヘッダーのコメントのお知らせ内容
  */
-export const HomeNotificationsContentCommentedItem = (props: Props) => {
+export function HomeNotificationsContentCommentedItem(props: Props) {
   const stickerClass = props.stickerSize
     ? stickerSizeClasses[props.stickerSize]
     : stickerSizeClasses.md

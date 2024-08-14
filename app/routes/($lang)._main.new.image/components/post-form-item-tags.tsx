@@ -14,7 +14,7 @@ type Props = {
 /**
  * タグ入力
  */
-export const PostFormItemTags = (props: Props) => {
+export function PostFormItemTags(props: Props) {
   const whiteListTags = props.whiteListTags
 
   const getRandomId = useCallback(() => {

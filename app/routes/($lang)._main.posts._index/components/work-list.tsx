@@ -10,7 +10,7 @@ type Props = {
 /**
  * 作品画像一覧
  */
-export const WorkList = (props: Props) => {
+export function WorkList(props: Props) {
   return (
     <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
       {props.works.map((work) => (

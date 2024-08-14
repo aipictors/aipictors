@@ -15,7 +15,7 @@ type Props = {
 /**
  * SNSアイコンリンク
  */
-export const SnsIconLink = (props: Props) => {
+export function SnsIconLink(props: Props) {
   const icon = () => {
     if (props.url.includes("twitter") || props.url.includes("x.com")) {
       return <RiTwitterXLine className="h-6 w-6" />

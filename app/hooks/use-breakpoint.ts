@@ -2,7 +2,7 @@ import { getBreakpoint } from "~/utils/get-breakpoints"
 import { throttle } from "../lib/throttle"
 import { useEffect, useState } from "react"
 
-export const useBreakpoint = () => {
+export function useBreakpoint() {
   const [breakpoint, setBreakpoint] = useState(getBreakpoint(window.innerWidth))
 
   useEffect(() => {

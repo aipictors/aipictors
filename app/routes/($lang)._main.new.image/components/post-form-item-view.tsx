@@ -10,7 +10,7 @@ type Props = {
 /**
  * 公開モード入力
  */
-export const PostFormItemView = (props: Props) => {
+export function PostFormItemView(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

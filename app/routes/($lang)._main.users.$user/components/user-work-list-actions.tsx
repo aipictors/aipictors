@@ -2,8 +2,8 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { SearchIcon } from "lucide-react"
 
-export const UserWorkListActions = () => (
-  <div className="space-y-4">
+export function UserWorkListActions() {
+  ;<div className="space-y-4">
     <div className="flex space-x-4">
       <Input
         placeholder="Select Date and Time"
@@ -25,4 +25,4 @@ export const UserWorkListActions = () => (
       </Button>
     </div>
   </div>
-)
+}

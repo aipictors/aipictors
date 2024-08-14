@@ -7,7 +7,7 @@ type Props = {
   userPickupSensitiveWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
-export const UserPickupContents = (props: Props) => {
+export function UserPickupContents(props: Props) {
   // 結合
   // const combinedWorks = props.userPickupWorks.concat(
   //   props.userPickupSensitiveWorks,

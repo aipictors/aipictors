@@ -10,7 +10,7 @@ type Props = {
 /**
  * 検索フォーム
  */
-export const StickerSearchForm = (props: Props) => {
+export function StickerSearchForm(props: Props) {
   const [searchTerm, setSearchTerm] = useState(props.text || "")
 
   const navigate = useNavigate()

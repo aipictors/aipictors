@@ -8,7 +8,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export const AutoLoginProvider = (props: Props) => {
+export function AutoLoginProvider  (props: Props) {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithWordPressTokenMutation,
   )

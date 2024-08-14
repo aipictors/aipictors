@@ -61,7 +61,7 @@ const useUpdateQueryParams = () => {
 /**
  * ホームのコンテンツ一覧
  */
-export const HomeContents = (props: Props) => {
+export function HomeContents(props: Props) {
   const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
 

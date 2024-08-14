@@ -19,7 +19,7 @@ type Props = {
 /**
  * レスポンシブ対応の作品一覧
  */
-export const ResponsivePhotoVideoWorksAlbum = (props: Props) => {
+export function ResponsivePhotoVideoWorksAlbum(props: Props) {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
 
   const isAutoPlay = props.isAutoPlay ?? true

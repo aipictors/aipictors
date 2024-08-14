@@ -12,7 +12,7 @@ type Props = {
 /**
  * 許可設定
  */
-export const PostFormPermissionSetting = (props: Props) => {
+export function PostFormPermissionSetting(props: Props) {
   const [isTagEditableChecked, setIsTagEditableChecked] = useState(
     props.isTagEditableChecked,
   )

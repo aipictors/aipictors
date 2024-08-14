@@ -12,7 +12,7 @@ type Props = {
 /**
  * レスポンシブ対応のフォルダ一覧
  */
-export const ResponsiveFoldersList = (props: Props) => {
+export function ResponsiveFoldersList(props: Props) {
   return (
     <div
       key={props.folder.id}

@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Switch } from "~/components/ui/switch"
 import { PlusIcon } from "lucide-react"
 
-export const UserPickUp = () => {
+export function UserPickUp() {
   return (
     <div className="flex">
       <span>{"Pick Up"}</span>

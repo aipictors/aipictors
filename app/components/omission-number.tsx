@@ -12,7 +12,7 @@ type Props = {
 /**
  * 省略数字
  */
-export const OmissionNumber = (props: Props) => {
+export function OmissionNumber  (props: Props)  {
   return (
     <HoverCard>
       <HoverCardTrigger>{toOmissionNumberText(props.number)}</HoverCardTrigger>

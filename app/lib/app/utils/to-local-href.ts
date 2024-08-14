@@ -1,7 +1,7 @@
 /**
  * 多言語化に対応したリンクを返す
  */
-export const toLocalHref = (path: `/${string}`, locale: string) => {
+export function toLocalHref(path: `/${string}`, locale: string) {
   if (!path.startsWith("/")) {
     throw new Error("Invalid pathname")
   }

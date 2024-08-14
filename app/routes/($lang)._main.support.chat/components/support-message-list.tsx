@@ -10,7 +10,7 @@ type Props = {
   messages: FragmentOf<typeof messageFieldsFragment>[]
 }
 
-export const SupportMessageList = (props: Props) => {
+export function SupportMessageList(props: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

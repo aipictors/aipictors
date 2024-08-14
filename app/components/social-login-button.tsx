@@ -15,7 +15,7 @@ type Props = {
  * ソーシャルログインボタン
  * Googleでログインするなど
  */
-export const SocialLoginButton = (props: Props) => {
+export function SocialLoginButton(props: Props) {
   const onLogin = async () => {
     if (props.disabled) return
 

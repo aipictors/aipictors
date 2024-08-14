@@ -12,7 +12,7 @@ type Props = {
 /**
  * ヘッダーのいいねのお知らせ内容
  */
-export const HomeNotificationsContentLikedItem = (props: Props) => {
+export function HomeNotificationsContentLikedItem(props: Props) {
   return (
     <>
       {props.workId && (

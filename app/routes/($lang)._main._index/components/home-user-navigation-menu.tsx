@@ -41,7 +41,7 @@ type Props = {
 /**
  * ヘッダーのナビゲーションメニュー
  */
-export const HomeUserNavigationMenu = (props: Props) => {
+export function HomeUserNavigationMenu(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {

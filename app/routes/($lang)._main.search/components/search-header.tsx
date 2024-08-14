@@ -4,7 +4,7 @@ import { Switch } from "~/components/ui/switch"
 import { SearchConfigDialog } from "~/routes/($lang)._main.search/components/search-config-dialog"
 import { useBoolean } from "usehooks-ts"
 
-export const SearchHeader = () => {
+export function SearchHeader() {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   return (

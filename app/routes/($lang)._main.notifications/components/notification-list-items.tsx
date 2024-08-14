@@ -22,7 +22,7 @@ type Props = {
   page: number
 }
 
-export const NotificationListItems = (props: Props) => {
+export function NotificationListItems(props: Props) {
   const { data: notifications } = useSuspenseQuery(viewerNotificationsQuery, {
     variables: {
       offset: props.page * 32,

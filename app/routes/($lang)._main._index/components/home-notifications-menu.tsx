@@ -16,7 +16,7 @@ import { Suspense, useState } from "react"
 /**
  * ヘッダーのお知らせメニュー
  */
-export const HomeNotificationsMenu = () => {
+export function HomeNotificationsMenu() {
   const tabValues: IntrospectionEnum<"NotificationType">[] = [
     "LIKED_WORK",
     "WORK_COMMENT",

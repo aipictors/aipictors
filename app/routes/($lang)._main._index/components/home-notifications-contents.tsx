@@ -20,7 +20,7 @@ type Props = {
 /**
  * ヘッダーのお知らせ内容
  */
-export const HomeNotificationsContents = (props: Props) => {
+export function HomeNotificationsContents(props: Props) {
   const { data: notifications } = useSuspenseQuery(viewerNotificationsQuery, {
     variables: {
       offset: 0,

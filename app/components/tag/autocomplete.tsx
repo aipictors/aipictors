@@ -20,7 +20,7 @@ type AutocompleteProps = {
   children: React.ReactNode
 }
 
-export const Autocomplete: React.FC<AutocompleteProps> = ({
+export function Autocomplete({
   tags,
   setTags,
   autocompleteOptions,
@@ -28,7 +28,7 @@ export const Autocomplete: React.FC<AutocompleteProps> = ({
   onTagAdd,
   allowDuplicates,
   children,
-}) => {
+}: AutocompleteProps) {
   return (
     <Command className="border">
       {children}

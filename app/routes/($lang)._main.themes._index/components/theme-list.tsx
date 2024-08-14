@@ -10,7 +10,7 @@ type Props = {
   dailyThemes: FragmentOf<typeof dailyThemeComponentFragment>[]
 }
 
-export const ThemeList = (props: Props) => {
+export function ThemeList(props: Props) {
   const navigate = useNavigate()
 
   const cells = createCalendarCells(props.year, props.month)

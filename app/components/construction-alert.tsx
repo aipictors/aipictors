@@ -20,7 +20,7 @@ type Props = {
   deadline?: string
 }
 
-export const ConstructionAlert: React.FC<Props> = (props: Props) => {
+export function ConstructionAlert(props: Props) {
   const alertTitle = () => {
     if (props.type === "BUG") {
       return "不具合を修正中です。"

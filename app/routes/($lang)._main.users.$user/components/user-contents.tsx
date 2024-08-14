@@ -18,7 +18,7 @@ type Props = {
   user: FragmentOf<typeof userProfileFragment>
 }
 
-export const UserContents = (props: Props) => {
+export function UserContents(props: Props) {
   const [activeTab, setActiveTab] = useState("ポートフォリオ")
 
   const [workPage, setWorkPage] = useState(0)

@@ -11,7 +11,7 @@ type Props = {
 /**
  * リリース情報アイテム
  */
-export const ReleaseItem = (props: Props) => {
+export function ReleaseItem(props: Props) {
   const { title, description, thumbnailUrl, platform, createdAt } = props
 
   const formatDate = (timestamp: number) => {

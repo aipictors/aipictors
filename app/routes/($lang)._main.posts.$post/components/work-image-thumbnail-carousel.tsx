@@ -14,9 +14,12 @@ type WorkImageThumbnailCarouselProps = {
   onSelectImage: (imageURL: string) => void
 }
 
-export const WorkImageThumbnailCarousel: React.FC<
-  WorkImageThumbnailCarouselProps
-> = ({ allImageURLs, selectedImage, currentIndex, onSelectImage }) => {
+export function WorkImageThumbnailCarousel({
+  allImageURLs,
+  selectedImage,
+  currentIndex,
+  onSelectImage,
+}: WorkImageThumbnailCarouselProps) {
   // キーボードイベントハンドラー
   const handleKeyPress = (imageURL: string, event: React.KeyboardEvent) => {
     if (event.key === "Enter") {

@@ -15,7 +15,7 @@ type Props = {
   workType: "NOVEL" | "COLUMN" | "VIDEO" | "WORK"
 }
 
-export const UserWorksContents = (props: Props) => {
+export function UserWorksContents(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: workRes } = useSuspenseQuery(worksQuery, {

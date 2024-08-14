@@ -26,7 +26,7 @@ type Props = {
   userNanoid: string
 }
 
-export const AlbumArticleEditorDialog = (props: Props) => {
+export function AlbumArticleEditorDialog(props: Props) {
   const authContext = useContext(AuthContext)
 
   const [selectedWorks, setSelectedWorks] = useState<string[]>(

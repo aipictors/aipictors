@@ -10,7 +10,7 @@ import { graphql } from "gql.tada"
 import { startTransition } from "react"
 import { useInterval } from "usehooks-ts"
 
-export const MessageThreadList = () => {
+export function MessageThreadList() {
   const { data: threads, refetch } = useSuspenseQuery(
     viewerMessageThreadsQuery,
     {

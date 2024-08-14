@@ -16,7 +16,7 @@ type Props = {
 /**
  * 四角形で作品をクロップして表示するコンポーネント
  */
-export const CroppedWorkSquare = (props: Props) => {
+export function CroppedWorkSquare  (props: Props)  {
   const [isHovered, setIsHovered] = useState(false)
 
   const getThumbnailPos = (

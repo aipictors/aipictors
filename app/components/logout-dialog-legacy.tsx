@@ -22,7 +22,7 @@ type Props = {
 /**
  * ログアウト・ダイアログ
  */
-export const LogoutDialogLegacy = (props: Props) => {
+export function LogoutDialogLegacy (props: Props) {
   const handleLogout = async () => {
     await signOut(getAuth())
     props.onClose()

@@ -13,7 +13,7 @@ type Props = {
 /**
  * ヘッダーのコメントのお知らせ内容
  */
-export const HomeNotificationsContentFollowedItem = (props: Props) => {
+export function HomeNotificationsContentFollowedItem(props: Props) {
   return (
     <>
       <Link

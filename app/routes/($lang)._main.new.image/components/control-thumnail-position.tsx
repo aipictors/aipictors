@@ -2,7 +2,7 @@ type Props = {
   imageBase64: string
 }
 
-export const ControlThumbnailPosition = (props: Props) => {
+export function ControlThumbnailPosition(props: Props) {
   return (
     <>
       <div className="h-16 w-16 overflow-hidden">

@@ -6,7 +6,7 @@ type Props = ButtonProps
 /**
  * Twitter
  */
-export const SocialTwitterButton = (props: Props) => {
+export function SocialTwitterButton(props: Props) {
   return (
     <Button aria-label={"twitter"} size={"icon"} {...props}>
       <RiTwitterXLine />

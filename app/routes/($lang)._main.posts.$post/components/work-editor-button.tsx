@@ -14,7 +14,7 @@ type Props = {
 /**
  * 作品編集ボタン
  */
-export const WorkEditorButton = (props: Props) => {
+export function WorkEditorButton(props: Props) {
   const authContext = useContext(AuthContext)
 
   if (authContext.userId !== props.targetWorkOwnerUserId) {

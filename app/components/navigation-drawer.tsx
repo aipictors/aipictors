@@ -6,7 +6,7 @@ type Props = {
   onClose: () => void
 }
 
-export const NavigationDrawer = (props: Props) => {
+export function NavigationDrawer  (props: Props)  {
   return (
     <Sheet>
       <SheetOverlay />

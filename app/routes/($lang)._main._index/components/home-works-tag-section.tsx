@@ -19,7 +19,7 @@ type Props = {
 /**
  * タグ作品一覧
  */
-export const HomeWorksTagSection = (props: Props) => {
+export function HomeWorksTagSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: recommendedWorksResp } = useQuery(WorksQuery, {

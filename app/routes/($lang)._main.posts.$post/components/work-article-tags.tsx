@@ -12,12 +12,12 @@ type WorkArticleTagProps = {
   postId: string
 }
 
-export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
+export function WorkArticleTags({
   tagNames,
   isEditable = false,
   postId,
   setTagNames,
-}) => {
+}: WorkArticleTagProps) {
   const [isOpenEdit, setIsOpenEdit] = React.useState(false)
 
   const [tags, setTags] = React.useState<Tag[]>([
