@@ -15,7 +15,7 @@ type Props = {
   models: FragmentOf<typeof imageModelContextFragment>[]
 }
 
-export const GenerationDocument = (props: Props) => {
+export function GenerationDocument(props: Props) {
   return (
     <div className="w-full space-y-4 overflow-hidden">
       <AppMarkdown>{props.markdownText}</AppMarkdown>

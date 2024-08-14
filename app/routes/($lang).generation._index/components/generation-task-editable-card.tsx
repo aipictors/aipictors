@@ -38,7 +38,7 @@ type Props = {
 /**
  * 画像生成の編集可能な履歴
  */
-export const GenerationTaskEditableCard = (props: Props) => {
+export function GenerationTaskEditableCard(props: Props) {
   const context = useGenerationContext()
 
   const data = useGenerationQuery()

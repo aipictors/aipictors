@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion"
 
-export const GenerationConfigLoraModels = () => {
+export function GenerationConfigLoraModels() {
   const context = useGenerationContext()
 
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()

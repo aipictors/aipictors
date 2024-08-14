@@ -29,7 +29,7 @@ interface Model {
 /**
  * エディタの設定
  */
-export const GenerationConfigModels = (props: Props) => {
+export function GenerationConfigModels(props: Props) {
   const context = useGenerationContext()
 
   // 直近で使用したモデル一覧

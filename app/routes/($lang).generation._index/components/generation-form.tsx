@@ -30,7 +30,7 @@ type Props = {
 /**
  * 画像生成
  */
-export const GenerationForm = (props: Props) => {
+export function GenerationForm(props: Props) {
   const [rating, setRating] = useState(-1)
 
   const [protect, setProtect] = useState(-1)

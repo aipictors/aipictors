@@ -24,7 +24,7 @@ type Props = {
 /**
  * ControlNet設定ダイアログ内容
  */
-export const GenerationConfigControlNetDialogContents = (props: Props) => {
+export function GenerationConfigControlNetDialogContents(props: Props) {
   const isShowWeight = () => {
     return (
       props.module === "dw_openpose_full" ||
