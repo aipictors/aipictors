@@ -10,7 +10,6 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Separator } from "~/components/ui/separator"
 import { Label } from "~/components/ui/label"
 import { Switch } from "~/components/ui/switch"
-import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
 import { graphql } from "gql.tada"
 
 /**
@@ -122,10 +121,16 @@ export const SettingRestrictionForm = () => {
 const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
-      ...UserSettingFields
+      id
+      userId
+      favoritedImageGenerationModelIds
+      preferenceRating
+      featurePromptonRequest
+      isAnonymousLike
+      isAnonymousSensitiveLike
+      isNotifyComment
     }
   }`,
-  [userSettingFieldsFragment],
 )
 
 const viewerIsBlurSensitiveImageQuery = graphql(

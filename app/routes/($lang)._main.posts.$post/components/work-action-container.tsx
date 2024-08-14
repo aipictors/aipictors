@@ -2,7 +2,6 @@ import { WorkAction } from "~/routes/($lang)._main.posts.$post/components/work-a
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -78,10 +77,23 @@ const workQuery = graphql(
       subWorksCount
       user {
         id
-        promptonUser {
-          id
-        }
-        ...UserFields
+        biography
+        login
+        nanoid
+        name
+        receivedLikesCount
+        receivedViewsCount
+        awardsCount
+        followersCount
+        worksCount
+        iconUrl
+        headerImageUrl
+        webFcmToken
+        headerImageUrl
+        biography
+        receivedLikesCount
+        createdLikesCount
+        createdBookmarksCount
         isFollower
         isFollowee
         isMuted
@@ -171,5 +183,4 @@ const workQuery = graphql(
       nanoid
     }
   }`,
-  [userFieldsFragment],
 )

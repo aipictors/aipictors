@@ -2,7 +2,6 @@ import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
@@ -668,7 +667,14 @@ const viewerQuery = graphql(
     ) {
       ...PartialAlbumFields
       user {
-        ...PartialUserFields
+        id
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
     aiModels(offset: 0, limit: 124, where: {}) {
@@ -700,12 +706,7 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [
-    aiModelFieldsFragment,
-    partialAlbumFieldsFragment,
-    partialUserFieldsFragment,
-    passFieldsFragment,
-  ],
+  [aiModelFieldsFragment, partialAlbumFieldsFragment, passFieldsFragment],
 )
 
 const workQuery = graphql(

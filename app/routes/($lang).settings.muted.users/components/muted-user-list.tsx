@@ -1,6 +1,5 @@
 import { IconUrl } from "~/components/icon-url"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { MutedUser } from "~/routes/($lang).settings.muted.users/components/muted-user"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -54,11 +53,16 @@ const viewerMutedUsersQuery = graphql(
       id
       mutedUsers(offset: $offset, limit: $limit) {
         id
-        ...PartialUserFields
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
   }`,
-  [partialUserFieldsFragment],
 )
 
 const muteUserMutation = graphql(

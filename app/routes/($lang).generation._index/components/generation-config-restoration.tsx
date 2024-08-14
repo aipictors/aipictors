@@ -1,6 +1,5 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { config } from "~/config"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -180,10 +179,23 @@ export const workQuery = graphql(
       subWorksCount
       user {
         id
-        promptonUser {
-          id
-        }
-        ...UserFields
+        biography
+        login
+        nanoid
+        name
+        receivedLikesCount
+        receivedViewsCount
+        awardsCount
+        followersCount
+        worksCount
+        iconUrl
+        headerImageUrl
+        webFcmToken
+        headerImageUrl
+        biography
+        receivedLikesCount
+        createdLikesCount
+        createdBookmarksCount
         isFollower
         isFollowee
         isMuted
@@ -273,5 +285,4 @@ export const workQuery = graphql(
       nanoid
     }
   }`,
-  [userFieldsFragment],
 )
