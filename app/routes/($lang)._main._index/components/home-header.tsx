@@ -149,7 +149,7 @@ const HomeHeader = (props: Props) => {
                 className="hidden md:block"
                 to={"https://www.aipictors.com/"}
               >
-                <Button variant={"ghost"}>{"旧版"}</Button>
+                <Button variant={"ghost"}>{"旧版トップ"}</Button>
               </Link>
               <Link to={"/generation"}>
                 <Button variant={"ghost"}>{"生成"}</Button>
