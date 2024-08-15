@@ -24,9 +24,16 @@ export const HomeCroppedWorkList = (props: Props) => {
             style={{ paddingBottom: "100%" }}
           >
             <img
+              src={work.largeThumbnailImageURL}
+              alt={work.title}
+              loading="lazy"
+              className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover md:block"
+            />
+            <img
               src={work.smallThumbnailImageURL}
               alt={work.title}
-              className="absolute top-0 left-0 h-full w-full rounded-md object-cover"
+              loading="lazy"
+              className="absolute top-0 left-0 block h-full w-full rounded-md object-cover md:hidden"
             />
             <div className="absolute right-2 bottom-2">
               <LikeButton

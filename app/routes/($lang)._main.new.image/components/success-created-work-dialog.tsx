@@ -63,7 +63,11 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
   }, [props.isOpen, props.workId])
 
   const link = () => {
-    if (props.accessType === "DRAFT" || props.accessType === "PRIVATE") {
+    if (
+      props.accessType === "DRAFT" ||
+      props.accessType === "PRIVATE" ||
+      isReserved()
+    ) {
       return `/posts/${props.workId}/draft`
     }
     if (props.accessType === "LIMITED") {
@@ -71,6 +75,14 @@ export const SuccessCreatedWorkDialog = (props: Props) => {
     }
     return `/posts/${props.workId}`
   }
+
+  // 予約投稿かどうか
+  const isReserved = () => {
+    const reservedDate = new Date(props.createdAt * 1000 + 3600000 * 9)
+    const now = new Date(Date.now() + 3600000 * 9)
+    return reservedDate > now
+  }
+
   return (
     <>
       <Dialog
