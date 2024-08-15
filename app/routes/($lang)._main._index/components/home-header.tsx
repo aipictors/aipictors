@@ -110,7 +110,13 @@ const HomeHeader = (props: Props) => {
         </div>
         <div className="flex w-full justify-end gap-x-2">
           <div className="hidden w-full items-center space-x-2 md:flex">
-            {isSearchFormOpen && (
+            <div className="flex w-full justify-start space-x-2 font-semibold">
+              <Link to={"/themes"}>
+                <Button variant={"ghost"}>{"お題"}</Button>
+              </Link>
+              <Link to={"/rankings"}>
+                <Button variant={"ghost"}>{"ランキング"}</Button>
+              </Link>
               <div className="w-full flex-1">
                 <Input
                   onChange={onChangeSearchText}
@@ -118,27 +124,8 @@ const HomeHeader = (props: Props) => {
                   onKeyPress={onSearch}
                 />
               </div>
-            )}
-            {!isSearchFormOpen && (
-              <div className="flex w-full justify-start space-x-2 font-semibold">
-                <Link to={"/themes"}>
-                  <Button variant={"ghost"}>{"お題"}</Button>
-                </Link>
-                <Link to={"/rankings"}>
-                  <Button variant={"ghost"}>{"ランキング"}</Button>
-                </Link>
-                {/* <Link to={"/timeline"}>
-                  <Button disabled={true} variant={"ghost"}>
-                    {"タイムライン"}
-                  </Button>
-                </Link> */}
-              </div>
-            )}
-            <Button
-              onClick={onToggleSearchForm}
-              variant={"ghost"}
-              size={"icon"}
-            >
+            </div>
+            <Button onClick={onSearch} variant={"ghost"} size={"icon"}>
               <Search className="w-16" />
             </Button>
             <Separator orientation="vertical" />
