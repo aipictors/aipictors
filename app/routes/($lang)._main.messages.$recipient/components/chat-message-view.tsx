@@ -1,11 +1,11 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { messageFieldsFragment } from "~/graphql/fragments/message-fields"
 import { ChatMessageListContent } from "~/routes/($lang)._main.messages.$recipient/components/chat-message-list-content"
 import { MessageInput } from "~/routes/($lang)._main.support.chat/components/message-input"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Suspense } from "react"
 import { toast } from "sonner"
+import { MessageListItemFragment } from "~/routes/($lang)._main.support.chat/components/chat-message-list"
 
 type Props = {
   recipientId: string
@@ -43,8 +43,9 @@ export function ChatMessageView(props: Props) {
 const createMessageMutation = graphql(
   `mutation CreateMessage($input: CreateMessageInput!) {
     createMessage(input: $input) {
-      ...MessageFields
+      id
+      ...MessageListItem
     }
   }`,
-  [messageFieldsFragment],
+  [MessageListItemFragment],
 )

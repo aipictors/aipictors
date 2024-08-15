@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { Textarea } from "~/components/ui/textarea"
-import { imageGenerationMemoFieldsFragment } from "~/graphql/fragments/image-reserved-generation-memo-field"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -355,17 +354,37 @@ const viewerCurrentPassQuery = graphql(
 const deleteImageGenerationMemoMutation = graphql(
   `mutation DeleteImageGenerationMemo($input: DeleteImageGenerationMemoInput!) {
     deleteImageGenerationMemo(input: $input) {
-      ...ImageGenerationMemoFields
+      id
+      isDeleted
     }
   }`,
-  [imageGenerationMemoFieldsFragment],
 )
 
 const updateImageGenerationMemoMutation = graphql(
   `mutation UpdateImageGenerationTask($input: UpdateImageGenerationMemoInput!) {
     updateImageGenerationMemo(input: $input) {
-      ...ImageGenerationMemoFields
+      id
+      nanoid
+      userId
+      title
+      explanation
+      prompts
+      negativePrompts
+      sampler
+      model {
+        id
+        name
+        type
+      }
+      vae
+      seed
+      steps
+      scale
+      clipSkip
+      width
+      height
+      isDeleted
+      createdAt
     }
   }`,
-  [imageGenerationMemoFieldsFragment],
 )

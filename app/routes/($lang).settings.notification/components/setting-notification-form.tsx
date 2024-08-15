@@ -2,7 +2,6 @@ import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
 import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/components/setting-fcm-form"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -163,10 +162,16 @@ export const SettingNotificationForm = () => {
 const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
-      ...UserSettingFields
+      id
+      userId
+      favoritedImageGenerationModelIds
+      preferenceRating
+      featurePromptonRequest
+      isAnonymousLike
+      isAnonymousSensitiveLike
+      isNotifyComment
     }
   }`,
-  [userSettingFieldsFragment],
 )
 
 const updateUserSettingMutation = graphql(

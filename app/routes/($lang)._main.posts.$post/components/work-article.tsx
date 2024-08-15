@@ -19,8 +19,6 @@ import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post/components/post-acess-type-banner"
-import { subWorkFieldsFragment } from "~/graphql/fragments/sub-work-fields"
-import { userFieldsFragment } from "~/graphql/fragments/user-fields"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post/components/work-markdown-view"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/components/work-action-container"
 
@@ -244,12 +242,25 @@ export const workArticleFragment = graphql(
     subWorksCount
     user {
       id
-      promptonUser {
-        id
-      }
-      ...UserFields
+      biography
+      login
+      nanoid
+      name
+      receivedLikesCount
+      receivedViewsCount
+      awardsCount
+      followersCount
+      worksCount
+      iconUrl
+      headerImageUrl
+      webFcmToken
       isFollower
       isFollowee
+      headerImageUrl
+      biography
+      receivedLikesCount
+      createdLikesCount
+      createdBookmarksCount
       isMuted
       works(offset: 0, limit: 16, where: { isSensitive: false }) {
         id
@@ -262,6 +273,9 @@ export const workArticleFragment = graphql(
         smallThumbnailImageHeight
         thumbnailImagePosition
         subWorksCount
+      }
+      promptonUser {
+        id
       }
     }
     likedUsers(offset: 0, limit: 32) {
@@ -285,7 +299,8 @@ export const workArticleFragment = graphql(
     viewsCount
     commentsCount
     subWorks {
-      ...SubWorkFields
+      id
+      imageUrl
     }
     nextWork {
       id
@@ -335,7 +350,6 @@ export const workArticleFragment = graphql(
     relatedUrl
     nanoid
   }`,
-  [userFieldsFragment, subWorkFieldsFragment],
 )
 
 export const sensitiveWorkArticleFragment = graphql(
@@ -364,12 +378,25 @@ export const sensitiveWorkArticleFragment = graphql(
     subWorksCount
     user {
       id
-      promptonUser {
-        id
-      }
-      ...UserFields
+      biography
+      login
+      nanoid
+      name
+      receivedLikesCount
+      receivedViewsCount
+      awardsCount
+      followersCount
+      worksCount
+      iconUrl
+      headerImageUrl
+      webFcmToken
       isFollower
       isFollowee
+      headerImageUrl
+      biography
+      receivedLikesCount
+      createdLikesCount
+      createdBookmarksCount
       isMuted
       works(offset: 0, limit: 16, where: { isSensitive: true }) {
         id
@@ -382,6 +409,9 @@ export const sensitiveWorkArticleFragment = graphql(
         smallThumbnailImageHeight
         thumbnailImagePosition
         subWorksCount
+      }
+      promptonUser {
+        id
       }
     }
     likedUsers(offset: 0, limit: 32) {
@@ -405,7 +435,8 @@ export const sensitiveWorkArticleFragment = graphql(
     viewsCount
     commentsCount
     subWorks {
-      ...SubWorkFields
+      id
+      imageUrl
     }
     nextWork {
       id
@@ -455,5 +486,4 @@ export const sensitiveWorkArticleFragment = graphql(
     relatedUrl
     nanoid
   }`,
-  [userFieldsFragment, subWorkFieldsFragment],
 )

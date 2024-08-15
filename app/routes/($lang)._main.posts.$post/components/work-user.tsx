@@ -6,7 +6,6 @@ import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
 import { Skeleton } from "~/components/ui/skeleton"
 
@@ -83,9 +82,15 @@ const userFolloweesQuery = graphql(
     user(id: $user_id) {
       id
       followees(offset: $offset, limit: $limit) {
-        ...PartialUserFields
+        id
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
   }`,
-  [partialUserFieldsFragment],
 )

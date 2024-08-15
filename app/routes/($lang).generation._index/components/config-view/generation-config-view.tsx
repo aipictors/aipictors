@@ -7,8 +7,6 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { imageGenerationMemoFieldsFragment } from "~/graphql/fragments/image-reserved-generation-memo-field"
-import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
 import { cn } from "~/lib/cn"
 import { config } from "~/config"
 import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/components/config-view/generation-config-clip-skip"
@@ -260,10 +258,15 @@ export function GenerationConfigView() {
 const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
-      ...UserSettingFields
+      userId
+      favoritedImageGenerationModelIds
+      preferenceRating
+      featurePromptonRequest
+      isAnonymousLike
+      isAnonymousSensitiveLike
+      isNotifyComment
     }
   }`,
-  [userSettingFieldsFragment],
 )
 
 const viewerCurrentImageGenerationMemosQuery = graphql(
@@ -272,11 +275,30 @@ const viewerCurrentImageGenerationMemosQuery = graphql(
       id
       currentImageGenerationMemos {
         id
-        ...ImageGenerationMemoFields
+        nanoid
+        userId
+        title
+        explanation
+        prompts
+        negativePrompts
+        sampler
+        model {
+          id
+          name
+          type
+        }
+        vae
+        seed
+        steps
+        scale
+        clipSkip
+        width
+        height
+        isDeleted
+        createdAt
       }
     }
   }`,
-  [imageGenerationMemoFieldsFragment],
 )
 
 const viewerFavoritedImageGenerationModelsQuery = graphql(

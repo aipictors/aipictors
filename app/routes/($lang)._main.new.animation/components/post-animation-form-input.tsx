@@ -15,7 +15,6 @@ import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/p
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
 import type { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 import type { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
-import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
 import type { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
 import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
@@ -301,8 +300,8 @@ const pageQuery = graphql(
         isSensitive: $isSensitive
       }
     ) {
-      ...PartialTagFields
+      id
+      name
     }
   }`,
-  [partialTagFieldsFragment],
 )

@@ -9,7 +9,6 @@ import React, { useEffect } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
 import { Link } from "@remix-run/react"
-import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
 import { graphql } from "gql.tada"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
@@ -158,10 +157,16 @@ export const SettingRequestForm = () => {
 const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
-      ...UserSettingFields
+      id
+      userId
+      favoritedImageGenerationModelIds
+      preferenceRating
+      featurePromptonRequest
+      isAnonymousLike
+      isAnonymousSensitiveLike
+      isNotifyComment
     }
   }`,
-  [userSettingFieldsFragment],
 )
 
 const userQuery = graphql(

@@ -1,6 +1,8 @@
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { messageFieldsFragment } from "~/graphql/fragments/message-fields"
-import { SupportMessageList } from "~/routes/($lang)._main.support.chat/components/support-message-list"
+import {
+  MessageListItemFragment,
+  SupportMessageList,
+} from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { GenerationMessageInput } from "~/routes/($lang).generation._index/components/task-view/generation-message-input"
 import { useMutation, useQuery } from "@apollo/client/index"
@@ -13,15 +15,12 @@ import { useInterval } from "usehooks-ts"
  * 連絡画面
  */
 export const GenerationCommunicationView = () => {
-  const { data: supportMessages, refetch } = useQuery(
-    viewerSupportMessagesQuery,
-    {
-      variables: {
-        limit: 124,
-        offset: 0,
-      },
+  const { data: supportMessages, refetch } = useQuery(MessagesQuery, {
+    variables: {
+      limit: 124,
+      offset: 0,
     },
-  )
+  })
 
   const [createMessage, { loading: isLoading }] = useMutation(
     createMessageMutation,
@@ -69,23 +68,23 @@ export const GenerationCommunicationView = () => {
   )
 }
 
-const viewerSupportMessagesQuery = graphql(
+const MessagesQuery = graphql(
   `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
     viewer {
       id
       supportMessages(offset: $offset, limit: $limit) {
-        ...MessageFields
+        ...MessageListItem
       }
     }
   }`,
-  [messageFieldsFragment],
+  [MessageListItemFragment],
 )
 
 const createMessageMutation = graphql(
   `mutation CreateMessage($input: CreateMessageInput!) {
     createMessage(input: $input) {
-      ...MessageFields
+      ...MessageListItem
     }
   }`,
-  [messageFieldsFragment],
+  [MessageListItemFragment],
 )
