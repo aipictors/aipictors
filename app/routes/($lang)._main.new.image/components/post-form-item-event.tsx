@@ -67,7 +67,13 @@ export const PostFormItemEvent = (props: Props) => {
           <Card>
             <CardContent className="space-y-2 p-4">
               <h3 className="font-medium text-sm">{props.eventName}</h3>
-              <h4 className="font-medium text-xs">{props.eventDescription}</h4>
+              {props.eventDescription !== null && (
+                <div
+                  className="font-medium text-xs"
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+                  dangerouslySetInnerHTML={{ __html: props.eventDescription }}
+                />
+              )}
             </CardContent>
           </Card>
         </Link>
