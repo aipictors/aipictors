@@ -193,33 +193,32 @@ export default function EventWakiaiai() {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "和気あいAI - 愛知県AIイラスト展示即売会" },
+    { title: "和気あいAI - ハロウィン企画 - 愛知県AIイラスト展示即売会" },
     {
       description:
-        "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会",
+        "ハロウィン企画、生成AIを利用したイラストの展示やグッズ等の展示即売会",
     },
     {
       property: "og:title",
-      content: "和気あいAI - 愛知県AIイラスト展示即売会",
+      content: "和気あいAI - ハロウィン企画 - 愛知県AIイラスト展示即売会",
     },
     {
       property: "og:description",
       content:
-        "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
+        "2024年10月19日（土）ハロウィン企画、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
     },
     {
       property: "og:image",
-      content:
-        "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+      content: "https://assets.aipictors.com/wakiaiai-halloween.webp",
     },
     {
       name: "twitter:title",
-      content: "和気あいAI - 愛知県AIイラスト展示即売会",
+      content: "和気あいAI - ハロウィン企画 - 愛知県AIイラスト展示即売会",
     },
     {
       name: "twitter:description",
       content:
-        "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
+        "2024年10月19日（土）ハロウィン企画、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
     },
   ]
 }
