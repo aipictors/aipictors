@@ -178,6 +178,10 @@ export default function EventWakiaiai() {
       {data.appEvent.works && (
         <>
           <h2 className="font-bold text-md">{"作品一覧"}</h2>
+          {data.appEvent.works.length === 0 && (
+            <p className="text-center">まだ投稿はありません。</p>
+          )}
+
           <EventWorkList
             works={data.appEvent.works}
             isSensitive={false}
