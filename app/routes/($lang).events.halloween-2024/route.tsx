@@ -56,7 +56,6 @@ export default function EventWakiaiai() {
           <EventImage
             alt="和気あいAI"
             imageURL="https://assets.aipictors.com/wakiaiai-halloween.webp"
-            linkURL="/"
             linkTitle="Aipictors"
           />
         </div>
