@@ -39,7 +39,7 @@ export const dateToText = (date: Date) => {
 
 export async function loader() {
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = ["コスプレ", "JK"]
+  const categories = ["ゆめかわ", "かっこいい", "綺麗"]
 
   const getRandomCategories = () => {
     const currentTime = new Date()
@@ -163,7 +163,7 @@ const query = graphql(
       where: {
         ratings: [G],
         search: $categoryFirst
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         style: ILLUSTRATION
       }
     ) {
@@ -175,7 +175,7 @@ const query = graphql(
       where: {
         ratings: [G],
         search: $categorySecond
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         style: ILLUSTRATION
       }
     ) {
