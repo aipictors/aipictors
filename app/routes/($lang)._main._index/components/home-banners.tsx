@@ -45,7 +45,7 @@ export function HomeBanners(props: Props) {
             <img
               alt="home_banner_01"
               className="h-40 w-auto md:h-64 md:max-h-auto"
-              src="https://assets.aipictors.com/wakiaiai-3-halloween-2024-home-banner.webp"
+              src="https://assets.aipictors.com/wakiaiai-3-halloween-2024-top-banner.webp"
             />
           </Link>
         </CarouselItem>
