@@ -58,7 +58,7 @@ export const contributors: Contributor[] = [
     name: "syuribox",
     message: "広報などにコントリビュート頂いております。",
     iconImageURL:
-      "https://files.aipictors.com/b65192f5-eebf-4cd4-98b6-9d9d7d5a1a51",
+      "https://files.aipictors.com/2ca811c7-1e54-46c8-a902-452a197db19a",
     xId: "syuribox",
     aipictorsId: "syuribox",
     homeUrl: "https://kakuyomu.jp/users/syuribox",
