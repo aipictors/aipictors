@@ -130,6 +130,10 @@ export default function EventWakiaiai() {
           </CardHeader>
           <CardContent>
             <p className="">投稿作品のファイル形式：投稿画面に準拠する。</p>
+            <p className="font-bold">
+              サイズは<span className="text-xl"> 正方形 </span>
+              でお願いいたします、正方形以外は運営側でトリミングか、トリミングが難しい場合は当日の掲載からは省かせていただきます。
+            </p>
           </CardContent>
         </Card>
 
@@ -141,9 +145,10 @@ export default function EventWakiaiai() {
           </CardHeader>
           <CardContent>
             <p className="">
-              和気あいAIリアルイベントに選ばれた方の作品はイベントポスターとして展示されます。
+              ご応募いただいた作品はイベントポスターとして展示されます。
               ポスターは、841mm x 1189mmのA0サイズで作成されます。
               掲載を辞退される方は、投稿時もしくはAipictorsへDMもしくはメールにてお知らせください。
+              ポスターは各サイトで制作される予定です。
             </p>
           </CardContent>
         </Card>
