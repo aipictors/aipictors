@@ -29,7 +29,7 @@ export default function EventWakiaiai3() {
           <EventImage
             alt={"和気あいAI3"}
             imageURL={
-              "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_top.png?alt=media&token=8d910ea3-1065-4601-813a-70b6ce082b9b"
+              "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_top_ver2.png?alt=media&token=2b316965-9868-44d4-9b99-0a37725b00b5"
             }
           />
         </div>
