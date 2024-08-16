@@ -62,7 +62,7 @@ export default function EventWakiaiai() {
       </div>
       <div className="m-auto block flex-col space-y-4 text-center">
         <h2 className="m-auto mb-4 block font-semibold text-lg text-orange-600">
-          2024年10月19日（土）
+          2024年10月19日(土)
         </h2>
         <div className="flex justify-center space-x-4">
           <Link
@@ -170,7 +170,7 @@ export default function EventWakiaiai() {
           「ハロウィン」をテーマにした作品を大募集！8月17日(土)～8月24日(土)
         </h3>
         <h3 className="font-semibold text-lg ">
-          リアルイベントは、現地にて2024年10月19日（土）に開催！
+          リアルイベントは、現地にて2024年10月19日(土)に開催！
         </h3>
       </div>
       <div className="md:flex md:space-x-4">
@@ -223,7 +223,7 @@ export const meta: MetaFunction = () => {
     {
       property: "og:description",
       content:
-        "2024年10月19日（土）ハロウィン企画、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
+        "2024年10月19日(土)ハロウィン企画、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
     },
     {
       property: "og:image",
@@ -236,7 +236,7 @@ export const meta: MetaFunction = () => {
     {
       name: "twitter:description",
       content:
-        "2024年10月19日（土）ハロウィン企画、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
+        "2024年10月19日(土)ハロウィン企画、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
     },
   ]
 }
