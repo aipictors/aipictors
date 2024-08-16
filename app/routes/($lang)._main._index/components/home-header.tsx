@@ -82,10 +82,7 @@ const HomeHeader = (props: Props) => {
             </SheetContent>
           </Sheet>
           <div className="flex items-center">
-            <Link
-              className="items-center space-x-2 md:flex"
-              to="https://www.aipictors.com"
-            >
+            <Link className="items-center space-x-2 md:flex" to="/">
               {navigation.state === "loading" && (
                 <div className="flex h-8 w-8 items-center justify-center">
                   <Loader2Icon className={"h-8 w-8 animate-spin"} />
