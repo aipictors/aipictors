@@ -50,7 +50,7 @@ export default function EventWakiaiai() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <div className="space-y-6 px-4 py-8">
+    <div className="space-y-6 py-8">
       <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
         <div className="max-w-[640px] flex-shrink-0">
           <EventImage
