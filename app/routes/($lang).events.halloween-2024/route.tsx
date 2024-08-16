@@ -51,14 +51,15 @@ export default function EventWakiaiai() {
 
   return (
     <div className="space-y-6 px-4 py-8">
-      <div className="mb-8 space-y-4 rounded-md bg-zinc-200 p-8 text-left dark:bg-zinc-800 ">
-        <h1 className="font-bold text-4xl">和気あいAI</h1>
-        <h2 className="font-semibold text-lg ">
-          愛知県で10月に開催する生成AIのリアルイベント「和気あいAI」様とのコラボ企画をAipictorsで開催。
-        </h2>
-        <h3 className="font-semibold text-lg ">
-          「ハロウィン」をテーマにした作品を大募集！8月17日(土)～8月24日(土)
-        </h3>
+      <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
+        <div className="flex-shrink-0">
+          <EventImage
+            alt="和気あいAI"
+            imageURL="https://assets.aipictors.com/wakiaiai-halloween.webp"
+            linkURL="/"
+            linkTitle="Aipictors"
+          />
+        </div>
       </div>
       <div className="m-auto block flex-col space-y-4 text-center">
         <h2 className="m-auto mb-4 block font-semibold text-lg text-orange-600">
@@ -86,18 +87,6 @@ export default function EventWakiaiai() {
           </XIntent>
         </div>
       </div>
-
-      <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
-        <div className="flex-shrink-0">
-          <EventImage
-            alt="和気あいAI"
-            imageURL="https://assets.aipictors.com/wakiaiai-halloween.webp"
-            linkURL="/"
-            linkTitle="Aipictors"
-          />
-        </div>
-      </div>
-
       <div className={cn("grid gap-6 md:grid-cols-2")}>
         <Card>
           <CardHeader>
@@ -123,7 +112,6 @@ export default function EventWakiaiai() {
           </CardContent>
         </Card>
       </div>
-
       <div className={cn("grid gap-6 md:grid-cols-2")}>
         <Card>
           <CardHeader>
@@ -172,7 +160,15 @@ export default function EventWakiaiai() {
           </p>
         </CardContent>
       </Card>
-
+      <div className="mb-8 space-y-4 rounded-md bg-zinc-200 p-8 text-left dark:bg-zinc-800 ">
+        <h1 className="font-bold text-4xl">和気あいAI</h1>
+        <h2 className="font-semibold text-lg ">
+          愛知県で10月に開催する生成AIのリアルイベント「和気あいAI」様とのコラボ企画をAipictorsで開催。
+        </h2>
+        <h3 className="font-semibold text-lg ">
+          「ハロウィン」をテーマにした作品を大募集！8月17日(土)～8月24日(土)
+        </h3>
+      </div>
       <div className="md:flex md:space-x-4">
         <img
           src="https://assets.aipictors.com/halloween-wakiaiai-image.webp"
