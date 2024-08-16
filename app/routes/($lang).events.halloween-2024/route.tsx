@@ -169,6 +169,9 @@ export default function EventWakiaiai() {
         <h3 className="font-semibold text-lg ">
           「ハロウィン」をテーマにした作品を大募集！8月17日(土)～8月24日(土)
         </h3>
+        <h3 className="font-semibold text-lg ">
+          リアルイベントは、現地にて2024年10月19日（土）に開催！
+        </h3>
       </div>
       <div className="md:flex md:space-x-4">
         <img
