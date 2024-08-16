@@ -1,0 +1,249 @@
+import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { cn } from "~/lib/cn"
+import { eventUsers } from "~/routes/($lang).events.wakiaiai/assets/event-users"
+import { EventImage } from "~/routes/($lang).events.wakiaiai/components/event-image"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import { json, Link, useLoaderData } from "@remix-run/react"
+import { MousePointerClickIcon } from "lucide-react"
+import { createClient } from "~/lib/client"
+import { graphql } from "gql.tada"
+import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { EventWorkList } from "~/routes/($lang).events.$event._index/components/event-work-list"
+
+export async function loader(props: LoaderFunctionArgs) {
+  const event = "halloween-2024"
+  const urlParams = new URL(props.request.url).searchParams
+  const pageParam = urlParams.get("page")
+  const page = pageParam ? Number(pageParam) : 0
+
+  const client = createClient()
+
+  const eventsResp = await client.query({
+    query: appEventQuery,
+    variables: {
+      limit: 64,
+      offset: page * 64,
+      slug: event,
+      where: {
+        ratings: ["G", "R15"],
+        isNowCreatedAt: true,
+      },
+      isSensitive: false,
+    },
+  })
+
+  if (eventsResp.data.appEvent === null) {
+    throw new Response(null, { status: 404 })
+  }
+
+  return json({
+    appEvent: eventsResp.data.appEvent,
+    page,
+  })
+}
+
+export default function EventWakiaiai() {
+  const length = Math.floor(eventUsers.length / 3)
+
+  const data = useLoaderData<typeof loader>()
+
+  return (
+    <div className="space-y-6 px-4 py-8">
+      <div className="mb-8 space-y-4 text-center">
+        <h1 className="font-bold text-4xl">和気あいAI</h1>
+        <h2 className="font-semibold text-lg ">
+          愛知県で10月に開催する生成AIのリアルイベント「和気あいAI」様とのコラボ企画をAipictorsで開催。
+        </h2>
+        <h3 className="font-semibold text-lg ">
+          「ハロウィン」をテーマにした作品を大募集！8月17日(土)～8月24日(土)
+        </h3>
+      </div>
+
+      <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
+        <div className="flex-shrink-0">
+          <EventImage
+            alt="和気あいAI"
+            imageURL="https://assets.aipictors.com/wakiaiai-halloween.webp"
+            linkURL="/"
+            linkTitle="Aipictors"
+          />
+        </div>
+        <div className="flex-1 space-y-4 text-center md:text-left">
+          <h2 className="font-semibold text-lg text-orange-600">
+            2024年10月19日（土）
+          </h2>
+          <Link
+            to="/events/wakiaiai3"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block"
+          >
+            <Button variant="outline" className="font-bold text-orange-600">
+              和気あいAI3開催決定
+              <MousePointerClickIcon className="ml-2" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      <div className={cn("grid gap-6 md:grid-cols-2")}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-semibold text-xl">応募期間</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600">2024年8月17日(土)～8月24日(土)23:59</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-semibold text-xl">募集内容</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600">
+              募集内容は「ハロウィン」をテーマにした「和気あいAI」イラスト/フォトを制作してください。
+              <br />
+              リアルイベントのため、全年齢向けの作品を募集させていただきます。レーティング基準については、Aipictorsの規約内のレーティング基準に準拠してください。
+              <br />
+              応募方法は「!和気あいAIハロウィン企画」のタグをつけてAipictorsへご投稿ください。
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className={cn("grid gap-6 md:grid-cols-2")}>
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-semibold text-xl">応募条件</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600">
+              投稿作品のファイル形式：投稿画面に準拠する。
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-semibold text-xl">
+              ポスター企画！
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-600">
+              和気あいAIリアルイベントに選ばれた方の作品はイベントポスターとして展示されます。
+              ポスターは、841mm x 1189mmのA0サイズで作成されます。
+              掲載を辞退される方は、投稿時もしくはAipictorsへDMもしくはメールにてお知らせください。
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-semibold text-xl">
+            3サイト合同書籍化企画！
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-600">
+            人気作品を書籍化して当日物販させていただきます。本イベントは
+            <a href="https://ourt-ai.work/">アワートAI</a>様、
+            <a href="https://iromirai.jp/">イロミライ</a>
+            様との合同企画で3サイト人気作品を10作品ずつ選出してAipictors側で冊子にまとめさせていただきます。
+            選出した際には個別にクリエイター様にご連絡させていただきます。
+            画像生成モデルなどについてライセンス上、書籍化に関して問題がある場合はご遠慮いただく場合がございますのでご注意下さい。
+            掲載を辞退される方は、投稿時もしくはAipictorsへDMもしくはメールにてお知らせください。
+          </p>
+        </CardContent>
+      </Card>
+
+      <div className="md:flex md:space-x-4">
+        <img
+          src="https://assets.aipictors.com/halloween-wakiaiai-image.webp"
+          className="m-auto w-full max-w-[1200px] rounded-lg md:w-1/2"
+          alt="和気あいAI"
+        />
+        <iframe
+          className="mt-4 rounded-lg md:mt-0"
+          style={{ border: 0 }}
+          width="100%"
+          src="https://www.youtube.com/embed/_VCTJxdKs3w"
+          title="和気あいAI、会場紹介動画"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+      {data.appEvent.works && (
+        <>
+          <h2 className="font-bold text-md">{"作品一覧"}</h2>
+          <EventWorkList
+            works={data.appEvent.works}
+            isSensitive={false}
+            maxCount={data.appEvent.worksCount as number}
+            page={data.page}
+            slug={data.appEvent.slug ?? ""}
+          />
+        </>
+      )}
+    </div>
+  )
+}
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "和気あいAI - 愛知県AIイラスト展示即売会" },
+    {
+      description:
+        "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会",
+    },
+    {
+      property: "og:title",
+      content: "和気あいAI - 愛知県AIイラスト展示即売会",
+    },
+    {
+      property: "og:description",
+      content:
+        "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
+    },
+    {
+      property: "og:image",
+      content:
+        "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+    },
+    {
+      name: "twitter:title",
+      content: "和気あいAI - 愛知県AIイラスト展示即売会",
+    },
+    {
+      name: "twitter:description",
+      content:
+        "2023年9月30日（土）東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会！",
+    },
+  ]
+}
+
+const appEventQuery = graphql(
+  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!, $isSensitive: Boolean!) {
+    appEvent(slug: $slug) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      tag
+      worksCount
+      works(offset: $offset, limit: $limit, where: $where) {
+        ...PartialWorkFields
+      }
+      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+        ...PartialWorkFields
+      }
+    }
+  }`,
+  [partialWorkFieldsFragment],
+)
