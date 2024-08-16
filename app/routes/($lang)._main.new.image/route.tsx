@@ -37,6 +37,7 @@ export default function NewImage() {
   const offset = 9 * 60 * 60 * 1000 // JST (UTC+9) のオフセット
   const dateJST = new Date(Date.now() + offset)
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + offset)
+
   const { data: viewer } = useQuery(ViewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
@@ -49,6 +50,7 @@ export default function NewImage() {
         nanoids: ref?.split("|") ?? [],
       },
       startAt: dateJST.toISOString().split("T")[0],
+      endAt: afterDate.toISOString().split("T")[0],
       startDate: dateJST.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
@@ -545,6 +547,7 @@ const ViewerQuery = graphql(
     $startAt: String
     $startDate: String
     $endDate: String
+    $endAt: String
   ) {
     viewer {
       id
@@ -684,6 +687,7 @@ const ViewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
+        endAt: $endAt,
       }
     ) {
       id

@@ -45,6 +45,7 @@ export default function NewText() {
         nanoids: ref?.split("|") ?? [],
       },
       startAt: dateJST.toISOString().split("T")[0],
+      endAt: afterDate.toISOString().split("T")[0],
       startDate: dateJST.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
@@ -453,6 +454,7 @@ const viewerQuery = graphql(
     $startDate: String!,
     $endDate: String!,
     $startAt: String!,
+    $endAt: String!,
   ) {
     viewer {
       id
@@ -592,6 +594,7 @@ const viewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
+        endAt: $endAt,
       }
     ) {
       id

@@ -74,6 +74,7 @@ export default function NewAnimation() {
       limit: 128,
       ownerUserId: authContext.userId,
       startAt: dateJST.toISOString().split("T")[0],
+      endAt: afterDate.toISOString().split("T")[0],
       startDate: dateJST.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
@@ -457,6 +458,7 @@ const ViewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
+        endAt: $endDate,
       }
     ) {
       id
