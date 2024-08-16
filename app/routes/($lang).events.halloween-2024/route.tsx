@@ -10,6 +10,7 @@ import { createClient } from "~/lib/client"
 import { graphql } from "gql.tada"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { EventWorkList } from "~/routes/($lang).events.$event._index/components/event-work-list"
+import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = "halloween-2024"
@@ -50,7 +51,7 @@ export default function EventWakiaiai() {
 
   return (
     <div className="space-y-6 px-4 py-8">
-      <div className="mb-8 space-y-4 text-center">
+      <div className="mb-8 space-y-4 rounded-md bg-zinc-200 p-8 text-left dark:bg-zinc-800 ">
         <h1 className="font-bold text-4xl">和気あいAI</h1>
         <h2 className="font-semibold text-lg ">
           愛知県で10月に開催する生成AIのリアルイベント「和気あいAI」様とのコラボ企画をAipictorsで開催。
@@ -59,6 +60,15 @@ export default function EventWakiaiai() {
           「ハロウィン」をテーマにした作品を大募集！8月17日(土)～8月24日(土)
         </h3>
       </div>
+
+      <XIntent
+        text={"和気あいAI ハロウィン企画"}
+        url={"https://beta.aipictors.com/events/halloween-2024"}
+        hashtags={["和気あいAI", "ハロウィン企画"]}
+        className="ml-auto flex w-32 items-center gap-2"
+      >
+        <span>{"Xで共有する"}</span>
+      </XIntent>
 
       <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
         <div className="flex-shrink-0">
@@ -93,7 +103,7 @@ export default function EventWakiaiai() {
             <CardTitle className="font-semibold text-xl">応募期間</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">2024年8月17日(土)～8月24日(土)23:59</p>
+            <p className="">2024年8月17日(土)～8月24日(土)23:59</p>
           </CardContent>
         </Card>
 
@@ -102,7 +112,7 @@ export default function EventWakiaiai() {
             <CardTitle className="font-semibold text-xl">募集内容</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">
+            <p className="">
               募集内容は「ハロウィン」をテーマにした「和気あいAI」イラスト/フォトを制作してください。
               <br />
               リアルイベントのため、全年齢向けの作品を募集させていただきます。レーティング基準については、Aipictorsの規約内のレーティング基準に準拠してください。
@@ -119,9 +129,7 @@ export default function EventWakiaiai() {
             <CardTitle className="font-semibold text-xl">応募条件</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">
-              投稿作品のファイル形式：投稿画面に準拠する。
-            </p>
+            <p className="">投稿作品のファイル形式：投稿画面に準拠する。</p>
           </CardContent>
         </Card>
 
@@ -132,7 +140,7 @@ export default function EventWakiaiai() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">
+            <p className="">
               和気あいAIリアルイベントに選ばれた方の作品はイベントポスターとして展示されます。
               ポスターは、841mm x 1189mmのA0サイズで作成されます。
               掲載を辞退される方は、投稿時もしくはAipictorsへDMもしくはメールにてお知らせください。
@@ -147,7 +155,7 @@ export default function EventWakiaiai() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-600">
+          <p className="">
             人気作品を書籍化して当日物販させていただきます。本イベントは
             <a href="https://ourt-ai.work/">アワートAI</a>様、
             <a href="https://iromirai.jp/">イロミライ</a>
