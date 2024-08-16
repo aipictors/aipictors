@@ -60,29 +60,11 @@ export default function EventWakiaiai() {
           「ハロウィン」をテーマにした作品を大募集！8月17日(土)～8月24日(土)
         </h3>
       </div>
-
-      <XIntent
-        text={"和気あいAI ハロウィン企画"}
-        url={"https://beta.aipictors.com/events/halloween-2024"}
-        hashtags={["和気あいAI", "ハロウィン企画"]}
-        className="ml-auto flex w-32 items-center gap-2"
-      >
-        <span>{"Xで共有する"}</span>
-      </XIntent>
-
-      <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
-        <div className="flex-shrink-0">
-          <EventImage
-            alt="和気あいAI"
-            imageURL="https://assets.aipictors.com/wakiaiai-halloween.webp"
-            linkURL="/"
-            linkTitle="Aipictors"
-          />
-        </div>
-        <div className="flex-1 space-y-4 text-center md:text-left">
-          <h2 className="font-semibold text-lg text-orange-600">
-            2024年10月19日（土）
-          </h2>
+      <div className="m-auto block flex-col space-y-4 text-center">
+        <h2 className="m-auto mb-4 block font-semibold text-lg text-orange-600">
+          2024年10月19日（土）
+        </h2>
+        <div className="flex justify-center space-x-4">
           <Link
             to="/events/wakiaiai3"
             target="_blank"
@@ -94,6 +76,25 @@ export default function EventWakiaiai() {
               <MousePointerClickIcon className="ml-2" />
             </Button>
           </Link>
+          <XIntent
+            text={"和気あいAI ハロウィン企画"}
+            url={"https://beta.aipictors.com/events/halloween-2024"}
+            hashtags={["和気あいAI", "ハロウィン企画"]}
+            className="ml-auto flex w-32 items-center gap-2"
+          >
+            <span>{"Xで共有する"}</span>
+          </XIntent>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
+        <div className="flex-shrink-0">
+          <EventImage
+            alt="和気あいAI"
+            imageURL="https://assets.aipictors.com/wakiaiai-halloween.webp"
+            linkURL="/"
+            linkTitle="Aipictors"
+          />
         </div>
       </div>
 

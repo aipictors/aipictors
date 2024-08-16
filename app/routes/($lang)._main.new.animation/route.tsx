@@ -366,6 +366,7 @@ const ViewerQuery = graphql(
     $startDate: String!,
     $endDate: String!,
     $startAt: String!,
+    $endAt: String!,
   ) {
     viewer {
       id
@@ -458,7 +459,7 @@ const ViewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
-        endAt: $endDate,
+        endAt: $endAt,
       }
     ) {
       id
