@@ -77,6 +77,7 @@ export const WorkAction = (props: Props) => {
         <SharePopover
           isDisabledShare={props.isDisabledShare}
           title={props.title}
+          id={props.targetWorkId}
         />
         <MenuPopover
           onDownload={onDownload}

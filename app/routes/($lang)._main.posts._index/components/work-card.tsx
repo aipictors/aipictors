@@ -13,12 +13,12 @@ export function WorkCard(props: Props) {
   }
 
   return (
-    <img
-      className="w-full rounded-lg object-cover sm:h-auto md:h-64 xl:h-96"
-      alt=""
-      src={props.imageURL}
-      width={props.imageWidth}
-      height={props.imageHeight}
-    />
+    <div className="aspect-square h-full w-full">
+      <img
+        className="h-full w-full rounded-lg object-cover"
+        alt=""
+        src={props.imageURL}
+      />
+    </div>
   )
 }

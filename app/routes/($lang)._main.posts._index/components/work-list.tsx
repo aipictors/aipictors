@@ -12,7 +12,7 @@ type Props = {
  */
 export const WorkList = (props: Props) => {
   return (
-    <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
+    <ul className="grid w-full grid-cols-2 gap-2 pr-4 pb-4 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-8">
       {props.works.map((work) => (
         <Link key={work.id} to={`/posts/${work.id}`}>
           <WorkCard
