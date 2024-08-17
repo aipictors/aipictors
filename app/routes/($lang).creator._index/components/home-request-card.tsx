@@ -22,18 +22,15 @@ export function HomeRequestCard(props: Props) {
           />
         </Link>
         <div className="flex items-center gap-x-2 p-2">
-          <Link to={`/users/${props.request.recipient.aipicsUser?.login}`}>
-            <Avatar className="h-6 w-6">
-              <AvatarImage
-                src={props.request.recipient?.aipicsUser?.iconUrl ?? undefined}
-              />
-            </Avatar>
-          </Link>
-          <Link to={`/users/${props.request.recipient.aipicsUser?.login}`}>
-            <h2 className="overflow-hidden text-ellipsis text-nowrap font-bold text-sm">
-              {props.request.recipient?.aipicsUser?.name}
-            </h2>
-          </Link>
+          {/* <Link to={`/users/${props.request.recipient.aipicsUser?.login}`}> */}
+          <Avatar className="h-6 w-6">
+            <AvatarImage
+              src={props.request.recipient?.aipicsUser?.iconUrl ?? undefined}
+            />
+          </Avatar>
+          <h2 className="overflow-hidden text-ellipsis text-nowrap font-bold text-sm">
+            {props.request.recipient?.aipicsUser?.name}
+          </h2>
         </div>
       </CardContent>
     </Card>

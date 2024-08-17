@@ -1,5 +1,5 @@
 import { json } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import {
@@ -34,6 +34,15 @@ export async function loader() {
   }
 
   return json(result.data)
+}
+
+export const meta: MetaFunction<typeof loader> = () => {
+  return [
+    {
+      title: "支援リクエスト",
+      description: "支援リクエストのページです。",
+    },
+  ]
 }
 
 const LoaderQuery = graphql(

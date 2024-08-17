@@ -1,21 +1,17 @@
-import { type FragmentOf, graphql } from "gql.tada"
+import { type FragmentOf, graphql, readFragment } from "gql.tada"
 
 type Props = {
   work: FragmentOf<typeof RequestArticlePostFragment>
 }
 
 export function RequestArticlePost(props: Props) {
-  return (
-    <img
-      className={"rounded"}
-      src={props.work.file.imageURL}
-      alt={props.work.id}
-    />
-  )
+  const work = readFragment(RequestArticlePostFragment, props.work)
+
+  return <img className={"rounded"} src={work.file.imageURL} alt={work.id} />
 }
 
 export const RequestArticlePostFragment = graphql(
-  `fragment RequestArticlePost on PromptonWorkNode @_unmask {
+  `fragment RequestArticlePost on PromptonWorkNode {
     id
     file {
       id

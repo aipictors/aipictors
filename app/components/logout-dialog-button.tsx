@@ -30,8 +30,8 @@ export function LogoutDialogButton() {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
-        <Button>{"ログアウト"}</Button>
+      <AlertDialogTrigger asChild>
+        <Button variant={"secondary"}>{"ログアウト"}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

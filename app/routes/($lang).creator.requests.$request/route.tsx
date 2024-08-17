@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
+import { graphql, readFragment } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import {
   RequestArticlePost,
@@ -40,15 +40,41 @@ export async function loader(props: LoaderFunctionArgs) {
   return json(result.data)
 }
 
+export const meta: MetaFunction<typeof loader> = (args) => {
+  if (args.data === undefined) return []
+
+  const meta = readFragment(MetaFragment, args.data.promptonRequest)
+
+  if (meta === null) return []
+
+  return [
+    {
+      title: `${meta.recipient.name}さんへのリクエスト`,
+      description: `リクエスト「${meta.recipient.id}」は${meta.recipient.name}さんへのリクエストです。`,
+    },
+  ]
+}
+
+export const MetaFragment = graphql(
+  `fragment Meta on PromptonRequestNode {
+    id
+    recipient {
+      id
+      name
+    }
+  }`,
+)
+
 const LoaderQuery = graphql(
   `query LoaderQuery($id: ID!) {
     promptonRequest(id: $id) {
       id
+      ...Meta
       deliverables {
         id
         ...RequestArticlePost
       }
     }
   }`,
-  [RequestArticlePostFragment],
+  [MetaFragment, RequestArticlePostFragment],
 )
