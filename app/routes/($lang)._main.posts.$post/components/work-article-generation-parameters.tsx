@@ -19,7 +19,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export const WorkArticleGenerationParameters = (props: Props) => {
+export function WorkArticleGenerationParameters(props: Props) {
   const [viewGenerationType, setViewGenerationType] = useState("prompt")
 
   if (

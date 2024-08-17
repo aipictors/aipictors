@@ -3,7 +3,7 @@
  * @param year
  * @param month
  */
-export const createCalendarCells = (year: number, month: number) => {
+export function createCalendarCells(year: number, month: number) {
   const first = new Date(year, month - 1, 1).getDay()
 
   const last = new Date(year, month, 0).getDate()

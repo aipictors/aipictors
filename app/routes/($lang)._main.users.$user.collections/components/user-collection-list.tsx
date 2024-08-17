@@ -1,3 +1,3 @@
-export const UserCollectionList = () => {
+export function UserCollectionList() {
   return <div />
 }

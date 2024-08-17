@@ -10,7 +10,7 @@ import { graphql } from "gql.tada"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 
-export const AccountLoginForm = () => {
+export function AccountLoginForm() {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {

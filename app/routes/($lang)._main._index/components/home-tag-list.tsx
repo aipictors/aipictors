@@ -14,7 +14,7 @@ type Props = {
 /**
  * ホーム上部に表示するタグ一覧
  */
-export const HomeTagList = (props: Props) => {
+export function HomeTagList(props: Props) {
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
       <CarouselContent>

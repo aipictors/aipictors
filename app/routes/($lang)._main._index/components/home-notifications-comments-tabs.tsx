@@ -7,7 +7,7 @@ import { useState } from "react"
 /**
  * ヘッダーのお知らせメニューのコメントタブ
  */
-export const HomeNotificationCommentsTabs = () => {
+export function HomeNotificationCommentsTabs() {
   const tabValues: IntrospectionEnum<"NotificationType">[] = [
     "WORK_COMMENT",
     "COMMENT_REPLY",

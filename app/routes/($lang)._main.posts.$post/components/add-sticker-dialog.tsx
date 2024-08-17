@@ -31,7 +31,7 @@ type Props = {
 /**
  * スタンプ追加ダイアログ
  */
-export const AddStickerDialog = (props: Props) => {
+export function AddStickerDialog(props: Props) {
   const authContext = useContext(AuthContext)
 
   const [imageBase64, setImageBase64] = useState("")

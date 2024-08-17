@@ -26,7 +26,7 @@ type Props = {
   onClickMenuItem?: () => void
 }
 
-export const HomeRouteList = (props: Props) => {
+export function HomeRouteList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const closeHeaderMenu = () => {

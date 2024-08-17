@@ -3,7 +3,7 @@ type Props = {
   thumbnailUrl: string
 }
 
-export const WorkHtmlView = ({ thumbnailUrl, html }: Props) => {
+export function WorkHtmlView({ thumbnailUrl, html }: Props) {
   return (
     <div className="relative">
       <img

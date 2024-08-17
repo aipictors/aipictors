@@ -25,7 +25,7 @@ type Props = {
 /**
  * 作成済みの作品選択ダイアログ
  */
-export const SelectCreatedWorksDialog = (props: Props) => {
+export function SelectCreatedWorksDialog(props: Props) {
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)

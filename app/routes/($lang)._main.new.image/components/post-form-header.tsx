@@ -8,7 +8,7 @@ type Props = {
   type: "image" | "animation" | "text"
 }
 
-export const PostFormHeader = (props: Props) => {
+export function PostFormHeader(props: Props) {
   const navigate = useNavigate()
 
   const handleNavigation = (path: string) => {

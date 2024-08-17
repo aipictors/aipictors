@@ -81,7 +81,7 @@ export type TagProps = {
   onRemoveTag: (id: string) => void
 } & Pick<TagInputProps, "direction" | "onTagClick" | "draggable">
 
-export const Tag: React.FC<TagProps> = ({
+export function Tag({
   tagObj,
   direction,
   draggable,
@@ -95,7 +95,7 @@ export const Tag: React.FC<TagProps> = ({
   interaction,
   animation,
   textStyle,
-}) => {
+}: TagProps) {
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
     <span

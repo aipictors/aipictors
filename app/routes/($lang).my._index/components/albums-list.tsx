@@ -21,7 +21,7 @@ type Props = {
 /**
  * シリーズ一覧
  */
-export const AlbumsList = (props: Props) => {
+export function AlbumsList(props: Props) {
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }

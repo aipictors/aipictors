@@ -28,7 +28,7 @@ type Props = {
 /**
  * 履歴メモ更新コンテンツ
  */
-export const GenerationConfigMemoUpdateContent = (props: Props) => {
+export function GenerationConfigMemoUpdateContent(props: Props) {
   const context = useGenerationContext()
 
   const [title, setTitle] = useState(props.memo.title)

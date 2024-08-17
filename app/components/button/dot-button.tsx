@@ -8,7 +8,7 @@ type Props = {
 /**
  * ドット
  */
-export const DotButton = (props: Props) => {
+export function DotButton(props: Props) {
   return (
     <Button
       aria-label="menu"

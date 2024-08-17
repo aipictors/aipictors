@@ -8,7 +8,7 @@ import { parseGenerationSize } from "~/routes/($lang).generation._index/types/ge
 /**
  * i2i向け画像設定
  */
-export const GenerationConfigI2i = () => {
+export function GenerationConfigI2i() {
   const context = useGenerationContext()
 
   const size = parseGenerationSize(context.config.sizeType)

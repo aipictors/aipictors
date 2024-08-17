@@ -14,7 +14,7 @@ type Props = {
   isMuted: boolean
 }
 
-export const UserActionOther = (props: Props) => {
+export function UserActionOther(props: Props) {
   const authContext = useContext(AuthContext)
 
   if (

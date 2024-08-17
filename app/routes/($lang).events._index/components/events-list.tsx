@@ -8,7 +8,7 @@ type Props = {
   appEvents: FragmentOf<typeof appEventItemFragment>[]
 }
 
-export const EventsList = (props: Props) => {
+export function EventsList(props: Props) {
   return (
     <div className="flex flex-col space-y-2">
       <div className="grid gap-2 rounded-lg p-4 md:grid-cols-2 xl:grid-cols-3">

@@ -3,7 +3,7 @@ import { useLocation } from "@remix-run/react"
 /**
  * 現在の言語を取得する
  */
-export const useLocale = () => {
+export function useLocale() {
   const { pathname } = useLocation()
 
   if (pathname.startsWith("/en")) {

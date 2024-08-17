@@ -4,7 +4,7 @@ import { FrownIcon } from "lucide-react"
 /**
  * エラーになった履歴
  */
-export const ErrorResultCard = () => {
+export function ErrorResultCard() {
   return (
     <Card>
       <div className="flex flex-col gap-y-2 p-4">

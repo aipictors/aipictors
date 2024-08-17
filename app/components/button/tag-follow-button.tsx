@@ -18,7 +18,7 @@ type Props = {
 /**
  * タグお気に入り登録
  */
-export const TagFollowButton = (props: Props) => {
+export function TagFollowButton(props: Props) {
   const authContext = useContext(AuthContext)
 
   const [isFollow, setIsFollow] = useState(props.isFollow)

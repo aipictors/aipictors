@@ -13,7 +13,7 @@ type Props = {
   tag: string
 }
 
-export const TagActionOther = (props: Props) => {
+export function TagActionOther(props: Props) {
   const navigate = useNavigate()
 
   return (

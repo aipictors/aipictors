@@ -2,7 +2,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { NotificationListContents } from "~/routes/($lang)._main.notifications/components/notification-list-contents"
 import { useState } from "react"
 
-export const NotificationList = () => {
+export function NotificationList() {
   const [page, setPage] = useState(0)
 
   const tabValues: IntrospectionEnum<"NotificationType">[] = [

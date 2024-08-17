@@ -17,7 +17,7 @@ type Props = {
  * URLからエディタの状態を復元する
  * @param props
  */
-export const GenerationConfigRestoration = (props: Props) => {
+export function GenerationConfigRestoration(props: Props) {
   const authContext = useContext(AuthContext)
 
   const context = useGenerationContext()

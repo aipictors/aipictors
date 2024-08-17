@@ -12,7 +12,7 @@ type Props = {
   isSensitive?: boolean
 }
 
-export const UserTabs = (props: Props) => {
+export function UserTabs(props: Props) {
   const handleTabClick = (value: string) => {
     props.setActiveTab(value)
   }

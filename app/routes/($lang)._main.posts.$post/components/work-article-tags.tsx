@@ -5,19 +5,19 @@ import { Link } from "@remix-run/react"
 import { PlusIcon } from "lucide-react"
 import React from "react"
 
-type WorkArticleTagProps = {
+type Props = {
   tagNames: string[]
   setTagNames: React.Dispatch<React.SetStateAction<string[]>>
   isEditable?: boolean
   postId: string
 }
 
-export const WorkArticleTags: React.FC<WorkArticleTagProps> = ({
+export function WorkArticleTags({
   tagNames,
   isEditable = false,
   postId,
   setTagNames,
-}) => {
+}: Props) {
   const [isOpenEdit, setIsOpenEdit] = React.useState(false)
 
   const [tags, setTags] = React.useState<Tag[]>([

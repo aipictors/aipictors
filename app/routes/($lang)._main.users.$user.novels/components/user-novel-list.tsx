@@ -13,7 +13,7 @@ type Props = {
 /**
  * 小説作品一覧
  */
-export const UserNovelList = (props: Props) => {
+export function UserNovelList(props: Props) {
   if (!props.works || props.works.length === 0) {
     return null
   }

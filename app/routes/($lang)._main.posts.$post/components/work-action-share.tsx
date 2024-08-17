@@ -14,7 +14,7 @@ type Props = {
   id: string
 }
 
-export const SharePopover = (props: Props) => {
+export function SharePopover(props: Props) {
   const currentUrl = `https://www.aipictors.com/works/${props.id}`
 
   return (

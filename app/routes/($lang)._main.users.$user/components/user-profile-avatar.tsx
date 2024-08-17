@@ -6,11 +6,11 @@ type UserProfileAvatarProps = {
   size?: "sm" | "md" | "lg" | "auto"
 }
 
-export const UserProfileAvatar = ({
+export function UserProfileAvatar({
   alt,
   src,
   size = "md",
-}: UserProfileAvatarProps) => {
+}: UserProfileAvatarProps) {
   const getSize = (size: "sm" | "md" | "lg" | "auto") => {
     switch (size) {
       case "sm":

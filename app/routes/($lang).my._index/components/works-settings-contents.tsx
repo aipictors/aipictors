@@ -11,7 +11,7 @@ type Props = {
 /**
  * 作品一覧カテゴリ切替
  */
-export const WorksSettingContents = (props: Props) => {
+export function WorksSettingContents(props: Props) {
   return (
     <>
       <div className="flex space-x-2">

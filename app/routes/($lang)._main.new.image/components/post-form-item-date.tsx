@@ -12,7 +12,7 @@ type Props = {
 /**
  * 日付入力
  */
-export const PostFormItemDate = (props: Props) => {
+export function PostFormItemDate(props: Props) {
   const hasValue = props.date || props.time
 
   return (

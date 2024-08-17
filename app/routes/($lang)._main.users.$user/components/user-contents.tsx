@@ -20,7 +20,7 @@ type Props = {
   isSensitive?: boolean
 }
 
-export const UserContents = (props: Props) => {
+export function UserContents(props: Props) {
   const [activeTab, setActiveTab] = useState("ポートフォリオ")
 
   const [workPage, setWorkPage] = useState(0)

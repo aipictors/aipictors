@@ -21,7 +21,7 @@ type Props = {
 
 type Claims = ParsedToken
 
-export const AuthContextProvider = (props: Props) => {
+export function AuthContextProvider(props: Props) {
   const [isLoading, setLoadingState] = useState(() => {
     return true
   })

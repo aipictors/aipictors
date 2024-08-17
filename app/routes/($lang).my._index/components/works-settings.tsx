@@ -37,7 +37,7 @@ type Props = {
 /**
  * 一覧設定
  */
-export const WorksSetting = (props: Props) => {
+export function WorksSetting(props: Props) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const [maxHeight, setMaxHeight] = useState("0px")

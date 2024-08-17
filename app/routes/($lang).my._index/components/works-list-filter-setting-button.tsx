@@ -7,7 +7,7 @@ type Props = {
 /**
  * 作品一覧フィルター
  */
-export const WorksListFilterSettingButton = (props: Props) => {
+export function WorksListFilterSettingButton(props: Props) {
   return (
     <>
       <Button

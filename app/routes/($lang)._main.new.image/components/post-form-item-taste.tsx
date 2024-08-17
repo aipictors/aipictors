@@ -16,7 +16,7 @@ type Props = {
 /**
  * テイスト入力
  */
-export const PostFormItemTaste = (props: Props) => {
+export function PostFormItemTaste(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

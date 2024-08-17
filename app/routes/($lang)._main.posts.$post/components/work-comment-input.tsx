@@ -25,7 +25,7 @@ type Props = {
 /**
  * 返信コメント入力欄
  */
-export const ReplyCommentInput = (props: Props) => {
+export function ReplyCommentInput(props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const [createReplyComment, { loading: isCreatingReplyComment }] = useMutation(

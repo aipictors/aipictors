@@ -13,7 +13,7 @@ type Props = {
   tags: FragmentOf<typeof HomeTagFragment>[]
 }
 
-export const HomeTagsSection = (props: Props) => {
+export function HomeTagsSection(props: Props) {
   const plugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true }),
   )

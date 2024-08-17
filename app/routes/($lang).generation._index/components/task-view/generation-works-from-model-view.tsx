@@ -12,7 +12,7 @@ import { useState } from "react"
 /**
  * モデルから作品検索
  */
-export const GenerationWorkListModelView = () => {
+export function GenerationWorkListModelView() {
   const { send } = GenerationConfigContext.useActorRef()
 
   const context = useGenerationContext()

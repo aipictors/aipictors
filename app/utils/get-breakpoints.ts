@@ -1,4 +1,4 @@
-export const getBreakpoint = (width: number) => {
+export function getBreakpoint(width: number) {
   if (width < 640) {
     return "base" as const
   }

@@ -12,7 +12,7 @@ type Props = {
 /**
  * 履歴メモ一覧
  */
-export const GenerationConfigMemoList = (props: Props) => {
+export function GenerationConfigMemoList(props: Props) {
   if (props.memos === undefined) {
     return <>{"プリセットから設定を復元できます"}</>
   }

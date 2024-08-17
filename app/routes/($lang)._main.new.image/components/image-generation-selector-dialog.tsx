@@ -18,7 +18,7 @@ type Props = {
   setIsOpen: (isOpen: boolean) => void
 }
 
-export const ImageGenerationSelectorDialog = (props: Props) => {
+export function ImageGenerationSelectorDialog(props: Props) {
   const { data: imageGenerationResults } = useQuery(
     viewerImageGenerationResultsQuery,
     {

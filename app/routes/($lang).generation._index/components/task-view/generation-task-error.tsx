@@ -5,7 +5,7 @@ import { useCallback } from "react"
 /**
  * エラーになった履歴
  */
-export const GenerationTaskError = () => {
+export function GenerationTaskError() {
   const reloadPage = useCallback(() => {
     window.location.reload()
   }, [])

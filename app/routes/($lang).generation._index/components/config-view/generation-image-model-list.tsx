@@ -27,7 +27,7 @@ type Props = {
   onSearchClick(id: string, name: string): void
 }
 
-export const ImageModelsList = (props: Props) => {
+export function ImageModelsList(props: Props) {
   const [selectedType, selectType] = useState("ALL")
 
   const [selectedCategory, selectCategory] = useState("ALL")

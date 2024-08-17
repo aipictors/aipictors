@@ -8,7 +8,7 @@ type Props = {
 /**
  * 投稿者への支援ボタン
  */
-export const PromptonRequestTextButton = ({ promptonId, ...rest }: Props) => {
+export function PromptonRequestTextButton({ promptonId, ...rest }: Props) {
   const onClick = () => {
     window.open(`https://prompton.io/aipic/${promptonId}`, "_blank")
   }

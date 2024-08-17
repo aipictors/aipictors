@@ -24,7 +24,7 @@ type Props = {
   isUsedShortcutKey?: boolean
 }
 
-export const LikeButton = (props: Props) => {
+export function LikeButton(props: Props) {
   const authContext = useContext(AuthContext)
   const [createWorkLike, { loading: isCreateLoading }] = useMutation(
     createWorkLikeMutation,

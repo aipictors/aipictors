@@ -4,7 +4,7 @@ import { toLocalTextFactory } from "~/lib/app/utils/to-local-text-factory"
 /**
  * 言語設定を含むテキストを取得する
  */
-export const useLocalText = () => {
+export function useLocalText() {
   const locale = useLocale()
 
   return toLocalTextFactory(locale)

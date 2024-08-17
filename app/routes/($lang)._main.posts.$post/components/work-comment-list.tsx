@@ -73,7 +73,7 @@ const getJSTDate = () => {
 /**
  * 作品へのコメント一覧
  */
-export const WorkCommentList = (props: Props) => {
+export function WorkCommentList(props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const appContext = useContext(AuthContext)

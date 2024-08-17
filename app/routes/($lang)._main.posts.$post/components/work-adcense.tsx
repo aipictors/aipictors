@@ -5,7 +5,7 @@ import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 
-export const WorkAdSense = () => {
+export function WorkAdSense() {
   const authContext = useContext(AuthContext)
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {

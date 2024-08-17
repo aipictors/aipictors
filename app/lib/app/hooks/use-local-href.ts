@@ -4,7 +4,7 @@ import { toLocalHrefFactory } from "~/lib/app/utils/to-local-href-factory"
 /**
  * 言語設定を含むパスを取得する
  */
-export const useLocalHref = () => {
+export function useLocalHref() {
   const locale = useLocale()
 
   return toLocalHrefFactory(locale)

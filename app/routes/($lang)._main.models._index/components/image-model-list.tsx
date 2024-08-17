@@ -5,7 +5,7 @@ type Props = {
   imageModels: FragmentOf<typeof imageModelCardFragment>[]
 }
 
-export const ImageModelList = (props: Props) => {
+export function ImageModelList(props: Props) {
   return (
     <div className="flex">
       <div className="flex flex-col">

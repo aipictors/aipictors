@@ -5,7 +5,7 @@ type Props = {
   onClick(): void
 }
 
-export const MutedTag = (props: Props) => {
+export function MutedTag(props: Props) {
   return (
     <div className="flex justify-between">
       <div>

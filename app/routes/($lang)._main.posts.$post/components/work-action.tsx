@@ -28,7 +28,7 @@ type Props = {
 /**
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
  */
-export const WorkAction = (props: Props) => {
+export function WorkAction(props: Props) {
   const appContext = useContext(AuthContext)
 
   const onDownload = async () => {

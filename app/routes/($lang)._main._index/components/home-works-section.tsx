@@ -31,7 +31,7 @@ type Props = {
 /**
  * トップ画面ホーム作品一覧
  */
-export const HomeWorksSection = (props: Props) => {
+export function HomeWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const perPageCount = props.workType === "VIDEO" ? 8 : 32

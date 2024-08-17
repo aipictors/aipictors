@@ -4,7 +4,7 @@ import { GenerationQueryContext } from "~/routes/($lang).generation._index/conte
 import { GenerationConfigAction } from "~/routes/($lang).generation._index/machines/models/generation-config-action"
 import { useContext } from "react"
 
-export const useGenerationContext = () => {
+export function useGenerationContext() {
   const dataContext = useContext(GenerationQueryContext)
 
   const configContext = GenerationConfigContext.useSelector((state) => {

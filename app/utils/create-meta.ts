@@ -1,9 +1,9 @@
 import { config, type MetaData } from "~/config"
 
-export const createMeta = (
+export function createMeta(
   data: MetaData,
   dynamicData?: { [key: string]: string },
-) => {
+) {
   const replacePlaceholders = (str: string) => {
     if (!dynamicData) return str
     return str.replace(/{{(.*?)}}/g, (_, key) => dynamicData[key.trim()] || "")

@@ -7,7 +7,7 @@ type Props = {
 /**
  * 通知一覧フィルター
  */
-export const NotificationListFilterSettingButton = (props: Props) => {
+export function NotificationListFilterSettingButton(props: Props) {
   return (
     <>
       <Button

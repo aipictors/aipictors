@@ -13,7 +13,7 @@ import { graphql } from "gql.tada"
 /**
  * 表示するコンテンツの年齢設定制限フォーム
  */
-export const SettingRestrictionForm = () => {
+export function SettingRestrictionForm() {
   const [rating, setRating] = React.useState("G")
 
   const authContext = useContext(AuthContext)

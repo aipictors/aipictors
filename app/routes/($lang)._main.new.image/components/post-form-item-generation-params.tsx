@@ -14,7 +14,7 @@ type Props = {
 /**
  * 生成パラメータ入力
  */
-export const PostFormItemGenerationParams = (props: Props) => {
+export function PostFormItemGenerationParams(props: Props) {
   const handleChange = (field: keyof PNGInfo["params"], value: string) => {
     if (!props.pngInfo) return
 

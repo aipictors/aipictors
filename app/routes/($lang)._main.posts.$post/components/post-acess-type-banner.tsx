@@ -8,7 +8,7 @@ type Props = {
 /**
  * 作品バナー
  */
-export const PostAccessTypeBanner = (props: Props) => {
+export function PostAccessTypeBanner(props: Props) {
   const accessTypeText = () => {
     switch (props.postAccessType) {
       case "PUBLIC":

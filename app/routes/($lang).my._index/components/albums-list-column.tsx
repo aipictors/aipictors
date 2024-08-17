@@ -13,7 +13,7 @@ type Props = {
 /**
  * シリーズ一覧テーブルのカラム
  */
-export const AlbumsListColumn = (props: Props) => {
+export function AlbumsListColumn(props: Props) {
   return (
     <>
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
