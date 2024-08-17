@@ -7,6 +7,7 @@ import { Input } from "~/components/ui/input"
 
 export const SearchHeader = () => {
   const [searchText, setSearchText] = useState("")
+
   const [isSensitive, setIsSensitive] = useState(false)
 
   const onSearch = () => {
@@ -16,11 +17,19 @@ export const SearchHeader = () => {
         ? `/sensitive/tags/${trimmedText}`
         : `/tags/${trimmedText}`
       window.location.href = baseUrl
+    } else {
+      window.location.href = "/search"
     }
   }
 
   const handleCheckboxChange = (checked: CheckedState) => {
-    setIsSensitive(checked === true) // checkedがtrueならtrueを設定、それ以外はfalseを設定
+    setIsSensitive(checked === true)
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onSearch()
+    }
   }
 
   return (
@@ -31,6 +40,7 @@ export const SearchHeader = () => {
             placeholder={"タグで作品を検索"}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <Button onClick={onSearch} variant={"ghost"} size={"icon"}>

@@ -30,10 +30,20 @@ const HomeHeader = (props: Props) => {
   const [searchText, setSearchText] = useState("")
 
   const onSearch = () => {
-    window.location.href = `https://www.aipictors.com/search/?word=${searchText}`
+    const trimmedText = searchText.trim()
+    if (trimmedText !== "") {
+      const baseUrl = `/tags/${trimmedText}`
+      window.location.href = baseUrl
+    }
   }
 
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onSearch()
+    }
+  }
 
   const onToggleSearchForm = () => {
     setIsSearchFormOpen((prev) => !prev)
@@ -117,8 +127,8 @@ const HomeHeader = (props: Props) => {
               <div className="w-full flex-1">
                 <Input
                   onChange={onChangeSearchText}
+                  onKeyDown={handleKeyDown}
                   placeholder={"作品を検索"}
-                  onKeyPress={onSearch}
                 />
               </div>
             </div>
