@@ -333,7 +333,7 @@ export enum KeyCodes {
 export interface MetaData {
   title?: string
   description?: string
-  enDescription?: string // enDescriptionを追加
+  enDescription?: string
   image?: string | null
   isIndex?: boolean
   isTop?: boolean

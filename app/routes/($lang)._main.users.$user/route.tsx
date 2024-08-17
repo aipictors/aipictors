@@ -70,8 +70,13 @@ export const meta: MetaFunction = ({ data }) => {
 
   const user = data as { user: FragmentOf<typeof userProfileIconFragment> }
 
+  const worksCountPart =
+    user.user.worksCount > 0 ? ` (${user.user.worksCount}作品)` : ""
+
   return createMeta(META.USERS, {
-    title: `${user.user.name}のマイページ` || "ユーザーのマイページ",
+    title:
+      `${user.user.name}のマイページ${worksCountPart}` ||
+      "ユーザーのマイページ",
     description:
       user.user.biography ||
       "Aipictorsのマイページです、AIイラストなどの作品一覧を閲覧することができます",
