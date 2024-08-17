@@ -86,8 +86,10 @@ export const meta: MetaFunction = ({ data }) => {
 
   const work = data as { work: FragmentOf<typeof workArticleFragment> }
 
+  const userPart = work.work.user ? ` - ${work.work.user?.name}の作品` : ""
+
   return createMeta(META.POSTS, {
-    title: work.work.title,
+    title: `${work.work.title}${userPart}`,
     description:
       work.work.description ||
       "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
