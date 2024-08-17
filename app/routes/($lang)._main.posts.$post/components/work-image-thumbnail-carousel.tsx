@@ -7,7 +7,7 @@ import {
 } from "~/components/ui/carousel"
 import type React from "react"
 
-type WorkImageThumbnailCarouselProps = {
+type Props = {
   allImageURLs: string[]
   selectedImage: string
   currentIndex: number
@@ -19,7 +19,7 @@ export function WorkImageThumbnailCarousel({
   selectedImage,
   currentIndex,
   onSelectImage,
-}: WorkImageThumbnailCarouselProps) {
+}: Props) {
   // キーボードイベントハンドラー
   const handleKeyPress = (imageURL: string, event: React.KeyboardEvent) => {
     if (event.key === "Enter") {

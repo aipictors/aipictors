@@ -14,10 +14,12 @@ type Props = {
 }
 
 export function RankingCard(props: Props) {
-  ;<Card>
-    <img src={props.imageURL ?? ""} alt={props.title ?? "no title"} />
-    <div className="flex flex-col">
-      <p className="text-sm">{props.title ?? ""}</p>
-    </div>
-  </Card>
+  return (
+    <Card>
+      <img src={props.imageURL ?? ""} alt={props.title ?? "no title"} />
+      <div className="flex flex-col">
+        <p className="text-sm">{props.title ?? ""}</p>
+      </div>
+    </Card>
+  )
 }
