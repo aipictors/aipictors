@@ -7,11 +7,14 @@ import {
   HomeRequestCardFragment,
 } from "~/routes/($lang).creator._index/components/home-request-card"
 
+/**
+ * 支援リクエスト
+ */
 export default function Route() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <div className="p-4">
+    <div className="container px-8">
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4">
         {data.requests.map((request) => (
           <HomeRequestCard key={request.id} request={request} />
