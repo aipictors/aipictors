@@ -6,7 +6,7 @@ export const eventUsers: EventUser[] = [
     types: ["SHOP", "EXHIBIT"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiai2_kotobanoaya_160.jpg?alt=media&token=e3b4a56c-23cc-4be5-93a4-2adea6e05109",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_kotobanoaya.jpg?alt=media&token=4501e176-39fa-4a6d-9ccc-aa79ebd41dd1",
     twitterId: "ko_to_ba_no_aya",
     aipictorsId: null,
     siteURL: null,
