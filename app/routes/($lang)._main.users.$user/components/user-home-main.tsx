@@ -35,8 +35,6 @@ export const UserHomeMain = (props: Props) => {
 
   const navigate = useNavigate()
 
-  console.log(props.isSensitive)
-
   return (
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-0 right-0 z-10 md:hidden">

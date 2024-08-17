@@ -7,6 +7,8 @@ import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import React from "react"
 import { Suspense, useContext } from "react"
+import { createMeta } from "~/utils/create-meta"
+import { META } from "~/config"
 
 export const headers: HeadersFunction = () => {
   return {
@@ -15,26 +17,7 @@ export const headers: HeadersFunction = () => {
 }
 
 export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors - ダッシュボード - ブックマーク"
-
-  const metaDescription = "ダッシュボード - ブックマーク"
-
-  const metaImage =
-    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
-
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "robots", content: "noindex" },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
+  return createMeta(META.MY_BOOKMARKS)
 }
 
 export default function MyBookmarks() {

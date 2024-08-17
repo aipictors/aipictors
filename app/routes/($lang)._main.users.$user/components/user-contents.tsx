@@ -13,6 +13,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useState } from "react"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { CalendarHeartIcon } from "lucide-react"
+import { Link } from "@remix-run/react"
 
 type Props = {
   user: FragmentOf<typeof userProfileFragment>
@@ -35,6 +36,45 @@ export const UserContents = (props: Props) => {
   const [foldersPage, setFoldersPage] = useState(0)
 
   const [stickersPage, setStickersPage] = useState(0)
+
+  const formatBiography = (biography: string): (string | JSX.Element)[] => {
+    // URLを検出する正規表現
+    const urlPattern = /https?:\/\/[^\s]+/g
+    const parts: string[] = biography.split(urlPattern)
+    const urls: string[] | null = biography.match(urlPattern)
+
+    const elements: (string | JSX.Element)[] = []
+
+    parts.forEach((part, index) => {
+      // 改行に対応するために、各パートを改行で分割
+      const splitByLineBreaks = part.split("\n")
+
+      splitByLineBreaks.forEach((line, lineIndex) => {
+        elements.push(line)
+        if (lineIndex < splitByLineBreaks.length - 1) {
+          // 改行を挿入
+          elements.push(
+            <br key={`line-break-${index}-${lineIndex.toString()}`} />,
+          )
+        }
+      })
+
+      if (urls?.[index]) {
+        elements.push(
+          <Link
+            key={index.toString()}
+            to={urls[index]}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {urls[index]}
+          </Link>,
+        )
+      }
+    })
+
+    return elements
+  }
 
   return (
     <div className="flex flex-col space-y-4">
@@ -82,7 +122,9 @@ export const UserContents = (props: Props) => {
                   )}
                 </p>
                 {props.user.biography && (
-                  <p className="text-sm">{props.user.biography}</p>
+                  <p className="text-sm">
+                    {formatBiography(props.user.biography)}
+                  </p>
                 )}
                 <div className="flex items-center gap-x-4">
                   {props.user.twitterAccountId && (
@@ -202,7 +244,6 @@ export const userProfileFragment = graphql(
     headerImageUrl
     headerImageUrl
     createdAt
-    biography
     instagramAccountId
     twitterAccountId
     githubAccountId

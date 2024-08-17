@@ -2,10 +2,12 @@ import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -47,6 +49,10 @@ export async function loader(props: LoaderFunctionArgs) {
     day,
     workAwards: workAwardsResp,
   })
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.RANKINGS_DAY)
 }
 
 /**

@@ -16,8 +16,14 @@ import {
 } from "~/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { createClient } from "~/lib/client"
-import { Link, json, useLoaderData } from "@remix-run/react"
+import { Link, type MetaFunction, json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.MILESTONES)
+}
 
 export async function loader() {
   const client = createClient()

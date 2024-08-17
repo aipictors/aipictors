@@ -15,13 +15,19 @@ import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reduce
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { useBeforeUnload, useSearchParams } from "@remix-run/react"
+import {
+  type MetaFunction,
+  useBeforeUnload,
+  useSearchParams,
+} from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React, { useEffect } from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export default function NewText() {
   const authContext = useContext(AuthContext)
@@ -441,6 +447,10 @@ export default function NewText() {
       />
     </div>
   )
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.NEW_TEXT)
 }
 
 const viewerQuery = graphql(

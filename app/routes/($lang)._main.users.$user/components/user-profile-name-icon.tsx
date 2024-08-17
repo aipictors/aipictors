@@ -63,6 +63,7 @@ export const userProfileIconFragment = graphql(
     login
     nanoid
     name
+    biography
     receivedLikesCount
     createdAt
     receivedViewsCount

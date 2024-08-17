@@ -15,11 +15,13 @@ import {
   userProfileIconFragment,
   UserProfileNameIcon,
 } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense } from "react"
 import { Lumiflex } from "uvcanvas"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -57,6 +59,27 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json({
     user: userResp.data.user,
+  })
+}
+
+export const meta: MetaFunction = ({ data }) => {
+  // data.user が存在しないか、オブジェクトでない場合のチェック
+  if (!data) {
+    return [{ title: "ユーザのマイページ" }]
+  }
+
+  const user = data as { user: FragmentOf<typeof userProfileIconFragment> }
+
+  return createMeta(META.USERS, {
+    title: `${user.user.name}のマイページ` || "ユーザーのマイページ",
+    description:
+      user.user.biography ||
+      "Aipictorsのマイページです、AIイラストなどの作品一覧を閲覧することができます",
+    url: user.user.headerImageUrl?.length
+      ? user.user.headerImageUrl
+      : user.user.iconUrl
+        ? IconUrl(user.user.iconUrl)
+        : "",
   })
 }
 

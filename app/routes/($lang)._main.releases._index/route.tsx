@@ -1,9 +1,14 @@
 import { json, Link, useLoaderData } from "@remix-run/react"
 import { useState } from "react"
 import { Button } from "~/components/ui/button"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { createClient as createCmsClient } from "microcms-js-sdk"
-import { config } from "~/config"
+import { config, META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.RELEASES)
+}
 
 interface Release {
   id: string
@@ -33,7 +38,7 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   const data: ApiResponse = await microCmsClient.get({
-    endpoint: `releases?orders=createdAt&limit=${limit}&offset=${offset}`,
+    endpoint: `releases?orders=-createdAt&limit=${limit}&offset=${offset}`,
   })
 
   return json({

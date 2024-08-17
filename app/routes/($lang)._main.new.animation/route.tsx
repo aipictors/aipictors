@@ -15,13 +15,15 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { useBeforeUnload } from "@remix-run/react"
+import { type MetaFunction, useBeforeUnload } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export default function NewAnimation() {
   const authContext = useContext(AuthContext)
@@ -356,6 +358,10 @@ export default function NewAnimation() {
       />
     </div>
   )
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.NEW_ANIMATION)
 }
 
 const ViewerQuery = graphql(
