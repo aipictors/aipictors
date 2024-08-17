@@ -4,8 +4,10 @@ import { WorkList } from "~/routes/($lang)._main.posts._index/components/work-li
 import { json, redirect, useLoaderData } from "@remix-run/react"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
@@ -52,6 +54,10 @@ export default function Search() {
       <WorkList works={data.worksResp.data.works ?? []} />
     </>
   )
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.SEARCH)
 }
 
 const worksQuery = graphql(

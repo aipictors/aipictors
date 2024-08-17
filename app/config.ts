@@ -463,6 +463,11 @@ export const META: { [key: string]: MetaData } = {
     description: "センシティブなAIイラスト週間お題ランキングの情報です",
     isIndex: true,
   },
+  SEARCH: {
+    title: "検索",
+    description: "最新のAIイラストを検索することができます",
+    isIndex: true,
+  },
   /**
    * インデックスなし
    */
