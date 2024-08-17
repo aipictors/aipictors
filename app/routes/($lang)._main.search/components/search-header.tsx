@@ -1,6 +1,7 @@
 import type { CheckedState } from "@radix-ui/react-checkbox" // CheckedStateのインポートが必要かも
 import { Search } from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Input } from "~/components/ui/input"
@@ -18,7 +19,7 @@ export const SearchHeader = () => {
         : `/tags/${trimmedText}`
       window.location.href = baseUrl
     } else {
-      window.location.href = "/search"
+      toast("検索ワードを入力してください")
     }
   }
 

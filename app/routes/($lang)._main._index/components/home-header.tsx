@@ -34,6 +34,8 @@ const HomeHeader = (props: Props) => {
     if (trimmedText !== "") {
       const baseUrl = `/tags/${trimmedText}`
       window.location.href = baseUrl
+    } else {
+      window.location.href = "/search"
     }
   }
 

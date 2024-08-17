@@ -69,5 +69,5 @@ export const metadata = {
   catchphraseJA: "AI画像投稿サイト・生成サイト",
   catchphraseEN: "AI Illustration & Generation",
   descriptionJA:
-    "AI画像投稿サイト・生成サイト「Aipictors」で作品を公開してみよう!、AIイラスト・AIフォト・AIグラビア・AI小説・ショート動画投稿サイトです。",
+    "AI画像投稿サイト・生成サイト「Aipictors」で作品を公開してみよう！AIイラスト、AIフォト、AIグラビアなどプロンプトが数多く投稿されています！数十万作品の中からお気に入りの作品を見つけよう！",
 }

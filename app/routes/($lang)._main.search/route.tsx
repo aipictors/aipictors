@@ -43,7 +43,7 @@ export default function Search() {
     <>
       {/* <RelatedTagList /> */}
       {/* <RelatedModelList /> */}
-      <div className="m-auto max-w-96">
+      <div className="m-auto md:max-w-96">
         <SearchHeader />
       </div>
       <h2 className="font-bold">モデル一覧</h2>

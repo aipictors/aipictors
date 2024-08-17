@@ -15,7 +15,7 @@ const models = [
 
 export const ModelList = () => {
   return (
-    <ul className="grid w-full grid-cols-2 gap-2 pr-4 pb-4 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
+    <ul className="grid w-full grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8">
       {models.map((model) => (
         <Link
           className="h-full"
