@@ -157,7 +157,7 @@ export function Home3dContents(props: Props) {
 
   return (
     <Tabs
-      defaultValue={searchParams.get("tab") || "home"}
+      defaultValue={searchParams.get("tab") || "new"}
       onValueChange={handleTabChange}
       className="space-y-4"
     >

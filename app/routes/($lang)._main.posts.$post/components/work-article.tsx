@@ -21,6 +21,7 @@ import { ConstructionAlert } from "~/components/construction-alert"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post/components/post-acess-type-banner"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post/components/work-markdown-view"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post/components/work-action-container"
+import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -130,15 +131,24 @@ export function WorkArticle(props: Props) {
               </div>
             </ToggleContent>
           )}
-
-          <span className="text-sm">
-            {"使用モデル名:"}
-            <Link
-              to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
-            >
-              {props.work.model}
-            </Link>
-          </span>
+          {props.work.model !== undefined &&
+            props.work.model !== null &&
+            props.work.model?.length !== 0 && (
+              <span className="text-sm">
+                {"使用モデル名:"}
+                <Link
+                  to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
+                >
+                  {props.work.model}
+                </Link>
+              </span>
+            )}
+          {props.work.rating !== null && (
+            <div className="flex items-center space-x-2">
+              <span className="text-sm">{"対象年齢:"}</span>
+              {toRatingText(props.work.rating)}
+            </div>
+          )}
           <span className="text-sm">
             {toDateTimeText(props.work.createdAt)}
           </span>

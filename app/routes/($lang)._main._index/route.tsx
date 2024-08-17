@@ -26,7 +26,7 @@ export function dateToText(date: Date) {
 
 export async function loader() {
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = ["ゆめかわ", "きれい", "コスプレ"]
+  const categories = ["ゆめかわ", "ダークソウル", "パステル"]
 
   const getRandomCategories = () => {
     const currentTime = new Date()
@@ -206,7 +206,7 @@ const query = graphql(
       ...HomeWorkAward
     }
     recommendedTags: recommendedTags(
-      limit: 8
+      limit: 16
       where: {
         isSensitive: false
       }

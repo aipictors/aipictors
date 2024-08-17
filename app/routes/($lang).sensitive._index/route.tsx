@@ -23,7 +23,7 @@ export function dateToText(date: Date) {
 
 export async function loader() {
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = ["メスガキ", "JK", "グラビア", "コスプレ"]
+  const categories = ["縄", "中だし"]
 
   const getRandomCategories = () => {
     const currentTime = new Date()
