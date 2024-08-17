@@ -8,9 +8,6 @@ import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Separator } from "~/components/ui/separator"
-import { Label } from "~/components/ui/label"
-import { Switch } from "~/components/ui/switch"
-import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
 import { graphql } from "gql.tada"
 
 /**
@@ -93,7 +90,7 @@ export function SettingRestrictionForm() {
         </ToggleGroup>
       </div>
       <Separator />
-      <div className="flex">
+      {/* <div className="flex">
         <div className="flex w-full items-center justify-between">
           <Label htmlFor="airplane-mode">{"センシティブ画像をぼかす"}</Label>
           <Switch
@@ -102,7 +99,7 @@ export function SettingRestrictionForm() {
             id="airplane-mode"
           />
         </div>
-      </div>
+      </div> */}
 
       <Button
         disabled={isUpdatingUserSetting}
@@ -122,10 +119,16 @@ export function SettingRestrictionForm() {
 const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
-      ...UserSettingFields
+      id
+      userId
+      favoritedImageGenerationModelIds
+      preferenceRating
+      featurePromptonRequest
+      isAnonymousLike
+      isAnonymousSensitiveLike
+      isNotifyComment
     }
   }`,
-  [userSettingFieldsFragment],
 )
 
 const viewerIsBlurSensitiveImageQuery = graphql(

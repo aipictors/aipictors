@@ -1,18 +1,11 @@
 import { FollowButton } from "~/components/button/follow-button"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Link } from "@remix-run/react"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
-  userId: string
-  userName: string
-  userIconImageURL: string | null
-  biography: string
-  works: {
-    id: string
-    title: string
-    thumbnailImageUrl: string
-  }[]
-  isFollow: boolean
+  user: FragmentOf<typeof FolloweeListItemFragment>
+  works: FragmentOf<typeof FolloweeListItemWorkFragment>[]
 }
 
 export function FollowingUserItem(props: Props) {
@@ -28,24 +21,21 @@ export function FollowingUserItem(props: Props) {
   return (
     <div className="flex">
       <div className="mr-4 flex">
-        <Link to={`/users/${props.userId}`}>
+        <Link to={`/users/${props.user.id}`}>
           <Avatar className="mt-2 mr-2">
-            <AvatarImage
-              src={props.userIconImageURL ?? ""}
-              alt={props.userName}
-            />
+            <AvatarImage src={props.user.iconUrl ?? ""} alt={props.user.name} />
             <AvatarFallback />
           </Avatar>
         </Link>
         <div className="w-48">
-          <p className="mb-1 font-bold text-md">{props.userName}</p>
+          <p className="mb-1 font-bold text-md">{props.user.name}</p>
           <p className="mb-2 text-sm opacity-80">
-            {truncateText(props.biography, MAX_LENGTH)}
+            {truncateText(props.user.biography ?? "", MAX_LENGTH)}
           </p>
           <div className="mb-2">
             <FollowButton
-              targetUserId={props.userId}
-              isFollow={props.isFollow}
+              targetUserId={props.user.id}
+              isFollow={props.user.isFollowee}
             />
           </div>
         </div>
@@ -59,7 +49,7 @@ export function FollowingUserItem(props: Props) {
                 className="h-32 w-32 object-cover"
                 alt={work.title}
                 key={work.id}
-                src={work.thumbnailImageUrl}
+                src={work.smallThumbnailImageURL}
               />
             </div>
           </Link>
@@ -68,3 +58,21 @@ export function FollowingUserItem(props: Props) {
     </div>
   )
 }
+
+export const FolloweeListItemFragment = graphql(
+  `fragment FolloweeListItem on UserNode  @_unmask {
+    id
+    name
+    iconUrl
+    biography
+    isFollowee
+  }`,
+)
+
+export const FolloweeListItemWorkFragment = graphql(
+  `fragment FolloweeListItemWork on WorkNode  @_unmask {
+    id
+    title
+    smallThumbnailImageURL
+  }`,
+)

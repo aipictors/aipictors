@@ -1,11 +1,13 @@
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { RankingSensitiveWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -48,6 +50,10 @@ export async function loader(props: LoaderFunctionArgs) {
     weekIndex: week,
     workAwards: workAwardsResp,
   })
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.SENSITIVE_RANKINGS_WEEK)
 }
 
 /**

@@ -4,7 +4,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover"
-import { useLocation } from "@remix-run/react"
 import { Share2 } from "lucide-react"
 import { CopyWorkUrlButton } from "./work-action-copy-url"
 import { XIntent } from "./work-action-share-x"
@@ -12,12 +11,11 @@ import { XIntent } from "./work-action-share-x"
 type Props = {
   title?: string
   isDisabledShare?: boolean
+  id: string
 }
 
-export function SharePopover(props: Props) {
-  const { pathname } = useLocation()
-
-  const currentUrl = `${"https://www.aipictors.com"}${pathname}`
+export const SharePopover = (props: Props) => {
+  const currentUrl = `https://www.aipictors.com/works/${props.id}`
 
   return (
     <Popover>

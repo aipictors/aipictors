@@ -1,7 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { WorkComment } from "~/routes/($lang)._main.posts.$post/components/work-comment"
+import {
+  WorkComment,
+  WorkCommentFragment,
+} from "~/routes/($lang)._main.posts.$post/components/work-comment"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post/components/work-comment-response"
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
@@ -13,14 +16,14 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { commentFieldsFragment } from "~/graphql/fragments/comment-fields"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
 import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
 import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
 
 type Props = {
   workId: string
-  comments: FragmentOf<typeof commentFragment>[]
+  comments: FragmentOf<typeof CommentListItemFragment>[]
+  defaultShowCommentCount?: number
 }
 
 // コメント
@@ -220,10 +223,15 @@ export function WorkCommentList(props: Props) {
   }
 
   // もっと見るを表示する前のコメント一覧、showCommentsから8件まで表示
-  const showCommentsBeforeMore = showComments.slice(0, 8)
+  const showCommentsBeforeMore = showComments.slice(
+    0,
+    props.defaultShowCommentCount ? props.defaultShowCommentCount : 8,
+  )
 
   // もっと見る以降のコメント一覧、showCommentsから8件以降を表示
-  const showCommentsAfterMore = showComments.slice(8)
+  const showCommentsAfterMore = showComments.slice(
+    props.defaultShowCommentCount ? props.defaultShowCommentCount : 8,
+  )
 
   const { data = null } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading,
@@ -470,11 +478,11 @@ export function WorkCommentList(props: Props) {
             </div>
           ))}
           {/* もっと見るで確認できる既にコメント済みのコメント一覧 */}
-          {showCommentsAfterMore.length > 8 && (
+          {showCommentsAfterMore.length > 0 && (
             <ExpansionTransition
               triggerChildren={
                 <Button className="w-full" variant={"secondary"}>
-                  もっと見る({showComments.length - 8})
+                  もっと見る({showCommentsAfterMore.length})
                 </Button>
               }
               oneTimeExpand={true}
@@ -529,7 +537,7 @@ export function WorkCommentList(props: Props) {
                   {comment.responses !== null &&
                     comment.responses?.length !== 0 &&
                     comment.responses
-                      .sort((a, b) => a.createdAt - b.createdAt)
+                      // .sort((a, b) => a.createdAt - b.createdAt)
                       .filter((reply) => !hideCommentIds.includes(reply.id))
                       .map((reply) => (
                         <WorkCommentResponse
@@ -717,14 +725,14 @@ const userQuery = graphql(
   [workCommentUserFragment, partialWorkFieldsFragment],
 )
 
-export const commentFragment = graphql(
+export const CommentListItemFragment = graphql(
   `fragment Comment on CommentNode @_unmask {
-      ...CommentFields
+      ...WorkComment
       responses(offset: 0, limit: 128) {
-        ...CommentFields
+        ...WorkComment
       }
   }`,
-  [commentFieldsFragment],
+  [WorkCommentFragment],
 )
 
 const createWorkCommentMutation = graphql(

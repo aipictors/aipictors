@@ -11,7 +11,7 @@ type Props = {
 export function EventsList(props: Props) {
   return (
     <div className="flex flex-col space-y-2">
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-2 rounded-lg p-4 shadow-md">
+      <div className="grid gap-2 rounded-lg p-4 md:grid-cols-2 xl:grid-cols-3">
         {props.appEvents.map((event) => (
           <div key={event.id}>
             <EventItem {...event} />

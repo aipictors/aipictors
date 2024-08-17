@@ -60,7 +60,7 @@ export function EventCreatorCard(props: Props) {
           <div className="flex space-x-2" style={{ height: "auto" }}>
             {props.user.twitterId !== null && (
               <Link
-                to={`https://twitter.com/${props.user.twitterId}`}
+                to={`https://x.com/${props.user.twitterId}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

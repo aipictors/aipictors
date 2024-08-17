@@ -5,7 +5,7 @@ import { MousePointerClickIcon } from "lucide-react"
 type Props = {
   alt: string
   imageURL: string
-  linkURL: string
+  linkURL?: string
   linkTitle: string
 }
 
@@ -17,17 +17,19 @@ export function EventImage(props: Props) {
         src={props.imageURL}
         className="w-full rounded-t-md rounded-br-3xl rounded-bl-md object-cover object-top"
       />
-      <Link
-        className="absolute right-4 bottom-4"
-        to={props.linkURL}
-        target={"_blank"}
-        rel={"noreferrer noopener"}
-      >
-        <Button className="rounded-full">
-          <MousePointerClickIcon />
-          <span className="ml-2">{props.linkTitle}</span>
-        </Button>
-      </Link>
+      {props.linkURL && (
+        <Link
+          className="absolute right-4 bottom-4"
+          to={props.linkURL}
+          target={"_blank"}
+          rel={"noreferrer noopener"}
+        >
+          <Button className="rounded-full">
+            <MousePointerClickIcon />
+            <span className="ml-2">{props.linkTitle}</span>
+          </Button>
+        </Link>
+      )}
     </div>
   )
 }

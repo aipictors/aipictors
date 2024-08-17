@@ -128,6 +128,7 @@ const deleteRecommendedWorkMutation = graphql(
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       currentPass {
         ...PassFields
       }

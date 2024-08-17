@@ -5,6 +5,7 @@ import { LoginDialogButton } from "~/components/login-dialog-button"
 import { cn } from "~/lib/cn"
 import { graphql } from "gql.tada"
 import { toast } from "sonner"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 
 type Props = {
   tag: string
@@ -15,7 +16,7 @@ type Props = {
 }
 
 /**
- * タグフォロー
+ * タグお気に入り登録
  */
 export function TagFollowButton(props: Props) {
   const authContext = useContext(AuthContext)
@@ -26,52 +27,50 @@ export function TagFollowButton(props: Props) {
     setIsFollow(props.isFollow)
   }, [props.isFollow])
 
-  const [follow, { loading: isFollowing }] = useMutation(followUserMutation)
-
+  const [follow, { loading: isFollowing }] = useMutation(followTagMutation)
   const [unFollow, { loading: isUnFollowing }] =
-    useMutation(unfollowUserMutation)
+    useMutation(unfollowTagMutation)
 
   const onFollow = async () => {
-    toast("メンテナンス中です")
-    // try {
-    //   const res = await follow({
-    //     variables: {
-    //       input: {
-    //         userId: props.targetUserId,
-    //       },
-    //     },
-    //   })
-    //   setIsFollow(res.data?.followUser?.isFollowee ?? false)
-    // } catch (e) {
-    //   console.error(e)
-    // }
+    try {
+      const res = await follow({
+        variables: {
+          input: {
+            tagName: props.tag,
+          },
+        },
+      })
+      setIsFollow(true)
+    } catch (e) {
+      console.error(e)
+      toast.error("お気に入り登録に失敗しました")
+    }
   }
 
   const onUnFollow = async () => {
-    toast("メンテナンス中です")
-    // try {
-    //   const res = await unFollow({
-    //     variables: {
-    //       input: {
-    //         userId: props.targetUserId,
-    //       },
-    //     },
-    //   })
-    //   setIsFollow(res.data?.unfollowUser?.isFollowee ?? false)
-    // } catch (e) {
-    //   console.error(e)
-    // }
+    try {
+      const res = await unFollow({
+        variables: {
+          input: {
+            tagName: props.tag,
+          },
+        },
+      })
+      setIsFollow(false)
+    } catch (e) {
+      console.error(e)
+      toast.error("お気に入り解除に失敗しました")
+    }
   }
 
   const triggerNode = props.triggerChildren ?? (
     <button
       type="button"
-      disabled={true}
-      onClick={() => {}}
-      className={
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        `h-10 w-full font-bold rounded-full bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
-      }
+      onClick={onFollow}
+      className={cn(
+        "h-10 w-full rounded-full bg-clear-bright-blue p-1 font-bold text-white transition duration-500 hover:opacity-80",
+        props.className,
+      )}
     >
       {"お気に入り登録"}
     </button>
@@ -80,12 +79,11 @@ export function TagFollowButton(props: Props) {
   const unFollowTriggerNode = props.unFollowTriggerChildren ?? (
     <button
       type="button"
-      disabled={true}
-      onClick={() => {}}
-      className={
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        `h-10 w-full font-bold rounded-full bg-gray-500 opacity-50 p-1 text-white transition duration-500 hover:opacity-30 ${props.className}`
-      }
+      onClick={onUnFollow}
+      className={cn(
+        "h-10 w-full rounded-full bg-gray-500 p-1 font-bold text-white opacity-50 transition duration-500 hover:opacity-30",
+        props.className,
+      )}
     >
       {"お気に入り解除"}
     </button>
@@ -95,10 +93,10 @@ export function TagFollowButton(props: Props) {
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return (
       <LoginDialogButton
-        label="フォロー"
+        label="お気に入り登録"
         isLoading={authContext.isLoading || authContext.isLoggedIn}
         isWidthFull={true}
-        description={"ユーザフォローして投稿を確認してみましょう！"}
+        description={"タグをお気に入り登録して投稿を確認してみましょう！"}
         triggerChildren={triggerNode}
       />
     )
@@ -108,49 +106,52 @@ export function TagFollowButton(props: Props) {
     return null
   }
 
-  return isFollow ? (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-    <div
-      onClick={() => {
-        if (isFollowing || isUnFollowing) return
-        onUnFollow()
-      }}
-      className={cn(
-        isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
+  return (
+    <div className="flex w-full items-center space-x-2">
+      <CrossPlatformTooltip
+        text={
+          "タグのついた新着作品をタイムラインでチェックできるようになります"
+        }
+      />
+      {isFollow ? (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+        <div
+          onClick={() => {
+            if (isFollowing || isUnFollowing) return
+            onUnFollow()
+          }}
+          className={cn(
+            isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
+          )}
+        >
+          {unFollowTriggerNode}
+        </div>
+      ) : (
+        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+        <div
+          onClick={() => {
+            if (isFollowing || isUnFollowing) return
+            onFollow()
+          }}
+          className={cn(
+            isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
+          )}
+        >
+          {triggerNode}
+        </div>
       )}
-    >
-      {unFollowTriggerNode}
-    </div>
-  ) : (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-    <div
-      onClick={() => {
-        if (isFollowing || isUnFollowing) return
-        onFollow()
-      }}
-      className={cn(
-        isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
-      )}
-    >
-      {triggerNode}
     </div>
   )
 }
 
-const followUserMutation = graphql(
-  `mutation FollowUser($input: FollowUserInput!) {
-    followUser(input: $input) {
-      id
-      isFollowee
-    }
+const followTagMutation = graphql(
+  `mutation FollowTag($input: FollowTagInput!) {
+    followTag(input: $input)
   }`,
 )
 
-const unfollowUserMutation = graphql(
-  `mutation UnfollowUser($input: UnfollowUserInput!) {
-    unfollowUser(input: $input) {
-      id
-      isFollowee
-    }
+const unfollowTagMutation = graphql(
+  `mutation UnFollowTag($input: UnFollowTagInput!) {
+    unFollowTag(input: $input)
   }`,
 )

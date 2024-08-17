@@ -30,10 +30,22 @@ const HomeHeader = (props: Props) => {
   const [searchText, setSearchText] = useState("")
 
   const onSearch = () => {
-    window.location.href = `https://www.aipictors.com/search/?word=${searchText}`
+    const trimmedText = searchText.trim()
+    if (trimmedText !== "") {
+      const baseUrl = `/tags/${trimmedText}`
+      window.location.href = baseUrl
+    } else {
+      window.location.href = "/search"
+    }
   }
 
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onSearch()
+    }
+  }
 
   const onToggleSearchForm = () => {
     setIsSearchFormOpen((prev) => !prev)
@@ -82,10 +94,7 @@ const HomeHeader = (props: Props) => {
             </SheetContent>
           </Sheet>
           <div className="flex items-center">
-            <Link
-              className="items-center space-x-2 md:flex"
-              to="https://www.aipictors.com"
-            >
+            <Link className="items-center space-x-2 md:flex" to="/">
               {navigation.state === "loading" && (
                 <div className="flex h-8 w-8 items-center justify-center">
                   <Loader2Icon className={"h-8 w-8 animate-spin"} />
@@ -110,35 +119,22 @@ const HomeHeader = (props: Props) => {
         </div>
         <div className="flex w-full justify-end gap-x-2">
           <div className="hidden w-full items-center space-x-2 md:flex">
-            {isSearchFormOpen && (
+            <div className="flex w-full justify-start space-x-2 font-semibold">
+              <Link to={"/themes"}>
+                <Button variant={"ghost"}>{"お題"}</Button>
+              </Link>
+              <Link to={"/rankings"}>
+                <Button variant={"ghost"}>{"ランキング"}</Button>
+              </Link>
               <div className="w-full flex-1">
                 <Input
                   onChange={onChangeSearchText}
+                  onKeyDown={handleKeyDown}
                   placeholder={"作品を検索"}
-                  onKeyPress={onSearch}
                 />
               </div>
-            )}
-            {!isSearchFormOpen && (
-              <div className="flex w-full justify-start space-x-2 font-semibold">
-                <Link to={"/themes"}>
-                  <Button variant={"ghost"}>{"お題"}</Button>
-                </Link>
-                <Link to={"/rankings"}>
-                  <Button variant={"ghost"}>{"ランキング"}</Button>
-                </Link>
-                {/* <Link to={"/timeline"}>
-                  <Button disabled={true} variant={"ghost"}>
-                    {"タイムライン"}
-                  </Button>
-                </Link> */}
-              </div>
-            )}
-            <Button
-              onClick={onToggleSearchForm}
-              variant={"ghost"}
-              size={"icon"}
-            >
+            </div>
+            <Button onClick={onSearch} variant={"ghost"} size={"icon"}>
               <Search className="w-16" />
             </Button>
             <Separator orientation="vertical" />
@@ -149,7 +145,7 @@ const HomeHeader = (props: Props) => {
                 className="hidden md:block"
                 to={"https://www.aipictors.com/"}
               >
-                <Button variant={"ghost"}>{"旧版"}</Button>
+                <Button variant={"ghost"}>{"旧版トップ"}</Button>
               </Link>
               <Link to={"/generation"}>
                 <Button variant={"ghost"}>{"生成"}</Button>

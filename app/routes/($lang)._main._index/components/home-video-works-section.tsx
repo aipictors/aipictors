@@ -1,9 +1,11 @@
-import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import type { FragmentOf } from "gql.tada"
+import {
+  PhotoAlbumVideoWorkFragment,
+  ResponsivePhotoVideoWorksAlbum,
+} from "~/components/responsive-photo-video-works-album"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof HomeVideosWorkListItemFragment>[]
   title: string
   tooltip?: string
   link?: string
@@ -34,3 +36,11 @@ export function HomeVideosWorksSection(props: Props) {
     </section>
   )
 }
+
+export const HomeVideosWorkListItemFragment = graphql(
+  `fragment HomeVideosWorkListItem on WorkNode @_unmask {
+    id
+    ...PhotoAlbumVideoWork
+  }`,
+  [PhotoAlbumVideoWorkFragment],
+)

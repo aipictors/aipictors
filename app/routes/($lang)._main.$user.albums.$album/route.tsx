@@ -1,11 +1,13 @@
 import { ParamsError } from "~/errors/params-error"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import {
   AlbumArticleHeader,
   AlbumArticleHeaderFragment,
 } from "~/routes/($lang)._main.albums.$album/components/album-article-header"
-import { AlbumWorkList } from "~/routes/($lang)._main.albums.$album/components/album-work-list"
+import {
+  AlbumWorkList,
+  AlbumWorkListItemFragment,
+} from "~/routes/($lang)._main.albums.$album/components/album-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -19,7 +21,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const client = createClient()
 
   const albumResp = await client.query({
-    query: userAlbumQuery,
+    query: LoaderQuery__DEPRECATED__,
     variables: {
       where: {
         userId: props.params.user,
@@ -35,7 +37,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const albumId = albumResp.data.userAlbum.id
 
   const albumWorksResp = await client.query({
-    query: albumWorksQuery,
+    query: LoaderQuery,
     variables: {
       albumId: albumId,
       offset: 0,
@@ -48,8 +50,8 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   return json({
-    album: albumResp.data.userAlbum,
-    albumWorks: albumWorksResp.data.album.works,
+    userAlbum: albumResp.data.userAlbum,
+    album: albumWorksResp.data.album,
   })
 }
 
@@ -65,41 +67,42 @@ export default function Route() {
 
   const data = useLoaderData<typeof loader>()
 
-  const [work = null] = data.albumWorks
+  const [work = null] = data.album.works
 
-  const thumbnail = data.album.thumbnailImageURL
-    ? data.album.thumbnailImageURL
+  const thumbnail = data.userAlbum.thumbnailImageURL
+    ? data.userAlbum.thumbnailImageURL
     : work?.largeThumbnailImageURL
 
   return (
     <>
       <article className="flex">
         <div className="flex w-full flex-col justify-center">
-          <AlbumArticleHeader album={data.album} thumbnail={thumbnail} />
+          <AlbumArticleHeader album={data.userAlbum} thumbnail={thumbnail} />
         </div>
       </article>
       <AlbumWorkList
-        albumId={data.album.id}
-        albumWorks={data.albumWorks}
-        maxCount={data.album.worksCount}
+        albumId={data.userAlbum.id}
+        albumWorks={data.album.works}
+        maxCount={data.userAlbum.worksCount}
       />
     </>
   )
 }
 
-const albumWorksQuery = graphql(
+const LoaderQuery = graphql(
   `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
     album(id: $albumId) {
       id
       works(offset: $offset, limit: $limit) {
-        ...PartialWorkFields
+        ...AlbumWorkListItem
       }
+      ...AlbumArticleHeader
     }
   }`,
-  [partialWorkFieldsFragment],
+  [AlbumWorkListItemFragment, AlbumArticleHeaderFragment],
 )
 
-const userAlbumQuery = graphql(
+const LoaderQuery__DEPRECATED__ = graphql(
   `query userAlbum($where: UserAlbumWhereInput) {
     userAlbum( where: $where) {
       ...AlbumArticleHeader

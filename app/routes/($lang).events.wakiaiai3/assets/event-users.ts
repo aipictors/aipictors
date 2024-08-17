@@ -6,7 +6,7 @@ export const eventUsers: EventUser[] = [
     types: ["SHOP", "EXHIBIT"],
     message: null,
     iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiai2_kotobanoaya_160.jpg?alt=media&token=e3b4a56c-23cc-4be5-93a4-2adea6e05109",
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_kotobanoaya.jpg?alt=media&token=4501e176-39fa-4a6d-9ccc-aa79ebd41dd1",
     twitterId: "ko_to_ba_no_aya",
     aipictorsId: null,
     siteURL: null,
@@ -62,6 +62,18 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "晴レル屋",
+    types: ["SHOP"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_KARA_Beee.png?alt=media&token=931ede5c-b35f-4998-a35d-835e1674f412",
+    twitterId: "KARA_Beee",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "サムネイル・ストーリーズ",
     types: ["EXHIBIT"],
     message: null,
@@ -73,7 +85,54 @@ export const eventUsers: EventUser[] = [
     siteTitle: null,
     links: [],
   },
-
+  {
+    name: "Heliotrope; Eccentric",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_Heliotrope.png?alt=media&token=96afa3e5-5697-4a12-ac63-7480ec37cd0b",
+    twitterId: "8484ff_42",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "褐色眼鏡工房",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_novelai_oekaki.jpg?alt=media&token=6415e924-1ed8-449c-949e-a065243cc42e",
+    twitterId: "novelai_oekaki",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "クラフ",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_AIPhotoCrafter.jpg?alt=media&token=386c6510-11f2-41d7-9e39-2df35409b1ee",
+    twitterId: "AIPhotoCrafter",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "Wood.Pecker",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_Wood_Pecker_.jpg?alt=media&token=7d3779e0-7931-484c-b728-da0e48c9556b",
+    twitterId: "Wood_Pecker_",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
   {
     name: "Aipictors",
     types: ["EXHIBIT"],

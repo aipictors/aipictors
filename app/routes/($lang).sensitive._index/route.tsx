@@ -7,32 +7,14 @@ import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/compone
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { config } from "~/config"
+import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeContents } from "~/routes/($lang)._main._index/components/home-contents"
+import { getJstDate } from "~/utils/jst-date"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors | AIイラスト投稿・生成サイト | センシティブ"
-
-  const metaDescription =
-    "AIで作った画像を公開してみよう！AIイラスト・生成サイト「AIピクターズ」、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
-
-  const metaImage =
-    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
-
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "robots", content: "noindex" },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
+  return createMeta(META.HOME_SENSITIVE)
 }
 
 export function dateToText(date: Date) {
@@ -66,13 +48,9 @@ export async function loader() {
 
   const client = createClient()
 
-  const date = new Date()
+  const now = getJstDate()
 
-  const yesterday = new Date()
-
-  yesterday.setDate(yesterday.getDate() - 1)
-
-  const now = new Date()
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
   const pastNovelDate = new Date(now)
   pastNovelDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
@@ -117,9 +95,9 @@ export async function loader() {
       awardDay: yesterday.getDate(),
       awardMonth: yesterday.getMonth() + 1,
       awardYear: yesterday.getFullYear(),
-      day: date.getDate(),
-      month: date.getMonth() + 1,
-      year: date.getFullYear(),
+      day: now.getDate(),
+      month: now.getMonth() + 1,
+      year: now.getFullYear(),
       adWorksLimit: config.query.homeWorkCount.ad,
       // novelWorksLimit: config.query.homeWorkCount.novel,
       // columnWorksLimit: config.query.homeWorkCount.column,
@@ -179,6 +157,7 @@ export default function Index() {
           promotionWorks: data.promotionWorks,
         }}
         isSensitive={true}
+        isCropped={false}
       />
     </>
   )

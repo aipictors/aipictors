@@ -43,12 +43,18 @@ export function ImagesPreview(props: Props) {
   const nextImage = () => {
     if (props.currentIndex < props.imageURLs.length - 1) {
       props.setCurrentIndex(props.currentIndex + 1)
+    } else {
+      // Loop back to the first image
+      props.setCurrentIndex(0)
     }
   }
 
   const prevImage = () => {
     if (props.currentIndex > 0) {
       props.setCurrentIndex(props.currentIndex - 1)
+    } else {
+      // Loop back to the last image
+      props.setCurrentIndex(props.imageURLs.length - 1)
     }
   }
 
@@ -68,10 +74,14 @@ export function ImagesPreview(props: Props) {
   const handleDoubleTap = (e: React.TouchEvent<HTMLImageElement>) => {
     const currentTime = new Date().getTime()
     const tapLength = currentTime - lastTap.current
-    if (tapLength < 300 && tapLength > 0) {
+
+    // ダブルタップの間隔を少し広げ、誤検知を防ぐ
+    if (tapLength < 300 && tapLength > 50) {
       e.preventDefault()
       handleDoubleClick()
     }
+
+    // 最後のタップ時間を更新
     lastTap.current = currentTime
   }
 
@@ -333,24 +343,32 @@ export function ImagesPreview(props: Props) {
               onTouchEndCapture={handleDoubleTap}
             />
             {props.imageURLs.length > 1 && (
-              <div className="absolute bottom-4 flex w-full justify-center">
-                <Button
-                  className="mr-4 transform rounded-full"
-                  size={"icon"}
-                  onClick={prevImage}
-                  disabled={!(props.currentIndex > 0)}
-                >
-                  <ChevronLeft />
-                </Button>
-                <Button
-                  className="ml-4 transform rounded-full"
-                  size={"icon"}
-                  onClick={nextImage}
-                  disabled={!(props.currentIndex < props.imageURLs.length - 1)}
-                >
-                  <ChevronRight />
-                </Button>
-              </div>
+              <>
+                <div className="absolute bottom-4 flex w-full items-center justify-center">
+                  <Button
+                    className="mr-4 transform rounded-full"
+                    size={"icon"}
+                    onClick={prevImage}
+                    disabled={!(props.currentIndex > 0)}
+                  >
+                    <ChevronLeft />
+                  </Button>
+                  <Button
+                    className="ml-4 transform rounded-full"
+                    size={"icon"}
+                    onClick={nextImage}
+                    disabled={
+                      !(props.currentIndex < props.imageURLs.length - 1)
+                    }
+                  >
+                    <ChevronRight />
+                  </Button>
+                </div>
+                {/* ページ */}
+                <div className="absolute right-6 bottom-6 text-right text-sm text-white">
+                  {props.currentIndex + 1}/{props.imageURLs.length}
+                </div>
+              </>
             )}
           </div>
         )}

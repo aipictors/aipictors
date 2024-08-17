@@ -6,29 +6,11 @@ import { json, useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 import { RankingSensitiveWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors | ランキング"
-
-  const metaDescription =
-    "AIで作った画像を公開してみよう！AIイラスト・生成サイト「AIピクターズ」、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトのランキングページです。"
-
-  const metaImage =
-    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
-
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "robots", content: "noindex" },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
+  return createMeta(META.SENSITIVE_RANKINGS_DAY)
 }
 
 export async function loader(props: LoaderFunctionArgs) {

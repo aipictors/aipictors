@@ -1,13 +1,24 @@
 import { createClient } from "~/lib/client"
-import { RelatedModelList } from "~/routes/($lang)._main.search/components/related-model-list"
-import { RelatedTagList } from "~/routes/($lang)._main.search/components/related-tag-list"
 import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
 import { WorkList } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { json, redirect, useLoaderData } from "@remix-run/react"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  const url = new URL(props.request.url)
+  const tag = url.searchParams.get("tag")
+
+  if (tag) {
+    return redirect(`/tags/${tag}`, {
+      status: 302,
+    })
+  }
+
   const client = createClient()
 
   const worksResp = await client.query({
@@ -15,7 +26,10 @@ export async function loader() {
     variables: {
       offset: 0,
       limit: 16,
-      where: {},
+      where: {
+        ratings: ["G"],
+        orderBy: "LIKES_COUNT",
+      },
     },
   })
 
@@ -29,12 +43,21 @@ export default function Search() {
 
   return (
     <>
-      <RelatedTagList />
-      <RelatedModelList />
-      <SearchHeader />
+      {/* <RelatedTagList /> */}
+      {/* <RelatedModelList /> */}
+      <div className="m-auto md:max-w-96">
+        <SearchHeader />
+      </div>
+      <h2 className="font-bold">モデル一覧</h2>
+      <ModelList />
+      <h2 className="font-bold">人気作品</h2>
       <WorkList works={data.worksResp.data.works ?? []} />
     </>
   )
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.SEARCH)
 }
 
 const worksQuery = graphql(

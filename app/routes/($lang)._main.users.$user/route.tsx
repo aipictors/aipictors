@@ -15,11 +15,13 @@ import {
   userProfileIconFragment,
   UserProfileNameIcon,
 } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense } from "react"
 import { Lumiflex } from "uvcanvas"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -60,6 +62,32 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
+export const meta: MetaFunction = ({ data }) => {
+  // data.user が存在しないか、オブジェクトでない場合のチェック
+  if (!data) {
+    return [{ title: "ユーザのマイページ" }]
+  }
+
+  const user = data as { user: FragmentOf<typeof userProfileIconFragment> }
+
+  const worksCountPart =
+    user.user.worksCount > 0 ? ` (${user.user.worksCount}作品)` : ""
+
+  return createMeta(META.USERS, {
+    title:
+      `${user.user.name}のマイページ${worksCountPart}` ||
+      "ユーザーのマイページ",
+    description:
+      user.user.biography ||
+      "Aipictorsのマイページです、AIイラストなどの作品一覧を閲覧することができます",
+    url: user.user.headerImageUrl?.length
+      ? user.user.headerImageUrl
+      : user.user.iconUrl
+        ? IconUrl(user.user.iconUrl)
+        : "",
+  })
+}
+
 export default function UserLayout() {
   const params = useParams<"user">()
 
@@ -96,15 +124,18 @@ export default function UserLayout() {
                       <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
                     </>
                   ) : (
-                    <div
-                      className="absolute top-0 left-0 z-10 z-standard flex h-16 min-h-[168px] w-full items-center justify-center opacity-50 md:min-h-[320px]"
-                      style={{
-                        background: "center top / contain no-repeat",
-                        maxHeight: "240px",
-                      }}
-                    >
-                      <Lumiflex />
-                    </div>
+                    <>
+                      <div
+                        className="absolute top-0 left-0 z-10 z-standard flex h-16 min-h-[168px] w-full items-center justify-center opacity-50 md:min-h-[320px]"
+                        style={{
+                          background: "center top / contain no-repeat",
+                          maxHeight: "240px",
+                        }}
+                      >
+                        <Lumiflex />
+                      </div>
+                      <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
+                    </>
                   )}
                   <div className="relative m-auto">
                     <div className="absolute top-0 left-0 max-h-full min-h-[168px] w-full max-w-full overflow-hidden md:min-h-[320px]">

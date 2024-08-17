@@ -27,9 +27,9 @@ export function EventItem(props: Props) {
     new Date(props.startAt * 1000) <= now && now <= new Date(props.endAt * 1000)
 
   return (
-    <Link to={`/events/${props.slug}`}>
-      <Card>
-        <CardHeader>
+    <Link className="w-full" to={`/events/${props.slug}`}>
+      <Card className="w-full">
+        <CardHeader className="w-full">
           <div className="relative flex items-center">
             <div className="m-auto">
               <img

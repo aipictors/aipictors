@@ -17,7 +17,6 @@ import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { graphql } from "gql.tada"
-import { imageGenerationReservedTaskFieldsFragment } from "~/graphql/fragments/image-reserved-generation-task-field"
 import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
 
 type Props = {
@@ -578,6 +577,7 @@ const viewerCurrentPassQuery = graphql(
         hasSignedImageGenerationTerms
       }
       currentPass {
+        id
         ...PassFields
       }
     }
@@ -628,10 +628,47 @@ const viewerUserQuery = graphql(
 const createImageGenerationTaskReservedMutation = graphql(
   `mutation CreateReservedImageGenerationTask($input: CreateReservedImageGenerationTaskInput!) {
     createReservedImageGenerationTask(input: $input) {
-      ...ImageGenerationReservedTaskFields
+      id
+      createdAt
+      isDeleted
+      isGenerated
+      generationType
+      model {
+        id
+        name
+        type
+      }
+      vae
+      prompt
+      negativePrompt
+      seed
+      steps
+      scale
+      clipSkip
+      sampler
+      sizeType
+      t2tImageUrl
+      t2tMaskImageUrl
+      t2tDenoisingStrengthSize
+      t2tInpaintingFillSize
+      token
+      nanoid
+      controlNetControlMode
+      controlNetEnabled
+      controlNetGuidanceEnd
+      controlNetGuidanceStart
+      controlNetPixelPerfect
+      controlNetProcessorRes
+      controlNetResizeMode
+      controlNetThresholdA
+      controlNetThresholdB
+      controlNetWeight
+      controlNetModule
+      controlNetModel
+      controlNetSaveDetectedMap
+      controlNetHrOption
     }
   }`,
-  [imageGenerationReservedTaskFieldsFragment],
 )
 
 const createImageGenerationTaskMutation = graphql(

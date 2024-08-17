@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
-import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
 import { ImageModelsList } from "~/routes/($lang).generation._index/components/config-view/generation-image-model-list"
 import type { imageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -123,8 +122,14 @@ export function GenerationModelListButton(props: Props) {
 const updateRatingImageGenerationModelMutation = graphql(
   `mutation UpdateRatingImageGenerationModel($input: UpdateRatingImageGenerationModelInput!) {
     updateRatingImageGenerationModel(input: $input) {
-      ...UserSettingFields
+      id
+      userId
+      favoritedImageGenerationModelIds
+      preferenceRating
+      featurePromptonRequest
+      isAnonymousLike
+      isAnonymousSensitiveLike
+      isNotifyComment
     }
   }`,
-  [userSettingFieldsFragment],
 )

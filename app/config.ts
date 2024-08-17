@@ -191,24 +191,6 @@ export const config = {
     ],
   },
   /**
-   * サイト
-   */
-  metadata: {
-    nameJA: "AIピクターズ",
-    nameEN: "Aipictors",
-    get titleJA() {
-      return `${this.nameJA} - ${this.catchphraseJA}`
-    },
-    get titleEN() {
-      return `${this.nameEN} - ${this.catchphraseEN}`
-    },
-    titleTemplateJA: "%s | Aipictors | AI画像投稿サイト・生成サイト",
-    catchphraseJA: "AI画像投稿サイト・生成サイト",
-    catchphraseEN: "AI Illustration & Generation",
-    descriptionJA:
-      "AI画像投稿サイト・生成サイト「AIピクターズ」で作品を公開してみよう!、AIイラスト・AIフォト・AIグラビア・AI小説・ショート動画投稿サイトです。",
-  },
-  /**
    * Firebaseの設定
    */
   firebaseConfig: {
@@ -274,7 +256,7 @@ export const config = {
       generation: 16,
       promotion: 16,
       award: 16,
-      tag: 16,
+      tag: 12,
     },
   },
   /**
@@ -321,6 +303,16 @@ export const config = {
    */
   isDevelopmentMode: import.meta.env.MODE === "development",
   /**
+   * デフォルトのOGP画像
+   */
+  defaultOgpImageUrl:
+    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg",
+  /**
+   * デフォルトのセンシティブOGP画像
+   */
+  defaultSensitiveOgpImageUrl:
+    "https://assets.aipictors.com/aipictors_sensitive_image.webp",
+  /**
    * 本番環境である
    */
   isReleaseMode: import.meta.env.MODE !== "development",
@@ -336,4 +328,260 @@ export enum KeyCodes {
   ALLOW_LEFT = "ArrowLeft",
   ALLOW_RIGHT = "ArrowRight",
   ESCAPE = 27,
+}
+
+export interface MetaData {
+  title?: string
+  description?: string
+  enDescription?: string
+  image?: string | null
+  isIndex?: boolean
+  isTop?: boolean
+}
+
+/**
+ * メタ情報の設定
+ */
+export const META: { [key: string]: MetaData } = {
+  /**
+   * インデックスあり
+   */
+  HOME: {
+    title: "ホーム",
+    description:
+      "AI画像投稿サイト・生成サイト「Aipictors」で作品を公開してみよう!最新のAIイラストを楽しむことができます、グラビアからイラストまでジャンルは様々！無料でイラスト生成することもできます！",
+    isIndex: true,
+  },
+  HOME_2D: {
+    title: "イラスト一覧",
+    description: `${new Date().getFullYear()}年の最新のAIイラスト一覧です！様々なモデルで作成された人気作品をチェックしよう！`,
+    isIndex: true,
+  },
+  HOME_3D: {
+    title: "フォト一覧",
+    description: `${new Date().getFullYear()}年の最新の3D、フォト画像一覧です！様々なモデルで作成された人気作品をチェックしよう！`,
+    isIndex: true,
+  },
+  HOME_SENSITIVE: {
+    title: "センシティブ一覧",
+    description: `${new Date().getFullYear()}年の最新のセンシティブ画像一覧です！様々なモデルで作成された人気作品をチェックしよう！`,
+    isIndex: true,
+  },
+  RELEASES: {
+    title: "リリース情報",
+    description: "最新のAipictorsのリリース情報をチェックできます",
+    isIndex: true,
+  },
+  MILESTONES: {
+    title: "開発予定",
+    description: "最新のAipictorsの開発予定情報をチェックできます",
+    isIndex: true,
+  },
+  EVENTS: {
+    title: "イベント一覧",
+    description: `${new Date().getFullYear()}年の最新のAIイラストイベント情報をチェックできます`,
+    isIndex: true,
+  },
+  EVENTS_INDEX: {
+    title: "{{title}}",
+    description: "{{description}}",
+    image: "{{url}}",
+    isIndex: true,
+  },
+  RANKINGS: {
+    title: "ランキング",
+    description: "Aipictorsのランキング情報をチェックできます",
+    isIndex: true,
+  },
+  THEMES: {
+    title: "お題",
+    description:
+      "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。",
+    isIndex: true,
+  },
+  ABOUT: {
+    title: "このサイトについて",
+    description:
+      "当サービスはAIで生成されたイラストのコンテンツをテーマにコミュニケーション、創作活動するプラットフォームです",
+    isIndex: true,
+  },
+  TERNS: {
+    title: "利用規約",
+    description: "Aipictorsの利用規約についての情報です",
+    isIndex: true,
+  },
+  USERS: {
+    title: "{{title}}",
+    description: "{{description}}",
+    image: "{{url}}",
+    isIndex: true,
+  },
+  POSTS: {
+    title: "{{title}}",
+    description: "{{description}}",
+    image: "{{url}}",
+    isIndex: true,
+  },
+  CONTRIBUTORS: {
+    title: "貢献者一覧",
+    description: "Aipictorsの貢献者一覧です",
+    image: "https://assets.aipictors.com/geometric_shapes.webp",
+    isIndex: true,
+  },
+  RANKINGS_MONTHLY: {
+    title: "月間ランキング",
+    description: "AIイラスト月間ランキングの情報です",
+    isIndex: true,
+  },
+  RANKINGS_WEEK: {
+    title: "週間ランキング",
+    description: "AIイラスト週間ランキングの情報です",
+    isIndex: true,
+  },
+  RANKINGS_DAY: {
+    title: "デイリーランキング",
+    description: "AIイラストのデイリーランキングの情報です",
+    isIndex: true,
+  },
+  SENSITIVE_RANKINGS_DAY: {
+    title: "センシティブデイリーランキング",
+    description: "センシティブなAIイラストのデイリーランキングの情報です",
+    isIndex: true,
+  },
+  SENSITIVE_RANKINGS_WEEK: {
+    title: "センシティブ週間ランキング",
+    description: "センシティブなAIイラスト週間ランキングの情報です",
+    isIndex: true,
+  },
+  SENSITIVE_RANKINGS_MONTHLY: {
+    title: "センシティブ月間ランキング",
+    description: "センシティブなAIイラスト月間ランキングの情報です",
+    isIndex: true,
+  },
+  SENSITIVE_THEME_RANKINGS_WEEK: {
+    title: "センシティブ週間お題ランキング",
+    description: "センシティブなAIイラスト週間お題ランキングの情報です",
+    isIndex: true,
+  },
+  SEARCH: {
+    title: "検索",
+    description: "最新のAIイラストを検索することができます",
+    isIndex: true,
+  },
+  /**
+   * インデックスなし
+   */
+  SUPPORT_CHAT: {
+    title: "お問い合わせ",
+    description: "運営とのチャットでサポートを受けることができます",
+    isIndex: false,
+  },
+  PLUS: {
+    title: "サブスクリプション",
+    description: "サブスクリプションを管理、更新することができます",
+    isIndex: false,
+  },
+  NEW_IMAGE: {
+    title: "画像投稿",
+    description: "画像を投稿することができます",
+    isIndex: false,
+  },
+  NEW_ANIMATION: {
+    title: "動画投稿",
+    description: "動画を投稿することができます",
+    isIndex: false,
+  },
+  NEW_TEXT: {
+    title: "小説・コラム投稿",
+    description: "小説・コラムを投稿することができます",
+    isIndex: false,
+  },
+  NOTIFICATIONS: {
+    title: "通知履歴",
+    description: "通知を確認することができます",
+    isIndex: false,
+  },
+  /**
+   * 設定
+   */
+  SETTINGS_ACCOUNT: {
+    title: "アカウント設定",
+    description: "アカウントに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_NOTIFICATION: {
+    title: "通知・いいね設定",
+    description: "通知・いいねに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_ACCOUNT_PASSWORD: {
+    title: "パスワード設定",
+    description: "パスワードに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_MUTE_USERS: {
+    title: "ユーザミュート設定",
+    description: "ユーザミュートに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_COLOR: {
+    title: "カラー設定",
+    description: "カラーに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_SUPPORT: {
+    title: "サポート設定",
+    description: "サポートに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_STICKERS: {
+    title: "スタンプ設定",
+    description: "スタンプに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_MUTE_TAGS: {
+    title: "タグミュート設定",
+    description: "タグミュートに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_LOGIN: {
+    title: "ログイン設定",
+    description: "ログインに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_RESTRICTION: {
+    title: "表示コンテンツ設定",
+    description: "表示コンテンツに関する設定を行うことができます",
+    isIndex: false,
+  },
+  SETTINGS_PROFILE: {
+    title: "プロフィール設定",
+    description: "プロフィールに関する設定を行うことができます",
+    isIndex: false,
+  },
+  /**
+   * ダッシュボード
+   */
+  MY_BOOKMARKS: {
+    title: "ブックマーク",
+    description: "自身のブックマークした作品一覧です。",
+    isIndex: false,
+  },
+  MY_ALBUMS: {
+    title: "シリーズ一覧",
+    description: "自身のシリーズを管理することができます",
+    isIndex: false,
+  },
+  MY_POSTS: {
+    title: "作品一覧",
+    description: "自身の作品を管理することができます",
+    isIndex: false,
+  },
+  MY_RECOMMENDED: {
+    title: "推薦作品一覧",
+    description: "自身の推薦した作品を管理することができます",
+    isIndex: false,
+  },
+
+  // 他のページも同様に追加
 }

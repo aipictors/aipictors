@@ -70,7 +70,7 @@ export const albumItemFragment = graphql(
 
 export const albumItemWorkFragment = graphql(
   `fragment AlbumItemWorkFields on WorkNode  @_unmask {
-      id
-      smallThumbnailImageURL
+    id
+    smallThumbnailImageURL
   }`,
 )

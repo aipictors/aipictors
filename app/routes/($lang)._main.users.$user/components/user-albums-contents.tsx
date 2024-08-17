@@ -17,14 +17,14 @@ type Props = {
   setPage(page: number): void
   userId: string
   orderBy: IntrospectionEnum<"AlbumOrderBy">
-  rating: IntrospectionEnum<"AlbumRating"> | null
+  rating: IntrospectionEnum<"AlbumRating">
   sort: SortType
 }
 
 export function UserAlbumsContents(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data: albumsResp, refetch } = useSuspenseQuery(albumsQuery, {
+  const { data: albumsResp, refetch } = useSuspenseQuery(AlbumsQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 16 * props.page,
@@ -32,7 +32,7 @@ export function UserAlbumsContents(props: Props) {
       where: {
         ownerUserId: props.userId,
         isSensitiveAndAllRating: props.rating === null,
-        isSensitive: props.rating !== "G",
+        isSensitive: props.rating === "R18",
         needInspected: false,
         needsThumbnailImage: false,
         orderBy: props.orderBy,
@@ -43,13 +43,13 @@ export function UserAlbumsContents(props: Props) {
 
   const albums = albumsResp?.albums ?? []
 
-  const albumsCountResp = useSuspenseQuery(albumsCountQuery, {
+  const albumsCountResp = useSuspenseQuery(AlbumsCountQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       where: {
         ownerUserId: props.userId,
         isSensitiveAndAllRating: props.rating === null,
-        isSensitive: props.rating !== "G",
+        isSensitive: props.rating === "R18",
         needInspected: false,
         needsThumbnailImage: false,
         orderBy: props.orderBy,
@@ -90,13 +90,13 @@ export function UserAlbumsContents(props: Props) {
   )
 }
 
-const albumsCountQuery = graphql(
+const AlbumsCountQuery = graphql(
   `query AlbumsCount($where: AlbumsWhereInput) {
     albumsCount(where: $where)
   }`,
 )
 
-const albumsQuery = graphql(
+const AlbumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
       ...AlbumItemFields

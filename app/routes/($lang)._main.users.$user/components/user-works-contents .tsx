@@ -13,6 +13,7 @@ type Props = {
   setPage(page: number): void
   userId: string
   workType: "NOVEL" | "COLUMN" | "VIDEO" | "WORK"
+  isSensitive?: boolean
 }
 
 export function UserWorksContents(props: Props) {
@@ -26,7 +27,8 @@ export function UserWorksContents(props: Props) {
       where: {
         userId: props.userId,
         isNowCreatedAt: true,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
         orderBy: "DATE_CREATED",
         workType: props.workType,
       },
@@ -39,7 +41,8 @@ export function UserWorksContents(props: Props) {
       where: {
         userId: props.userId,
         isNowCreatedAt: true,
-        ratings: ["G", "R15", "R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        isSensitive: props.isSensitive,
         workType: props.workType,
       },
     },
@@ -48,8 +51,6 @@ export function UserWorksContents(props: Props) {
   const works = workRes?.works ?? []
 
   const maxCount = worksCountResp.data?.worksCount ?? 0
-
-  console.log("works", maxCount)
 
   return (
     <>

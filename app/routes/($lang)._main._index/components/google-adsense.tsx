@@ -59,6 +59,7 @@ export function GoogleAdsense(props: Props) {
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
+      id
       ...CurrentPassContext
     }
   }`,

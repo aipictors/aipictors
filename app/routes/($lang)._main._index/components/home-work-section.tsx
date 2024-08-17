@@ -9,14 +9,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import {
-  HomeCoppedWorkFragment,
-  HomeCroppedWorkList,
-} from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 import { Link } from "@remix-run/react"
 import { RiQuestionLine } from "@remixicon/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { cn } from "~/lib/cn"
+import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
+import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 
 type Props = {
   works: FragmentOf<typeof HomeWorkFragment>[]

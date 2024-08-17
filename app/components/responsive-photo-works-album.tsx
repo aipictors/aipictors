@@ -17,7 +17,34 @@ type Props = {
 /**
  * レスポンシブ対応の作品一覧
  */
-export function ResponsivePhotoWorksAlbum(props: Props) {
+export const ResponsivePhotoWorksAlbum = (props: Props) => {
+  if (props.works.length === 1) {
+    return (
+      <Link
+        className="relative block max-w-32 object-cover"
+        to={`/posts/${props.works[0].id}`}
+      >
+        <img
+          src={props.works[0].smallThumbnailImageURL}
+          alt={props.works[0].title}
+          className="m-auto max-h-32 object-cover"
+        />
+        <div className="absolute right-1 bottom-0 z-10">
+          <LikeButton
+            size={56}
+            targetWorkId={props.works[0].id}
+            targetWorkOwnerUserId={props.works[0].user.id}
+            defaultLiked={props.works[0].isLiked}
+            defaultLikedCount={props.works[0].likesCount}
+            isBackgroundNone={true}
+            strokeWidth={2}
+            likedCount={props.works[0].likesCount}
+          />
+        </div>
+      </Link>
+    )
+  }
+
   return (
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum

@@ -72,7 +72,7 @@ export default function StickersPage() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <main className="flex flex-col space-y-8 pb-16">
+    <main className="flex flex-col space-y-4">
       <StickerListHeader />
       <StickerSearchForm />
       <section className="flex flex-col gap-y-4">

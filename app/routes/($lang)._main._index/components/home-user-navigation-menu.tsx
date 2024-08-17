@@ -31,7 +31,6 @@ import { useContext } from "react"
 import { useTheme } from "next-themes"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { Link } from "@remix-run/react"
-import { userSettingFieldsFragment } from "~/graphql/fragments/user-setting-fields"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -247,10 +246,16 @@ export function HomeUserNavigationMenu(props: Props) {
 const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
-      ...UserSettingFields
+      id
+      userId
+      favoritedImageGenerationModelIds
+      preferenceRating
+      featurePromptonRequest
+      isAnonymousLike
+      isAnonymousSensitiveLike
+      isNotifyComment
     }
   }`,
-  [userSettingFieldsFragment],
 )
 
 const viewerTokenQuery = graphql(

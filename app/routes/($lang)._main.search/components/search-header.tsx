@@ -1,33 +1,63 @@
+import type { CheckedState } from "@radix-ui/react-checkbox" // CheckedStateのインポートが必要かも
+import { Search } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
-import { Label } from "~/components/ui/label"
-import { Switch } from "~/components/ui/switch"
-import { SearchConfigDialog } from "~/routes/($lang)._main.search/components/search-config-dialog"
-import { useBoolean } from "usehooks-ts"
+import { Checkbox } from "~/components/ui/checkbox"
+import { Input } from "~/components/ui/input"
 
-export function SearchHeader() {
-  const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
+export const SearchHeader = () => {
+  const [searchText, setSearchText] = useState("")
+
+  const [isSensitive, setIsSensitive] = useState(false)
+
+  const onSearch = () => {
+    const trimmedText = searchText.trim()
+    if (trimmedText !== "") {
+      const baseUrl = isSensitive
+        ? `/sensitive/tags/${trimmedText}`
+        : `/tags/${trimmedText}`
+      window.location.href = baseUrl
+    } else {
+      toast("検索ワードを入力してください")
+    }
+  }
+
+  const handleCheckboxChange = (checked: CheckedState) => {
+    setIsSensitive(checked === true)
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      onSearch()
+    }
+  }
 
   return (
-    <>
-      <div className="space-y-4">
-        <div className="flex justify-center">
-          <p className="font-bold text-lg">{"＃タグの検索結果（1234件）"}</p>
+    <div className="flex flex-col space-y-4">
+      <div className="flex space-x-2">
+        <div className="w-full flex-1">
+          <Input
+            placeholder={"タグで作品を検索"}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
         </div>
-        <div className="flex space-x-2">
-          <p>{"検索トップ"}</p>
-          <p className="text-sm">{">検索結果"}</p>
-        </div>
-        <div className="flex">
-          <Button onClick={onOpen}>{"詳細検索設定"}</Button>
-        </div>
-        <div className="flex space-x-2">
-          <Label>{"ぼかしを外す"}</Label>
-          <Switch />
-          <Label>{"ダイアログ"}</Label>
-          <Switch />
-        </div>
+        <Button onClick={onSearch} variant={"ghost"} size={"icon"}>
+          <Search className="w-16" />
+        </Button>
       </div>
-      <SearchConfigDialog isOpen={isOpen} onClose={onClose} />
-    </>
+      <div className="flex items-center space-x-2 opacity-50">
+        <Checkbox
+          id="sensitive"
+          checked={isSensitive}
+          onCheckedChange={handleCheckboxChange}
+        />
+        <label htmlFor="sensitive" className="font-medium text-sm leading-none">
+          センシティブ
+        </label>
+      </div>
+    </div>
   )
 }

@@ -6,7 +6,6 @@ import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { type FragmentOf, graphql } from "gql.tada"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import type { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
 
 type Props = {
@@ -66,9 +65,15 @@ const userFolloweesQuery = graphql(
     user(id: $user_id) {
       id
       followees(offset: $offset, limit: $limit) {
-        ...PartialUserFields
+        id
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
   }`,
-  [partialUserFieldsFragment],
 )

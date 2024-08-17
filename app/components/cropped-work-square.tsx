@@ -6,7 +6,7 @@ type Props = {
   workId: string
   imageUrl: string
   thumbnailImagePosition: number
-  size: "sm" | "md" | "lg"
+  size: "sm" | "md" | "lg" | "auto"
   imageWidth: number
   imageHeight: number
   ranking?: number
@@ -52,6 +52,9 @@ export function CroppedWorkSquare(props: Props) {
   )
 
   const size = () => {
+    if (props.size === "auto") {
+      return "w-full h-auto"
+    }
     if (props.size === "sm") {
       return props.imageWidth > props.imageHeight
         ? "h-20 w-auto"
@@ -67,6 +70,9 @@ export function CroppedWorkSquare(props: Props) {
   }
 
   const wrapSize = () => {
+    if (props.size === "auto") {
+      return "w-full"
+    }
     if (props.size === "sm") {
       return "h-20 w-20"
     }
@@ -99,15 +105,13 @@ export function CroppedWorkSquare(props: Props) {
         <div
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          // biome-ignore lint/nursery/useSortedClasses: <explanation>
-          className={`rounded ${wrapSize()} overflow-hidden relative`}
+          className={`rounded ${wrapSize()} relative overflow-hidden`}
         >
           <img
             src={props.imageUrl}
             alt=""
             key={props.imageUrl}
-            // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`rounded max-w-none ${size()} transition-transform duration-300 ease-in-out`}
+            className={`max-w-none rounded ${size()} transition-transform duration-300 ease-in-out`}
             style={{
               transform: `${transform} ${isHovered ? "scale(1.05)" : "scale(1)"}`,
             }}

@@ -1,13 +1,17 @@
-import type { messageFieldsFragment } from "~/graphql/fragments/message-fields"
-import { RecipientMessage } from "~/routes/($lang)._main.support.chat/components/recipient-message"
-import { SenderMessage } from "~/routes/($lang)._main.support.chat/components/sender-message"
-import type { FragmentOf } from "gql.tada"
-
+import {
+  RecipientMessage,
+  RecipientMessageFragment,
+} from "~/routes/($lang)._main.support.chat/components/recipient-message"
+import {
+  SenderMessage,
+  SenderMessageFragment,
+} from "~/routes/($lang)._main.support.chat/components/sender-message"
+import { graphql, type FragmentOf } from "gql.tada"
 import { useEffect, useRef } from "react"
 
 type Props = {
+  messages: FragmentOf<typeof MessageListItemFragment>[]
   recipientIconImageURL: string
-  messages: FragmentOf<typeof messageFieldsFragment>[]
 }
 
 export function SupportMessageList(props: Props) {
@@ -31,21 +35,32 @@ export function SupportMessageList(props: Props) {
     >
       {messages.map((message) =>
         message.isViewer ? (
-          <SenderMessage
-            key={message.id}
-            createdAt={message.createdAt}
-            isRead={message.isRead}
-            text={message.text ?? "-"}
-          />
+          <SenderMessage key={message.id} message={message} />
         ) : (
           <RecipientMessage
             key={message.id}
-            text={message.text ?? "-"}
-            createdAt={message.createdAt}
-            iconImageURL={props.recipientIconImageURL}
+            message={message}
+            recipientIconImageURL={props.recipientIconImageURL}
           />
         ),
       )}
     </div>
   )
 }
+
+export const MessageThreadRecipientFragment = graphql(
+  `fragment MessageThreadRecipient on UserNode @_unmask {
+    id
+    iconUrl
+  }`,
+)
+
+export const MessageListItemFragment = graphql(
+  `fragment MessageListItem on MessageNode @_unmask {
+    id
+    isViewer
+    ...SenderMessage
+    ...RecipientMessage
+  }`,
+  [SenderMessageFragment, RecipientMessageFragment],
+)

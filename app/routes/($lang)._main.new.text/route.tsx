@@ -1,10 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
@@ -19,14 +15,19 @@ import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reduce
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { useBeforeUnload, useSearchParams } from "@remix-run/react"
+import {
+  type MetaFunction,
+  useBeforeUnload,
+  useSearchParams,
+} from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React, { useEffect } from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export default function NewText() {
   const authContext = useContext(AuthContext)
@@ -50,6 +51,7 @@ export default function NewText() {
         nanoids: ref?.split("|") ?? [],
       },
       startAt: dateJST.toISOString().split("T")[0],
+      endAt: afterDate.toISOString().split("T")[0],
       startDate: dateJST.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
@@ -166,7 +168,7 @@ export default function NewText() {
   }, [viewer?.viewer?.imageGenerationResults, dispatch])
 
   const [createWork, { loading: isCreatedLoading }] =
-    useMutation(createWorkMutation)
+    useMutation(CreateWorkMutation)
 
   const formResult = safeParse(vPostTextForm, {
     title: inputState.title,
@@ -447,6 +449,10 @@ export default function NewText() {
   )
 }
 
+export const meta: MetaFunction = () => {
+  return createMeta(META.NEW_TEXT)
+}
+
 const viewerQuery = graphql(
   `query ViewerQuery(
     $limit: Int!,
@@ -458,6 +464,7 @@ const viewerQuery = graphql(
     $startDate: String!,
     $endDate: String!,
     $startAt: String!,
+    $endAt: String!,
   ) {
     viewer {
       id
@@ -468,10 +475,67 @@ const viewerQuery = graphql(
         hasSignedImageGenerationTerms
       }
       currentPass {
-        ...PassFields
+        id
+        type
+        payment {
+          id
+          amount
+          stripePaymentIntentId
+        }
+        isDisabled
+        periodStart
+        periodEnd
+        trialPeriodStart
+        trialPeriodEnd
+        createdAt
+        price
       }
       imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
-        ...ImageGenerationResultFields
+        id
+        prompt
+        negativePrompt
+        seed
+        steps
+        scale
+        sampler
+        clipSkip
+        sizeType
+        t2tImageUrl
+        t2tMaskImageUrl
+        t2tDenoisingStrengthSize
+        t2tInpaintingFillSize
+        rating
+        completedAt
+        isProtected
+        generationType
+        postModelId
+        modelHash
+        model {
+          id
+          name
+          type
+        }
+        vae
+        nanoid
+        status
+        estimatedSeconds
+        controlNetControlMode
+        controlNetEnabled
+        controlNetGuidanceEnd
+        controlNetGuidanceStart
+        controlNetPixelPerfect
+        controlNetProcessorRes
+        controlNetResizeMode
+        controlNetThresholdA
+        controlNetThresholdB
+        controlNetWeight
+        controlNetModule
+        controlNetModel
+        controlNetSaveDetectedMap
+        controlNetHrOption
+        upscaleSize
+        imageUrl
+        thumbnailUrl
       }
     }
     albums(
@@ -484,13 +548,45 @@ const viewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      ...PartialAlbumFields
+      id
+      title
+      isSensitive
+      likesCount
+      viewsCount
+      thumbnailImageURL
+      description
+      works(limit: $limit, offset: $offset) {
+        id
+        title
+        imageURL
+        largeThumbnailImageURL
+        smallThumbnailImageURL
+        accessType
+        rating
+        createdAt
+      }
+      rating
+      createdAt
+      slug
+      userId
       user {
-        ...PartialUserFields
+        id
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
     aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
+      id
+      name
+      type
+      generationModelId
+      workModelId
+      thumbnailImageURL
     }
     dailyThemes(
       limit: 8,
@@ -508,6 +604,7 @@ const viewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
+        endAt: $endAt,
       }
     ) {
       id
@@ -518,16 +615,9 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [
-    aiModelFieldsFragment,
-    partialAlbumFieldsFragment,
-    partialUserFieldsFragment,
-    passFieldsFragment,
-    imageGenerationResultFieldsFragment,
-  ],
 )
 
-const createWorkMutation = graphql(
+const CreateWorkMutation = graphql(
   `mutation CreateWork($input: CreateWorkInput!) {
     createWork(input: $input) {
       id

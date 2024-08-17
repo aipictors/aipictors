@@ -10,6 +10,7 @@ import { tagWorksQuery } from "~/routes/($lang)._main.tags.$tag._index/route"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
 import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/tag-action-other"
+import { CircleAlertIcon } from "lucide-react"
 
 type Props = {
   works: FragmentOf<typeof partialWorkFieldsFragment>[]
@@ -74,6 +75,10 @@ export function TagWorkSection(props: Props) {
               <p>#{props.tag}の作品</p>
               <p>{props.worksCount}件</p>
             </h1>
+          </div>
+          <div className="mt-2 flex items-center space-x-2">
+            <CircleAlertIcon className="h-4 w-4 opacity-80" />
+            <p className="text-sm opacity-80">作品は1日ごとに集計されます</p>
           </div>
         </div>
       </div>

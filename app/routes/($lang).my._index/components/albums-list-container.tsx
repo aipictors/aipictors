@@ -8,7 +8,6 @@ import { AlbumsList } from "~/routes/($lang).my._index/components/albums-list"
 import { WorksSeriesAddButton } from "~/routes/($lang).my._index/components/works-series-add-button"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -101,9 +100,16 @@ const albumsQuery = graphql(
     albums(offset: $offset, limit: $limit, where: $where) {
       ...PartialAlbumFields
       user {
-        ...PartialUserFields
+        id
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
   }`,
-  [partialAlbumFieldsFragment, partialUserFieldsFragment],
+  [partialAlbumFieldsFragment],
 )

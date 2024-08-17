@@ -36,7 +36,7 @@ export function ThemeArticle(props: Props) {
       limit: 32,
       where: {
         subjectId: Number(props.themeId),
-        ratings: props.isSensitive ? ["G", "R15"] : ["R18", "R18G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
         isSensitive: props.isSensitive,
       },
@@ -62,6 +62,7 @@ export function ThemeArticle(props: Props) {
           <h1 className="font-bold text-2xl">{props.title}</h1>
           {props.isSensitive && <h2 className="text-md">{"センシティブ"}</h2>}
           <h2 className="text-xl">{`作品数: ${props.worksCount}`}</h2>
+          <p className="text-sm opacity-80">作品は1日ごとに集計されます</p>
         </div>
         {!props.isSensitive ? (
           <AppConfirmDialog

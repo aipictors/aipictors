@@ -1,6 +1,10 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
+import {
+  json,
+  type MetaFunction,
+  type LoaderFunctionArgs,
+} from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { createClient } from "~/lib/client"
@@ -9,6 +13,8 @@ import { EventWorkList } from "~/routes/($lang).events.$event._index/components/
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { RefreshCcwIcon } from "lucide-react"
 import { EventAwardWorkList } from "~/routes/($lang).events.$event._index/components/event-award-work-list"
+import { createMeta } from "~/utils/create-meta"
+import { META } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -44,6 +50,30 @@ export async function loader(props: LoaderFunctionArgs) {
   return json({
     appEvent: eventsResp.data.appEvent,
     page,
+  })
+}
+
+// export const meta: MetaFunction = () => {
+//   return createMeta(META.EVENTS)
+// }
+
+export const meta: MetaFunction = ({ data }) => {
+  if (!data) {
+    return [{ title: "イベントが見つかりませんでした" }]
+  }
+
+  const { appEvent } = data as {
+    appEvent: { title: string; description: string; thumbnailImageUrl: string }
+  }
+
+  const stripHtmlTags = (str: string) => {
+    return str.replace(/<[^>]*>?/gm, "")
+  }
+
+  return createMeta(META.EVENTS_INDEX, {
+    title: appEvent.title,
+    description: stripHtmlTags(appEvent.description),
+    url: appEvent.thumbnailImageUrl,
   })
 }
 

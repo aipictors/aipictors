@@ -4,32 +4,14 @@ import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/compone
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { config } from "~/config"
+import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { Home2dContents } from "~/routes/($lang)._main.posts.2d/conponents/home-2d-contents"
+import { getJstDate } from "~/utils/jst-date"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors | AIイラスト投稿・生成サイト"
-
-  const metaDescription =
-    "AIで作った画像を公開してみよう！AIイラスト・生成サイト「AIピクターズ」、AIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。"
-
-  const metaImage =
-    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
-
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "robots", content: "noindex" },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
+  return createMeta(META.HOME_2D)
 }
 
 export const dateToText = (date: Date) => {
@@ -38,7 +20,7 @@ export const dateToText = (date: Date) => {
 
 export async function loader() {
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = ["コスプレ", "JK"]
+  const categories = ["ゆめかわ", "かっこいい", "綺麗"]
 
   const getRandomCategories = () => {
     const currentTime = new Date()
@@ -63,13 +45,9 @@ export async function loader() {
 
   const client = createClient()
 
-  const date = new Date()
+  const now = getJstDate()
 
-  const yesterday = new Date()
-
-  yesterday.setDate(yesterday.getDate() - 1)
-
-  const now = new Date()
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
   const pastPromotionDate = new Date(now)
   pastPromotionDate.setMonth(now.getMonth() - Math.floor(Math.random() * 12))
@@ -166,7 +144,7 @@ const query = graphql(
       where: {
         ratings: [G],
         search: $categoryFirst
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         style: ILLUSTRATION
       }
     ) {
@@ -178,7 +156,7 @@ const query = graphql(
       where: {
         ratings: [G],
         search: $categorySecond
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         style: ILLUSTRATION
       }
     ) {

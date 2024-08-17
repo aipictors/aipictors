@@ -1,7 +1,9 @@
-import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-list"
+import {
+  HomeTagList,
+  HomeTagListItemFragment,
+} from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeWorkList } from "~/routes/($lang)._main._index/components/home-work-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -10,7 +12,7 @@ export async function loader() {
   const client = createClient()
 
   const worksResp = await client.query({
-    query: worksQuery,
+    query: LoaderWorksQuery,
     variables: {
       offset: 0,
       limit: 16,
@@ -19,7 +21,7 @@ export async function loader() {
   })
 
   const hotTagsResp = await client.query({
-    query: hotTagsQuery,
+    query: LoaderTagsQuery,
     variables: {},
   })
 
@@ -43,19 +45,16 @@ export default function Works25d() {
   )
 }
 
-const hotTagsQuery = graphql(
+const LoaderTagsQuery = graphql(
   `query HotTags {
     hotTags {
-      ...PartialTagFields
-      firstWork {
-        ...PartialWorkFields
-      }
+      ...HomeTagListItem
     }
   }`,
-  [partialTagFieldsFragment, partialWorkFieldsFragment],
+  [HomeTagListItemFragment],
 )
 
-const worksQuery = graphql(
+const LoaderWorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PartialWorkFields

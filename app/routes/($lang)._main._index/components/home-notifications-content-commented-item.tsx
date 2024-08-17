@@ -1,26 +1,11 @@
 import { IconUrl } from "~/components/icon-url"
 import { Badge } from "~/components/ui/badge"
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { toDateText } from "~/utils/to-date-text"
 
 type Props = {
-  workId: string
-  thumbnailUrl: string
-  iconUrl: string
-  stickerUrl: string
-  comment: string
-  userName: string
-  createdAt: string
-  isReplied: boolean // 返信済みかどうか
-  repliedItem: {
-    id: string
-    comment: string
-    user: {
-      id: string
-      name: string
-      iconUrl: string
-    }
-    stickerUrl: string
-  } | null
+  notification: FragmentOf<typeof WorkCommentNotificationFragment>
   stickerSize?: "lg" | "md" | "sm" | "xs"
 }
 
@@ -39,70 +24,77 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
     ? stickerSizeClasses[props.stickerSize]
     : stickerSizeClasses.md
 
+  const isReplied =
+    props.notification.myReplies && props.notification.myReplies.length !== 0
+
+  const [reply] = props.notification.myReplies ?? []
+
   return (
     <div className="flex flex-col border-b">
       <Link
-        to={`/posts/${props.workId}`}
+        to={`/posts/${props.notification.work?.id}`}
         className="flex items-center rounded-md p-2 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
       >
         <>
           <img
-            src={IconUrl(props.iconUrl)}
+            src={IconUrl(props.notification.user?.iconUrl)}
             alt="thumbnail"
             className="h-8 w-8 rounded-full object-cover"
           />
           <div className="ml-2 w-full overflow-hidden">
             <p className="text-ellipsis">
-              {props.userName}さんがコメントしました
-              {props.comment && (
+              {props.notification.user?.name}さんがコメントしました
+              {props.notification.message && (
                 <>
                   {"「"}
-                  {props.comment}
+                  {props.notification.message}
                   {"」"}
                 </>
               )}
             </p>
-            {props.stickerUrl && (
+            {props.notification.sticker?.imageUrl && (
               <img
-                src={props.stickerUrl}
+                src={props.notification.sticker.imageUrl}
                 alt="sticker"
                 className={`${stickerClass} object-cover`}
               />
             )}
             <div className="flex items-center space-x-2">
-              <p className="text-sm opacity-80">{props.createdAt}</p>
-              {props.isReplied && <Badge variant="secondary">返信済み</Badge>}
+              <p className="text-sm opacity-80">
+                {toDateText(props.notification.createdAt)}
+              </p>
+              {isReplied && <Badge variant="secondary">返信済み</Badge>}
             </div>
           </div>
           <div className="h-12 w-12 overflow-hidden rounded-md">
             <img
-              src={props.thumbnailUrl}
+              src={props.notification.work?.smallThumbnailImageURL}
               alt="thumbnail"
               className="h-16 w-16 object-cover"
             />
           </div>
         </>
       </Link>
-      {props.repliedItem && (
+      {reply && (
         <div className="ml-12 flex items-center space-x-2">
           <img
-            src={IconUrl(props.repliedItem.user.iconUrl)}
+            src={IconUrl(reply.user?.iconUrl)}
             alt="thumbnail"
             className="h-8 w-8 rounded-full object-cover"
           />
           <p className="text-ellipsis">
-            {props.repliedItem.user.name}返信しました
-            {props.repliedItem.comment && (
+            {reply.user?.name}返信しました
+            {reply.text && (
               <>
                 {"「"}
-                {props.repliedItem.comment}
+                {reply.text}
                 {"」"}
               </>
             )}
           </p>
-          {props.repliedItem.stickerUrl && (
+          {reply.sticker?.imageUrl && (
             <img
-              src={props.repliedItem.stickerUrl}
+              src={reply.sticker?.imageUrl}
               alt="sticker"
               className={`${stickerClass} object-cover`}
             />
@@ -112,3 +104,37 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
     </div>
   )
 }
+
+export const WorkCommentNotificationFragment = graphql(
+  `fragment WorkCommentNotification on WorkCommentNotificationNode @_unmask {
+    id
+    createdAt
+    message
+    work {
+      id
+      smallThumbnailImageURL
+    }
+    user {
+      id
+      iconUrl
+      name
+    }
+    sticker {
+      id
+      imageUrl
+    }
+    myReplies {
+      id
+      text
+      user {
+        id
+        name
+        iconUrl
+      }
+      sticker {
+        id
+        imageUrl
+      }
+    }
+  }`,
+)

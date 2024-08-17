@@ -13,9 +13,11 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useState } from "react"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { CalendarHeartIcon } from "lucide-react"
+import { Link } from "@remix-run/react"
 
 type Props = {
   user: FragmentOf<typeof userProfileFragment>
+  isSensitive?: boolean
 }
 
 export function UserContents(props: Props) {
@@ -35,7 +37,44 @@ export function UserContents(props: Props) {
 
   const [stickersPage, setStickersPage] = useState(0)
 
-  console.log(props.user.createdAt)
+  const formatBiography = (biography: string): (string | JSX.Element)[] => {
+    // URLを検出する正規表現
+    const urlPattern = /https?:\/\/[^\s]+/g
+    const parts: string[] = biography.split(urlPattern)
+    const urls: string[] | null = biography.match(urlPattern)
+
+    const elements: (string | JSX.Element)[] = []
+
+    parts.forEach((part, index) => {
+      // 改行に対応するために、各パートを改行で分割
+      const splitByLineBreaks = part.split("\n")
+
+      splitByLineBreaks.forEach((line, lineIndex) => {
+        elements.push(line)
+        if (lineIndex < splitByLineBreaks.length - 1) {
+          // 改行を挿入
+          elements.push(
+            <br key={`line-break-${index}-${lineIndex.toString()}`} />,
+          )
+        }
+      })
+
+      if (urls?.[index]) {
+        elements.push(
+          <Link
+            key={index.toString()}
+            to={urls[index]}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {urls[index]}
+          </Link>,
+        )
+      }
+    })
+
+    return elements
+  }
 
   return (
     <div className="flex flex-col space-y-4">
@@ -43,6 +82,7 @@ export function UserContents(props: Props) {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         userId={props.user.id}
+        isSensitive={props.isSensitive}
       />
       <div className="flex min-h-96 flex-col gap-y-4">
         <Suspense fallback={<AppLoadingPage />}>
@@ -82,7 +122,9 @@ export function UserContents(props: Props) {
                   )}
                 </p>
                 {props.user.biography && (
-                  <p className="text-sm">{props.user.biography}</p>
+                  <p className="text-sm">
+                    {formatBiography(props.user.biography)}
+                  </p>
                 )}
                 <div className="flex items-center gap-x-4">
                   {props.user.twitterAccountId && (
@@ -105,16 +147,20 @@ export function UserContents(props: Props) {
                   )}
                 </div>
               </Card>
-              <UserPickupContents
-                userPickupWorks={props.user.featuredWorks ?? []}
-                userPickupSensitiveWorks={
-                  props.user.featuredSensitiveWorks ?? []
-                }
-              />
+              {props.isSensitive ? (
+                <UserPickupContents
+                  userPickupWorks={props.user.featuredSensitiveWorks ?? []}
+                />
+              ) : (
+                <UserPickupContents
+                  userPickupWorks={props.user.featuredWorks ?? []}
+                />
+              )}
               <Suspense fallback={<AppLoadingPage />}>
                 <UserContentsContainer
                   userId={props.user.id}
                   userLogin={props.user.login}
+                  isSensitive={props.isSensitive}
                 />
               </Suspense>
             </>
@@ -125,6 +171,7 @@ export function UserContents(props: Props) {
               page={workPage}
               setPage={setWorkPage}
               workType="WORK"
+              isSensitive={props.isSensitive}
             />
           )}
           {activeTab === "小説" && (
@@ -133,6 +180,7 @@ export function UserContents(props: Props) {
               page={novelPage}
               setPage={setNovelPage}
               workType="NOVEL"
+              isSensitive={props.isSensitive}
             />
           )}
           {activeTab === "動画" && (
@@ -141,6 +189,7 @@ export function UserContents(props: Props) {
               page={videoPage}
               setPage={setVideoPage}
               workType="VIDEO"
+              isSensitive={props.isSensitive}
             />
           )}
           {activeTab === "コラム" && (
@@ -149,6 +198,7 @@ export function UserContents(props: Props) {
               page={columnPage}
               setPage={setColumnPage}
               workType="COLUMN"
+              isSensitive={props.isSensitive}
             />
           )}
           {activeTab === "シリーズ" && (
@@ -157,7 +207,7 @@ export function UserContents(props: Props) {
               page={albumsPage}
               setPage={setAlbumsPage}
               orderBy="DATE_CREATED"
-              rating={null}
+              rating={props.isSensitive ? "R18" : "G"}
               sort="DESC"
             />
           )}
@@ -169,6 +219,7 @@ export function UserContents(props: Props) {
               orderBy="DATE_CREATED"
               rating={null}
               sort="DESC"
+              isSensitive={props.isSensitive}
             />
           )}
           {activeTab === "スタンプ" && (
@@ -193,15 +244,14 @@ export const userProfileFragment = graphql(
     headerImageUrl
     headerImageUrl
     createdAt
-    biography
     instagramAccountId
     twitterAccountId
     githubAccountId
     mailAddress
-    featuredSensitiveWorks {
+    featuredWorks {
       ...PartialWorkFields
     }
-    featuredWorks {
+    featuredSensitiveWorks {
       ...PartialWorkFields
     }
   }`,

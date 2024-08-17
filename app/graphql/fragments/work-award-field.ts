@@ -1,4 +1,3 @@
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 
 export const workAwardFieldsFragment = graphql(
@@ -7,8 +6,40 @@ export const workAwardFieldsFragment = graphql(
       index
       dateText
       work {
-        ...PartialWorkFields
+        id
+        title
+        accessType
+        adminAccessType
+        type
+        likesCount
+        commentsCount
+        bookmarksCount
+        viewsCount
+        createdAt
+        rating
+        isTagEditable
+        smallThumbnailImageURL
+        smallThumbnailImageHeight
+        smallThumbnailImageWidth
+        largeThumbnailImageURL
+        largeThumbnailImageHeight
+        largeThumbnailImageWidth
+        type
+        prompt
+        negativePrompt
+        isLiked
+        thumbnailImagePosition
+        description
+        url
+        subWorksCount
+        tags {
+          name
+        }
+        user {
+          id
+          name
+          iconUrl
+        }
       }
   }`,
-  [partialWorkFieldsFragment],
 )

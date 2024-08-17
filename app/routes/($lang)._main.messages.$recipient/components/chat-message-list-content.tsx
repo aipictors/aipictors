@@ -1,11 +1,12 @@
-import { IconUrl } from "~/components/icon-url"
-import { messageFieldsFragment } from "~/graphql/fragments/message-fields"
-import { messageThreadFieldsFragment } from "~/graphql/fragments/message-thread-fields"
-import { SupportMessageList } from "~/routes/($lang)._main.support.chat/components/support-message-list"
+import {
+  MessageListItemFragment,
+  MessageThreadRecipientFragment,
+} from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { startTransition } from "react"
 import { useInterval } from "usehooks-ts"
+import { ChatMessageList } from "~/routes/($lang)._main.support.chat/components/chat-message-list"
 
 type Props = {
   recipientId: string
@@ -14,7 +15,7 @@ type Props = {
 /**
  */
 export function ChatMessageListContent(props: Props) {
-  const { data, refetch } = useSuspenseQuery(messageThreadMessagesQuery, {
+  const { data, refetch } = useSuspenseQuery(MessagesQuery, {
     variables: {
       threadId: props.recipientId,
       limit: 124,
@@ -28,30 +29,33 @@ export function ChatMessageListContent(props: Props) {
     })
   }, 4000)
 
-  const messages = data?.viewer?.messageThread?.messages ?? []
+  if (data.viewer === null || data.viewer.messageThread === null) {
+    return null
+  }
 
   return (
-    <SupportMessageList
-      messages={messages}
-      recipientIconImageURL={IconUrl(
-        data?.viewer?.messageThread?.recipient.iconUrl,
-      )}
+    <ChatMessageList
+      messages={data.viewer.messageThread.messages}
+      recipient={data.viewer.messageThread.recipient}
     />
   )
 }
 
-const messageThreadMessagesQuery = graphql(
-  `query MessageThreadMessages($threadId: ID!, $offset: Int!, $limit: Int!) {
+const MessagesQuery = graphql(
+  `query ChatMessageList($threadId: ID!, $offset: Int!, $limit: Int!) {
     viewer {
       id
       messageThread(threadId: $threadId) {
         id
-        ...MessageThreadFields
+        recipient {
+          ...MessageThreadRecipient
+        }
         messages(offset: $offset, limit: $limit) {
-          ...MessageFields
+          id
+          ...MessageListItem
         }
       }
     }
   }`,
-  [messageThreadFieldsFragment, messageFieldsFragment],
+  [MessageThreadRecipientFragment, MessageListItemFragment],
 )

@@ -1,4 +1,3 @@
-import { partialTagFieldsFragment } from "~/graphql/fragments/partial-tag-fields"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import { HomeTagList } from "~/routes/($lang)._main._index/components/home-tag-list"
@@ -43,13 +42,14 @@ export default function SensitiveWorks25d() {
 export const hotTagsQuery = graphql(
   `query HotTags {
     hotTags {
-      ...PartialTagFields
+      id
+      name
       firstWork {
         ...PartialWorkFields
       }
     }
   }`,
-  [partialTagFieldsFragment, partialWorkFieldsFragment],
+  [partialWorkFieldsFragment],
 )
 
 export const worksQuery = graphql(

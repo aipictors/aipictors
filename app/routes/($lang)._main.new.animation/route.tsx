@@ -1,9 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
@@ -18,14 +15,15 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { useBeforeUnload } from "@remix-run/react"
+import { type MetaFunction, useBeforeUnload } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React from "react"
 import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export default function NewAnimation() {
   const authContext = useContext(AuthContext)
@@ -71,20 +69,21 @@ export default function NewAnimation() {
   const offset = 9 * 60 * 60 * 1000 // JST (UTC+9) のオフセット
   const dateJST = new Date(Date.now() + offset)
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + offset)
-  const { data: viewer } = useQuery(viewerQuery, {
+  const { data: viewer } = useQuery(ViewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
       offset: 0,
       limit: 128,
       ownerUserId: authContext.userId,
       startAt: dateJST.toISOString().split("T")[0],
+      endAt: afterDate.toISOString().split("T")[0],
       startDate: dateJST.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
 
   const [createWork, { loading: isCreatedLoading }] =
-    useMutation(createWorkMutation)
+    useMutation(CreateWorkMutation)
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
@@ -361,7 +360,11 @@ export default function NewAnimation() {
   )
 }
 
-const viewerQuery = graphql(
+export const meta: MetaFunction = () => {
+  return createMeta(META.NEW_ANIMATION)
+}
+
+const ViewerQuery = graphql(
   `query ViewerQuery(
     $limit: Int!,
     $offset: Int!,
@@ -369,6 +372,7 @@ const viewerQuery = graphql(
     $startDate: String!,
     $endDate: String!,
     $startAt: String!,
+    $endAt: String!,
   ) {
     viewer {
       id
@@ -379,7 +383,20 @@ const viewerQuery = graphql(
         hasSignedImageGenerationTerms
       }
       currentPass {
-        ...PassFields
+        id
+        type
+        payment {
+          id
+          amount
+          stripePaymentIntentId
+        }
+        isDisabled
+        periodStart
+        periodEnd
+        trialPeriodStart
+        trialPeriodEnd
+        createdAt
+        price
       }
     }
     albums(
@@ -392,13 +409,45 @@ const viewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      ...PartialAlbumFields
+      id
+      title
+      isSensitive
+      likesCount
+      viewsCount
+      thumbnailImageURL
+      description
+      works(limit: $limit, offset: $offset) {
+        id
+        title
+        imageURL
+        largeThumbnailImageURL
+        smallThumbnailImageURL
+        accessType
+        rating
+        createdAt
+      }
+      rating
+      createdAt
+      slug
+      userId
       user {
-        ...PartialUserFields
+        id
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
     aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
+      id
+      name
+      type
+      generationModelId
+      workModelId
+      thumbnailImageURL
     }
     dailyThemes(
       limit: 8,
@@ -416,6 +465,7 @@ const viewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
+        endAt: $endAt,
       }
     ) {
       id
@@ -426,15 +476,9 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [
-    aiModelFieldsFragment,
-    partialAlbumFieldsFragment,
-    partialUserFieldsFragment,
-    passFieldsFragment,
-  ],
 )
 
-const createWorkMutation = graphql(
+const CreateWorkMutation = graphql(
   `mutation CreateWork($input: CreateWorkInput!) {
     createWork(input: $input) {
       id

@@ -7,6 +7,7 @@ type Props = {
   oneTimeExpand?: boolean // 一度切りの展開フラグ
   onExpandChange?: (isOpen: boolean) => void
   className?: string
+  hidden?: boolean
 }
 
 export function ExpansionTransition(props: Props) {
@@ -50,7 +51,7 @@ export function ExpansionTransition(props: Props) {
           style={{
             maxHeight: maxHeight,
             opacity: opacity,
-            overflow: "hidden",
+            overflow: props.hidden ? "hidden" : "visible",
             transition: "max-height 0.5s ease, opacity 0.5s ease",
           }}
           className={props.className}

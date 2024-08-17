@@ -1,9 +1,7 @@
 import { OmissionNumber } from "~/components/omission-number"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
-import { UserActionShare } from "~/routes/($lang)._main.users.$user/components/user-action-share"
 
 type Props = {
   user: FragmentOf<typeof userProfileIconFragment>
@@ -49,28 +47,10 @@ export function UserProfileNameIcon(props: Props) {
               </div>
             </div>
           </div>
-          <div className="absolute right-0 bottom-0 md:hidden">
-            <UserActionShare login={props.user.login} name={props.user.name} />
-          </div>
         </div>
         <div className="block md:hidden">
           <h1 className="text-nowrap font-bold text-md">{props.user.name}</h1>
           <h2 className="font-bold text-sm opacity-50">@{props.user.login}</h2>
-        </div>
-
-        <div className="flex md:hidden">
-          <div className="w-32">
-            <div className="white mt-4 font-bold text-md">
-              {toOmissionNumberText(props.user.followersCount)}
-            </div>
-            <div className="white mt-1 text-sm opacity-50">{"フォロワー"}</div>
-          </div>
-          <div className="w-32">
-            <div className="white mt-4 font-bold text-md">
-              {toOmissionNumberText(props.user.receivedLikesCount)}
-            </div>
-            <div className="white mt-1 text-sm opacity-50">{"いいね"}</div>
-          </div>
         </div>
       </div>
     </header>
@@ -83,6 +63,7 @@ export const userProfileIconFragment = graphql(
     login
     nanoid
     name
+    biography
     receivedLikesCount
     createdAt
     receivedViewsCount

@@ -11,7 +11,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
-import { imageReservedGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-reserved-task-field"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
@@ -198,8 +197,31 @@ const viewerCurrentPassQuery = graphql(
 const deleteReservedImageGenerationTasksMutation = graphql(
   `mutation DeleteReservedImageGenerationTasks {
     deleteReservedImageGenerationTasks {
-      ...ImageReservedGenerationTaskFields
+      id
+      prompt
+      negativePrompt
+      seed
+      steps
+      scale
+      sampler
+      clipSkip
+      sizeType
+      t2tImageUrl
+      t2tMaskImageUrl
+      t2tDenoisingStrengthSize
+      t2tInpaintingFillSize
+      createdAt
+      isDeleted
+      generationType
+      model {
+        id
+        name
+        type
+      }
+      vae
+      token
+      nanoid
+      upscaleSize
     }
   }`,
-  [imageReservedGenerationTaskFieldsFragment],
 )

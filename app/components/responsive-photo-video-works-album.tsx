@@ -1,8 +1,7 @@
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import { UnstableSSR as SSR } from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
@@ -11,7 +10,7 @@ import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
   targetRowHeight?: number
   isAutoPlay?: boolean
 }
@@ -45,6 +44,51 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
       video.style.zIndex = "-1" // 動画を背面に戻す
     }
   }, [])
+
+  if (props.works.length === 1) {
+    return (
+      <div className="relative transition-all" style={{ position: "relative" }}>
+        <div
+          className="relative inline-block h-full w-full"
+          onMouseEnter={() => handleMouseEnter(Number(props.works[0].id))}
+          onMouseLeave={() => handleMouseLeave(Number(props.works[0].id))}
+        >
+          <Link
+            to={`/posts/${props.works[0].id}`}
+            className="max-h-32 overflow-hidden rounded"
+          >
+            <img
+              {...props}
+              alt={props.works[0].title}
+              className="max-h-32 overflow-hidden rounded"
+            />
+            <video
+              src={props.works[0].url ?? ""}
+              // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+              ref={(el) => (videoRefs.current[Number(props.works[0].id)] = el)}
+              className="absolute top-0 left-0 hidden max-h-32 w-full overflow-hidden rounded object-contain md:block"
+              style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
+              muted
+              autoPlay={isAutoPlay}
+              loop
+            >
+              <track
+                kind="captions"
+                src={props.works[0].url ?? ""}
+                label="English"
+              />
+            </video>
+
+            <div className="absolute top-1 left-1 opacity-50">
+              <Badge variant={"secondary"} className="text-xs">
+                {"video"}
+              </Badge>
+            </div>
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <SSR breakpoints={[300, 600, 900, 1200]}>
@@ -177,3 +221,21 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
     </SSR>
   )
 }
+
+export const PhotoAlbumVideoWorkFragment = graphql(
+  `fragment PhotoAlbumVideoWork on WorkNode @_unmask {
+    id
+    title
+    url
+    smallThumbnailImageHeight
+    smallThumbnailImageWidth
+    smallThumbnailImageURL
+    likesCount
+    isLiked
+    user {
+      id
+      name
+      iconUrl
+    }
+  }`,
+)

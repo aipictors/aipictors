@@ -1,6 +1,10 @@
 import React, { useEffect, useReducer, useContext } from "react"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { useBeforeUnload, useSearchParams } from "@remix-run/react"
+import {
+  type MetaFunction,
+  useBeforeUnload,
+  useSearchParams,
+} from "@remix-run/react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { graphql } from "gql.tada"
@@ -26,12 +30,9 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
-import { partialUserFieldsFragment } from "~/graphql/fragments/partial-user-fields"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
-import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 import type { PNGInfo } from "~/utils/get-extract-info-from-png"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export default function NewImage() {
   const authContext = useContext(AuthContext)
@@ -42,7 +43,8 @@ export default function NewImage() {
   const offset = 9 * 60 * 60 * 1000 // JST (UTC+9) のオフセット
   const dateJST = new Date(Date.now() + offset)
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + offset)
-  const { data: viewer } = useQuery(viewerQuery, {
+
+  const { data: viewer } = useQuery(ViewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -54,6 +56,7 @@ export default function NewImage() {
         nanoids: ref?.split("|") ?? [],
       },
       startAt: dateJST.toISOString().split("T")[0],
+      endAt: afterDate.toISOString().split("T")[0],
       startDate: dateJST.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
@@ -182,7 +185,7 @@ export default function NewImage() {
   }, [viewer?.viewer?.imageGenerationResults, dispatch])
 
   const [createWork, { loading: isCreatedLoading }] =
-    useMutation(createWorkMutation)
+    useMutation(CreateWorkMutation)
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
@@ -539,7 +542,11 @@ export default function NewImage() {
   )
 }
 
-const viewerQuery = graphql(
+export const meta: MetaFunction = () => {
+  return createMeta(META.NEW_IMAGE)
+}
+
+const ViewerQuery = graphql(
   `query ViewerQuery(
     $limit: Int!,
     $offset: Int!,
@@ -550,6 +557,7 @@ const viewerQuery = graphql(
     $startAt: String
     $startDate: String
     $endDate: String
+    $endAt: String
   ) {
     viewer {
       id
@@ -560,10 +568,67 @@ const viewerQuery = graphql(
         hasSignedImageGenerationTerms
       }
       currentPass {
-        ...PassFields
+        id
+        type
+        payment {
+          id
+          amount
+          stripePaymentIntentId
+        }
+        isDisabled
+        periodStart
+        periodEnd
+        trialPeriodStart
+        trialPeriodEnd
+        createdAt
+        price
       }
       imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
-        ...ImageGenerationResultFields
+        id
+        prompt
+        negativePrompt
+        seed
+        steps
+        scale
+        sampler
+        clipSkip
+        sizeType
+        t2tImageUrl
+        t2tMaskImageUrl
+        t2tDenoisingStrengthSize
+        t2tInpaintingFillSize
+        rating
+        completedAt
+        isProtected
+        generationType
+        postModelId
+        modelHash
+        model {
+          id
+          name
+          type
+        }
+        vae
+        nanoid
+        status
+        estimatedSeconds
+        controlNetControlMode
+        controlNetEnabled
+        controlNetGuidanceEnd
+        controlNetGuidanceStart
+        controlNetPixelPerfect
+        controlNetProcessorRes
+        controlNetResizeMode
+        controlNetThresholdA
+        controlNetThresholdB
+        controlNetWeight
+        controlNetModule
+        controlNetModel
+        controlNetSaveDetectedMap
+        controlNetHrOption
+        upscaleSize
+        imageUrl
+        thumbnailUrl
       }
     }
     albums(
@@ -576,13 +641,45 @@ const viewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      ...PartialAlbumFields
+      id
+      title
+      isSensitive
+      likesCount
+      viewsCount
+      thumbnailImageURL
+      description
+      works(limit: $limit, offset: $offset) {
+        id
+        title
+        imageURL
+        largeThumbnailImageURL
+        smallThumbnailImageURL
+        accessType
+        rating
+        createdAt
+      }
+      rating
+      createdAt
+      slug
+      userId
       user {
-        ...PartialUserFields
+        id
+        nanoid
+        login
+        name
+        iconUrl
+        isFollowee
+        isFollower
+        iconUrl
       }
     }
     aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
+      id
+      name
+      type
+      generationModelId
+      workModelId
+      thumbnailImageURL
     }
     dailyThemes(
       limit: 8,
@@ -600,6 +697,7 @@ const viewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
+        endAt: $endAt,
       }
     ) {
       id
@@ -610,16 +708,9 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [
-    aiModelFieldsFragment,
-    partialAlbumFieldsFragment,
-    partialUserFieldsFragment,
-    passFieldsFragment,
-    imageGenerationResultFieldsFragment,
-  ],
 )
 
-const createWorkMutation = graphql(
+const CreateWorkMutation = graphql(
   `mutation CreateWork($input: CreateWorkInput!) {
     createWork(input: $input) {
       id

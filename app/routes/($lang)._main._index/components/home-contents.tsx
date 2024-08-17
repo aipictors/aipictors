@@ -31,6 +31,8 @@ import {
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
+import { FeedContents } from "~/routes/($lang)._main._index/components/feed-contents"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -48,6 +50,7 @@ type homeParticles = {
 type Props = {
   homeParticles?: homeParticles
   isSensitive?: boolean
+  isCropped?: boolean
 }
 
 const useUpdateQueryParams = () => {
@@ -68,9 +71,14 @@ export function HomeContents(props: Props) {
   const [isMounted, setIsMounted] = useState(false)
 
   const [newWorksPage, setNewWorksPage] = useState(0)
+
+  const [feedPage, setFeedPage] = useState(0)
+
   const [workType, setWorkType] =
     useState<IntrospectionEnum<"WorkType"> | null>(null)
+
   const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
+
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
@@ -179,11 +187,19 @@ export function HomeContents(props: Props) {
       className="space-y-4"
     >
       <TabsList>
-        <TabsTrigger value="home">ホーム</TabsTrigger>
-        <TabsTrigger value="new">新着・人気</TabsTrigger>
-        <TabsTrigger value="timeline">タイムライン</TabsTrigger>
+        <TabsTrigger value="home">{"ホーム"}</TabsTrigger>
+        <TabsTrigger value="new">{"新着・人気"}</TabsTrigger>
+        <TabsTrigger value="timeline">
+          <div className="flex items-center space-x-2">
+            <p>{"タイムライン"}</p>
+            <CrossPlatformTooltip
+              text={
+                "フォローしたユーザ、お気に入り登録したタグの新着作品が表示されます"
+              }
+            />
+          </div>
+        </TabsTrigger>
       </TabsList>
-
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
         {props.homeParticles && (
           <>
@@ -197,11 +213,13 @@ export function HomeContents(props: Props) {
               tag={props.homeParticles.firstTag}
               works={props.homeParticles.firstTagWorks}
               isSensitive={props.isSensitive}
+              isCropped={props.isCropped}
             />
             <HomeWorksTagSection
               tag={props.homeParticles.secondTag}
               works={props.homeParticles.secondTagWorks}
               isSensitive={props.isSensitive}
+              isCropped={props.isCropped}
             />
             <HomeAwardWorkSection
               awardDateText={props.homeParticles.awardDateText}
@@ -299,11 +317,11 @@ export function HomeContents(props: Props) {
       </TabsContent>
 
       <TabsContent value="timeline">
-        <div className="flex h-32 items-center justify-center text-center">
-          {"😢"}
-          <br />
-          {"ごめんなさい！工事中です！"}
-        </div>
+        <FeedContents
+          isSensitive={props.isSensitive}
+          page={feedPage}
+          setPage={setFeedPage}
+        />
       </TabsContent>
     </Tabs>
   )
