@@ -214,7 +214,7 @@ const query = graphql(
       ...HomeWorkAward
     }
     recommendedTags: recommendedTags(
-      limit: 8
+      limit: 16
       where: {
         isSensitive: true
       }
