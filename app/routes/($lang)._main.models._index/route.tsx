@@ -1,12 +1,14 @@
 import { ArticlePage } from "~/components/page/article-page"
 import { createClient } from "~/lib/client"
-import { GoogleAdsense } from "~/routes/($lang)._main._index/components/google-adsense"
 import {
   imageModelCardFragment,
   ImageModelList,
 } from "~/routes/($lang)._main.models._index/components/image-model-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import type { MetaFunction } from "@remix-run/cloudflare"
+import { createMeta } from "~/utils/create-meta"
+import { META } from "~/config"
 
 /**
  * モデルの一覧
@@ -16,12 +18,19 @@ export async function loader() {
 
   const resp = await client.query({
     query: imageModelsQuery,
-    variables: {},
+    variables: {
+      limit: 64,
+      offset: 0,
+    },
   })
 
   return json({
     imageModels: resp.data.imageModels,
   })
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.MODELS)
 }
 
 export default function ModelsPage() {
@@ -30,7 +39,6 @@ export default function ModelsPage() {
   return (
     <ArticlePage>
       <ImageModelList imageModels={data.imageModels} />
-      <GoogleAdsense slot={"5201832236"} format={"auto"} responsive={"true"} />
     </ArticlePage>
   )
 }

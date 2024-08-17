@@ -8,7 +8,7 @@ type Props = {
   albums: FragmentOf<typeof partialAlbumFieldsFragment>[]
 }
 
-export const UserAlbumList = (props: Props) => {
+export function UserAlbumList(props: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">

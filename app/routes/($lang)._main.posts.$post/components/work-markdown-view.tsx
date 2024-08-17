@@ -13,7 +13,7 @@ type Props = {
   title: string
 }
 
-export const WorkMarkdownView = (props: Props) => {
+export function WorkMarkdownView(props: Props) {
   const editor = useEditor({
     editable: false,
     editorProps: {

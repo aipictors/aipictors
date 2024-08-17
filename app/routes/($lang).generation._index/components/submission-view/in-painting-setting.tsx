@@ -7,7 +7,7 @@ type Props = {
   onChangeDenoisingStrengthSize(value: string): void
 }
 
-export const InPaintingSetting = (props: Props) => {
+export function InPaintingSetting(props: Props) {
   const handleRadioChange = (value: string) => {
     props.onChangeMaskType(value)
   }

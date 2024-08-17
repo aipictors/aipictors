@@ -17,7 +17,7 @@ export const meta: MetaFunction = () => {
   return createMeta(META.HOME_SENSITIVE)
 }
 
-export const dateToText = (date: Date) => {
+export function dateToText(date: Date) {
   return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join("/")
 }
 

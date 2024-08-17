@@ -10,7 +10,7 @@ type Props = {
 /**
  * 画像生成の削除ボタン
  */
-export const GenerationTaskDeleteButton = (props: Props) => {
+export function GenerationTaskDeleteButton(props: Props) {
   return (
     <button
       disabled={props.isDeletedLoading}

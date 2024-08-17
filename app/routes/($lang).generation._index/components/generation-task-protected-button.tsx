@@ -16,7 +16,7 @@ type Props = {
 /**
  * 画像生成の履歴の保護ボタン
  */
-export const GenerationTaskProtectedButton = (props: Props) => {
+export function GenerationTaskProtectedButton(props: Props) {
   const [mutation, { loading: isLoading }] = useMutation(
     updateProtectedImageGenerationResultMutation,
   )

@@ -6,7 +6,7 @@ type Props = ButtonProps
 /**
  * Instagram
  */
-export const SocialInstagramButton = (props: Props) => {
+export function SocialInstagramButton(props: Props) {
   return (
     <Button aria-label={"instagram"} size={"icon"} {...props}>
       <RiInstagramLine />

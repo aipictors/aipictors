@@ -21,7 +21,7 @@ type Props = {
 /**
  * 推薦作品一覧テーブルの項目
  */
-export const RecommendedWorksListTableRow = (props: Props) => {
+export function RecommendedWorksListTableRow(props: Props) {
   return (
     <>
       <TableRow>

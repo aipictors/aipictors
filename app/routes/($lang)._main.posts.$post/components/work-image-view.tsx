@@ -7,7 +7,7 @@ type Props = {
   subWorkImageURLs: string[]
 }
 
-export const WorkImageView = ({ workImageURL, subWorkImageURLs }: Props) => {
+export function WorkImageView({ workImageURL, subWorkImageURLs }: Props) {
   const allImageURLs = workImageURL
     ? [workImageURL, ...subWorkImageURLs]
     : subWorkImageURLs

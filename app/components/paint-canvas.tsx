@@ -51,7 +51,7 @@ interface CanvasState {
  * ペイント機能を提供する、ツールバーも提供する
  * TODO: コンポーネントを分割する
  */
-export const PaintCanvas = (props: Props) => {
+export function PaintCanvas(props: Props) {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const brushCanvasRef = useRef<HTMLCanvasElement | null>(null)

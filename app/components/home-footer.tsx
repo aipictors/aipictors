@@ -4,7 +4,7 @@ import { Link } from "@remix-run/react"
 /**
  * フッター
  */
-export const HomeFooter = () => {
+export function HomeFooter() {
   return (
     <footer className={cn("container max-w-none", "space-y-2 border-t py-4")}>
       <div className="flex flex-col gap-x-2 gap-y-2 md:flex-row">

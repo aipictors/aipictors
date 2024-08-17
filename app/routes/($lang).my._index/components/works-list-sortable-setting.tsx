@@ -22,7 +22,7 @@ type Props = {
 /**
  * 作品一覧
  */
-export const WorksListSortableSetting = (props: Props) => {
+export function WorksListSortableSetting(props: Props) {
   const getLabel = (nowOrderBy: IntrospectionEnum<"WorkOrderBy">) => {
     switch (nowOrderBy) {
       case "LIKES_COUNT":

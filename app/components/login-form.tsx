@@ -22,7 +22,7 @@ type Props = {
 /**
  * ログイン
  */
-export const LoginDialog = (props: Props) => {
+export function LoginDialog(props: Props) {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )

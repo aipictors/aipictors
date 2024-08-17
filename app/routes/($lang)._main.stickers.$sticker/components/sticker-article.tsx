@@ -28,7 +28,7 @@ type Props = {
   }
 }
 
-export const StickerArticle = (props: Props) => {
+export function StickerArticle(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: recommendedWorksResp } = useQuery(stickerQuery, {

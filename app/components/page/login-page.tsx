@@ -19,7 +19,7 @@ import { toast } from "sonner"
 /**
  * ログインページ
  */
-export const LoginPage = () => {
+export function LoginPage() {
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )

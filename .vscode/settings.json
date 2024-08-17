@@ -59,6 +59,7 @@
   },
   "search.exclude": {
     "*.lock": true,
+    "app/graphql-env.d.ts": true,
     "package-lock.json": true,
     "public": true
   },

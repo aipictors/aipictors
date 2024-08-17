@@ -7,7 +7,7 @@ import {
 
 type Props = { name: string }
 
-export const NegativePromptCategoryIcon = (props: Props) => {
+export function NegativePromptCategoryIcon(props: Props) {
   const categoryIcons = new Map([
     ["汎用", BookTextIcon],
     ["手の崩れ予防", HandIcon],

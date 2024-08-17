@@ -9,7 +9,7 @@ type Props = {
 /**
  * 関連リンク入力
  */
-export const PostFormItemRelatedLink = (props: Props) => {
+export function PostFormItemRelatedLink(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

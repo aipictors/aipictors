@@ -48,7 +48,7 @@ type Props = {
 /**
  * 履歴の操作
  */
-export const GenerationTaskListActions = (props: Props) => {
+export function GenerationTaskListActions(props: Props) {
   const [deleteTask] = useMutation(deleteImageGenerationResultMutation)
 
   const [isAllSelected, setIsAllSelected] = useState(false)

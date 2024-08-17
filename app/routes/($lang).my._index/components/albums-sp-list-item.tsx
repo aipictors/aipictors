@@ -21,7 +21,7 @@ type Props = {
 /**
  * スマホ向けシリーズ一覧のアイテム
  */
-export const AlbumsSpListItem = (props: Props) => {
+export function AlbumsSpListItem(props: Props) {
   const [deleteWork, { loading: isLoadingDeleteAlbum }] =
     useMutation(deleteWorkMutation)
 

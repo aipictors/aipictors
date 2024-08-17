@@ -6,7 +6,7 @@ type Props = {
   message: FragmentOf<typeof SenderMessageFragment>
 }
 
-export const SenderMessage = (props: Props) => {
+export function SenderMessage(props: Props) {
   return (
     <div className="flex justify-end">
       <div className="flex max-w-sm flex-col gap-y-2">

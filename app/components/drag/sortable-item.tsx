@@ -23,7 +23,7 @@ type Props = {
  * ドラッグ可能なアイテム
  * @param props
  */
-export const SortableItem = ({ item, ...props }: Props) => {
+export function SortableItem({ item, ...props }: Props) {
   if (!item.content) {
     return null
   }

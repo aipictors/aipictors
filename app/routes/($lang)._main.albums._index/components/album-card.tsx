@@ -1,6 +1,6 @@
 import { Card, CardHeader } from "~/components/ui/card"
 
-export const AlbumCard = () => {
+export function AlbumCard() {
   return (
     <Card>
       <CardHeader>

@@ -8,7 +8,7 @@ type Props = {
 /**
  * レスポンシブ対応のフォルダ一覧
  */
-export const ResponsiveFoldersList = (props: Props) => {
+export function ResponsiveFoldersList(props: Props) {
   return (
     <div className="h-16 w-32 overflow-hidden rounded-md md:h-32 md:w-64">
       <div className="box-border flex flex-col justify-end">

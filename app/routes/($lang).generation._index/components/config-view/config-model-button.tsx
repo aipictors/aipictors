@@ -13,7 +13,7 @@ type Props = {
   onSearchClick(): void
 }
 
-export const ConfigModelButton = (props: Props) => {
+export function ConfigModelButton(props: Props) {
   return (
     <div className="relative">
       <Button

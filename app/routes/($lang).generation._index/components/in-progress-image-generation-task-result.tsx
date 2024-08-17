@@ -29,7 +29,7 @@ type Props = {
 /**
  * 生成中の履歴詳細
  */
-export const InProgressImageGenerationTaskResult = (props: Props) => {
+export function InProgressImageGenerationTaskResult(props: Props) {
   if (props.task === undefined) return null
 
   const generationSize: GenerationSize = parseGenerationSize(

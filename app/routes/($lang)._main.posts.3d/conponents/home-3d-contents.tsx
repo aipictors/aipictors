@@ -44,7 +44,7 @@ const useUpdateQueryParams = () => {
 /**
  * 3Dホームのコンテンツ一覧
  */
-export const Home3dContents = (props: Props) => {
+export function Home3dContents(props: Props) {
   const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
 

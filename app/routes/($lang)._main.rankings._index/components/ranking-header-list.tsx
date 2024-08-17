@@ -1,7 +1,7 @@
 import {} from "@remix-run/react"
 import { Button } from "~/components/ui/button"
 
-export const RankingHeaderList = () => {
+export function RankingHeaderList() {
   return (
     <div className="flex justify-center space-x-2">
       <Button variant="secondary">{"デイリー"}</Button>

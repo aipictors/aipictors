@@ -20,7 +20,7 @@ type Props = {
   isSensitive?: boolean
 }
 
-export const UserFoldersContents = (props: Props) => {
+export function UserFoldersContents(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: foldersResp, refetch } = useSuspenseQuery(foldersQuery, {

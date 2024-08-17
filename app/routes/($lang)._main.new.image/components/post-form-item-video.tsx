@@ -19,7 +19,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const PostFormItemVideo = (props: Props) => {
+export function PostFormItemVideo(props: Props) {
   // ファイルの最大サイズ(バイト単位)
   const maxSize = 32 * 1024 * 1024
 

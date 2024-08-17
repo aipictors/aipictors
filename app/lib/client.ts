@@ -49,7 +49,7 @@ const contextSetter: ContextSetter = async (_, context) => {
 
 const authLink = setContext(contextSetter)
 
-export const createClient = () => {
+export function createClient() {
   const cache = new InMemoryCache({
     typePolicies: typePolicies,
   })

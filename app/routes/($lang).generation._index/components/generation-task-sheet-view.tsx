@@ -31,7 +31,7 @@ type Props = {
  * 生成情報をクリップボードにコピーする
  * @param generationParameters
  */
-export const copyGeneration = (generationParameters: GenerationParameters) => {
+export function copyGeneration(generationParameters: GenerationParameters) {
   const text = `${generationParameters.prompt}\nNegative prompt:${generationParameters.negativePrompt},\nSteps:${generationParameters.steps}, Size:${generationParameters.width}x${generationParameters.height}, Seed:${generationParameters.seed}, Model:${generationParameters.modelName}, Sampler:${generationParameters.sampler}, CFG scale:${generationParameters.scale}`
 
   navigator.clipboard
@@ -48,7 +48,7 @@ export const copyGeneration = (generationParameters: GenerationParameters) => {
  * URLをクリップボードにコピーする
  * @param generationParameters
  */
-export const copyUrl = (taskId: string) => {
+export function copyUrl(taskId: string) {
   const sitUrl = config.siteURL
   const text = `${sitUrl}/generation/tasks/${taskId}`
 

@@ -21,7 +21,7 @@ type Props = {
 /**
  * ブックマーク作品一覧テーブルの項目
  */
-export const BookmarkWorksListTableRow = (props: Props) => {
+export function BookmarkWorksListTableRow(props: Props) {
   return (
     <>
       <TableRow>

@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react"
 
-export const PlusNoteList = () => {
+export function PlusNoteList() {
   return (
     <ul className="ml-6 list-disc space-y-2">
       <li>

@@ -9,7 +9,7 @@ type Props = {
   recipientIconImageURL: string
 }
 
-export const RecipientMessage = (props: Props) => {
+export function RecipientMessage(props: Props) {
   return (
     <div className="flex items-start space-x-4">
       <Avatar>

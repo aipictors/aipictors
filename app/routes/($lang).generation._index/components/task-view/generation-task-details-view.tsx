@@ -6,7 +6,7 @@ import { GenerationConfigContext } from "~/routes/($lang).generation._index/cont
 /**
  * 生成履歴詳細
  */
-export const GenerationTaskDetailsView = () => {
+export function GenerationTaskDetailsView() {
   const { send } = GenerationConfigContext.useActorRef()
 
   const onCancel = () => {

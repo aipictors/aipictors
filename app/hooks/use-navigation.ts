@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-export const useNavigation = () => {
+export function useNavigation() {
   const [flag, setFlag] = useState(true)
 
   useEffect(() => {

@@ -23,7 +23,7 @@ type Props = {
 /**
  * 作品へ投稿しているユーザの投稿数、フォロワ数、フォローするボタン等の情報
  */
-export const WorkUser = (props: Props) => {
+export function WorkUser(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useQuery(userFolloweesQuery, {

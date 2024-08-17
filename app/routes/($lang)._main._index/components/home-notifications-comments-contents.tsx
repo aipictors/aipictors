@@ -17,7 +17,7 @@ type Props = {
 /**
  * ヘッダーのお知らせメニューのコメントタブ
  */
-export const HomeNotificationCommentsContents = (props: Props) => {
+export function HomeNotificationCommentsContents(props: Props) {
   const result = useSuspenseQuery(viewerNotificationsQuery, {
     variables: {
       offset: 0,

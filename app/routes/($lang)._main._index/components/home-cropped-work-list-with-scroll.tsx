@@ -13,7 +13,7 @@ type Props = {
 /**
  * クロップ済み作品一覧
  */
-export const HomeCroppedWorkListWithScroll = (props: Props) => {
+export function HomeCroppedWorkListWithScroll(props: Props) {
   if (props.works === null || props.works.length === 0) {
     return null
   }

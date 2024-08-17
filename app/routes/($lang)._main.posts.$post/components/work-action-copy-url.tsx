@@ -8,7 +8,7 @@ type Props = {
   currentUrl: string
 }
 
-export const CopyWorkUrlButton = ({ currentUrl }: Props) => {
+export function CopyWorkUrlButton({ currentUrl }: Props) {
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl)

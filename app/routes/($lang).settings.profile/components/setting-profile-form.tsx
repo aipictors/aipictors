@@ -17,7 +17,7 @@ import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fiel
 /**
  * プロフィール設定フォーム
  */
-export const SettingProfileForm = () => {
+export function SettingProfileForm() {
   const authContext = useContext(AuthContext)
 
   const { data: user } = useSuspenseQuery(userQuery, {

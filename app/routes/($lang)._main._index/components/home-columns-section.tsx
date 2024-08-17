@@ -19,7 +19,7 @@ type Props = {
 /**
  * 小説作品一覧
  */
-export const HomeColumnsSection = (props: Props) => {
+export function HomeColumnsSection(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: novelWorks } = useQuery(WorksQuery, {

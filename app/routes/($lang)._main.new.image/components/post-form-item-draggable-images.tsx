@@ -34,7 +34,7 @@ type Props = {
  * @param props
  * @returns
  */
-export const PostFormItemDraggableImages = (props: Props) => {
+export function PostFormItemDraggableImages(props: Props) {
   // 先頭の画像
   const [nowHeadImageBase64, setNowHeadImageBase64] = useState("")
 

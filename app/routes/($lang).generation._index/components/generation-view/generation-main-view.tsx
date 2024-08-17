@@ -17,7 +17,7 @@ type Props = {
 /**
  * 画像生画面のメイン部分
  */
-export const GenerationMainView = (props: Props) => {
+export function GenerationMainView(props: Props) {
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })

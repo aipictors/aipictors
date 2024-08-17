@@ -19,7 +19,7 @@ type Props = {
 /**
  * 認証ダイアログ
  */
-export const VerificationDialog = (props: Props) => {
+export function VerificationDialog(props: Props) {
   const { data: verificationUrlRet, refetch: verificationUrlRefetch } =
     useQuery(verificationUrlQuery)
 

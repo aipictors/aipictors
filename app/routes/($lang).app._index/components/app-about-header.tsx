@@ -1,7 +1,7 @@
 import { AppCanvas } from "~/routes/($lang).app._index/components/app-canvas"
 import { Link } from "@remix-run/react"
 
-export const AppAboutHeader = () => {
+export function AppAboutHeader() {
   return (
     <div className="relative mx-auto w-full px-4 pb-32">
       <div className="absolute inset-0 top-[-8%] z-[-1] h-full w-full opacity-20">

@@ -18,7 +18,7 @@ type Props = {
   thumbnail?: string
 }
 
-export const AlbumArticleHeader = (props: Props) => {
+export function AlbumArticleHeader(props: Props) {
   const workIds = props.album.workIds.map((work) => work.toString())
 
   const authContext = useContext(AuthContext)

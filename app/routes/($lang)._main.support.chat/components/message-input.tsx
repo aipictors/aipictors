@@ -9,7 +9,7 @@ type Props = {
   onSubmit(message: string): void
 }
 
-export const MessageInput = (props: Props) => {
+export function MessageInput(props: Props) {
   const [message, setMessage] = useState("")
 
   const [selectedImages, setSelectedImages] = useState<string[]>([])

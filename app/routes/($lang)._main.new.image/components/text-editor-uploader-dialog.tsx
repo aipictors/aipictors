@@ -16,7 +16,7 @@ type Props = {
 /**
  * テキスト入力時の画像アップローダー
  */
-export const TextEditorUploaderDialog = (props: Props) => {
+export function TextEditorUploaderDialog(props: Props) {
   const [imageBase64, setImageBase64] = useState<string | null>(null)
 
   const [isOpen, setIsOpen] = useState(false)

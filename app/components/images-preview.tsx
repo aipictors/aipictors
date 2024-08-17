@@ -10,7 +10,7 @@ type Props = {
   setCurrentIndex: (index: number) => void
 }
 
-export const ImagesPreview = (props: Props) => {
+export function ImagesPreview(props: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })

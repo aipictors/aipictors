@@ -15,7 +15,7 @@ type Props = {
   onClose(): void
 }
 
-export const SearchConfigDialog = (props: Props) => {
+export function SearchConfigDialog(props: Props) {
   return (
     <Dialog
       open={props.isOpen}

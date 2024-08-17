@@ -24,7 +24,7 @@ type Props = {
 /**
  * スタンプ情報ダイアログ
  */
-export const StickerInfoDialog = (props: Props) => {
+export function StickerInfoDialog(props: Props) {
   const [createUserSticker, { loading: isCreatingUserSticker }] = useMutation(
     createUserStickerMutation,
   )

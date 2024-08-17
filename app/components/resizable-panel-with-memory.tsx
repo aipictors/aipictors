@@ -4,22 +4,22 @@ import { ResizablePanel } from "~/components/ui/resizable"
 import { getCookie } from "~/utils/get-cookie"
 import { setCookie } from "~/utils/set-cookie"
 
+type Props = React.ComponentProps<
+  typeof ResizablePrimitive.PanelResizeHandle
+> & {
+  withHandle?: boolean
+}
+
 /**
  * リサイザーパネルのサイズ記憶付きハンドル
  * id（一意）を指定することでCookieにサイズを保存
  */
-export const ResizablePanelWithMemory = ({
-  id,
-  className,
-  children,
-}: React.ComponentProps<typeof ResizablePrimitive.PanelResizeHandle> & {
-  withHandle?: boolean
-}) => {
+export function ResizablePanelWithMemory(props: Props) {
   /**
    * Cookieからサイズを取得
    */
   const getCookieValue = () => {
-    const size = getCookie(`size-${id}`)
+    const size = getCookie(`size-${props.id}`)
     if (size === null) {
       return undefined
     }
@@ -31,7 +31,7 @@ export const ResizablePanelWithMemory = ({
    */
   const handleResizeStop = (event: number) => {
     if (event !== 0) {
-      setCookie(`size-${id}`, event)
+      setCookie(`size-${props.id}`, event)
     }
   }
 
@@ -41,9 +41,9 @@ export const ResizablePanelWithMemory = ({
       onResize={(event) => {
         handleResizeStop(event)
       }}
-      className={cn(className)}
+      className={cn(props.className)}
     >
-      {children}
+      {props.children}
     </ResizablePanel>
   )
 }

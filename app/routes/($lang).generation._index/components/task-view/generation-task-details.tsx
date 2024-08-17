@@ -11,7 +11,7 @@ import { useCachedImageGenerationResult } from "~/routes/($lang).generation._ind
 /**
  * 画像生成履歴の詳細
  */
-export const GenerationTaskDetails = () => {
+export function GenerationTaskDetails() {
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)

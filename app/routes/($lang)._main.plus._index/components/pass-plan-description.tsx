@@ -21,7 +21,7 @@ type Props = {
   onClick(): Promise<void>
 }
 
-export const PassPlanDescription = (props: Props) => {
+export function PassPlanDescription(props: Props) {
   return (
     <Card className={cn("h-full", props.isPrimary && "border-blue-500")}>
       <CardHeader className="space-y-2">

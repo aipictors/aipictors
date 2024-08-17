@@ -11,7 +11,7 @@ type Props = {
 /**
  * レスポンシブ対応のアルバム一覧
  */
-export const ResponsiveAlbumsList = (props: Props) => {
+export function ResponsiveAlbumsList(props: Props) {
   return (
     <div
       key={props.album.id}

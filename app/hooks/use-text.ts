@@ -1,6 +1,6 @@
 import { useLocale } from "~/hooks/use-locale"
 
-export const useText = () => {
+export function useText() {
   const locale = useLocale()
 
   /**

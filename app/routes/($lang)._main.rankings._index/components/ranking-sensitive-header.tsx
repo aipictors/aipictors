@@ -12,7 +12,7 @@ type Props = {
   weekIndex: number | null
 }
 
-export const RankingSensitiveHeader = (props: Props) => {
+export function RankingSensitiveHeader(props: Props) {
   const [year, setYear] = useState(props.year)
   const [month, setMonth] = useState(props.month)
   const [day, setDay] = useState(props.day)

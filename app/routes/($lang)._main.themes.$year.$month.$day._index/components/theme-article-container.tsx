@@ -15,7 +15,7 @@ type Props = {
   themeId: string
 }
 
-export const ThemeArticleContainer = (props: Props) => {
+export function ThemeArticleContainer(props: Props) {
   return (
     <article>
       <ThemeArticle

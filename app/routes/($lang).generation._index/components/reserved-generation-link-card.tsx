@@ -14,7 +14,7 @@ type Props = {
 /**
  * 生成予約の履歴
  */
-export const ReservedGenerationLinkCard = (props: Props) => {
+export function ReservedGenerationLinkCard(props: Props) {
   const [cancelReservedTask, { loading: isCancelingReservedTask }] =
     useMutation(cancelImageGenerationReservedTaskMutation)
 

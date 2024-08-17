@@ -14,7 +14,7 @@ type Props = {
 /**
  * スタンプボタン
  */
-export const StickerButton = (props: Props) => {
+export function StickerButton(props: Props) {
   if (!props.imageUrl) {
     return null
   }

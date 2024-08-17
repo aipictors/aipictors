@@ -6,7 +6,7 @@ import {
   UserIcon,
 } from "lucide-react"
 
-export const AccountRouteList = () => {
+export function AccountRouteList() {
   return (
     <div className="space-y-1">
       <HomeNavigationButton href={"/"} icon={ArrowLeftIcon}>

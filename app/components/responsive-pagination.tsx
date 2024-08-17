@@ -17,13 +17,13 @@ type Props = {
 /**
  * レスポンシブ対応のページネーション
  */
-export const ResponsivePagination = ({
+export function ResponsivePagination({
   maxCount,
   perPage,
   currentPage,
   onPageChange,
   isActiveButtonStyle,
-}: Props) => {
+}: Props) {
   const pageCount = Math.ceil(maxCount / perPage) // 総ページ数の計算
 
   const currentPageIndex =

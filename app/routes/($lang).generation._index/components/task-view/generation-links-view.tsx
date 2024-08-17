@@ -5,7 +5,7 @@ import { Link } from "@remix-run/react"
 /**
  * リンク
  */
-export const GenerationLinksView = () => {
+export function GenerationLinksView() {
   const context = useGenerationContext()
 
   const isNonSubscription = !context.currentPass

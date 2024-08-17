@@ -11,7 +11,7 @@ type Props = {
   hideSubmitButton?: boolean
 }
 
-export const PlusAbout = (props: Props) => {
+export function PlusAbout(props: Props) {
   const [mutation, { loading: isLoading }] = useMutation(
     createPassCheckoutSessionMutation,
   )

@@ -8,7 +8,7 @@ type Props = {
   works: FragmentOf<typeof FolloweeListItemWorkFragment>[]
 }
 
-export const FollowingUserItem = (props: Props) => {
+export function FollowingUserItem(props: Props) {
   const MAX_LENGTH = 40 // Set your desired maximum length
 
   const truncateText = (text: string, maxLength: number) => {

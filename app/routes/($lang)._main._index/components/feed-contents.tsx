@@ -22,7 +22,7 @@ type Props = {
   setPage: (page: number) => void
 }
 
-export const FeedContents = (props: Props) => {
+export function FeedContents(props: Props) {
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) {

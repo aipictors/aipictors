@@ -7,7 +7,7 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Suspense, useState } from "react"
 
-export const NotificationListContents = () => {
+export function NotificationListContents() {
   const [notifyType, setNotifyType] =
     useState<IntrospectionEnum<"NotificationType"> | null>("LIKED_WORK")
 

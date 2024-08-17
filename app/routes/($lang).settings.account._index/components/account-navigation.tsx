@@ -1,7 +1,7 @@
 import { useBreakpoint } from "~/hooks/use-breakpoint"
 import { AccountRouteList } from "~/routes/($lang).settings.account/components/account-route-list"
 
-export const AccountNavigation = () => {
+export function AccountNavigation() {
   const breakpoint = useBreakpoint()
 
   if (breakpoint !== "base" && breakpoint !== "sm") {

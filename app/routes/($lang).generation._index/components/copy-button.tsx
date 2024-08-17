@@ -7,7 +7,7 @@ type Props = {
   disabled?: boolean
 }
 
-export const CopyButton = (props: Props) => {
+export function CopyButton(props: Props) {
   const copyToClipboard = () => {
     navigator.clipboard
       .writeText(props.text)

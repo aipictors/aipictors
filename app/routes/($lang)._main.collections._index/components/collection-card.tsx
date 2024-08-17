@@ -1,6 +1,6 @@
 import { Card, CardHeader } from "~/components/ui/card"
 
-export const CollectionCard = () => {
+export function CollectionCard() {
   return (
     <Card>
       <CardHeader>

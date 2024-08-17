@@ -12,7 +12,7 @@ type Props = {
 /**
  * 投稿者への支援ボタン
  */
-export const PromptonRequestColorfulButton = (props: Props) => {
+export function PromptonRequestColorfulButton(props: Props) {
   const authContext = useContext(AuthContext)
 
   if (authContext.userId === props.targetUserId) {

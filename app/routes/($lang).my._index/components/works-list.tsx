@@ -38,7 +38,7 @@ type Props = {
 /**
  * 作品一覧
  */
-export const WorksList = (props: Props) => {
+export function WorksList(props: Props) {
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }

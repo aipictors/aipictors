@@ -11,7 +11,7 @@ type Props = Readonly<{
 /**
  * ダッシュボードコンテンツ
  */
-export const MyContents = (props: Props) => {
+export function MyContents(props: Props) {
   const authContext = useContext(AuthContext)
   const location = useLocation()
 

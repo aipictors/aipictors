@@ -34,7 +34,7 @@ type Props = {
 /**
  * 指定された要素をドラッグで並び替えできるようにする
  */
-export const SortableItems = (props: Props) => {
+export function SortableItems(props: Props) {
   const [activeItem, setActiveItem] = useState<TSortableItem>()
   const [isDragging, setIsDragging] = useState(false)
 

@@ -11,7 +11,7 @@ import {
   FollowerListItemWorkFragment,
 } from "~/routes/($lang).followers._index/components/follower-user-item"
 
-export const FollowingList = () => {
+export function FollowingList() {
   const [page, setPage] = React.useState(0)
 
   const authContext = useContext(AuthContext)

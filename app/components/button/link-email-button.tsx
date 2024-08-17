@@ -6,7 +6,7 @@ type Props = ButtonProps
 /**
  * メールリンク
  */
-export const LinkEmailButton = (props: Props) => {
+export function LinkEmailButton(props: Props) {
   return (
     <Button aria-label={"email"} size={"icon"} {...props}>
       <MailIcon />

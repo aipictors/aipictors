@@ -1,7 +1,7 @@
 import { cn } from "~/lib/cn"
 import { Link } from "@remix-run/react"
 
-export const AppFooter = () => {
+export function AppFooter() {
   return (
     <footer className={cn("container max-w-none", "space-y-2 border-t py-4")}>
       <div className="flex flex-col md:flex-row">

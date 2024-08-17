@@ -22,7 +22,7 @@ type Props = {
   onClose(): void
 }
 
-export const LoraModelListDialogButton = (props: Props) => {
+export function LoraModelListDialogButton(props: Props) {
   const { value, setTrue, setFalse } = useBoolean()
 
   return (

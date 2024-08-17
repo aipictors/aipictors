@@ -8,7 +8,7 @@ type Props = {
   nowSortType: string
 }
 
-export const SortListSelector = (props: Props) => {
+export function SortListSelector(props: Props) {
   return (
     <>
       <div className="p-4">
