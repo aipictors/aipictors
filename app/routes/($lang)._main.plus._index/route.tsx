@@ -1,6 +1,13 @@
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { AppPageHeader } from "~/components/app/app-page-header"
+import { META } from "~/config"
 import { PlusForm } from "~/routes/($lang)._main.plus._index/components/plus-form"
 import { PlusNoteList } from "~/routes/($lang)._main.plus._index/components/plus-note-list"
+import { createMeta } from "~/utils/create-meta"
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.PLUS)
+}
 
 /**
  * サブスク

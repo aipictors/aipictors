@@ -6,8 +6,7 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import { ContextProviders } from "~/components/context-providers"
 import { cn } from "~/lib/cn"
-import { config } from "~/config"
-import type { LinksFunction, MetaFunction } from "@remix-run/cloudflare"
+import type { LinksFunction } from "@remix-run/cloudflare"
 import {
   Links,
   Meta,
@@ -31,13 +30,6 @@ export const links: LinksFunction = () => {
   return [
     // tailwind.cssのロード
     { rel: "stylesheet", href: styles, crossOrigin: "anonymous" },
-  ]
-}
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: config.metadata.catchphraseJA },
-    { desc: config.metadata.descriptionJA },
   ]
 }
 

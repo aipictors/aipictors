@@ -8,8 +8,6 @@ import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Separator } from "~/components/ui/separator"
-import { Label } from "~/components/ui/label"
-import { Switch } from "~/components/ui/switch"
 import { graphql } from "gql.tada"
 
 /**
@@ -92,7 +90,7 @@ export const SettingRestrictionForm = () => {
         </ToggleGroup>
       </div>
       <Separator />
-      <div className="flex">
+      {/* <div className="flex">
         <div className="flex w-full items-center justify-between">
           <Label htmlFor="airplane-mode">{"センシティブ画像をぼかす"}</Label>
           <Switch
@@ -101,7 +99,7 @@ export const SettingRestrictionForm = () => {
             id="airplane-mode"
           />
         </div>
-      </div>
+      </div> */}
 
       <Button
         disabled={isUpdatingUserSetting}

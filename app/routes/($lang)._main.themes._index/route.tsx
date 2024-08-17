@@ -1,9 +1,11 @@
 import { AppPageHeader } from "~/components/app/app-page-header"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { json, useLoaderData } from "@remix-run/react"
+import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeList } from "~/routes/($lang)._main.themes._index/components/theme-list"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export async function loader() {
   const client = createClient()
@@ -26,6 +28,10 @@ export async function loader() {
     year,
     month,
   })
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.THEMES)
 }
 
 export default function Themes() {

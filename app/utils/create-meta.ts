@@ -1,31 +1,73 @@
-export const createMeta = (data: MetaData) => {
+import { config, type MetaData } from "~/config"
+
+export const createMeta = (
+  data: MetaData,
+  dynamicData?: { [key: string]: string },
+) => {
+  const replacePlaceholders = (str: string) => {
+    if (!dynamicData) return str
+    return str.replace(/{{(.*?)}}/g, (_, key) => dynamicData[key.trim()] || "")
+  }
+
   const {
     title: metaTitle,
-    description: metaDescription = "",
-    image:
-      metaImage = "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg",
+    description: metaDescription = metadata.descriptionJA,
+    image: metaImage = config.defaultOgpImageUrl,
     isIndex: metaIndex = true,
+    isTop = false,
   } = data
 
+  // テンプレートを動的に置換
+  const title = replacePlaceholders(
+    metaTitle
+      ? `${metaTitle} - ${metadata.nameJA} - ${metadata.catchphraseJA}`
+      : metadata.titleJA,
+  )
+
+  const imageUrl = metaImage?.length
+    ? replacePlaceholders(metaImage)
+    : metaImage
+
+  const description = replacePlaceholders(
+    metaDescription.length > 155
+      ? `${metaDescription.substring(0, 152)}...`
+      : metaDescription,
+  )
+
   const metaTags = [
-    { name: "robots", content: metaIndex ? "index" : "noindex" },
-    { name: "description", content: metaDescription },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
+    { title: title },
+    {
+      name: "robots",
+      content: metaIndex ? "index, follow" : "noindex, nofollow",
+    },
+    { name: "description", content: description },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    { name: "twitter:image", content: imageUrl },
     { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:image", content: imageUrl },
+    { property: "og:site_name", content: metadata.nameJA },
+    { property: "og:type", content: isTop ? "website" : "article" },
+    { property: "og:url", content: "https://www.aipictors.com" },
   ]
 
   return metaTags
 }
 
-export interface MetaData {
-  title: string
-  description?: string
-  image?: string | null
-  isIndex?: boolean
+// サイトのメタ情報
+export const metadata = {
+  nameJA: "Aipictors",
+  nameEN: "Aipictors",
+  get titleJA() {
+    return `${this.nameJA} - ${this.catchphraseJA}`
+  },
+  get titleEN() {
+    return `${this.nameEN} - ${this.catchphraseEN}`
+  },
+  catchphraseJA: "AI画像投稿サイト・生成サイト",
+  catchphraseEN: "AI Illustration & Generation",
+  descriptionJA:
+    "AI画像投稿サイト・生成サイト「Aipictors」で作品を公開してみよう!、AIイラスト・AIフォト・AIグラビア・AI小説・ショート動画投稿サイトです。",
 }

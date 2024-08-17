@@ -1,8 +1,10 @@
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = () => {
-  return [{ title: "本サイトについて" }]
+  return createMeta(META.ABOUT)
 }
 
 /**

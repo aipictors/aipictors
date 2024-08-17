@@ -2,10 +2,12 @@
 import { json, useLoaderData } from "@remix-run/react"
 import { createClient } from "~/lib/client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
+import { createMeta } from "~/utils/create-meta"
+import { META } from "~/config"
 
 export async function loader(params: LoaderFunctionArgs) {
   const client = createClient()
@@ -45,6 +47,10 @@ export async function loader(params: LoaderFunctionArgs) {
     day,
     workAwards: workAwardsResp,
   })
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.RANKINGS)
 }
 
 /**

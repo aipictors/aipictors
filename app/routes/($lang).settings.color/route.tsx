@@ -7,6 +7,13 @@ import { useTheme } from "next-themes"
 import { useState } from "react"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import { Separator } from "~/components/ui/separator"
+import type { MetaFunction } from "@remix-run/cloudflare"
+import { createMeta } from "~/utils/create-meta"
+import { META } from "~/config"
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.SETTINGS_COLOR)
+}
 
 export default function SettingColor() {
   const [activeTab, setActiveTab] = useState<string>("sampleTab1")

@@ -1,6 +1,10 @@
 import React, { useEffect, useReducer, useContext } from "react"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { useBeforeUnload, useSearchParams } from "@remix-run/react"
+import {
+  type MetaFunction,
+  useBeforeUnload,
+  useSearchParams,
+} from "@remix-run/react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { graphql } from "gql.tada"
@@ -27,6 +31,8 @@ import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import type { PNGInfo } from "~/utils/get-extract-info-from-png"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export default function NewImage() {
   const authContext = useContext(AuthContext)
@@ -534,6 +540,10 @@ export default function NewImage() {
       />
     </div>
   )
+}
+
+export const meta: MetaFunction = () => {
+  return createMeta(META.NEW_IMAGE)
 }
 
 const ViewerQuery = graphql(

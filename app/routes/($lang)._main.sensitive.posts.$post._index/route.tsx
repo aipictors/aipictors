@@ -1,14 +1,18 @@
 import { ParamsError } from "~/errors/params-error"
 import { createClient } from "~/lib/client"
-import { sensitiveWorkArticleFragment } from "~/routes/($lang)._main.posts.$post/components/work-article"
+import {
+  sensitiveWorkArticleFragment,
+  type workArticleFragment,
+} from "~/routes/($lang)._main.posts.$post/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post/components/work-container"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { config } from "~/config"
+import { config, META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -76,6 +80,22 @@ export async function loader(props: LoaderFunctionArgs) {
       },
     },
   )
+}
+
+export const meta: MetaFunction = ({ data }) => {
+  if (!data) {
+    return [{ title: "Aipictorsの作品ページ" }]
+  }
+
+  const work = data as { work: FragmentOf<typeof workArticleFragment> }
+
+  return createMeta(META.POSTS, {
+    title: work.work.title,
+    description:
+      work.work.description ||
+      "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
+    url: config.defaultSensitiveOgpImageUrl,
+  })
 }
 
 export default function Work() {
