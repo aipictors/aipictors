@@ -7,7 +7,10 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
-import { PostTextFormInput } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
+import {
+  PostTextFormAiModelFragment,
+  PostTextFormInput,
+} from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { PostTextFormUploader } from "~/routes/($lang)._main.new.image/components/post-text-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
@@ -582,11 +585,7 @@ const viewerQuery = graphql(
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
-      name
-      type
-      generationModelId
-      workModelId
-      thumbnailImageURL
+      ...PostTextFormAiModel
     }
     dailyThemes(
       limit: 8,
@@ -615,6 +614,7 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
+  [PostTextFormAiModelFragment],
 )
 
 const CreateWorkMutation = graphql(

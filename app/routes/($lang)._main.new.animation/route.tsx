@@ -7,7 +7,10 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadPublicVideo } from "~/utils/upload-public-video"
-import { PostAnimationFormInput } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
+import {
+  PostAnimationFormInput,
+  PostAnimationFormAiModelFragment,
+} from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { PostAnimationFormUploader } from "~/routes/($lang)._main.new.animation/components/post-animation-form-uploader"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import { postAnimationFormReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-reducer"
@@ -443,11 +446,7 @@ const ViewerQuery = graphql(
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
-      name
-      type
-      generationModelId
-      workModelId
-      thumbnailImageURL
+      ...PostAnimationFormAiModel
     }
     dailyThemes(
       limit: 8,
@@ -476,6 +475,7 @@ const ViewerQuery = graphql(
       endAt
     }
   }`,
+  [PostAnimationFormAiModelFragment],
 )
 
 const CreateWorkMutation = graphql(

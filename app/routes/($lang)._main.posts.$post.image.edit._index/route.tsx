@@ -9,7 +9,10 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
-import { PostImageFormInput } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
+import {
+  PostImageFormAiModelFragment,
+  PostImageFormInput,
+} from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
@@ -24,7 +27,6 @@ import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditImageFormUploader } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/edit-image-form-uploader"
 import React from "react"
-import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -678,7 +680,8 @@ const viewerQuery = graphql(
       }
     }
     aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
+      id
+      ...PostImageFormAiModel
     }
     dailyThemes(
       limit: 8,
@@ -706,7 +709,11 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [aiModelFieldsFragment, partialAlbumFieldsFragment, passFieldsFragment],
+  [
+    PostImageFormAiModelFragment,
+    partialAlbumFieldsFragment,
+    passFieldsFragment,
+  ],
 )
 
 const workQuery = graphql(
