@@ -45,6 +45,7 @@ export default function Search() {
     <>
       {/* <RelatedTagList /> */}
       {/* <RelatedModelList /> */}
+      <h1 className="font-bold">作品を検索</h1>
       <div className="m-auto md:max-w-96">
         <SearchHeader />
       </div>

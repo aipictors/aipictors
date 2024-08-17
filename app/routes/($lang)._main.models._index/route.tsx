@@ -1,6 +1,5 @@
 import { ArticlePage } from "~/components/page/article-page"
 import { createClient } from "~/lib/client"
-import { GoogleAdsense } from "~/routes/($lang)._main._index/components/google-adsense"
 import {
   imageModelCardFragment,
   ImageModelList,
@@ -30,7 +29,6 @@ export default function ModelsPage() {
   return (
     <ArticlePage>
       <ImageModelList imageModels={data.imageModels} />
-      <GoogleAdsense slot={"5201832236"} format={"auto"} responsive={"true"} />
     </ArticlePage>
   )
 }

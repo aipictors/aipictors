@@ -3,7 +3,6 @@ import { Link } from "@remix-run/react"
 const models = [
   { id: "stable-diffusion-sd", name: "Stable Diffusion", label: "SD" },
   { id: "stable-diffusion-xl", name: "Stable Diffusion XL", label: "XL" },
-  { id: "aipictors", name: "Aipictors生成機能", label: "AP" },
   { id: "nijijourney", name: "niji・journey", label: "NJ" },
   { id: "dalle", name: "Dalle", label: "DA" },
   { id: "midjourney", name: "Midjourney", label: "MJ" },
