@@ -14,11 +14,13 @@ export function HomeRequestCard(props: Props) {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
-        <img
-          className="w-full"
-          src={props.request.firstDeliverable?.file.squareThumbnailImageURL}
-          alt={props.request.firstDeliverable?.id}
-        />
+        <Link to={`/creator/requests/${props.request.id}`}>
+          <img
+            className="w-full"
+            src={props.request.firstDeliverable?.file.squareThumbnailImageURL}
+            alt={props.request.firstDeliverable?.id}
+          />
+        </Link>
         <div className="flex items-center gap-x-2 p-2">
           <Link to={`/users/${props.request.recipient.aipicsUser?.login}`}>
             <Avatar className="h-6 w-6">

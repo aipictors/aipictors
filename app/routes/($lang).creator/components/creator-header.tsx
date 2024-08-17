@@ -10,26 +10,27 @@ export function CreatorHeader() {
   const authContext = useContext(AuthContext)
 
   return (
-    <header className="fixed z-50 w-full bg-card">
-      <div
-        className={cn(
-          "container max-w-none",
-          "flex w-full items-center justify-between gap-x-4 py-4",
-          "px-8",
-        )}
-      >
-        <div className="flex items-center gap-x-4">
-          <HomeIcon />
-          <Link className="items-center space-x-2 md:flex" to="/creator">
-            <h1 className="font-bold">{"支援リクエスト"}</h1>
-          </Link>
+    <>
+      <header className="fixed z-50 w-full bg-card">
+        <div
+          className={cn(
+            "container-2 max-w-none",
+            "flex w-full items-center justify-between gap-x-4 py-4",
+          )}
+        >
+          <div className="flex items-center gap-x-4">
+            <HomeIcon />
+            <Link className="items-center space-x-2 md:flex" to="/creator">
+              <h1 className="font-bold">{"支援リクエスト"}</h1>
+            </Link>
+          </div>
+          <div className="flex gap-x-2">
+            {authContext.isNotLoggedIn && <LoginDialogButton />}
+            {authContext.isLoggedIn && <LogoutDialogButton />}
+          </div>
         </div>
-        <div className="flex gap-x-2">
-          {authContext.isNotLoggedIn && <LoginDialogButton />}
-          {authContext.isLoggedIn && <LogoutDialogButton />}
-        </div>
-      </div>
+      </header>
       <div className={"h-header"} />
-    </header>
+    </>
   )
 }

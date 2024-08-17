@@ -653,3 +653,20 @@ html {
 .like-image {
   background: url("assets/particle.avif");
 }
+
+/**
+ * @see https://github.com/shadcn-ui/ui/blob/9f156a1b890cc043b8fe01037abb6625bd3f588a/packages/cli/src/utils/templates.ts#L28
+ */
+.container-2 {
+  @apply container;
+  @apply px-[2rem];
+}
+
+/**
+ * @see https://github.com/shadcn-ui/ui/blob/0fae3fd93ae749aca708bdfbbbeddc5d576bfb2e/apps/www/styles/globals.css#L76
+ */
+ @media (max-width: 640px) {
+  .container-2 {
+    @apply px-4;
+  }
+}
