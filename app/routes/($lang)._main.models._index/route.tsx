@@ -15,7 +15,10 @@ export async function loader() {
 
   const resp = await client.query({
     query: imageModelsQuery,
-    variables: {},
+    variables: {
+      limit: 64,
+      offset: 0,
+    },
   })
 
   return json({

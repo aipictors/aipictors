@@ -30,7 +30,10 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
-import type { PNGInfo } from "~/utils/get-extract-info-from-png"
+import {
+  getExtractInfoFromBase64,
+  type PNGInfo,
+} from "~/utils/get-extract-info-from-png"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
@@ -142,28 +145,14 @@ export default function NewImage() {
           payload: base64Urls[0],
         })
 
-        dispatch({
-          type: "SET_PNG_INFO",
-          payload: {
-            src: null,
-            params: {
-              prompt: viewer.viewer.imageGenerationResults[0].prompt,
-              negativePrompt:
-                viewer.viewer.imageGenerationResults[0].negativePrompt,
-              seed: viewer.viewer.imageGenerationResults[0].seed.toString(),
-              sampler: viewer.viewer.imageGenerationResults[0].sampler,
-              strength:
-                viewer.viewer.imageGenerationResults[0]
-                  .t2tDenoisingStrengthSize ?? "",
-              noise: "",
-              model: viewer.viewer.imageGenerationResults[0].model?.name,
-              modelHash:
-                viewer.viewer.imageGenerationResults[0].modelHash ?? "",
-              steps: viewer.viewer.imageGenerationResults[0].steps.toString(),
-              scale: viewer.viewer.imageGenerationResults[0].scale.toString(),
-              vae: viewer.viewer.imageGenerationResults[0].vae ?? "",
-            },
-          },
+        const imageUrl = viewer.viewer.imageGenerationResults[0].imageUrl
+        const pngInfo = imageUrl
+          ? await getExtractInfoFromBase64(imageUrl)
+          : null
+
+        dispatchInput({
+          type: "SET_IMAGE_INFORMATION",
+          payload: pngInfo,
         })
 
         // 選択AIモデルを設定
@@ -183,6 +172,11 @@ export default function NewImage() {
 
     processImages()
   }, [viewer?.viewer?.imageGenerationResults, dispatch])
+
+  console.log(
+    "state.isSelectedGenerationImage",
+    state.isSelectedGenerationImage,
+  )
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(CreateWorkMutation)

@@ -66,7 +66,7 @@ export function ImageGenerationSelectorDialog(props: Props) {
     <Dialog open={props.isOpen}>
       <DialogContent>
         <ScrollArea className="max-h-[80vh]">
-          <div className="flex h-[80vh] flex-wrap space-x-2 space-y-2">
+          <div className="flex h-[80vh] flex-wrap gap-x-2 gap-y-2">
             {imageGenerationResults?.viewer?.imageGenerationResults.map(
               (result) => (
                 <Card
