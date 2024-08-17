@@ -9,7 +9,7 @@ type Props = {
 /**
  * 履歴メモ単体
  */
-export const GenerationConfigMemoItem = (props: Props) => {
+export function GenerationConfigMemoItem(props: Props) {
   if (props.memo === undefined) return null
 
   return (

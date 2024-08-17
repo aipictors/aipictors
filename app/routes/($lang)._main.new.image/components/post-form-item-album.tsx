@@ -18,7 +18,7 @@ type Props = {
 /**
  * シリーズ入力
  */
-export const PostFormItemAlbum = (props: Props) => {
+export function PostFormItemAlbum(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

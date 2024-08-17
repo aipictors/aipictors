@@ -29,7 +29,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export const WorkContainer = (props: Props) => {
+export function WorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(

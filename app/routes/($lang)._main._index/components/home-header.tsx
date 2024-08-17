@@ -22,7 +22,7 @@ type Props = {
   onToggleSideMenu?: () => void
 }
 
-const HomeHeader = (props: Props) => {
+function HomeHeader(props: Props) {
   const navigation = useNavigation()
 
   const authContext = useContext(AuthContext)

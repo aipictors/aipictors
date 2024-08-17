@@ -29,7 +29,7 @@ type Props = {
 /**
  * スタンプ公開状態変更ダイアログ
  */
-export const StickerChangeAccessTypeActionDialog = (props: Props) => {
+export function StickerChangeAccessTypeActionDialog(props: Props) {
   const authContext = useContext(AuthContext)
 
   const [updateSticker, { loading: isChangeStickerAccessType }] = useMutation(

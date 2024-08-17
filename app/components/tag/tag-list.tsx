@@ -14,14 +14,14 @@ const DropTarget: React.FC = () => {
   return <div className={cn("h-full rounded-md bg-secondary/50")} />
 }
 
-export const TagList: React.FC<TagListProps> = ({
+export function TagList({
   tags,
   customTagRenderer,
   direction,
   draggable,
   onSortEnd,
   ...tagListProps
-}) => {
+}: TagListProps) {
   const [draggedTagId, setDraggedTagId] = React.useState<string | null>(null)
 
   const handleMouseDown = (id: string) => {

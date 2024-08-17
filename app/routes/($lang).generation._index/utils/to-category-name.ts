@@ -1,4 +1,4 @@
-export const toCategoryName = (category: string | null) => {
+export function toCategoryName(category: string | null) {
   if (category === "ILLUSTRATION_GIRL") {
     return "美少女イラスト"
   }

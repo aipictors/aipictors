@@ -12,7 +12,7 @@ type Props = {
 /**
  * 宣伝作品かどうか入力
  */
-export const PostFormItemAdvertising = (props: Props) => {
+export function PostFormItemAdvertising(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

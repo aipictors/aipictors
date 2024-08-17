@@ -7,7 +7,7 @@ type Props = {
   text?: string
 }
 
-export const CreatingWorkDialog = (props: Props) => {
+export function CreatingWorkDialog(props: Props) {
   return (
     <>
       <Dialog open={props.isOpen}>

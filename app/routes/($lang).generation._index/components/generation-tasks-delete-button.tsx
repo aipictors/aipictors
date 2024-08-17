@@ -14,7 +14,7 @@ type Props = {
 /**
  * 画像生成の一括削除ボタン
  */
-export const GenerationTasksDeleteButton = (props: Props) => {
+export function GenerationTasksDeleteButton(props: Props) {
   if (props.isDeletedLoading) {
     return (
       <Button onClick={() => {}} variant={"ghost"} size={"icon"}>

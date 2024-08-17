@@ -28,7 +28,7 @@ type Props = {
  * エディタに必要なデータを提供する
  * @param props
  */
-export const GenerationQueryProvider = (props: Props) => {
+export function GenerationQueryProvider(props: Props) {
   const authContext = useContext(AuthContext)
 
   const {

@@ -1,6 +1,6 @@
 import { useLocation } from "@remix-run/react"
 
-export const useLocale = () => {
+export function useLocale() {
   const location = useLocation()
 
   if (location.pathname.startsWith("/en")) {

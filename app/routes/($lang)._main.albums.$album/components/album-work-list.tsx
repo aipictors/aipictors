@@ -13,7 +13,7 @@ type Props = {
   maxCount: number
 }
 
-export const AlbumWorkList = (props: Props) => {
+export function AlbumWorkList(props: Props) {
   if (props.albumWorks === null || props.albumWorks.length === 0) {
     return (
       <div className="text-center">

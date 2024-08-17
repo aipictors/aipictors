@@ -12,7 +12,7 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
-export const SettingRequestForm = () => {
+export function SettingRequestForm() {
   const authContext = useContext(AuthContext)
 
   const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)

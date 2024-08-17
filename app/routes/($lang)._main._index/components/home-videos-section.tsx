@@ -16,7 +16,7 @@ type Props = {
 /**
  * 動画作品一覧
  */
-export const HomeVideosSection = (props: Props) => {
+export function HomeVideosSection(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: videoWorks } = useQuery(worksQuery, {

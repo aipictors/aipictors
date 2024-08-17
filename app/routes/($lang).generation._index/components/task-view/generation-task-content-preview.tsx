@@ -8,7 +8,7 @@ import { useContext } from "react"
 /**
  * タスクプレビュー内容
  */
-export const GenerationTaskContentPreview = () => {
+export function GenerationTaskContentPreview() {
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)

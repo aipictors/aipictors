@@ -11,7 +11,7 @@ import { graphql } from "gql.tada"
 import React from "react"
 import { useContext } from "react"
 
-export const FollowerList = () => {
+export function FollowerList() {
   const [page, setPage] = React.useState(0)
 
   const authContext = useContext(AuthContext)

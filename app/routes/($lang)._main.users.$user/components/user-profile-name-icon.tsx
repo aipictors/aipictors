@@ -7,7 +7,7 @@ type Props = {
   user: FragmentOf<typeof userProfileIconFragment>
 }
 
-export const UserProfileNameIcon = (props: Props) => {
+export function UserProfileNameIcon(props: Props) {
   return (
     <header className="relative">
       <div

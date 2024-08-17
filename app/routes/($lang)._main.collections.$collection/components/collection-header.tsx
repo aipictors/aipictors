@@ -15,7 +15,7 @@ type Props = {
   tags: string[]
 }
 
-export const CollectionHeader = (props: Props) => {
+export function CollectionHeader(props: Props) {
   return (
     <div className="flex flex-col overflow-hidden rounded-md">
       <div className="relative h-56 w-full">

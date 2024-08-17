@@ -23,7 +23,7 @@ type Props = {
 /**
  * スマホ向け推薦作品一覧
  */
-export const RecommendedWorksSpList = (props: Props) => {
+export function RecommendedWorksSpList(props: Props) {
   return (
     <>
       {props.works.map((work, index) => (

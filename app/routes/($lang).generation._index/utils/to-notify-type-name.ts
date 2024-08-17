@@ -1,8 +1,8 @@
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
-export const toNotificationTypeName = (
+export function toNotificationTypeName(
   type: IntrospectionEnum<"NotificationType"> | null,
-) => {
+) {
   if (type === "LIKED_WORK") {
     return "いいね"
   }

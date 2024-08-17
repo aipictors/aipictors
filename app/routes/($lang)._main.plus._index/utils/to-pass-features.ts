@@ -1,7 +1,7 @@
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { config } from "~/config"
 
-export const toPassFeatures = (passType: IntrospectionEnum<"PassType">) => {
+export function toPassFeatures(passType: IntrospectionEnum<"PassType">) {
   if (passType === "LITE") {
     return [
       `1日に${config.passFeature.imageGenerationsCount.lite}枚の生成`,

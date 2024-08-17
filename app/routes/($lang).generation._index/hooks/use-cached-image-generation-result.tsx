@@ -1,7 +1,7 @@
 import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import { useApolloClient } from "@apollo/client/index"
 
-export const useCachedImageGenerationResult = (id: string) => {
+export function useCachedImageGenerationResult(id: string) {
   const client = useApolloClient()
 
   const data = client.cache.readFragment({

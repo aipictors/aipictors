@@ -13,7 +13,7 @@ type Props = {
   onDelete(): void
 }
 
-export const ConfigLoraModel = (props: Props) => {
+export function ConfigLoraModel(props: Props) {
   return (
     <Card>
       <CardContent className="flex items-center space-x-2 p-2">

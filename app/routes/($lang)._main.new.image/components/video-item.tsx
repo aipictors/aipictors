@@ -9,7 +9,7 @@ type Props = {
 /**
  * 動画アイテム
  */
-export const VideoItem = (props: Props) => {
+export function VideoItem(props: Props) {
   return (
     <div className="relative m-auto w-64">
       <video

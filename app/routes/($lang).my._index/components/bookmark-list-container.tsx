@@ -16,7 +16,7 @@ type Props = {
 /**
  * ブックマーク一覧コンテナ
  */
-export const BookmarkListContainer = (props: Props) => {
+export function BookmarkListContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   if (

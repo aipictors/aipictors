@@ -13,7 +13,7 @@ type Props = {
 /**
  * 画像生成の履歴の画像ズームアップボタン
  */
-export const GenerationTaskZoomUpButton = (props: Props) => {
+export function GenerationTaskZoomUpButton(props: Props) {
   return (
     <GenerationImageDialogButton
       isAbsolute={true}

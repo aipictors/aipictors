@@ -18,7 +18,7 @@ type Props = {
 /**
  * 読み込み中の履歴
  */
-export const InProgressGenerationCard = (props: Props) => {
+export function InProgressGenerationCard(props: Props) {
   const [initWaitCount, setInitWaitCount] = useState(-1)
 
   const [initNormalWaitCount, setInitNormalWaitCount] = useState(-1)

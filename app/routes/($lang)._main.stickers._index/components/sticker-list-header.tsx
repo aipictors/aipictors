@@ -5,7 +5,7 @@ type Props = {
   title?: string
 }
 
-export const StickerListHeader = (props: Props) => {
+export function StickerListHeader(props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   return (

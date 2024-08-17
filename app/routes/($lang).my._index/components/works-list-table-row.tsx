@@ -31,7 +31,7 @@ type Props = {
 /**
  * 作品一覧テーブルの項目
  */
-export const WorksListTableRow = (props: Props) => {
+export function WorksListTableRow(props: Props) {
   const [deleteWork, { loading: isLoadingDeleteWork }] =
     useMutation(deleteWorkMutation)
 

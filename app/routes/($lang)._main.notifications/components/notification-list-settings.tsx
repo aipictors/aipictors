@@ -19,7 +19,7 @@ type Props = {
 /**
  * 通知履歴設定
  */
-export const NotificationListSetting = (props: Props) => {
+export function NotificationListSetting(props: Props) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const [maxHeight, setMaxHeight] = useState("0px")

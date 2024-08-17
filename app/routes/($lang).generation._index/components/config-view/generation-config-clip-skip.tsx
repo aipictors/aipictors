@@ -15,7 +15,7 @@ type Props = {
 /**
  * ClipSkipの設定
  */
-export const GenerationConfigClipSkip = (props: Props) => {
+export function GenerationConfigClipSkip(props: Props) {
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">

@@ -37,7 +37,7 @@ type Props = {
 /**
  * 作品のコメントへの返信
  */
-export const WorkCommentResponse = (props: Props) => {
+export function WorkCommentResponse(props: Props) {
   const [deleteMutation, { loading: isDeleteLoading }] = useMutation(
     deleteCommentMutation,
   )

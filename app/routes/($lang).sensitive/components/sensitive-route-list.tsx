@@ -9,7 +9,7 @@ import {
   Undo2Icon,
 } from "lucide-react"
 
-export const SensitiveRouteList = () => {
+export function SensitiveRouteList() {
   return (
     <div className="space-y-1">
       <HomeNavigationButton href={"/"} icon={Undo2Icon}>

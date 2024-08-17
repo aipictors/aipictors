@@ -12,7 +12,7 @@ type Props = {
 /**
  * ユーザネームとアイコンを表示するコンポーネント
  */
-export const UserNameBadge = (props: Props) => {
+export function UserNameBadge(props: Props) {
   const width = () => {
     if (props.width === "sm") {
       return "max-w-20"

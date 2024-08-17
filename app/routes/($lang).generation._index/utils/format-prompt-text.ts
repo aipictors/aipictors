@@ -2,7 +2,7 @@
  * Format prompt text
  * @param text
  */
-export const formatPromptText = (text: string) => {
+export function formatPromptText(text: string) {
   return text
     .split(",")
     .filter((t) => t.length !== 0)

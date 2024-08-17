@@ -9,7 +9,7 @@ type Props = {
   collection: FragmentOf<typeof partialFolderFieldsFragment>
 }
 
-export const CollectionArticle = (props: Props) => {
+export function CollectionArticle(props: Props) {
   if (!props.collection.user) {
     return null
   }

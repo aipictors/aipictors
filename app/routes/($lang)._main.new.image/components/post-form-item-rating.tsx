@@ -11,7 +11,7 @@ type Props = {
 /**
  * 年齢制限入力
  */
-export const PostFormItemRating = (props: Props) => {
+export function PostFormItemRating(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

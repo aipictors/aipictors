@@ -22,7 +22,7 @@ type Props = {
 /**
  * ランキング作品一覧
  */
-export const HomeAwardWorkSection = (props: Props) => {
+export function HomeAwardWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
 
   const year = props.awardDateText.split("/")[0]

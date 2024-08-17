@@ -6,7 +6,7 @@ import { EyeIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-export const AccountPasswordForm = () => {
+export function AccountPasswordForm() {
   const [newPassword, setNewPassword] = useState("")
 
   const [currentPassword, setCurrentPassword] = useState("")

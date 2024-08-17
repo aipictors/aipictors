@@ -16,7 +16,7 @@ type Props = {
   isSensitive?: boolean
 }
 
-export const UserWorksContents = (props: Props) => {
+export function UserWorksContents(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: workRes } = useSuspenseQuery(worksQuery, {

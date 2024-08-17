@@ -12,7 +12,7 @@ type Props = {
  * エディタの設定を提供する
  * @param props
  */
-export const GenerationConfigProvider = (props: Props) => {
+export function GenerationConfigProvider(props: Props) {
   // TODO: 後で移動
   const getDefaultNegativePrompt = (modelType: string) => {
     if (modelType === "SD1") {

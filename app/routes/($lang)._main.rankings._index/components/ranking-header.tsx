@@ -13,7 +13,7 @@ type Props = {
   weekIndex: number | null
 }
 
-export const RankingHeader = (props: Props) => {
+export function RankingHeader(props: Props) {
   const [year, setYear] = useState(props.year)
   const [month, setMonth] = useState(props.month)
   const [day, setDay] = useState(props.day)

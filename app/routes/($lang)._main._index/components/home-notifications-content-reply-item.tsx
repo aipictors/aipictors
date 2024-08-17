@@ -18,7 +18,7 @@ const stickerSizeClasses = {
 /**
  * ヘッダーの返信のお知らせ内容
  */
-export const HomeNotificationsContentReplyItem = (props: Props) => {
+export function HomeNotificationsContentReplyItem(props: Props) {
   const stickerClass = props.stickerSize
     ? stickerSizeClasses[props.stickerSize]
     : stickerSizeClasses.md

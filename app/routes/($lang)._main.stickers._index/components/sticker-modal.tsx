@@ -7,7 +7,7 @@ import {
 } from "~/components/ui/dialog"
 import { useNavigate } from "@remix-run/react"
 
-export const StickerModal = () => {
+export function StickerModal() {
   const navigate = useNavigate()
 
   const onClose = () => {

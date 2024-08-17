@@ -12,7 +12,7 @@ type Props = {
   onChange(value: number): void
 }
 
-export const GenerationConfigScale = (props: Props) => {
+export function GenerationConfigScale(props: Props) {
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex items-center gap-x-2">

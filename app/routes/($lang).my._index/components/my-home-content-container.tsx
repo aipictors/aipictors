@@ -6,7 +6,7 @@ type Props = {
 /**
  * ダッシュボードホームコンテンツコンテナ
  */
-export const DashboardHomeContentContainer = (props: Props) => {
+export function DashboardHomeContentContainer(props: Props) {
   return (
     <>
       <div className="h-auto rounded-md md:h-[640px] ">

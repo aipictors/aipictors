@@ -24,7 +24,7 @@ type Props = {
 /**
  * SMS認証ダイアログ
  */
-export const SmsVerificationDialog = (props: Props) => {
+export function SmsVerificationDialog(props: Props) {
   const [phoneNumber, setPhoneNumber] = useState("")
 
   const [applicationVerifier, setApplicationVerifier] =

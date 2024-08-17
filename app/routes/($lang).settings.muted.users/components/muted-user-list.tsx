@@ -5,7 +5,7 @@ import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 
-export const MutedUserList = () => {
+export function MutedUserList() {
   const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery(viewerMutedUsersQuery, {

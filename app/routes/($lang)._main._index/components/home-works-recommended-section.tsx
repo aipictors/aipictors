@@ -13,7 +13,7 @@ type Props = {
 /**
  * おすすめ作品セクション
  */
-export const HomeWorksRecommendedSection = (props: Props) => {
+export function HomeWorksRecommendedSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const [recommendedIds, setRecommendedIds] = useState<string[]>([])

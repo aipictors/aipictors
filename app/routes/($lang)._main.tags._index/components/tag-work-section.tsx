@@ -20,7 +20,7 @@ type Props = {
   isSensitive: boolean
 }
 
-export const TagWorkSection = (props: Props) => {
+export function TagWorkSection(props: Props) {
   const navigate = useNavigate()
   const authContext = useContext(AuthContext)
 

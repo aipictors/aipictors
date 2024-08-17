@@ -27,7 +27,7 @@ type Props = {
 /**
  * 推薦作品一覧
  */
-export const RecommendedWorksListTable = (props: Props) => {
+export function RecommendedWorksListTable(props: Props) {
   return (
     <>
       <ScrollArea className="overflow-x-auto">

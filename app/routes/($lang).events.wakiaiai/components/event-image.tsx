@@ -9,7 +9,7 @@ type Props = {
   linkTitle: string
 }
 
-export const EventImage = (props: Props) => {
+export function EventImage(props: Props) {
   return (
     <div className="relative">
       <img

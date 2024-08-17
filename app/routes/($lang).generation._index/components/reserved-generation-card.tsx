@@ -16,7 +16,7 @@ type Props = {
 /**
  * 生成予約の履歴
  */
-export const ReservedGenerationCard = (props: Props) => {
+export function ReservedGenerationCard(props: Props) {
   const context = useGenerationContext()
   const { send } = GenerationConfigContext.useActorRef()
 

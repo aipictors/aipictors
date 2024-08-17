@@ -1,7 +1,7 @@
 /**
  * ホームのイベントバナー
  */
-export const HomeEventBanner = () => {
+export function HomeEventBanner() {
   const onClick = () => {
     if (window) {
       window.location.href = "https://www.aipictors.com/events/mizugi2024/"

@@ -21,7 +21,7 @@ type Props = {
   sort: SortType
 }
 
-export const UserAlbumsContents = (props: Props) => {
+export function UserAlbumsContents(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: albumsResp, refetch } = useSuspenseQuery(AlbumsQuery, {

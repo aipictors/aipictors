@@ -12,7 +12,7 @@ type Props = {
   onSelect(passType: IntrospectionEnum<"PassType">): Promise<void>
 }
 
-export const PassPlanList = (props: Props) => {
+export function PassPlanList(props: Props) {
   const { data } = useSuspenseQuery(viewerCurrentPassQuery, {})
 
   if (data.viewer === null) {

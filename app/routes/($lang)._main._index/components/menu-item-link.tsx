@@ -10,7 +10,7 @@ type Props = {
 /**
  * メニュー項目
  */
-export const MenuItemLink = (props: Props) => {
+export function MenuItemLink(props: Props) {
   if (!props.href) {
     return (
       <DropdownMenuItem>

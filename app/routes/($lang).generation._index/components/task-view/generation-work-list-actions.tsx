@@ -23,7 +23,7 @@ type Props = {
 /**
  * 作品一覧の操作
  */
-export const GenerationWorkListActions = (props: Props) => {
+export function GenerationWorkListActions(props: Props) {
   const context = useGenerationContext()
 
   const state = GenerationConfigContext.useSelector((snap) => {

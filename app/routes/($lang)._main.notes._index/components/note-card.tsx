@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle } from "~/components/ui/card"
 
-export const NoteCard = () => {
+export function NoteCard() {
   return (
     <Card slot="article">
       <CardHeader slot={"header"}>

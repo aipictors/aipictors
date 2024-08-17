@@ -10,7 +10,7 @@ type Props = {
 /**
  * キャプション入力
  */
-export const PostFormItemCaption = (props: Props) => {
+export function PostFormItemCaption(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

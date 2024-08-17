@@ -18,7 +18,7 @@ type Props = {
 /**
  * モデル入力
  */
-export const PostFormItemModel = (props: Props) => {
+export function PostFormItemModel(props: Props) {
   // モデル名で並び替え
   const displayModels = props.models.sort((a, b) => {
     if (a.name < b.name) {

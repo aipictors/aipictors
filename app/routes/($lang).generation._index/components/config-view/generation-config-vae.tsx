@@ -22,7 +22,7 @@ type Props = {
 /**
  * VAEの設定
  */
-export const GenerationConfigVae = (props: Props) => {
+export function GenerationConfigVae(props: Props) {
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">

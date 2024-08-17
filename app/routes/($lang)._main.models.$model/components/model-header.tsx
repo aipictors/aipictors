@@ -5,7 +5,7 @@ type Props = {
   imageModel: FragmentOf<typeof imageModelHeaderFragment>
 }
 
-export const ModelHeader = (props: Props) => {
+export function ModelHeader(props: Props) {
   return (
     <div className="flex flex-col">
       <div className="flex">

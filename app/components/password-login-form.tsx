@@ -9,7 +9,7 @@ type Props = {
   isLoading: boolean
 }
 
-export const PasswordLoginForm = (props: Props) => {
+export function PasswordLoginForm(props: Props) {
   const [username, setUsername] = useState("")
 
   const [password, setPassword] = useState("")

@@ -12,14 +12,14 @@ import { useBoolean } from "usehooks-ts"
  * Format prompt text
  * @param text
  */
-export const formatPromptTextForKeyWord = (text: string) => {
+export function formatPromptTextForKeyWord(text: string) {
   return text
     .split(",")
     .filter((t) => t.length !== 0)
     .join(",")
 }
 
-export const GenerationPromptView = () => {
+export function GenerationPromptView() {
   const context = useGenerationContext()
 
   const formattedPromptText = formatPromptTextForKeyWord(

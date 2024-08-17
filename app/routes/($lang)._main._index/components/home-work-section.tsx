@@ -25,7 +25,7 @@ type Props = {
   targetRowHeight?: number
 }
 
-export const HomeWorkSection = (props: Props) => {
+export function HomeWorkSection(props: Props) {
   return (
     <section className={cn(props.title ? "space-y-4" : "gap-y-4")}>
       <div className="flex items-center justify-between">

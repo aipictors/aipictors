@@ -15,7 +15,7 @@ type Props = {
 /**
  * 公開モード入力
  */
-export const PostFormItemEnglish = (props: Props) => {
+export function PostFormItemEnglish(props: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (

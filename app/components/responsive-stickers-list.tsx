@@ -11,7 +11,7 @@ type Props = {
 /**
  * レスポンシブ対応のスタンプ一覧
  */
-export const ResponsiveStickersList = (props: Props) => {
+export function ResponsiveStickersList(props: Props) {
   if (props.stickers === null || props.stickers.length === 0) {
     return null
   }

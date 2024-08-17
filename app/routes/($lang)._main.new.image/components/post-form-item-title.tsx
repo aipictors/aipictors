@@ -10,7 +10,7 @@ type Props = {
 /**
  * タイトル入力
  */
-export const PostFormItemTitle = (props: Props) => {
+export function PostFormItemTitle(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
