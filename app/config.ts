@@ -468,6 +468,11 @@ export const META: { [key: string]: MetaData } = {
     description: "最新のAIイラストを検索することができます",
     isIndex: true,
   },
+  MODELS: {
+    title: "モデル一覧",
+    description: "モデル一覧から生成された作品を確認することができます",
+    isIndex: false,
+  },
   /**
    * インデックスなし
    */
