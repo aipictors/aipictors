@@ -6,7 +6,7 @@ type Props = {
   userPickupWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
 }
 
-export const UserPickupContents = (props: Props) => {
+export function UserPickupContents(props: Props) {
   return (
     <div className="items-center">
       {props.userPickupWorks && props.userPickupWorks.length > 0 && (

@@ -17,7 +17,7 @@ type Props = {
 /**
  * レスポンシブ対応の作品一覧
  */
-export const ResponsivePhotoWorksAlbum = (props: Props) => {
+export function ResponsivePhotoWorksAlbum(props: Props) {
   if (props.works.length === 1) {
     return (
       <Link
