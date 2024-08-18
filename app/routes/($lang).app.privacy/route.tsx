@@ -5,7 +5,7 @@ import type { MetaFunction } from "@remix-run/cloudflare"
 
 export default function AppPrivacyPage() {
   return (
-    <div className="space-y-8 py-8">
+    <div className="container space-y-8 px-8 py-8">
       <h1 className="font-bold text-2xl">{"プライバシー・ポリシー"}</h1>
       <AppMarkdown>{text}</AppMarkdown>
     </div>
