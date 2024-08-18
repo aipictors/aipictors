@@ -92,7 +92,11 @@ export function TagWorkSection(props: Props) {
         perPage={32}
         currentPage={props.page}
         onPageChange={(page: number) => {
-          navigate(`/tags/${props.tag}/?page=${page}`)
+          navigate(
+            props.isSensitive
+              ? `/tags/${props.tag}/?page=${page}&sensitive=1`
+              : `/tags/${props.tag}/?sensitive=1&page=${page}`,
+          )
         }}
       />
     </div>
