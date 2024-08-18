@@ -26,17 +26,17 @@ export async function loader(props: LoaderFunctionArgs) {
     ? ["R18", "R18G"]
     : ["R18"]
 
-  const page = Number.parseInt(searchParams.get("page") || "1", 10)
+  const page = searchParams.get("page")
+    ? Number.parseInt(searchParams.get("page") || "1", 10)
+    : 0
 
   const hasPrompt = searchParams.get("prompt") === "1"
-
-  const offset = (page - 1) * 32
 
   const resp = await client.query({
     query: aiModelQuery,
     variables: {
       search: props.params.model,
-      offset: offset,
+      offset: page * 32,
       limit: 32,
       where: {
         ratings: ratings,
@@ -44,6 +44,10 @@ export async function loader(props: LoaderFunctionArgs) {
       },
     },
   })
+
+  if (!resp.data.aiModel) {
+    throw new Response(null, { status: 404 })
+  }
 
   return json({
     data: resp.data.aiModel,
@@ -111,6 +115,7 @@ export default function ModelPage() {
         isSensitive={true}
         isMoreRatings={data.isR18G}
         hasPrompt={data.hasPrompt}
+        page={data.page}
       />
     </>
   )

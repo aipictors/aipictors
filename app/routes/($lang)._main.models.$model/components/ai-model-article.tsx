@@ -6,6 +6,7 @@ import { useContext, useState } from "react"
 import { useQuery } from "@apollo/client/index"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { AuthContext } from "~/contexts/auth-context"
+import { useNavigate } from "@remix-run/react"
 
 type Props = {
   name: string
@@ -15,6 +16,7 @@ type Props = {
   isSensitive: boolean
   isMoreRatings: boolean
   hasPrompt: boolean
+  page: number
 }
 
 export function AiModelArticle(props: Props) {
@@ -28,7 +30,7 @@ export function AiModelArticle(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(props.page)
 
   const { data } = useQuery(aiModelWorksQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -53,7 +55,7 @@ export function AiModelArticle(props: Props) {
 
   const works = data?.aiModel?.works ?? props.works
 
-  console.log(props.thumbnailImageURL)
+  const navigate = useNavigate()
 
   return (
     <div className="flex flex-col space-y-4">
@@ -75,7 +77,7 @@ export function AiModelArticle(props: Props) {
         <ResponsivePhotoWorksAlbum
           works={works}
           targetRowHeight={240}
-          size="large"
+          size="small"
           isHideProfile={true}
         />
         <ResponsivePagination
@@ -84,6 +86,7 @@ export function AiModelArticle(props: Props) {
           currentPage={page}
           onPageChange={(page: number) => {
             setPage(page)
+            navigate(`?page=${page}`)
           }}
         />
       </div>
