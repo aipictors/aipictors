@@ -6,8 +6,8 @@ import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { AiModelArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.model === undefined) {
@@ -20,9 +20,11 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const searchParams = new URLSearchParams(url.search)
 
-  const r15 = searchParams.get("r15") === "1"
+  const r18g = searchParams.get("r18g") === "1"
 
-  const ratings: ("G" | "R15" | "R18" | "R18G")[] = r15 ? ["G", "R15"] : ["G"]
+  const ratings: ("G" | "R15" | "R18" | "R18G")[] = r18g
+    ? ["R18", "R18G"]
+    : ["R18"]
 
   const page = Number.parseInt(searchParams.get("page") || "1", 10)
 
@@ -38,8 +40,7 @@ export async function loader(props: LoaderFunctionArgs) {
       limit: 32,
       where: {
         ratings: ratings,
-        isSensitive: false,
-        hasPrompt: hasPrompt,
+        isSensitive: true,
       },
     },
   })
@@ -47,7 +48,7 @@ export async function loader(props: LoaderFunctionArgs) {
   return json({
     data: resp.data.aiModel,
     page: page,
-    isR15: r15,
+    isR18G: r18g,
     hasPrompt: hasPrompt,
   })
 }
@@ -69,16 +70,10 @@ export const meta: MetaFunction = ({ data }) => {
     }
   }
 
-  const thumbnailUrl = aiModel.data.thumbnailImageURL
-    ? aiModel.data.thumbnailImageURL
-    : aiModel.data.works?.length
-      ? aiModel.data.works[0].largeThumbnailImageURL
-      : ""
-
   return createMeta(META.MODEL, {
-    title: `${aiModel.data.name}モデルで生成された作品一覧（${aiModel.data.works.length}件）`,
-    description: `${aiModel.data.name}モデルで生成された最新の作品一覧です、プロンプト情報など多数掲載されています`,
-    url: thumbnailUrl,
+    title: `${aiModel.data.name}モデルで生成されたR18作品一覧（${aiModel.data.works.length}件）`,
+    description: `${aiModel.data.name}モデルで生成されたR18最新の作品一覧です、プロンプト情報など多数掲載されています`,
+    url: config.defaultSensitiveOgpImageUrl,
   })
 }
 
@@ -113,8 +108,8 @@ export default function ModelPage() {
         }
         works={data.data.works}
         worksCount={data.data.works.length}
-        isSensitive={false}
-        isMoreRatings={data.isR15}
+        isSensitive={true}
+        isMoreRatings={data.isR18G}
         hasPrompt={data.hasPrompt}
       />
     </>

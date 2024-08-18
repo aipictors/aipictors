@@ -1,11 +1,13 @@
 import { json } from "@remix-run/cloudflare"
 import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import {
   HomeRequestCard,
   HomeRequestCardFragment,
 } from "~/routes/($lang).creator._index/components/home-request-card"
+import { createMeta } from "~/utils/create-meta"
 
 /**
  * 支援リクエスト
@@ -37,12 +39,7 @@ export async function loader() {
 }
 
 export const meta: MetaFunction<typeof loader> = () => {
-  return [
-    {
-      title: "支援リクエスト",
-      description: "支援リクエストのページです。",
-    },
-  ]
+  return createMeta(META.CREATOR)
 }
 
 const LoaderQuery = graphql(

@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext, useEffect } from "react"
-import { Link, useLocation } from "@remix-run/react"
+import { useLocation, useNavigate } from "@remix-run/react"
 import React from "react"
 
 type Props = Readonly<{
@@ -51,6 +51,8 @@ export function MyContents(props: Props) {
     return null
   }
 
+  const navigate = useNavigate()
+
   return (
     <>
       <div
@@ -69,68 +71,62 @@ export function MyContents(props: Props) {
               <TabsTrigger
                 onClick={() => {
                   setMyContentType("HOME")
+                  navigate("/my")
                 }}
                 className="w-full"
                 value="HOME"
               >
-                <Link to="/my" className="w-full">
-                  ホーム
-                </Link>
+                {"ホーム"}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
                   setMyContentType("POSTS")
+                  navigate("/my/posts")
                 }}
                 className="w-full"
                 value="POSTS"
               >
-                <Link to="/my/posts" className="w-full">
-                  作品
-                </Link>
+                {"作品"}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
                   setMyContentType("ALBUMS")
+                  navigate("/my/albums")
                 }}
                 className="w-full"
                 value="ALBUMS"
               >
-                <Link to="/my/albums" className="w-full">
-                  シリーズ
-                </Link>
+                {"シリーズ"}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
                   setMyContentType("RECOMMENDED")
+                  navigate("/my/recommended")
                 }}
                 className="w-full"
                 value="RECOMMENDED"
               >
-                <Link to="/my/recommended" className="w-full">
-                  推薦
-                </Link>
+                {"推薦"}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
                   setMyContentType("BOOKMARKS")
+                  navigate("/my/bookmarks")
                 }}
                 className="w-full"
                 value="BOOKMARKS"
               >
-                <Link to="/my/bookmarks" className="w-full">
-                  ブックマーク
-                </Link>
+                {"ブックマーク"}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
                   setMyContentType("LIKES")
+                  navigate("/my/likes")
                 }}
                 className="w-full"
                 value="LIKES"
               >
-                <Link to="/my/likes" className="w-full">
-                  いいね
-                </Link>
+                {"いいね"}
               </TabsTrigger>
             </TabsList>
           </Tabs>
