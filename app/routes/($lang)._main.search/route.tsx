@@ -1,8 +1,10 @@
 import { createClient } from "~/lib/client"
 import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
-import { WorkList } from "~/routes/($lang)._main.posts._index/components/work-list"
+import {
+  WorkList,
+  WorkListItemFragment,
+} from "~/routes/($lang)._main.posts._index/components/work-list"
 import { json, redirect, useLoaderData } from "@remix-run/react"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
@@ -64,8 +66,8 @@ export const meta: MetaFunction = () => {
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...WorkListItem
     }
   }`,
-  [partialWorkFieldsFragment],
+  [WorkListItemFragment],
 )

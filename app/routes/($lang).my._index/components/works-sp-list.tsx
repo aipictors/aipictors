@@ -12,27 +12,15 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { Link } from "@remix-run/react"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  works: {
-    id: string
-    title: string
-    thumbnailImageUrl: string
-    likesCount: number
-    bookmarksCount: number
-    commentsCount: number
-    viewsCount: number
-    createdAt: number
-    workType: IntrospectionEnum<"WorkType">
-    accessType: IntrospectionEnum<"AccessType">
-    isTagEditable: boolean
-    uuid: string
-  }[]
+  works: FragmentOf<typeof MobileWorkListItemFragment>[]
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
 }
 
-const editUrl = (id: string, workType: IntrospectionEnum<"WorkType">) => {
+const editUrl = (id: string, workType: string) => {
   if (workType === "WORK") {
     return `/posts/${id}/image/edit`
   }
@@ -49,8 +37,8 @@ const editUrl = (id: string, workType: IntrospectionEnum<"WorkType">) => {
 const postUrl = (work: {
   id: string
   createdAt: number
-  accessType: IntrospectionEnum<"AccessType">
-  uuid: string
+  accessType: string
+  uuid: string | null
 }) => {
   if (
     new Date(work.createdAt * 1000).getTime() > new Date().getTime() ||
@@ -69,6 +57,10 @@ const postUrl = (work: {
  * スマホ向け作品一覧
  */
 export function WorksSpList(props: Props) {
+  const truncateTitle = (title: string, maxLength: number) => {
+    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
+  }
+
   return (
     <>
       {props.works.map((work, index) => (
@@ -77,7 +69,7 @@ export function WorksSpList(props: Props) {
           <div className="flex border-b">
             <Link to={postUrl(work)}>
               <img
-                src={work.thumbnailImageUrl}
+                src={work.smallThumbnailImageURL}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
@@ -85,14 +77,16 @@ export function WorksSpList(props: Props) {
             <div className="w-full">
               <div className="w-full max-w-40 space-y-4 overflow-hidden text-ellipsis">
                 <Link to={postUrl(work)}>
-                  <div className="w-full font-bold">{work.title}</div>
+                  <div className="w-full font-bold">
+                    {truncateTitle(work.title, 32)}
+                  </div>
                 </Link>
                 <div className="space-x-2">
                   <Badge variant={"secondary"}>
                     {toAccessTypeText(work.accessType)}
                   </Badge>
                   <Badge variant={"secondary"}>
-                    {toWorkTypeText(work.workType)}
+                    {toWorkTypeText(work.type)}
                   </Badge>
                 </div>
                 <div className="text-sm opacity-80">
@@ -119,7 +113,7 @@ export function WorksSpList(props: Props) {
               </div>
             </div>
             <div className="flex w-16 justify-center">
-              <Link to={editUrl(work.id, work.workType)}>
+              <Link to={editUrl(work.id, work.type)}>
                 <PencilIcon />
               </Link>
             </div>
@@ -129,3 +123,19 @@ export function WorksSpList(props: Props) {
     </>
   )
 }
+
+export const MobileWorkListItemFragment = graphql(
+  `fragment MobileWorkListItem on WorkNode @_unmask {
+    id
+    title
+    smallThumbnailImageURL
+    type
+    commentsCount
+    viewsCount
+    likesCount
+    bookmarksCount
+    createdAt
+    accessType
+    uuid
+  }`,
+)

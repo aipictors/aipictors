@@ -1,14 +1,13 @@
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import { UnstableSSR as SSR } from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof TagWorkFragment>[]
   title: string
 }
 
@@ -87,3 +86,27 @@ export function TagReferencedWorkSection(props: Props) {
     </SSR>
   )
 }
+
+export const TagWorkFragment = graphql(
+  `fragment TagWork on WorkNode @_unmask {
+    id
+    title
+    steps
+    sampler
+    scale
+    vae
+    prompt
+    negativePrompt
+    largeThumbnailImageURL
+    largeThumbnailImageWidth
+    largeThumbnailImageHeight
+    rating
+    subWorksCount
+    isLiked
+    user {
+      id
+      iconUrl
+      name
+    }
+  }`,
+)

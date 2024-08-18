@@ -6,10 +6,10 @@ import { GenerationWorkLinkButton } from "~/routes/($lang).generation._index/com
 import { useState } from "react"
 import { toast } from "sonner"
 import { GenerationWorkZoomUpButton } from "~/routes/($lang).generation._index/components/generation-work-zoom-up-button"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  work: any //NonNullable<WorkQuery["work"]>
+  work: FragmentOf<typeof GenerationWorkCardFragment>
   isPreviewByHover: boolean
 }
 
@@ -89,3 +89,17 @@ export function GenerationWorkCard(props: Props) {
     </div>
   )
 }
+
+export const GenerationWorkCardFragment = graphql(
+  `fragment GenerationWorkCard on WorkNode @_unmask {
+    id
+    title
+    steps
+    sampler
+    scale
+    vae
+    prompt
+    negativePrompt
+    largeThumbnailImageURL
+  }`,
+)

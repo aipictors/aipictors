@@ -8,24 +8,15 @@ import {
 import { WorksListColumn } from "~/routes/($lang).my._index/components/works-list-column"
 import type { SortType } from "~/types/sort-type"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { WorksListTableRow } from "~/routes/($lang).my._index/components/works-list-table-row"
+import {
+  WorksListTableRow,
+  WorksListTableRowFragment,
+} from "~/routes/($lang).my._index/components/works-list-table-row"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  works: {
-    id: string
-    uuid: string
-    title: string
-    thumbnailImageUrl: string
-    likesCount: number
-    bookmarksCount: number
-    commentsCount: number
-    viewsCount: number
-    createdAt: number
-    accessType: IntrospectionEnum<"AccessType">
-    workType: IntrospectionEnum<"WorkType">
-    isTagEditable: boolean
-  }[]
+  works: FragmentOf<typeof WorksListTableItemFragment>[]
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   onClickTitleSortButton: () => void
@@ -127,8 +118,7 @@ export function WorksListTable(props: Props) {
           </TableHeader>
           <TableBody>
             {props.works.map((work, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-              <WorksListTableRow work={work} key={index} />
+              <WorksListTableRow work={work} key={work.id} />
             ))}
           </TableBody>
         </Table>
@@ -136,3 +126,10 @@ export function WorksListTable(props: Props) {
     </>
   )
 }
+
+export const WorksListTableItemFragment = graphql(
+  `fragment WorksListTableItem on WorkNode @_unmask {
+    ...WorksListTableRow
+  }`,
+  [WorksListTableRowFragment],
+)

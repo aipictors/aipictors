@@ -11,12 +11,12 @@ import { UserTabs } from "~/routes/($lang)._main.users.$user/components/user-tab
 import { UserWorksContents } from "~/routes/($lang)._main.users.$user/components/user-works-contents "
 import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useState } from "react"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { CalendarHeartIcon } from "lucide-react"
 import { Link } from "@remix-run/react"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 
 type Props = {
-  user: FragmentOf<typeof userProfileFragment>
+  user: FragmentOf<typeof UserProfileFragment>
   isSensitive?: boolean
 }
 
@@ -235,7 +235,7 @@ export function UserContents(props: Props) {
   )
 }
 
-export const userProfileFragment = graphql(
+export const UserProfileFragment = graphql(
   `fragment UserProfile on UserNode @_unmask {
     id
     biography
@@ -249,11 +249,11 @@ export const userProfileFragment = graphql(
     githubAccountId
     mailAddress
     featuredWorks {
-      ...PartialWorkFields
+      ...HomeWork
     }
     featuredSensitiveWorks {
-      ...PartialWorkFields
+      ...HomeWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [HomeWorkFragment],
 )

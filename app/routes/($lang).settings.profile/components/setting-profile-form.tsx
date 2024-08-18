@@ -4,7 +4,10 @@ import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { SelectCreatedWorksDialog } from "~/routes/($lang).my._index/components/select-created-works-dialog"
+import {
+  DialogWorkFragment,
+  SelectCreatedWorksDialog,
+} from "~/routes/($lang).my._index/components/select-created-works-dialog"
 import { useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
@@ -12,7 +15,6 @@ import { Suspense, useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 /**
  * プロフィール設定フォーム
@@ -24,21 +26,6 @@ export function SettingProfileForm() {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: authContext.userId?.toString() ?? "",
-      worksWhere: {},
-      followeesWorksWhere: {},
-      followersWorksWhere: {},
-      worksOffset: 0,
-      worksLimit: 0,
-      followeesOffset: 0,
-      followeesLimit: 0,
-      followeesWorksOffset: 0,
-      followeesWorksLimit: 0,
-      followersOffset: 0,
-      followersLimit: 0,
-      followersWorksOffset: 0,
-      followersWorksLimit: 0,
-      bookmarksOffset: 0,
-      bookmarksLimit: 0,
     },
     fetchPolicy: "cache-first",
   })
@@ -396,22 +383,6 @@ export function SettingProfileForm() {
 const userQuery = graphql(
   `query User(
     $userId: ID!,
-    $worksOffset: Int!,
-    $worksLimit: Int!,
-    $worksWhere: UserWorksWhereInput,
-    $followeesOffset: Int!,
-    $followeesLimit: Int!,
-    $followeesWorksOffset: Int!,
-    $followeesWorksLimit: Int!,
-    $followeesWorksWhere: UserWorksWhereInput,
-    $followersOffset: Int!,
-    $followersLimit: Int!,
-    $followersWorksOffset: Int!,
-    $followersWorksLimit: Int!
-    $followersWorksWhere: UserWorksWhereInput,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
       id
@@ -429,46 +400,12 @@ const userQuery = graphql(
       iconUrl
       headerImageUrl
       webFcmToken
-      isFollower
-      isFollowee
       headerImageUrl
-      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
-        ...PartialWorkFields
-      }
-      followees(offset: $followeesOffset, limit: $followeesLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      followers(offset: $followersOffset, limit: $followersLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
-        ...PartialWorkFields
-      }
       featuredSensitiveWorks {
-        ...PartialWorkFields
+        ...DialogWork
       }
       featuredWorks {
-        ...PartialWorkFields
+        ...DialogWork
       }
       biography
       enBiography
@@ -477,12 +414,9 @@ const userQuery = graphql(
       githubAccountId
       siteURL
       mailAddress
-      promptonUser {
-        id
-      }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [DialogWorkFragment],
 )
 
 const viewerTokenQuery = graphql(

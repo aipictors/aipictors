@@ -6,22 +6,14 @@ import {
   TableBody,
 } from "~/components/ui/table"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { RecommendedWorksListTableRow } from "~/routes/($lang).my._index/components/recommended-works-list-table-row"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import {
+  RecommendedWorksListTableRow,
+  RecommendedWorksTableRowFragment,
+} from "~/routes/($lang).my._index/components/recommended-works-list-table-row"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  works: {
-    id: string
-    title: string
-    thumbnailImageUrl: string
-    likesCount: number
-    bookmarksCount: number
-    commentsCount: number
-    viewsCount: number
-    createdAt: string
-    accessType: IntrospectionEnum<"AccessType">
-    isTagEditable: boolean
-  }[]
+  works: FragmentOf<typeof RecommendedWorksTableItemFragment>[]
 }
 
 /**
@@ -35,7 +27,7 @@ export function RecommendedWorksListTable(props: Props) {
           <TableHeader>
             <TableRow>
               <TableHead>{"タイトル"}</TableHead>
-              <TableHead>{}</TableHead>
+              <TableHead>{""}</TableHead>
               <TableHead>{"いいね"}</TableHead>
               <TableHead>{"ブックマーク"}</TableHead>
               <TableHead>{"コメント"}</TableHead>
@@ -45,9 +37,8 @@ export function RecommendedWorksListTable(props: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {props.works.map((work, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-              <RecommendedWorksListTableRow work={work} key={index} />
+            {props.works.map((work) => (
+              <RecommendedWorksListTableRow work={work} key={work.id} />
             ))}
           </TableBody>
         </Table>
@@ -55,3 +46,10 @@ export function RecommendedWorksListTable(props: Props) {
     </>
   )
 }
+
+export const RecommendedWorksTableItemFragment = graphql(
+  `fragment RecommendedWorksTableItem on WorkNode @_unmask {
+    ...RecommendedWorksTableRow
+  }`,
+  [RecommendedWorksTableRowFragment],
+)

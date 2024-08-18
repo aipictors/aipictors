@@ -1,7 +1,9 @@
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { FragmentOf } from "gql.tada"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import {
+  type PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { useNavigate } from "@remix-run/react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
@@ -13,7 +15,7 @@ import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/ta
 import { CircleAlertIcon } from "lucide-react"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   worksCount: number
   tag: string
   page: number

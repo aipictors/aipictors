@@ -1,6 +1,5 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { BookmarkListContainer } from "~/routes/($lang).my._index/components/bookmark-list-container"
 import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
@@ -64,5 +63,4 @@ const userQuery = graphql(
       createdBookmarksCount
     }
   }`,
-  [partialWorkFieldsFragment],
 )

@@ -1,7 +1,9 @@
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
-import { GenerationWorkList } from "~/routes/($lang).generation._index/components/task-view/generation-work-list"
+import {
+  GenerationWorkList,
+  GenerationWorkListItemFragment,
+} from "~/routes/($lang).generation._index/components/task-view/generation-work-list"
 import { GenerationWorkListActions } from "~/routes/($lang).generation._index/components/task-view/generation-work-list-actions"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -104,8 +106,8 @@ export function GenerationWorkListModelView() {
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...GenerationWorkListItem
     }
   }`,
-  [partialWorkFieldsFragment],
+  [GenerationWorkListItemFragment],
 )

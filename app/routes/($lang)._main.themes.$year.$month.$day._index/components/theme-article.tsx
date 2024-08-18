@@ -1,20 +1,21 @@
 import { useNavigate } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { themeWorksQuery } from "~/routes/($lang)._main.themes.$year.$month.$day._index/route"
+import { graphql, type FragmentOf } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { AuthContext } from "~/contexts/auth-context"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
 import { RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof ThemeWorkFragment>[]
   worksCount: number
-  firstWork: FragmentOf<typeof partialWorkFieldsFragment> | null
+  firstWork: FragmentOf<typeof ThemeWorkFragment> | null
   isSensitive: boolean
   title: string
   year: number
@@ -125,3 +126,20 @@ export function ThemeArticle(props: Props) {
     </div>
   )
 }
+
+export const ThemeWorkFragment = graphql(
+  `fragment ThemeWork on WorkNode @_unmask {
+    id
+    ...PhotoAlbumWork
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+export const themeWorksQuery = graphql(
+  `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...ThemeWork
+    }
+  }`,
+  [ThemeWorkFragment],
+)

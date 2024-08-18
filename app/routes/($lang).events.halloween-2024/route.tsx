@@ -8,8 +8,10 @@ import { json, Link, useLoaderData } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 import { createClient } from "~/lib/client"
 import { graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { EventWorkList } from "~/routes/($lang).events.$event._index/components/event-work-list"
+import {
+  EventWorkList,
+  EventWorkListItemFragment,
+} from "~/routes/($lang).events.$event._index/components/event-work-list"
 import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -30,7 +32,6 @@ export async function loader(props: LoaderFunctionArgs) {
         ratings: ["G", "R15"],
         isNowCreatedAt: true,
       },
-      isSensitive: false,
     },
   })
 
@@ -242,7 +243,7 @@ export const meta: MetaFunction = () => {
 }
 
 const appEventQuery = graphql(
-  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!, $isSensitive: Boolean!) {
+  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
     appEvent(slug: $slug) {
       id
       description
@@ -255,12 +256,9 @@ const appEventQuery = graphql(
       tag
       worksCount
       works(offset: $offset, limit: $limit, where: $where) {
-        ...PartialWorkFields
-      }
-      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
-        ...PartialWorkFields
+        ...EventWorkListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [EventWorkListItemFragment],
 )

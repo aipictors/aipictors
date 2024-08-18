@@ -1,10 +1,11 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { BookmarkWorksList } from "~/routes/($lang).my._index/components/bookmark-works-list"
+import {
+  BookmarkWorksList,
+  BookmarkWorksListItemFragment,
+} from "~/routes/($lang).my._index/components/bookmark-works-list"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { useQuery } from "@apollo/client/index"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -40,20 +41,7 @@ export function LikeListContainer(props: Props) {
 
   return (
     <>
-      <BookmarkWorksList
-        works={works.map((work) => ({
-          id: work.id,
-          title: work.title,
-          thumbnailImageUrl: work.smallThumbnailImageURL,
-          bookmarksCount: work.bookmarksCount ?? 0,
-          likesCount: work.likesCount ?? 0,
-          commentsCount: work.commentsCount ?? 0,
-          viewsCount: work.viewsCount,
-          createdAt: toDateTimeText(work.createdAt), // Convert createdAt to string
-          accessType: work.accessType,
-          isTagEditable: work.isTagEditable,
-        }))}
-      />
+      <BookmarkWorksList works={works} />
       <div className="mt-4 mb-8">
         <ResponsivePagination
           perPage={16}
@@ -78,9 +66,9 @@ const userQuery = graphql(
     user(id: $userId) {
       id
       likedWorks(offset: $likesOffset, limit: $likesLimit, where: $likesWhere) {
-        ...PartialWorkFields
+        ...BookmarkWorksListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [BookmarkWorksListItemFragment],
 )

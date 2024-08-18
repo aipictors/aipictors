@@ -1,6 +1,8 @@
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { WorkList } from "~/routes/($lang)._main.posts._index/components/work-list"
+import {
+  WorkList,
+  WorkListItemFragment,
+} from "~/routes/($lang)._main.posts._index/components/work-list"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 
@@ -35,8 +37,8 @@ export default function SensitiveCollection() {
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...WorkListItem
     }
   }`,
-  [partialWorkFieldsFragment],
+  [WorkListItemFragment],
 )

@@ -1,7 +1,9 @@
 import { ParamsError } from "~/errors/params-error"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
-import { CollectionArticle } from "~/routes/($lang)._main.collections.$collection/components/collection-article"
+import {
+  CollectionArticle,
+  FolderArticleFragment,
+} from "~/routes/($lang)._main.collections.$collection/components/collection-article"
 import { json, useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -48,32 +50,11 @@ export default function Collections() {
   )
 }
 
-export const partialFolderFieldsFragment = graphql(
-  `fragment PartialFolderFields on FolderNode @_unmask {
-      id
-      thumbnailImageURL
-      title
-      description
-      tags
-      user {
-        id
-        name
-        iconUrl
-        login
-      }
-      worksCount
-      works(offset: 0, limit: 16) {
-        ...PartialWorkFields
-      }
-  }`,
-  [partialWorkFieldsFragment],
-)
-
 const folderQuery = graphql(
   `query folder($nanoid: String!) {
     folder(where: { nanoid: $nanoid }) {
-      ...PartialFolderFields
+      ...FolderArticle
     }
   }`,
-  [partialFolderFieldsFragment],
+  [FolderArticleFragment],
 )

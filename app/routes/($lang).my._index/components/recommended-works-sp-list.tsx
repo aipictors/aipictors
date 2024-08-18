@@ -1,23 +1,12 @@
 import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import { Link } from "@remix-run/react"
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircle } from "lucide-react"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  works: {
-    id: string
-    title: string
-    thumbnailImageUrl: string
-    likesCount: number
-    bookmarksCount: number
-    commentsCount: number
-    viewsCount: number
-    createdAt: string
-    accessType: IntrospectionEnum<"AccessType">
-    isTagEditable: boolean
-  }[]
+  works: FragmentOf<typeof MobileRecommendedWorkItemFragment>[]
 }
 
 /**
@@ -32,7 +21,7 @@ export function RecommendedWorksSpList(props: Props) {
           <div className="mt-2 mb-2 flex">
             <Link to={`/posts/${work.id}`} className="mr-2">
               <img
-                src={work.thumbnailImageUrl}
+                src={work.smallThumbnailImageURL}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
@@ -73,3 +62,17 @@ export function RecommendedWorksSpList(props: Props) {
     </>
   )
 }
+
+export const MobileRecommendedWorkItemFragment = graphql(
+  `fragment MobileRecommendedWorkItem on WorkNode @_unmask {
+    id
+    title
+    smallThumbnailImageURL
+    accessType
+    createdAt
+    bookmarksCount
+    likesCount
+    viewsCount
+    commentsCount
+  }`,
+)

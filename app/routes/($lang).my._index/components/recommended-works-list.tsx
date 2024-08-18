@@ -1,45 +1,37 @@
-import { RecommendedWorksListTable } from "~/routes/($lang).my._index/components/recommended-works-list-table"
-import { RecommendedWorksSpList } from "~/routes/($lang).my._index/components/recommended-works-sp-list"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import {
+  RecommendedWorksListTable,
+  RecommendedWorksTableItemFragment,
+} from "~/routes/($lang).my._index/components/recommended-works-list-table"
+import {
+  MobileRecommendedWorkItemFragment,
+  RecommendedWorksSpList,
+} from "~/routes/($lang).my._index/components/recommended-works-sp-list"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  works: {
-    id: string
-    title: string
-    thumbnailImageUrl: string
-    likesCount: number
-    bookmarksCount: number
-    commentsCount: number
-    viewsCount: number
-    createdAt: string
-    accessType: IntrospectionEnum<"AccessType">
-    isTagEditable: boolean
-  }[]
+  works: FragmentOf<typeof RecommendedWorkListItemFragment>[]
 }
 
 /**
  * 推薦作品一覧
  */
 export function RecommendedWorksList(props: Props) {
-  const truncateTitle = (title: string, maxLength: number) => {
-    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
-  }
-
-  const displayWorks = props.works.map((work) => {
-    return {
-      ...work,
-      title: truncateTitle(work.title, 32),
-    }
-  })
-
   return (
     <>
       <div className="hidden md:block">
-        <RecommendedWorksListTable works={displayWorks} />
+        <RecommendedWorksListTable works={props.works} />
       </div>
       <div className="block md:hidden">
-        <RecommendedWorksSpList works={displayWorks} />
+        <RecommendedWorksSpList works={props.works} />
       </div>
     </>
   )
 }
+
+export const RecommendedWorkListItemFragment = graphql(
+  `fragment RecommendedWorkListItem on WorkNode @_unmask {
+    ...RecommendedWorksTableItem
+    ...MobileRecommendedWorkItem
+  }`,
+  [RecommendedWorksTableItemFragment, MobileRecommendedWorkItemFragment],
+)

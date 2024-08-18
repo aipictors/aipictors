@@ -1,11 +1,13 @@
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Skeleton } from "~/components/ui/skeleton"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { cn } from "~/lib/cn"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
 import { FallbackTaskCard } from "~/routes/($lang).generation._index/components/fallback-task-card"
-import { GenerationWorkCard } from "~/routes/($lang).generation._index/components/generation-work-card "
-import type { FragmentOf } from "gql.tada"
+import {
+  GenerationWorkCard,
+  GenerationWorkCardFragment,
+} from "~/routes/($lang).generation._index/components/generation-work-card "
+import { graphql, type FragmentOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -13,7 +15,7 @@ type Props = {
   loading: boolean
   onCancel?(): void
   thumbnailSize: number
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof GenerationWorkListItemFragment>[]
   isPreviewByHover: boolean
 }
 
@@ -68,3 +70,10 @@ export function GenerationWorkList(props: Props) {
     </>
   )
 }
+
+export const GenerationWorkListItemFragment = graphql(
+  `fragment GenerationWorkListItem on WorkNode @_unmask {
+    ...GenerationWorkCard
+  }`,
+  [GenerationWorkCardFragment],
+)

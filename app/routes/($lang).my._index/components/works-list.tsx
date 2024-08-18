@@ -1,23 +1,14 @@
 import type { SortType } from "~/types/sort-type"
 import { WorksSpList } from "~/routes/($lang).my._index/components/works-sp-list"
-import { WorksListTable } from "~/routes/($lang).my._index/components/works-list-table"
+import {
+  WorksListTable,
+  WorksListTableItemFragment,
+} from "~/routes/($lang).my._index/components/works-list-table"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  works: {
-    id: string
-    uuid: string
-    title: string
-    thumbnailImageUrl: string
-    likesCount: number
-    bookmarksCount: number
-    commentsCount: number
-    viewsCount: number
-    createdAt: number
-    accessType: IntrospectionEnum<"AccessType">
-    workType: IntrospectionEnum<"WorkType">
-    isTagEditable: boolean
-  }[]
+  works: FragmentOf<typeof WorkListItemFragment>[]
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   accessType: IntrospectionEnum<"AccessType"> | null
@@ -39,20 +30,11 @@ type Props = {
  * 作品一覧
  */
 export function WorksList(props: Props) {
-  const truncateTitle = (title: string, maxLength: number) => {
-    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
-  }
-
   return (
     <>
       <div className="hidden md:block">
         <WorksListTable
-          works={props.works.map((work) => {
-            return {
-              ...work,
-              title: truncateTitle(work.title, 32),
-            }
-          })}
+          works={props.works}
           sort={props.sort}
           orderBy={props.orderBy}
           onClickTitleSortButton={props.onClickTitleSortButton}
@@ -67,12 +49,7 @@ export function WorksList(props: Props) {
       </div>
       <div className="block md:hidden">
         <WorksSpList
-          works={props.works.map((work) => {
-            return {
-              ...work,
-              title: truncateTitle(work.title, 32),
-            }
-          })}
+          works={props.works}
           sort={props.sort}
           orderBy={props.orderBy}
         />
@@ -80,3 +57,10 @@ export function WorksList(props: Props) {
     </>
   )
 }
+
+export const WorkListItemFragment = graphql(
+  `fragment WorkListItem on WorkNode @_unmask {
+    ...WorksListTableItem
+  }`,
+  [WorksListTableItemFragment],
+)

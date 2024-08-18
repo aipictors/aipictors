@@ -1,10 +1,8 @@
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-
 /**
  * 作品の種別の文言を返す
  * @param
  */
-export const toWorkTypeText = (type: IntrospectionEnum<"WorkType">) => {
+export const toWorkTypeText = (type: string) => {
   switch (type) {
     case "WORK":
       return "画像"

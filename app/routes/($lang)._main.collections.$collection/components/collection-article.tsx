@@ -1,12 +1,14 @@
 import React from "react"
 import { CollectionHeader } from "./collection-header"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
-import { CollectionWorkList } from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
-import type { partialFolderFieldsFragment } from "~/routes/($lang)._main.collections.$collection/route"
+import {
+  CollectionWorkList,
+  CollectionWorkListItemFragment,
+} from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
 
 type Props = {
-  collection: FragmentOf<typeof partialFolderFieldsFragment>
+  collection: FragmentOf<typeof FolderArticleFragment>
 }
 
 export function CollectionArticle(props: Props) {
@@ -39,3 +41,24 @@ export function CollectionArticle(props: Props) {
     </div>
   )
 }
+
+export const FolderArticleFragment = graphql(
+  `fragment FolderArticle on FolderNode @_unmask {
+      id
+      thumbnailImageURL
+      title
+      description
+      tags
+      user {
+        id
+        name
+        iconUrl
+        login
+      }
+      worksCount
+      works(offset: 0, limit: 16) {
+        ...CollectionWorkListItem
+      }
+  }`,
+  [CollectionWorkListItemFragment],
+)

@@ -8,11 +8,16 @@ import {
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { createClient } from "~/lib/client"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { EventWorkList } from "~/routes/($lang).events.$event._index/components/event-work-list"
+import {
+  EventWorkList,
+  EventWorkListItemFragment,
+} from "~/routes/($lang).events.$event._index/components/event-work-list"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { RefreshCcwIcon } from "lucide-react"
-import { EventAwardWorkList } from "~/routes/($lang).events.$event._index/components/event-award-work-list"
+import {
+  EventAwardWorkList,
+  EventAwardWorkListItemFragment,
+} from "~/routes/($lang).events.$event._index/components/event-award-work-list"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 
@@ -180,12 +185,12 @@ const appEventQuery = graphql(
       tag
       worksCount
       works(offset: $offset, limit: $limit, where: $where) {
-        ...PartialWorkFields
+        ...EventWorkListItem
       }
       awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
-        ...PartialWorkFields
+        ...EventAwardWorkListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [EventAwardWorkListItemFragment, EventWorkListItemFragment],
 )

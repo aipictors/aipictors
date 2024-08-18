@@ -1,11 +1,13 @@
 import type { FragmentOf } from "gql.tada"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { ThemeArticle } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
+import {
+  ThemeArticle,
+  type ThemeWorkFragment,
+} from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof ThemeWorkFragment>[]
   worksCount: number
-  firstWork: FragmentOf<typeof partialWorkFieldsFragment> | null
+  firstWork: FragmentOf<typeof ThemeWorkFragment> | null
   isSensitive: boolean
   title: string
   year: number

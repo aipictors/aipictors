@@ -1,18 +1,17 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { IconUrl } from "~/components/icon-url"
 import { ParamsError } from "~/errors/params-error"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import {
   UserContents,
-  userProfileFragment,
+  UserProfileFragment,
 } from "~/routes/($lang)._main.users.$user/components/user-contents"
 import {
   UserHomeMain,
   userHomeMainFragment,
 } from "~/routes/($lang)._main.users.$user/components/user-home-main"
 import {
-  userProfileIconFragment,
+  UserProfileIconFragment,
   UserProfileNameIcon,
 } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -32,26 +31,6 @@ export async function loader(props: LoaderFunctionArgs) {
     query: userQuery,
     variables: {
       userId: decodeURIComponent(props.params.user),
-      worksWhere: {
-        isSensitive: true,
-      },
-      followeesWorksWhere: {},
-      followersWorksWhere: {},
-      bookmarksOffset: 0,
-      bookmarksLimit: 0,
-      bookmarksWhere: {
-        isSensitive: true,
-      },
-      worksOffset: 0,
-      worksLimit: 0,
-      followeesOffset: 0,
-      followeesLimit: 0,
-      followeesWorksOffset: 0,
-      followeesWorksLimit: 0,
-      followersOffset: 0,
-      followersLimit: 0,
-      followersWorksOffset: 0,
-      followersWorksLimit: 0,
     },
   })
 
@@ -174,71 +153,12 @@ export default function UserLayout() {
 const userQuery = graphql(
   `query User(
     $userId: ID!,
-    $worksOffset: Int!,
-    $worksLimit: Int!,
-    $worksWhere: UserWorksWhereInput,
-    $followeesOffset: Int!,
-    $followeesLimit: Int!,
-    $followeesWorksOffset: Int!,
-    $followeesWorksLimit: Int!,
-    $followeesWorksWhere: UserWorksWhereInput,
-    $followersOffset: Int!,
-    $followersLimit: Int!,
-    $followersWorksOffset: Int!,
-    $followersWorksLimit: Int!
-    $followersWorksWhere: UserWorksWhereInput,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
       ...UserHomeMain
       ...UserProfile
       ...UserProfileIcon
-      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
-        ...PartialWorkFields
-      }
-      followees(offset: $followeesOffset, limit: $followeesLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      followers(offset: $followersOffset, limit: $followersLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
-        ...PartialWorkFields
-      }
-      featuredSensitiveWorks {
-        ...PartialWorkFields
-      }
-      featuredWorks {
-        ...PartialWorkFields
-      }
     }
   }`,
-  [
-    userHomeMainFragment,
-    userProfileFragment,
-    userProfileIconFragment,
-    partialWorkFieldsFragment,
-  ],
+  [userHomeMainFragment, UserProfileFragment, UserProfileIconFragment],
 )

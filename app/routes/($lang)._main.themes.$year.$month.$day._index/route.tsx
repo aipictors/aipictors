@@ -1,9 +1,10 @@
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeArticleContainer } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article-container"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -96,28 +97,21 @@ const dailyThemesQuery = graphql(
       day
       worksCount
       firstWork {
-        ...PartialWorkFields
+        ...PhotoAlbumWork
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [PhotoAlbumWorkFragment],
 )
 
-export const themeWorksAndCountQuery = graphql(
+console.log("ThemeWorkFragment", ThemeWorkFragment)
+
+const themeWorksAndCountQuery = graphql(
   `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...ThemeWork
     }
     worksCount(where: $where)
   }`,
-  [partialWorkFieldsFragment],
-)
-
-export const themeWorksQuery = graphql(
-  `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
-    }
-  }`,
-  [partialWorkFieldsFragment],
+  [ThemeWorkFragment],
 )

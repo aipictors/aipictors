@@ -1,11 +1,10 @@
 import { Switch } from "~/components/ui/switch"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
 import { Link } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof UserWorkListItemFragment>[]
 }
 
 export function UserWorkList(props: Props) {
@@ -29,3 +28,12 @@ export function UserWorkList(props: Props) {
     </div>
   )
 }
+
+export const UserWorkListItemFragment = graphql(
+  `fragment UserWorkListItem on WorkNode @_unmask {
+    id
+    largeThumbnailImageURL
+    largeThumbnailImageHeight
+    largeThumbnailImageWidth
+  }`,
+)

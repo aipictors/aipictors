@@ -6,7 +6,10 @@ import { CropImageField } from "~/components/crop-image-field"
 import { Input } from "~/components/ui/input"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Button } from "~/components/ui/button"
-import { SelectCreatedWorksDialog } from "~/routes/($lang).my._index/components/select-created-works-dialog"
+import {
+  type DialogWorkFragment,
+  SelectCreatedWorksDialog,
+} from "~/routes/($lang).my._index/components/select-created-works-dialog"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { AuthContext } from "~/contexts/auth-context"
@@ -15,7 +18,6 @@ import { createRandomString } from "~/routes/($lang).generation._index/utils/cre
 import { toast } from "sonner"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { type FragmentOf, graphql } from "gql.tada"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 type Props = {
   children: React.ReactNode
@@ -39,7 +41,7 @@ export function CreateAlbumDialog(props: Props) {
   const [description, setDescription] = useState<string>("")
 
   const [selectedWorks, setSelectedWorks] = useState<
-    FragmentOf<typeof partialWorkFieldsFragment>[]
+    FragmentOf<typeof DialogWorkFragment>[]
   >([])
 
   const [isCreating, setIsCreating] = useState<boolean>(false)
