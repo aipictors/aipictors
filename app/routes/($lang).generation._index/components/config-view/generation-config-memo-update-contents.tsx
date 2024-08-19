@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { Textarea } from "~/components/ui/textarea"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
@@ -337,18 +336,11 @@ const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
         id
-        ...PassFields
       }
     }
   }`,
-  [passFieldsFragment],
 )
 
 const deleteImageGenerationMemoMutation = graphql(

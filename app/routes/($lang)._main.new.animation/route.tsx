@@ -11,6 +11,7 @@ import {
   PostAnimationFormInput,
   PostAnimationFormAiModelFragment,
   PostAnimationFormAlbumFragment,
+  PostAnimationFormPassFragment,
 } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { PostAnimationFormUploader } from "~/routes/($lang)._main.new.animation/components/post-animation-form-uploader"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
@@ -381,26 +382,8 @@ const ViewerQuery = graphql(
     viewer {
       id
       token
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
-        id
-        type
-        payment {
-          id
-          amount
-          stripePaymentIntentId
-        }
-        isDisabled
-        periodStart
-        periodEnd
-        trialPeriodStart
-        trialPeriodEnd
-        createdAt
-        price
+        ...PostAnimationFormPass
       }
     }
     albums(
@@ -446,7 +429,11 @@ const ViewerQuery = graphql(
       endAt
     }
   }`,
-  [PostAnimationFormAiModelFragment, PostAnimationFormAlbumFragment],
+  [
+    PostAnimationFormAiModelFragment,
+    PostAnimationFormAlbumFragment,
+    PostAnimationFormPassFragment,
+  ],
 )
 
 const CreateWorkMutation = graphql(

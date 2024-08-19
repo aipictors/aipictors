@@ -1,7 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
@@ -12,6 +11,7 @@ import {
   PostImageFormAiModelFragment,
   PostImageFormAlbumFragment,
   PostImageFormInput,
+  PostImageFormPassFragment,
 } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
@@ -647,14 +647,8 @@ const viewerQuery = graphql(
     viewer {
       id
       token
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
-        id
-        ...PassFields
+        ...PostImageFormPass
       }
     }
     albums(
@@ -702,7 +696,7 @@ const viewerQuery = graphql(
   [
     PostImageFormAiModelFragment,
     PostImageFormAlbumFragment,
-    passFieldsFragment,
+    PostImageFormPassFragment,
   ],
 )
 
@@ -774,7 +768,7 @@ const workQuery = graphql(
         }
       }
       album {
-        ...PostImageFormAlbum
+        id
       }
       dailyTheme {
         id
@@ -786,7 +780,6 @@ const workQuery = graphql(
       }
     }
   }`,
-  [PostImageFormAlbumFragment],
 )
 
 const updateWorkMutation = graphql(

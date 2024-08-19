@@ -1,7 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
@@ -24,6 +23,7 @@ import {
   PostAnimationFormInput,
   PostAnimationFormAiModelFragment,
   PostAnimationFormAlbumFragment,
+  PostAnimationFormPassFragment,
 } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import React from "react"
@@ -555,8 +555,7 @@ const viewerQuery = graphql(
         hasSignedImageGenerationTerms
       }
       currentPass {
-        id
-        ...PassFields
+        ...PostAnimationFormPass
       }
     }
     albums(
@@ -604,7 +603,7 @@ const viewerQuery = graphql(
   [
     PostAnimationFormAiModelFragment,
     PostAnimationFormAlbumFragment,
-    passFieldsFragment,
+    PostAnimationFormPassFragment,
   ],
 )
 
@@ -676,7 +675,7 @@ const workQuery = graphql(
         }
       }
       album {
-        ...PostAnimationFormAlbum
+        id
       }
       dailyTheme {
         id
@@ -688,7 +687,6 @@ const workQuery = graphql(
       }
     }
   }`,
-  [PostAnimationFormAlbumFragment],
 )
 
 const updateWorkMutation = graphql(

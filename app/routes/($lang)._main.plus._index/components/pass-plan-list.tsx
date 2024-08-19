@@ -1,4 +1,3 @@
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { PassPlanDescription } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
@@ -101,15 +100,10 @@ const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
-        ...PassFields
+        id
+        type
       }
     }
   }`,
-  [passFieldsFragment],
 )

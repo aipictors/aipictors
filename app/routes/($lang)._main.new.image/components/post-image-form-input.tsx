@@ -14,7 +14,6 @@ import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/p
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
-import type { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
 import type { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
 import type { InferInput } from "valibot"
@@ -29,7 +28,7 @@ type Props = {
   dispatch: Dispatch<PostImageFormInputAction>
   state: PostImageFormInputState
   albums: FragmentOf<typeof PostImageFormAlbumFragment>[]
-  currentPass: FragmentOf<typeof passFieldsFragment> | null
+  currentPass: FragmentOf<typeof PostImageFormPassFragment> | null
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
   themes: { date: string; title: string; id: string }[] | null
@@ -377,5 +376,12 @@ export const PostImageFormAiModelFragment = graphql(
     generationModelId
     workModelId
     thumbnailImageURL
+  }`,
+)
+
+export const PostImageFormPassFragment = graphql(
+  `fragment PostImageFormPass on PassNode @_unmask {
+    id
+    type
   }`,
 )

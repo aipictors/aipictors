@@ -1,7 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { cn } from "~/lib/cn"
 import { toDateText } from "~/utils/to-date-text"
 import { PassBenefitList } from "~/routes/($lang)._main.plus._index/components/pass-benefit-list"
@@ -120,17 +119,14 @@ const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
-        ...PassFields
+        id
+        type
+        price
+        periodEnd
       }
     }
   }`,
-  [passFieldsFragment],
 )
 
 const createCustomerPortalSessionMutation = graphql(
