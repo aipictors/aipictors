@@ -1,17 +1,19 @@
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import { cn } from "~/lib/cn"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
 import { FallbackTaskCard } from "~/routes/($lang).generation._index/components/fallback-task-card"
-import { GenerationTaskCard } from "~/routes/($lang).generation._index/components/generation-task-card"
+import {
+  GenerationResultCardFragment,
+  GenerationResultCardTaskFragment,
+  GenerationTaskCard,
+} from "~/routes/($lang).generation._index/components/generation-task-card"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { toast } from "sonner"
@@ -27,8 +29,8 @@ type Props = {
   hidedTaskIds: string[]
   viewCount?: number
   currentPage: number
-  results: FragmentOf<typeof imageGenerationResultFieldsFragment>[]
-  tasks: FragmentOf<typeof imageGenerationTaskFieldsFragment>[]
+  results: FragmentOf<typeof GenerationTaskListItemFragment>[]
+  tasks: FragmentOf<typeof GenerationTaskListItemTaskFragment>[]
   userToken: string
   setCurrentPage: (currentPage: number) => void
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
@@ -222,3 +224,28 @@ export function GenerationTaskList(props: Props) {
     </>
   )
 }
+
+export const GenerationTaskListItemFragment = graphql(
+  `fragment GenerationTaskListItem on ImageGenerationResultNode @_unmask {
+    id
+    model {
+      id
+      type
+    }
+    ...GenerationResultCard
+  }`,
+  [GenerationResultCardFragment],
+)
+
+export const GenerationTaskListItemTaskFragment = graphql(
+  `fragment GenerationTaskListItemTask on ImageGenerationTaskNode @_unmask {
+    id
+    isDeleted
+    model {
+      id
+      type
+    }
+    ...GenerationResultCardTask
+  }`,
+  [GenerationResultCardTaskFragment],
+)

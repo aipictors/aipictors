@@ -1,7 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { Slider } from "~/components/ui/slider"
 import { Toggle } from "~/components/ui/toggle"
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import { GenerationTasksDeleteButton } from "~/routes/($lang).generation._index/components/generation-tasks-delete-button"
 import { GenerationImageDownloadButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-download-button"
 import { GenerationImagePostButton } from "~/routes/($lang).generation._index/components/task-view/generation-image-upload-button"
@@ -213,8 +212,7 @@ export function GenerationTaskListActions(props: Props) {
 const deleteImageGenerationResultMutation = graphql(
   `mutation deleteImageGenerationResult($input: DeleteImageGenerationResultInput!) {
     deleteImageGenerationResult(input: $input) {
-      ...ImageGenerationResultFields
+      id
     }
   }`,
-  [imageGenerationResultFieldsFragment],
 )

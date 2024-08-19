@@ -15,14 +15,12 @@ import {
 import { CopyButton } from "./copy-button"
 import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import type { FragmentOf } from "gql.tada"
-import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
-import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
   task:
-    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
-    | FragmentOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof InProgressGenerationImageResultFragment>
+    | FragmentOf<typeof InProgressGenerationImageResultTaskFragment>
     | undefined
 }
 
@@ -201,3 +199,49 @@ export function InProgressImageGenerationTaskResult(props: Props) {
     </>
   )
 }
+
+export const InProgressGenerationImageResultFragment = graphql(
+  `fragment InProgressGenerationImageResult on ImageGenerationResultNode @_unmask {
+    id
+    prompt
+    negativePrompt
+    scale
+    steps
+    sampler
+    sizeType
+    upscaleSize
+    status
+    clipSkip
+    vae
+    seed
+    controlNetModule
+    controlNetWeight
+    model {
+      id
+      name
+    }
+  }`,
+)
+
+export const InProgressGenerationImageResultTaskFragment = graphql(
+  `fragment InProgressGenerationImageResultTask on ImageGenerationTaskNode @_unmask {
+    id
+    prompt
+    negativePrompt
+    scale
+    steps
+    sampler
+    sizeType
+    upscaleSize
+    status
+    clipSkip
+    vae
+    seed
+    controlNetModule
+    controlNetWeight
+    model {
+      id
+      name
+    }
+  }`,
+)

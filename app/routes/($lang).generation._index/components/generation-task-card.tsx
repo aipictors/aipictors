@@ -1,14 +1,20 @@
-import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
-import { GenerationTaskEditableCard } from "~/routes/($lang).generation._index/components/generation-task-editable-card"
-import { GenerationTaskResponsiveCard } from "~/routes/($lang).generation._index/components/generation-task-responsive-card"
+import {
+  EditableGenerationResultCardFragment,
+  EditableGenerationResultCardTaskFragment,
+  GenerationTaskEditableCard,
+} from "~/routes/($lang).generation._index/components/generation-task-editable-card"
+import {
+  GenerationTaskResponsiveCard,
+  ReadOnlyGenerationResultCardFragment,
+  ReadOnlyGenerationResultCardTaskFragment,
+} from "~/routes/($lang).generation._index/components/generation-task-responsive-card"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
   task:
-    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
-    | FragmentOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof GenerationResultCardFragment>
+    | FragmentOf<typeof GenerationResultCardTaskFragment>
   taskIds?: string[]
   isEditMode: boolean
   isSelected?: boolean
@@ -73,3 +79,22 @@ export function GenerationTaskCard(props: Props) {
     </>
   )
 }
+
+export const GenerationResultCardFragment = graphql(
+  `fragment GenerationResultCard on ImageGenerationResultNode @_unmask {
+    ...EditableGenerationResultCard
+    ...ReadOnlyGenerationResultCard
+  }`,
+  [EditableGenerationResultCardFragment, ReadOnlyGenerationResultCardFragment],
+)
+
+export const GenerationResultCardTaskFragment = graphql(
+  `fragment GenerationResultCardTask on ImageGenerationTaskNode @_unmask {
+    ...EditableGenerationResultCardTask
+    ...ReadOnlyGenerationResultCardTask
+  }`,
+  [
+    EditableGenerationResultCardTaskFragment,
+    ReadOnlyGenerationResultCardTaskFragment,
+  ],
+)

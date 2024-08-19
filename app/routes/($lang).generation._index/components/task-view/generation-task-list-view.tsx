@@ -1,8 +1,10 @@
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
 import { config } from "~/config"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
-import { GenerationTaskList } from "~/routes/($lang).generation._index/components/task-view/generation-task-list"
+import {
+  GenerationTaskList,
+  GenerationTaskListItemFragment,
+  GenerationTaskListItemTaskFragment,
+} from "~/routes/($lang).generation._index/components/task-view/generation-task-list"
 import { GenerationTaskListActions } from "~/routes/($lang).generation._index/components/task-view/generation-task-list-actions"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -249,12 +251,11 @@ const viewerImageGenerationResultsQuery = graphql(
     viewer {
       id
       imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
-        id
-        ...ImageGenerationResultFields
+        ...GenerationTaskListItem
       }
     }
   }`,
-  [imageGenerationResultFieldsFragment],
+  [GenerationTaskListItemFragment],
 )
 
 const viewerImageGenerationTasksQuery = graphql(
@@ -262,10 +263,9 @@ const viewerImageGenerationTasksQuery = graphql(
     viewer {
       id
       imageGenerationTasks(offset: $offset, limit: $limit, where: $where) {
-        id
-        ...ImageGenerationTaskFields
+        ...GenerationTaskListItemTask
       }
     }
   }`,
-  [imageGenerationTaskFieldsFragment],
+  [GenerationTaskListItemTaskFragment],
 )
