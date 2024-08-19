@@ -16,8 +16,10 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
-import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
-import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
+import {
+  StickerButton,
+  StickerButtonFragment,
+} from "~/routes/($lang)._main.posts.$post/components/sticker-button"
 
 type Props = {
   workId: string
@@ -642,13 +644,15 @@ const createWorkCommentMutation = graphql(
 const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
+      id
       user {
+        id
         iconUrl
       }
       userStickers(offset: 0, limit: 5, orderBy: DATE_USED) {
-        ...PartialStickerFields
+        ...StickerButton
       }
     }
   }`,
-  [partialStickerFieldsFragment],
+  [StickerButtonFragment],
 )

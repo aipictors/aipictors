@@ -1,10 +1,9 @@
-import type { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
 import { Link } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { Download, MessageCircle } from "lucide-react"
 
 type Props = {
-  stickers: FragmentOf<typeof partialStickerFieldsFragment>[]
+  stickers: FragmentOf<typeof StickerListItemFragment>[]
   targetRowHeight?: number
 }
 
@@ -50,3 +49,13 @@ export function ResponsiveStickersList(props: Props) {
     </div>
   )
 }
+
+export const StickerListItemFragment = graphql(
+  `fragment StickerListItem on StickerNode @_unmask {
+    id
+    title
+    downloadsCount
+    usesCount
+    imageUrl
+  }`,
+)

@@ -1,11 +1,9 @@
 import { Card, CardContent } from "~/components/ui/card"
 import { DownloadIcon, StampIcon } from "lucide-react"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  title?: string
-  imageURL: string | null
-  downloadsCount?: number
-  usesCount?: number
+  sticker: FragmentOf<typeof StickerCardFragment>
 }
 
 export function StickerCard(props: Props) {
@@ -14,21 +12,21 @@ export function StickerCard(props: Props) {
       <Card className="h-full">
         <img
           className="rounded-lg"
-          src={props.imageURL ?? ""}
-          alt={props.title ?? "no title"}
+          src={props.sticker.imageUrl ?? ""}
+          alt={props.sticker.title ?? "no title"}
         />
         <CardContent className="flex flex-col justify-between space-y-1 p-2">
           <h3 className="overflow-hidden text-ellipsis whitespace-nowrap font-bold text-sm">
-            {props.title ?? "no title"}
+            {props.sticker.title ?? "no title"}
           </h3>
           <div className="flex items-center space-x-4">
             <div className="flex">
               <DownloadIcon className="mr-2 w-4" />
-              <span>{props.downloadsCount}</span>
+              <span>{props.sticker.downloadsCount}</span>
             </div>
             <div className="flex">
               <StampIcon className="mr-2 w-4" />
-              <span>{props.usesCount}</span>
+              <span>{props.sticker.usesCount}</span>
             </div>
           </div>
         </CardContent>
@@ -36,3 +34,13 @@ export function StickerCard(props: Props) {
     </article>
   )
 }
+
+export const StickerCardFragment = graphql(
+  `fragment StickerCard on StickerNode @_unmask {
+    id
+    title
+    imageUrl
+    downloadsCount
+    usesCount
+  }`,
+)

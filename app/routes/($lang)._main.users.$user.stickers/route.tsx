@@ -1,7 +1,9 @@
 import { ParamsError } from "~/errors/params-error"
-import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
 import { createClient } from "~/lib/client"
-import { UserStickerList } from "~/routes/($lang)._main.users.$user.stickers/components/user-sticker-list"
+import {
+  UserStickerList,
+  UserStickerListItemFragment,
+} from "~/routes/($lang)._main.users.$user.stickers/components/user-sticker-list"
 import { UserWorkListActions } from "~/routes/($lang)._main.users.$user/components/user-work-list-actions"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
@@ -55,9 +57,9 @@ const userStickersQuery = graphql(
     user(id: $userId) {
       id
       stickers(offset: $offset, limit: $limit) {
-        ...PartialStickerFields
+        ...UserStickerListItem
       }
     }
   }`,
-  [partialStickerFieldsFragment],
+  [UserStickerListItemFragment],
 )

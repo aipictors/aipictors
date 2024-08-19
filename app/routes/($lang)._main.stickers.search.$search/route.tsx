@@ -1,7 +1,9 @@
 import { ParamsError } from "~/errors/params-error"
-import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
 import { createClient } from "~/lib/client"
-import { StickerList } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
+import {
+  StickerList,
+  StickerListItemFragment,
+} from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
 import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -64,8 +66,8 @@ export default function Stickers() {
 const stickersQuery = graphql(
   `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
     stickers(offset: $offset, limit: $limit, where: $where) {
-      ...PartialStickerFields
+      ...StickerListItem
     }
   }`,
-  [partialStickerFieldsFragment],
+  [StickerListItemFragment],
 )
