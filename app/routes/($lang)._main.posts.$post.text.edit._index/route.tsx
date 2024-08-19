@@ -1,7 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
@@ -23,6 +22,7 @@ import { EditTextFormUploader } from "~/routes/($lang)._main.posts.$post.text.ed
 import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
 import {
   PostTextFormAiModelFragment,
+  PostTextFormAlbumFragment,
   PostTextFormInput,
 } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
@@ -670,17 +670,7 @@ const viewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      ...PartialAlbumFields
-      user {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      ...PostTextFormAlbum
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       ...PostTextFormAiModel
@@ -711,7 +701,7 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [PostTextFormAiModelFragment, partialAlbumFieldsFragment, passFieldsFragment],
+  [PostTextFormAiModelFragment, PostTextFormAlbumFragment, passFieldsFragment],
 )
 
 const workQuery = graphql(
@@ -783,9 +773,7 @@ const workQuery = graphql(
         }
       }
       album {
-        id
-        title
-        description
+        ...PostTextFormAlbum
       }
       dailyTheme {
         id
@@ -797,6 +785,7 @@ const workQuery = graphql(
       }
     }
   }`,
+  [PostTextFormAlbumFragment],
 )
 
 const updateWorkMutation = graphql(

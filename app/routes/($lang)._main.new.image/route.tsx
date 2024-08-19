@@ -14,6 +14,7 @@ import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import {
   PostImageFormAiModelFragment,
+  PostImageFormAlbumFragment,
   PostImageFormInput,
 } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
@@ -638,37 +639,7 @@ const ViewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      id
-      title
-      isSensitive
-      likesCount
-      viewsCount
-      thumbnailImageURL
-      description
-      works(limit: $limit, offset: $offset) {
-        id
-        title
-        imageURL
-        largeThumbnailImageURL
-        smallThumbnailImageURL
-        accessType
-        rating
-        createdAt
-      }
-      rating
-      createdAt
-      slug
-      userId
-      user {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      ...PostImageFormAlbum
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
@@ -701,7 +672,7 @@ const ViewerQuery = graphql(
       endAt
     }
   }`,
-  [PostImageFormAiModelFragment],
+  [PostImageFormAiModelFragment, PostImageFormAlbumFragment],
 )
 
 const CreateWorkMutation = graphql(

@@ -5,17 +5,10 @@ import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { Link } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  album: {
-    id: string
-    userId: string
-    title: string
-    slug: string
-    thumbnailImageUrl: string
-    createdAt: string
-  }
+  album: FragmentOf<typeof MobileAlbumListItemFragment>
 }
 
 /**
@@ -67,7 +60,7 @@ export function AlbumsSpListItem(props: Props) {
               className="mr-2"
             >
               <img
-                src={props.album.thumbnailImageUrl}
+                src={props.album.thumbnailImageURL ?? undefined}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
@@ -105,6 +98,17 @@ export function AlbumsSpListItem(props: Props) {
     </>
   )
 }
+
+export const MobileAlbumListItemFragment = graphql(
+  `fragment MobileAlbumListItem on AlbumNode @_unmask {
+    id
+    title
+    createdAt
+    userId
+    thumbnailImageURL
+    slug
+  }`,
+)
 
 const deleteWorkMutation = graphql(
   `mutation DeleteWork($input: DeleteWorkInput!) {

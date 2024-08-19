@@ -2,12 +2,13 @@ import type { SortType } from "~/types/sort-type"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { toDateTimeText } from "~/utils/to-date-time-text"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { AlbumsList } from "~/routes/($lang).my._index/components/albums-list"
+import {
+  AlbumListItemFragment,
+  AlbumsList,
+} from "~/routes/($lang).my._index/components/albums-list"
 import { WorksSeriesAddButton } from "~/routes/($lang).my._index/components/works-series-add-button"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -64,18 +65,7 @@ export function AlbumsListContainer(props: Props) {
         <WorksSeriesAddButton refetch={refetchAlbums} />
       </div>
       <AlbumsList
-        albums={
-          albums?.map((album) => ({
-            id: album.id,
-            userId: album.userId,
-            title: album.title,
-            slug: album.slug ?? "",
-            thumbnailImageUrl: album.thumbnailImageURL
-              ? album.thumbnailImageURL
-              : album.works?.[0]?.smallThumbnailImageURL ?? "",
-            createdAt: toDateTimeText(album.createdAt),
-          })) ?? []
-        }
+        albums={albums}
         sort={props.sort}
         orderBy={props.orderBy}
         onClickTitleSortButton={props.onClickAlbumTitleSortButton}
@@ -98,18 +88,8 @@ export function AlbumsListContainer(props: Props) {
 const albumsQuery = graphql(
   `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
     albums(offset: $offset, limit: $limit, where: $where) {
-      ...PartialAlbumFields
-      user {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      ...AlbumListItem
     }
   }`,
-  [partialAlbumFieldsFragment],
+  [AlbumListItemFragment],
 )

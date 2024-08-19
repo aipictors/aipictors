@@ -13,7 +13,6 @@ import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/p
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
-import type { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import type { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
 import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
@@ -24,7 +23,7 @@ import type { PostAnimationFormInputState } from "~/routes/($lang)._main.new.ani
 type Props = {
   dispatch: Dispatch<PostAnimationFormInputAction>
   state: PostAnimationFormInputState
-  albums: FragmentOf<typeof partialAlbumFieldsFragment>[]
+  albums: FragmentOf<typeof PostAnimationFormAlbumFragment>[]
   currentPass: FragmentOf<typeof passFieldsFragment> | null
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
@@ -289,6 +288,13 @@ export function PostAnimationFormInput(props: Props) {
     </div>
   )
 }
+
+export const PostAnimationFormAlbumFragment = graphql(
+  `fragment PostAnimationFormAlbum on AlbumNode @_unmask {
+    id
+    title
+  }`,
+)
 
 const pageQuery = graphql(
   `query PageQuery(
