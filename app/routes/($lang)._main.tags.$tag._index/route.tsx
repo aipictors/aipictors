@@ -1,11 +1,11 @@
 import { ParamsError } from "~/errors/params-error"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import { TagWorkSection } from "~/routes/($lang)._main.tags._index/components/tag-work-section"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 export async function loader(props: LoaderFunctionArgs) {
   const client = createClient()
@@ -70,18 +70,18 @@ export default function Tag() {
 const tagWorksAndCountQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...PhotoAlbumWork
     }
     worksCount(where: $where)
   }`,
-  [partialWorkFieldsFragment],
+  [PhotoAlbumWorkFragment],
 )
 
 export const tagWorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...PhotoAlbumWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [PhotoAlbumWorkFragment],
 )

@@ -1,29 +1,22 @@
 import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import { Link } from "@remix-run/react"
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircle } from "lucide-react"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  works: {
-    id: string
-    title: string
-    thumbnailImageUrl: string
-    likesCount: number
-    bookmarksCount: number
-    commentsCount: number
-    viewsCount: number
-    createdAt: string
-    accessType: IntrospectionEnum<"AccessType">
-    isTagEditable: boolean
-  }[]
+  works: FragmentOf<typeof BookmarkWorksSpListItemFragment>[]
 }
 
 /**
  * スマホ向けブックマーク作品一覧
  */
 export function BookmarkWorksSpList(props: Props) {
+  const truncateTitle = (title: string, maxLength: number) => {
+    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
+  }
+
   return (
     <>
       {props.works.map((work, index) => (
@@ -32,7 +25,7 @@ export function BookmarkWorksSpList(props: Props) {
           <div className="mt-2 mb-2 flex">
             <Link to={`/posts/${work.id}`} className="mr-2">
               <img
-                src={work.thumbnailImageUrl}
+                src={work.smallThumbnailImageURL}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
@@ -40,7 +33,9 @@ export function BookmarkWorksSpList(props: Props) {
             <div className="w-full space-y-2">
               <div className="w-full space-y-2">
                 <Link to={`/posts/${work.id}`}>
-                  <div className="w-full font-bold">{work.title}</div>
+                  <div className="w-full font-bold">
+                    {truncateTitle(work.title, 32)}
+                  </div>
                 </Link>
                 <Badge variant={"secondary"}>
                   {toAccessTypeText(work.accessType)}
@@ -73,3 +68,17 @@ export function BookmarkWorksSpList(props: Props) {
     </>
   )
 }
+
+export const BookmarkWorksSpListItemFragment = graphql(
+  `fragment BookmarkWorksSpListItem on WorkNode @_unmask {
+    id
+    title
+    smallThumbnailImageURL
+    likesCount
+    bookmarksCount
+    commentsCount
+    viewsCount
+    accessType
+    createdAt
+  }`,
+)

@@ -21,10 +21,12 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import React from "react"
 import { EditTextFormUploader } from "~/routes/($lang)._main.posts.$post.text.edit._index/components/edit-text-form-uploader"
 import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
-import { PostTextFormInput } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
+import {
+  PostTextFormAiModelFragment,
+  PostTextFormInput,
+} from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
-import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -681,7 +683,7 @@ const viewerQuery = graphql(
       }
     }
     aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
+      ...PostTextFormAiModel
     }
     dailyThemes(
       limit: 8,
@@ -709,7 +711,7 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [aiModelFieldsFragment, partialAlbumFieldsFragment, passFieldsFragment],
+  [PostTextFormAiModelFragment, partialAlbumFieldsFragment, passFieldsFragment],
 )
 
 const workQuery = graphql(

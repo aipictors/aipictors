@@ -21,10 +21,12 @@ import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditAnimationFormUploader } from "~/routes/($lang)._main.posts.$post.animation.edit._index/components/edit-animation-form-uploader"
 import { postAnimationFormReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-reducer"
-import { PostAnimationFormInput } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
+import {
+  PostAnimationFormInput,
+  PostAnimationFormAiModelFragment,
+} from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import React from "react"
-import { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -580,7 +582,8 @@ const viewerQuery = graphql(
       }
     }
     aiModels(offset: 0, limit: 124, where: {}) {
-      ...AiModelFields
+      id
+      ...PostAnimationFormAiModel
     }
     dailyThemes(
       limit: 8,
@@ -608,7 +611,11 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [aiModelFieldsFragment, partialAlbumFieldsFragment, passFieldsFragment],
+  [
+    PostAnimationFormAiModelFragment,
+    partialAlbumFieldsFragment,
+    passFieldsFragment,
+  ],
 )
 
 const workQuery = graphql(

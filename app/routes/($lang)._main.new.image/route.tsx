@@ -12,7 +12,10 @@ import { Loader2Icon } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
-import { PostImageFormInput } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
+import {
+  PostImageFormAiModelFragment,
+  PostImageFormInput,
+} from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
@@ -669,11 +672,7 @@ const ViewerQuery = graphql(
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
-      name
-      type
-      generationModelId
-      workModelId
-      thumbnailImageURL
+      ...PostImageFormAiModel
     }
     dailyThemes(
       limit: 8,
@@ -702,6 +701,7 @@ const ViewerQuery = graphql(
       endAt
     }
   }`,
+  [PostImageFormAiModelFragment],
 )
 
 const CreateWorkMutation = graphql(

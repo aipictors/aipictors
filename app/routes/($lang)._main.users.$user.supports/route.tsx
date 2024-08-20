@@ -1,5 +1,4 @@
 import { ParamsError } from "~/errors/params-error"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import { UserSupport } from "~/routes/($lang)._main.users.$user.supports/components/user-support"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -18,22 +17,6 @@ export async function loader(props: LoaderFunctionArgs) {
     query: userQuery,
     variables: {
       userId: props.params.user,
-      worksWhere: {},
-      followeesWorksWhere: {},
-      followersWorksWhere: {},
-      bookmarksOffset: 0,
-      bookmarksLimit: 0,
-      bookmarksWhere: {},
-      worksOffset: 0,
-      worksLimit: 0,
-      followeesOffset: 0,
-      followeesLimit: 0,
-      followeesWorksOffset: 0,
-      followeesWorksLimit: 0,
-      followersOffset: 0,
-      followersLimit: 0,
-      followersWorksOffset: 0,
-      followersWorksLimit: 0,
     },
   })
 
@@ -66,91 +49,11 @@ export default function UserSupports() {
 const userQuery = graphql(
   `query User(
     $userId: ID!,
-    $worksOffset: Int!,
-    $worksLimit: Int!,
-    $worksWhere: UserWorksWhereInput,
-    $followeesOffset: Int!,
-    $followeesLimit: Int!,
-    $followeesWorksOffset: Int!,
-    $followeesWorksLimit: Int!,
-    $followeesWorksWhere: UserWorksWhereInput,
-    $followersOffset: Int!,
-    $followersLimit: Int!,
-    $followersWorksOffset: Int!,
-    $followersWorksLimit: Int!
-    $followersWorksWhere: UserWorksWhereInput,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
       id
-      biography
-      createdBookmarksCount
-      login
-      nanoid
       name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
       iconUrl
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
-        ...PartialWorkFields
-      }
-      followees(offset: $followeesOffset, limit: $followeesLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      followers(offset: $followersOffset, limit: $followersLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
-        ...PartialWorkFields
-      }
-      featuredSensitiveWorks {
-        ...PartialWorkFields
-      }
-      featuredWorks {
-        ...PartialWorkFields
-      }
-      biography
-      enBiography
-      instagramAccountId
-      twitterAccountId
-      githubAccountId
-      siteURL
-      mailAddress
-      promptonUser {
-        id
-      }
     }
   }`,
-  [partialWorkFieldsFragment],
 )

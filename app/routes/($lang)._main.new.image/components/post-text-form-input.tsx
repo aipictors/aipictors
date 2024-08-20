@@ -14,7 +14,6 @@ import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/p
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
-import type { aiModelFieldsFragment } from "~/graphql/fragments/ai-model-fields"
 import type { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import type { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -43,7 +42,7 @@ type Props = {
     endAt: number
     slug: string | null
   }
-  aiModels: FragmentOf<typeof aiModelFieldsFragment>[]
+  aiModels: FragmentOf<typeof PostTextFormAiModelFragment>[]
 }
 
 // 日本時間の日付を計算する関数
@@ -342,5 +341,16 @@ const pageQuery = graphql(
       id
       name
     }
+  }`,
+)
+
+export const PostTextFormAiModelFragment = graphql(
+  `fragment PostTextFormAiModel on AiModelNode @_unmask  {
+    id
+    name
+    type
+    generationModelId
+    workModelId
+    thumbnailImageURL
   }`,
 )

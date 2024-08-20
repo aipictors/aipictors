@@ -1,9 +1,11 @@
 import { AppPageHeader } from "~/components/app/app-page-header"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createClient } from "~/lib/client"
 import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { ThemeList } from "~/routes/($lang)._main.themes._index/components/theme-list"
+import {
+  ThemeList,
+  ThemeListItemFragment,
+} from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
@@ -59,17 +61,8 @@ const dailyThemesQuery = graphql(
     $where: DailyThemesWhereInput!
   ) {
     dailyThemes(offset: $offset, limit: $limit, where: $where) {
-      id
-      title
-      dateText
-      year
-      month
-      day
-      worksCount
-      firstWork {
-        ...PartialWorkFields
-      }
+      ...ThemeListItem
     }
   }`,
-  [partialWorkFieldsFragment],
+  [ThemeListItemFragment],
 )

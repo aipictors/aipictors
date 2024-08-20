@@ -10,14 +10,11 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toast } from "sonner"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 type Props = {
   children?: React.ReactNode
-  selectedWorks: FragmentOf<typeof partialWorkFieldsFragment>[]
-  setSelectedWorks: (
-    works: FragmentOf<typeof partialWorkFieldsFragment>[],
-  ) => void
+  selectedWorks: FragmentOf<typeof DialogWorkFragment>[]
+  setSelectedWorks: (works: FragmentOf<typeof DialogWorkFragment>[]) => void
   limit?: number
   isSensitive?: boolean
 }
@@ -65,9 +62,7 @@ export function SelectCreatedWorksDialog(props: Props) {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
 
-  const handleWorkClick = (
-    work: FragmentOf<typeof partialWorkFieldsFragment>,
-  ) => {
+  const handleWorkClick = (work: FragmentOf<typeof DialogWorkFragment>) => {
     if (props.selectedWorks.some((w) => w.id === work.id)) {
       props.setSelectedWorks(
         props.selectedWorks.filter((w) => w.id !== work.id),
@@ -82,7 +77,7 @@ export function SelectCreatedWorksDialog(props: Props) {
   }
 
   const renderWorks = (
-    worksToRender: FragmentOf<typeof partialWorkFieldsFragment>[],
+    worksToRender: FragmentOf<typeof DialogWorkFragment>[],
   ) => {
     return worksToRender.map((work) => (
       <div key={work.id}>
@@ -220,6 +215,14 @@ export function SelectCreatedWorksDialog(props: Props) {
   )
 }
 
+export const DialogWorkFragment = graphql(
+  `fragment DialogWork on WorkNode @_unmask {
+    id
+    title
+    smallThumbnailImageURL
+  }`,
+)
+
 const worksCountQuery = graphql(
   `query WorksCount($where: WorksWhereInput) {
     worksCount(where: $where)
@@ -229,8 +232,8 @@ const worksCountQuery = graphql(
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...DialogWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [DialogWorkFragment],
 )

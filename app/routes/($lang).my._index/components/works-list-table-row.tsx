@@ -5,27 +5,13 @@ import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Link } from "@remix-run/react"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  work: {
-    id: string
-    uuid: string
-    title: string
-    thumbnailImageUrl: string
-    likesCount: number
-    bookmarksCount: number
-    commentsCount: number
-    viewsCount: number
-    createdAt: number
-    accessType: IntrospectionEnum<"AccessType">
-    workType: IntrospectionEnum<"WorkType">
-    isTagEditable: boolean
-  }
+  work: FragmentOf<typeof WorksListTableRowFragment>
 }
 
 /**
@@ -62,13 +48,13 @@ export function WorksListTableRow(props: Props) {
   const [isHidden, setIsHidden] = useState(false)
 
   const editUrl = () => {
-    if (props.work.workType === "WORK") {
+    if (props.work.type === "WORK") {
       return `/posts/${props.work.id}/image/edit`
     }
-    if (props.work.workType === "VIDEO") {
+    if (props.work.type === "VIDEO") {
       return `/posts/${props.work.id}/animation/edit`
     }
-    if (props.work.workType === "COLUMN" || props.work.workType === "NOVEL") {
+    if (props.work.type === "COLUMN" || props.work.type === "NOVEL") {
       return `/posts/${props.work.id}/text/edit`
     }
     return "/"
@@ -114,7 +100,7 @@ export function WorksListTableRow(props: Props) {
           <TableCell>
             <Link to={postUrl()}>
               <img
-                src={props.work.thumbnailImageUrl}
+                src={props.work.smallThumbnailImageURL}
                 alt="thumbnail"
                 className="h-[80px] w-[80px] min-w-[80px] cursor-pointer rounded-md object-cover"
               />{" "}
@@ -131,7 +117,7 @@ export function WorksListTableRow(props: Props) {
           </TableCell>
           <TableCell>{props.work.commentsCount}</TableCell>
           <TableCell>{props.work.viewsCount}</TableCell>
-          <TableCell>{toWorkTypeText(props.work.workType)}</TableCell>
+          <TableCell>{toWorkTypeText(props.work.type)}</TableCell>
           <TableCell>{toAccessTypeText(props.work.accessType)}</TableCell>
           <TableCell>
             {isLoadingDeleteWork ? (
@@ -156,10 +142,27 @@ export function WorksListTableRow(props: Props) {
   )
 }
 
+export const WorksListTableRowFragment = graphql(
+  `fragment WorksListTableRow on WorkNode @_unmask {
+    id
+    uuid
+    title
+    type
+    createdAt
+    accessType
+    smallThumbnailImageURL
+    likesCount
+    bookmarksCount
+    commentsCount
+    viewsCount
+  }`,
+)
+
 const deleteWorkMutation = graphql(
   `mutation DeleteWork($input: DeleteWorkInput!) {
     deleteWork(input: $input) {
       id
+      isDeleted
     }
   }`,
 )

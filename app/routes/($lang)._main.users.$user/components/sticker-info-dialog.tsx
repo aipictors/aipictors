@@ -16,7 +16,7 @@ import React, { useEffect } from "react"
 type Props = {
   title: string
   stickerId: string
-  imageUrl: string
+  imageUrl: string | null
   isDownloaded: boolean
   children: React.ReactNode
 }
@@ -53,13 +53,15 @@ export function StickerInfoDialog(props: Props) {
         <DialogHeader>
           <DialogTitle>タイトル：{props.title}</DialogTitle>
         </DialogHeader>
-        <Link className="m-auto w-24" to={`/stickers/${props.stickerId}`}>
-          <img
-            className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
-            src={props.imageUrl}
-            alt={props.title}
-          />
-        </Link>
+        {props.imageUrl && (
+          <Link className="m-auto w-24" to={`/stickers/${props.stickerId}`}>
+            <img
+              className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
+              src={props.imageUrl}
+              alt={props.title}
+            />
+          </Link>
+        )}
         <DialogFooter>
           {!isDownloaded ? (
             <Button className="w-full" onClick={onDownload}>

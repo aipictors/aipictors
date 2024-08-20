@@ -1,6 +1,5 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
@@ -81,5 +80,4 @@ const userQuery = graphql(
       createdLikesCount
     }
   }`,
-  [partialWorkFieldsFragment],
 )

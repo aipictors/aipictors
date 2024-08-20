@@ -1,7 +1,9 @@
-import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
+import {
+  RankingWorkList,
+  WorkAwardListItemFragment,
+} from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -95,8 +97,8 @@ export default function MonthlyAwards() {
 const workAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
-      ...WorkAwardFields
+      ...WorkAwardListItem
     }
   }`,
-  [workAwardFieldsFragment],
+  [WorkAwardListItemFragment],
 )

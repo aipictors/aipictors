@@ -1,12 +1,14 @@
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"
-import { UserNovelList } from "~/routes/($lang)._main.users.$user.novels/components/user-novel-list"
+import {
+  UserNovelList,
+  UserNovelListItemFragment,
+} from "~/routes/($lang)._main.users.$user.novels/components/user-novel-list"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useParams } from "@remix-run/react"
 import { useContext } from "react"
 import { graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 type Props = {
   page: number
@@ -85,8 +87,8 @@ const worksCountQuery = graphql(
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...UserNovelListItem
     }
   }`,
-  [partialWorkFieldsFragment],
+  [UserNovelListItemFragment],
 )

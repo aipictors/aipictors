@@ -4,10 +4,12 @@ import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { createClient } from "~/lib/client"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { RefreshCcwIcon } from "lucide-react"
-import { EventAwardPagingWorkList } from "~/routes/($lang).events.$event.award._index/components/event-award-paging-work-list"
+import {
+  EventAwardPagingWorkList,
+  EventAwardWorkListItemFragment,
+} from "~/routes/($lang).events.$event.award._index/components/event-award-paging-work-list"
 import { Button } from "~/components/ui/button"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -156,9 +158,9 @@ const appEventQuery = graphql(
       tag
       worksCount
       awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
-        ...PartialWorkFields
+        ...EventAwardWorkListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [EventAwardWorkListItemFragment],
 )

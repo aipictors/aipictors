@@ -3,8 +3,10 @@ import { json, useLoaderData } from "@remix-run/react"
 import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
-import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
-import { RankingSensitiveWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
+import {
+  RankingSensitiveWorkList,
+  SensitiveWorkAwardListItemFragment,
+} from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 
 export async function loader(params: LoaderFunctionArgs) {
@@ -79,8 +81,8 @@ export default function Rankings() {
 const workAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
-      ...WorkAwardFields
+      ...SensitiveWorkAwardListItem
     }
   }`,
-  [workAwardFieldsFragment],
+  [SensitiveWorkAwardListItemFragment],
 )

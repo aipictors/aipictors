@@ -1,7 +1,9 @@
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsiveStickersList } from "~/components/responsive-stickers-list"
+import {
+  ResponsiveStickersList,
+  StickerListItemFragment,
+} from "~/components/responsive-stickers-list"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
@@ -65,8 +67,8 @@ const stickersCountQuery = graphql(
 const stickersQuery = graphql(
   `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
     stickers(offset: $offset, limit: $limit, where: $where) {
-      ...PartialStickerFields
+      ...StickerListItem
     }
   }`,
-  [partialStickerFieldsFragment],
+  [StickerListItemFragment],
 )

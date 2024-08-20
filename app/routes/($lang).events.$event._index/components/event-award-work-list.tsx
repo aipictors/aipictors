@@ -9,11 +9,10 @@ import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof EventAwardWorkListItemFragment>[]
   isSensitive: boolean
   slug: string
 }
@@ -114,13 +113,53 @@ export function EventAwardWorkList(props: Props) {
   )
 }
 
+export const EventAwardWorkListItemFragment = graphql(
+  `fragment EventAwardWorkListItem on WorkNode @_unmask {
+    id
+    title
+    accessType
+    adminAccessType
+    type
+    likesCount
+    commentsCount
+    bookmarksCount
+    viewsCount
+    createdAt
+    rating
+    isTagEditable
+    smallThumbnailImageURL
+    smallThumbnailImageHeight
+    smallThumbnailImageWidth
+    largeThumbnailImageURL
+    largeThumbnailImageHeight
+    largeThumbnailImageWidth
+    type
+    prompt
+    negativePrompt
+    isLiked
+    thumbnailImagePosition
+    description
+    url
+    subWorksCount
+    tags {
+      name
+    }
+    user {
+      id
+      name
+      iconUrl
+    }
+    uuid
+  }`,
+)
+
 const appAwardEventQuery = graphql(
   `query AppEvent($slug: String!, $isSensitive: Boolean!) {
     appEvent(slug: $slug) {
       awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
-        ...PartialWorkFields
+        ...EventAwardWorkListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [EventAwardWorkListItemFragment],
 )

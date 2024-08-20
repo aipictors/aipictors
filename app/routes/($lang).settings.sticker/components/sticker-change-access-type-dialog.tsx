@@ -9,17 +9,17 @@ import {
 } from "~/components/ui/dialog"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import React from "react"
 import { toast } from "sonner"
 import { StickerChangeAccessTypeActionDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-action-dialog"
 
 type Props = {
-  title: string
-  stickerId: string
-  imageUrl: string
+  sticker: FragmentOf<typeof StickerAccessTypeDialogFragment>
+  /**
+   * TODO: childrenを受け取ると壊れる
+   */
   children: React.ReactNode
-  accessType: "PUBLIC" | "PRIVATE"
   onAccessTypeChange(): void
 }
 
@@ -35,7 +35,7 @@ export function StickerChangeAccessTypeDialog(props: Props) {
     await updateSticker({
       variables: {
         input: {
-          stickerId: props.stickerId,
+          stickerId: props.sticker.id,
           accessType: "PUBLIC",
         },
       },
@@ -44,36 +44,40 @@ export function StickerChangeAccessTypeDialog(props: Props) {
     setAccessType("PUBLIC")
   }
 
-  const [accessType, setAccessType] = React.useState(props.accessType)
+  const [accessType, setAccessType] = React.useState(props.sticker.accessType)
+
+  if (props.sticker.imageUrl === null) {
+    return null
+  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>タイトル：{props.title}</DialogTitle>
+          <DialogTitle>タイトル：{props.sticker.title}</DialogTitle>
         </DialogHeader>
         {accessType === "PRIVATE" ? (
           <img
             className="m-auto mb-2 w-24 duration-500"
-            src={props.imageUrl}
-            alt={props.title}
+            src={props.sticker.imageUrl}
+            alt={props.sticker.title}
           />
         ) : (
-          <Link className="m-auto w-24" to={`/stickers/${props.stickerId}`}>
+          <Link className="m-auto w-24" to={`/stickers/${props.sticker.id}`}>
             <img
               className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
-              src={props.imageUrl}
-              alt={props.title}
+              src={props.sticker.imageUrl}
+              alt={props.sticker.title}
             />
           </Link>
         )}
         <DialogFooter>
           {accessType === "PRIVATE" ? (
             <StickerChangeAccessTypeActionDialog
-              title={props.title}
-              stickerId={props.stickerId}
-              imageUrl={props.imageUrl}
+              title={props.sticker.title}
+              stickerId={props.sticker.id}
+              imageUrl={props.sticker.imageUrl}
               accessType={accessType}
               onAccessTypeChange={props.onAccessTypeChange}
             >
@@ -89,6 +93,15 @@ export function StickerChangeAccessTypeDialog(props: Props) {
     </Dialog>
   )
 }
+
+export const StickerAccessTypeDialogFragment = graphql(
+  `fragment StickerAccessTypeDialog on StickerNode @_unmask {
+    id
+    title
+    imageUrl
+    accessType
+  }`,
+)
 
 const updateStickerMutation = graphql(
   `mutation updateSticker($input: UpdateStickerInput!) {

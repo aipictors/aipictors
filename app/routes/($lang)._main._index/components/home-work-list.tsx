@@ -1,10 +1,9 @@
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
 import { Link } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof HomeWorkListItemFragment>[]
 }
 
 export function HomeWorkList(props: Props) {
@@ -25,3 +24,43 @@ export function HomeWorkList(props: Props) {
     </ul>
   )
 }
+
+export const HomeWorkListItemFragment = graphql(
+  `fragment HomeWorkListItem on WorkNode @_unmask {
+    id
+    title
+    accessType
+    adminAccessType
+    type
+    likesCount
+    commentsCount
+    bookmarksCount
+    viewsCount
+    createdAt
+    rating
+    isTagEditable
+    smallThumbnailImageURL
+    smallThumbnailImageHeight
+    smallThumbnailImageWidth
+    largeThumbnailImageURL
+    largeThumbnailImageHeight
+    largeThumbnailImageWidth
+    type
+    prompt
+    negativePrompt
+    isLiked
+    thumbnailImagePosition
+    description
+    url
+    subWorksCount
+    tags {
+      name
+    }
+    user {
+      id
+      name
+      iconUrl
+    }
+    uuid
+  }`,
+)

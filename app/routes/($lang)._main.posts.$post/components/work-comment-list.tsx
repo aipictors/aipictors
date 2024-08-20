@@ -15,10 +15,11 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import { ExpansionTransition } from "~/components/expansion-transition"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
-import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
-import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
+import {
+  StickerButton,
+  StickerButtonFragment,
+} from "~/routes/($lang)._main.posts.$post/components/sticker-button"
 
 type Props = {
   workId: string
@@ -107,22 +108,6 @@ export function WorkCommentList(props: Props) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: authContext.userId ?? "0",
-      worksWhere: {},
-      followeesWorksWhere: {},
-      followersWorksWhere: {},
-      bookmarksOffset: 0,
-      bookmarksLimit: 0,
-      bookmarksWhere: {},
-      worksOffset: 0,
-      worksLimit: 0,
-      followeesOffset: 0,
-      followeesLimit: 0,
-      followeesWorksOffset: 0,
-      followeesWorksLimit: 0,
-      followersOffset: 0,
-      followersLimit: 0,
-      followersWorksOffset: 0,
-      followersWorksLimit: 0,
     },
   })
 
@@ -627,102 +612,15 @@ export function WorkCommentList(props: Props) {
   )
 }
 
-export const workCommentUserFragment = graphql(
-  `fragment WorkCommentUser on UserNode @_unmask {
-    id
-    biography
-    createdBookmarksCount
-    login
-    nanoid
-    name
-    receivedLikesCount
-    receivedViewsCount
-    awardsCount
-    followCount
-    followersCount
-    worksCount
-    iconUrl
-    headerImageUrl
-    webFcmToken
-    isFollower
-    isFollowee
-    headerImageUrl
-    biography
-    enBiography
-    instagramAccountId
-    twitterAccountId
-    githubAccountId
-    siteURL
-    mailAddress
-    promptonUser {
-      id
-    }
-  }`,
-)
-
 const userQuery = graphql(
   `query User(
     $userId: ID!,
-    $worksOffset: Int!,
-    $worksLimit: Int!,
-    $worksWhere: UserWorksWhereInput,
-    $followeesOffset: Int!,
-    $followeesLimit: Int!,
-    $followeesWorksOffset: Int!,
-    $followeesWorksLimit: Int!,
-    $followeesWorksWhere: UserWorksWhereInput,
-    $followersOffset: Int!,
-    $followersLimit: Int!,
-    $followersWorksOffset: Int!,
-    $followersWorksLimit: Int!
-    $followersWorksWhere: UserWorksWhereInput,
-    $bookmarksOffset: Int!,
-    $bookmarksLimit: Int!,
-    $bookmarksWhere: UserWorksWhereInput,
   ) {
     user(id: $userId) {
-      ...WorkCommentUser
-      works(offset: $worksOffset, limit: $worksLimit, where: $worksWhere) {
-        ...PartialWorkFields
-      }
-      followees(offset: $followeesOffset, limit: $followeesLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      followers(offset: $followersOffset, limit: $followersLimit) {
-        id
-        name
-        iconUrl
-        headerImageUrl
-        biography
-        isFollower
-        isFollowee
-        enBiography
-        works(offset: $followersWorksOffset, limit: $followersWorksLimit, where: $followersWorksWhere) {
-          ...PartialWorkFields
-        }
-      }
-      bookmarkWorks(offset: $bookmarksOffset, limit: $bookmarksLimit, where: $bookmarksWhere) {
-        ...PartialWorkFields
-      }
-      featuredSensitiveWorks {
-        ...PartialWorkFields
-      }
-      featuredWorks {
-        ...PartialWorkFields
-      }
+      id
+      iconUrl
     }
   }`,
-  [workCommentUserFragment, partialWorkFieldsFragment],
 )
 
 export const CommentListItemFragment = graphql(
@@ -746,13 +644,15 @@ const createWorkCommentMutation = graphql(
 const viewerUserQuery = graphql(
   `query ViewerUser {
     viewer {
+      id
       user {
+        id
         iconUrl
       }
       userStickers(offset: 0, limit: 5, orderBy: DATE_USED) {
-        ...PartialStickerFields
+        ...StickerButton
       }
     }
   }`,
-  [partialStickerFieldsFragment],
+  [StickerButtonFragment],
 )

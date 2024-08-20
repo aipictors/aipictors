@@ -2,7 +2,6 @@ import { RoundedLightButton } from "~/components/button/rounded-light-button"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
 import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
@@ -11,7 +10,10 @@ import { useState } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
 import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post/components/add-sticker-dialog"
-import { StickerChangeAccessTypeDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-dialog"
+import {
+  StickerAccessTypeDialogFragment,
+  StickerChangeAccessTypeDialog,
+} from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-dialog"
 
 export function MyStickersList() {
   const authContext = useContext(AuthContext)
@@ -129,12 +131,7 @@ export function MyStickersList() {
           stickerStatus !== "DOWNLOADED" ? (
             <StickerChangeAccessTypeDialog
               key={sticker.id}
-              title={sticker.title}
-              stickerId={sticker.id}
-              imageUrl={sticker.imageUrl ?? ""}
-              accessType={
-                sticker.accessType === "PUBLIC" ? "PUBLIC" : "PRIVATE"
-              }
+              sticker={sticker}
               onAccessTypeChange={() => {
                 reactStickers()
                 reactStickersCount()
@@ -191,12 +188,11 @@ const viewerUserStickersQuery = graphql(
     viewer {
       id
       userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
-        id
-        ...PartialStickerFields
+        ...StickerAccessTypeDialog
       }
     }
   }`,
-  [partialStickerFieldsFragment],
+  [StickerAccessTypeDialogFragment],
 )
 
 const deleteUserStickerMutation = graphql(

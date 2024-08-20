@@ -1,6 +1,7 @@
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"
 import { XIcon } from "lucide-react"
+import { graphql } from "gql.tada"
 
 type Props = {
   imageUrl?: string
@@ -63,3 +64,11 @@ export function StickerButton(props: Props) {
     </div>
   )
 }
+
+export const StickerButtonFragment = graphql(
+  `fragment StickerButton on StickerNode @_unmask {
+    id
+    title
+    imageUrl
+  }`,
+)

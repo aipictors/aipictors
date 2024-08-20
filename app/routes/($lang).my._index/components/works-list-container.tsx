@@ -6,7 +6,7 @@ import { WorksList } from "~/routes/($lang).my._index/components/works-list"
 import { useSuspenseQuery } from "@apollo/client/index"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import { MobileWorkListItemFragment } from "~/routes/($lang).my._index/components/works-sp-list"
 
 type Props = {
   page: number
@@ -107,22 +107,7 @@ export function WorksListContainer(props: Props) {
   return (
     <>
       <WorksList
-        works={
-          works?.map((work) => ({
-            id: work.id,
-            uuid: work.uuid ?? "",
-            title: work.title,
-            thumbnailImageUrl: work.smallThumbnailImageURL,
-            likesCount: work.likesCount,
-            bookmarksCount: work.bookmarksCount ?? 0,
-            commentsCount: work.commentsCount ?? 0,
-            viewsCount: work.viewsCount,
-            accessType: work.accessType,
-            createdAt: work.createdAt,
-            workType: work.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
-            isTagEditable: work.isTagEditable,
-          })) ?? []
-        }
+        works={works ?? []}
         accessType={props.accessType}
         rating={props.rating}
         sort={props.sort}
@@ -162,8 +147,8 @@ const worksCountQuery = graphql(
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...MobileWorkListItem
     }
   }`,
-  [partialWorkFieldsFragment],
+  [MobileWorkListItemFragment],
 )

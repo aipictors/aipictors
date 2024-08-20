@@ -1,5 +1,13 @@
 import { ParamsError } from "~/errors/params-error"
 import { createClient } from "~/lib/client"
+import {
+  imageModelHeaderFragment,
+  ModelHeader,
+} from "~/routes/($lang)._main.models.$model/components/model-header"
+import {
+  WorkList,
+  WorkListItemFragment,
+} from "~/routes/($lang)._main.posts._index/components/work-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -130,19 +138,20 @@ export default function ModelPage() {
   )
 }
 
-const aiModelQuery = graphql(
-  `query AiModel($search: String!, $limit: Int!, $offset: Int!, $where: WorksWhereInput) {
-    aiModel(where: {search: $search}) {
-      id
-      name
-      type
-      generationModelId
-      workModelId
-      thumbnailImageURL
-      works(limit: $limit, offset: $offset, where: $where) {
-        ...PartialWorkFields
-      }
+const imageModelQuery = graphql(
+  `query ImageModel($id: ID!) {
+    imageModel(id: $id) {
+      ...ImageModelHeader
     }
   }`,
-  [partialWorkFieldsFragment],
+  [imageModelHeaderFragment],
+)
+
+const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...WorkListItem
+    }
+  }`,
+  [WorkListItemFragment],
 )

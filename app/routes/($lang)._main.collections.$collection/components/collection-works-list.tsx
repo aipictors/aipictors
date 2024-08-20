@@ -1,10 +1,12 @@
-import type { FragmentOf } from "gql.tada"
-import type { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import { graphql, type FragmentOf } from "gql.tada"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 
 type Props = {
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof CollectionWorkListItemFragment>[]
   page: number
   setPage: (page: number) => void
   maxCount: number
@@ -30,3 +32,10 @@ export function CollectionWorkList(props: Props) {
     </div>
   )
 }
+
+export const CollectionWorkListItemFragment = graphql(
+  `fragment CollectionWorkListItem on WorkNode @_unmask {
+    ...PhotoAlbumWork
+  }`,
+  [PhotoAlbumWorkFragment],
+)

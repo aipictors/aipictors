@@ -4,9 +4,11 @@ import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { createClient } from "~/lib/client"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { RefreshCcwIcon } from "lucide-react"
-import { EventSensitiveWorkList } from "~/routes/($lang).sensitive.events.$event._index/components/event-sensitive-work-list"
+import {
+  EventSensitiveWorkList,
+  EventSensitiveWorkListItemFragment,
+} from "~/routes/($lang).sensitive.events.$event._index/components/event-sensitive-work-list"
 import { Button } from "~/components/ui/button"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -142,12 +144,12 @@ const appEventQuery = graphql(
       tag
       worksCount
       works(offset: $offset, limit: $limit, where: $where) {
-        ...PartialWorkFields
+        ...EventSensitiveWorkListItem
       }
       awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
-        ...PartialWorkFields
+        ...EventSensitiveWorkListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [EventSensitiveWorkListItemFragment],
 )

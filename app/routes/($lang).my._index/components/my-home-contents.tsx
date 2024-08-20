@@ -5,7 +5,6 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 
 export function DashboardHomeContents() {
   const appContext = useContext(AuthContext)
@@ -181,20 +180,10 @@ const viewerUserQuery = graphql(
       id
       user {
         id
-        biography
-        login
-        name
         awardsCount
         followersCount
         followCount
-        iconUrl
-        headerImageUrl
-        webFcmToken
         generatedCount
-        promptonUser {
-          id
-          name
-        }
         receivedLikesCount
         receivedViewsCount
         createdLikesCount
@@ -206,11 +195,20 @@ const viewerUserQuery = graphql(
   }`,
 )
 
+export const MyWorkFragment = graphql(
+  `fragment MyWork on WorkNode @_unmask {
+    id
+    title
+    smallThumbnailImageURL
+    likesCount
+  }`,
+)
+
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...MyWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [MyWorkFragment],
 )

@@ -1,5 +1,4 @@
 import { Button } from "~/components/ui/button"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { createCalendarCells } from "~/routes/($lang)._main.themes._index/utils/create-calendar-cells"
 import { useNavigate } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -7,7 +6,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 type Props = {
   year: number
   month: number
-  dailyThemes: FragmentOf<typeof dailyThemeComponentFragment>[]
+  dailyThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
 export function ThemeList(props: Props) {
@@ -122,8 +121,8 @@ export function ThemeList(props: Props) {
   )
 }
 
-export const dailyThemeComponentFragment = graphql(
-  `fragment DailyThemeComponent on DailyThemeNode @_unmask {
+export const ThemeListItemFragment = graphql(
+  `fragment ThemeListItem on DailyThemeNode @_unmask {
     id
     title
     dateText
@@ -132,10 +131,10 @@ export const dailyThemeComponentFragment = graphql(
     day
     worksCount
     firstWork {
-      ...PartialWorkFields
+      id
+      smallThumbnailImageURL
     }
   }`,
-  [partialWorkFieldsFragment],
 )
 
 const getJSTDate = () => {

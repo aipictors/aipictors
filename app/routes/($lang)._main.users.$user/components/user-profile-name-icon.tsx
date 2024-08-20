@@ -1,10 +1,9 @@
 import { OmissionNumber } from "~/components/omission-number"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  user: FragmentOf<typeof userProfileIconFragment>
+  user: FragmentOf<typeof UserProfileIconFragment>
 }
 
 export function UserProfileNameIcon(props: Props) {
@@ -57,7 +56,7 @@ export function UserProfileNameIcon(props: Props) {
   )
 }
 
-export const userProfileIconFragment = graphql(
+export const UserProfileIconFragment = graphql(
   `fragment UserProfileIcon on UserNode @_unmask {
     id
     login
@@ -74,5 +73,4 @@ export const userProfileIconFragment = graphql(
     iconUrl
     headerImageUrl
   }`,
-  [partialWorkFieldsFragment],
 )

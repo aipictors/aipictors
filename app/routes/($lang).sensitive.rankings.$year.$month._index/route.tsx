@@ -1,11 +1,13 @@
-import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
-import { RankingSensitiveWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
+import {
+  RankingSensitiveWorkList,
+  SensitiveWorkAwardListItemFragment,
+} from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
@@ -88,8 +90,8 @@ export default function SensitiveMonthAward() {
 const workAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
-      ...WorkAwardFields
+      ...SensitiveWorkAwardListItem
     }
   }`,
-  [workAwardFieldsFragment],
+  [SensitiveWorkAwardListItemFragment],
 )

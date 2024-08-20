@@ -1,7 +1,9 @@
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { getRecommendedWorkIds } from "~/utils/get-recommended-work-ids"
-import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
@@ -88,8 +90,8 @@ export function HomeWorksRecommendedSection(props: Props) {
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...HomeWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [HomeWorkFragment],
 )

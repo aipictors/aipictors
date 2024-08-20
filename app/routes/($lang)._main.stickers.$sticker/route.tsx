@@ -1,10 +1,15 @@
-import { StickerArticle } from "~/routes/($lang)._main.stickers.$sticker/components/sticker-article"
+import {
+  StickerArticle,
+  StickerArticleFragment,
+} from "~/routes/($lang)._main.stickers.$sticker/components/sticker-article"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { createClient } from "~/lib/client"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { StickerList } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
-import { partialStickerFieldsFragment } from "~/graphql/fragments/partial-sticker-fields"
+import {
+  StickerList,
+  StickerListItemFragment,
+} from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -62,24 +67,7 @@ export default function Sticker() {
 
   return (
     <>
-      <StickerArticle
-        sticker={{
-          id: data.sticker.id,
-          title: data.sticker.title,
-          imageUrl: data.sticker.imageUrl ?? "",
-          userId: data.sticker.userId,
-          downloadsCount: data.sticker.downloadsCount,
-          usesCount: data.sticker.usesCount,
-          likesCount: data.sticker.likesCount,
-          accessType: data.sticker.accessType,
-          createdAt: data.sticker.createdAt,
-          user: {
-            login: data.sticker.user.login,
-            name: data.sticker.user.name,
-            iconUrl: data.sticker.user.iconUrl ?? "",
-          },
-        }}
-      />
+      <StickerArticle sticker={data.sticker} />
       <section className="flex flex-col gap-y-4">
         <h2 className="font-bold text-lg">{"人気"}</h2>
         <StickerList stickers={data.stickers} />
@@ -88,32 +76,21 @@ export default function Sticker() {
   )
 }
 
-const stickerQuery = graphql(`
-  query Sticker($id: ID!) {
+const stickerQuery = graphql(
+  `query Sticker($id: ID!) {
     sticker(id: $id) {
-      id
-      title
-      imageUrl
-      userId
-      downloadsCount
-      usesCount
-      likesCount
-      accessType
-      createdAt
-      user {
-        login
-        name
-        iconUrl
-      }
+      ...StickerArticle
     }
   }
-`)
+`,
+  [StickerArticleFragment],
+)
 
 const stickersQuery = graphql(
   `query Stickers($offset: Int!, $limit: Int!, $where: StickersWhereInput) {
     stickers(offset: $offset, limit: $limit, where: $where) {
-      ...PartialStickerFields
+      ...StickerListItem
     }
   }`,
-  [partialStickerFieldsFragment],
+  [StickerListItemFragment],
 )

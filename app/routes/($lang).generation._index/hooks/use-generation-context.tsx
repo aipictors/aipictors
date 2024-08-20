@@ -53,9 +53,9 @@ export function useGenerationContext() {
     modelType: string,
     sampler: string,
     scale: number,
-    vae: string,
-    promptText: string,
-    negativePromptText: string,
+    vae: string | null,
+    promptText: string | null,
+    negativePromptText: string | null,
     seed: number,
     sizeType: string,
     clipSkip: number,
@@ -65,7 +65,7 @@ export function useGenerationContext() {
     controlNetModel: string | null,
   ) => {
     const value = configAction
-      .updatePrompt(promptText)
+      .updatePrompt(promptText ?? "")
       .updateSteps(steps)
       .updateModelId(modelId, modelType)
       .updateSampler(sampler)
@@ -73,7 +73,7 @@ export function useGenerationContext() {
       .updateSeed(seed)
       .updateSizeType(sizeType)
       .updateClipSkip(clipSkip)
-      .updateNegativePrompt(negativePromptText)
+      .updateNegativePrompt(negativePromptText ?? "")
       .updateVae(vae)
       .changeControlNetImageBase64(controlNetImageBase64)
       .changeControlNetWeight(controlNetWeight)

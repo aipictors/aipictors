@@ -1,9 +1,10 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { RecommendedWorksList } from "~/routes/($lang).my._index/components/recommended-works-list"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
+import {
+  RecommendedWorkListItemFragment,
+  RecommendedWorksList,
+} from "~/routes/($lang).my._index/components/recommended-works-list"
 import { graphql } from "gql.tada"
 
 /**
@@ -38,20 +39,7 @@ export function RecommendedListContainer() {
 
   return (
     <>
-      <RecommendedWorksList
-        works={works.map((work) => ({
-          id: work.id,
-          title: work.title,
-          thumbnailImageUrl: work.smallThumbnailImageURL,
-          likesCount: work.likesCount,
-          bookmarksCount: work.bookmarksCount ?? 0,
-          commentsCount: work.commentsCount ?? 0,
-          viewsCount: work.viewsCount,
-          createdAt: toDateTimeText(work.createdAt), // Convert createdAt to string
-          accessType: work.accessType,
-          isTagEditable: work.isTagEditable,
-        }))}
-      />
+      <RecommendedWorksList works={works} />
     </>
   )
 }
@@ -59,8 +47,8 @@ export function RecommendedListContainer() {
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...RecommendedWorkListItem
     }
   }`,
-  [partialWorkFieldsFragment],
+  [RecommendedWorkListItemFragment],
 )

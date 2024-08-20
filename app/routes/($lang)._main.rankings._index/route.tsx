@@ -4,8 +4,10 @@ import { createClient } from "~/lib/client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
-import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
-import { RankingWorkList } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
+import {
+  RankingWorkList,
+  WorkAwardListItemFragment,
+} from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 
@@ -84,8 +86,8 @@ export default function Rankings() {
 const workAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
-      ...WorkAwardFields
+      ...WorkAwardListItem
     }
   }`,
-  [workAwardFieldsFragment],
+  [WorkAwardListItemFragment],
 )

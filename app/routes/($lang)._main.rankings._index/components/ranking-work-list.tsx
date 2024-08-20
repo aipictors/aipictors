@@ -3,13 +3,13 @@ import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
-import { workAwardFieldsFragment } from "~/graphql/fragments/work-award-field"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+
 type Props = {
-  awards: FragmentOf<typeof workAwardFieldsFragment>[]
+  awards: FragmentOf<typeof WorkAwardListItemFragment>[]
   year: number
   month: number
   day: number | null
@@ -89,11 +89,55 @@ export function RankingWorkList(props: Props) {
   )
 }
 
+export const WorkAwardListItemFragment = graphql(
+  `fragment WorkAwardListItem on WorkAwardNode @_unmask {
+      id
+      index
+      dateText
+      work {
+        id
+        title
+        accessType
+        adminAccessType
+        type
+        likesCount
+        commentsCount
+        bookmarksCount
+        viewsCount
+        createdAt
+        rating
+        isTagEditable
+        smallThumbnailImageURL
+        smallThumbnailImageHeight
+        smallThumbnailImageWidth
+        largeThumbnailImageURL
+        largeThumbnailImageHeight
+        largeThumbnailImageWidth
+        type
+        prompt
+        negativePrompt
+        isLiked
+        thumbnailImagePosition
+        description
+        url
+        subWorksCount
+        tags {
+          name
+        }
+        user {
+          id
+          name
+          iconUrl
+        }
+      }
+  }`,
+)
+
 const workAwardsQuery = graphql(
   `query WorkAwards($offset: Int!, $limit: Int!, $where: WorkAwardsWhereInput!) {
     workAwards(offset: $offset, limit: $limit, where: $where) {
-      ...WorkAwardFields
+      ...WorkAwardListItem
     }
   }`,
-  [workAwardFieldsFragment],
+  [WorkAwardListItemFragment],
 )

@@ -1,9 +1,11 @@
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { HomeNovelsWorksSection } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import { HomeVideosWorksSection } from "~/routes/($lang)._main._index/components/home-video-works-section"
-import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
@@ -84,8 +86,8 @@ const worksCountQuery = graphql(
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...PartialWorkFields
+      ...HomeWork
     }
   }`,
-  [partialWorkFieldsFragment],
+  [HomeWorkFragment],
 )

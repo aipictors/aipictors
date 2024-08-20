@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import { Button } from "~/components/ui/button"
 import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
@@ -10,22 +10,7 @@ import { useQuery } from "@apollo/client/index"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user/components/sticker-info-dialog"
 
 type Props = {
-  sticker: {
-    id: string
-    title: string
-    imageUrl: string
-    userId: string
-    downloadsCount: number
-    usesCount: number
-    likesCount: number
-    accessType: string
-    createdAt: number
-    user: {
-      login: string
-      name: string
-      iconUrl: string
-    }
-  }
+  sticker: FragmentOf<typeof StickerArticleFragment>
 }
 
 export function StickerArticle(props: Props) {
@@ -110,6 +95,25 @@ export function StickerArticle(props: Props) {
     </div>
   )
 }
+
+export const StickerArticleFragment = graphql(
+  `fragment StickerArticle on StickerNode @_unmask {
+    id
+    title
+    imageUrl
+    userId
+    downloadsCount
+    usesCount
+    likesCount
+    accessType
+    createdAt
+    user {
+      login
+      name
+      iconUrl
+    }
+  }`,
+)
 
 const stickerQuery = graphql(
   `query Sticker($id: ID!) {
