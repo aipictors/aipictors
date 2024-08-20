@@ -1,7 +1,12 @@
-import { InPaintingImageForm } from "~/routes/($lang).generation._index/components/submission-view/InPaintingImageForm"
+import {
+  InPaintingImageForm,
+  InPaintingImageFormFragment,
+  InPaintingImageFormTaskFragment,
+} from "~/routes/($lang).generation._index/components/submission-view/InPaintingImageForm"
 import { useEffect, useState } from "react"
 import FullScreenContainer from "~/components/full-screen-container"
 import PrivateImagePaintCanvas from "~/routes/($lang).generation._index/components/submission-view/private-image-paint-canvas"
+import { graphql } from "gql.tada"
 
 type Props = {
   isOpen: boolean
@@ -213,3 +218,17 @@ export function InPaintingDialog(props: Props) {
     )
   )
 }
+
+export const InPaintingImageDialogFragment = graphql(
+  `fragment InPaintingImageDialog on ImageGenerationResultNode @_unmask {
+    ...InPaintingImageForm
+  }`,
+  [InPaintingImageFormFragment],
+)
+
+export const InPaintingImageDialogTaskFragment = graphql(
+  `fragment InPaintingImageDialogTask on ImageGenerationTaskNode @_unmask {
+    ...InPaintingImageFormTask
+  }`,
+  [InPaintingImageFormTaskFragment],
+)

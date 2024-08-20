@@ -1,5 +1,4 @@
 import { Card } from "~/components/ui/card"
-import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
 import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
 import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
@@ -61,8 +60,7 @@ export function ReservedGenerationLinkCard(props: Props) {
 const cancelImageGenerationReservedTaskMutation = graphql(
   `mutation CancelImageGenerationReservedTask($input: CancelImageGenerationReservedTaskInput!) {
     cancelImageGenerationReservedTask(input: $input) {
-      ...ImageGenerationTaskFields
+      id
     }
   }`,
-  [imageGenerationTaskFieldsFragment],
 )

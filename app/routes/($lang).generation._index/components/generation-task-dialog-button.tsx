@@ -2,18 +2,24 @@ import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { InPaintingDialog } from "~/routes/($lang).generation._index/components/submission-view/in-painting-dialog"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
-import { GenerationTaskEditableCard } from "~/routes/($lang).generation._index/components/generation-task-editable-card"
-import { GenerationTaskSheetView } from "~/routes/($lang).generation._index/components/generation-task-sheet-view"
+import {
+  EditableGenerationResultCardFragment,
+  EditableGenerationResultCardTaskFragment,
+  GenerationTaskEditableCard,
+} from "~/routes/($lang).generation._index/components/generation-task-editable-card"
+import {
+  GenerationImageResultSheetFragment,
+  GenerationImageResultSheetTaskFragment,
+  GenerationTaskSheetView,
+} from "~/routes/($lang).generation._index/components/generation-task-sheet-view"
 import { useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
-import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
-import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
   task:
-    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
-    | FragmentOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof GenerationResultDialogButtonFragment>
+    | FragmentOf<typeof GenerationResultDialogButtonTaskFragment>
   taskIds?: string[]
   sizeType: number
   userToken: string
@@ -117,3 +123,22 @@ export function GenerationTaskDialogButton(props: Props) {
     </>
   )
 }
+
+export const GenerationResultDialogButtonFragment = graphql(
+  `fragment GenerationResultDialogButton on ImageGenerationResultNode @_unmask {
+    ...EditableGenerationResultCard
+    ...GenerationImageResultSheet
+  }`,
+  [EditableGenerationResultCardFragment, GenerationImageResultSheetFragment],
+)
+
+export const GenerationResultDialogButtonTaskFragment = graphql(
+  `fragment GenerationResultDialogButtonTask on ImageGenerationTaskNode @_unmask {
+    ...EditableGenerationResultCardTask
+    ...GenerationImageResultSheetTask
+  }`,
+  [
+    EditableGenerationResultCardTaskFragment,
+    GenerationImageResultSheetTaskFragment,
+  ],
+)

@@ -1,6 +1,5 @@
 import { Card } from "~/components/ui/card"
 import { AuthContext } from "~/contexts/auth-context"
-import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { skipToken } from "@apollo/client/index"
@@ -71,8 +70,14 @@ export function GenerationTaskContentPreview() {
 const imageGenerationTaskQuery = graphql(
   `query ImageGenerationTask($id: ID!) {
     imageGenerationTask(id: $id) {
-      ...ImageGenerationTaskFields
+      id
+      status
+      imageUrl
+      thumbnailUrl
+      model {
+        id
+        name
+      }
     }
   }`,
-  [imageGenerationTaskFieldsFragment],
 )

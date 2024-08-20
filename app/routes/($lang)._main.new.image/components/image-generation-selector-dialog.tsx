@@ -5,7 +5,6 @@ import { Button } from "~/components/ui/button"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Card } from "~/components/ui/card"
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -111,9 +110,10 @@ export const viewerImageGenerationResultsQuery = graphql(
     viewer {
       id
       imageGenerationResults(offset: $offset, limit: $limit, where: $where) {
-        ...ImageGenerationResultFields
+        id
+        imageUrl
+        thumbnailUrl
       }
     }
   }`,
-  [imageGenerationResultFieldsFragment],
 )

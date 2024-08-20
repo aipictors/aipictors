@@ -1,4 +1,3 @@
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import { cn } from "~/lib/cn"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -75,8 +74,8 @@ export function GenerationTaskRatingButton(props: Props) {
 const updateRatingImageGenerationResultMutation = graphql(
   `mutation updateRatingImageGenerationResult($input: UpdateRatingImageGenerationResultInput!) {
     updateRatingImageGenerationResult(input: $input) {
-      ...ImageGenerationResultFields
+      id
+      rating
     }
   }`,
-  [imageGenerationResultFieldsFragment],
 )

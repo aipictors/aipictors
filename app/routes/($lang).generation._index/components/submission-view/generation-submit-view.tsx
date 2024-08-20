@@ -16,7 +16,6 @@ import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
-import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
 
 type Props = {
   termsText: string
@@ -592,26 +591,7 @@ const viewerUserQuery = graphql(
       id
       user {
         id
-        biography
-        login
-        name
-        awardsCount
-        followersCount
-        followCount
-        iconUrl
-        headerImageUrl
-        webFcmToken
         generatedCount
-        promptonUser {
-          id
-          name
-        }
-        receivedLikesCount
-        receivedViewsCount
-        createdLikesCount
-        createdViewsCount
-        createdCommentsCount
-        createdBookmarksCount
       }
     }
   }`,
@@ -621,44 +601,6 @@ const createImageGenerationTaskReservedMutation = graphql(
   `mutation CreateReservedImageGenerationTask($input: CreateReservedImageGenerationTaskInput!) {
     createReservedImageGenerationTask(input: $input) {
       id
-      createdAt
-      isDeleted
-      isGenerated
-      generationType
-      model {
-        id
-        name
-        type
-      }
-      vae
-      prompt
-      negativePrompt
-      seed
-      steps
-      scale
-      clipSkip
-      sampler
-      sizeType
-      t2tImageUrl
-      t2tMaskImageUrl
-      t2tDenoisingStrengthSize
-      t2tInpaintingFillSize
-      token
-      nanoid
-      controlNetControlMode
-      controlNetEnabled
-      controlNetGuidanceEnd
-      controlNetGuidanceStart
-      controlNetPixelPerfect
-      controlNetProcessorRes
-      controlNetResizeMode
-      controlNetThresholdA
-      controlNetThresholdB
-      controlNetWeight
-      controlNetModule
-      controlNetModel
-      controlNetSaveDetectedMap
-      controlNetHrOption
     }
   }`,
 )
@@ -666,10 +608,9 @@ const createImageGenerationTaskReservedMutation = graphql(
 const createImageGenerationTaskMutation = graphql(
   `mutation CreateImageGenerationTask($input: CreateImageGenerationTaskInput!) {
     createImageGenerationTask(input: $input) {
-      ...ImageGenerationTaskFields
+      id
     }
   }`,
-  [imageGenerationTaskFieldsFragment],
 )
 
 const signImageGenerationTermsMutation = graphql(

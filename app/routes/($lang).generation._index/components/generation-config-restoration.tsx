@@ -1,5 +1,4 @@
 import { AuthContext } from "~/contexts/auth-context"
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import { config } from "~/config"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
@@ -147,142 +146,36 @@ export function GenerationConfigRestoration(props: Props) {
 export const imageGenerationResultQuery = graphql(
   `query ImageGenerationResult($id: ID!) {
     imageGenerationResult(id: $id) {
-      ...ImageGenerationResultFields
+      id
+      steps
+      sampler
+      scale
+      vae
+      prompt
+      negativePrompt
+      seed
+      sizeType
+      clipSkip
+      model {
+        id
+        type
+      }
     }
   }`,
-  [imageGenerationResultFieldsFragment],
 )
 
 export const workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       id
-      isMyRecommended
-      title
-      accessType
-      type
-      adminAccessType
-      promptAccessType
-      rating
-      description
-      isSensitive
-      enTitle
-      enDescription
-      imageURL
-      largeThumbnailImageURL
-      largeThumbnailImageWidth
-      largeThumbnailImageHeight
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
-      subWorksCount
-      user {
-        id
-        biography
-        login
-        nanoid
-        name
-        receivedLikesCount
-        receivedViewsCount
-        awardsCount
-        followersCount
-        worksCount
-        iconUrl
-        headerImageUrl
-        webFcmToken
-        headerImageUrl
-        biography
-        receivedLikesCount
-        createdLikesCount
-        createdBookmarksCount
-        isFollower
-        isFollowee
-        isMuted
-        works(offset: 0, limit: 16) {
-          id
-          userId
-          largeThumbnailImageURL
-          largeThumbnailImageWidth
-          largeThumbnailImageHeight
-          smallThumbnailImageURL
-          smallThumbnailImageWidth
-          smallThumbnailImageHeight
-          thumbnailImagePosition
-          subWorksCount
-        }
-      }
-      likedUsers(offset: 0, limit: 32) {
-        id
-        name
-        iconUrl
-        login
-      }
-      album {
-        id
-        title
-        description
-      }
-      dailyTheme {
-        id
-        title
-      }
-      tagNames
-      createdAt
-      likesCount
-      viewsCount
-      commentsCount
-      subWorks {
-        id
-        imageUrl
-      }
-      nextWork {
-        id
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-      }
-      previousWork {
-        id
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-      }
-      model
-      modelHash
       generationModelId
-      workModelId
-      isTagEditable
-      isCommentsEditable
-      isLiked
-      isBookmarked
-      isInCollection
-      isPromotion
-      isGeneration
-      ogpThumbnailImageUrl
-      prompt
-      negativePrompt
-      noise
-      seed
       steps
       sampler
       scale
-      strength
       vae
+      prompt
+      negativePrompt
       clipSkip
-      otherGenerationParams
-      pngInfo
-      style
-      url
-      html
-      updatedAt
-      dailyRanking
-      weeklyRanking
-      monthlyRanking
-      relatedUrl
-      nanoid
     }
   }`,
 )

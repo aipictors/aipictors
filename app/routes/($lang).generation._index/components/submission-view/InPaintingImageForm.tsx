@@ -10,7 +10,6 @@ import { useMutation } from "@apollo/client/index"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import type { Props } from "./in-painting-image-form"
-import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
 import { graphql } from "gql.tada"
 
 /**
@@ -208,11 +207,65 @@ export function InPaintingImageForm(props: Props) {
   )
 }
 
+export const InPaintingImageFormFragment = graphql(
+  `fragment InPaintingImageForm on ImageGenerationResultNode @_unmask {
+    id
+    nanoid
+    prompt
+    negativePrompt
+    upscaleSize
+    seed
+    steps
+    scale
+    sampler
+    clipSkip
+    imageUrl
+    sizeType
+    vae
+    controlNetModule
+    controlNetWeight
+    thumbnailUrl
+    status
+    completedAt
+    model {
+      id
+      name
+    }
+  }`,
+)
+
+export const InPaintingImageFormTaskFragment = graphql(
+  `fragment InPaintingImageFormTask on ImageGenerationTaskNode @_unmask {
+    id
+    nanoid
+    prompt
+    negativePrompt
+    upscaleSize
+    seed
+    steps
+    scale
+    sampler
+    clipSkip
+    imageUrl
+    sizeType
+    vae
+    controlNetModule
+    controlNetWeight
+    thumbnailUrl
+    status
+    completedAt
+    model {
+      id
+      name
+    }
+  }`,
+)
+
 const createImageGenerationTaskMutation = graphql(
   `mutation CreateImageGenerationTask($input: CreateImageGenerationTaskInput!) {
     createImageGenerationTask(input: $input) {
-      ...ImageGenerationTaskFields
+      ...InPaintingImageFormTask
     }
   }`,
-  [imageGenerationTaskFieldsFragment],
+  [InPaintingImageFormTaskFragment],
 )

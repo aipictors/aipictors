@@ -1,4 +1,3 @@
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 import { cn } from "~/lib/cn"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -64,11 +63,25 @@ export function GenerationTaskProtectedButton(props: Props) {
   )
 }
 
+export const GenerationResultProtectButtonFragment = graphql(
+  `fragment GenerationResultProtectButton on ImageGenerationResultNode @_unmask {
+    id
+    isProtected
+  }`,
+)
+
+export const GenerationResultProtectButtonTaskFragment = graphql(
+  `fragment GenerationResultProtectButtonTask on ImageGenerationTaskNode @_unmask {
+    id
+    isProtected
+  }`,
+)
+
 const updateProtectedImageGenerationResultMutation = graphql(
   `mutation updateProtectedImageGenerationResult($input: UpdateProtectedImageGenerationResultInput!) {
     updateProtectedImageGenerationResult(input: $input) {
-      ...ImageGenerationResultFields
+      ...GenerationResultProtectButton
     }
   }`,
-  [imageGenerationResultFieldsFragment],
+  [GenerationResultProtectButtonFragment],
 )

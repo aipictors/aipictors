@@ -28,18 +28,20 @@ import { ErrorBoundary } from "react-error-boundary"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { GenerationTaskError } from "~/routes/($lang).generation._index/components/task-view/generation-task-error"
 import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
-import { InPaintingDialog } from "~/routes/($lang).generation._index/components/submission-view/in-painting-dialog"
+import {
+  InPaintingDialog,
+  InPaintingImageDialogFragment,
+  InPaintingImageDialogTaskFragment,
+} from "~/routes/($lang).generation._index/components/submission-view/in-painting-dialog"
 import { CopyButton } from "~/routes/($lang).generation._index/components/copy-button"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import type { FragmentOf } from "gql.tada"
-import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
-import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
+import { graphql, type FragmentOf } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
   task:
-    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
-    | FragmentOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof GenerationImageResultSheetContentFragment>
+    | FragmentOf<typeof GenerationImageResultSheetContentTaskFragment>
   isScroll: boolean
   isDisplayImageListButton: boolean
   isListFullSize: boolean
@@ -470,3 +472,21 @@ export function GenerationTaskSheetViewContent(props: Props) {
     </>
   )
 }
+
+export const GenerationImageResultSheetContentFragment = graphql(
+  `fragment GenerationImageResultSheetContent on ImageGenerationResultNode @_unmask {
+    rating
+    isProtected
+    ...InPaintingImageDialog
+  }`,
+  [InPaintingImageDialogFragment],
+)
+
+export const GenerationImageResultSheetContentTaskFragment = graphql(
+  `fragment GenerationImageResultSheetContentTask on ImageGenerationTaskNode @_unmask {
+    rating
+    isProtected
+    ...InPaintingImageDialogTask
+  }`,
+  [InPaintingImageDialogTaskFragment],
+)

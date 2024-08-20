@@ -11,10 +11,12 @@ import { InProgressGenerationCard } from "~/routes/($lang).generation._index/com
 import { GenerationTaskZoomUpButton } from "~/routes/($lang).generation._index/components/generation-task-zoom-up-button"
 import { GenerationTaskRatingButton } from "~/routes/($lang).generation._index/components/generation-task-rating-button"
 import { GenerationTaskDeleteButton } from "~/routes/($lang).generation._index/components/generation-task-delete-button"
-import { GenerationTaskProtectedButton } from "~/routes/($lang).generation._index/components/generation-task-protected-button"
+import {
+  GenerationResultProtectButtonFragment,
+  GenerationResultProtectButtonTaskFragment,
+  GenerationTaskProtectedButton,
+} from "~/routes/($lang).generation._index/components/generation-task-protected-button"
 import { graphql, type FragmentOf } from "gql.tada"
-import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
-import { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
 
 type Props = {
   taskId: string
@@ -26,8 +28,8 @@ type Props = {
   optionButtonSize: number
   isSelectDisabled: boolean
   task:
-    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
-    | FragmentOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof EditableGenerationResultCardFragment>
+    | FragmentOf<typeof EditableGenerationResultCardTaskFragment>
   isPreviewByHover?: boolean
   userToken: string
   onClick?(): void
@@ -251,29 +253,57 @@ export function GenerationTaskEditableCard(props: Props) {
   )
 }
 
+export const EditableGenerationResultCardFragment = graphql(
+  `fragment EditableGenerationResultCard on ImageGenerationResultNode @_unmask {
+    id
+    nanoid
+    status
+    imageUrl
+    thumbnailUrl
+    estimatedSeconds
+    rating
+    ...GenerationResultProtectButton
+  }`,
+  [GenerationResultProtectButtonFragment],
+)
+
+export const EditableGenerationResultCardTaskFragment = graphql(
+  `fragment EditableGenerationResultCardTask on ImageGenerationTaskNode @_unmask {
+    id
+    nanoid
+    status
+    imageUrl
+    thumbnailUrl
+    estimatedSeconds
+    rating
+    ...GenerationResultProtectButtonTask
+  }`,
+  [GenerationResultProtectButtonTaskFragment],
+)
+
 const cancelImageGenerationReservedTaskMutation = graphql(
   `mutation CancelImageGenerationReservedTask($input: CancelImageGenerationReservedTaskInput!) {
     cancelImageGenerationReservedTask(input: $input) {
-      ...ImageGenerationTaskFields
+      ...EditableGenerationResultCardTask
     }
   }`,
-  [imageGenerationTaskFieldsFragment],
+  [EditableGenerationResultCardTaskFragment],
 )
 
 const cancelImageGenerationTaskMutation = graphql(
   `mutation CancelImageGenerationTask($input: CancelImageGenerationTaskInput!) {
     cancelImageGenerationTask(input: $input) {
-      ...ImageGenerationTaskFields
+      ...EditableGenerationResultCardTask
     }
   }`,
-  [imageGenerationTaskFieldsFragment],
+  [EditableGenerationResultCardTaskFragment],
 )
 
 const deleteImageGenerationResultMutation = graphql(
   `mutation deleteImageGenerationResult($input: DeleteImageGenerationResultInput!) {
     deleteImageGenerationResult(input: $input) {
-      ...ImageGenerationResultFields
+      ...EditableGenerationResultCard
     }
   }`,
-  [imageGenerationResultFieldsFragment],
+  [EditableGenerationResultCardFragment],
 )

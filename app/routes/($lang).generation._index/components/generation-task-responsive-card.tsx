@@ -1,17 +1,23 @@
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
-import { GenerationTaskButton } from "~/routes/($lang).generation._index/components/generation-task-button"
-import { GenerationTaskDialogButton } from "~/routes/($lang).generation._index/components/generation-task-dialog-button"
+import {
+  GenerationResultButtonFragment,
+  GenerationResultButtonTaskFragment,
+  GenerationTaskButton,
+} from "~/routes/($lang).generation._index/components/generation-task-button"
+import {
+  GenerationResultDialogButtonFragment,
+  GenerationResultDialogButtonTaskFragment,
+  GenerationTaskDialogButton,
+} from "~/routes/($lang).generation._index/components/generation-task-dialog-button"
 import { ReservedGenerationLinkCard } from "~/routes/($lang).generation._index/components/reserved-generation-link-card"
 import { ErrorBoundary } from "react-error-boundary"
-import type { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
-import type { imageGenerationResultFieldsFragment } from "~/graphql/fragments/image-generation-result-field"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
   task:
-    | FragmentOf<typeof imageGenerationTaskFieldsFragment>
-    | FragmentOf<typeof imageGenerationResultFieldsFragment>
+    | FragmentOf<typeof ReadOnlyGenerationResultCardFragment>
+    | FragmentOf<typeof ReadOnlyGenerationResultCardTaskFragment>
   taskIds?: string[]
   estimatedSeconds?: number
   selectedTaskIds: string[]
@@ -84,3 +90,22 @@ export function GenerationTaskResponsiveCard(props: Props) {
     </>
   )
 }
+
+export const ReadOnlyGenerationResultCardFragment = graphql(
+  `fragment ReadOnlyGenerationResultCard on ImageGenerationResultNode @_unmask {
+    ...GenerationResultDialogButton
+    ...GenerationResultButton
+  }`,
+  [GenerationResultDialogButtonFragment, GenerationResultButtonFragment],
+)
+
+export const ReadOnlyGenerationResultCardTaskFragment = graphql(
+  `fragment ReadOnlyGenerationResultCardTask on ImageGenerationTaskNode @_unmask {
+    ...GenerationResultDialogButtonTask
+    ...GenerationResultButtonTask
+  }`,
+  [
+    GenerationResultDialogButtonTaskFragment,
+    GenerationResultButtonTaskFragment,
+  ],
+)
