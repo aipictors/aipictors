@@ -1,7 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
@@ -11,6 +10,7 @@ import { uploadPublicImage } from "~/utils/upload-public-image"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import {
   PostImageFormAiModelFragment,
+  PostImageFormAlbumFragment,
   PostImageFormInput,
 } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
@@ -667,17 +667,7 @@ const viewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      ...PartialAlbumFields
-      user {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      ...PostImageFormAlbum
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
@@ -711,7 +701,7 @@ const viewerQuery = graphql(
   }`,
   [
     PostImageFormAiModelFragment,
-    partialAlbumFieldsFragment,
+    PostImageFormAlbumFragment,
     passFieldsFragment,
   ],
 )
@@ -784,9 +774,7 @@ const workQuery = graphql(
         }
       }
       album {
-        id
-        title
-        description
+        ...PostImageFormAlbum
       }
       dailyTheme {
         id
@@ -798,6 +786,7 @@ const workQuery = graphql(
       }
     }
   }`,
+  [PostImageFormAlbumFragment],
 )
 
 const updateWorkMutation = graphql(

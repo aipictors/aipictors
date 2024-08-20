@@ -9,6 +9,7 @@ import { uploadPublicImage } from "~/utils/upload-public-image"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
 import {
   PostTextFormAiModelFragment,
+  PostTextFormAlbumFragment,
   PostTextFormInput,
 } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { PostTextFormUploader } from "~/routes/($lang)._main.new.image/components/post-text-form-uploader"
@@ -551,37 +552,7 @@ const viewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      id
-      title
-      isSensitive
-      likesCount
-      viewsCount
-      thumbnailImageURL
-      description
-      works(limit: $limit, offset: $offset) {
-        id
-        title
-        imageURL
-        largeThumbnailImageURL
-        smallThumbnailImageURL
-        accessType
-        rating
-        createdAt
-      }
-      rating
-      createdAt
-      slug
-      userId
-      user {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      ...PostTextFormAlbum
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
@@ -614,7 +585,7 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [PostTextFormAiModelFragment],
+  [PostTextFormAiModelFragment, PostTextFormAlbumFragment],
 )
 
 const CreateWorkMutation = graphql(

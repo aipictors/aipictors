@@ -1,11 +1,10 @@
 import { Switch } from "~/components/ui/switch"
-import type { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
 import { Link } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
-  albums: FragmentOf<typeof partialAlbumFieldsFragment>[]
+  albums: FragmentOf<typeof UserAlbumListItemFragment>[]
 }
 
 export function UserAlbumList(props: Props) {
@@ -25,3 +24,10 @@ export function UserAlbumList(props: Props) {
     </div>
   )
 }
+
+export const UserAlbumListItemFragment = graphql(
+  `fragment UserAlbumListItem on AlbumNode @_unmask {
+    id
+    thumbnailImageURL
+  }`,
+)

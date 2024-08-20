@@ -1,7 +1,9 @@
 import { ParamsError } from "~/errors/params-error"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import { createClient } from "~/lib/client"
-import { UserAlbumList } from "~/routes/($lang)._main.users.$user.albums/components/user-album-list"
+import {
+  UserAlbumList,
+  UserAlbumListItemFragment,
+} from "~/routes/($lang)._main.users.$user.albums/components/user-album-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -49,9 +51,9 @@ const userAlbumsQuery = graphql(
     user(id: $userId) {
       id
       albums(offset: $offset, limit: $limit) {
-        ...PartialAlbumFields
+        ...UserAlbumListItem
       }
     }
   }`,
-  [partialAlbumFieldsFragment],
+  [UserAlbumListItemFragment],
 )

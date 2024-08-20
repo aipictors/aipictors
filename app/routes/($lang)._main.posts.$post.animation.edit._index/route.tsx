@@ -1,7 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
@@ -24,6 +23,7 @@ import { postAnimationFormReducer } from "~/routes/($lang)._main.new.animation/r
 import {
   PostAnimationFormInput,
   PostAnimationFormAiModelFragment,
+  PostAnimationFormAlbumFragment,
 } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import React from "react"
@@ -569,17 +569,7 @@ const viewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      ...PartialAlbumFields
-      user {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      ...PostAnimationFormAlbum
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
@@ -613,7 +603,7 @@ const viewerQuery = graphql(
   }`,
   [
     PostAnimationFormAiModelFragment,
-    partialAlbumFieldsFragment,
+    PostAnimationFormAlbumFragment,
     passFieldsFragment,
   ],
 )
@@ -686,9 +676,7 @@ const workQuery = graphql(
         }
       }
       album {
-        id
-        title
-        description
+        ...PostAnimationFormAlbum
       }
       dailyTheme {
         id
@@ -700,6 +688,7 @@ const workQuery = graphql(
       }
     }
   }`,
+  [PostAnimationFormAlbumFragment],
 )
 
 const updateWorkMutation = graphql(

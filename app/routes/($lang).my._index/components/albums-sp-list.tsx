@@ -1,14 +1,11 @@
-import { AlbumsSpListItem } from "~/routes/($lang).my._index/components/albums-sp-list-item"
+import type { FragmentOf } from "gql.tada"
+import {
+  AlbumsSpListItem,
+  type MobileAlbumListItemFragment,
+} from "~/routes/($lang).my._index/components/albums-sp-list-item"
 
 type Props = {
-  albums: {
-    id: string
-    userId: string
-    title: string
-    slug: string
-    thumbnailImageUrl: string
-    createdAt: string
-  }[]
+  albums: FragmentOf<typeof MobileAlbumListItemFragment>[]
 }
 
 /**
@@ -18,8 +15,7 @@ export function AlbumsSpList(props: Props) {
   return (
     <>
       {props.albums.map((album, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-        <div key={index}>
+        <div key={album.id}>
           <AlbumsSpListItem album={album} />
         </div>
       ))}

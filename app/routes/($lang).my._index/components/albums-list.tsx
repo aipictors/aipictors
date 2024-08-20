@@ -1,17 +1,15 @@
 import type { SortType } from "~/types/sort-type"
-import { AlbumsListTable } from "~/routes/($lang).my._index/components/albums-list-table"
+import {
+  AlbumsListTable,
+  AlbumTableItemFragment,
+} from "~/routes/($lang).my._index/components/albums-list-table"
 import { AlbumsSpList } from "~/routes/($lang).my._index/components/albums-sp-list"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { type FragmentOf, graphql } from "gql.tada"
+import { MobileAlbumListItemFragment } from "~/routes/($lang).my._index/components/albums-sp-list-item"
 
 type Props = {
-  albums: {
-    id: string
-    userId: string
-    title: string
-    slug: string
-    thumbnailImageUrl: string
-    createdAt: string
-  }[]
+  albums: FragmentOf<typeof AlbumListItemFragment>[]
   sort: SortType
   orderBy: IntrospectionEnum<"AlbumOrderBy">
   onClickTitleSortButton: () => void
@@ -45,8 +43,16 @@ export function AlbumsList(props: Props) {
         />
       </div>
       <div className="block md:hidden">
-        <AlbumsSpList albums={displayAlbums} />
+        <AlbumsSpList albums={props.albums} />
       </div>
     </>
   )
 }
+
+export const AlbumListItemFragment = graphql(
+  `fragment AlbumListItem on AlbumNode @_unmask {
+    ...AlbumTableItem
+    ...MobileAlbumListItem
+  }`,
+  [AlbumTableItemFragment, MobileAlbumListItemFragment],
+)

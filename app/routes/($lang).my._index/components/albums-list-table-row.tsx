@@ -5,17 +5,11 @@ import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Link } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
-  album: {
-    id: string
-    userId: string
-    title: string
-    slug: string
-    thumbnailImageUrl: string
-    createdAt: string
-  }
+  album: FragmentOf<typeof AlbumTableRowFragment>
 }
 
 /**
@@ -51,6 +45,10 @@ export function AlbumsListTableRow(props: Props) {
 
   const [isHidden, setIsHidden] = useState(false)
 
+  const truncateTitle = (title: string, maxLength: number) => {
+    return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
+  }
+
   return (
     <>
       {!isHidden && (
@@ -63,14 +61,14 @@ export function AlbumsListTableRow(props: Props) {
           <TableCell className="font-medium">
             <Link to={`/${props.album.userId}/albums/${props.album.slug}`}>
               <div className="w-32 overflow-hidden text-ellipsis">
-                {props.album.title}
+                {truncateTitle(props.album.title, 32)}
               </div>
             </Link>
           </TableCell>
           <TableCell>
             <Link to={`/${props.album.userId}/albums/${props.album.slug}`}>
               <img
-                src={props.album.thumbnailImageUrl}
+                src={props.album.thumbnailImageURL ?? undefined}
                 alt="thumbnail"
                 className="h-[80px] w-[80px] min-w-[80px] rounded-md object-cover"
               />
@@ -92,12 +90,23 @@ export function AlbumsListTableRow(props: Props) {
               </AppConfirmDialog>
             )}
           </TableCell>
-          <TableCell>{props.album.createdAt}</TableCell>
+          <TableCell>{toDateTimeText(props.album.createdAt)}</TableCell>
         </TableRow>
       )}
     </>
   )
 }
+
+export const AlbumTableRowFragment = graphql(
+  `fragment AlbumTableRow on AlbumNode @_unmask {
+    id
+    title
+    createdAt
+    thumbnailImageURL
+    userId
+    slug
+  }`,
+)
 
 const deleteAlbumMutation = graphql(
   `mutation DeleteAlbum($input: DeleteAlbumInput!) {

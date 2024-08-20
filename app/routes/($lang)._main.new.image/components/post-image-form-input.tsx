@@ -14,7 +14,6 @@ import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/p
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
 import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
 import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
-import type { partialAlbumFieldsFragment } from "~/graphql/fragments/partial-album-fields"
 import type { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { type FragmentOf, graphql } from "gql.tada"
 import type { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
@@ -29,7 +28,7 @@ type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
   dispatch: Dispatch<PostImageFormInputAction>
   state: PostImageFormInputState
-  albums: FragmentOf<typeof partialAlbumFieldsFragment>[]
+  albums: FragmentOf<typeof PostImageFormAlbumFragment>[]
   currentPass: FragmentOf<typeof passFieldsFragment> | null
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
@@ -346,6 +345,13 @@ export function PostImageFormInput(props: Props) {
     </div>
   )
 }
+
+export const PostImageFormAlbumFragment = graphql(
+  `fragment PostImageFormAlbum on AlbumNode @_unmask {
+    id
+    title
+  }`,
+)
 
 const pageQuery = graphql(
   `query PageQuery(

@@ -7,19 +7,16 @@ import {
 } from "~/components/ui/table"
 import type { SortType } from "~/types/sort-type"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { AlbumsListTableRow } from "~/routes/($lang).my._index/components/albums-list-table-row"
+import {
+  AlbumsListTableRow,
+  AlbumTableRowFragment,
+} from "~/routes/($lang).my._index/components/albums-list-table-row"
 import { AlbumsListColumn } from "~/routes/($lang).my._index/components/albums-list-column"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {
-  albums: {
-    id: string
-    userId: string
-    title: string
-    slug: string
-    thumbnailImageUrl: string
-    createdAt: string
-  }[]
+  albums: FragmentOf<typeof AlbumTableItemFragment>[]
   sort: SortType
   orderBy: IntrospectionEnum<"AlbumOrderBy">
   onClickTitleSortButton: () => void
@@ -69,3 +66,10 @@ export function AlbumsListTable(props: Props) {
     </>
   )
 }
+
+export const AlbumTableItemFragment = graphql(
+  `fragment AlbumTableItem on AlbumNode @_unmask {
+    ...AlbumTableRow
+  }`,
+  [AlbumTableRowFragment],
+)

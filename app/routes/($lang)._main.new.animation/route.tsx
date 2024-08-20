@@ -10,6 +10,7 @@ import { uploadPublicVideo } from "~/utils/upload-public-video"
 import {
   PostAnimationFormInput,
   PostAnimationFormAiModelFragment,
+  PostAnimationFormAlbumFragment,
 } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { PostAnimationFormUploader } from "~/routes/($lang)._main.new.animation/components/post-animation-form-uploader"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
@@ -412,37 +413,7 @@ const ViewerQuery = graphql(
         needsThumbnailImage: false,
       }
     ) {
-      id
-      title
-      isSensitive
-      likesCount
-      viewsCount
-      thumbnailImageURL
-      description
-      works(limit: $limit, offset: $offset) {
-        id
-        title
-        imageURL
-        largeThumbnailImageURL
-        smallThumbnailImageURL
-        accessType
-        rating
-        createdAt
-      }
-      rating
-      createdAt
-      slug
-      userId
-      user {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      ...PostAnimationFormAlbum
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
@@ -475,7 +446,7 @@ const ViewerQuery = graphql(
       endAt
     }
   }`,
-  [PostAnimationFormAiModelFragment],
+  [PostAnimationFormAiModelFragment, PostAnimationFormAlbumFragment],
 )
 
 const CreateWorkMutation = graphql(
