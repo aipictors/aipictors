@@ -25,7 +25,11 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
         to={`/posts/${props.works[0].id}`}
       >
         <img
-          src={props.works[0].smallThumbnailImageURL}
+          src={
+            props.size === "large"
+              ? props.works[0].largeThumbnailImageURL
+              : props.works[0].smallThumbnailImageURL
+          }
           alt={props.works[0].title}
           className="m-auto max-h-32 object-cover"
         />
@@ -50,9 +54,18 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
       <RowsPhotoAlbum
         photos={props.works.map((work) => ({
           key: work.id,
-          src: work.smallThumbnailImageURL,
-          width: work.smallThumbnailImageWidth,
-          height: work.smallThumbnailImageHeight,
+          src:
+            props.size === "large"
+              ? work.largeThumbnailImageURL
+              : work.smallThumbnailImageURL,
+          width:
+            props.size === "large"
+              ? work.largeThumbnailImageWidth
+              : work.smallThumbnailImageWidth,
+          height:
+            props.size === "large"
+              ? work.largeThumbnailImageHeight
+              : work.smallThumbnailImageHeight,
           // workId: work.id, // 各作品のID
           // userId: work.user.id, // 作品の所有者のID
           // userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン

@@ -471,7 +471,13 @@ export const META: { [key: string]: MetaData } = {
   MODELS: {
     title: "モデル一覧",
     description: "モデル一覧から生成された作品を確認することができます",
-    isIndex: false,
+    isIndex: true,
+  },
+  MODEL: {
+    title: "{{title}}",
+    description: "{{description}}",
+    image: "{{url}}",
+    isIndex: true,
   },
   /**
    * インデックスなし
@@ -504,6 +510,11 @@ export const META: { [key: string]: MetaData } = {
   NOTIFICATIONS: {
     title: "通知履歴",
     description: "通知を確認することができます",
+    isIndex: false,
+  },
+  CREATOR: {
+    title: "支援リクエスト",
+    description: "支援リクエストを確認できます",
     isIndex: false,
   },
   /**

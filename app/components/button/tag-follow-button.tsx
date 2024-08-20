@@ -151,7 +151,7 @@ const followTagMutation = graphql(
 )
 
 const unfollowTagMutation = graphql(
-  `mutation UnFollowTag($input: UnFollowTagInput!) {
-    unFollowTag(input: $input)
+  `mutation UnFollowTag($input: UnfollowTagInput!) {
+    unfollowTag(input: $input)
   }`,
 )

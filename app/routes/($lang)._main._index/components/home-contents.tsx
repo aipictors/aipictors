@@ -230,6 +230,7 @@ export function HomeContents(props: Props) {
             <HomeTagsSection
               title={"人気タグ"}
               tags={props.homeParticles.recommendedTags}
+              isSensitive={props.isSensitive}
             />
             {!props.isSensitive && (
               <HomeWorksUsersRecommendedSection

@@ -90,8 +90,6 @@ export async function loader() {
     pastGenerationDate.setTime(now.getTime())
   }
 
-  console.log(randomCategories)
-
   const result = await client.query({
     query: query,
     variables: {
@@ -109,6 +107,8 @@ export async function loader() {
       tagWorksLimit: config.query.homeWorkCount.tag,
     },
   })
+
+  console.log(result)
 
   const awardDateText = dateToText(yesterday)
   const generationDateText = pastGenerationDate.toISOString()
@@ -137,6 +137,8 @@ export async function loader() {
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
+
+  console.log(data.dailyTheme)
 
   return (
     <>

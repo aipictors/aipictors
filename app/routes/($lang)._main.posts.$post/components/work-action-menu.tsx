@@ -8,7 +8,7 @@ import {
 import { ReportDialog } from "~/routes/($lang)._main.posts.$post/components/report-dialog"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { DownloadIcon, Loader2Icon, MoreHorizontal } from "lucide-react"
+import { DownloadIcon, Loader2Icon, MoreHorizontal, Trash } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
@@ -75,7 +75,7 @@ export function MenuPopover(props: Props) {
                   {isLoadingDeleteAlbum ? (
                     <Loader2Icon className="animate-spin" />
                   ) : (
-                    <DownloadIcon />
+                    <Trash />
                   )}
                   {isDeleted ? "削除済み" : "削除"}
                 </Button>
