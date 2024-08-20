@@ -3,7 +3,6 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 
 export function WorkAdSense() {
   const authContext = useContext(AuthContext)
@@ -40,15 +39,10 @@ const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
-        ...PassFields
+        id
+        type
       }
     }
   }`,
-  [passFieldsFragment],
 )

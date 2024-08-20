@@ -15,7 +15,6 @@ import { useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { graphql } from "gql.tada"
 import { imageGenerationTaskFieldsFragment } from "~/graphql/fragments/image-generation-task-field"
 
@@ -571,18 +570,11 @@ const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
         id
-        ...PassFields
       }
     }
   }`,
-  [passFieldsFragment],
 )
 
 const viewerLineUserIdQuery = graphql(

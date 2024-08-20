@@ -8,7 +8,6 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { Textarea } from "~/components/ui/textarea"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
@@ -249,18 +248,12 @@ const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
         id
-        ...PassFields
+        type
       }
     }
   }`,
-  [passFieldsFragment],
 )
 
 const createImageGenerationMemoMutation = graphql(

@@ -5,7 +5,6 @@ import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import { Suspense } from "react"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 
@@ -40,16 +39,11 @@ export default function MyRecommended() {
 const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
+      id
       currentPass {
         id
-        ...PassFields
+        type
       }
     }
   }`,
-  [passFieldsFragment],
 )

@@ -6,7 +6,6 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react"
 import { graphql } from "gql.tada"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 
 type Props = {
   workId: string
@@ -130,9 +129,9 @@ const viewerCurrentPassQuery = graphql(
     viewer {
       id
       currentPass {
-        ...PassFields
+        id
+        type
       }
     }
   }`,
-  [passFieldsFragment],
 )

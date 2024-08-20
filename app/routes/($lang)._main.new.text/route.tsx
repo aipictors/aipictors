@@ -11,6 +11,7 @@ import {
   PostTextFormAiModelFragment,
   PostTextFormAlbumFragment,
   PostTextFormInput,
+  PostTextFormPassFragment,
 } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { PostTextFormUploader } from "~/routes/($lang)._main.new.image/components/post-text-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
@@ -473,26 +474,8 @@ const viewerQuery = graphql(
     viewer {
       id
       token
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
-        id
-        type
-        payment {
-          id
-          amount
-          stripePaymentIntentId
-        }
-        isDisabled
-        periodStart
-        periodEnd
-        trialPeriodStart
-        trialPeriodEnd
-        createdAt
-        price
+        ...PostTextFormPass
       }
       imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
         id
@@ -585,7 +568,11 @@ const viewerQuery = graphql(
       endAt
     }
   }`,
-  [PostTextFormAiModelFragment, PostTextFormAlbumFragment],
+  [
+    PostTextFormAiModelFragment,
+    PostTextFormAlbumFragment,
+    PostTextFormPassFragment,
+  ],
 )
 
 const CreateWorkMutation = graphql(

@@ -11,7 +11,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
-import { passFieldsFragment } from "~/graphql/fragments/pass-fields"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
@@ -181,17 +180,11 @@ const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      user {
-        id
-        nanoid
-        hasSignedImageGenerationTerms
-      }
       currentPass {
-        ...PassFields
+        id
       }
     }
   }`,
-  [passFieldsFragment],
 )
 
 const deleteReservedImageGenerationTasksMutation = graphql(
