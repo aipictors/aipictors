@@ -1,17 +1,11 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import React from "react"
 import { Suspense, useContext } from "react"
-
 import { LikeListContainer } from "~/routes/($lang).my._index/components/like-list-container"
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control": "max-age=0, s-maxage=0",
-  }
-}
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors - ダッシュボード - いいね"

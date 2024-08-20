@@ -1,14 +1,8 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { FollowingList } from "~/routes/($lang).following._index/components/following-list"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import type { MetaFunction } from "@remix-run/cloudflare"
 import { Suspense, useContext } from "react"
-
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control": "max-age=0, s-maxage=0",
-  }
-}
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors - フォロー一覧"
