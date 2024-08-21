@@ -4,7 +4,6 @@ import { EventsList } from "~/routes/($lang).events._index/components/events-lis
 import {
   json,
   type LoaderFunctionArgs,
-  type HeadersFunction,
   type MetaFunction,
 } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
@@ -12,12 +11,6 @@ import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-
-export const headers: HeadersFunction = () => {
-  return {
-    "Cache-Control": "max-age=0, s-maxage=0",
-  }
-}
 
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)
