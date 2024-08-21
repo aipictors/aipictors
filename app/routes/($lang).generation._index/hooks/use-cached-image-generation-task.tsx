@@ -30,6 +30,9 @@ export function useCachedImageGenerationTask(id: string) {
         thumbnailUrl
         status
         completedAt
+        isProtected
+        completedAt
+        rating
         model {
           id
           name

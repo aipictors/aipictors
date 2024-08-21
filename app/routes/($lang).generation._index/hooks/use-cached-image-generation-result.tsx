@@ -36,6 +36,7 @@ export function useCachedImageGenerationResult(id: string) {
         }
         clipSkip
         rating
+        isProtected
       }`,
     ),
   })
