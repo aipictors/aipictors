@@ -4,14 +4,14 @@ import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-a
 import { AiModelHeader } from "~/routes/($lang)._main.models.$model/components/ai-model-header"
 import { useContext, useState } from "react"
 import { useQuery } from "@apollo/client/index"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { AuthContext } from "~/contexts/auth-context"
 import { useNavigate } from "@remix-run/react"
+import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 
 type Props = {
   name: string
   thumbnailImageURL: string | null
-  works: FragmentOf<typeof partialWorkFieldsFragment>[]
+  works: FragmentOf<typeof WorkListItemFragment>[]
   worksCount: number
   isSensitive: boolean
   isMoreRatings: boolean
@@ -98,9 +98,9 @@ const aiModelWorksQuery = graphql(
   `query AiModel($search: String!, $limit: Int!, $offset: Int!, $where: WorksWhereInput) {
     aiModel(where: {search: $search}) {
       works(limit: $limit, offset: $offset, where: $where) {
-        ...PartialWorkFields
+        ...WorkListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [WorkListItemFragment],
 )

@@ -4,10 +4,10 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { AiModelArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.model === undefined) {
@@ -70,7 +70,7 @@ export const meta: MetaFunction = ({ data }) => {
       generationModelId: string | null
       workModelId: string | null
       thumbnailImageURL: string | null
-      works: FragmentOf<typeof partialWorkFieldsFragment>[]
+      works: FragmentOf<typeof WorkListItemFragment>[]
     }
   }
 
@@ -131,9 +131,9 @@ const aiModelQuery = graphql(
       workModelId
       thumbnailImageURL
       works(limit: $limit, offset: $offset, where: $where) {
-        ...PartialWorkFields
+        ...WorkListItem
       }
     }
   }`,
-  [partialWorkFieldsFragment],
+  [WorkListItemFragment],
 )

@@ -1,18 +1,10 @@
 import { ParamsError } from "~/errors/params-error"
 import { createClient } from "~/lib/client"
-import {
-  imageModelHeaderFragment,
-  ModelHeader,
-} from "~/routes/($lang)._main.models.$model/components/model-header"
-import {
-  WorkList,
-  WorkListItemFragment,
-} from "~/routes/($lang)._main.posts._index/components/work-list"
+import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { partialWorkFieldsFragment } from "~/graphql/fragments/partial-work-fields"
 import { AiModelArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
@@ -77,7 +69,7 @@ export const meta: MetaFunction = ({ data }) => {
       generationModelId: string | null
       workModelId: string | null
       thumbnailImageURL: string | null
-      works: FragmentOf<typeof partialWorkFieldsFragment>[]
+      works: FragmentOf<typeof WorkListItemFragment>[]
     }
   }
 
@@ -138,13 +130,21 @@ export default function ModelPage() {
   )
 }
 
-const imageModelQuery = graphql(
-  `query ImageModel($id: ID!) {
-    imageModel(id: $id) {
-      ...ImageModelHeader
+const aiModelQuery = graphql(
+  `query AiModel($search: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    aiModel(where:{search: $search}) {
+      id
+      name
+      type
+      generationModelId
+      workModelId
+      thumbnailImageURL
+      works(offset: $offset, limit: $limit, where: $where) {
+        ...WorkListItem
+      }
     }
   }`,
-  [imageModelHeaderFragment],
+  [WorkListItemFragment],
 )
 
 const worksQuery = graphql(
