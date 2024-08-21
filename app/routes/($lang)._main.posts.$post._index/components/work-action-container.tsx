@@ -1,4 +1,4 @@
-import { WorkAction } from "~/routes/($lang)._main.posts.$post/components/work-action"
+import { WorkAction } from "~/routes/($lang)._main.posts.$post._index/components/work-action"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"

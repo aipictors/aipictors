@@ -1,7 +1,7 @@
 import { FollowButton } from "~/components/button/follow-button"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-text-button"
+import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-text-button"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"

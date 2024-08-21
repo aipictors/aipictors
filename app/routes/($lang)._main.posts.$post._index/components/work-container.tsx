@@ -2,21 +2,21 @@ import {
   WorkArticle,
   workArticleFragment,
   sensitiveWorkArticleFragment,
-} from "~/routes/($lang)._main.posts.$post/components/work-article"
-import { WorkUser } from "~/routes/($lang)._main.posts.$post/components/work-user"
+} from "~/routes/($lang)._main.posts.$post._index/components/work-article"
+import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import { Suspense, useContext } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post/components/work-related-list"
-import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post/components/work-tags-works"
-import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post/components/work-next-and-previous"
-import { WorkAdSense } from "~/routes/($lang)._main.posts.$post/components/work-adcense"
+import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
+import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
+import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
+import { WorkAdSense } from "~/routes/($lang)._main.posts.$post._index/components/work-adcense"
 import {
   type CommentListItemFragment,
   WorkCommentList,
-} from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
+} from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 
 type Props = {
   post: string

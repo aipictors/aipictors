@@ -1,6 +1,6 @@
 import type { Tag } from "~/components/tag/tag-input"
 import { Button } from "~/components/ui/button"
-import { WorkTagInput } from "~/routes/($lang)._main.posts.$post/components/work-tag-input"
+import { WorkTagInput } from "~/routes/($lang)._main.posts.$post._index/components/work-tag-input"
 import { Link } from "@remix-run/react"
 import { PlusIcon } from "lucide-react"
 import React from "react"

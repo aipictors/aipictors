@@ -9,7 +9,7 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { IconUrl } from "~/components/icon-url"
-import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
+import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 
 type Props = {
   targetCommentId: string

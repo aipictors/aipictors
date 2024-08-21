@@ -5,8 +5,8 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { Share2 } from "lucide-react"
-import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post/components/work-action-copy-url"
-import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
+import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/components/work-action-copy-url"
+import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 
 type Props = {
   login: string

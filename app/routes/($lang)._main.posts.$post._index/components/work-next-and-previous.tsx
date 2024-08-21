@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import type { workArticleFragment } from "~/routes/($lang)._main.posts.$post/components/work-article"
+import type { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import type { FragmentOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
 import { useEffect } from "react"

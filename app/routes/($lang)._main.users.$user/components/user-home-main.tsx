@@ -1,6 +1,6 @@
 import { FollowButton } from "~/components/button/follow-button"
 import { Button } from "~/components/ui/button"
-import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post/components/prompton-request-colorful-button"
+import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"

@@ -2,14 +2,14 @@ import { RoundedLightButton } from "~/components/button/rounded-light-button"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
-import { StickerButton } from "~/routes/($lang)._main.posts.$post/components/sticker-button"
+import { StickerButton } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useState } from "react"
 import { useContext } from "react"
 import { toast } from "sonner"
-import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post/components/add-sticker-dialog"
+import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
 import {
   StickerAccessTypeDialogFragment,
   StickerChangeAccessTypeDialog,

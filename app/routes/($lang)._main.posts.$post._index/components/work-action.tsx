@@ -3,12 +3,12 @@ import { SharePopover } from "./work-action-share"
 import { LikeButton } from "~/components/like-button"
 import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
-import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post/components/work-editor-button"
+import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post._index/components/work-editor-button"
 import { Suspense, useContext } from "react"
-import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post/components/work-action-bookmark"
+import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post._index/components/work-action-bookmark"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { RecommendButton } from "~/routes/($lang)._main.posts.$post/components/recommend-button"
+import { RecommendButton } from "~/routes/($lang)._main.posts.$post._index/components/recommend-button"
 
 type Props = {
   title?: string

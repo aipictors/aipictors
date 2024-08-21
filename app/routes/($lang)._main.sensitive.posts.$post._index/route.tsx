@@ -3,9 +3,9 @@ import { createClient } from "~/lib/client"
 import {
   sensitiveWorkArticleFragment,
   type workArticleFragment,
-} from "~/routes/($lang)._main.posts.$post/components/work-article"
-import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post/components/work-comment-list"
-import { WorkContainer } from "~/routes/($lang)._main.posts.$post/components/work-container"
+} from "~/routes/($lang)._main.posts.$post._index/components/work-article"
+import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"

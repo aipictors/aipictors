@@ -4,8 +4,8 @@ import { AuthContext } from "~/contexts/auth-context"
 import {
   WorkComment,
   WorkCommentFragment,
-} from "~/routes/($lang)._main.posts.$post/components/work-comment"
-import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post/components/work-comment-response"
+} from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
+import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-response"
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { useBoolean } from "usehooks-ts"
@@ -15,11 +15,11 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
 import { ExpansionTransition } from "~/components/expansion-transition"
-import { StickerDialog } from "~/routes/($lang)._main.posts.$post/components/sticker-dialog"
+import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import {
   StickerButton,
   StickerButtonFragment,
-} from "~/routes/($lang)._main.posts.$post/components/sticker-button"
+} from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 
 type Props = {
   workId: string

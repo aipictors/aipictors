@@ -12,7 +12,7 @@ import {
   EventWorkList,
   EventWorkListItemFragment,
 } from "~/routes/($lang).events.$event._index/components/event-work-list"
-import { XIntent } from "~/routes/($lang)._main.posts.$post/components/work-action-share-x"
+import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = "halloween-2024"

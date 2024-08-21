@@ -5,7 +5,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover"
-import { ReportDialog } from "~/routes/($lang)._main.posts.$post/components/report-dialog"
+import { ReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/report-dialog"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { DownloadIcon, Loader2Icon, MoreHorizontal, Trash } from "lucide-react"

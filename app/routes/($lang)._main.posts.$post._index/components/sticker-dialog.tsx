@@ -8,11 +8,11 @@ import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import {
   StickerButton,
   StickerButtonFragment,
-} from "~/routes/($lang)._main.posts.$post/components/sticker-button"
+} from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { graphql } from "gql.tada"
-import { AddStickerButton } from "~/routes/($lang)._main.posts.$post/components/add-sticker-button"
+import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
 
 type Props = {
   isOpen: boolean
