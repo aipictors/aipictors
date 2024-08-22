@@ -387,7 +387,7 @@ export function WorkCommentList(props: Props) {
               {comment.responses !== null &&
                 comment.responses?.length !== 0 &&
                 comment.responses
-                  .sort((a, b) => a.createdAt - b.createdAt)
+                  // .sort((a, b) => a.createdAt - b.createdAt)
                   .filter((reply) => !hideCommentIds.includes(reply.id))
                   .map((reply) => (
                     <WorkCommentResponse
@@ -438,26 +438,24 @@ export function WorkCommentList(props: Props) {
                     />
                   ))}
               {/* 新しく追加した返信への返信 */}
-              {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
-              {showNewReplyComments &&
-                showNewReplyComments.map((newReply) =>
-                  newReply.replyTargetId !== comment.id ? null : (
-                    <WorkCommentResponse
-                      key={newReply.id}
-                      userId={newReply.user?.id ?? ""}
-                      isMine={newReply.user?.id === appContext.userId}
-                      createdAt={newReply.createdAt}
-                      stickerImageURL={newReply.sticker?.image?.downloadURL}
-                      text={newReply.text}
-                      iconUrl={IconUrl(userIcon)}
-                      userName={newReply.user?.name}
-                      replyId={newReply.id}
-                      onDeleteComment={() => {
-                        onDeleteComment(newReply.id)
-                      }}
-                    />
-                  ),
-                )}
+              {showNewReplyComments?.map((newReply) =>
+                newReply.replyTargetId !== comment.id ? null : (
+                  <WorkCommentResponse
+                    key={newReply.id}
+                    userId={newReply.user?.id ?? ""}
+                    isMine={newReply.user?.id === appContext.userId}
+                    createdAt={newReply.createdAt}
+                    stickerImageURL={newReply.sticker?.image?.downloadURL}
+                    text={newReply.text}
+                    iconUrl={IconUrl(userIcon)}
+                    userName={newReply.user?.name}
+                    replyId={newReply.id}
+                    onDeleteComment={() => {
+                      onDeleteComment(newReply.id)
+                    }}
+                  />
+                ),
+              )}
             </div>
           ))}
           {/* もっと見るで確認できる既にコメント済みのコメント一覧 */}
