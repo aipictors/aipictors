@@ -9,12 +9,18 @@ type Props = {
   dailyThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
+/**
+ * お題カレンダーのセル一覧を作成する
+ */
 export function ThemeList(props: Props) {
   const navigate = useNavigate()
 
+  // カレンダーセルを生成
   const cells = createCalendarCells(props.year, props.month)
 
   const currentDateInJapan = getJSTDate()
+
+  const firstDayOfWeek = new Date(props.year, props.month - 1, 1).getDay() // 1日の曜日を取得
 
   const blocks = cells.map((day, index) => {
     const theme = props.dailyThemes.find((dailyTheme) => {
@@ -24,12 +30,16 @@ export function ThemeList(props: Props) {
       props.year === currentDateInJapan.getFullYear() &&
       props.month === currentDateInJapan.getMonth() + 1 &&
       day === currentDateInJapan.getDate()
+    
+    // 正しい曜日を算出
+    const dayOfWeek = (index + firstDayOfWeek) % 7;
+
     return {
       id: `/${props.year}-${props.month}-${index}`,
       day: day,
       title: theme?.title ?? null,
-      isSunday: index % 7 === 0,
-      isSaturday: index % 7 === 6,
+      isSunday: dayOfWeek === 0,  // 日曜日
+      isSaturday: dayOfWeek === 6, // 土曜日
       isToday: isToday,
       date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
       thumbnailUrl: theme?.firstWork?.smallThumbnailImageURL ?? null,
@@ -89,37 +99,45 @@ export function ThemeList(props: Props) {
               {day}
             </div>
           ))}
-          {blocks
-            .filter((block) => block.title !== null)
-            .map((block) => (
-              // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+          {blocks.map((block) => (
+            // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+            <div
+              key={block.id}
+              onClick={() => handleCellClick(block.date)}
+              className={`flex h-24 min-w-24 relative cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
+            >
               <div
-                key={block.id}
-                onClick={() => handleCellClick(block.date)}
-                className={`flex cursor-pointer flex-col space-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
+                className={`text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
               >
-                <div
-                  className={`text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
-                >
-                  {block.day}
-                </div>
-                {block.title && (
-                  <div className="mt-2 text-center text-sm">{block.title}</div>
-                )}
-                {block.thumbnailUrl && (
-                  <img
-                    src={block.thumbnailUrl}
-                    alt=""
-                    className="h-16 w-full rounded-md object-cover"
-                  />
-                )}
+                {block.day}
               </div>
-            ))}
+              {block.thumbnailUrl && (
+                <img
+                  src={block.thumbnailUrl}
+                  alt=""
+                  className="h-full w-full m-0 object-cover absolute left-0 top-0"
+                />
+              )}
+              {block.thumbnailUrl && (
+                <div className="absolute bg-black left-0 top-0 w-full h-full opacity-40" />
+              )}
+              {block.title && block.thumbnailUrl && (
+                <>
+                  <div className="font-bold z-10 p-2 text-white text-center rounded-md w-24 -translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">{block.title}</div>
+                  <div className="absolute right-0 bottom-0 left-0 box-border opacity-30 flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88" />               
+                </>
+              )}
+              {block.title && !block.thumbnailUrl && (
+                <div className="font-bold p-2 rounded-md w-24 text-center -translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">{block.title}</div>
+              )}
+          </div>
+          ))}
         </div>
       </div>
     </div>
   )
 }
+
 
 export const ThemeListItemFragment = graphql(
   `fragment ThemeListItem on DailyThemeNode @_unmask {

@@ -1,8 +1,7 @@
 import { Link } from "@remix-run/react"
 
 const models = [
-  { id: "stable-diffusion-sd", name: "Stable Diffusion", label: "SD" },
-  { id: "stable-diffusion-xl", name: "Stable Diffusion XL", label: "XL" },
+  { id: "stable-diffusion-sd", name: "StableDiffusion", label: "SD" },
   { id: "nijijourney", name: "niji・journey", label: "NJ" },
   { id: "dalle", name: "Dalle", label: "DA" },
   { id: "midjourney", name: "Midjourney", label: "MJ" },

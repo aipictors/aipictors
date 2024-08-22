@@ -54,6 +54,7 @@ export async function loader(props: LoaderFunctionArgs) {
         subjectId: Number(dailyThemesResp.data.dailyThemes[0].id),
         ratings: ["G", "R15"],
         orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
       },
     },
   })

@@ -107,11 +107,11 @@ export default function ModelPage() {
         name={data.data.name}
         thumbnailImageURL={
           data.data.thumbnailImageURL
-            ? data.data.works[0].largeThumbnailImageURL
+            ? data.data.works[0].smallThumbnailImageURL
             : null
         }
         works={data.data.works}
-        worksCount={data.data.works.length}
+        worksCount={data.data.worksCount}
         isSensitive={true}
         isMoreRatings={data.isR18G}
         hasPrompt={data.hasPrompt}
@@ -127,6 +127,7 @@ const aiModelQuery = graphql(
       id
       name
       type
+      worksCount
       generationModelId
       workModelId
       thumbnailImageURL

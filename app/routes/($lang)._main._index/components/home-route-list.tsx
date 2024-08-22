@@ -1,4 +1,3 @@
-import { LoginDialogButton } from "~/components/login-dialog-button"
 import { NavigationLogoutDialogButton } from "~/components/logout-navigation-dialog-button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
@@ -39,14 +38,6 @@ export function HomeRouteList(props: Props) {
 
   return (
     <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
-      {authContext.isNotLoggedIn && (
-        <>
-          <LoginDialogButton variant="secondary" isWidthFull />
-          <div className={"py-2"}>
-            <Separator />
-          </div>
-        </>
-      )}
       <HomeNavigationButton
         onClick={closeHeaderMenu}
         href={"/"}

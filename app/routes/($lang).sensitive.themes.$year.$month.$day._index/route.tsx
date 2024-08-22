@@ -24,6 +24,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const day = Number.parseInt(props.params.day)
 
   const url = new URL(props.request.url)
+
   const page = url.searchParams.get("page")
     ? Number.parseInt(url.searchParams.get("page") as string) > 100
       ? 0
@@ -55,6 +56,7 @@ export async function loader(props: LoaderFunctionArgs) {
         ratings: ["R18", "R18G"],
         orderBy: "LIKES_COUNT",
         isSensitive: true,
+        isNowCreatedAt: true,
       },
     },
   })
@@ -118,15 +120,6 @@ export const themeWorksAndCountQuery = graphql(
       ...ThemeWork
     }
     worksCount(where: $where)
-  }`,
-  [ThemeWorkFragment],
-)
-
-export const themeWorksQuery = graphql(
-  `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...ThemeWork
-    }
   }`,
   [ThemeWorkFragment],
 )
