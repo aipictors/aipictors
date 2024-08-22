@@ -30,15 +30,15 @@ export function ThemeList(props: Props) {
       props.year === currentDateInJapan.getFullYear() &&
       props.month === currentDateInJapan.getMonth() + 1 &&
       day === currentDateInJapan.getDate()
-    
+
     // 正しい曜日を算出
-    const dayOfWeek = (index + firstDayOfWeek) % 7;
+    const dayOfWeek = (index + firstDayOfWeek) % 7
 
     return {
       id: `/${props.year}-${props.month}-${index}`,
       day: day,
       title: theme?.title ?? null,
-      isSunday: dayOfWeek === 0,  // 日曜日
+      isSunday: dayOfWeek === 0, // 日曜日
       isSaturday: dayOfWeek === 6, // 土曜日
       isToday: isToday,
       date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
@@ -104,7 +104,7 @@ export function ThemeList(props: Props) {
             <div
               key={block.id}
               onClick={() => handleCellClick(block.date)}
-              className={`flex h-24 min-w-24 relative cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
+              className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
             >
               <div
                 className={`text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
@@ -115,29 +115,32 @@ export function ThemeList(props: Props) {
                 <img
                   src={block.thumbnailUrl}
                   alt=""
-                  className="h-full w-full m-0 object-cover absolute left-0 top-0"
+                  className="absolute top-0 left-0 m-0 h-full w-full object-cover"
                 />
               )}
               {block.thumbnailUrl && (
-                <div className="absolute bg-black left-0 top-0 w-full h-full opacity-40" />
+                <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
               )}
               {block.title && block.thumbnailUrl && (
                 <>
-                  <div className="font-bold z-10 p-2 text-white text-center rounded-md w-24 -translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">{block.title}</div>
-                  <div className="absolute right-0 bottom-0 left-0 box-border opacity-30 flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88" />               
+                  <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 w-24 transform rounded-md p-2 text-center font-bold text-white">
+                    {block.title}
+                  </div>
+                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-30 opacity-88" />
                 </>
               )}
               {block.title && !block.thumbnailUrl && (
-                <div className="font-bold p-2 rounded-md w-24 text-center -translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">{block.title}</div>
+                <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 w-24 transform rounded-md p-2 text-center font-bold">
+                  {block.title}
+                </div>
               )}
-          </div>
+            </div>
           ))}
         </div>
       </div>
     </div>
   )
 }
-
 
 export const ThemeListItemFragment = graphql(
   `fragment ThemeListItem on DailyThemeNode @_unmask {
