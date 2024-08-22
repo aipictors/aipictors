@@ -255,6 +255,7 @@ export const config = {
       column: 16,
       generation: 16,
       promotion: 16,
+      newUser: 16,
       award: 16,
       tag: 13,
     },

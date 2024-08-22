@@ -12,6 +12,7 @@ import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/ho
 import { HomeContents } from "~/routes/($lang)._main._index/components/home-contents"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
+import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.HOME_SENSITIVE)
@@ -108,6 +109,7 @@ export async function loader() {
       categoryFirst: randomCategories[0],
       categorySecond: randomCategories[1],
       tagWorksLimit: config.query.homeWorkCount.tag,
+      newUsersWorksLimit: config.query.homeWorkCount.newUser,
     },
   })
 
@@ -153,6 +155,7 @@ export default function Index() {
           workAwards: data.workAwards,
           recommendedTags: data.recommendedTags,
           promotionWorks: data.promotionWorks,
+          newUserWorks: data.newUserWorks,
         }}
         isSensitive={true}
         isCropped={false}
@@ -181,6 +184,7 @@ const query = graphql(
     $categoryFirst: String!
     $categorySecond: String!
     $tagWorksLimit: Int!
+    $newUsersWorksLimit: Int!
   ) {
     adWorks: works(
       offset: 0,
@@ -243,6 +247,15 @@ const query = graphql(
     ) {
       ...HomeTagWork
     }
+    newUserWorks: newUserWorks(
+      offset: 0,
+      limit: $newUsersWorksLimit,
+      where: {
+        ratings: [R18, R18G],
+      }
+    ) {
+      ...HomeNewUsersWorks
+    }
     promotionWorks: works(
       offset: 0,
       limit: $promotionWorksLimit,
@@ -286,5 +299,6 @@ const query = graphql(
     // HomeColumnPostFragment,
     HomeTagFragment,
     HomeTagWorkFragment,
+    HomeNewUsersWorksFragment,
   ],
 )

@@ -5,31 +5,18 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import type {
+  MicroCmsApiRelease,
+  MicroCmsApiReleaseResponse,
+} from "~/types/micro-cms-release-response"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.RELEASES)
 }
 
-interface Release {
-  id: string
-  title: string
-  description: string
-  thumbnail_url: {
-    url: string
-  }
-  platform: string
-  createdAt: number
-}
-
-interface ApiResponse {
-  contents: Release[]
-  totalCount: number
-  offset: number
-  limit: number
-}
-
 export async function loader(props: LoaderFunctionArgs) {
   const limit = 16
+
   const offset = props.params.offset ? Number(props.params.offset) : 0
 
   const microCmsClient = createCmsClient({
@@ -37,7 +24,7 @@ export async function loader(props: LoaderFunctionArgs) {
     apiKey: config.cms.microCms.apiKey,
   })
 
-  const data: ApiResponse = await microCmsClient.get({
+  const data: MicroCmsApiReleaseResponse = await microCmsClient.get({
     endpoint: `releases?orders=-createdAt&limit=${limit}&offset=${offset}`,
   })
 
@@ -53,7 +40,7 @@ export default function Milestone() {
 
   const [offset, setOffset] = useState(data.data.offset)
 
-  const releases: Release[] = data.data.contents
+  const releases: MicroCmsApiRelease[] = data.data.contents
 
   const handleNext = () => {
     setOffset(offset + limit)

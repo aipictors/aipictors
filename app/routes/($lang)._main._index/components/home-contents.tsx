@@ -1,5 +1,5 @@
 import type { FragmentOf } from "gql.tada"
-import { ArrowDownWideNarrow } from "lucide-react"
+import { ArrowDownWideNarrow, RefreshCcwIcon } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import {
@@ -33,6 +33,20 @@ import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { FeedContents } from "~/routes/($lang)._main._index/components/feed-contents"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import {
+  HomeNewUsersWorksSection,
+  type HomeNewUsersWorksFragment,
+} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
+import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { Button } from "~/components/ui/button"
+import { Link, useNavigate } from "@remix-run/react"
+import { Separator } from "~/components/ui/separator"
+import {
+  HomeNewUsersSection,
+  type HomeNewPostedUsersFragment,
+} from "~/routes/($lang)._main._index/components/home-new-users-section"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -45,6 +59,9 @@ type homeParticles = {
   workAwards: FragmentOf<typeof HomeWorkAwardFragment>[]
   recommendedTags: FragmentOf<typeof HomeTagFragment>[]
   promotionWorks: FragmentOf<typeof HomeTagWorkFragment>[]
+  newUserWorks: FragmentOf<typeof HomeNewUsersWorksFragment>[]
+  releaseList?: MicroCmsApiReleaseResponse
+  newPostedUsers?: FragmentOf<typeof HomeNewPostedUsersFragment>[]
 }
 
 type Props = {
@@ -178,6 +195,8 @@ export function HomeContents(props: Props) {
   //   return null
   // }
 
+  const navigate = useNavigate()
+
   return (
     <Tabs
       defaultValue={searchParams.get("tab") || "home"}
@@ -199,7 +218,110 @@ export function HomeContents(props: Props) {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
-        {props.homeParticles && (
+        {!props.isSensitive && props.homeParticles && (
+          <div className="block md:flex md:space-x-4">
+            <div className="flex flex-col space-y-4 md:w-[76%]">
+              <div className="hidden md:block">
+                {props.homeParticles.releaseList && (
+                  <HomeReleaseList
+                    releaseList={props.homeParticles.releaseList}
+                  />
+                )}
+              </div>
+              <div>
+                <HomeTagList
+                  themeTitle={props.homeParticles.dailyThemeTitle}
+                  hotTags={props.homeParticles.hotTags}
+                />
+              </div>
+              <HomeWorksTagSection
+                tag={props.homeParticles.firstTag}
+                works={props.homeParticles.firstTagWorks}
+                isSensitive={props.isSensitive}
+                isCropped={props.isCropped}
+              />
+              <HomeWorksTagSection
+                tag={props.homeParticles.secondTag}
+                works={props.homeParticles.secondTagWorks}
+                isSensitive={props.isSensitive}
+                isCropped={props.isCropped}
+              />
+              <HomeNewUsersWorksSection
+                works={props.homeParticles.newUserWorks}
+                isSensitive={props.isSensitive}
+              />
+              <HomeAwardWorkSection
+                awardDateText={props.homeParticles.awardDateText}
+                title={"前日ランキング"}
+                awards={props.homeParticles.workAwards}
+                isSensitive={props.isSensitive}
+              />
+              <HomeTagsSection
+                title={"人気タグ"}
+                tags={props.homeParticles.recommendedTags}
+                isSensitive={props.isSensitive}
+              />
+              {!props.isSensitive && (
+                <HomeWorksUsersRecommendedSection
+                  isSensitive={props.isSensitive}
+                  works={props.homeParticles.promotionWorks}
+                />
+              )}
+            </div>
+            <Separator
+              orientation="vertical"
+              className="hidden h-[100vh] w-[1px] md:block"
+            />
+            <div className="flex flex-col space-y-4 md:w-[24%]">
+              <div className="relative grid gap-4">
+                {!props.isSensitive ? (
+                  <AppConfirmDialog
+                    title={"確認"}
+                    description={
+                      "センシティブな作品を表示します、あなたは18歳以上ですか？"
+                    }
+                    onNext={() => {
+                      navigate("/sensitive")
+                    }}
+                    cookieKey={"check-sensitive-ranking"}
+                    onCancel={() => {}}
+                  >
+                    <Button
+                      variant={"secondary"}
+                      className="flex w-full transform cursor-pointer items-center"
+                    >
+                      <RefreshCcwIcon className="mr-1 w-3" />
+                      <p className="text-sm">{"対象年齢"}</p>
+                    </Button>
+                  </AppConfirmDialog>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      navigate("/")
+                    }}
+                    variant={"secondary"}
+                    className="flex w-full transform cursor-pointer items-center"
+                  >
+                    <RefreshCcwIcon className="mr-1 w-3" />
+                    <p className="text-sm">{"対象年齢"}</p>
+                  </Button>
+                )}
+                <Link to="/generation">
+                  <img
+                    src="https://assets.aipictors.com/Aipictors_01.webp"
+                    alt="Aipictors Logo"
+                  />
+                </Link>
+                {props.homeParticles.newPostedUsers && (
+                  <HomeNewUsersSection
+                    users={props.homeParticles.newPostedUsers}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {props.isSensitive && props.homeParticles && (
           <>
             <div>
               <HomeTagList
@@ -219,6 +341,10 @@ export function HomeContents(props: Props) {
               isSensitive={props.isSensitive}
               isCropped={props.isCropped}
             />
+            <HomeNewUsersWorksSection
+              works={props.homeParticles.newUserWorks}
+              isSensitive={props.isSensitive}
+            />
             <HomeAwardWorkSection
               awardDateText={props.homeParticles.awardDateText}
               title={"前日ランキング"}
@@ -230,16 +356,9 @@ export function HomeContents(props: Props) {
               tags={props.homeParticles.recommendedTags}
               isSensitive={props.isSensitive}
             />
-            {!props.isSensitive && (
-              <HomeWorksUsersRecommendedSection
-                isSensitive={props.isSensitive}
-                works={props.homeParticles.promotionWorks}
-              />
-            )}
           </>
         )}
       </TabsContent>
-
       <TabsContent value="new">
         <div className="space-y-4">
           <div className="flex space-x-4">

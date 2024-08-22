@@ -15,6 +15,10 @@ import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/ho
 import { HomeContents } from "~/routes/($lang)._main._index/components/home-contents"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
+import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { createClient as createCmsClient } from "microcms-js-sdk"
+import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
+import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.HOME)
@@ -90,6 +94,15 @@ export async function loader() {
     pastGenerationDate.setTime(now.getTime())
   }
 
+  const microCmsClient = createCmsClient({
+    serviceDomain: "aipictors",
+    apiKey: "P0QqFga5C1pPv3MDnSgMSYeFFLvAG1e5hNXt",
+  })
+
+  const releaseList: MicroCmsApiReleaseResponse = await microCmsClient.get({
+    endpoint: `releases?orders=-createdAt&limit=${4}&offset=0`,
+  })
+
   const result = await client.query({
     query: query,
     variables: {
@@ -105,6 +118,7 @@ export async function loader() {
       categoryFirst: randomCategories[0],
       categorySecond: randomCategories[1],
       tagWorksLimit: config.query.homeWorkCount.tag,
+      newUsersWorksLimit: config.query.homeWorkCount.newUser,
     },
   })
 
@@ -124,6 +138,7 @@ export async function loader() {
       columnWorksBeforeText,
       firstTag: randomCategories[0],
       secondTag: randomCategories[1],
+      releaseList,
     },
     {
       headers: {
@@ -151,6 +166,9 @@ export default function Index() {
           workAwards: data.workAwards,
           recommendedTags: data.recommendedTags,
           promotionWorks: data.promotionWorks,
+          newUserWorks: data.newUserWorks,
+          releaseList: data.releaseList,
+          newPostedUsers: data.newPostedUsers,
         }}
         isCropped={true}
       />
@@ -173,6 +191,7 @@ const query = graphql(
     $categoryFirst: String!
     $categorySecond: String!
     $tagWorksLimit: Int!
+    $newUsersWorksLimit: Int!
   ) {
     adWorks: works(
       offset: 0,
@@ -243,6 +262,21 @@ const query = graphql(
     ) {
       ...HomePromotionWork
     }
+    newUserWorks: newUserWorks(
+      offset: 0,
+      limit: $newUsersWorksLimit,
+      where: {
+        ratings: [G],
+      }
+    ) {
+      ...HomeNewUsersWorks
+    }
+    newPostedUsers: newPostedUsers(
+      offset: 0,
+      limit: 8,
+    ) {
+      ...HomeNewPostedUsers
+    }
   }`,
   [
     HomeBannerWorkFragment,
@@ -251,5 +285,7 @@ const query = graphql(
     HomeWorkAwardFragment,
     HomeTagFragment,
     HomeTagWorkFragment,
+    HomeNewUsersWorksFragment,
+    HomeNewPostedUsersFragment,
   ],
 )
