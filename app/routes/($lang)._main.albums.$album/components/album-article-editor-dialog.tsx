@@ -80,8 +80,6 @@ export function AlbumArticleEditorDialog(props: Props) {
     toast("シリーズを更新しました")
   }
 
-  console.log("test")
-
   return (
     <Dialog>
       <DialogTrigger asChild>{props.children}</DialogTrigger>

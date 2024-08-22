@@ -88,8 +88,6 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
       if (!props.limit || selectedWorksOnMemory.length < props.limit) {
         props.setSelectedWorkIds([...props.selectedWorkIds, work.id])
         setSelectedWorksOnMemory([...selectedWorksOnMemory, work])
-
-        console.log(props.selectedWorkIds)
       } else {
         toast(`選択できる作品数は${props.limit}つまでです。`)
       }

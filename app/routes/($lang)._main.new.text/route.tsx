@@ -121,11 +121,6 @@ export default function NewText() {
             .filter((url) => url !== ""),
         )
 
-        console.log(
-          "viewer.viewer.imageGenerationResults",
-          viewer.viewer.imageGenerationResults,
-        )
-
         dispatch({
           type: "SET_ITEMS",
           payload: viewer.viewer.imageGenerationResults.map(

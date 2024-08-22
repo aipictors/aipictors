@@ -303,16 +303,13 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
       />
-      {/* {loading && <Loader2Icon className="h-4 w-4 animate-spin" />} */}
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}
         onTagEditableChange={(value) => {
-          console.log(value)
           props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
         }}
         isCommentsEditableChecked={props.state.useCommentFeature}
         onCommentsEditableChange={(value) => {
-          console.log(value)
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
         }}
       />

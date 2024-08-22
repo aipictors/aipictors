@@ -193,7 +193,6 @@ export function InPaintingDialog(props: Props) {
               }}
               setIsDrawing={(value) => {
                 setIsDrawing(value)
-                console.log(isDrawing)
               }}
             />
           </div>

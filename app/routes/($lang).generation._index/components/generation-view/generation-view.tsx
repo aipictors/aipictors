@@ -58,13 +58,7 @@ export function GenerationView(props: Props) {
 
   return (
     <main className="flex flex-col gap-4 overflow-hidden pb-4 md:h-main md:flex-row">
-      <ResizablePanelGroup
-        onVolumeChange={(volume) => {
-          console.log(volume)
-        }}
-        defaultValue={1}
-        direction="horizontal"
-      >
+      <ResizablePanelGroup defaultValue={1} direction="horizontal">
         <ResizablePanelWithMemory
           id="generation-header-menu"
           className="flex flex-col"

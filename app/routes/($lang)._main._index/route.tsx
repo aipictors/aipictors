@@ -108,8 +108,6 @@ export async function loader() {
     },
   })
 
-  console.log(result)
-
   const awardDateText = dateToText(yesterday)
   const generationDateText = pastGenerationDate.toISOString()
   const novelWorksBeforeText = pastNovelDate.toISOString()
@@ -137,8 +135,6 @@ export async function loader() {
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
-
-  console.log(data.dailyTheme)
 
   return (
     <>

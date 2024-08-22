@@ -42,7 +42,6 @@ export function SortableItems(props: Props) {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
-    console.log("Drag started for item with id:", active.id) // ログ出力
     setActiveItem(props.items.find((item) => item.id === active.id))
     setIsDragging(true)
   }
@@ -106,8 +105,6 @@ export function SortableItems(props: Props) {
   }
 
   const deleteIndex = (deletedId: number) => {
-    console.log("deletedId", deletedId)
-
     // deletedId以降は1つずつ前にずらす
     const draftIds = props.items
       .map((item) => item.id)

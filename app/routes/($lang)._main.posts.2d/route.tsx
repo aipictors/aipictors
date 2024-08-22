@@ -63,8 +63,6 @@ export async function loader() {
     pastGenerationDate.setTime(now.getTime())
   }
 
-  console.log(randomCategories)
-
   const result = await client.query({
     query: query,
     variables: {

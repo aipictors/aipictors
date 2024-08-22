@@ -21,7 +21,6 @@ export default function SettingColor() {
   const { theme, setTheme } = useTheme()
 
   const handleTabClick = (value: string) => setActiveTab(value)
-  const handleInput = (value: string) => console.log(value)
 
   const setColorTheme = (mode: string, color: string) => {
     setTheme(
@@ -144,14 +143,14 @@ export default function SettingColor() {
             className="mx-2 w-80"
             id="sampleText1"
             placeholder="プレースホルダー"
-            onChange={(e) => handleInput(e.target.value)}
+            onChange={(e) => {}}
           />
           <Input
             className="mx-2 w-80"
             id="sampleText2"
             placeholder=""
             value="入力済み"
-            onChange={(e) => handleInput(e.target.value)}
+            onChange={(e) => {}}
           />
         </div>
         <Tabs>

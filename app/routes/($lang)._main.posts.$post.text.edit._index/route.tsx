@@ -369,8 +369,6 @@ export default function EditText() {
     try {
       dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-      console.log(formResult.output.thumbnailBase64)
-
       const smallThumbnail = formResult.output.thumbnailBase64.startsWith(
         "https://",
       )

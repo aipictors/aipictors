@@ -33,13 +33,11 @@ if (typeof document !== "undefined" && getApps().length === 0) {
   try {
     getMessaging(getApp())
     onMessage(getMessaging(), (payload) => {
-      console.log("onMessage", payload)
       getToken(getMessaging(), {
         vapidKey: config.fcm.vapidKey,
       }).then((token) => {
         navigator.serviceWorker.ready.then((registration) => {
           if (payload.data === undefined) return
-          console.log("serviceWorker.ready", payload)
           registration.showNotification(payload.data.title, {
             body: payload.data.body,
             icon: payload.data.icon,

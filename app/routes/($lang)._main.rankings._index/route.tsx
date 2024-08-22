@@ -61,9 +61,6 @@ export const meta: MetaFunction = () => {
 export default function Rankings() {
   const data = useLoaderData<typeof loader>()
 
-  console.log(data)
-  console.log(data.year)
-
   return (
     <>
       <RankingHeader

@@ -31,7 +31,6 @@ export function HomeRouteList(props: Props) {
 
   const closeHeaderMenu = () => {
     if (props.onClickMenuItem) {
-      console.log("closeHeaderMenu")
       props.onClickMenuItem()
     }
   }

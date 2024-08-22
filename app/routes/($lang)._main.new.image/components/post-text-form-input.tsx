@@ -288,12 +288,10 @@ export function PostTextFormInput(props: Props) {
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}
         onTagEditableChange={(value) => {
-          console.log(value)
           props.dispatch({ type: "ENABLE_TAG_FEATURE", payload: value })
         }}
         isCommentsEditableChecked={props.state.useCommentFeature}
         onCommentsEditableChange={(value) => {
-          console.log(value)
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
         }}
       />

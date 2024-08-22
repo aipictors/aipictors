@@ -49,9 +49,8 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function Milestone() {
   const data = useLoaderData<typeof loader>()
 
-  console.log(data)
-
   const [limit] = useState(10)
+
   const [offset, setOffset] = useState(data.data.offset)
 
   const releases: Release[] = data.data.contents

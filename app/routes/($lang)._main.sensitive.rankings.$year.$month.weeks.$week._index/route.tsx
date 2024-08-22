@@ -74,8 +74,6 @@ export default function MonthlyAwards() {
 
   const data = useLoaderData<typeof loader>()
 
-  console.log(data.month)
-
   return (
     <>
       <RankingSensitiveHeader

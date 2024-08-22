@@ -117,7 +117,6 @@ export default function NewImage() {
   })
 
   const onChangeImageInformation = (imageInformation: PNGInfo) => {
-    console.log(imageInformation)
     dispatchInput({
       type: "SET_IMAGE_INFORMATION",
       payload: imageInformation,
@@ -177,11 +176,6 @@ export default function NewImage() {
 
     processImages()
   }, [viewer?.viewer?.imageGenerationResults, dispatch])
-
-  console.log(
-    "state.isSelectedGenerationImage",
-    state.isSelectedGenerationImage,
-  )
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(CreateWorkMutation)

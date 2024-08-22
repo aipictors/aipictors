@@ -56,7 +56,6 @@ export function ImageGenerationSelectorDialog(props: Props) {
   }
 
   const handleSubmit = () => {
-    console.log(selectedImages)
     props.onSubmit(selectedImages, selectedIds, lastSelectedOriginalImage)
     props.setIsOpen(false)
   }

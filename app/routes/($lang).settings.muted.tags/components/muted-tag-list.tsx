@@ -3,11 +3,7 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
 import { MutedTag } from "~/routes/($lang).settings.muted.tags/components/muted-tag"
-import {
-  ApolloError,
-  useMutation,
-  useSuspenseQuery,
-} from "@apollo/client/index"
+import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
 
@@ -18,8 +14,6 @@ export function MutedTagList() {
     skip: appContext.isLoading,
     variables: { offset: 0, limit: 128 },
   })
-
-  console.log(data)
 
   const [text, setText] = useState("")
 
@@ -53,21 +47,15 @@ export function MutedTagList() {
   }
 
   const handleMute = async () => {
-    try {
-      await mutation({
-        variables: {
-          input: {
-            tagName: text,
-          },
+    await mutation({
+      variables: {
+        input: {
+          tagName: text,
         },
-      })
-      setText("")
-      await refetch()
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        console.log(error.name)
-      }
-    }
+      },
+    })
+    setText("")
+    await refetch()
   }
 
   return (

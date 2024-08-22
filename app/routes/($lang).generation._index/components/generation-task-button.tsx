@@ -32,8 +32,6 @@ export function GenerationTaskButton(props: Props) {
 
   const onClickTask = () => {
     setTimeout(() => {
-      console.log(props.task.id, props.taskIds)
-
       if (props.taskIds?.length) {
         context.updateViewTask(props.task.id, props.taskIds)
       }

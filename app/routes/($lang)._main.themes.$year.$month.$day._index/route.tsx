@@ -104,8 +104,6 @@ const dailyThemesQuery = graphql(
   [PhotoAlbumWorkFragment],
 )
 
-console.log("ThemeWorkFragment", ThemeWorkFragment)
-
 const themeWorksAndCountQuery = graphql(
   `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
     works(offset: $offset, limit: $limit, where: $where) {

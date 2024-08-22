@@ -59,8 +59,6 @@ export function UserNovelsContents(props: Props) {
 
   const maxCount = worksCountResp.data?.worksCount ?? 0
 
-  console.log("works", maxCount)
-
   return (
     <>
       <UserNovelList works={works} />

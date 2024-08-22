@@ -39,9 +39,6 @@ export function SmsVerificationDialog(props: Props) {
 
     const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
       size: "invisible",
-      callback: (response: string) => {
-        console.log("recaptcha callback", response)
-      },
       "expired-callback": () => {},
     })
 

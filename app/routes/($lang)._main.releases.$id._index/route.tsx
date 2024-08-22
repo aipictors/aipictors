@@ -55,8 +55,6 @@ export default function Release() {
 
   const release: Release = data.data.contents[0]
 
-  console.log(release)
-
   const releases: Release[] = data.list.contents
 
   const handleMoveList = () => {

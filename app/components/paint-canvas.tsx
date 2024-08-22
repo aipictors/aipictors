@@ -103,8 +103,6 @@ export function PaintCanvas(props: Props) {
       img.src = canvas.toDataURL()
     })
 
-    console.log("saveCanvasState")
-
     waitForImageLoad
       .then(() => {
         const dataUrl = canvas.toDataURL() // Canvas のデータ URL を取得
@@ -113,7 +111,6 @@ export function PaintCanvas(props: Props) {
           width: canvas.width,
           height: canvas.height,
         }
-        console.log("waitForImageLoad")
         if (canvasStates.length > 0) {
           setCanvasStates((prevStates) => [
             ...prevStates.slice(0, stateIndex + 1),

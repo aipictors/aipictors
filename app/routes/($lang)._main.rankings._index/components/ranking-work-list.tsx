@@ -35,8 +35,6 @@ export function RankingWorkList(props: Props) {
     },
   })
 
-  console.log(awardWorks)
-
   const workAwards = awardWorks?.workAwards ?? works
 
   return (

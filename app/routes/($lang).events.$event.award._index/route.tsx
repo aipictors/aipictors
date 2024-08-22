@@ -67,8 +67,6 @@ export default function FollowingLayout() {
     return null
   }
 
-  console.log(data.appEvent.awardWorks)
-
   return (
     <div className="flex flex-col space-y-4">
       <img

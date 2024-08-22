@@ -127,9 +127,6 @@ export function InPaintingImageForm(props: Props) {
         context.config.controlNetImageBase64,
       )
 
-      console.log(srcImageURL)
-      console.log(maskImageURL)
-
       await createTask({
         variables: {
           input: {

@@ -193,7 +193,7 @@ const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
 
         info.other = objectToText(json)
       } catch (error) {
-        console.log("Comment parse error: ", error, comment.text)
+        console.error("Comment parse error: ", error, comment.text)
       }
     }
   } else if (chunks.some((e) => e.keyword === "parameters")) {

@@ -100,8 +100,6 @@ export function FeedContents(props: Props) {
     .map((post) => post.work)
     .map((work) => work)
 
-  console.log(works)
-
   return (
     <div className="m-auto w-full space-y-4">
       {works.map(

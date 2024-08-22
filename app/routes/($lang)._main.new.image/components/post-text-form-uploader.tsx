@@ -178,7 +178,6 @@ export function PostTextFormUploader(props: Props) {
           selectedIds: string[],
           lastSelectedOriginalImage: string,
         ) => {
-          console.log(selectedImage.length)
           if (props.state.items.length === 0) {
             const image = selectedImage[0]
             const id = selectedIds[0]

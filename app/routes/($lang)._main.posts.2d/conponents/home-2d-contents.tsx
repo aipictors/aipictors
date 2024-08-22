@@ -66,9 +66,7 @@ export function Home2dContents(props: Props) {
     if (page) {
       const pageNumber = Number.parseInt(page)
       if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
-        console.log("Invalid page number:", pageNumber)
       } else {
-        console.log("page", pageNumber)
         setNewWorksPage(pageNumber)
       }
     } else {
@@ -128,7 +126,6 @@ export function Home2dContents(props: Props) {
       setIsPromptPublic(null)
     } else {
       const isPrompt = value === "prompt"
-      console.log(isPrompt)
       searchParams.set("isPromptPublic", isPrompt ? "true" : "false")
       setIsPromptPublic(isPrompt)
     }

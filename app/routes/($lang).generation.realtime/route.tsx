@@ -101,10 +101,6 @@ export default function GenerationLayout() {
     return <AppLoadingPage />
   }
 
-  const onChangeBrushImageBase64 = (value: string) => {
-    // console.log(value)
-  }
-
   // 生成中かどうか
   const [isGenerating, setIsGenerating] = React.useState(false)
 
@@ -260,7 +256,6 @@ export default function GenerationLayout() {
         <div className="flex flex-col items-center md:flex-row">
           <div className="h-[400px] w-[400px] md:h-[512px] md:w-[556px]">
             <PaintCanvas
-              onChangeBrushImageBase64={onChangeBrushImageBase64}
               width={512}
               height={512}
               isBackground={true}

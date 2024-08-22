@@ -91,7 +91,6 @@ export function CropImageField(props: Props) {
   }
 
   const handleChildrenClick = () => {
-    console.log("test")
     fileInputRef.current?.click()
   }
 

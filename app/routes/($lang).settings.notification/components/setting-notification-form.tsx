@@ -21,7 +21,6 @@ export function SettingNotificationForm() {
       skip: authContext.isLoading || authContext.isNotLoggedIn,
     },
   )
-  console.log(userSetting)
 
   const [updateUserSetting, { loading: isUpdatingUserSetting }] = useMutation(
     updateUserSettingMutation,

@@ -31,9 +31,6 @@ export function FollowingList() {
       followeesWorksWhere: {},
     },
   })
-  console.log(userResp.data)
-
-  console.log(userResp.data?.user?.followees)
 
   return (
     <>

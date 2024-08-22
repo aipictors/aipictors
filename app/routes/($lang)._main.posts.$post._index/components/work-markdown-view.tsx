@@ -52,8 +52,6 @@ export function WorkMarkdownView(props: Props) {
     content: props.md,
   })
 
-  console.log(props.html)
-
   return (
     <div className="relative m-0">
       <div className="relative h-64 w-full overflow-hidden rounded-lg md:h-80">

@@ -156,7 +156,6 @@ export function WorkCommentList(props: Props) {
         })
 
         setComment("")
-        console.log(getJSTDate().getTime())
 
         setNewComments([
           {
@@ -313,7 +312,6 @@ export function WorkCommentList(props: Props) {
                       stickerId: string,
                       stickerImageURL: string,
                     ) => {
-                      console.log(getJSTDate().getTime())
                       // 表示コメントを追加
                       setNewComments([
                         {

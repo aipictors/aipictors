@@ -128,8 +128,6 @@ export default function EditImage() {
         },
       })
 
-      console.log("work?.dailyTheme?.id", work?.dailyTheme?.id)
-
       dispatchInput({
         type: "INITIALIZE",
         payload: {
@@ -366,8 +364,6 @@ export default function EditImage() {
 
     try {
       dispatch({ type: "SET_PROGRESS", payload: 10 })
-
-      console.log(formResult.output.thumbnailBase64)
 
       const smallThumbnail = formResult.output.thumbnailBase64.startsWith(
         "https://",

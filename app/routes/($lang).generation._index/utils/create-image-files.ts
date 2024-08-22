@@ -33,7 +33,6 @@ export async function createImageFiles(props: Props) {
       )
 
       if (imageElement === null) {
-        console.log(`Image element not found for taskId: ${imageId}`)
         continue
       }
 
@@ -42,7 +41,6 @@ export async function createImageFiles(props: Props) {
         : imageElement.src
 
       if (typeof dataName === "undefined") {
-        console.log("dataName is undefined")
         continue
       }
 
