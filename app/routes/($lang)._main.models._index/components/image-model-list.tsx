@@ -19,7 +19,7 @@ export function ImageModelList(props: Props) {
             key={imageModel.id}
             className="overflow-hidden rounded-lg border shadow-lg"
           >
-            <Link to={`/models/${imageModel.displayName}`}>
+            <Link to={`/models/${imageModel.modelName}`}>
               <img
                 src={imageModel.thumbnailImageURL ?? ""}
                 alt={imageModel.displayName}
@@ -38,6 +38,7 @@ export const imageModelCardFragment = graphql(
   `fragment ImageModelCard on ImageModelNode @_unmask {
     id
     name
+    modelName
     displayName
     category
     description

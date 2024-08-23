@@ -518,6 +518,11 @@ export const META: { [key: string]: MetaData } = {
     description: "支援リクエストを確認できます",
     isIndex: false,
   },
+  NEW_PROFILE: {
+    title: "プロフィール作成",
+    description: "プロフィールを作成することができます",
+    isIndex: false,
+  },
   /**
    * 設定
    */

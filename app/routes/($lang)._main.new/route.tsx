@@ -5,7 +5,7 @@ import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 
 /**
- * メッセージの一覧
+ * 新規投稿
  */
 export default function New() {
   const authContext = useContext(AuthContext)

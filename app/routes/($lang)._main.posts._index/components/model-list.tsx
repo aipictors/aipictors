@@ -1,14 +1,12 @@
 import { Link } from "@remix-run/react"
 
 const models = [
-  { id: "stable-diffusion-sd", name: "StableDiffusion", label: "SD" },
+  { id: "stablediffusion", name: "StableDiffusion", label: "SD" },
   { id: "nijijourney", name: "niji・journey", label: "NJ" },
-  { id: "dalle", name: "Dalle", label: "DA" },
+  { id: "Dalle-2", name: "Dalle", label: "DA" },
   { id: "midjourney", name: "Midjourney", label: "MJ" },
-  { id: "holara", name: "Holara", label: "HR" },
-  { id: "tranart", name: "TrinArt", label: "TA" },
+  { id: "HolaraAI", name: "Holara", label: "HR" },
   { id: "novelai", name: "NovelAI", label: "NA" },
-  { id: "other", name: "その他", label: "OT" },
 ]
 
 export const ModelList = () => {
