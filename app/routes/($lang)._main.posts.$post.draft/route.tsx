@@ -7,6 +7,7 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -29,10 +30,18 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const newComments = await client.query({
+    query: newCommentsQuery,
+    variables: {
+      workId: props.params.post,
+    },
+  })
+
   return json({
     post: props.params.post,
     work: workResp.data.work,
     workComments: workCommentsResp?.data?.work?.comments ?? [],
+    newComments: newComments.data.newComments,
   })
 }
 
@@ -51,6 +60,7 @@ export default function Work() {
       isDraft={true}
       work={data.work}
       comments={data.workComments}
+      newComments={data.newComments}
     />
   )
 }
@@ -74,4 +84,20 @@ const workQuery = graphql(
     }
   }`,
   [workArticleFragment],
+)
+
+const newCommentsQuery = graphql(
+  `query NewComments {
+    newComments: newComments(
+      offset: 0,
+      limit: 8,
+      where: {
+        isSensitive: false,
+        ratings: [G],
+      }
+    ) {
+      ...HomeNewComments
+    }
+  }`,
+  [HomeNewCommentsFragment],
 )

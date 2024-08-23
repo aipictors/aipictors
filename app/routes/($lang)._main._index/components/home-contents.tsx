@@ -66,7 +66,7 @@ type homeParticles = {
   newUserWorks: FragmentOf<typeof HomeNewUsersWorksFragment>[]
   releaseList?: MicroCmsApiReleaseResponse
   newPostedUsers?: FragmentOf<typeof HomeNewPostedUsersFragment>[]
-  newComments: FragmentOf<typeof HomeNewCommentsFragment>[]
+  newComments?: FragmentOf<typeof HomeNewCommentsFragment>[]
 }
 
 type Props = {
@@ -318,11 +318,12 @@ export function HomeContents(props: Props) {
                     users={props.homeParticles.newPostedUsers}
                   />
                 )}
-                {props.homeParticles.newComments.length > 0 && (
-                  <HomeNewCommentsSection
-                    comments={props.homeParticles.newComments}
-                  />
-                )}
+                {props.homeParticles.newComments &&
+                  props.homeParticles.newComments.length > 0 && (
+                    <HomeNewCommentsSection
+                      comments={props.homeParticles.newComments}
+                    />
+                  )}
               </div>
             </div>
           </div>

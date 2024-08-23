@@ -10,6 +10,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -65,11 +66,19 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  const newComments = await client.query({
+    query: newCommentsQuery,
+    variables: {
+      workId: props.params.post,
+    },
+  })
+
   return json(
     {
       post: props.params.post,
       work: workResp.data.work,
       workComments: workCommentsResp.data.work.comments,
+      newComments: newComments.data.newComments,
     },
     {
       headers: {
@@ -117,6 +126,7 @@ export default function Work() {
       post={data.post}
       work={data.work}
       comments={data.workComments}
+      newComments={data.newComments}
     />
   )
 }
@@ -140,4 +150,20 @@ const workQuery = graphql(
     }
   }`,
   [workArticleFragment],
+)
+
+const newCommentsQuery = graphql(
+  `query NewComments {
+    newComments: newComments(
+      offset: 0,
+      limit: 8,
+      where: {
+        isSensitive: false,
+        ratings: [G],
+      }
+    ) {
+      ...HomeNewComments
+    }
+  }`,
+  [HomeNewCommentsFragment],
 )

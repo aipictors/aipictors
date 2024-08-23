@@ -17,6 +17,10 @@ import {
   type CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import {
+  HomeNewCommentsSection,
+  type HomeNewCommentsFragment,
+} from "~/routes/($lang)._main._index/components/home-new-comments"
 
 type Props = {
   post: string
@@ -24,6 +28,7 @@ type Props = {
   comments: FragmentOf<typeof CommentListItemFragment>[]
   isDraft?: boolean
   isSensitive?: boolean
+  newComments: FragmentOf<typeof HomeNewCommentsFragment>[]
 }
 
 /**
@@ -112,6 +117,7 @@ export function WorkContainer(props: Props) {
             <Suspense fallback={null}>
               <WorkAdSense />
             </Suspense>
+            <HomeNewCommentsSection comments={props.newComments} />
           </div>
         </div>
       </div>
