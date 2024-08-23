@@ -26,6 +26,10 @@ type Props = {
 }
 
 export function HomeWorkSection(props: Props) {
+  if (props.works.length === 0) {
+    return null
+  }
+
   return (
     <section className={cn(props.title ? "space-y-4" : "gap-y-4")}>
       <div className="flex items-center justify-between">

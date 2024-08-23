@@ -15,7 +15,7 @@ export function UserPickupContents(props: Props) {
         <HomeWorkSection
           title="ピックアップ"
           works={props.userPickupWorks}
-          isCropped={false}
+          isCropped={true}
         />
       )}
     </div>

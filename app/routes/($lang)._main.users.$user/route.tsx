@@ -137,7 +137,7 @@ export default function UserLayout() {
                   </div> */}
                 </div>
               ) : (
-                <div className="relative min-h-[240px] md:min-h-[320px]">
+                <div className="relative min-h-[240px] overflow-hidden md:min-h-[320px]">
                   {/* <div
                 className="absolute top-0 left-0 z-10 z-standard flex h-full min-h-[240px] w-full items-center justify-center md:min-h-[320px]"
                 style={{
@@ -153,10 +153,11 @@ export default function UserLayout() {
                       src={IconUrl(data.user.iconUrl)}
                       alt=""
                     />
-                    <div className="absolute bottom-0 left-8 z-20">
-                      <UserProfileNameIcon user={data.user} />
-                    </div>
                   </div>
+                  <div className="absolute bottom-0 left-8 z-20">
+                    <UserProfileNameIcon user={data.user} />
+                  </div>
+                  <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
                 </div>
               )}
             </div>

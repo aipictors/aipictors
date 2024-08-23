@@ -35,6 +35,7 @@ export function UserContentsContainer(props: Props) {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
       },
     },
   })
@@ -46,6 +47,7 @@ export function UserContentsContainer(props: Props) {
         userId: authContext.userId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
       },
     },
   })
@@ -62,6 +64,7 @@ export function UserContentsContainer(props: Props) {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
       },
     },
   })
@@ -74,6 +77,7 @@ export function UserContentsContainer(props: Props) {
         userId: authContext.userId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
       },
     },
   })
@@ -90,6 +94,7 @@ export function UserContentsContainer(props: Props) {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
       },
     },
   })
@@ -102,6 +107,7 @@ export function UserContentsContainer(props: Props) {
         userId: authContext.userId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
       },
     },
   })
@@ -118,6 +124,7 @@ export function UserContentsContainer(props: Props) {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
       },
     },
   })
@@ -130,6 +137,7 @@ export function UserContentsContainer(props: Props) {
         userId: authContext.userId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
       },
     },
   })

@@ -5,6 +5,7 @@ import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
 import { Images } from "lucide-react"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -18,34 +19,42 @@ type Props = {
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoWorksAlbum(props: Props) {
-  if (props.works.length === 1) {
+  if (props.works.length <= 2) {
     return (
-      <Link
-        className="relative block max-w-32 object-cover"
-        to={`/posts/${props.works[0].id}`}
-      >
-        <img
-          src={
-            props.size === "large"
-              ? props.works[0].largeThumbnailImageURL
-              : props.works[0].smallThumbnailImageURL
-          }
-          alt={props.works[0].title}
-          className="m-auto max-h-32 object-cover"
-        />
-        <div className="absolute right-1 bottom-0 z-10">
-          <LikeButton
-            size={56}
-            targetWorkId={props.works[0].id}
-            targetWorkOwnerUserId={props.works[0].user.id}
-            defaultLiked={props.works[0].isLiked}
-            defaultLikedCount={props.works[0].likesCount}
-            isBackgroundNone={true}
-            strokeWidth={2}
-            likedCount={props.works[0].likesCount}
-          />
-        </div>
-      </Link>
+      <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">
+        {props.works.map((workItem, index) => {
+          return (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              key={workItem.id}
+              className="relative flex flex-col space-y-2"
+            >
+              <div className="relative">
+                <CroppedWorkSquare
+                  workId={workItem.id}
+                  subWorksCount={workItem.subWorksCount}
+                  imageUrl={workItem.smallThumbnailImageURL}
+                  thumbnailImagePosition={workItem.thumbnailImagePosition ?? 0}
+                  size="lg"
+                  imageWidth={workItem.smallThumbnailImageWidth}
+                  imageHeight={workItem.smallThumbnailImageHeight}
+                />
+                <div className="absolute right-0 bottom-0">
+                  <LikeButton
+                    size={56}
+                    targetWorkId={workItem.id}
+                    targetWorkOwnerUserId={workItem.user.id}
+                    defaultLiked={workItem.isLiked}
+                    defaultLikedCount={0}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                  />
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
     )
   }
 
