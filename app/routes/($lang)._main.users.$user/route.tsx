@@ -137,28 +137,21 @@ export default function UserLayout() {
                   </div> */}
                 </div>
               ) : (
-                <div className="relative min-h-[240px] overflow-hidden md:min-h-[320px]">
-                  {/* <div
-                className="absolute top-0 left-0 z-10 z-standard flex h-full min-h-[240px] w-full items-center justify-center md:min-h-[320px]"
-                style={{
-                  background: "center top / contain no-repeat",
-                  backgroundImage: `url(${data.user.headerImageUrl})`,
-                  maxHeight: "240px",
-                  boxShadow: "0px 0px 20px rgba(0,0,0,0.5)",
-                }}
-              /> */}
-                  <div className="relative m-auto">
-                    <img
-                      className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
-                      src={IconUrl(data.user.iconUrl)}
-                      alt=""
-                    />
+                <>
+                  <div className="relative min-h-[168px] overflow-hidden md:min-h-[320px]">
+                    <div className="relative m-auto">
+                      <img
+                        className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
+                        src={IconUrl(data.user.iconUrl)}
+                        alt=""
+                      />
+                    </div>
+                    <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
                   </div>
-                  <div className="absolute bottom-0 left-8 z-20">
+                  <div className="absolute top-0 left-8 z-20">
                     <UserProfileNameIcon user={data.user} />
                   </div>
-                  <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
-                </div>
+                </>
               )}
             </div>
             <Suspense>

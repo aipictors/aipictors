@@ -6,7 +6,7 @@ type Props = {
   workId: string
   imageUrl: string
   thumbnailImagePosition: number
-  size: "sm" | "md" | "lg" | "auto"
+  size: "xs" | "sm" | "md" | "lg" | "auto"
   imageWidth: number
   imageHeight: number
   ranking?: number
@@ -72,6 +72,9 @@ export function CroppedWorkSquare(props: Props) {
   const wrapSize = () => {
     if (props.size === "auto") {
       return "w-full"
+    }
+    if (props.size === "xs") {
+      return "h-16 w-16"
     }
     if (props.size === "sm") {
       return "h-20 w-20"

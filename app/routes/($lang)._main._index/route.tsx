@@ -19,6 +19,7 @@ import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/compone
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.HOME)
@@ -169,6 +170,7 @@ export default function Index() {
           newUserWorks: data.newUserWorks,
           releaseList: data.releaseList,
           newPostedUsers: data.newPostedUsers,
+          newComments: data.newComments,
         }}
         isCropped={true}
       />
@@ -277,6 +279,16 @@ const query = graphql(
     ) {
       ...HomeNewPostedUsers
     }
+    newComments: newComments(
+      offset: 0,
+      limit: 8,
+      where: {
+        isSensitive: false,
+        ratings: [G],
+      }
+    ) {
+      ...HomeNewComments
+    }
   }`,
   [
     HomeBannerWorkFragment,
@@ -287,5 +299,6 @@ const query = graphql(
     HomeTagWorkFragment,
     HomeNewUsersWorksFragment,
     HomeNewPostedUsersFragment,
+    HomeNewCommentsFragment,
   ],
 )

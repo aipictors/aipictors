@@ -3,6 +3,7 @@ import {
   differenceInHours,
   differenceInMinutes,
   differenceInMonths,
+  differenceInSeconds,
   format,
 } from "date-fns"
 
@@ -43,5 +44,11 @@ export function toElapsedTimeText(createdAt: number) {
 
   const minutes = differenceInMinutes(dateLeft, dateRight)
 
-  return `${minutes}分前`
+  if (0 < minutes) {
+    return `${minutes}分前`
+  }
+
+  const seconds = differenceInSeconds(dateLeft, dateRight)
+
+  return `${seconds}秒前`
 }

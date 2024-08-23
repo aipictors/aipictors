@@ -8,7 +8,7 @@ type Props = {
 }
 
 /**
- * 新規ユーザの作品
+ * 新規ユーザ一覧
  */
 export function HomeNewUsersSection(props: Props) {
   return (

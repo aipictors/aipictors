@@ -168,12 +168,8 @@ export function Home2dContents(props: Props) {
             <HomeWorksTagSection
               tag={props.homeParticles.firstTag}
               works={props.homeParticles.firstTagWorks}
-              isSensitive={props.isSensitive}
-              style="ILLUSTRATION"
-            />
-            <HomeWorksTagSection
-              tag={props.homeParticles.secondTag}
-              works={props.homeParticles.secondTagWorks}
+              secondTag={props.homeParticles.secondTag}
+              secondWorks={props.homeParticles.secondTagWorks}
               isSensitive={props.isSensitive}
               style="ILLUSTRATION"
             />

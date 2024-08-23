@@ -13,6 +13,8 @@ type Props = {
   isSensitive?: boolean
   works: FragmentOf<typeof HomeTagWorkFragment>[]
   tag: string
+  secondWorks: FragmentOf<typeof HomeTagWorkFragment>[]
+  secondTag: string
   style?: IntrospectionEnum<"ImageStyle">
   isCropped?: boolean
 }
@@ -23,7 +25,7 @@ type Props = {
 export function HomeWorksTagSection(props: Props) {
   const appContext = useContext(AuthContext)
 
-  const { data: recommendedWorksResp } = useQuery(WorksQuery, {
+  const { data: firstTagWorksResp } = useQuery(WorksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: 0,
@@ -31,7 +33,7 @@ export function HomeWorksTagSection(props: Props) {
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
         isSensitive: props.isSensitive,
-        search: props.tag, // タグによるフィルタリングを追加
+        search: props.tag,
         orderBy: "LIKES_COUNT",
         ...(props.style && {
           style: props.style,
@@ -40,13 +42,36 @@ export function HomeWorksTagSection(props: Props) {
     },
   })
 
-  const workDisplayed = recommendedWorksResp?.works ?? props.works
+  const { data: secondTagWorksResp } = useQuery(WorksQuery, {
+    skip: appContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: config.query.homeWorkCount.tag,
+      where: {
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
+        isSensitive: props.isSensitive,
+        search: props.secondTag,
+        orderBy: "LIKES_COUNT",
+        ...(props.style && {
+          style: props.style,
+        }),
+      },
+    },
+  })
+
+  const workDisplayed = firstTagWorksResp?.works ?? props.works
+  const secondWorkDisplayed = secondTagWorksResp?.works ?? props.secondWorks
+
+  const combinedWorks = [
+    ...(workDisplayed ?? []),
+    ...(secondWorkDisplayed ?? []),
+  ]
 
   return (
     <>
       <HomeWorkSection
         title={""}
-        works={workDisplayed}
+        works={combinedWorks}
         isCropped={props.isCropped}
       />
     </>

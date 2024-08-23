@@ -47,6 +47,10 @@ import {
   HomeNewUsersSection,
   type HomeNewPostedUsersFragment,
 } from "~/routes/($lang)._main._index/components/home-new-users-section"
+import {
+  type HomeNewCommentsFragment,
+  HomeNewCommentsSection,
+} from "~/routes/($lang)._main._index/components/home-new-comments"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -62,6 +66,7 @@ type homeParticles = {
   newUserWorks: FragmentOf<typeof HomeNewUsersWorksFragment>[]
   releaseList?: MicroCmsApiReleaseResponse
   newPostedUsers?: FragmentOf<typeof HomeNewPostedUsersFragment>[]
+  newComments: FragmentOf<typeof HomeNewCommentsFragment>[]
 }
 
 type Props = {
@@ -220,7 +225,7 @@ export function HomeContents(props: Props) {
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
         {!props.isSensitive && props.homeParticles && (
           <div className="block md:flex md:space-x-4">
-            <div className="flex flex-col space-y-4 md:w-[76%]">
+            <div className="flex flex-col space-y-4 md:w-[80%]">
               <div className="hidden md:block">
                 {props.homeParticles.releaseList && (
                   <HomeReleaseList
@@ -237,12 +242,8 @@ export function HomeContents(props: Props) {
               <HomeWorksTagSection
                 tag={props.homeParticles.firstTag}
                 works={props.homeParticles.firstTagWorks}
-                isSensitive={props.isSensitive}
-                isCropped={props.isCropped}
-              />
-              <HomeWorksTagSection
-                tag={props.homeParticles.secondTag}
-                works={props.homeParticles.secondTagWorks}
+                secondTag={props.homeParticles.secondTag}
+                secondWorks={props.homeParticles.secondTagWorks}
                 isSensitive={props.isSensitive}
                 isCropped={props.isCropped}
               />
@@ -272,7 +273,7 @@ export function HomeContents(props: Props) {
               orientation="vertical"
               className="hidden h-[100vh] w-[1px] md:block"
             />
-            <div className="flex flex-col space-y-4 md:w-[24%]">
+            <div className="flex flex-col space-y-4 md:w-[20%]">
               <div className="relative grid gap-4">
                 {!props.isSensitive ? (
                   <AppConfirmDialog
@@ -317,6 +318,11 @@ export function HomeContents(props: Props) {
                     users={props.homeParticles.newPostedUsers}
                   />
                 )}
+                {props.homeParticles.newComments.length > 0 && (
+                  <HomeNewCommentsSection
+                    comments={props.homeParticles.newComments}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -332,12 +338,8 @@ export function HomeContents(props: Props) {
             <HomeWorksTagSection
               tag={props.homeParticles.firstTag}
               works={props.homeParticles.firstTagWorks}
-              isSensitive={props.isSensitive}
-              isCropped={props.isCropped}
-            />
-            <HomeWorksTagSection
-              tag={props.homeParticles.secondTag}
-              works={props.homeParticles.secondTagWorks}
+              secondTag={props.homeParticles.secondTag}
+              secondWorks={props.homeParticles.secondTagWorks}
               isSensitive={props.isSensitive}
               isCropped={props.isCropped}
             />
