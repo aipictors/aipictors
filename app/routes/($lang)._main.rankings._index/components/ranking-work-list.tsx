@@ -79,6 +79,8 @@ export function RankingWorkList(props: Props) {
               userIconImageURL={IconUrl(workItem.work.user.iconUrl)}
               name={workItem.work.user.name}
               width={"md"}
+              likesCount={workItem.work.likesCount}
+              snapshotLikedCount={workItem.snapshotLikedCount}
             />
           </div>
         )
@@ -92,6 +94,7 @@ export const WorkAwardListItemFragment = graphql(
       id
       index
       dateText
+      snapshotLikedCount
       work {
         id
         title

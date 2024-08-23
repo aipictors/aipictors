@@ -1,5 +1,6 @@
 import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
+import { Heart } from "lucide-react"
 
 type Props = {
   userId: string
@@ -7,6 +8,8 @@ type Props = {
   userIconImageURL?: string
   width: "sm" | "md" | "lg"
   padding?: "sm" | "md" | "lg"
+  likesCount?: number
+  snapshotLikedCount?: number
 }
 
 /**
@@ -41,19 +44,34 @@ export function UserNameBadge(props: Props) {
     <Link
       to={`/users/${props.userId}`}
       // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`flex items-center space-x-2 text-ellipsis overflow-hidden ${width()} ${padding()}`}
+      className={`flex items-center text-ellipsis overflow-hidden ${width()} ${padding()}`}
     >
-      <img
-        alt="user icon"
-        className="h-4 w-4 rounded-full"
-        src={IconUrl(props.userIconImageURL)}
-      />
-      <p
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        className={`text-ellipsis overflow-hidden text-nowrap text-xs ${width()}`}
-      >
-        {props.name}
-      </p>
+      <div className="flex items-center space-x-2">
+        <img
+          alt="user icon"
+          className="h-4 w-4 rounded-full"
+          src={IconUrl(props.userIconImageURL)}
+        />
+        <p
+          // biome-ignore lint/nursery/useSortedClasses: <explanation>
+          className={`text-ellipsis overflow-hidden text-nowrap text-xs ${width()}`}
+        >
+          {props.name}
+        </p>
+      </div>
+      {props.likesCount && (
+        <div className="ml-auto items-center">
+          <div className="flex items-center space-x-1">
+            <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+            <span className="text-xs">{props.likesCount}</span>
+            {props.snapshotLikedCount && (
+              <span className="text-xs opacity-80">
+                ({props.snapshotLikedCount})
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </Link>
   )
 }

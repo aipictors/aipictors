@@ -18,8 +18,12 @@ export const meta: MetaFunction = () => {
   return createMeta(META.HOME_SENSITIVE)
 }
 
-export function dateToText(date: Date) {
-  return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join("/")
+const getUtcDateString = (date: Date) => {
+  const year = date.getUTCFullYear()
+  const month = `0${date.getUTCMonth() + 1}`.slice(-2) // UTCの月を取得
+  const day = `0${date.getUTCDate()}`.slice(-2) // UTCの日付を取得
+
+  return `${year}/${month}/${day}`
 }
 
 export async function loader() {
@@ -113,7 +117,7 @@ export async function loader() {
     },
   })
 
-  const awardDateText = dateToText(yesterday)
+  const awardDateText = getUtcDateString(yesterday)
   const generationDateText = pastGenerationDate.toISOString()
   const novelWorksBeforeText = pastNovelDate.toISOString()
   const videoWorksBeforeText = pastVideoDate.toISOString()
