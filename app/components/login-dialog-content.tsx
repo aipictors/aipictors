@@ -65,6 +65,9 @@ export function LoginDialogContent() {
     <>
       <div className="my-2 space-y-2">
         <p className="text-sm">{"SNSアカウントでログイン"}</p>
+        <p className="text-sm">
+          {"ここからアカウントを「作成」した場合は旧版にはログインできません"}
+        </p>
         <div className="flex flex-col gap-2 md:flex-row">
           <SocialLoginButton
             disabled={

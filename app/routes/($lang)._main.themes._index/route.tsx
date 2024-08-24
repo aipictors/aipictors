@@ -10,6 +10,7 @@ import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { ThemeWorksList } from "~/routes/($lang)._main.themes._index/components/theme-works-list"
+import { ConstructionAlert } from "~/components/construction-alert"
 
 export async function loader() {
   const client = createClient()
@@ -83,6 +84,11 @@ export default function Themes() {
 
   return (
     <>
+      <ConstructionAlert
+        type="WARNING"
+        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
+        fallbackURL="https://www.aipictors.com/idead"
+      />
       <AppPageHeader title={"お題"} description={description} />
       <ThemeWorksList
         todayTheme={data.todayTheme}

@@ -523,6 +523,16 @@ export const META: { [key: string]: MetaData } = {
     description: "プロフィールを作成することができます",
     isIndex: false,
   },
+  NEW_SETTINGS: {
+    title: "ユーザ設定作成",
+    description: "ユーザ設定を作成することができます",
+    isIndex: false,
+  },
+  COMPLETED_SETTINGS: {
+    title: "設定完了！",
+    description: "設定が完了したときに表示されるページです",
+    isIndex: false,
+  },
   /**
    * 設定
    */

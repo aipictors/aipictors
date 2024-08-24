@@ -20,6 +20,7 @@ import { createClient as createCmsClient } from "microcms-js-sdk"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { ConstructionAlert } from "~/components/construction-alert"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.HOME)
@@ -162,6 +163,11 @@ export default function Index() {
 
   return (
     <>
+      <ConstructionAlert
+        type="WARNING"
+        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
+        fallbackURL="https://www.aipictors.com"
+      />
       <HomeBanners works={data.adWorks} />
       <HomeContents
         homeParticles={{

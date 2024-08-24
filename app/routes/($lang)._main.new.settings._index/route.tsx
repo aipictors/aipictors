@@ -2,10 +2,10 @@ import { json } from "@remix-run/react"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
-import { ProfileEditorForm } from "~/routes/($lang)._main.new.profile._index/components/profile-editor-form"
+import { UserSettingsForm } from "~/routes/($lang)._main.new.settings._index/components/user-settings-form"
 
 /**
- * プロフィール新規作成ページ
+ * ユーザ設定新規作成ページ
  */
 export async function loader() {
   // const client = createClient()
@@ -22,9 +22,9 @@ export async function loader() {
 }
 
 export const meta: MetaFunction = () => {
-  return createMeta(META.NEW_PROFILE)
+  return createMeta(META.NEW_SETTINGS)
 }
 
-export default function NewProfilePage() {
-  return <ProfileEditorForm />
+export default function NewSettingsPage() {
+  return <UserSettingsForm />
 }

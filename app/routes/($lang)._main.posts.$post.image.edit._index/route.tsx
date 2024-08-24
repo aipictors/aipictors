@@ -567,7 +567,7 @@ export default function EditImage() {
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <ConstructionAlert
         type="WARNING"
-        message="このページは現在開発中のため不具合が起きる可能性があります。"
+        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
         fallbackURL={`https://www.aipictors.com/edit-works?id=${work.id}`}
       />
       <div className="space-y-4">

@@ -32,7 +32,7 @@ export function ConstructionAlert(props: Props) {
   }
 
   return (
-    <Alert className="space-y-2 border">
+    <Alert className="space-y-2 border bg-primary text-white dark:text-black">
       <AlertTitle>{alertTitle()}</AlertTitle>
       <div className="flex flex-col justify-between gap-2 md:flex-row">
         {props.message && <AlertDescription>{props.message}</AlertDescription>}

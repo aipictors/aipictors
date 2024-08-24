@@ -1,25 +1,23 @@
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import {
-  DialogWorkFragment,
-  SelectCreatedWorksDialog,
-} from "~/routes/($lang).my._index/components/select-created-works-dialog"
+import { DialogWorkFragment } from "~/routes/($lang).my._index/components/select-created-works-dialog"
 import { useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
-import { Suspense, useContext, useState } from "react"
+import { Loader2Icon, Pencil } from "lucide-react"
+import { useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
+import { Card, CardContent } from "~/components/ui/card"
+import { useNavigate } from "@remix-run/react"
 
 /**
  * プロフィール設定フォーム
  */
-export function SettingProfileForm() {
+export function ProfileEditorForm() {
   const authContext = useContext(AuthContext)
 
   const { data: user } = useSuspenseQuery(userQuery, {
@@ -29,6 +27,8 @@ export function SettingProfileForm() {
     },
     fetchPolicy: "cache-first",
   })
+
+  const navigate = useNavigate()
 
   const userInfo = user?.user
 
@@ -106,6 +106,8 @@ export function SettingProfileForm() {
     })
 
     toast("プロフィールを更新しました。")
+
+    navigate("/new/settings")
   }
 
   const profileImageSrc =
@@ -116,12 +118,19 @@ export function SettingProfileForm() {
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="container m-auto space-y-4">
+        <Card>
+          <CardContent className="m-0 p-4 text-xl">
+            <p>{"Aipictorsへようこそ！"}</p>
+            <p>{"Aipictorsで使用するプロフィールを設定しましょう！"}</p>
+            <p>{"設定から内容はいつでも変更できます"}</p>
+          </CardContent>
+        </Card>
         <div className="justify-between">
           <div className="relative">
             {headerImageSrc ? (
               <img
-                className="h-auto w-full object-cover"
+                className="h-auto max-h-64 w-full object-cover"
                 src={headerImageSrc}
                 alt="header"
               />
@@ -187,7 +196,6 @@ export function SettingProfileForm() {
             プロフィール画像やヘッダー画像にR-18画像は掲載できません。
           </p>
         </div>
-
         <div className="flex flex-col justify-between space-y-2">
           <label
             htmlFor="nickname"
@@ -254,6 +262,7 @@ export function SettingProfileForm() {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
+          <p className="font-semibold">{"SNSリンク（@マークは不要）"}</p>
           <label
             htmlFor="instagram"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -321,75 +330,18 @@ export function SettingProfileForm() {
             onChange={(e) => setMail(e.target.value)}
           />
         </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="pickup"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"ピックアップ ※最大3つ"}
-          </label>
-          <Suspense fallback={<AppLoadingPage />}>
-            <SelectCreatedWorksDialog
-              selectedWorks={selectedPickupWorks}
-              setSelectedWorks={setSelectedPickupWorks}
-              limit={3}
-            >
-              <div className="border-2 border-transparent p-1">
-                <Button
-                  className="h-16 w-16"
-                  size={"icon"}
-                  variant={"secondary"}
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </SelectCreatedWorksDialog>
-          </Suspense>
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="sensitive-pickup"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {"センシティブピックアップ ※最大3つ"}
-          </label>
-          <Suspense fallback={<AppLoadingPage />}>
-            <SelectCreatedWorksDialog
-              selectedWorks={selectedPickupSensitiveWorks}
-              setSelectedWorks={setSelectedPickupSensitiveWorks}
-              limit={3}
-              isSensitive={true}
-            >
-              <div className="border-2 border-transparent p-1">
-                <Button
-                  className="h-16 w-16"
-                  size={"icon"}
-                  variant={"secondary"}
-                >
-                  <PlusIcon />
-                </Button>
-              </div>
-            </SelectCreatedWorksDialog>
-          </Suspense>
-        </div>
         <Separator />
         <Button
           disabled={isUpdating}
           onClick={onSubmit}
-          className="ml-auto block w-24"
+          className="ml-auto block w-full"
         >
           {isUpdating ? (
             <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
           ) : (
-            <p>{"更新する"}</p>
+            <p>{"次へ"}</p>
           )}
         </Button>
-        <Separator />
-        <a className="m-auto block" href="settings/account/login">
-          <Button className="m-auto block" variant={"secondary"}>
-            ログイン情報を変更する
-          </Button>
-        </a>
       </div>
     </>
   )
