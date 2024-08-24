@@ -32,7 +32,7 @@ export function ThemeList(props: Props) {
       day === currentDateInJapan.getDate()
 
     // 正しい曜日を算出
-    const dayOfWeek = (index + firstDayOfWeek) % 7
+    const dayOfWeek = day ? (day + firstDayOfWeek - 1) % 7 : null
 
     return {
       id: `/${props.year}-${props.month}-${index}`,
