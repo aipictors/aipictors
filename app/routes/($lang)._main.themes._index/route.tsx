@@ -87,7 +87,7 @@ export default function Themes() {
       <ConstructionAlert
         type="WARNING"
         message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
-        fallbackURL="https://www.aipictors.com/idead"
+        fallbackURL="https://www.aipictors.com/idea"
       />
       <AppPageHeader title={"お題"} description={description} />
       <ThemeWorksList
