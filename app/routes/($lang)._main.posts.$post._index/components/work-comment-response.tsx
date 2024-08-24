@@ -58,8 +58,8 @@ export function WorkCommentResponse(props: Props) {
   return (
     <>
       <div className="flex items-start space-x-4 pl-16">
-        <Link to={`/users/${props.userId}`}>
-          <Avatar>
+        <Link className="block h-10 w-10" to={`/users/${props.userId}`}>
+          <Avatar className="block h-10 w-10">
             <AvatarImage
               className="h-10 w-10 rounded-full"
               src={props.userIconImageURL}
