@@ -238,7 +238,7 @@ export function PostImageFormInput(props: Props) {
           </label>
         </div>
       )}
-      {props.imageInformation && props.state.useGenerationParams && (
+      {props.imageInformation && (
         <PostFormItemGenerationParams
           pngInfo={props.imageInformation}
           setPngInfo={(value) => {

@@ -13,7 +13,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { ToggleContent } from "~/components/toggle-content"
-import { Heart } from "lucide-react"
+import { Heart, ShieldAlert } from "lucide-react"
 import { Separator } from "~/components/ui/separator"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
@@ -181,7 +181,12 @@ export function WorkArticle(props: Props) {
         <p className="overflow-hidden whitespace-pre-wrap break-words">
           {props.work.description}
         </p>
-
+        {props.work.promptAccessType === "PRIVATE" && (
+          <p className="flex items-center gap-x-2 font-bold opacity-60">
+            <ShieldAlert className="block h-6 w-6" />
+            <p>{"生成情報は非公開状態です、ご自身のみ閲覧可能です"}</p>
+          </p>
+        )}
         <WorkArticleGenerationParameters
           prompt={props.work.prompt}
           negativePrompt={props.work.negativePrompt}
@@ -192,6 +197,7 @@ export function WorkArticle(props: Props) {
           strength={props.work.strength}
           otherGenerationParams={props.work.otherGenerationParams}
         />
+
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link
