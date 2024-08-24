@@ -181,12 +181,13 @@ export function WorkArticle(props: Props) {
         <p className="overflow-hidden whitespace-pre-wrap break-words">
           {props.work.description}
         </p>
-        {props.work.promptAccessType === "PRIVATE" && (
-          <p className="flex items-center gap-x-2 font-bold opacity-60">
-            <ShieldAlert className="block h-6 w-6" />
-            <p>{"生成情報は非公開状態です、ご自身のみ閲覧可能です"}</p>
-          </p>
-        )}
+        {props.work.promptAccessType === "PRIVATE" &&
+          props.work.user.id === appContext.userId && (
+            <p className="flex items-center gap-x-2 font-bold opacity-60">
+              <ShieldAlert className="block h-6 w-6" />
+              <p>{"生成情報は非公開状態です、ご自身のみ閲覧可能です"}</p>
+            </p>
+          )}
         <WorkArticleGenerationParameters
           prompt={props.work.prompt}
           negativePrompt={props.work.negativePrompt}
