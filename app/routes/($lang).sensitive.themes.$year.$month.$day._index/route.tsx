@@ -3,7 +3,6 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeArticleContainer } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article-container"
-import { config } from "~/config"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -63,11 +62,11 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json(
     { dailyTheme, worksResp, year, month, day, page },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.oneDay,
-      },
-    },
+    // {
+    //   headers: {
+    //     "Cache-Control": config.cacheControl.oneDay,
+    //   },
+    // },
   )
 }
 
