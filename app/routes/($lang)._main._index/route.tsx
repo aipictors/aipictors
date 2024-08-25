@@ -168,7 +168,9 @@ export default function Index() {
         message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
         fallbackURL="https://www.aipictors.com"
       />
-      <HomeBanners works={data.adWorks} />
+      {data.adWorks && data.adWorks.length > 0 && (
+        <HomeBanners works={data.adWorks} />
+      )}
       <HomeContents
         homeParticles={{
           dailyThemeTitle: data.dailyTheme ? data.dailyTheme.title ?? "" : "",
