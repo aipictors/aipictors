@@ -48,7 +48,7 @@ export async function loader(props: LoaderFunctionArgs) {
     query: dailyThemesQuery,
     variables: {
       offset: 0,
-      limit: 31,
+      limit: 32,
       where: { year: todayYear, month: todayMonth, day: todayDay },
     },
   })
