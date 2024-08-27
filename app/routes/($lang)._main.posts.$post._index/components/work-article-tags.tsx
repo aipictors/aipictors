@@ -12,27 +12,22 @@ type Props = {
   postId: string
 }
 
-export function WorkArticleTags({
-  tagNames,
-  isEditable = false,
-  postId,
-  setTagNames,
-}: Props) {
+export function WorkArticleTags(props: Props) {
   const [isOpenEdit, setIsOpenEdit] = React.useState(false)
 
   const [tags, setTags] = React.useState<Tag[]>([
-    ...tagNames.map((tagName) => ({ id: tagName, text: tagName })),
+    ...props.tagNames.map((tagName) => ({ id: tagName, text: tagName })),
   ])
 
   return (
     <>
       <div className="flex flex-row flex-wrap items-center gap-x-4">
-        {tagNames.map((tagName) => (
+        {props.tagNames.map((tagName) => (
           <Link to={`/tags/${tagName}`} key={tagName} className="p-0">
             <Button className="p-0" variant={"link"}>{`#${tagName}`}</Button>
           </Link>
         ))}
-        {isEditable && (
+        {props.isEditable && (
           <Button
             onClick={() => {
               setIsOpenEdit(!isOpenEdit)
@@ -47,8 +42,8 @@ export function WorkArticleTags({
       </div>
       {isOpenEdit && (
         <WorkTagInput
-          postId={postId}
-          setTagNames={setTagNames}
+          postId={props.postId}
+          setTagNames={props.setTagNames}
           tags={tags}
           setTags={setTags}
           isEditable={true}
