@@ -12,6 +12,10 @@ import { toast } from "sonner"
  * WebFCMTokenを更新するフォーム
  */
 export function SettingFcmForm() {
+  if (!("Notification" in window)) {
+    return "PCブラウザに対応しています。スマートフォンのブラウザには対応していません。"
+  }
+
   const [mutation, { loading: isLoading }] = useMutation(
     updateAccountWebFcmTokenMutation,
   )
@@ -75,16 +79,20 @@ export function SettingFcmForm() {
   }
 
   const onClickTestNotify = async () => {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        new Notification("テスト通知", {
-          body: "テスト通知",
-          icon: "https://www.aipictors.com/wp-content/uploads/notification_thumbnails/aipictors_square_logo.png",
-        })
-      } else {
-        toast("通知設定がOFFです。")
-      }
-    })
+    if ("Notification" in window) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          new Notification("テスト通知", {
+            body: "テスト通知",
+            icon: "https://www.aipictors.com/wp-content/uploads/notification_thumbnail.png",
+          });
+        } else {
+          toast("通知設定がOFFです。");
+        }
+      });
+    } else {
+      toast("このデバイスは通知をサポートしていません。");
+    }
   }
 
   return (

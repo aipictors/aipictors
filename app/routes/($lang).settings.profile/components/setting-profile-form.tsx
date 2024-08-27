@@ -121,7 +121,7 @@ export function SettingProfileForm() {
           <div className="relative">
             {headerImageSrc ? (
               <img
-                className="h-auto w-full object-cover"
+                className="h-auto w-full object-cover max-h-96"
                 src={headerImageSrc}
                 alt="header"
               />
