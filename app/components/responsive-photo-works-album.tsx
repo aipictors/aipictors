@@ -25,8 +25,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
         {props.works.map((workItem, index) => {
           return (
             <div
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-              key={workItem.id}
+              key={workItem.id.toString()}
               className="relative flex flex-col space-y-2"
             >
               <div className="relative">

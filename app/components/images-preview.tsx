@@ -296,8 +296,7 @@ export function ImagesPreview(props: Props) {
             {props.imageURLs.map((url, index) => (
               // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
               <img
-                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                key={index}
+                key={index.toString()}
                 className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain md:max-h-[72vh] dark:bg-zinc-900"
                 draggable={false}
                 alt={`thumbnail-${index}`}

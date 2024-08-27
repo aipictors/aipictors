@@ -85,13 +85,13 @@ export function SettingFcmForm() {
           new Notification("テスト通知", {
             body: "テスト通知",
             icon: "https://www.aipictors.com/wp-content/uploads/notification_thumbnail.png",
-          });
+          })
         } else {
-          toast("通知設定がOFFです。");
+          toast("通知設定がOFFです。")
         }
-      });
+      })
     } else {
-      toast("このデバイスは通知をサポートしていません。");
+      toast("このデバイスは通知をサポートしていません。")
     }
   }
 
