@@ -61,6 +61,30 @@ export async function loader() {
       })
     : null
 
+  const getJSTDate = (date: Date) => {
+    const offsetJST = 9 * 60 // JST は UTC +9 時間
+    const utcDate = date.getTime() + date.getTimezoneOffset() * 60 * 1000
+    const jstDate = new Date(utcDate + offsetJST * 60 * 1000)
+    return jstDate
+  }
+
+  const jstStartDate = getJSTDate(new Date(today.setDate(today.getDate() + 1)))
+
+  const jstEndDate = getJSTDate(new Date(today.setDate(today.getDate() + 7)))
+
+  const startDate = jstStartDate.toISOString().split("T")[0]
+
+  const endDate = jstEndDate.toISOString().split("T")[0]
+
+  const afterSevenDayThemesResp = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 7,
+      where: { startDate, endDate },
+    },
+  })
+
   return json({
     dailyThemes: dailyThemesResp.data.dailyThemes,
     year,
@@ -69,6 +93,7 @@ export async function loader() {
       ? todayThemesResp.data.dailyThemes[0]
       : null,
     works: worksResp ? worksResp.data.works : null,
+    afterSevenDayThemes: afterSevenDayThemesResp.data.dailyThemes,
   })
 }
 
@@ -94,6 +119,7 @@ export default function Themes() {
         todayTheme={data.todayTheme}
         works={data.works}
         isSensitive={false}
+        afterThemes={data.afterSevenDayThemes}
       />
       <ThemeList
         year={data.year}

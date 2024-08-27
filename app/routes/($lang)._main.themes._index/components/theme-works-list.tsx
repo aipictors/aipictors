@@ -1,16 +1,23 @@
 import { Button } from "~/components/ui/button"
-import { useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import type { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { RefreshCcwIcon } from "lucide-react"
 import type { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { HomeCroppedWorkListWithScroll } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
+import { Card, CardContent } from "~/components/ui/card"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "~/components/ui/carousel"
 
 type Props = {
   todayTheme: FragmentOf<typeof ThemeListItemFragment> | null
   works: FragmentOf<typeof ThemeWorkFragment>[] | null
   isSensitive: boolean
+  afterThemes: FragmentOf<typeof ThemeListItemFragment>[] | null
 }
 
 /**
@@ -38,7 +45,10 @@ export function ThemeWorksList(props: Props) {
   return (
     <>
       {props.todayTheme && (
-        <div className="relative h-24 overflow-hidden rounded-md p-4">
+        <Link
+          to={`/themes/${props.todayTheme.year}/${props.todayTheme.month}/${props.todayTheme.day}`}
+          className="relative block h-24 overflow-hidden rounded-md p-4"
+        >
           <h2 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 transform text-center font-bold text-white">
             {"今日のお題は"}
             <br />「{props.todayTheme.title}」
@@ -49,7 +59,28 @@ export function ThemeWorksList(props: Props) {
             alt={props.todayTheme.title}
           />
           <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
-        </div>
+        </Link>
+      )}
+      {props.afterThemes && props.afterThemes.length > 0 && (
+        <Carousel opts={{ dragFree: true, loop: false }}>
+          <CarouselContent>
+            {props.afterThemes.map((theme) => (
+              <CarouselItem
+                key={theme.id}
+                className="basis-1/2 md:basis-1/5 xl:basis-1/7"
+              >
+                <Card>
+                  <CardContent className="m-0 p-4 text-center">
+                    <p>
+                      {theme.month}/{theme.day}
+                    </p>
+                    <p>{theme.title}</p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
       )}
       {props.works && props.works.length > 0 && (
         <>

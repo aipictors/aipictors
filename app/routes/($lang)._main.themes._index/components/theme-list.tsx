@@ -106,11 +106,21 @@ export function ThemeList(props: Props) {
               onClick={() => handleCellClick(block.date)}
               className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
             >
-              <div
-                className={`text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
-              >
-                {block.day}
-              </div>
+              {block.thumbnailUrl?.length ? (
+                <div
+                  className={
+                    "absolute z-10 text-right font-bold text-white text-xs"
+                  }
+                >
+                  {block.day}
+                </div>
+              ) : (
+                <div
+                  className={`absolute text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
+                >
+                  {block.day}
+                </div>
+              )}
               {block.thumbnailUrl && (
                 <img
                   src={block.thumbnailUrl}
