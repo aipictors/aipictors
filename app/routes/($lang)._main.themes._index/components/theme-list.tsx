@@ -26,6 +26,7 @@ export function ThemeList(props: Props) {
     const theme = props.dailyThemes.find((dailyTheme) => {
       return dailyTheme.day === day
     })
+
     const isToday =
       props.year === currentDateInJapan.getFullYear() &&
       props.month === currentDateInJapan.getMonth() + 1 &&
@@ -34,10 +35,19 @@ export function ThemeList(props: Props) {
     // 正しい曜日を算出
     const dayOfWeek = day ? (day + firstDayOfWeek - 1) % 7 : null
 
+    // 現在の日付と比較
+    const sevenDaysAfter = new Date(currentDateInJapan)
+
+    sevenDaysAfter.setDate(currentDateInJapan.getDate() + 7)
+
+    const shouldHideTitle = day
+      ? new Date(props.year, props.month - 1, day) > sevenDaysAfter
+      : false
+
     return {
       id: `/${props.year}-${props.month}-${index}`,
       day: day,
-      title: theme?.title ?? null,
+      title: !shouldHideTitle ? theme?.title ?? null : null, // 7日後以降はお題内容を表示しない
       isSunday: dayOfWeek === 0, // 日曜日
       isSaturday: dayOfWeek === 6, // 土曜日
       isToday: isToday,
@@ -68,6 +78,12 @@ export function ThemeList(props: Props) {
     const year = Number(date.slice(0, 4))
     const month = Number(date.slice(5, 7))
     const day = Number(date.slice(8, 10))
+
+    // NaNなら何もしない
+    if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
+      return
+    }
+
     navigate(`/themes/${year}/${month}/${day}`)
   }
 
@@ -106,21 +122,11 @@ export function ThemeList(props: Props) {
               onClick={() => handleCellClick(block.date)}
               className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
             >
-              {block.thumbnailUrl?.length ? (
-                <div
-                  className={
-                    "absolute z-10 text-right font-bold text-white text-xs"
-                  }
-                >
-                  {block.day}
-                </div>
-              ) : (
-                <div
-                  className={`absolute text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
-                >
-                  {block.day}
-                </div>
-              )}
+              <div
+                className={`absolute text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
+              >
+                {block.day}
+              </div>
               {block.thumbnailUrl && (
                 <img
                   src={block.thumbnailUrl}
