@@ -13,12 +13,12 @@ export const meta: MetaFunction = () => {
  */
 export default function Login() {
   return (
-    <>
+    <div className="container">
       <Card>
         <CardContent className="p-4">
           <LoginForm />
         </CardContent>
       </Card>
-    </>
+    </div>
   )
 }

@@ -15,6 +15,8 @@ import { graphql } from "gql.tada"
 import { Suspense } from "react"
 import { LineLoggedInWithUrlButton } from "~/components/line-logged-in-with-url-button"
 import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
+import { Link } from "@remix-run/react"
+import { Button } from "~/components/ui/button"
 
 /**
  * ログイン
@@ -76,11 +78,15 @@ export function LoginDialogContent() {
             buttonText="𝕏(Twitter)で続ける"
             icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
           />
-          <Suspense
-            fallback={<LineLoggedInButton disabled={true} onClick={() => {}} />}
-          >
-            <LineLoggedInWithUrlButton text={"LINEで続ける"} />
-          </Suspense>
+          <div className="hidden">
+            <Suspense
+              fallback={
+                <LineLoggedInButton disabled={true} onClick={() => {}} />
+              }
+            >
+              <LineLoggedInWithUrlButton text={"LINEで続ける"} />
+            </Suspense>
+          </div>
         </div>
       </div>
       <Separator />
@@ -88,7 +94,7 @@ export function LoginDialogContent() {
         <p className="text-sm">{"またはアカウント情報でログイン"}</p>
         <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
       </div>
-      {/* <Separator />
+      <Separator />
       <div className={"flex w-full flex-col gap-y-2"}>
         <span className="text-sm">{"アカウントをお持ちで無い方はこちら"}</span>
         <Link
@@ -101,20 +107,6 @@ export function LoginDialogContent() {
           </Button>
         </Link>
       </div>
-      <Separator />
-      <div className={"flex w-full flex-col gap-y-2"}>
-        <ToggleContent
-          trigger={
-            <span className="text-sm">
-              {"ログインしているけどログイン状態にならない"}
-            </span>
-          }
-        >
-          <div className="mt-2 w-full">
-            <NavigationLogoutDialogButton text="ログアウトを試す" />
-          </div>
-        </ToggleContent>
-      </div> */}
     </>
   )
 }
