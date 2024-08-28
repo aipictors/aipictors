@@ -4,7 +4,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-button"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
 import { type FragmentOf, graphql } from "gql.tada"
 import { IconUrl } from "~/components/icon-url"
@@ -41,6 +41,10 @@ export function WorkArticle(props: Props) {
   const [tagNames, setTagNames] = useState<string[]>(props.work.tagNames)
 
   const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
+
+  useEffect(() => {
+    setTagNames(props.work.tagNames)
+  }, [props.work.tagNames])
 
   return (
     <article className="flex flex-col space-y-4">

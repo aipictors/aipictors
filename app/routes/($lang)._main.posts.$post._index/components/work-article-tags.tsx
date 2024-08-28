@@ -3,7 +3,7 @@ import { Button } from "~/components/ui/button"
 import { WorkTagInput } from "~/routes/($lang)._main.posts.$post._index/components/work-tag-input"
 import { Link } from "@remix-run/react"
 import { PlusIcon } from "lucide-react"
-import React from "react"
+import React, { useEffect } from "react"
 
 type Props = {
   tagNames: string[]
@@ -18,6 +18,12 @@ export function WorkArticleTags(props: Props) {
   const [tags, setTags] = React.useState<Tag[]>([
     ...props.tagNames.map((tagName) => ({ id: tagName, text: tagName })),
   ])
+
+  useEffect(() => {
+    setTags([
+      ...props.tagNames.map((tagName) => ({ id: tagName, text: tagName })),
+    ])
+  }, [props.tagNames])
 
   return (
     <>

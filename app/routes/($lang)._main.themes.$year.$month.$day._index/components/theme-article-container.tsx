@@ -3,6 +3,7 @@ import {
   ThemeArticle,
   type ThemeWorkFragment,
 } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
+import type { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 
 type Props = {
   works: FragmentOf<typeof ThemeWorkFragment>[]
@@ -15,6 +16,7 @@ type Props = {
   day: number
   page: number
   themeId: string
+  dailyThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
 export function ThemeArticleContainer(props: Props) {
@@ -31,6 +33,7 @@ export function ThemeArticleContainer(props: Props) {
         isSensitive={props.isSensitive}
         page={props.page}
         themeId={props.themeId}
+        dailyThemes={props.dailyThemes}
       />
     </article>
   )

@@ -1,7 +1,7 @@
 import { useNavigate } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { AuthContext } from "~/contexts/auth-context"
 import {
@@ -11,6 +11,10 @@ import {
 import { Button } from "~/components/ui/button"
 import { RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import {
+  ThemeList,
+  type ThemeListItemFragment,
+} from "~/routes/($lang)._main.themes._index/components/theme-list"
 
 type Props = {
   works: FragmentOf<typeof ThemeWorkFragment>[]
@@ -23,10 +27,13 @@ type Props = {
   day: number
   page: number
   themeId: string
+  dailyThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
 export function ThemeArticle(props: Props) {
   const navigate = useNavigate()
+
+  const [isOpenedCalender, setIsOpenedCalender] = useState(false)
 
   const authContext = useContext(AuthContext)
 
@@ -39,16 +46,29 @@ export function ThemeArticle(props: Props) {
         subjectId: Number(props.themeId),
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "LIKES_COUNT",
-        isSensitive: props.isSensitive,
         isNowCreatedAt: true,
       },
     },
   })
 
+  const onToggleCalender = () => {
+    setIsOpenedCalender((prev) => !prev)
+  }
+
   const works = resp?.works ?? props.works
 
   return (
     <div className="flex flex-col space-y-6 rounded-lg bg-gradient-to-b p-4">
+      <Button
+        onClick={() => {
+          navigate("/themes")
+        }}
+        variant={"secondary"}
+        size={"sm"}
+        className="h-8 w-full"
+      >
+        {"お題トップ"}
+      </Button>
       <div className="relative h-48 overflow-hidden rounded-md ">
         <img
           src={props.firstWork?.smallThumbnailImageURL ?? ""}
@@ -101,16 +121,23 @@ export function ThemeArticle(props: Props) {
           </Button>
         )}
       </div>
-      <Button
-        onClick={() => {
-          navigate("/themes")
-        }}
-        variant={"secondary"}
-        size={"sm"}
-        className="w-full"
-      >
-        {"お題カレンダーに戻る"}
-      </Button>
+      <div className="flex items-center space-x-2">
+        <Button
+          onClick={onToggleCalender}
+          className="h-8 w-full"
+          aria-label="Toggle Calender"
+          variant={"secondary"}
+        >
+          {isOpenedCalender ? "カレンダーを閉じる" : "カレンダーを開く"}
+        </Button>
+      </div>
+      {isOpenedCalender && (
+        <ThemeList
+          year={props.year}
+          month={props.month}
+          dailyThemes={props.dailyThemes}
+        />
+      )}
       <div className="mt-4">
         <ResponsivePhotoWorksAlbum works={works} />
       </div>

@@ -45,6 +45,15 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response("Not found", { status: 404 })
   }
 
+  const monthlyThemes = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 31,
+      where: { year, month },
+    },
+  })
+
   const worksResp = await client.query({
     query: themeWorksAndCountQuery,
     variables: {
@@ -59,7 +68,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({ dailyTheme, worksResp, year, month, day, page })
+  return json({ dailyTheme, worksResp, year, month, day, page, monthlyThemes })
 }
 
 export default function SensitiveDayThemePage() {
@@ -78,6 +87,7 @@ export default function SensitiveDayThemePage() {
         page={data.page}
         isSensitive={false}
         themeId={data.dailyTheme.id}
+        dailyThemes={data.monthlyThemes.data.dailyThemes}
       />
     </article>
   )
