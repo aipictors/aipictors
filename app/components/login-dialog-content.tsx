@@ -57,14 +57,14 @@ export function LoginDialogContent() {
             "ここからアカウントを「作成」した場合は旧版にはパスワード認証のみ可能です"
           }
         </p>
-        <div className="flex flex-col gap-2 md:h-10 md:flex-row">
+        <div className="flex flex-col gap-2">
           <SocialLoginButton
             disabled={
               isLoading
               // || turnstileStatus !== "solved"
             }
             provider={new GoogleAuthProvider()}
-            buttonText="Google"
+            buttonText="Googleで続ける"
             icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
           />
           <SocialLoginButton
@@ -73,13 +73,13 @@ export function LoginDialogContent() {
               // || turnstileStatus !== "solved"
             }
             provider={new TwitterAuthProvider()}
-            buttonText="𝕏(Twitter)"
+            buttonText="𝕏(Twitter)で続ける"
             icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
           />
           <Suspense
             fallback={<LineLoggedInButton disabled={true} onClick={() => {}} />}
           >
-            <LineLoggedInWithUrlButton text={"LINE"} />
+            <LineLoggedInWithUrlButton text={"LINEで続ける"} />
           </Suspense>
         </div>
       </div>
