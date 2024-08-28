@@ -27,7 +27,7 @@ export function LineLoggedInButton(props: Props) {
             src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/btn_base.png"
           />
         </div>
-        <p className="p-2 text-md text-white">{buttonText}</p>
+        <p className="p-2 text-sm text-white">{buttonText}</p>
       </div>
     </button>
   )
