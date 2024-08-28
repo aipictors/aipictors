@@ -20,7 +20,7 @@ export function LineLoggedInButton(props: Props) {
       }
     >
       <div className="m-auto flex h-full w-full items-center justify-center">
-        <div className="pl-2">
+        <div className="pr-4">
           <img
             alt="line icon"
             className="h-8 w-8"
