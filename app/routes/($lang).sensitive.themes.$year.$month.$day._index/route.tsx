@@ -60,8 +60,17 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const monthlyThemes = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 31,
+      where: { year, month },
+    },
+  })
+
   return json(
-    { dailyTheme, worksResp, year, month, day, page },
+    { dailyTheme, worksResp, year, month, day, page, monthlyThemes },
     // {
     //   headers: {
     //     "Cache-Control": config.cacheControl.oneDay,
@@ -86,6 +95,7 @@ export default function SensitiveDayThemePage() {
         page={data.page}
         isSensitive={true}
         themeId={data.dailyTheme.id}
+        dailyThemes={data.monthlyThemes.data.dailyThemes}
       />
     </article>
   )
