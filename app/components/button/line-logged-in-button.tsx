@@ -16,10 +16,10 @@ export function LineLoggedInButton(props: Props) {
       type="button"
       disabled={props.disabled}
       className={
-        "flex w-full items-center rounded-md bg-line-theme font-bold duration-200 hover:opacity-90"
+        "flex h-full w-full items-center rounded-md bg-line-theme font-bold duration-200 hover:opacity-90"
       }
     >
-      <div className="m-auto flex items-center">
+      <div className="m-auto flex h-full w-full items-center justify-center">
         <div className="pl-2">
           <img
             alt="line icon"
@@ -27,7 +27,7 @@ export function LineLoggedInButton(props: Props) {
             src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/btn_base.png"
           />
         </div>
-        <p className="p-4 pr-6 text-md text-white">{buttonText}</p>
+        <p className="p-2 text-md text-white">{buttonText}</p>
       </div>
     </button>
   )

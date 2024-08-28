@@ -480,6 +480,11 @@ export const META: { [key: string]: MetaData } = {
     image: "{{url}}",
     isIndex: true,
   },
+  LOGIN: {
+    title: "ログイン",
+    description: "ログインしてAipictorsを楽しもう！",
+    isIndex: true,
+  },
   /**
    * インデックスなし
    */

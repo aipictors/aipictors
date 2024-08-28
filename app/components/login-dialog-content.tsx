@@ -1,25 +1,20 @@
-import CloudflareTurnstile, {
-  type Status,
-} from "~/components/cloudflare-turnstile"
 import { PasswordLoginForm } from "~/components/password-login-form"
 import { SocialLoginButton } from "~/components/social-login-button"
-import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import type { FormLogin } from "~/types/form-login"
 import { useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
 import {
   GoogleAuthProvider,
   TwitterAuthProvider,
   getAuth,
   signInWithCustomToken,
 } from "firebase/auth"
-import { useState } from "react"
 import { RiGoogleFill, RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"
 import { graphql } from "gql.tada"
-import { ToggleContent } from "~/components/toggle-content"
-import { NavigationLogoutDialogButton } from "~/components/logout-navigation-dialog-button"
+import { Suspense } from "react"
+import { LineLoggedInWithUrlButton } from "~/components/line-logged-in-with-url-button"
+import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
 
 /**
  * ログイン
@@ -29,15 +24,7 @@ export function LoginDialogContent() {
     loginWithPasswordMutation,
   )
 
-  // Add this line to manage Turnstile status
-  const [turnstileStatus, setTurnstileStatus] = useState<Status | null>(null)
-
   const onLogin = async (form: FormLogin) => {
-    // if (turnstileStatus !== "solved") {
-    //   toast("CAPTCHAを解決してください。")
-    //   return
-    // }
-
     try {
       const result = await mutation({
         variables: {
@@ -66,16 +53,18 @@ export function LoginDialogContent() {
       <div className="my-2 space-y-2">
         <p className="text-sm">{"SNSアカウントでログイン"}</p>
         <p className="text-sm">
-          {"ここからアカウントを「作成」した場合は旧版にはログインできません"}
+          {
+            "ここからアカウントを「作成」した場合は旧版にはパスワード認証のみ可能です"
+          }
         </p>
-        <div className="flex flex-col gap-2 md:flex-row">
+        <div className="flex flex-col gap-2 md:h-10 md:flex-row">
           <SocialLoginButton
             disabled={
               isLoading
               // || turnstileStatus !== "solved"
             }
             provider={new GoogleAuthProvider()}
-            buttonText="Googleでログイン"
+            buttonText="Google"
             icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
           />
           <SocialLoginButton
@@ -84,24 +73,22 @@ export function LoginDialogContent() {
               // || turnstileStatus !== "solved"
             }
             provider={new TwitterAuthProvider()}
-            buttonText="𝕏(Twitter)でログイン"
+            buttonText="𝕏(Twitter)"
             icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
           />
+          <Suspense
+            fallback={<LineLoggedInButton disabled={true} onClick={() => {}} />}
+          >
+            <LineLoggedInWithUrlButton text={"LINE"} />
+          </Suspense>
         </div>
       </div>
       <Separator />
       <div className="my-2 w-full space-y-2">
         <p className="text-sm">{"またはアカウント情報でログイン"}</p>
-        <PasswordLoginForm
-          onSubmit={onLogin}
-          isLoading={
-            isLoading
-            // || turnstileStatus !== "solved"
-          }
-        />
+        <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
       </div>
-      <CloudflareTurnstile onStatusChange={setTurnstileStatus} />
-      <Separator />
+      {/* <Separator />
       <div className={"flex w-full flex-col gap-y-2"}>
         <span className="text-sm">{"アカウントをお持ちで無い方はこちら"}</span>
         <Link
@@ -127,7 +114,7 @@ export function LoginDialogContent() {
             <NavigationLogoutDialogButton text="ログアウトを試す" />
           </div>
         </ToggleContent>
-      </div>
+      </div> */}
     </>
   )
 }
