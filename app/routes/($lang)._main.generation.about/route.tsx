@@ -5,7 +5,7 @@ import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.GENERATION_ABOUT, {
-    url: "https://assets.aipictors.com/generator-thumbnail-2_11zon.webp",
+    url: "https://assets.aipictors.com/generation-thumbnail-3_11zon.webp",
   })
 }
 
