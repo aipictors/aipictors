@@ -485,6 +485,22 @@ export const META: { [key: string]: MetaData } = {
     description: "ログインしてAipictorsを楽しもう！",
     isIndex: true,
   },
+  GENERATION_ABOUT: {
+    title: "生成機能について",
+    description: "イラスト、リアル系まで生成できるジャンルは無限大！",
+    image: "{{url}}",
+    isIndex: true,
+  },
+  GENERATION_PLANS: {
+    title: "生成機能のプラン",
+    description: "生成機能のプランについてご紹介いたします",
+    isIndex: true,
+  },
+  GENERATION_TERMS: {
+    title: "生成機能の利用規約",
+    description: "生成機能の利用規約についてご説明いたします",
+    isIndex: true,
+  },
   /**
    * インデックスなし
    */

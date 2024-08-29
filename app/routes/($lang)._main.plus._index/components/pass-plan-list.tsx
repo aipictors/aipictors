@@ -1,7 +1,7 @@
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { PassPlanDescription } from "~/routes/($lang)._main.plus._index/components/pass-plan-description"
 import { toPassFeatures } from "~/routes/($lang)._main.plus._index/utils/to-pass-features"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 
 type Props = {
@@ -12,11 +12,11 @@ type Props = {
 }
 
 export function PassPlanList(props: Props) {
-  const { data } = useSuspenseQuery(viewerCurrentPassQuery, {})
+  const { data } = useQuery(viewerCurrentPassQuery, {})
 
-  if (data.viewer === null) {
-    return null
-  }
+  // if (data.viewer === null) {
+  //   return null
+  // }
 
   const isUpgradeOrEqualPlan = (
     currentPlan: IntrospectionEnum<"PassType"> | undefined,
@@ -45,7 +45,11 @@ export function PassPlanList(props: Props) {
     return false
   }
 
-  const currentPass = data.viewer.currentPass
+  const currentPass = data
+    ? data.viewer
+      ? data.viewer.currentPass ?? null
+      : null
+    : null
 
   return (
     <div className="flex flex-col space-y-2 lg:flex-row lg:space-x-2 lg:space-y-0">

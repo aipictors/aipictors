@@ -22,6 +22,7 @@ import { setUserToken } from "~/utils/set-user-token"
 import { jwtDecode } from "jwt-decode"
 import { GenerationLinksView } from "~/routes/($lang).generation._index/components/task-view/generation-links-view"
 import { graphql } from "gql.tada"
+import { GenerationFormFooter } from "~/routes/($lang).generation._index/components/generation-form-footer"
 
 type Props = {
   termsMarkdownText: string
@@ -121,6 +122,7 @@ export function GenerationForm(props: Props) {
         />
       }
       menu={<GenerationConfigView />}
+      footer={<GenerationFormFooter />}
     />
   )
 }
