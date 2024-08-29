@@ -19,7 +19,9 @@ type Props = {
  * Googleでログインするなど
  */
 export function SocialLoginButton(props: Props) {
-  const [checkUserSetting] = useMutation(checkUserSettingMutation)
+  const [isInitializedUserProfile] = useMutation(
+    isInitializedUserProfileMutation,
+  )
 
   const navigate = useNavigate()
 
@@ -30,11 +32,11 @@ export function SocialLoginButton(props: Props) {
       await signInWithPopup(getAuth(), props.provider)
 
       // ユーザ設定有無チェック
-      const isExistUserSetting = await checkUserSetting()
+      const isInitializedUserProfileRet = await isInitializedUserProfile()
 
       if (
-        isExistUserSetting.data &&
-        !isExistUserSetting.data.checkUserSetting
+        isInitializedUserProfileRet.data &&
+        !isInitializedUserProfileRet.data.isInitializedUserProfile
       ) {
         // 存在しない場合はユーザ設定作成画面へ遷移
         navigate("/new/profile")
@@ -65,8 +67,8 @@ export function SocialLoginButton(props: Props) {
   )
 }
 
-const checkUserSettingMutation = graphql(
-  `mutation CheckUserSetting {
-    checkUserSetting
+const isInitializedUserProfileMutation = graphql(
+  `mutation IsInitializedUserProfile {
+    isInitializedUserProfile
   }`,
 )
