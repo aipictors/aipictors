@@ -15,8 +15,6 @@ import { graphql } from "gql.tada"
 import { Suspense } from "react"
 import { LineLoggedInWithUrlButton } from "~/components/line-logged-in-with-url-button"
 import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
-import { Link } from "@remix-run/react"
-import { Button } from "~/components/ui/button"
 
 /**
  * ログイン
@@ -90,7 +88,7 @@ export function LoginDialogContent() {
         <p className="text-sm">{"またはアカウント情報でログイン"}</p>
         <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
       </div>
-      <Separator />
+      {/* <Separator />
       <div className={"flex w-full flex-col gap-y-2"}>
         <span className="text-sm">{"アカウントをお持ちで無い方はこちら"}</span>
         <Link
@@ -102,7 +100,7 @@ export function LoginDialogContent() {
             {"アカウント作成"}
           </Button>
         </Link>
-      </div>
+      </div> */}
     </>
   )
 }
