@@ -1,7 +1,7 @@
-import {} from "firebase/auth"
-import {} from "react"
+import { getAuth, signInWithCustomToken } from "firebase/auth"
+import { useEffect } from "react"
 import { LoginDialogContent } from "~/components/login-dialog-content"
-import { useSearchParams } from "@remix-run/react"
+import { useNavigate, useSearchParams } from "@remix-run/react"
 import { Button } from "~/components/ui/button"
 
 /**
@@ -12,15 +12,48 @@ export function LoginForm() {
 
   const ref = searchParams.get("result")
 
+  const token = searchParams.get("token")
+
+  const isNew = searchParams.get("new")
+
   const onClickHome = () => {
     window.location.href = "/"
   }
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (token) {
+      const auth = getAuth()
+      signInWithCustomToken(auth, token)
+        .then(() => {
+          // 認証が成功したらURLからトークンを削除してリダイレクト
+          searchParams.delete("token")
+
+          if (isNew === "1") {
+            navigate("/new/profile", { replace: true })
+          } else {
+            navigate(
+              {
+                pathname: window.location.pathname,
+                search: searchParams.toString(),
+              },
+              { replace: true },
+            )
+          }
+        })
+        .catch((error) => {
+          console.error("カスタムトークンによるログインに失敗しました:", error)
+          // 必要に応じてエラーハンドリングを追加
+        })
+    }
+  }, [token, isNew, navigate, searchParams])
 
   if (ref && ref === "verification") {
     return (
       <div className="flex flex-col space-y-4">
         <div className="text-center font-bold text-sm">
-          <p>{"認証が完了いたしました！"}</p>
+          <p>{"ログインが完了いたしました！"}</p>
           <p>{"Aipictorsを引き続き楽しんでください！🎊"}</p>
         </div>
         <Button onClick={onClickHome} className="m-auto block">
