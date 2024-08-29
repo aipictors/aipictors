@@ -1,11 +1,11 @@
+import React, { Suspense, useEffect } from "react"
+import { useSearchParams } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { WorksListContainer } from "~/routes/($lang).my._index/components/works-list-container"
 import { WorksSetting } from "~/routes/($lang).my._index/components/works-settings"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import React from "react"
-import { Suspense } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 
@@ -14,22 +14,64 @@ export const meta: MetaFunction = () => {
 }
 
 export default function MyPosts() {
-  const [page, setPage] = React.useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const [albumOrderDeskAsc, setAlbumOrderDeskAsc] =
-    React.useState<SortType>("DESC")
+  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
+
+  const [albumOrderDeskAsc, setAlbumOrderDeskAsc] = React.useState<SortType>(
+    (searchParams.get("albumOrderDeskAsc") as SortType) || "DESC",
+  )
 
   const [accessType, setAccessType] =
-    React.useState<IntrospectionEnum<"AccessType"> | null>(null)
+    React.useState<IntrospectionEnum<"AccessType"> | null>(
+      (searchParams.get("accessType") as IntrospectionEnum<"AccessType">) ||
+        null,
+    )
 
   const [workType, setWorkType] =
-    React.useState<IntrospectionEnum<"WorkType"> | null>(null)
+    React.useState<IntrospectionEnum<"WorkType"> | null>(
+      (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
+    )
 
-  const [WorkOrderby, setWorkOrderby] =
-    React.useState<IntrospectionEnum<"WorkOrderBy">>("DATE_CREATED")
+  const [WorkOrderby, setWorkOrderby] = React.useState<
+    IntrospectionEnum<"WorkOrderBy">
+  >(
+    (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
+      "DATE_CREATED",
+  )
 
-  const [worksOrderDeskAsc, setWorksOrderDeskAsc] =
-    React.useState<SortType>("DESC")
+  const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
+    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
+  )
+
+  const [rating, setRating] =
+    React.useState<IntrospectionEnum<"Rating"> | null>(
+      (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
+    )
+
+  // URLパラメータの監視と更新
+  useEffect(() => {
+    const params = new URLSearchParams()
+
+    params.set("page", String(page))
+    params.set("albumOrderDeskAsc", albumOrderDeskAsc)
+    if (accessType) params.set("accessType", accessType)
+    if (workType) params.set("workType", workType)
+    if (rating) params.set("rating", rating)
+    params.set("WorkOrderby", WorkOrderby)
+    params.set("worksOrderDeskAsc", worksOrderDeskAsc)
+
+    setSearchParams(params)
+  }, [
+    page,
+    albumOrderDeskAsc,
+    accessType,
+    workType,
+    rating,
+    WorkOrderby,
+    worksOrderDeskAsc,
+    setSearchParams,
+  ])
 
   // 作品一覧のソートボタンクリック時の処理
   const onClickTitleSortButton = () => {
@@ -71,9 +113,6 @@ export default function MyPosts() {
     setWorkOrderby("WORK_TYPE")
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
-
-  const [rating, setRating] =
-    React.useState<IntrospectionEnum<"Rating"> | null>(null)
 
   const [worksMaxCount, setWorksMaxCount] = React.useState(0)
 

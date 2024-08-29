@@ -29,6 +29,11 @@ type Props = Readonly<{
 export function AppConfirmDialog(props: Props) {
   const [isCheck, setIsCheck] = useState(false)
 
+  // document is not defined が発生するため、SSR時は実行しない
+  if (typeof document === "undefined") {
+    return null
+  }
+
   if (props.cookieKey) {
     if (
       document.cookie
