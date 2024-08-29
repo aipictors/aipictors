@@ -26,7 +26,7 @@ export function UserProfileNameIcon(props: Props) {
             <h1 className="text-nowrap font-bold text-2xl text-white">
               {props.user.name}
             </h1>
-            <h2 className="font-bold text-sm text-white opacity-50">
+            <h2 className="text-nowrap font-bold text-sm text-white opacity-50">
               @{props.user.login}
             </h2>
             <div className="flex">

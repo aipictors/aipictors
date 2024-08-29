@@ -78,15 +78,11 @@ export function LoginDialogContent() {
             buttonText="𝕏(Twitter)で続ける"
             icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
           />
-          <div className="hidden">
-            <Suspense
-              fallback={
-                <LineLoggedInButton disabled={true} onClick={() => {}} />
-              }
-            >
-              <LineLoggedInWithUrlButton text={"LINEで続ける"} />
-            </Suspense>
-          </div>
+          <Suspense
+            fallback={<LineLoggedInButton disabled={true} onClick={() => {}} />}
+          >
+            <LineLoggedInWithUrlButton text={"LINEで続ける"} />
+          </Suspense>
         </div>
       </div>
       <Separator />

@@ -19,8 +19,8 @@ export function LineLoggedInButton(props: Props) {
         "flex h-full w-full items-center rounded-md bg-line-theme font-bold duration-200 hover:opacity-90"
       }
     >
-      <div className="m-auto flex h-full w-full items-center justify-center">
-        <div className="pr-4">
+      <div className="relative m-auto flex h-full w-full items-center justify-center">
+        <div className="absolute left-2">
           <img
             alt="line icon"
             className="h-8 w-8"

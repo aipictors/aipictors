@@ -49,15 +49,17 @@ export function SocialLoginButton(props: Props) {
 
   return (
     <Button
-      className="flex w-full items-center justify-center"
+      className="relative flex w-full items-center justify-center"
       onClick={onLogin}
       disabled={props.disabled}
     >
-      {props.disabled ? (
-        <RiRestartLine className="mr-2 h-4 w-4 animate-spin" />
-      ) : (
-        props.icon
-      )}
+      <div className="absolute left-4">
+        {props.disabled ? (
+          <RiRestartLine className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          props.icon
+        )}
+      </div>
       {props.buttonText}
     </Button>
   )
