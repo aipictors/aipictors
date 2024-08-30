@@ -41,37 +41,40 @@ export function UserNameBadge(props: Props) {
   }
 
   return (
-    <Link
-      to={`/users/${props.userId}`}
-      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`flex items-center text-ellipsis overflow-hidden ${width()} ${padding()}`}
-    >
-      <div className="flex items-center space-x-2">
-        <img
-          alt="user icon"
-          className="h-4 w-4 rounded-full"
-          src={IconUrl(props.userIconImageURL)}
-        />
-        <p
-          // biome-ignore lint/nursery/useSortedClasses: <explanation>
-          className={`text-ellipsis overflow-hidden text-nowrap text-xs ${width()}`}
-        >
-          {props.name}
-        </p>
-      </div>
-      {props.likesCount && (
-        <div className="ml-auto items-center">
-          <div className="flex items-center space-x-1">
-            <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
-            <span className="text-xs">{props.likesCount}</span>
-            {props.snapshotLikedCount && (
-              <span className="text-xs opacity-80">
-                ({props.snapshotLikedCount})
-              </span>
-            )}
-          </div>
+    <Link className="flex flex-col gap-y-2" to={`/users/${props.userId}`}>
+      <div
+        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+        className={`flex items-center overflow-hidden text-ellipsis ${width()} ${padding()}`}
+      >
+        <div className="flex items-center space-x-2">
+          <img
+            alt="user icon"
+            className="h-4 w-4 rounded-full"
+            src={IconUrl(props.userIconImageURL)}
+          />
+          <p
+            // biome-ignore lint/nursery/useSortedClasses: <explanation>
+            className={`text-ellipsis overflow-hidden text-nowrap text-xs ${width()}`}
+          >
+            {props.name}
+          </p>
         </div>
-      )}
+      </div>
+      <div>
+        {props.likesCount && (
+          <div className="ml-auto items-center">
+            <div className="flex items-center space-x-1">
+              <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+              <span className="text-xs">{props.likesCount}</span>
+              {props.snapshotLikedCount && (
+                <span className="text-xs opacity-80">
+                  ({props.snapshotLikedCount})
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </Link>
   )
 }
