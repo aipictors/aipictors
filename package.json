@@ -111,7 +111,7 @@
     "use-image": "^1.1.1",
     "usehooks-ts": "^3.1.0",
     "uvcanvas": "^0.2.1",
-    "valibot": "^0.38.0",
+    "valibot": "^0.40.0",
     "vaul": "^0.9.1",
     "vite-bundle-analyzer": "^0.10.6",
     "xstate": "^5.17.4",
