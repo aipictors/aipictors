@@ -64,9 +64,6 @@ export function NotificationListSetting(props: Props) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="LIKED_WORK">{"いいね"}</SelectItem>
-              {/* <SelectItem value="LIKED_WORKS_SUMMARY">
-                {"いいね集計"}
-              </SelectItem> */}
               <SelectItem value="WORK_COMMENT">{"コメント"}</SelectItem>
               <SelectItem value="COMMENT_REPLY">{"返信"}</SelectItem>
               <SelectItem value="FOLLOW">{"フォロー"}</SelectItem>

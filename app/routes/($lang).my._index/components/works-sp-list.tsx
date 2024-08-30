@@ -137,5 +137,6 @@ export const MobileWorkListItemFragment = graphql(
     createdAt
     accessType
     uuid
+    isPromotion
   }`,
 )

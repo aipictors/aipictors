@@ -135,6 +135,7 @@ export function WorksListTableRow(props: Props) {
               </AppConfirmDialog>
             )}
           </TableCell>
+          <TableCell>{props.work.isPromotion ? "○" : ""}</TableCell>
           <TableCell>{toDateTimeText(props.work.createdAt)}</TableCell>
         </TableRow>
       )}
@@ -155,6 +156,7 @@ export const WorksListTableRowFragment = graphql(
     bookmarksCount
     commentsCount
     viewsCount
+    isPromotion
   }`,
 )
 

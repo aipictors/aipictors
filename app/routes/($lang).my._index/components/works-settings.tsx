@@ -32,6 +32,7 @@ type Props = {
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
   onClickWorkTypeSortButton: () => void
+  onClickIsPromotionSortButton: () => void
 }
 
 /**
@@ -169,6 +170,7 @@ export function WorksSetting(props: Props) {
             onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
             onClickDateSortButton={props.onClickDateSortButton}
             onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+            onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
           />
         </div>
       </div>

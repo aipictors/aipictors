@@ -27,6 +27,7 @@ type Props = {
   onClickWorkTypeSortButton: () => void
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
+  onClickIsPromotionSortButton: () => void
 }
 
 /**
@@ -105,6 +106,15 @@ export function WorksListTable(props: Props) {
                 />
               </TableHead>
               <TableHead>{}</TableHead>
+              <TableHead>
+                <WorksListColumn
+                  label="宣伝作品"
+                  orderBy="IS_PROMOTION"
+                  nowOrderBy={props.orderBy}
+                  sort={props.sort}
+                  onClick={props.onClickIsPromotionSortButton}
+                />
+              </TableHead>
               <TableHead>
                 <WorksListColumn
                   label="日付"

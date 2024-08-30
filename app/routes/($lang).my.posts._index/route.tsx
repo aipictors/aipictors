@@ -114,6 +114,11 @@ export default function MyPosts() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
+  const onClickIsPromotionSortButton = () => {
+    setWorkOrderby("IS_PROMOTION")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
   const [worksMaxCount, setWorksMaxCount] = React.useState(0)
 
   return (
@@ -135,6 +140,7 @@ export default function MyPosts() {
             onClickAccessTypeSortButton={onClickAccessTypeSortButton}
             onClickDateSortButton={onClickDateSortButton}
             onClickWorkTypeSortButton={onClickWorkTypeSortButton}
+            onClickIsPromotionSortButton={onClickIsPromotionSortButton}
             setAccessType={setAccessType}
             setWorkType={setWorkType}
             setRating={setRating}
@@ -161,6 +167,7 @@ export default function MyPosts() {
               onClickAccessTypeSortButton={onClickAccessTypeSortButton}
               onClickDateSortButton={onClickDateSortButton}
               onClickWorkTypeSortButton={onClickWorkTypeSortButton}
+              onClickIsPromotionSortButton={onClickIsPromotionSortButton}
             />
           </Suspense>
         </>

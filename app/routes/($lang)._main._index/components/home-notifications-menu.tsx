@@ -10,7 +10,13 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HomeNotificationCommentsTabs } from "~/routes/($lang)._main._index/components/home-notifications-comments-tabs"
 import { HomeNotificationsContents } from "~/routes/($lang)._main._index/components/home-notifications-contents"
 import { Link } from "@remix-run/react"
-import { BellIcon } from "lucide-react"
+import {
+  AwardIcon,
+  BellIcon,
+  HeartIcon,
+  MessageCircle,
+  UserRoundCheck,
+} from "lucide-react"
 import { Suspense, useState } from "react"
 
 /**
@@ -23,8 +29,6 @@ export function HomeNotificationsMenu() {
     "WORK_AWARD",
     "FOLLOW",
   ]
-
-  const tabLabel = ["いいね", "コメント", "ランキング", "フォロー"]
 
   const defaultTab = tabValues[0]
 
@@ -54,7 +58,14 @@ export function HomeNotificationsMenu() {
                     value={tabValue}
                     onClick={() => handleTabClick(tabValue)}
                   >
-                    {tabLabel[tabValues.indexOf(tabValue)]}
+                    {tabValue === "LIKED_WORK" && <HeartIcon className="w-4" />}
+                    {tabValue === "WORK_COMMENT" && (
+                      <MessageCircle className="w-4" />
+                    )}
+                    {tabValue === "WORK_AWARD" && <AwardIcon className="w-4" />}
+                    {tabValue === "FOLLOW" && (
+                      <UserRoundCheck className="w-4" />
+                    )}
                   </TabsTrigger>
                 ))}
               </TabsList>

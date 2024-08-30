@@ -28,6 +28,7 @@ type Props = {
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
   onClickWorkTypeSortButton: () => void
+  onClickIsPromotionSortButton: () => void
 }
 
 /**
@@ -123,6 +124,7 @@ export function WorksListContainer(props: Props) {
         onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
         onClickDateSortButton={props.onClickDateSortButton}
         onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+        onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
       />
       <div className="mt-4 mb-8">
         <ResponsivePagination

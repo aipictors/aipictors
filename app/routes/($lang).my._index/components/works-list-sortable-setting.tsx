@@ -17,6 +17,7 @@ type Props = {
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
   onClickWorkTypeSortButton: () => void
+  onClickIsPromotionSortButton: () => void
 }
 
 /**
@@ -37,6 +38,8 @@ export function WorksListSortableSetting(props: Props) {
         return "日付順"
       case "NAME":
         return "タイトル順"
+      case "IS_PROMOTION":
+        return "宣伝作品"
       default:
         return "日付順"
     }
@@ -139,6 +142,18 @@ export function WorksListSortableSetting(props: Props) {
     }
   }
 
+  const onClickIsPromotionSortButton = () => {
+    if (props.nowOrderBy === "IS_PROMOTION") {
+      if (props.nowSort === "ASC") {
+        props.setSort("DESC")
+      } else {
+        props.setSort("ASC")
+      }
+    } else {
+      props.onClickIsPromotionSortButton()
+    }
+  }
+
   return (
     <>
       <Drawer>
@@ -188,6 +203,12 @@ export function WorksListSortableSetting(props: Props) {
                 sortType: "WORK_TYPE",
                 label: "種別順",
                 callback: onClickWorkTypeSortButton,
+              },
+              {
+                sort: "ASC",
+                sortType: "WORK_TYPE",
+                label: "宣伝作品",
+                callback: onClickIsPromotionSortButton,
               },
               {
                 sort: "ASC",

@@ -22,6 +22,7 @@ import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { toRatingText } from "~/utils/work/to-rating-text"
+import { Badge } from "~/components/ui/badge"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -135,36 +136,58 @@ export function WorkArticle(props: Props) {
               </div>
             </ToggleContent>
           )}
-          {props.work.model !== undefined &&
-            props.work.model !== null &&
-            props.work.model?.length !== 0 && (
-              <span className="text-sm">
-                {"使用モデル名:"}
-                <Link
-                  to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
-                >
-                  {props.work.model}
-                </Link>
-              </span>
-            )}
-          {props.work.rating !== null && (
-            <div className="flex items-center space-x-2">
-              <span className="text-sm">{"対象年齢:"}</span>
-              {toRatingText(props.work.rating)}
-            </div>
-          )}
           <span className="text-sm">
             {toDateTimeText(props.work.createdAt)}
           </span>
-          {props.work.dailyRanking && (
-            <span className="text-sm">{`デイリー入賞 ${props.work.dailyRanking} 位`}</span>
-          )}
-          {props.work.weeklyRanking && (
-            <span className="text-sm">{`ウィークリー入賞 ${props.work.dailyRanking} 位`}</span>
-          )}
-          {props.work.monthlyRanking && (
-            <span className="text-sm">{`マンスリー入賞 ${props.work.dailyRanking} 位`}</span>
-          )}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-4">
+            {props.work.model !== undefined &&
+              props.work.model !== null &&
+              props.work.model?.length !== 0 && (
+                <Badge variant="secondary" className="text-sm">
+                  {"使用モデル名:"}
+                  <Link
+                    to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
+                  >
+                    {props.work.model}
+                  </Link>
+                </Badge>
+              )}
+            {props.work.rating !== null && (
+              <Badge
+                variant="secondary"
+                className="flex items-center space-x-2"
+              >
+                <span className="text-sm">{"対象年齢:"}</span>
+                {toRatingText(props.work.rating)}
+              </Badge>
+            )}
+            {props.work.isPromotion === true && (
+              <Badge
+                variant="secondary"
+                className="flex items-center space-x-2"
+              >
+                <span className="text-sm">{"宣伝作品"}</span>
+              </Badge>
+            )}
+            {props.work.dailyRanking && (
+              <Badge
+                variant="secondary"
+                className="text-sm"
+              >{`デイリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+            )}
+            {props.work.weeklyRanking && (
+              <Badge
+                variant="secondary"
+                className="text-sm"
+              >{`ウィークリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+            )}
+            {props.work.monthlyRanking && (
+              <Badge
+                variant="secondary"
+                className="text-sm"
+              >{`マンスリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+            )}
+          </div>
           {props.work.dailyTheme && (
             <div className="flex items-center">
               <span className="text-sm">{"参加お題:"}</span>
@@ -506,5 +529,6 @@ export const sensitiveWorkArticleFragment = graphql(
     monthlyRanking
     relatedUrl
     nanoid
+    isPromotion
   }`,
 )
