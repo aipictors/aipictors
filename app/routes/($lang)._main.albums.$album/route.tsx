@@ -20,6 +20,14 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  const url = new URL(props.request.url)
+
+  const page = url.searchParams.get("page")
+    ? Number.parseInt(url.searchParams.get("page") as string) > 100
+      ? 0
+      : Number.parseInt(url.searchParams.get("page") as string)
+    : 0
+
   const client = createClient()
 
   const result = await client.query({
@@ -38,6 +46,7 @@ export async function loader(props: LoaderFunctionArgs) {
   return json({
     ...result.data,
     album: result.data.album,
+    page: page,
   })
 }
 
@@ -62,6 +71,7 @@ export default function albums() {
             albumWorks={data.album.works}
             maxCount={0}
             albumId={data.album.id}
+            page={data.page}
           />
         </div>
         <AlbumWorkDescription album={data.album} />

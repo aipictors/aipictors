@@ -288,7 +288,7 @@ export function WorkCommentList(props: Props) {
             </Button>
           )}
         </div>
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-y-auto">
           {/* 新しくコメント追加したコメント一覧 */}
           {showNewComments && (
             <div className="space-y-4">
