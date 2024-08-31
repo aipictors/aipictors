@@ -6,7 +6,6 @@ import {
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import { Suspense, useContext } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
-import { IconUrl } from "~/components/icon-url"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
@@ -21,6 +20,7 @@ import {
   HomeNewCommentsSection,
   type HomeNewCommentsFragment,
 } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   post: string
@@ -90,7 +90,7 @@ export function WorkContainer(props: Props) {
                 userId={work.user.id}
                 userLogin={work.user.login}
                 userName={work.user.name}
-                userIconImageURL={IconUrl(work.user.iconUrl)}
+                userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography ?? ""}
                 userPromptonId={work.user.promptonUser?.id}
@@ -105,7 +105,7 @@ export function WorkContainer(props: Props) {
               userId={work.user.id}
               userName={work.user.name}
               userLogin={work.user.login}
-              userIconImageURL={IconUrl(work.user.iconUrl)}
+              userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
               userFollowersCount={work.user.followersCount}
               userBiography={work.user.biography ?? ""}
               userPromptonId={work.user.promptonUser?.id}

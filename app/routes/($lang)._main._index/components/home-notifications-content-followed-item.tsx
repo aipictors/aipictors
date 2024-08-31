@@ -1,8 +1,8 @@
-import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
 import { ArrowLeftRightIcon } from "lucide-react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateText } from "~/utils/to-date-text"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   notification: FragmentOf<typeof FollowNotificationFragment>
@@ -22,9 +22,9 @@ export function HomeNotificationsContentFollowedItem(props: Props) {
       to={`/users/${props.notification.user.id}`}
     >
       <img
-        src={IconUrl(
+        src={ExchangeIconUrl(
           props.notification.user.iconUrl ??
-            "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg",
+            "https://assets.aipictors.com/no-profile.webp",
         )}
         alt="thumbnail"
         className="h-8 w-8 rounded-full object-cover"

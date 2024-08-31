@@ -1,5 +1,4 @@
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
@@ -7,6 +6,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   awards: FragmentOf<typeof WorkAwardListItemFragment>[]
@@ -78,7 +78,7 @@ export function RankingWorkList(props: Props) {
                 </p>
                 <UserNameBadge
                   userId={workItem.work.user.id}
-                  userIconImageURL={IconUrl(workItem.work.user.iconUrl)}
+                  userIconImageURL={ExchangeIconUrl(workItem.work.user.iconUrl)}
                   name={workItem.work.user.name}
                   width={"md"}
                   likesCount={workItem.work.likesCount}

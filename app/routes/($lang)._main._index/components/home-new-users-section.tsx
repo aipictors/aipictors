@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { IconUrl } from "~/components/icon-url"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   users: FragmentOf<typeof HomeNewPostedUsersFragment>[]
@@ -19,7 +19,7 @@ export function HomeNewUsersSection(props: Props) {
           <Avatar>
             <AvatarImage
               className="rounded-full"
-              src={IconUrl(user.iconUrl)}
+              src={ExchangeIconUrl(user.iconUrl)}
               alt=""
             />
             <AvatarFallback />

@@ -7,7 +7,6 @@ import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$p
 import { useContext, useEffect, useState } from "react"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
 import { type FragmentOf, graphql } from "gql.tada"
-import { IconUrl } from "~/components/icon-url"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { AuthContext } from "~/contexts/auth-context"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
@@ -23,6 +22,7 @@ import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/comp
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { toRatingText } from "~/utils/work/to-rating-text"
 import { Badge } from "~/components/ui/badge"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -233,7 +233,7 @@ export function WorkArticle(props: Props) {
               to={`/users/${props.work.user.login}`}
             >
               <Avatar>
-                <AvatarImage src={IconUrl(props.work.user.iconUrl)} />
+                <AvatarImage src={ExchangeIconUrl(props.work.user.iconUrl)} />
                 <AvatarFallback />
               </Avatar>
               <span>{props.work.user.name}</span>

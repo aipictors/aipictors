@@ -14,13 +14,13 @@ import { Separator } from "~/components/ui/separator"
 import { FollowButton } from "~/components/button/follow-button"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Card, CardContent } from "~/components/ui/card"
-import { IconUrl } from "~/components/icon-url"
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "~/components/ui/carousel"
 import { useNavigate } from "@remix-run/react"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 /**
  * プロフィール設定フォーム
@@ -204,7 +204,7 @@ export function UserSettingsForm() {
                       <div className="flex justify-center">
                         <Avatar>
                           <AvatarImage
-                            src={IconUrl(user.iconUrl)}
+                            src={ExchangeIconUrl(user.iconUrl)}
                             alt={user.name}
                           />
                           <AvatarFallback />

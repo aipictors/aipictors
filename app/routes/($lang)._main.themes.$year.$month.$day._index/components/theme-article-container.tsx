@@ -17,6 +17,7 @@ type Props = {
   page: number
   themeId: string
   dailyThemes: FragmentOf<typeof ThemeListItemFragment>[]
+  dailyBeforeThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
 export function ThemeArticleContainer(props: Props) {
@@ -34,6 +35,7 @@ export function ThemeArticleContainer(props: Props) {
         page={props.page}
         themeId={props.themeId}
         dailyThemes={props.dailyThemes}
+        dailyBeforeThemes={props.dailyBeforeThemes}
       />
     </article>
   )

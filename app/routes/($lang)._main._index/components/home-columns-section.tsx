@@ -1,5 +1,4 @@
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
-import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
@@ -8,6 +7,7 @@ import { useContext } from "react"
 import { config } from "~/config"
 import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   title: string
@@ -63,7 +63,7 @@ export function HomeColumnsSection(props: Props) {
               </div>
               <UserNameBadge
                 userId={work.user.id}
-                userIconImageURL={IconUrl(work.user.iconUrl)}
+                userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
                 name={work.user.name}
                 width={"lg"}
                 padding={"md"}

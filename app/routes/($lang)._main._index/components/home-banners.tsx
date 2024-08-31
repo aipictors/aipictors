@@ -2,6 +2,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "~/components/ui/carousel"
 import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
@@ -59,6 +61,8 @@ export function HomeBanners(props: Props) {
           </Link>
         </CarouselItem>
       </CarouselContent>
+      <CarouselPrevious className="absolute top-1/2 left-0" />
+      <CarouselNext className="absolute top-1/2 right-0" />
     </Carousel>
   )
 }

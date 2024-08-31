@@ -1,8 +1,8 @@
-import { IconUrl } from "~/components/icon-url"
 import { Badge } from "~/components/ui/badge"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateText } from "~/utils/to-date-text"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
@@ -37,7 +37,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
       >
         <>
           <img
-            src={IconUrl(props.notification.user?.iconUrl)}
+            src={ExchangeIconUrl(props.notification.user?.iconUrl)}
             alt="thumbnail"
             className="h-8 w-8 rounded-full object-cover"
           />
@@ -78,7 +78,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
       {reply && (
         <div className="ml-12 flex items-center space-x-2">
           <img
-            src={IconUrl(reply.user?.iconUrl)}
+            src={ExchangeIconUrl(reply.user?.iconUrl)}
             alt="thumbnail"
             className="h-8 w-8 rounded-full object-cover"
           />

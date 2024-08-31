@@ -1,6 +1,7 @@
 import { OmissionNumber } from "~/components/omission-number"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -16,10 +17,7 @@ export function UserProfileNameIcon(props: Props) {
         <div className="relative mr-auto flex items-center gap-4 p-0 pb-4 md:p-8">
           <UserProfileAvatar
             alt={props.user.name}
-            src={
-              props.user.iconUrl ??
-              "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/no-profile.jpg"
-            }
+            src={ExchangeIconUrl(props.user.iconUrl)}
             size={"auto"}
           />
           <div className="hidden md:block">

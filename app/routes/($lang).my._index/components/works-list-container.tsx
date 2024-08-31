@@ -15,6 +15,7 @@ type Props = {
   accessType: IntrospectionEnum<"AccessType"> | null
   workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
+  isFixedPagination?: boolean
   setWorksMaxCount: (worksMaxCount: number) => void
   setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
@@ -126,16 +127,30 @@ export function WorksListContainer(props: Props) {
         onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
         onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
       />
-      <div className="mt-4 mb-8">
-        <ResponsivePagination
-          perPage={16}
-          maxCount={worksMaxCount}
-          currentPage={props.page}
-          onPageChange={(page: number) => {
-            props.setPage(page)
-          }}
-        />
-      </div>
+      {props.isFixedPagination && (
+        <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <ResponsivePagination
+            perPage={16}
+            maxCount={worksMaxCount}
+            currentPage={props.page}
+            onPageChange={(page: number) => {
+              props.setPage(page)
+            }}
+          />
+        </div>
+      )}
+      {!props.isFixedPagination && (
+        <div className="mt-4 mb-8">
+          <ResponsivePagination
+            perPage={16}
+            maxCount={worksMaxCount}
+            currentPage={props.page}
+            onPageChange={(page: number) => {
+              props.setPage(page)
+            }}
+          />
+        </div>
+      )}
     </>
   )
 }

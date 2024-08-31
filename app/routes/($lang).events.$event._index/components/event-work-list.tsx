@@ -42,14 +42,17 @@ export function EventWorkList(props: Props) {
   return (
     <>
       <ResponsivePhotoWorksAlbum works={works} isHideProfile={true} />
-      <ResponsivePagination
-        maxCount={Number(props.maxCount)}
-        perPage={64}
-        currentPage={props.page}
-        onPageChange={(page: number) => {
-          navigate(`/events/${props.slug}?page=${page}`)
-        }}
-      />
+      <div className="h-8" />
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <ResponsivePagination
+          maxCount={Number(props.maxCount)}
+          perPage={64}
+          currentPage={props.page}
+          onPageChange={(page: number) => {
+            navigate(`/events/${props.slug}?page=${page}`)
+          }}
+        />
+      </div>
     </>
   )
 }

@@ -4,7 +4,6 @@ import { Suspense, useContext } from "react"
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { AuthContext } from "~/contexts/auth-context"
-import { IconUrl } from "~/components/icon-url"
 import { MessageCircleIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
@@ -15,6 +14,7 @@ import { cn } from "~/lib/cn"
 import React from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   isSensitive?: boolean
@@ -111,7 +111,7 @@ export function FeedContents(props: Props) {
                   <Avatar>
                     <AvatarImage
                       className="rounded-full"
-                      src={IconUrl(work.user.iconUrl)}
+                      src={ExchangeIconUrl(work.user.iconUrl)}
                       alt=""
                     />
                     <AvatarFallback />

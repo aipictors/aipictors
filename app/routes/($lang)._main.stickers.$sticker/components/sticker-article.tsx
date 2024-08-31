@@ -1,6 +1,5 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { IconUrl } from "~/components/icon-url"
 import { Button } from "~/components/ui/button"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import { toDateTimeText } from "~/utils/to-date-time-text"
@@ -8,6 +7,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user/components/sticker-info-dialog"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   sticker: FragmentOf<typeof StickerArticleFragment>
@@ -50,7 +50,7 @@ export function StickerArticle(props: Props) {
           <Link to={`/users/${props.sticker.user.login}`}>
             <div className="mt-2 flex items-center space-x-2">
               <img
-                src={IconUrl(props.sticker.user.iconUrl)}
+                src={ExchangeIconUrl(props.sticker.user.iconUrl)}
                 alt={props.sticker.user.name}
                 className="h-8 w-8 rounded-full"
               />

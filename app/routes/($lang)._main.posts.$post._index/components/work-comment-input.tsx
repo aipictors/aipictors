@@ -8,8 +8,8 @@ import { useBoolean } from "usehooks-ts"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
-import { IconUrl } from "~/components/icon-url"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   targetCommentId: string
@@ -91,7 +91,7 @@ export function ReplyCommentInput(props: Props) {
     <>
       <div className="flex w-full items-center space-x-4 pl-16">
         <Avatar>
-          <AvatarImage src={IconUrl(iconUrl)} alt="" />
+          <AvatarImage src={ExchangeIconUrl(iconUrl)} alt="" />
           <AvatarFallback />
         </Avatar>
         <AutoResizeTextarea

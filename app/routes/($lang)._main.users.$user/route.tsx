@@ -1,5 +1,4 @@
 import { ConstructionAlert } from "~/components/construction-alert"
-import { IconUrl } from "~/components/icon-url"
 import { ParamsError } from "~/errors/params-error"
 import { createClient } from "~/lib/client"
 import {
@@ -21,6 +20,7 @@ import { Suspense } from "react"
 import { Lumiflex } from "uvcanvas"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -66,7 +66,7 @@ export const meta: MetaFunction = ({ data }) => {
     url: user.user.headerImageUrl?.length
       ? user.user.headerImageUrl
       : user.user.iconUrl
-        ? IconUrl(user.user.iconUrl)
+        ? ExchangeIconUrl(user.user.iconUrl)
         : "",
   })
 }
@@ -142,7 +142,7 @@ export default function UserLayout() {
                     <div className="relative m-auto">
                       <img
                         className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
-                        src={IconUrl(data.user.iconUrl)}
+                        src={ExchangeIconUrl(data.user.iconUrl)}
                         alt=""
                       />
                     </div>

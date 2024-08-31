@@ -1,7 +1,7 @@
-import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = RenderPhotoProps & {
   src: string
@@ -38,7 +38,7 @@ export function HomeWorkAlbum(props: Props) {
         <Link to={`/users/${props.userId}`}>
           <div className="flex items-center space-x-2">
             <img
-              src={IconUrl(props.userIcon)}
+              src={ExchangeIconUrl(props.userIcon)}
               alt={props.userName}
               className="h-4 w-4 rounded-full"
             />

@@ -13,13 +13,13 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { type FragmentOf, graphql } from "gql.tada"
-import { IconUrl } from "~/components/icon-url"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   workId: string
@@ -165,7 +165,7 @@ export function WorkCommentList(props: Props) {
             user: {
               id: appContext.userId ?? "",
               name: appContext.displayName ?? "",
-              iconUrl: IconUrl(iconUrl),
+              iconUrl: ExchangeIconUrl(iconUrl),
             },
             sticker: {
               image: {
@@ -221,8 +221,6 @@ export function WorkCommentList(props: Props) {
     skip: authContext.isLoading,
   })
 
-  const iconUrl = data?.viewer?.user?.iconUrl ?? ""
-
   const stickers = data?.viewer?.userStickers ?? []
 
   return (
@@ -257,7 +255,7 @@ export function WorkCommentList(props: Props) {
         {/* コメント入力欄 */}
         <div className="flex w-full items-center space-x-4">
           <Avatar>
-            <AvatarImage src={IconUrl(iconUrl)} alt="" />
+            <AvatarImage src={ExchangeIconUrl(userIcon)} alt="" />
             <AvatarFallback />
           </Avatar>
           <AutoResizeTextarea
@@ -302,7 +300,7 @@ export function WorkCommentList(props: Props) {
                     createdAt={comment.createdAt}
                     stickerImageURL={comment.sticker?.image?.downloadURL}
                     text={comment.text}
-                    userIconImageURL={IconUrl(userIcon)}
+                    userIconImageURL={ExchangeIconUrl(userIcon)}
                     userName={comment.user?.name}
                     commentId={comment.id}
                     onDeleteComment={() => onDeleteComment(comment.id)}
@@ -321,7 +319,7 @@ export function WorkCommentList(props: Props) {
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
-                            iconUrl: IconUrl(userIcon),
+                            iconUrl: ExchangeIconUrl(userIcon),
                           },
                           sticker: {
                             image: {
@@ -351,7 +349,7 @@ export function WorkCommentList(props: Props) {
                 stickerAccessType={comment.sticker?.accessType}
                 isStickerDownloadable={comment.sticker?.isDownloaded}
                 text={comment.text}
-                userIconImageURL={IconUrl(comment.user?.iconUrl)}
+                userIconImageURL={ExchangeIconUrl(comment.user?.iconUrl)}
                 userName={comment.user?.name}
                 commentId={comment.id}
                 onDeleteComment={() => onDeleteComment(comment.id)}
@@ -371,7 +369,7 @@ export function WorkCommentList(props: Props) {
                       user: {
                         id: appContext.userId ?? "",
                         name: appContext.displayName ?? "",
-                        iconUrl: IconUrl(userIcon),
+                        iconUrl: ExchangeIconUrl(userIcon),
                       },
                       sticker: {
                         image: {
@@ -401,10 +399,10 @@ export function WorkCommentList(props: Props) {
                       stickerAccessType={reply.sticker?.accessType}
                       isStickerDownloadable={reply.sticker?.isDownloaded}
                       text={reply.text}
-                      userIconImageURL={IconUrl(reply.user?.iconUrl)}
+                      userIconImageURL={ExchangeIconUrl(reply.user?.iconUrl)}
                       userName={reply.user?.name}
                       replyId={reply.id}
-                      iconUrl={IconUrl(userIcon)}
+                      iconUrl={ExchangeIconUrl(userIcon)}
                       onDeleteComment={() => {
                         onDeleteComment(reply.id)
                       }}
@@ -424,7 +422,7 @@ export function WorkCommentList(props: Props) {
                             user: {
                               id: appContext.userId ?? "",
                               name: appContext.displayName ?? "",
-                              iconUrl: IconUrl(userIcon),
+                              iconUrl: ExchangeIconUrl(userIcon),
                             },
                             sticker: {
                               image: {
@@ -447,7 +445,7 @@ export function WorkCommentList(props: Props) {
                     createdAt={newReply.createdAt}
                     stickerImageURL={newReply.sticker?.image?.downloadURL}
                     text={newReply.text}
-                    iconUrl={IconUrl(userIcon)}
+                    iconUrl={ExchangeIconUrl(userIcon)}
                     userName={newReply.user?.name}
                     replyId={newReply.id}
                     onDeleteComment={() => {
@@ -482,7 +480,7 @@ export function WorkCommentList(props: Props) {
                     stickerAccessType={comment.sticker?.accessType}
                     isStickerDownloadable={comment.sticker?.isDownloaded}
                     text={comment.text}
-                    userIconImageURL={IconUrl(comment.user?.iconUrl)}
+                    userIconImageURL={ExchangeIconUrl(comment.user?.iconUrl)}
                     userName={comment.user?.name}
                     commentId={comment.id}
                     onDeleteComment={() => onDeleteComment(comment.id)}
@@ -502,7 +500,7 @@ export function WorkCommentList(props: Props) {
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
-                            iconUrl: IconUrl(userIcon),
+                            iconUrl: ExchangeIconUrl(userIcon),
                           },
                           sticker: {
                             image: {
@@ -532,10 +530,12 @@ export function WorkCommentList(props: Props) {
                           stickerAccessType={reply.sticker?.accessType}
                           isStickerDownloadable={reply.sticker?.isDownloaded}
                           text={reply.text}
-                          userIconImageURL={IconUrl(reply.user?.iconUrl)}
+                          userIconImageURL={ExchangeIconUrl(
+                            reply.user?.iconUrl,
+                          )}
                           userName={reply.user?.name}
                           replyId={reply.id}
-                          iconUrl={IconUrl(userIcon)}
+                          iconUrl={ExchangeIconUrl(userIcon)}
                           onDeleteComment={() => {
                             onDeleteComment(reply.id)
                           }}
@@ -555,7 +555,7 @@ export function WorkCommentList(props: Props) {
                                 user: {
                                   id: appContext.userId ?? "",
                                   name: appContext.displayName ?? "",
-                                  iconUrl: IconUrl(userIcon),
+                                  iconUrl: ExchangeIconUrl(userIcon),
                                 },
                                 sticker: {
                                   image: {
@@ -580,10 +580,12 @@ export function WorkCommentList(props: Props) {
                           createdAt={newReply.createdAt}
                           stickerImageURL={newReply.sticker?.image?.downloadURL}
                           text={newReply.text}
-                          userIconImageURL={IconUrl(newReply.user?.iconUrl)}
+                          userIconImageURL={ExchangeIconUrl(
+                            newReply.user?.iconUrl,
+                          )}
                           userName={newReply.user?.name}
                           replyId={newReply.id}
-                          iconUrl={IconUrl(userIcon)}
+                          iconUrl={ExchangeIconUrl(userIcon)}
                           onDeleteComment={() => {
                             onDeleteComment(newReply.id)
                           }}

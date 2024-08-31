@@ -1,6 +1,6 @@
-import { IconUrl } from "~/components/icon-url"
 import { Link } from "@remix-run/react"
 import { Heart } from "lucide-react"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   userId: string
@@ -40,6 +40,28 @@ export function UserNameBadge(props: Props) {
     return "p-0"
   }
 
+  const iconWidth = () => {
+    if (props.width === "sm") {
+      return "h-4 w-4"
+    }
+    if (props.width === "md") {
+      return "h-6 w-6"
+    }
+
+    return "h-8 w-8"
+  }
+
+  const nameSize = () => {
+    if (props.width === "sm") {
+      return "text-xs"
+    }
+    if (props.width === "md") {
+      return "text-sm"
+    }
+
+    return "text-base"
+  }
+
   return (
     <Link className="flex flex-col gap-y-2" to={`/users/${props.userId}`}>
       <div
@@ -49,12 +71,12 @@ export function UserNameBadge(props: Props) {
         <div className="flex items-center space-x-2">
           <img
             alt="user icon"
-            className="h-4 w-4 rounded-full"
-            src={IconUrl(props.userIconImageURL)}
+            className={`rounded-full ${iconWidth()}`}
+            src={ExchangeIconUrl(props.userIconImageURL)}
           />
           <p
             // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`text-ellipsis overflow-hidden text-nowrap text-xs ${width()}`}
+            className={`text-ellipsis overflow-hidden text-nowrap ${nameSize()} ${width()}`}
           >
             {props.name}
           </p>

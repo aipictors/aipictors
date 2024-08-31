@@ -68,7 +68,42 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({ dailyTheme, worksResp, year, month, day, page, monthlyThemes })
+  // 7日前後の日付から7日前のお題を取得する
+  const sevenDaysAgo = new Date(Number(year), Number(month) - 1, Number(day))
+
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+  const sevenDaysAfter = new Date(Number(year), Number(month) - 1, Number(day))
+
+  sevenDaysAfter.setDate(sevenDaysAgo.getDate() + 14)
+
+  const formatDate = (date: Date) => date.toISOString().split("T")[0]
+
+  console.log(formatDate(sevenDaysAgo))
+  console.log(formatDate(sevenDaysAfter))
+
+  const dailyBeforeThemes = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 14,
+      where: {
+        startDate: formatDate(sevenDaysAgo),
+        endDate: formatDate(sevenDaysAfter),
+      },
+    },
+  })
+
+  return json({
+    dailyTheme,
+    worksResp,
+    year,
+    month,
+    day,
+    page,
+    monthlyThemes,
+    dailyBeforeThemes,
+  })
 }
 
 export default function SensitiveDayThemePage() {
@@ -88,6 +123,7 @@ export default function SensitiveDayThemePage() {
         isSensitive={false}
         themeId={data.dailyTheme.id}
         dailyThemes={data.monthlyThemes.data.dailyThemes}
+        dailyBeforeThemes={data.dailyBeforeThemes.data.dailyThemes}
       />
     </article>
   )

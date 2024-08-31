@@ -11,7 +11,7 @@ import { Link } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { Pencil } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
-import { IconUrl } from "~/components/icon-url"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleHeaderFragment>
@@ -40,7 +40,7 @@ export function AlbumArticleHeader(props: Props) {
         <Link to={`/users/${props.album.user.login}`}>
           <div className="flex max-w-32 items-center overflow-hidden">
             <img
-              src={IconUrl(props.album.user.iconUrl)}
+              src={ExchangeIconUrl(props.album.user.iconUrl)}
               alt={props.album.user.name}
               className="mr-2 h-8 w-8 rounded-full"
             />

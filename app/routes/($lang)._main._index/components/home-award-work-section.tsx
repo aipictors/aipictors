@@ -1,6 +1,5 @@
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { IconUrl } from "~/components/icon-url"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
@@ -11,6 +10,7 @@ import { useContext } from "react"
 import { Heart } from "lucide-react"
 import { config } from "~/config"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   title: string
@@ -121,7 +121,7 @@ export function HomeAwardWorkSection(props: Props) {
                 {work.userId && work.userName && (
                   <UserNameBadge
                     userId={work.userId}
-                    userIconImageURL={IconUrl(work.userIcon)}
+                    userIconImageURL={ExchangeIconUrl(work.userIcon)}
                     name={work.userName}
                     width={"lg"}
                   />
