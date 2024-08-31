@@ -291,8 +291,7 @@ export function HomeContents(props: Props) {
                       variant={"secondary"}
                       className="flex w-full transform cursor-pointer items-center"
                     >
-                      <RefreshCcwIcon className="mr-1 w-3" />
-                      <p className="text-sm">{"対象年齢"}</p>
+                      <p className="text-sm">{"センシティブ"}</p>
                     </Button>
                   </AppConfirmDialog>
                 ) : (

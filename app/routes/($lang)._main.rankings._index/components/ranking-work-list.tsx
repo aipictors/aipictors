@@ -46,42 +46,46 @@ export function RankingWorkList(props: Props) {
             key={index}
             className="relative flex flex-col space-y-2"
           >
-            <div className="relative">
-              <CroppedWorkSquare
-                workId={workItem.work.id}
-                subWorksCount={workItem.work.subWorksCount}
-                imageUrl={workItem.work.smallThumbnailImageURL}
-                thumbnailImagePosition={
-                  workItem.work.thumbnailImagePosition ?? 0
-                }
-                size="md"
-                imageWidth={workItem.work.smallThumbnailImageWidth}
-                imageHeight={workItem.work.smallThumbnailImageHeight}
-                ranking={index + 1}
-              />
-              <div className="absolute right-0 bottom-0">
-                <LikeButton
-                  size={56}
-                  targetWorkId={workItem.work.id}
-                  targetWorkOwnerUserId={workItem.work.user.id}
-                  defaultLiked={workItem.work.isLiked}
-                  defaultLikedCount={0}
-                  isBackgroundNone={true}
-                  strokeWidth={2}
+            {workItem.work && (
+              <>
+                <div className="relative">
+                  <CroppedWorkSquare
+                    workId={workItem.work.id}
+                    subWorksCount={workItem.work.subWorksCount}
+                    imageUrl={workItem.work.smallThumbnailImageURL}
+                    thumbnailImagePosition={
+                      workItem.work.thumbnailImagePosition ?? 0
+                    }
+                    size="md"
+                    imageWidth={workItem.work.smallThumbnailImageWidth}
+                    imageHeight={workItem.work.smallThumbnailImageHeight}
+                    ranking={index + 1}
+                  />
+                  <div className="absolute right-0 bottom-0">
+                    <LikeButton
+                      size={56}
+                      targetWorkId={workItem.work.id}
+                      targetWorkOwnerUserId={workItem.work.user.id}
+                      defaultLiked={workItem.work.isLiked}
+                      defaultLikedCount={0}
+                      isBackgroundNone={true}
+                      strokeWidth={2}
+                    />
+                  </div>
+                </div>
+                <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
+                  {workItem.work.title}
+                </p>
+                <UserNameBadge
+                  userId={workItem.work.user.id}
+                  userIconImageURL={IconUrl(workItem.work.user.iconUrl)}
+                  name={workItem.work.user.name}
+                  width={"md"}
+                  likesCount={workItem.work.likesCount}
+                  snapshotLikedCount={workItem.snapshotLikedCount}
                 />
-              </div>
-            </div>
-            <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
-              {workItem.work.title}
-            </p>
-            <UserNameBadge
-              userId={workItem.work.user.id}
-              userIconImageURL={IconUrl(workItem.work.user.iconUrl)}
-              name={workItem.work.user.name}
-              width={"md"}
-              likesCount={workItem.work.likesCount}
-              snapshotLikedCount={workItem.snapshotLikedCount}
-            />
+              </>
+            )}
           </div>
         )
       })}
