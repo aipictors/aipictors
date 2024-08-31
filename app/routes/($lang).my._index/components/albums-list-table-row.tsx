@@ -59,14 +59,14 @@ export function AlbumsListTableRow(props: Props) {
           }}
         >
           <TableCell className="font-medium">
-            <Link to={`/${props.album.userId}/albums/${props.album.slug}`}>
+            <Link to={`/${props.album.user.login}/albums/${props.album.slug}`}>
               <div className="w-32 overflow-hidden text-ellipsis">
                 {truncateTitle(props.album.title, 32)}
               </div>
             </Link>
           </TableCell>
           <TableCell>
-            <Link to={`/${props.album.userId}/albums/${props.album.slug}`}>
+            <Link to={`/${props.album.user.login}/albums/${props.album.slug}`}>
               <img
                 src={props.album.thumbnailImageURL ?? undefined}
                 alt="thumbnail"
@@ -105,6 +105,9 @@ export const AlbumTableRowFragment = graphql(
     thumbnailImageURL
     userId
     slug
+    user {
+      login
+    }
   }`,
 )
 

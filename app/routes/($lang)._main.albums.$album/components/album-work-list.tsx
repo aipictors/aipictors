@@ -5,12 +5,15 @@ import {
 } from "~/components/responsive-photo-works-album"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useState } from "react"
+import { useEffect } from "react"
+import React from "react"
+import { useSearchParams } from "@remix-run/react"
 
 type Props = {
   albumId: string
   albumWorks: FragmentOf<typeof AlbumWorkListItemFragment>[]
   maxCount: number
+  page: number
 }
 
 export function AlbumWorkList(props: Props) {
@@ -22,7 +25,15 @@ export function AlbumWorkList(props: Props) {
     )
   }
 
-  const [page, setPage] = useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+
+    setSearchParams(params)
+  }, [page])
 
   const { data } = useSuspenseQuery(query, {
     variables: {
@@ -42,7 +53,8 @@ export function AlbumWorkList(props: Props) {
         works={albumWorks}
         targetRowHeight={80}
       />
-      <div className="mt-1 mb-1">
+      <div className="h-8" />
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <ResponsivePagination
           perPage={32}
           maxCount={props.maxCount}

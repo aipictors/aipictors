@@ -10,27 +10,22 @@ import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/wo
 import { Link } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { Pencil } from "lucide-react"
-import { Suspense, useContext, useState } from "react"
+import { Suspense, useContext } from "react"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleHeaderFragment>
-  thumbnail?: string
 }
 
 export function AlbumArticleHeader(props: Props) {
-  const workIds = props.album.workIds.map((work) => work.toString())
-
   const authContext = useContext(AuthContext)
-
-  const [headerImageUrl, setHeaderImageUrl] = useState(props.thumbnail ?? "")
 
   return (
     <Card className="relative flex flex-col items-center p-4">
       <div className="relative">
         <div className="m-auto h-40 w-72 overflow-hidden rounded-md">
           <img
-            src={headerImageUrl}
+            src={props.album.thumbnailImageURL ?? ""}
             alt={props.album.title}
             className="h-full w-full rounded-md object-cover object-center"
           />
@@ -64,7 +59,7 @@ export function AlbumArticleHeader(props: Props) {
             <Suspense fallback={<AppLoadingPage />}>
               <AlbumArticleEditorDialog
                 album={props.album}
-                thumbnail={headerImageUrl}
+                thumbnail={props.album.thumbnailImageURL ?? ""}
                 userNanoid={props.album.user.nanoid}
               >
                 <Button
@@ -97,7 +92,6 @@ export const AlbumArticleHeaderFragment = graphql(
     thumbnailImageURL
     slug
     worksCount
-    workIds
     ...AlbumArticleEditorDialog
   }`,
   [AlbumArticleEditorDialogFragment],

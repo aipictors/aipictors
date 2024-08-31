@@ -9,7 +9,7 @@ import {
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
-import { RefreshCcwIcon } from "lucide-react"
+import { Minus, Plus, RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import {
   ThemeList,
@@ -138,6 +138,7 @@ export function ThemeArticle(props: Props) {
           aria-label="Toggle Calender"
           variant={"secondary"}
         >
+          {isOpenedCalender ? <Minus /> : <Plus />}
           {isOpenedCalender ? "カレンダーを閉じる" : "カレンダーを開く"}
         </Button>
       </div>

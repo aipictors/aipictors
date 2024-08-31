@@ -114,7 +114,7 @@ export function HomeAwardWorkSection(props: Props) {
                   </div>
                 )}
               </div>
-              <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
+              <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
                 {work.title}
               </p>
               <div className="flex max-w-40 items-center justify-between">

@@ -11,6 +11,7 @@ import { graphql } from "gql.tada"
 import { AppPageHeader } from "~/components/app/app-page-header"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { ThemeWorksList } from "~/routes/($lang)._main.themes._index/components/theme-works-list"
+import { Separator } from "~/components/ui/separator"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -135,6 +136,7 @@ export default function MonthThemes() {
         isSensitive={false}
         afterThemes={data.afterSevenDayThemes}
       />
+      <Separator />
       <ThemeList year={year} month={month} dailyThemes={data.dailyThemes} />
     </>
   )

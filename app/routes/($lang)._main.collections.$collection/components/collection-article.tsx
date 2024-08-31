@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { CollectionHeader } from "./collection-header"
 import { graphql, type FragmentOf } from "gql.tada"
 import {
@@ -6,9 +6,11 @@ import {
   CollectionWorkListItemFragment,
 } from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useSearchParams } from "@remix-run/react"
 
 type Props = {
   collection: FragmentOf<typeof FolderArticleFragment>
+  page: number
 }
 
 export function CollectionArticle(props: Props) {
@@ -16,7 +18,17 @@ export function CollectionArticle(props: Props) {
     return null
   }
 
-  const [page, setPage] = React.useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+
+    params.set("page", String(page))
+
+    setSearchParams(params)
+  }, [page])
 
   return (
     <div className="flex flex-col">

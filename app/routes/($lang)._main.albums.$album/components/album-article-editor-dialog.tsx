@@ -1,5 +1,4 @@
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -9,13 +8,11 @@ import {
   DialogTitle,
   DialogFooter,
 } from "~/components/ui/dialog"
-import { AuthContext } from "~/contexts/auth-context"
-import { uploadPublicImage } from "~/utils/upload-public-image"
 import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
-import { useMutation, useQuery } from "@apollo/client/index"
+import { useMutation } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
-import { useContext, useState } from "react"
+import { Loader2Icon, PlusIcon } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
 
 type Props = {
@@ -26,13 +23,9 @@ type Props = {
 }
 
 export function AlbumArticleEditorDialog(props: Props) {
-  const authContext = useContext(AuthContext)
-
   const [selectedWorks, setSelectedWorks] = useState<string[]>(
     props.album.workIds.map((work) => work.toString()),
   )
-
-  const [headerImageUrl, setHeaderImageUrl] = useState(props.thumbnail ?? "")
 
   const [title, setTitle] = useState(props.album.title)
 
@@ -40,10 +33,6 @@ export function AlbumArticleEditorDialog(props: Props) {
 
   const [updateAlbum, { loading: isUpdating }] =
     useMutation(updateAlbumMutation)
-
-  const { data: token, refetch: tokenRefetch } = useQuery(viewerQuery, {
-    skip: authContext.isLoading,
-  })
 
   const onSubmit = async () => {
     if (title.length === 0) {
@@ -61,9 +50,9 @@ export function AlbumArticleEditorDialog(props: Props) {
       return null
     }
 
-    const imageUrl = headerImageUrl.startsWith("https://")
-      ? null
-      : await uploadPublicImage(headerImageUrl, token?.viewer?.token)
+    // const imageUrl = headerImageUrl.startsWith("https://")
+    //   ? null
+    //   : await uploadPublicImage(headerImageUrl, token?.viewer?.token)
 
     await updateAlbum({
       variables: {
@@ -71,7 +60,6 @@ export function AlbumArticleEditorDialog(props: Props) {
           albumId: props.album.id,
           title: title,
           description: description,
-          ...(imageUrl && { headerImageUrl: imageUrl }),
           ...(selectedWorks && { workIds: selectedWorks }),
         },
       },
@@ -88,7 +76,7 @@ export function AlbumArticleEditorDialog(props: Props) {
           <DialogTitle>{"シリーズ更新"}</DialogTitle>
         </DialogHeader>
         <>
-          <div className="relative">
+          {/* <div className="relative">
             <div className="m-auto h-40 w-72 overflow-hidden rounded-md">
               <img
                 src={headerImageUrl}
@@ -116,7 +104,7 @@ export function AlbumArticleEditorDialog(props: Props) {
                 <Pencil className="h-8 w-8" />
               </Button>
             </CropImageField>
-          </div>
+          </div> */}
           <div className="flex flex-col justify-between space-y-2">
             <label
               htmlFor="nickname"
@@ -150,7 +138,11 @@ export function AlbumArticleEditorDialog(props: Props) {
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
-
+          <p className="font-medium text-sm ">
+            {"選択中の作品（"}
+            {selectedWorks.length}
+            {"）"}
+          </p>
           <SelectCreatedWorksDialogWithIds
             selectedWorkIds={selectedWorks}
             setSelectedWorkIds={setSelectedWorks}
@@ -194,15 +186,6 @@ export const AlbumArticleEditorDialogFragment = graphql(
     slug
     worksCount
     workIds
-  }`,
-)
-
-const viewerQuery = graphql(
-  `query ViewerToken {
-    viewer {
-      id
-      token
-    }
   }`,
 )
 

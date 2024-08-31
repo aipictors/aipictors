@@ -11,6 +11,7 @@ import { createMeta } from "~/utils/create-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { ThemeWorksList } from "~/routes/($lang)._main.themes._index/components/theme-works-list"
 import { ConstructionAlert } from "~/components/construction-alert"
+import { Separator } from "~/components/ui/separator"
 
 export async function loader() {
   const client = createClient()
@@ -121,6 +122,7 @@ export default function Themes() {
         isSensitive={false}
         afterThemes={data.afterSevenDayThemes}
       />
+      <Separator />
       <ThemeList
         year={data.year}
         month={data.month}

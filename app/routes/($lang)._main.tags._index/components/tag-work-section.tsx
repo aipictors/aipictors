@@ -89,18 +89,21 @@ export function TagWorkSection(props: Props) {
         <TagActionOther isSensitive={props.isSensitive} tag={props.tag} />
       </div>
       <ResponsivePhotoWorksAlbum works={works} />
-      <ResponsivePagination
-        maxCount={Number(props.worksCount)}
-        perPage={32}
-        currentPage={props.page}
-        onPageChange={(page: number) => {
-          navigate(
-            props.isSensitive
-              ? `/tags/${props.tag}/?sensitive=1&page=${page}`
-              : `/tags/${props.tag}/?page=${page}`,
-          )
-        }}
-      />
+      <div className="h-8" />
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <ResponsivePagination
+          maxCount={Number(props.worksCount)}
+          perPage={32}
+          currentPage={props.page}
+          onPageChange={(page: number) => {
+            navigate(
+              props.isSensitive
+                ? `/tags/${props.tag}/?sensitive=1&page=${page}`
+                : `/tags/${props.tag}/?page=${page}`,
+            )
+          }}
+        />
+      </div>
     </div>
   )
 }
