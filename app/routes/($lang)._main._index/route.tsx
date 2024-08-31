@@ -36,23 +36,30 @@ const getUtcDateString = (date: Date) => {
 
 export async function loader() {
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = ["ゆめかわ", "ダークソウル", "パステル"]
+  const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
 
   const getRandomCategories = () => {
     const currentTime = new Date()
 
     // 1時間ごとに異なるシードを生成
-    const hourSeed = Math.floor(currentTime.getTime() / 3600000)
+    // const hourSeed = Math.floor(currentTime.getTime() / 3600000)
+    const secondSeed = Math.floor(currentTime.getTime() / 1000)
 
-    // シードを使った乱数生成器
-    const seededRandom = (seed: number) => {
-      const x = Math.sin(seed) * 10000
+    // 各カテゴリに対して異なる乱数を生成
+    const seededRandom = (seed: number, str: string) => {
+      const combined = seed + str.charCodeAt(0) // 簡単なハッシュ
+      const x = Math.sin(combined) * 10000
       return x - Math.floor(x)
     }
 
     const randomCategories = categories
-      .sort(() => seededRandom(hourSeed) - 0.5)
+      .map((cat) => ({
+        cat,
+        sortKey: seededRandom(secondSeed, cat),
+      }))
+      .sort((a, b) => a.sortKey - b.sortKey)
       .slice(0, 2)
+      .map((item) => item.cat)
 
     return randomCategories
   }

@@ -16,14 +16,14 @@ export function HomeNewCommentsSection(props: Props) {
       <h2 className="font-semibold">新規コメント</h2>
       {props.comments.map((comment) => (
         <div key={comment.id} className="flex items-center space-x-2">
-          {comment.workId && comment.work?.smallThumbnailImageURL && (
+          {comment.work?.smallThumbnailImageURL && (
             <Link
-              to={`/posts/${comment.workId}`}
+              to={`/posts/${comment.work}`}
               className="flex items-center space-x-2"
             >
               <div className="opacity-60">
                 <CroppedWorkSquare
-                  workId={comment.workId}
+                  workId={comment.id}
                   imageUrl={comment.work?.smallThumbnailImageURL}
                   size="sm"
                   thumbnailImagePosition={
@@ -34,20 +34,21 @@ export function HomeNewCommentsSection(props: Props) {
                 />
               </div>
               <div className="flex flex-col space-y-2">
-                {comment.text.length > 0 && (
+                {comment.comment.text.length > 0 && (
                   <p>
                     <span className="line-clamp-2 font-semibold text-md">
-                      {comment.text}
+                      {comment.comment.text}
                     </span>
                   </p>
                 )}
-                {comment.text.length === 0 && comment.sticker?.imageUrl && (
-                  <p>
-                    <span className="line-clamp-2 font-semibold text-md">
-                      {`スタンプ：「${comment.sticker.title.length > 0 ? comment.sticker.title : ""}」`}
-                    </span>
-                  </p>
-                )}
+                {comment.comment.text.length === 0 &&
+                  comment.sticker?.imageUrl && (
+                    <p>
+                      <span className="line-clamp-2 font-semibold text-md">
+                        {`スタンプ：「${comment.sticker.title.length > 0 ? comment.sticker.title : ""}」`}
+                      </span>
+                    </p>
+                  )}
                 {comment.sticker?.imageUrl && (
                   <img
                     src={comment.sticker.imageUrl}
@@ -68,7 +69,7 @@ export function HomeNewCommentsSection(props: Props) {
 }
 
 export const HomeNewCommentsFragment = graphql(
-  `fragment HomeNewComments on CommentNode @_unmask {
+  `fragment HomeNewComments on NewCommentNode @_unmask {
     id
     user {
       id
@@ -82,13 +83,15 @@ export const HomeNewCommentsFragment = graphql(
       title
     }
     work {
+      id
       smallThumbnailImageURL
       smallThumbnailImageHeight
       smallThumbnailImageWidth
       thumbnailImagePosition
     }
-    workId
-    text
+    comment {
+      text
+    }
     createdAt
   }`,
 )
