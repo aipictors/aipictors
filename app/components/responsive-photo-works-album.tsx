@@ -86,7 +86,6 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
           href: `/posts/${work.id}`,
           context: work,
         }))}
-        targetRowHeight={240}
         sizes={{
           size: "calc(100vw - 240px)",
           sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
@@ -108,16 +107,6 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   strokeWidth={2}
                   likedCount={photo.context.likesCount}
                 />
-              </div>
-              <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
-                <Link
-                  className="w-48 font-bold"
-                  to={`/posts/${photo.context.id}`}
-                >
-                  <p className="overflow-hidden text-ellipsis text-nowrap text-xs">
-                    {photo.context.title}
-                  </p>
-                </Link>
               </div>
             </div>
           ),
