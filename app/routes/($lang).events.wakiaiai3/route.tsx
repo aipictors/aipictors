@@ -1,11 +1,9 @@
-import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { cn } from "~/lib/cn"
 import { eventUsers } from "~/routes/($lang).events.wakiaiai3/assets/event-users"
 import { EventCreatorCard } from "~/routes/($lang).events.wakiaiai3/components/event-creator-card"
 import { EventImage } from "~/routes/($lang).events.wakiaiai3/components/event-image"
 import { Link, type MetaFunction } from "@remix-run/react"
-import { MousePointerClickIcon } from "lucide-react"
 
 export default function EventWakiaiai3() {
   const length = Math.floor(eventUsers.length / 3)
@@ -52,16 +50,6 @@ export default function EventWakiaiai3() {
               "第三回目はAIイラストだけじゃない！名古屋ゲームミュージックアンサンブル様とコラボ✨"
             }
           </p>
-          <Link
-            to="https://forms.gle/zqJGK1XV6uhAqY5G7"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button variant={"outline"} className="m-4 font-bold text-lg">
-              和気あいAI3展示・出展募集中
-              <MousePointerClickIcon className="ml-2" />
-            </Button>
-          </Link>
         </div>
       </div>
       <div className={cn("grid gap-2 md:grid-flow-col md:grid-cols-2")}>
