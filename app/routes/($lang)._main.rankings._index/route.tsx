@@ -21,6 +21,9 @@ export async function loader(params: LoaderFunctionArgs) {
   const year = params.params.year
     ? Number.parseInt(params.params.year)
     : yesterday.getFullYear()
+
+  console.log(year)
+
   const month = params.params.month
     ? Number.parseInt(params.params.month)
     : yesterday.getMonth() + 1
@@ -63,19 +66,23 @@ export default function Rankings() {
 
   return (
     <>
-      <RankingHeader
-        year={data.year}
-        month={data.month}
-        day={data.day}
-        weekIndex={null}
-      />
-      <RankingWorkList
-        year={data.year}
-        month={data.month}
-        day={data.day}
-        awards={data.workAwards.data.workAwards}
-        weekIndex={null}
-      />
+      {data && (
+        <>
+          <RankingHeader
+            year={data.year}
+            month={data.month}
+            day={data.day}
+            weekIndex={null}
+          />
+          <RankingWorkList
+            year={data.year}
+            month={data.month}
+            day={data.day}
+            awards={data.workAwards.data.workAwards}
+            weekIndex={null}
+          />
+        </>
+      )}
     </>
   )
 }
