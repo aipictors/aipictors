@@ -154,6 +154,12 @@ export default function NewImage() {
           ? await getExtractInfoFromBase64(imageUrl)
           : null
 
+        if (pngInfo) {
+          pngInfo.params.prompt = viewer.viewer.imageGenerationResults[0].prompt
+          pngInfo.params.negativePrompt =
+            viewer.viewer.imageGenerationResults[0].negativePrompt
+        }
+
         dispatchInput({
           type: "SET_IMAGE_INFORMATION",
           payload: pngInfo,
