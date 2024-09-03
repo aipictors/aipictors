@@ -12,11 +12,7 @@ export default defineConfig({
   },
   plugins: [
     cloudflareDevProxyVitePlugin(),
-    vitePlugin({
-      future: {
-        unstable_singleFetch: true,
-      },
-    }),
+    vitePlugin({}),
     tsconfigPaths(),
     viteStaticCopy({
       targets: [
