@@ -96,7 +96,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
         render={{
           extras: (_, { photo, index }) => (
             <div key={index}>
-              <div className="absolute right-1 bottom-6 z-10">
+              <div className="absolute right-0 bottom-0 z-10">
                 <LikeButton
                   size={56}
                   targetWorkId={photo.context.id}

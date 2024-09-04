@@ -259,6 +259,14 @@ export const config = {
       award: 16,
       tag: 13,
     },
+    /**
+     * 未ログインでのOFFSETの最大値
+     */
+    defaultOffsetMax: 64 * 24,
+    /**
+     * ログイン済みでのOFFSETの最大値
+     */
+    offsetMax: 64 * 24,
   },
   /**
    * ワードプレスエンドポイント

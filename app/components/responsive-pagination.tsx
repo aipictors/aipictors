@@ -1,3 +1,4 @@
+import { useContext } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Pagination,
@@ -5,6 +6,8 @@ import {
   PaginationEllipsis,
   PaginationItem,
 } from "~/components/ui/pagination"
+import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
   maxCount: number // 最大個数
@@ -24,7 +27,13 @@ export function ResponsivePagination({
   onPageChange,
   isActiveButtonStyle,
 }: Props) {
-  const pageCount = Math.ceil(maxCount / perPage) // 総ページ数の計算
+  const authContext = useContext(AuthContext)
+
+  const adjustedMaxCount = authContext.isLoggedIn
+    ? Math.min(maxCount, config.query.offsetMax)
+    : Math.min(maxCount, config.query.offsetMax)
+
+  const pageCount = Math.ceil(adjustedMaxCount / perPage) // 総ページ数の計算
 
   const currentPageIndex =
     currentPage >= pageCount ? pageCount - 1 : currentPage
@@ -60,7 +69,7 @@ export function ResponsivePagination({
               <Button variant={"secondary"} onClick={() => handlePageChange(0)}>
                 {1}
               </Button>
-            </PaginationItem>{" "}
+            </PaginationItem>
             <PaginationEllipsis />
           </>
         )}
