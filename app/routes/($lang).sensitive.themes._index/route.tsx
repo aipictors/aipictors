@@ -9,6 +9,7 @@ import { AppPageHeader } from "~/components/app/app-page-header"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { ThemeWorksList } from "~/routes/($lang)._main.themes._index/components/theme-works-list"
 import { Separator } from "~/components/ui/separator"
+import { getJstDate } from "~/utils/jst-date"
 
 export async function loader() {
   const client = createClient()
@@ -26,7 +27,7 @@ export async function loader() {
     },
   })
 
-  const today = new Date()
+  const today = getJstDate(new Date())
 
   const todayYear = today.getFullYear()
 
