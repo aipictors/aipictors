@@ -133,7 +133,7 @@ export default function FollowingLayout() {
               <AppConfirmDialog
                 title={"確認"}
                 description={
-                  "センシティブ作品を表示します。あなたは18歳以上ですか？"
+                  "センシティブ版を表示します。あなたは18歳以上ですか？"
                 }
                 onNext={() => {
                   navigate(`/sensitive/events/${data.appEvent.slug}`)

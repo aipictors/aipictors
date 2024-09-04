@@ -113,7 +113,9 @@ export function HomeRouteList(props: Props) {
       </HomeNavigationButton>
       <AppConfirmDialog
         title={"確認"}
-        description={"センシティブ作品を表示します。あなたは18歳以上ですか？"}
+        description={
+          "センシティブ版のトップページに遷移します。あなたは18歳以上ですか？"
+        }
         onNext={() => {
           navigate("/sensitive")
           closeHeaderMenu()
