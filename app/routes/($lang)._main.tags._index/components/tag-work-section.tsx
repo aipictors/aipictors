@@ -55,7 +55,7 @@ export function TagWorkSection(props: Props) {
       offset: props.page * 32,
       limit: 32,
       where: {
-        search: props.tag,
+        tagNames: [props.tag],
         orderBy: props.orderBy,
         sort: props.sort,
         isSensitive: props.isSensitive,
@@ -63,7 +63,7 @@ export function TagWorkSection(props: Props) {
     },
   })
 
-  const works = resp?.works ?? props.works
+  const works = resp?.tagWorks ?? props.works
 
   const firstWork = works.length ? works[0] : null
 

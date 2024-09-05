@@ -40,7 +40,7 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 32,
       limit: 32,
       where: {
-        search: decodeURIComponent(props.params.tag),
+        tagNames: [decodeURIComponent(props.params.tag)],
         orderBy: orderBy,
         sort: sort,
         isSensitive: isSensitive,
@@ -50,7 +50,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json({
     tag: decodeURIComponent(props.params.tag),
-    works: worksResp.data.works,
+    works: worksResp.data.tagWorks,
     worksCount: worksResp.data.worksCount,
     page: page,
     isSensitive: isSensitive,
@@ -184,7 +184,7 @@ export default function Tag() {
 
 const tagWorksAndCountQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
+    tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
     }
     worksCount(where: $where)
@@ -194,7 +194,7 @@ const tagWorksAndCountQuery = graphql(
 
 export const tagWorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
+    tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
     }
   }`,
