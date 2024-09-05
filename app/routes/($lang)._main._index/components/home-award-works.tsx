@@ -36,14 +36,14 @@ export function HomeAwardWorksSection(props: Props) {
                   <Link to={`/posts/${work.work?.id}`}>
                     <p className="font-semibold">{work.work?.title}</p>
                   </Link>
-                  <Link to={`/users/${work.user.id}`}>
+                  <Link to={`/users/${work.work?.user.id}`}>
                     <div className="flex items-center space-x-2">
                       <img
-                        src={ExchangeIconUrl(work.user?.iconUrl)}
+                        src={ExchangeIconUrl(work.work?.user?.iconUrl)}
                         className="h-8 w-8 rounded-full"
                         alt="icon"
                       />
-                      <p>{work.user?.name}</p>
+                      <p>{work.work?.user?.name}</p>
                     </div>
                   </Link>
                 </div>
@@ -67,11 +67,11 @@ export const HomeAwardWorksFragment = graphql(
       smallThumbnailImageWidth
       thumbnailImagePosition
       title
-    }
-    user {
-      id
-      iconUrl
-      name
+      user {
+        id
+        iconUrl
+        name
+      }
     }
     index
   }`,

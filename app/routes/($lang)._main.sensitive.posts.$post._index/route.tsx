@@ -97,9 +97,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (awardWorks.data.workAwards.length === 0) {
-    throw new Response(null, { status: 404 })
-  }
+  console.log(awardWorks)
 
   return json(
     {
