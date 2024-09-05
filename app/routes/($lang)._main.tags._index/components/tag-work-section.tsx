@@ -22,6 +22,7 @@ type Props = {
   worksCount: number
   tag: string
   page: number
+  setPage: (page: number) => void
   isSensitive: boolean
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
@@ -139,11 +140,7 @@ export function TagWorkSection(props: Props) {
           perPage={32}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(
-              props.isSensitive
-                ? `/tags/${props.tag}/?sensitive=1&page=${page}`
-                : `/tags/${props.tag}/?page=${page}`,
-            )
+            props.setPage(page)
           }}
         />
       </div>

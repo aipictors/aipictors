@@ -24,6 +24,14 @@ export async function loader(props: LoaderFunctionArgs) {
       : Number.parseInt(url.searchParams.get("page") as string)
     : 0
 
+  const orderBy = url.searchParams.get("orderBy")
+    ? (url.searchParams.get("orderBy") as IntrospectionEnum<"WorkOrderBy">)
+    : "LIKES_COUNT"
+
+  const sort = url.searchParams.get("sort")
+    ? (url.searchParams.get("sort") as SortType)
+    : "DESC"
+
   const isSensitive = url.searchParams.get("sensitive") === "1"
 
   const worksResp = await client.query({
@@ -33,7 +41,8 @@ export async function loader(props: LoaderFunctionArgs) {
       limit: 32,
       where: {
         search: decodeURIComponent(props.params.tag),
-        orderBy: "LIKES_COUNT",
+        orderBy: orderBy,
+        sort: sort,
         isSensitive: isSensitive,
       },
     },
@@ -67,12 +76,12 @@ export default function Tag() {
   const [WorkOrderby, setWorkOrderby] = React.useState<
     IntrospectionEnum<"WorkOrderBy">
   >(
-    (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
-      "DATE_CREATED",
+    (searchParams.get("orderBy") as IntrospectionEnum<"WorkOrderBy">) ||
+      "LIKES_COUNT",
   )
 
   const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
-    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
+    (searchParams.get("sort") as SortType) || "DESC",
   )
 
   const [rating, setRating] =
@@ -125,6 +134,8 @@ export default function Tag() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
+  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
+
   // URLパラメータの監視と更新
   useEffect(() => {
     const params = new URLSearchParams()
@@ -133,9 +144,15 @@ export default function Tag() {
     }
     params.set("orderBy", WorkOrderby)
     params.set("sort", worksOrderDeskAsc)
+    params.set("page", page.toString())
+
+    // isSensitiveのパラメータが1なら、セット
+    if (data.isSensitive) {
+      params.set("sensitive", "1")
+    }
 
     setSearchParams(params)
-  }, [workType, WorkOrderby, worksOrderDeskAsc])
+  }, [page, workType, WorkOrderby, worksOrderDeskAsc])
 
   return (
     <>
@@ -143,7 +160,8 @@ export default function Tag() {
         works={data.works}
         worksCount={data.worksCount}
         tag={decodeURIComponent(params.tag)}
-        page={data.page}
+        page={page}
+        setPage={setPage}
         isSensitive={data.isSensitive}
         onClickTitleSortButton={onClickTitleSortButton}
         onClickLikeSortButton={onClickLikeSortButton}
