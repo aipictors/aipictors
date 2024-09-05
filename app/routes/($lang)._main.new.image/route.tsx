@@ -41,6 +41,7 @@ import {
 } from "~/utils/get-extract-info-from-png"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { getJstDate } from "~/utils/jst-date"
 
 export default function NewImage() {
   const authContext = useContext(AuthContext)
@@ -48,9 +49,9 @@ export default function NewImage() {
   const [searchParams] = useSearchParams()
   const ref = searchParams.get("generation")
 
-  const offset = 9 * 60 * 60 * 1000 // JST (UTC+9) のオフセット
-  const dateJST = new Date(Date.now() + offset)
-  const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + offset)
+  const now = getJstDate(new Date())
+
+  const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
   const { data: viewer } = useQuery(ViewerQuery, {
     skip: authContext.isNotLoggedIn,
@@ -63,12 +64,15 @@ export default function NewImage() {
       generationWhere: {
         nanoids: ref?.split("|") ?? [],
       },
-      startAt: dateJST.toISOString().split("T")[0],
-      endAt: afterDate.toISOString().split("T")[0],
-      startDate: dateJST.toISOString().split("T")[0],
+      startAt: now.toISOString().split("T")[0],
+      startDate: now.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
+
+  console.log(now.toISOString().split("T")[0])
+
+  console.log(viewer?.appEvents)
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
@@ -556,7 +560,6 @@ const ViewerQuery = graphql(
     $startAt: String
     $startDate: String
     $endDate: String
-    $endAt: String
   ) {
     viewer {
       id
@@ -644,7 +647,6 @@ const ViewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
-        endAt: $endAt,
       }
     ) {
       id

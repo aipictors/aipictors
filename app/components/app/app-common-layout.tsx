@@ -29,15 +29,7 @@ export function AppCommonLayout(props: Props) {
   return (
     <>
       <HomeHeader onToggleSideMenu={() => {}} title={props.title} />
-      <AppContents
-        // aside={
-        //   <AppAside isOpen={isOpen}>
-        //     <HomeRouteList />
-        //   </AppAside>
-        // }
-        outlet={props.outlet}
-        isOpen={false}
-      />
+      <AppContents outlet={props.outlet} isOpen={false} />
     </>
   )
 }

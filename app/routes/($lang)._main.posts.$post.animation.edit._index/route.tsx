@@ -27,6 +27,7 @@ import {
 } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import React from "react"
+import { getJstDate } from "~/utils/jst-date"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -188,9 +189,7 @@ export default function EditImage() {
         : null,
   })
 
-  const { reservationDate, reservationTime } = getReservationDetails(
-    work?.createdAt ?? 0,
-  )
+  const now = getJstDate(new Date())
 
   const [inputState, dispatchInput] = useReducer(
     postAnimationFormInputReducer,
@@ -223,7 +222,7 @@ export default function EditImage() {
       offset: 0,
       limit: 128,
       ownerUserId: authContext.userId,
-      startAt: new Date().toISOString().split("T")[0],
+      startAt: now.toISOString().split("T")[0],
       startDate: new Date(Date.now() - 24 * 60 * 60 * 1000)
         .toISOString()
         .split("T")[0],

@@ -33,6 +33,7 @@ import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { getJstDate } from "~/utils/jst-date"
 
 export default function NewText() {
   const authContext = useContext(AuthContext)
@@ -41,9 +42,10 @@ export default function NewText() {
 
   const ref = searchParams.get("generation")
 
-  const offset = 9 * 60 * 60 * 1000 // JST (UTC+9) のオフセット
-  const dateJST = new Date(Date.now() + offset)
-  const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000 + offset)
+  const now = getJstDate(new Date())
+
+  const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
   const { data: viewer } = useQuery(viewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
@@ -55,9 +57,8 @@ export default function NewText() {
       generationWhere: {
         nanoids: ref?.split("|") ?? [],
       },
-      startAt: dateJST.toISOString().split("T")[0],
-      endAt: afterDate.toISOString().split("T")[0],
-      startDate: dateJST.toISOString().split("T")[0],
+      startAt: now.toISOString().split("T")[0],
+      startDate: now.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
@@ -464,7 +465,6 @@ const viewerQuery = graphql(
     $startDate: String!,
     $endDate: String!,
     $startAt: String!,
-    $endAt: String!,
   ) {
     viewer {
       id
@@ -552,7 +552,6 @@ const viewerQuery = graphql(
       offset: 0,
       where: {
         startAt: $startAt,
-        endAt: $endAt,
       }
     ) {
       id

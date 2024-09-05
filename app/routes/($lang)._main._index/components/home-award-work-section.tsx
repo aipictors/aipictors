@@ -148,6 +148,11 @@ export const HomeWorkAwardFragment = graphql(
       id
       index
       dateText
+      user {
+        id
+        name
+        iconUrl
+      }
       work {
         id
         title

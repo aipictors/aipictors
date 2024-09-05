@@ -5,7 +5,6 @@ import {
   SelectContent,
   SelectItem,
 } from "~/components/ui/select"
-import { useState } from "react"
 import { toNotificationTypeName } from "~/routes/($lang).generation._index/utils/to-notify-type-name"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
@@ -20,23 +19,6 @@ type Props = {
  * 通知履歴設定
  */
 export function NotificationListSetting(props: Props) {
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-
-  const [maxHeight, setMaxHeight] = useState("0px")
-
-  const [opacity, setOpacity] = useState(0)
-
-  const onToggleFilterButton = () => {
-    if (isFilterOpen) {
-      setMaxHeight("0px")
-      setOpacity(0)
-    } else {
-      setMaxHeight("480px") // 適切な高さに調整
-      setOpacity(1)
-    }
-    setIsFilterOpen(!isFilterOpen)
-  }
-
   return (
     <>
       <div className="mt-4 mb-4">

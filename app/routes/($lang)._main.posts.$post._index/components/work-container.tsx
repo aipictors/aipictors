@@ -4,23 +4,22 @@ import {
   sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
-import { Suspense, useContext } from "react"
+import { useContext } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
-import { WorkAdSense } from "~/routes/($lang)._main.posts.$post._index/components/work-adcense"
 import {
   type CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import {
-  HomeNewCommentsSection,
-  type HomeNewCommentsFragment,
-} from "~/routes/($lang)._main._index/components/home-new-comments"
+import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { AppSideMenu } from "~/components/app/app-side-menu"
+import type { HomeAwardWorksFragment } from "~/routes/($lang)._main._index/components/home-award-works"
+import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 
 type Props = {
   post: string
@@ -29,6 +28,9 @@ type Props = {
   isDraft?: boolean
   isSensitive?: boolean
   newComments: FragmentOf<typeof HomeNewCommentsFragment>[]
+  awardWorks: FragmentOf<
+    typeof HomeAwardWorksFragment | typeof HomeWorkAwardFragment
+  >[]
 }
 
 /**
@@ -99,7 +101,7 @@ export function WorkContainer(props: Props) {
             </div>
           </div>
         </div>
-        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 lg:flex lg:max-w-80">
+        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 md:flex md:max-w-80">
           <div className="w-full">
             <WorkUser
               userId={work.user.id}
@@ -112,12 +114,16 @@ export function WorkContainer(props: Props) {
               userWorksCount={work.user.worksCount}
             />
           </div>
-          <div className="invisible flex w-full flex-col space-y-4 lg:visible">
+          <div className="invisible flex w-full flex-col space-y-4 md:visible">
             <WorkNextAndPrevious work={work} />
-            <Suspense fallback={null}>
-              <WorkAdSense />
-            </Suspense>
-            <HomeNewCommentsSection comments={props.newComments} />
+            <AppSideMenu
+              homeParticles={{
+                newComments: props.newComments,
+                awardWorks: props.awardWorks,
+              }}
+              isSensitive={props.isSensitive ?? false}
+              isShowGenerationAds={true}
+            />
           </div>
         </div>
       </div>
@@ -137,6 +143,16 @@ export function WorkContainer(props: Props) {
           </>
         )}
       </section>
+      <div className="flex w-full flex-col space-y-4 md:hidden">
+        <AppSideMenu
+          homeParticles={{
+            newComments: props.newComments,
+            awardWorks: props.awardWorks,
+          }}
+          isSensitive={props.isSensitive ?? false}
+          isShowGenerationAds={false}
+        />
+      </div>
     </div>
   )
 }

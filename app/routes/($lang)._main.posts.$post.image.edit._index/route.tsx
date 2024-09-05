@@ -27,6 +27,7 @@ import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditImageFormUploader } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/edit-image-form-uploader"
 import React from "react"
+import { getJstDate } from "~/utils/jst-date"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -281,6 +282,8 @@ export default function EditImage() {
       work?.isTagEditable === undefined ? true : work?.isTagEditable,
   })
 
+  const now = getJstDate(new Date())
+
   const { data: viewer } = useQuery(viewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
@@ -288,9 +291,7 @@ export default function EditImage() {
       limit: 128,
       ownerUserId: authContext.userId,
       startAt: new Date().toISOString().split("T")[0],
-      startDate: new Date(Date.now() - 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0],
+      startDate: now.toISOString().split("T")[0],
       endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         .toISOString()
         .split("T")[0],

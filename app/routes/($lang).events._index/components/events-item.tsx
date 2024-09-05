@@ -2,6 +2,7 @@ import { Card, CardHeader } from "~/components/ui/card"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
+import { getJstDate } from "~/utils/jst-date"
 
 type Props = FragmentOf<typeof appEventItemFragment>
 
@@ -22,7 +23,7 @@ export function EventItem(props: Props) {
     return null
   }
 
-  const now = new Date()
+  const now = getJstDate(new Date())
   const isOngoing =
     new Date(props.startAt * 1000) <= now && now <= new Date(props.endAt * 1000)
 

@@ -58,10 +58,6 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
-// export const meta: MetaFunction = () => {
-//   return createMeta(META.EVENTS)
-// }
-
 export const meta: MetaFunction = ({ data }) => {
   if (!data) {
     return [{ title: "イベントが見つかりませんでした" }]
@@ -87,25 +83,27 @@ export default function FollowingLayout() {
 
   const navigate = useNavigate()
 
-  if (
-    !data.appEvent?.title ||
-    !data.appEvent?.thumbnailImageUrl ||
-    !data.appEvent?.tag ||
-    !data.appEvent?.description ||
-    !data.appEvent?.startAt ||
-    !data.appEvent?.endAt ||
-    !data.appEvent.worksCount
-  ) {
-    return null
-  }
+  // if (
+  //   !data.appEvent?.title ||
+  //   !data.appEvent?.thumbnailImageUrl ||
+  //   !data.appEvent?.tag ||
+  //   !data.appEvent?.description ||
+  //   !data.appEvent?.startAt ||
+  //   !data.appEvent?.endAt ||
+  //   !data.appEvent.worksCount
+  // ) {
+  //   return null
+  // }
 
   return (
     <div className="flex flex-col space-y-4">
-      <img
-        className="h-auto max-h-96 w-full rounded-lg object-cover"
-        src={data.appEvent.thumbnailImageUrl}
-        alt=""
-      />
+      {data.appEvent.thumbnailImageUrl && (
+        <img
+          className="h-auto max-h-96 w-full rounded-lg object-cover"
+          src={data.appEvent.thumbnailImageUrl}
+          alt=""
+        />
+      )}
       <Card className="m-auto w-full">
         <CardHeader>
           <div className="mt-4 text-center font-medium text-lg">
@@ -114,15 +112,19 @@ export default function FollowingLayout() {
         </CardHeader>
         <CardContent>
           <div className="m-auto flex flex-col items-center text-left">
-            <div
-              className="mb-2 text-left text-sm"
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-              dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
-            />
-            <div className="mr-auto text-sm">
-              {toDateTimeText(data.appEvent.startAt)}～
-              {toDateTimeText(data.appEvent.endAt)}
-            </div>
+            {data.appEvent.description && (
+              <div
+                className="mb-2 text-left text-sm"
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+                dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
+              />
+            )}
+            {data.appEvent.startAt && data.appEvent.endAt && (
+              <div className="mr-auto text-sm">
+                {toDateTimeText(data.appEvent.startAt)}～
+                {toDateTimeText(data.appEvent.endAt)}
+              </div>
+            )}
             <div className="mt-2 mr-auto text-sm">
               応募作品数: {data.appEvent.worksCount?.toString() ?? "0"}
             </div>
