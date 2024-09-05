@@ -80,7 +80,7 @@ export function WorkContainer(props: Props) {
                   relatedWork.smallThumbnailImageHeight,
                 id: relatedWork.id,
                 userId: relatedWork.userId,
-                isLiked: false,
+                isLiked: relatedWork.isLiked,
                 subWorksCount: relatedWork.subWorksCount,
               }))}
             />

@@ -81,6 +81,9 @@ export function WorkNextAndPrevious(props: Props) {
             />
           </div>
         )}
+
+        {!props.work.nextWork && <div className="w-full" />}
+
         <div className="w-full opacity-50">
           <CroppedWorkSquare
             workId={props.work.id}
@@ -105,6 +108,8 @@ export function WorkNextAndPrevious(props: Props) {
             />
           </div>
         )}
+
+        {!props.work.previousWork && <div className="w-full" />}
       </div>
     </>
   )
