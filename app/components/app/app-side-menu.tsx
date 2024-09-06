@@ -12,7 +12,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { graphql, type FragmentOf } from "gql.tada"
 import { Button } from "~/components/ui/button"
-import { useQuery } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import {
   HomeAwardWorksSection,
   type HomeAwardWorksFragment,
@@ -58,7 +58,20 @@ export function AppSideMenu(props: Props) {
     },
   })
 
-  console.log(advertisements)
+  const [updateClickedCountCustomerAdvertisement] = useMutation(
+    updateClickedCountCustomerAdvertisementMutation,
+  )
+
+  const onClickAdvertisement = async () => {
+    if (advertisements?.randomCustomerAdvertisement) {
+      // 広告クリック数を更新
+      await updateClickedCountCustomerAdvertisement({
+        variables: {
+          id: advertisements.randomCustomerAdvertisement.id,
+        },
+      })
+    }
+  }
 
   const passData = pass?.viewer?.currentPass
 
@@ -103,11 +116,16 @@ export function AppSideMenu(props: Props) {
                 <p className="text-sm">{"対象年齢"}</p>
               </Button>
             ))}
-          {props.isShowCustomerAds &&
+          {!isSubscriptionUser &&
+            props.isShowCustomerAds &&
             advertisements &&
             advertisements.randomCustomerAdvertisement && (
-              <div className="relative">
-                <Link to={advertisements.randomCustomerAdvertisement.url}>
+              <div className="relative border">
+                <Link
+                  onClick={onClickAdvertisement}
+                  target="_blank"
+                  to={advertisements.randomCustomerAdvertisement.url}
+                >
                   <img
                     src={advertisements.randomCustomerAdvertisement.imageUrl}
                     alt="Advertisement"
@@ -184,4 +202,12 @@ const randomCustomerAdvertisementQuery = graphql(
     }
   }`,
   [SideMenuAdvertisementsFragment],
+)
+
+const updateClickedCountCustomerAdvertisementMutation = graphql(
+  `mutation UpdateClickedCountCustomerAdvertisement($id: ID!) {
+    updateClickedCountCustomerAdvertisement(id: $id) {
+      id
+    }
+  }`,
 )
