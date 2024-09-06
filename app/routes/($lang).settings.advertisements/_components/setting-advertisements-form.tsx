@@ -299,7 +299,7 @@ export function SettingAdvertisementsForm() {
       const startAtJST = toJST(startOfMonth(selectedDate))
       const endAtJST = toJST(endOfMonth(selectedDate))
       refetch({
-        limit: 72,
+        limit: 64,
         offset: 0,
         where: {
           startAtAfter: startAtJST.toISOString(),
