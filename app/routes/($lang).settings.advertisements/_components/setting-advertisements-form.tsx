@@ -24,6 +24,16 @@ const toJST = (date: Date) => {
 }
 
 export function SettingAdvertisementsForm() {
+  const authContext = useContext(AuthContext)
+
+  const { data: isAdvertiser, loading: isAdvertiserLoading } = useQuery(
+    viewerIsAdvertiserQuery,
+  )
+
+  if (isAdvertiser?.viewer?.isAdvertiser === false) {
+    throw new Response(null, { status: 404 })
+  }
+
   const [newAdvertisement, setNewAdvertisement] = useState({
     imageUrl: "",
     url: "",
@@ -33,8 +43,6 @@ export function SettingAdvertisementsForm() {
     startAt: "",
     endAt: "",
   })
-
-  const authContext = useContext(AuthContext)
 
   const { data: token } = useQuery(viewerTokenQuery, {
     skip: authContext.isLoading,
@@ -56,6 +64,7 @@ export function SettingAdvertisementsForm() {
   const { data, loading, error, refetch } = useQuery(
     viewerAdvertisementsQuery,
     {
+      skip: authContext.isLoading,
       variables: {
         limit: 64,
         offset: 0,
@@ -301,6 +310,10 @@ export function SettingAdvertisementsForm() {
         },
       })
     }
+  }
+
+  if (authContext.isLoading || isAdvertiserLoading) {
+    return <AppLoadingPage />
   }
 
   return (
@@ -722,6 +735,14 @@ const viewerTokenQuery = graphql(
     viewer {
       id
       token
+    }
+  }`,
+)
+
+const viewerIsAdvertiserQuery = graphql(
+  `query ViewerIsAdvertiser {
+    viewer {
+      isAdvertiser
     }
   }`,
 )
