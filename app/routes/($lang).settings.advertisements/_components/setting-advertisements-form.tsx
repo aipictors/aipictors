@@ -366,6 +366,16 @@ export function SettingAdvertisementsForm() {
               />
               <label htmlFor="sensitiveFilter">{"センシティブ"}</label>
             </div>
+            <div className="flex w-40 items-center space-x-2">
+              <Checkbox
+                id="ageFilter"
+                checked={isSensitiveFilter === false}
+                onCheckedChange={(checked) =>
+                  setIsSensitiveFilter(checked === true ? false : undefined)
+                }
+              />
+              <label htmlFor="ageFilter">{"全年齢"}</label>
+            </div>
             <Button
               variant={"secondary"}
               className="w-full"
