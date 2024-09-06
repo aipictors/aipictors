@@ -18,6 +18,8 @@ import {
   type HomeAwardWorksFragment,
 } from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { addHours } from "date-fns"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 
 type homeParticles = {
   newPostedUsers?: FragmentOf<typeof HomeNewPostedUsersFragment>[]
@@ -32,6 +34,11 @@ type Props = {
   homeParticles: homeParticles
   isShowSensitiveButton?: boolean
   isShowGenerationAds?: boolean
+  isShowCustomerAds?: boolean
+}
+
+const toJST = (date: Date) => {
+  return addHours(date, 9) // UTCに対して+9時間でJSTに変換
 }
 
 /**
@@ -41,6 +48,17 @@ export function AppSideMenu(props: Props) {
   const navigate = useNavigate()
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+
+  const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    variables: {
+      where: {
+        isSensitive: !!props.isSensitive,
+        page: "work",
+      },
+    },
+  })
+
+  console.log(advertisements)
 
   const passData = pass?.viewer?.currentPass
 
@@ -85,6 +103,25 @@ export function AppSideMenu(props: Props) {
                 <p className="text-sm">{"対象年齢"}</p>
               </Button>
             ))}
+          {props.isShowCustomerAds &&
+            advertisements &&
+            advertisements.randomCustomerAdvertisement && (
+              <div className="relative">
+                <Link to={advertisements.randomCustomerAdvertisement.url}>
+                  <img
+                    src={advertisements.randomCustomerAdvertisement.imageUrl}
+                    alt="Advertisement"
+                  />
+                </Link>
+                <div className="absolute top-0 right-0">
+                  <CrossPlatformTooltip
+                    text={
+                      "提携広告です、広告主様を募集中です。メールまたはDMにてご連絡ください。"
+                    }
+                  />
+                </div>
+              </div>
+            )}
           {!isSubscriptionUser && props.isShowGenerationAds && (
             <Link to="/generation">
               <img
@@ -121,4 +158,30 @@ const viewerCurrentPassQuery = graphql(
       }
     }
   }`,
+)
+
+export const SideMenuAdvertisementsFragment = graphql(
+  `fragment SideMenuAdvertisementsFields on CustomerAdvertisementNode @_unmask {
+      id
+      imageUrl
+      url
+      displayProbability
+      clickCount
+      impressionCount
+      isSensitive
+      createdAt
+      page
+      startAt
+      endAt
+      isActive
+  }`,
+)
+
+const randomCustomerAdvertisementQuery = graphql(
+  `query RandomCustomerAdvertisement($where: RandomCustomerAdvertisementWhereInput!) {
+    randomCustomerAdvertisement(where: $where) {
+      ...SideMenuAdvertisementsFields
+    }
+  }`,
+  [SideMenuAdvertisementsFragment],
 )

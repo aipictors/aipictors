@@ -123,6 +123,7 @@ export function WorkContainer(props: Props) {
               }}
               isSensitive={props.isSensitive ?? false}
               isShowGenerationAds={true}
+              isShowCustomerAds={true}
             />
           </div>
         </div>
@@ -151,6 +152,7 @@ export function WorkContainer(props: Props) {
           }}
           isSensitive={props.isSensitive ?? false}
           isShowGenerationAds={false}
+          isShowCustomerAds={true}
         />
       </div>
     </div>

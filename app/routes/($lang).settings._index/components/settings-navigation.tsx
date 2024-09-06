@@ -9,9 +9,14 @@ import {
   PaletteIcon,
   UserXIcon,
   ChevronRight,
+  Radio,
 } from "lucide-react"
+import { graphql } from "gql.tada"
+import { useQuery } from "@apollo/client/index"
 
 export function SettingsNavigation() {
+  const { data } = useQuery(viewerIsAdvertiserQuery)
+
   return (
     <div className="w-full space-y-1 md:w-auto">
       <HomeNavigationButton href={"/"} icon={ArrowLeftIcon}>
@@ -100,6 +105,24 @@ export function SettingsNavigation() {
           </div>
         </div>
       </HomeNavigationButton>
+      {data?.viewer?.isAdvertiser && (
+        <HomeNavigationButton href={"/settings/advertisements"} icon={Radio}>
+          <div className="flex w-full items-center justify-between">
+            {"広告設定"}
+            <div className="ml-auto text-right md:hidden">
+              <ChevronRight />
+            </div>
+          </div>
+        </HomeNavigationButton>
+      )}
     </div>
   )
 }
+
+const viewerIsAdvertiserQuery = graphql(
+  `query ViewerIsAdvertiser {
+    viewer {
+      isAdvertiser
+    }
+  }`,
+)

@@ -620,6 +620,11 @@ export const META: { [key: string]: MetaData } = {
     description: "プロフィールに関する設定を行うことができます",
     isIndex: false,
   },
+  SETTINGS_ADVERTISEMENTS: {
+    title: "広告設定",
+    description: "広告設定を行うことができます",
+    isIndex: false,
+  },
   /**
    * ダッシュボード
    */
