@@ -16,7 +16,7 @@ type Props = {
 export function HomeAwardWorksSection(props: Props) {
   return (
     <div className="flex flex-col space-y-4">
-      <h2 className="font-semibold">ランキング</h2>
+      <h2 className="font-semibold">前日ランキング</h2>
       {props.works.map(
         (work) =>
           work && (
