@@ -13,6 +13,7 @@ import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$d
 import { ThemeWorksList } from "~/routes/($lang)._main.themes._index/components/theme-works-list"
 import { Separator } from "~/components/ui/separator"
 import { getJstDate } from "~/utils/jst-date"
+import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -21,6 +22,14 @@ export async function loader(props: LoaderFunctionArgs) {
 
   if (props.params.month === undefined) {
     throw new Response(null, { status: 404 })
+  }
+
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(
+    props.request,
+    `/sensitive/themes/${props.params.year}/${props.params.month}`,
+  )
+  if (redirectResult) {
+    return redirectResult
   }
 
   const client = createClient()

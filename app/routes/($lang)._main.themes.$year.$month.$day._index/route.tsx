@@ -5,6 +5,7 @@ import { graphql } from "gql.tada"
 import { ThemeArticleContainer } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article-container"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
+import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -13,6 +14,14 @@ export async function loader(props: LoaderFunctionArgs) {
     props.params.day === undefined
   ) {
     throw new Response("Invalid date", { status: 400 })
+  }
+
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(
+    props.request,
+    `/sensitive/themes/${props.params.year}/${props.params.month}/${props.params.day}`,
+  )
+  if (redirectResult) {
+    return redirectResult
   }
 
   const client = createClient()

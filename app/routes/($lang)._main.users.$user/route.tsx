@@ -21,10 +21,19 @@ import { Lumiflex } from "uvcanvas"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
     throw new Response(null, { status: 404 })
+  }
+
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(
+    props.request,
+    `/sensitive/users/${props.params.user}`,
+  )
+  if (redirectResult) {
+    return redirectResult
   }
 
   const client = createClient()

@@ -206,7 +206,7 @@ export function HomeContents(props: Props) {
       </TabsList>
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
         {!props.isSensitive && props.homeParticles && (
-          <div className="block md:flex md:space-x-4">
+          <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex flex-col space-y-4 md:w-[80%]">
               <div className="hidden md:block">
                 {props.homeParticles.releaseList && (

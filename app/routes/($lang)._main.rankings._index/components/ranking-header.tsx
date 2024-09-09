@@ -1,10 +1,9 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import { useNavigate, useLocation } from "@remix-run/react"
-import { ChevronLeftIcon, ChevronRightIcon, RefreshCcwIcon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 
 type Props = {
   year: number
@@ -213,7 +212,7 @@ export function RankingHeader(props: Props) {
           </Button>
         </div>
         <div className="flex w-full justify-between space-x-1 md:space-x-4">
-          <AppConfirmDialog
+          {/* <AppConfirmDialog
             title={"確認"}
             description={
               "センシティブな作品を表示します、あなたは18歳以上ですか？"
@@ -228,7 +227,7 @@ export function RankingHeader(props: Props) {
               <RefreshCcwIcon className="mr-1 w-3" />
               <p className="text-sm">{"対象年齢"}</p>
             </div>
-          </AppConfirmDialog>
+          </AppConfirmDialog> */}
 
           <Button
             className="w-72 md:w-96"

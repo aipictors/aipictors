@@ -13,8 +13,17 @@ import { ThemeWorksList } from "~/routes/($lang)._main.themes._index/components/
 import { ConstructionAlert } from "~/components/construction-alert"
 import { Separator } from "~/components/ui/separator"
 import { getJstDate } from "~/utils/jst-date"
+import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(
+    request,
+    "/sensitive/themes",
+  )
+  if (redirectResult) {
+    return redirectResult
+  }
+
   const client = createClient()
 
   const year = new Date().getFullYear()

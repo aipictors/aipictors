@@ -1,9 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Link, useNavigate } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import type { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
-import { RefreshCcwIcon } from "lucide-react"
 import type { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { HomeCroppedWorkListWithScroll } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
 import { Card, CardContent } from "~/components/ui/card"
@@ -85,7 +83,7 @@ export function ThemeWorksList(props: Props) {
       {props.works && props.works.length > 0 && (
         <>
           <div className="flex">
-            <div className="relative grid gap-4">
+            {/* <div className="relative grid gap-4">
               {!props.isSensitive ? (
                 <AppConfirmDialog
                   title={"確認"}
@@ -118,7 +116,7 @@ export function ThemeWorksList(props: Props) {
                   <p className="text-sm">{"対象年齢"}</p>
                 </Button>
               )}
-            </div>
+            </div> */}
             <div className="ml-auto flex justify-end">
               <Button onClick={onMore} variant={"secondary"}>
                 {"もっと見る"}

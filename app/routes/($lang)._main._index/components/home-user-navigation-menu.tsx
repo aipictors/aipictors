@@ -32,6 +32,7 @@ import { useTheme } from "next-themes"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
 
 type Props = {
   onLogout(): void
@@ -233,6 +234,13 @@ export function HomeUserNavigationMenu(props: Props) {
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
+          {userSetting?.userSetting &&
+            (userSetting?.userSetting.preferenceRating === "R18" ||
+              userSetting?.userSetting.preferenceRating === "R18G") && (
+              <DropdownMenuItem>
+                <ToggleSensitive />
+              </DropdownMenuItem>
+            )}
           <DropdownMenuItem onClick={props.onLogout}>
             <LogOutIcon className="mr-2 inline-block w-4" />
             <p>ログアウト</p>

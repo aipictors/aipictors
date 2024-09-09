@@ -21,6 +21,7 @@ import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-respo
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { ConstructionAlert } from "~/components/construction-alert"
+import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.HOME)
@@ -34,7 +35,15 @@ const getUtcDateString = (date: Date) => {
   return `${year}/${month}/${day}`
 }
 
-export async function loader() {
+export async function loader({ request }: { request: Request }) {
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(
+    request,
+    "/sensitive",
+  )
+  if (redirectResult) {
+    return redirectResult
+  }
+
   // 下記カテゴリからランダムに2つ選んで返す
   const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
 

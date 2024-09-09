@@ -65,7 +65,7 @@ export function HomeCroppedWorkList(props: Props) {
           </div>
         ))}
       </section>
-      <section className="grid grid-cols-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <section className="grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {props.works.map((work) => (
           <Link to={`/posts/${work.id}`} key={work.id} className="relative">
             <div
