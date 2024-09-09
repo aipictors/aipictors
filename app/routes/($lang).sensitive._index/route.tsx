@@ -196,6 +196,7 @@ const query = graphql(
       where: {
         isFeatured: true,
         ratings: [R18],
+        isNowCreatedAt: true
       }
     ) {
       ...HomeBannerWork
@@ -222,7 +223,7 @@ const query = graphql(
     recommendedTags: recommendedTags(
       limit: 16
       where: {
-        isSensitive: true
+        isSensitive: true,
       }
     ) {
       ...HomeTag
@@ -235,6 +236,7 @@ const query = graphql(
         search: $categoryFirst
         orderBy: VIEWS_COUNT
         isSensitive: true
+        isNowCreatedAt: true
       }
     ) {
       ...HomeTagWork
@@ -243,10 +245,11 @@ const query = graphql(
       offset: 0,
       limit: $tagWorksLimit,
       where: {
-        ratings: [R18],
+        ratings: [R18]
         search: $categorySecond
         orderBy: VIEWS_COUNT
         isSensitive: true
+        isNowCreatedAt: true
       }
     ) {
       ...HomeTagWork
@@ -265,6 +268,7 @@ const query = graphql(
       limit: $promotionWorksLimit,
       where: {
         isRecommended: true
+        isNowCreatedAt: true
         ratings: [R18]
       }
     ) {

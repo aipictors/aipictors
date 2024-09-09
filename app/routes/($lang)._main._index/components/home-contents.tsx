@@ -80,6 +80,7 @@ const useUpdateQueryParams = () => {
  */
 export function HomeContents(props: Props) {
   const [searchParams] = useSearchParams()
+
   const updateQueryParams = useUpdateQueryParams()
 
   const [isMounted, setIsMounted] = useState(false)
@@ -220,6 +221,12 @@ export function HomeContents(props: Props) {
                   hotTags={props.homeParticles.hotTags}
                 />
               </div>
+              {!props.isSensitive && (
+                <HomeWorksUsersRecommendedSection
+                  isSensitive={props.isSensitive}
+                  works={props.homeParticles.promotionWorks}
+                />
+              )}
               <HomeWorksTagSection
                 tag={props.homeParticles.firstTag}
                 works={props.homeParticles.firstTagWorks}
@@ -232,12 +239,6 @@ export function HomeContents(props: Props) {
                 works={props.homeParticles.newUserWorks}
                 isSensitive={props.isSensitive}
               />
-              {!props.isSensitive && (
-                <HomeWorksUsersRecommendedSection
-                  isSensitive={props.isSensitive}
-                  works={props.homeParticles.promotionWorks}
-                />
-              )}
               <HomeAwardWorkSection
                 awardDateText={props.homeParticles.awardDateText}
                 title={"前日ランキング"}

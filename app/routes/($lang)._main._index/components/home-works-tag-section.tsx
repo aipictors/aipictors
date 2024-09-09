@@ -33,6 +33,7 @@ export function HomeWorksTagSection(props: Props) {
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
         search: props.tag,
         orderBy: "LIKES_COUNT",
         ...(props.style && {
@@ -50,6 +51,7 @@ export function HomeWorksTagSection(props: Props) {
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
         isSensitive: props.isSensitive,
+        isNowCreatedAt: true,
         search: props.secondTag,
         orderBy: "LIKES_COUNT",
         ...(props.style && {
@@ -70,7 +72,7 @@ export function HomeWorksTagSection(props: Props) {
   return (
     <>
       <HomeWorkSection
-        title={""}
+        title={"タグ作品"}
         works={combinedWorks}
         isCropped={props.isCropped}
       />

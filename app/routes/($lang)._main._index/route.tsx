@@ -223,6 +223,7 @@ const query = graphql(
       limit: $adWorksLimit,
       where: {
         isFeatured: true,
+        isNowCreatedAt: true,
         ratings: [G],
       }
     ) {
@@ -250,7 +251,7 @@ const query = graphql(
     recommendedTags: recommendedTags(
       limit: 16
       where: {
-        isSensitive: false
+        isSensitive: false,
       }
     ) {
       ...HomeTag
@@ -260,7 +261,8 @@ const query = graphql(
       limit: $tagWorksLimit,
       where: {
         ratings: [G],
-        search: $categoryFirst
+        search: $categoryFirst,
+        isNowCreatedAt: true,
         orderBy: LIKES_COUNT
       }
     ) {
@@ -271,7 +273,8 @@ const query = graphql(
       limit: $tagWorksLimit,
       where: {
         ratings: [G],
-        search: $categorySecond
+        search: $categorySecond,
+        isNowCreatedAt: true,
         orderBy: LIKES_COUNT
       }
     ) {
@@ -282,7 +285,8 @@ const query = graphql(
       limit: $promotionWorksLimit,
       where: {
         isRecommended: true
-        ratings: [G]
+        isNowCreatedAt: true
+        ratings: [G, R15]
       }
     ) {
       ...HomePromotionWork
@@ -292,6 +296,7 @@ const query = graphql(
       limit: $newUsersWorksLimit,
       where: {
         ratings: [G],
+        isNowCreatedAt: true
       }
     ) {
       ...HomeNewUsersWorks
@@ -307,7 +312,7 @@ const query = graphql(
       limit: 8,
       where: {
         isSensitive: false,
-        ratings: [G],
+        ratings: [G]
       }
     ) {
       ...HomeNewComments
