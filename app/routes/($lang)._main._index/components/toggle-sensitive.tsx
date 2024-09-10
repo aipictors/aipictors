@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react"
 import { Label } from "~/components/ui/label"
 import { Switch } from "~/components/ui/switch"
-import { useNavigate, useLocation } from "react-router-dom" // React Routerを使用
+import { useNavigate, useLocation, useRevalidator } from "react-router-dom" // React Routerを使用
 
 export function ToggleSensitive() {
   const [sensitive, setSensitive] = useState(false)
+
   const navigate = useNavigate() // リダイレクト用
+
   const location = useLocation() // 現在のURLを取得
+
+  const revalidator = useRevalidator()
 
   // Cookieから"sensitive"フラグをチェック
   useEffect(() => {
@@ -32,7 +36,8 @@ export function ToggleSensitive() {
     } else {
       // センシティブフラグを設定
       document.cookie = "sensitive=1; path=/"
-      window.location.reload() // Cookie変更後にリロード
+
+      revalidator.revalidate()
     }
 
     setSensitive(!sensitive)
