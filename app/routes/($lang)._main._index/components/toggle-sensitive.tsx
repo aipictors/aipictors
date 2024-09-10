@@ -38,6 +38,8 @@ export function ToggleSensitive() {
       document.cookie = "sensitive=1; path=/"
 
       revalidator.revalidate()
+
+      window.location.reload() // Cookie変更後にリロード
     }
 
     setSensitive(!sensitive)
