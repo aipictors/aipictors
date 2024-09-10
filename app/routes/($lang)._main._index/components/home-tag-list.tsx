@@ -21,14 +21,14 @@ export function HomeTagList(props: Props) {
         <CarouselItem className="basis-auto">
           {props.themeTitle && (
             <TagButton
-              link={`${props.themeTitle}`}
+              link={`/tags/${props.themeTitle}`}
               name={`今日のお題「${props.themeTitle}」`}
             />
           )}
         </CarouselItem>
         {props.hotTags?.map((tag) => (
           <CarouselItem className="basis-auto" key={tag.id}>
-            <TagButton link={`${tag.name}`} name={tag.name} />
+            <TagButton link={`/tags/${tag.name}`} name={tag.name} />
           </CarouselItem>
         ))}
         <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />

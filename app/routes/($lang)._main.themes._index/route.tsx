@@ -1,19 +1,30 @@
-import { AppPageHeader } from "~/components/app/app-page-header"
 import { createClient } from "~/lib/client"
-import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
 import {
-  ThemeList,
-  ThemeListItemFragment,
-} from "~/routes/($lang)._main.themes._index/components/theme-list"
+  json,
+  type MetaFunction,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
-import { ThemeWorksList } from "~/routes/($lang)._main.themes._index/components/theme-works-list"
-import { ConstructionAlert } from "~/components/construction-alert"
-import { Separator } from "~/components/ui/separator"
 import { getJstDate } from "~/utils/jst-date"
 import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
+import {} from "~/components/ui/tabs"
+import {} from "~/components/ui/card"
+import {} from "~/components/ui/carousel"
+import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
+
+const useUpdateQueryParams = () => {
+  const updateQueryParams = (newParams: URLSearchParams) => {
+    const newUrl = `${window.location.pathname}?${newParams.toString()}`
+    window.history.replaceState(null, "", newUrl)
+  }
+  return updateQueryParams
+}
 
 export async function loader({ request }: { request: Request }) {
   const redirectResult = redirectUrlWithOptionalSensitiveParam(
@@ -23,6 +34,14 @@ export async function loader({ request }: { request: Request }) {
   if (redirectResult) {
     return redirectResult
   }
+
+  const url = new URL(request.url)
+
+  const page = url.searchParams.get("page")
+    ? Number.parseInt(url.searchParams.get("page") as string) > 100
+      ? 0
+      : Number.parseInt(url.searchParams.get("page") as string)
+    : 0
 
   const client = createClient()
 
@@ -60,7 +79,7 @@ export async function loader({ request }: { request: Request }) {
     ? await client.query({
         query: themeWorksQuery,
         variables: {
-          offset: 0,
+          offset: 32 * page,
           limit: 32,
           where: {
             subjectId: Number(todayThemesResp.data.dailyThemes[0].id),
@@ -96,6 +115,36 @@ export async function loader({ request }: { request: Request }) {
     },
   })
 
+  const sevenDaysAgo = new Date(
+    Number(todayYear),
+    Number(todayMonth) - 1,
+    Number(todayDay),
+  )
+
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+  const sevenDaysAfter = new Date(
+    Number(todayYear),
+    Number(todayMonth) - 1,
+    Number(todayDay),
+  )
+
+  sevenDaysAfter.setDate(sevenDaysAgo.getDate() + 14)
+
+  const formatDate = (date: Date) => date.toISOString().split("T")[0]
+
+  const dailyBeforeThemes = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 14,
+      where: {
+        startDate: formatDate(sevenDaysAgo),
+        endDate: formatDate(sevenDaysAfter),
+      },
+    },
+  })
+
   return json({
     dailyThemes: dailyThemesResp.data.dailyThemes,
     year,
@@ -105,6 +154,10 @@ export async function loader({ request }: { request: Request }) {
       : null,
     works: worksResp ? worksResp.data.works : null,
     afterSevenDayThemes: afterSevenDayThemesResp.data.dailyThemes,
+    dailyBeforeThemes: dailyBeforeThemes.data.dailyThemes,
+    worksCount: worksResp ? worksResp.data.worksCount : null,
+    page,
+    themeId: Number(todayThemesResp.data.dailyThemes[0].id),
   })
 }
 
@@ -115,28 +168,34 @@ export const meta: MetaFunction = () => {
 export default function Themes() {
   const data = useLoaderData<typeof loader>()
 
+  const navigate = useNavigate()
+
+  const [searchParams] = useSearchParams()
+
+  const updateQueryParams = useUpdateQueryParams()
+
+  const handleTabChange = (tab: string) => {
+    searchParams.set("tab", tab)
+    updateQueryParams(searchParams)
+  }
   const description =
     "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
 
+  const isSensitive = false
+
   return (
     <>
-      <ConstructionAlert
-        type="WARNING"
-        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
-        fallbackURL="https://www.aipictors.com/idea"
-      />
-      <AppPageHeader title={"お題"} description={description} />
-      <ThemeWorksList
+      <ThemeContainer
+        dailyThemes={data.dailyThemes}
         todayTheme={data.todayTheme}
-        works={data.works}
-        isSensitive={false}
-        afterThemes={data.afterSevenDayThemes}
-      />
-      <Separator />
-      <ThemeList
+        works={data.works ?? []}
+        afterSevenDayThemes={data.afterSevenDayThemes}
+        dailyBeforeThemes={data.dailyBeforeThemes}
+        worksCount={data.worksCount ?? 0}
+        page={data.page}
         year={data.year}
         month={data.month}
-        dailyThemes={data.dailyThemes}
+        themeId={data.themeId.toString()}
       />
     </>
   )
@@ -160,6 +219,7 @@ const themeWorksQuery = graphql(
     works(offset: $offset, limit: $limit, where: $where) {
       ...ThemeWork
     }
+    worksCount(where: $where)
   }`,
   [ThemeWorkFragment],
 )
