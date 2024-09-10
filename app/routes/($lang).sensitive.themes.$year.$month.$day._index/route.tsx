@@ -2,7 +2,9 @@ import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
+import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 import { getJstDate } from "~/utils/jst-date"
 
@@ -13,6 +15,14 @@ export async function loader(props: LoaderFunctionArgs) {
     props.params.day === undefined
   ) {
     throw new Response("Invalid date", { status: 400 })
+  }
+
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(
+    props.request,
+    `/sensitive/themes/${props.params.year}/${props.params.month}/${props.params.day}`,
+  )
+  if (redirectResult) {
+    return redirectResult
   }
 
   const client = createClient()
@@ -57,6 +67,15 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const monthlyThemes = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 31,
+      where: { year, month },
+    },
+  })
+
   const worksResp = await client.query({
     query: themeWorksAndCountQuery,
     variables: {
@@ -66,18 +85,8 @@ export async function loader(props: LoaderFunctionArgs) {
         subjectId: Number(targetThemesResp.data.dailyThemes[0].id),
         ratings: ["R18", "R18G"],
         orderBy: "DATE_CREATED",
-        isSensitive: true,
         isNowCreatedAt: true,
       },
-    },
-  })
-
-  const monthlyThemes = await client.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 31,
-      where: { year, month },
     },
   })
 
@@ -88,7 +97,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const sevenDaysAfter = new Date(Number(year), Number(month) - 1, Number(day))
 
-  sevenDaysAfter.setDate(sevenDaysAgo.getDate() + 7)
+  sevenDaysAfter.setDate(sevenDaysAgo.getDate() + 14)
 
   const formatDate = (date: Date) => date.toISOString().split("T")[0]
 
@@ -161,6 +170,8 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function SensitiveDayThemePage() {
   const data = useLoaderData<typeof loader>()
 
+  console.log(data.tab !== "list" ? "calender" : "list")
+
   return (
     <article>
       <ThemeContainer
@@ -176,27 +187,9 @@ export default function SensitiveDayThemePage() {
         day={data.day}
         month={data.month}
         defaultTab={data.tab !== "list" ? "calender" : "list"}
-        isSensitive={true}
         themeId={data.themeId.toString()}
       />
     </article>
-
-    // <article>
-    //   <ThemeArticleContainer
-    //     works={data.worksResp.data.works}
-    //     worksCount={data.worksResp.data.worksCount}
-    //     firstWork={data.dailyTheme.firstWork}
-    //     title={`${data.year}/${data.month}/${data.day}のお題「${data.dailyTheme.title}」`}
-    //     year={data.year}
-    //     month={data.month}
-    //     day={data.day}
-    //     page={data.page}
-    //     isSensitive={true}
-    //     themeId={data.dailyTheme.id}
-    //     dailyThemes={data.monthlyThemes.data.dailyThemes}
-    //     dailyBeforeThemes={data.dailyBeforeThemes.data.dailyThemes}
-    //   />
-    // </article>
   )
 }
 
@@ -215,14 +208,19 @@ const dailyThemesQuery = graphql(
       day
       worksCount
       firstWork {
-        ...ThemeWork
+        ...PhotoAlbumWork
+      }
+      proposer {
+        id
+        name
+        iconUrl
       }
     }
   }`,
-  [ThemeWorkFragment],
+  [PhotoAlbumWorkFragment],
 )
 
-export const themeWorksAndCountQuery = graphql(
+const themeWorksAndCountQuery = graphql(
   `query AlbumWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...ThemeWork
