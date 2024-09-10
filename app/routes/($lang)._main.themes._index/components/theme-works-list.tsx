@@ -4,12 +4,8 @@ import type { FragmentOf } from "gql.tada"
 import type { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import type { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { HomeCroppedWorkListWithScroll } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
-import { Card, CardContent } from "~/components/ui/card"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "~/components/ui/carousel"
+import {} from "~/components/ui/card"
+import {} from "~/components/ui/carousel"
 
 type Props = {
   todayTheme: FragmentOf<typeof ThemeListItemFragment> | null
@@ -59,7 +55,7 @@ export function ThemeWorksList(props: Props) {
           <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
         </Link>
       )}
-      {props.afterThemes && props.afterThemes.length > 0 && (
+      {/* {props.afterThemes && props.afterThemes.length > 0 && (
         <Carousel opts={{ dragFree: true, loop: false }}>
           <CarouselContent>
             {props.afterThemes.map((theme) => (
@@ -79,7 +75,7 @@ export function ThemeWorksList(props: Props) {
             ))}
           </CarouselContent>
         </Carousel>
-      )}
+      )} */}
       {props.works && props.works.length > 0 && (
         <>
           <div className="flex">

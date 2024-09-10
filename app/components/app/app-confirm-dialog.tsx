@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +13,6 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
 import { Checkbox } from "~/components/ui/checkbox"
-import { useState } from "react"
 
 type Props = Readonly<{
   description: string
@@ -23,57 +25,33 @@ type Props = Readonly<{
   onCancel(): void
 }>
 
-/**
- * 確認ダイアログ
- */
 export function AppConfirmDialog(props: Props) {
   const [isCheck, setIsCheck] = useState(false)
+  const [shouldSkipDialog, setShouldSkipDialog] = useState(false)
 
-  // document is not defined が発生するため、SSR時は実行しない
-  if (typeof document === "undefined") {
-    return null
-  }
-
-  if (props.cookieKey) {
-    if (
-      document.cookie
+  useEffect(() => {
+    if (props.cookieKey) {
+      const cookieExists = document.cookie
         .split("; ")
         .some((item) => item.startsWith(`${props.cookieKey}=`))
-    ) {
-      // cookieKey が存在する場合、props.onNext を実行
-      return (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-        <div onClick={props.onNext}>{props.children}</div>
-      )
+      setShouldSkipDialog(cookieExists)
     }
-  }
+  }, [props.cookieKey])
 
   const onNext = () => {
-    if (props.cookieKey) {
-      if (
-        document.cookie
-          .split("; ")
-          .some((item) => item.startsWith(`${props.cookieKey}=`))
-      ) {
-        // cookieKey が存在する場合、props.onNext を実行
-        props.onNext()
-        return
-      }
-
-      if (isCheck) {
-        const expiryDate = new Date()
-
-        expiryDate.setDate(expiryDate.getDate() + 7) // Cookieの有効期限を1週間後に設定
-        document.cookie = `${
-          props.cookieKey
-        }=true; expires=${expiryDate.toUTCString()}; path=/`
-      }
-
-      props.onNext()
-    } else {
-      // cookieKey が存在しない場合、直接 props.onNext を実行
-      props.onNext()
+    if (props.cookieKey && isCheck) {
+      const expiryDate = new Date()
+      expiryDate.setDate(expiryDate.getDate() + 7) // Cookie expires in 1 week
+      document.cookie = `${props.cookieKey}=true; expires=${expiryDate.toUTCString()}; path=/`
     }
+    props.onNext()
+  }
+
+  if (shouldSkipDialog) {
+    return (
+      // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+      <div onClick={props.onNext}>{props.children}</div>
+    )
   }
 
   return (
@@ -95,13 +73,16 @@ export function AppConfirmDialog(props: Props) {
         {props.cookieKey && (
           <div className="flex items-center space-x-2">
             <Checkbox
-              onCheckedChange={(value: boolean) => {
-                setIsCheck(value)
-              }}
               id="hide-check"
               checked={isCheck}
+              onCheckedChange={(checked: boolean) =>
+                setIsCheck(checked === true)
+              }
             />
-            <label htmlFor="hide-check" className="font-medium text-sm">
+            <label
+              htmlFor="hide-check"
+              className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
               今後表示しない
             </label>
           </div>

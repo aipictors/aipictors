@@ -40,8 +40,6 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
 
   const workDisplayed = recommendedWorksResp?.works ?? props.works
 
-  console.log(workDisplayed)
-
   return (
     <>
       {workDisplayed.length > 0 && (

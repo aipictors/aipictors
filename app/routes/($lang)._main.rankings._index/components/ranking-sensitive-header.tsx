@@ -1,7 +1,7 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import { useNavigate, useLocation } from "@remix-run/react"
-import { ChevronLeftIcon, ChevronRightIcon, RefreshCcwIcon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
 
@@ -211,7 +211,7 @@ export function RankingSensitiveHeader(props: Props) {
             週間
           </Button>
         </div>
-        <div className="flex w-full justify-between space-x-1 md:space-x-4">
+        {/* <div className="flex w-full justify-between space-x-1 md:space-x-4">
           <Button
             className="w-24"
             variant={"ghost"}
@@ -227,7 +227,7 @@ export function RankingSensitiveHeader(props: Props) {
           >
             {"変更した内容で表示"}
           </Button>
-        </div>
+        </div> */}
       </div>
     </Card>
   )
