@@ -112,18 +112,41 @@ export function ThemeContainer(props: Props) {
     )
   }
 
+  // 前後の日付に移動する関数
   const handlePreviousDay = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    const currentDate = date ? new Date(date) : new Date()
-    const previousDay = new Date(currentDate.setDate(currentDate.getDate() - 1))
-    navigateToDate(previousDay)
+    event.stopPropagation() // イベントの伝播を停止
+
+    const previousDay = props.day
+      ? new Date(props.year, props.month - 1, props.day - 1)
+      : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
+
+    if (props.isSensitive) {
+      navigate(
+        `/sensitive/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+      )
+    } else {
+      navigate(
+        `/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+      )
+    }
   }
 
   const handleNextDay = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    const currentDate = date ? new Date(date) : new Date()
-    const nextDay = new Date(currentDate.setDate(currentDate.getDate() + 1))
-    navigateToDate(nextDay)
+    event.stopPropagation() // イベントの伝播を停止
+
+    const nextDay = props.day
+      ? new Date(props.year, props.month - 1, props.day + 1)
+      : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+
+    if (props.isSensitive) {
+      navigate(
+        `/sensitive/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
+      )
+    } else {
+      navigate(
+        `/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
+      )
+    }
   }
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
