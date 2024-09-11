@@ -210,7 +210,19 @@ export function ThemeContainer(props: Props) {
               perPage={32}
               currentPage={props.page}
               onPageChange={(page: number) => {
-                navigate(`/themes?page=${page}`)
+                if (props.isSensitive) {
+                  if (props.day) {
+                    navigate(`sensitive/themes/${props.year}/${props.month}/${props.day}?page=${page}`)
+                  } else {
+                    navigate(`sensitive/themes?page=${page}`)
+                  }
+                } else {
+                  if (props.day) {
+                    navigate(`/themes/${props.year}/${props.month}/${props.day}?page=${page}`)
+                  } else {
+                    navigate(`/themes?page=${page}`)
+                  }  
+                }
               }}
             />
           </div>
