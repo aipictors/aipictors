@@ -24,6 +24,8 @@ import type { FragmentOf } from "gql.tada"
 import React, { useContext, useEffect } from "react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
+import { Button } from "~/components/ui/button"
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
 
 type Props = {
   year: number
@@ -55,10 +57,9 @@ const useUpdateQueryParams = () => {
  */
 export function ThemeContainer(props: Props) {
   const navigate = useNavigate()
-
   const [searchParams] = useSearchParams()
-
   const updateQueryParams = useUpdateQueryParams()
+  const today = new Date() // 今日の日付を取得
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
@@ -69,8 +70,6 @@ export function ThemeContainer(props: Props) {
     "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
 
   const authContext = useContext(AuthContext)
-
-  console.log(props.themeId)
 
   const { data: resp } = useQuery(themeWorksQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -92,15 +91,67 @@ export function ThemeContainer(props: Props) {
     searchParams.get("tab") || props.defaultTab || "list",
   )
 
-  const onChangeListTab = () => {
-    searchParams.set("tab", "list")
-    updateQueryParams(searchParams)
-    setTab("list")
-  }
-
   useEffect(() => {
     setTab("list")
   }, [props.day])
+
+  // 今日の日付とテーマの日付を比較してボーダーを付けるロジック
+  const isToday = (year: number, month: number, day: number) => {
+    const targetDate = new Date(year, month - 1, day)
+
+    // props.day が指定されている場合、その日付かどうかを判定
+    if (props.day) {
+      return (
+        targetDate.getFullYear() === props.year &&
+        targetDate.getMonth() === props.month - 1 &&
+        targetDate.getDate() === props.day
+      )
+    }
+
+    // props.day が指定されていない場合、今日の日付かどうかを判定
+    return (
+      targetDate.getFullYear() === today.getFullYear() &&
+      targetDate.getMonth() === today.getMonth() &&
+      targetDate.getDate() === today.getDate()
+    )
+  }
+
+  // 前後の日付に移動する関数
+  const handlePreviousDay = (event: React.MouseEvent) => {
+    event.stopPropagation() // イベントの伝播を停止
+
+    const previousDay = props.day
+      ? new Date(props.year, props.month - 1, props.day - 1)
+      : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
+
+    if (props.isSensitive) {
+      navigate(
+        `/sensitive/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+      )
+    } else {
+      navigate(
+        `/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+      )
+    }
+  }
+
+  const handleNextDay = (event: React.MouseEvent) => {
+    event.stopPropagation() // イベントの伝播を停止
+
+    const nextDay = props.day
+      ? new Date(props.year, props.month - 1, props.day + 1)
+      : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+
+    if (props.isSensitive) {
+      navigate(
+        `/sensitive/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
+      )
+    } else {
+      navigate(
+        `/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
+      )
+    }
+  }
 
   return (
     <div className="flex flex-col space-y-4">
@@ -111,24 +162,32 @@ export function ThemeContainer(props: Props) {
       />
       <AppPageHeader title={"お題"} description={description} />
       {!props.day && props.todayTheme && (
-        <Link
-          to={`/themes/${props.todayTheme.year}/${props.todayTheme.month}/${props.todayTheme.day}`}
-          className="relative block h-24 overflow-hidden rounded-md p-4"
-        >
-          <h2 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 transform text-center font-bold text-white">
-            {"今日のお題は"}
-            <br />「{props.todayTheme.title}」
-          </h2>
-          <img
-            className="absolute top-0 left-0 w-full"
-            src={props.todayTheme.firstWork?.smallThumbnailImageURL}
-            alt={props.todayTheme.title}
-          />
-          <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
-        </Link>
+        <div className="relative overflow-hidden rounded-md">
+          <Link
+            to={`/themes/${props.todayTheme.year}/${props.todayTheme.month}/${props.todayTheme.day}`}
+            className="relative block h-24 overflow-hidden rounded-md p-4"
+          >
+            <h2 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 transform text-center font-bold text-white">
+              {"今日のお題は"}
+              <br />「{props.todayTheme.title}」
+            </h2>
+            <img
+              className="absolute top-0 left-0 w-full"
+              src={props.todayTheme.firstWork?.smallThumbnailImageURL}
+              alt={props.todayTheme.title}
+            />
+            <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
+          </Link>
+          <div className="-translate-y-1/2 absolute top-1/2 left-2 z-10">
+            <Button onClick={handlePreviousDay} className="p-2">
+              <ArrowLeftIcon />
+            </Button>
+          </div>
+        </div>
       )}
+
       {props.day && props.targetThemes && props.targetThemes.length && (
-        <div className="relative h-48 overflow-hidden rounded-md ">
+        <div className="relative h-48 overflow-hidden rounded-md">
           <img
             src={props.targetThemes[0].firstWork?.smallThumbnailImageURL ?? ""}
             alt={""}
@@ -142,6 +201,16 @@ export function ThemeContainer(props: Props) {
           <div className="absolute top-0 left-0 w-full bg-black bg-opacity-60 p-4 text-center font-semibold text-lg text-white">
             <h1 className="font-bold text-2xl">{`${props.year}/${props.month}/${props.day}のお題「${props.targetThemes[0].title}」`}</h1>
             <h2 className="text-xl">{`作品数: ${props.worksCount}`}</h2>
+          </div>
+          <div className="-translate-y-1/2 absolute top-1/2 left-2 z-10">
+            <Button onClick={handlePreviousDay} className="p-2">
+              <ArrowLeftIcon />
+            </Button>
+          </div>
+          <div className="-translate-y-1/2 absolute top-1/2 right-2 z-10">
+            <Button onClick={handleNextDay} className="p-2">
+              <ArrowRightIcon />
+            </Button>
           </div>
         </div>
       )}
@@ -173,7 +242,7 @@ export function ThemeContainer(props: Props) {
         <TabsContent value="list" className="m-0 flex flex-col space-y-4">
           <Carousel
             className="relative overflow-hidden"
-            opts={{ dragFree: true, loop: false }}
+            opts={{ dragFree: true, loop: false, align: "center" }}
           >
             <CarouselContent>
               {props.dailyBeforeThemes.length > 0 &&
@@ -191,6 +260,7 @@ export function ThemeContainer(props: Props) {
                         new Date()
                       }
                       title={`${theme.year}/${theme.month}/${theme.day}`}
+                      border={isToday(theme.year, theme.month, theme.day)} // 今日の日付ならボーダーを付ける
                     />
                   </CarouselItem>
                 ))}

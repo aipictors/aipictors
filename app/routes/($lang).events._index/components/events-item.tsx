@@ -29,7 +29,7 @@ export function EventItem(props: Props) {
 
   return (
     <Link className="w-full" to={`/events/${props.slug}`}>
-      <Card className="w-full">
+      <Card className="h-full w-full">
         <CardHeader className="w-full">
           <div className="relative flex items-center">
             <div className="m-auto">

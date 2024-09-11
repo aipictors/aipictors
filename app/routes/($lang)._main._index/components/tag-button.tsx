@@ -5,6 +5,8 @@ type Props = {
   title?: string
   link: string
   isDisabled?: boolean
+  isTagName?: boolean
+  border?: boolean
 }
 
 /**
@@ -42,9 +44,13 @@ const stringToColor = (text: string, isDisabled: boolean) => {
 }
 
 export function TagButton(props: Props) {
+  const borderStyle = props.border
+    ? "border-4 border-blue-500"
+    : "border-4 border-transparent"
+
   return props.isDisabled ? (
     <div
-      className="rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white"
+      className={`rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white ${borderStyle} box-border`}
       style={{
         backgroundColor: stringToColor(props.name, props.isDisabled ?? false),
       }}
@@ -52,12 +58,16 @@ export function TagButton(props: Props) {
       {props.title && (
         <div className="text-center font-bold text-md">{props.title}</div>
       )}
-      <div className="text-center font-bold">#{props.name}</div>
+      {props.isTagName ? (
+        <div className="text-center font-bold">#{props.name}</div>
+      ) : (
+        <div className="text-center font-bold">{props.name}</div>
+      )}
     </div>
   ) : (
     <Link to={`${props.link}`}>
       <div
-        className="rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white"
+        className={`rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white ${borderStyle} box-border`}
         style={{
           backgroundColor: stringToColor(props.name, props.isDisabled ?? false),
         }}
@@ -65,7 +75,11 @@ export function TagButton(props: Props) {
         {props.title && (
           <div className="text-center font-bold text-md">{props.title}</div>
         )}
-        <div className="text-center font-bold">#{props.name}</div>
+        {props.isTagName ? (
+          <div className="text-center font-bold">#{props.name}</div>
+        ) : (
+          <div className="text-center font-bold">{props.name}</div>
+        )}
       </div>
     </Link>
   )

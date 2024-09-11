@@ -71,15 +71,20 @@ export default function FollowingLayout() {
     !data.appEvent?.description ||
     !data.appEvent?.startAt ||
     !data.appEvent?.endAt ||
-    !data.appEvent.worksCount ||
-    !data.appEvent.awardWorks ||
-    !data.works
+    !data.appEvent.worksCount
   ) {
     return null
   }
 
   return (
     <div className="flex flex-col space-y-4">
+      {data.appEvent.thumbnailImageUrl && (
+        <img
+          className="h-auto max-h-96 w-full rounded-lg object-cover"
+          src={data.appEvent.thumbnailImageUrl}
+          alt=""
+        />
+      )}
       <Card className="m-auto w-full">
         <CardHeader>
           <div className="mt-4 text-center font-medium text-lg">
@@ -119,7 +124,7 @@ export default function FollowingLayout() {
       </Card>
       {data.appEvent.slug && (
         <EventSensitiveWorkList
-          works={data.works}
+          works={data.works ?? []}
           isSensitive={false}
           maxCount={data.worksCount}
           page={data.page}
