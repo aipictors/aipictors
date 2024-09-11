@@ -1,8 +1,16 @@
+import type React from "react"
+import { useContext, useEffect, useState } from "react"
 import { Link, useNavigate, useSearchParams } from "@remix-run/react"
+import { useQuery } from "@apollo/client/index"
+import type { FragmentOf } from "gql.tada"
+import { ArrowLeftIcon, ArrowRightIcon, CalendarIcon } from "lucide-react"
+
 import { AppPageHeader } from "~/components/app/app-page-header"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import {
   Carousel,
   CarouselContent,
@@ -11,6 +19,7 @@ import {
   CarouselNext,
 } from "~/components/ui/carousel"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs"
+import { AuthContext } from "~/contexts/auth-context"
 import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
 import {
   type ThemeListItemFragment,
@@ -20,12 +29,6 @@ import {
   themeWorksQuery,
   type ThemeWorkFragment,
 } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
-import type { FragmentOf } from "gql.tada"
-import React, { useContext, useEffect } from "react"
-import { useQuery } from "@apollo/client/index"
-import { AuthContext } from "~/contexts/auth-context"
-import { Button } from "~/components/ui/button"
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
 
 type Props = {
   year: number
@@ -52,24 +55,21 @@ const useUpdateQueryParams = () => {
   return updateQueryParams
 }
 
-/**
- * お題コンテナ
- */
 export function ThemeContainer(props: Props) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
-  const today = new Date() // 今日の日付を取得
-
-  const handleTabChange = (tab: string) => {
-    searchParams.set("tab", tab)
-    updateQueryParams(searchParams)
-  }
-
-  const description =
-    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
-
+  const today = new Date()
   const authContext = useContext(AuthContext)
+
+  const [tab, setTab] = useState(
+    searchParams.get("tab") || props.defaultTab || "list",
+  )
+  const [date, setDate] = useState(
+    props.day
+      ? `${props.year}-${String(props.month).padStart(2, "0")}-${String(props.day).padStart(2, "0")}`
+      : "",
+  )
 
   const { data: resp } = useQuery(themeWorksQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -87,19 +87,17 @@ export function ThemeContainer(props: Props) {
 
   const works = resp?.works ?? props.works
 
-  const [tab, setTab] = React.useState(
-    searchParams.get("tab") || props.defaultTab || "list",
-  )
-
   useEffect(() => {
     setTab("list")
   }, [props.day])
 
-  // 今日の日付とテーマの日付を比較してボーダーを付けるロジック
+  const handleTabChange = (tab: string) => {
+    searchParams.set("tab", tab)
+    updateQueryParams(searchParams)
+  }
+
   const isToday = (year: number, month: number, day: number) => {
     const targetDate = new Date(year, month - 1, day)
-
-    // props.day が指定されている場合、その日付かどうかを判定
     if (props.day) {
       return (
         targetDate.getFullYear() === props.year &&
@@ -107,8 +105,6 @@ export function ThemeContainer(props: Props) {
         targetDate.getDate() === props.day
       )
     }
-
-    // props.day が指定されていない場合、今日の日付かどうかを判定
     return (
       targetDate.getFullYear() === today.getFullYear() &&
       targetDate.getMonth() === today.getMonth() &&
@@ -116,42 +112,48 @@ export function ThemeContainer(props: Props) {
     )
   }
 
-  // 前後の日付に移動する関数
   const handlePreviousDay = (event: React.MouseEvent) => {
-    event.stopPropagation() // イベントの伝播を停止
-
-    const previousDay = props.day
-      ? new Date(props.year, props.month - 1, props.day - 1)
-      : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
-
-    if (props.isSensitive) {
-      navigate(
-        `/sensitive/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
-      )
-    } else {
-      navigate(
-        `/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
-      )
-    }
+    event.stopPropagation()
+    const currentDate = date ? new Date(date) : new Date()
+    const previousDay = new Date(currentDate.setDate(currentDate.getDate() - 1))
+    navigateToDate(previousDay)
   }
 
   const handleNextDay = (event: React.MouseEvent) => {
-    event.stopPropagation() // イベントの伝播を停止
+    event.stopPropagation()
+    const currentDate = date ? new Date(date) : new Date()
+    const nextDay = new Date(currentDate.setDate(currentDate.getDate() + 1))
+    navigateToDate(nextDay)
+  }
 
-    const nextDay = props.day
-      ? new Date(props.year, props.month - 1, props.day + 1)
-      : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
-
-    if (props.isSensitive) {
-      navigate(
-        `/sensitive/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
-      )
-    } else {
-      navigate(
-        `/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
-      )
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = event.target.value
+    setDate(newDate)
+    if (newDate) {
+      navigateToDate(new Date(newDate))
     }
   }
+
+  const handleTodayClick = () => {
+    const today = new Date()
+    const formattedDate = today.toISOString().split("T")[0]
+    setDate(formattedDate)
+    navigateToDate(today)
+  }
+
+  const navigateToDate = (date: Date) => {
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    if (props.isSensitive) {
+      navigate(`/sensitive/themes/${year}/${month}/${day}`)
+    } else {
+      navigate(`/themes/${year}/${month}/${day}`)
+    }
+  }
+
+  const description =
+    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
 
   return (
     <div className="flex flex-col space-y-4">
@@ -161,6 +163,30 @@ export function ThemeContainer(props: Props) {
         fallbackURL="https://www.aipictors.com/idea"
       />
       <AppPageHeader title={"お題"} description={description} />
+
+      <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
+        <div className="flex space-x-2">
+          <Button onClick={handlePreviousDay} className="p-2">
+            <ArrowLeftIcon />
+          </Button>
+          <Button onClick={handleNextDay} className="p-2">
+            <ArrowRightIcon />
+          </Button>
+        </div>
+        <div className="flex items-center space-x-2">
+          <CalendarIcon className="h-5 w-5 text-gray-400" />
+          <Input
+            type="date"
+            value={date}
+            onChange={handleDateChange}
+            className="w-[200px]"
+          />
+          <Button onClick={handleTodayClick} variant="outline">
+            {"本日"}
+          </Button>
+        </div>
+      </div>
+
       {!props.day && props.todayTheme && (
         <div className="relative overflow-hidden rounded-md">
           <Link
@@ -178,15 +204,10 @@ export function ThemeContainer(props: Props) {
             />
             <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
           </Link>
-          <div className="-translate-y-1/2 absolute top-1/2 left-2 z-10">
-            <Button onClick={handlePreviousDay} className="p-2">
-              <ArrowLeftIcon />
-            </Button>
-          </div>
         </div>
       )}
 
-      {props.day && props.targetThemes && props.targetThemes.length && (
+      {props.day && props.targetThemes && props.targetThemes.length > 0 && (
         <div className="relative h-48 overflow-hidden rounded-md">
           <img
             src={props.targetThemes[0].firstWork?.smallThumbnailImageURL ?? ""}
@@ -202,16 +223,6 @@ export function ThemeContainer(props: Props) {
             <h1 className="font-bold text-2xl">{`${props.year}/${props.month}/${props.day}のお題「${props.targetThemes[0].title}」`}</h1>
             <h2 className="text-xl">{`作品数: ${props.worksCount}`}</h2>
           </div>
-          <div className="-translate-y-1/2 absolute top-1/2 left-2 z-10">
-            <Button onClick={handlePreviousDay} className="p-2">
-              <ArrowLeftIcon />
-            </Button>
-          </div>
-          <div className="-translate-y-1/2 absolute top-1/2 right-2 z-10">
-            <Button onClick={handleNextDay} className="p-2">
-              <ArrowRightIcon />
-            </Button>
-          </div>
         </div>
       )}
 
@@ -222,20 +233,10 @@ export function ThemeContainer(props: Props) {
         className="space-y-4"
       >
         <TabsList>
-          <TabsTrigger
-            onClick={() => {
-              setTab("list")
-            }}
-            value="list"
-          >
+          <TabsTrigger onClick={() => setTab("list")} value="list">
             <div className="w-full">{"作品一覧"}</div>
           </TabsTrigger>
-          <TabsTrigger
-            onClick={() => {
-              setTab("calender")
-            }}
-            value="calender"
-          >
+          <TabsTrigger onClick={() => setTab("calender")} value="calender">
             <div className="w-full">{"カレンダー"}</div>
           </TabsTrigger>
         </TabsList>
@@ -260,7 +261,7 @@ export function ThemeContainer(props: Props) {
                         new Date()
                       }
                       title={`${theme.year}/${theme.month}/${theme.day}`}
-                      border={isToday(theme.year, theme.month, theme.day)} // 今日の日付ならボーダーを付ける
+                      border={isToday(theme.year, theme.month, theme.day)}
                     />
                   </CarouselItem>
                 ))}
