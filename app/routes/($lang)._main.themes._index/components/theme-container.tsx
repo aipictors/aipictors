@@ -212,16 +212,20 @@ export function ThemeContainer(props: Props) {
               onPageChange={(page: number) => {
                 if (props.isSensitive) {
                   if (props.day) {
-                    navigate(`/sensitive/themes/${props.year}/${props.month}/${props.day}?page=${page}`)
+                    navigate(
+                      `/sensitive/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
+                    )
                   } else {
                     navigate(`/sensitive/themes?page=${page}`)
                   }
                 } else {
                   if (props.day) {
-                    navigate(`/themes/${props.year}/${props.month}/${props.day}?page=${page}`)
+                    navigate(
+                      `/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
+                    )
                   } else {
                     navigate(`/themes?page=${page}`)
-                  }  
+                  }
                 }
               }}
             />
