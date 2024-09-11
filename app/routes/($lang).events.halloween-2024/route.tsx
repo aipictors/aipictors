@@ -1,8 +1,8 @@
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { cn } from "~/lib/cn"
-import { eventUsers } from "~/routes/($lang).events.wakiaiai/assets/event-users"
-import { EventImage } from "~/routes/($lang).events.wakiaiai/components/event-image"
+import { eventUsers } from "~/routes/events.wakiaiai/assets/event-users"
+import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, Link, useLoaderData } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
@@ -54,7 +54,7 @@ export default function EventWakiaiai() {
     <div className="space-y-6 py-8">
       <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
         <div className="max-w-[640px] flex-shrink-0">
-          <EventImage
+          <EventWakiaiaiImage
             alt="和気あいAI"
             imageURL="https://assets.aipictors.com/wakiaiai-halloween.webp"
             linkTitle="Aipictors"
