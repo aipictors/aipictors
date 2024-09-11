@@ -179,6 +179,7 @@ export default function SensitiveDayThemePage() {
         month={data.month}
         defaultTab={data.tab !== "list" ? "calender" : "list"}
         themeId={data.themeId}
+        isSensitive={true}
       />
     </article>
   )
