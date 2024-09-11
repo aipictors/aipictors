@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { cn } from "~/lib/cn"
-import { eventUsers } from "~/routes/events.wakiaiai/assets/event-users"
+import { eventUsers } from "~/routes/events.wakiaiai2/assets/event-users"
 import { EventWakiaiaiCreatorCard } from "~/routes/events.wakiaiai/components/event-wakiaiai-creator-card"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
 import { Link, type MetaFunction } from "@remix-run/react"
