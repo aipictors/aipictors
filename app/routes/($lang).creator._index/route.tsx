@@ -16,7 +16,7 @@ export default function Route() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <div className="container-2">
+    <div className="container-shadcn-ui">
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4">
         {data.requests.map((request) => (
           <HomeRequestCard key={request.id} request={request} />

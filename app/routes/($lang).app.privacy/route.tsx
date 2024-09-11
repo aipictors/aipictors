@@ -3,9 +3,12 @@ import text from "~/assets/flutter/privacy.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
 import type { MetaFunction } from "@remix-run/cloudflare"
 
-export default function AppPrivacyPage() {
+/**
+ * プライバシー・ポリシー
+ */
+export default function Route() {
   return (
-    <div className="container space-y-8 px-8 py-8">
+    <div className="container-shadcn-ui space-y-8 px-8 py-8">
       <h1 className="font-bold text-2xl">{"プライバシー・ポリシー"}</h1>
       <AppMarkdown>{text}</AppMarkdown>
     </div>
