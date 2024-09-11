@@ -207,7 +207,7 @@ export default function MonthThemes() {
         year={data.year}
         month={data.month}
         defaultTab={"calender"}
-        themeId={data.subjectId.toString()}
+        themeId={data.subjectId}
       />
     </>
   )

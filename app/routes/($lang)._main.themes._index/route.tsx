@@ -195,7 +195,7 @@ export default function Themes() {
         page={data.page}
         year={data.year}
         month={data.month}
-        themeId={data.themeId.toString()}
+        themeId={data.themeId}
       />
     </>
   )

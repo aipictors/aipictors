@@ -39,7 +39,7 @@ type Props = {
   works: FragmentOf<typeof ThemeWorkFragment>[]
   defaultTab?: "list" | "calender"
   isSensitive?: boolean
-  themeId: string
+  themeId: number
 }
 
 const useUpdateQueryParams = () => {
@@ -78,7 +78,7 @@ export function ThemeContainer(props: Props) {
       offset: props.page * 32,
       limit: 32,
       where: {
-        subjectId: Number(props.themeId),
+        subjectId: props.themeId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         orderBy: "DATE_CREATED",
         isNowCreatedAt: true,

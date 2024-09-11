@@ -187,7 +187,7 @@ export default function Themes() {
         year={data.year}
         month={data.month}
         isSensitive={true}
-        themeId={data.themeId.toString()}
+        themeId={data.themeId}
       />
     </>
   )

@@ -198,7 +198,7 @@ export default function MonthThemes() {
         month={data.month}
         defaultTab={"calender"}
         isSensitive={true}
-        themeId={data.todayTheme?.id.toString() ?? ""}
+        themeId={Number(data.todayTheme?.id)}
       />
     </>
   )
