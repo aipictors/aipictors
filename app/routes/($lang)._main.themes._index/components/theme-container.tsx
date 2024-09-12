@@ -74,8 +74,8 @@ export function ThemeContainer(props: Props) {
   const { data: resp } = useQuery(themeWorksQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
-      offset: props.page * 32,
-      limit: 32,
+      offset: props.page * 64,
+      limit: 64,
       where: {
         subjectId: props.themeId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
