@@ -163,7 +163,7 @@ export default function Route() {
         <EventWakiaiaiImage
           alt={"和気あいAI"}
           imageURL={
-            "https://www.aipictors.com/wp-content/uploads/2023/06/FDfUikjd67cARVC30vePmGJMn4zL81.webp"
+            "https://files.aipictors.com/e9ce2430-d643-4f76-b726-c67cab9ef4eb"
           }
           linkURL={"/posts/59815/"}
           linkTitle={"Aipictors"}
@@ -193,7 +193,7 @@ export const meta: MetaFunction = () => {
     {
       property: "og:image",
       content:
-        "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+        "https://files.aipictors.com/e9ce2430-d643-4f76-b726-c67cab9ef4eb",
     },
     {
       name: "twitter:title",

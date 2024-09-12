@@ -147,7 +147,7 @@ export const meta: MetaFunction = () => {
     {
       property: "og:image",
       content:
-        "https://www.aipictors.com/wp-content/uploads/2023/07/2NSLUKmgXQni6HaM18FAVTbtd4xscq.webp",
+        "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai2_top.webp?alt=media&token=678241ea-c5de-4cf4-992c-e0bb081f4cc7",
     },
     {
       name: "twitter:title",
