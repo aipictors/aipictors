@@ -189,10 +189,12 @@ export function ThemeContainer(props: Props) {
 
       <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
         <div className="flex space-x-2">
-          <Button onClick={handlePreviousDay} className="p-2">
+          <Button onClick={handlePreviousDay} className="flex items-center p-2">
             <ArrowLeftIcon />
+            {"前日"}
           </Button>
-          <Button onClick={handleNextDay} className="p-2">
+          <Button onClick={handleNextDay} className="flex items-center p-2">
+            {"翌日"}
             <ArrowRightIcon />
           </Button>
         </div>
@@ -301,7 +303,7 @@ export function ThemeContainer(props: Props) {
           <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
             <ResponsivePagination
               maxCount={props.worksCount || 0}
-              perPage={32}
+              perPage={64}
               currentPage={props.page}
               onPageChange={(page: number) => {
                 if (props.isSensitive) {

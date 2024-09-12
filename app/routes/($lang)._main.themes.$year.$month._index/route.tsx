@@ -80,8 +80,8 @@ export async function loader(props: LoaderFunctionArgs) {
     ? await client.query({
         query: themeWorksQuery,
         variables: {
-          offset: page * 32,
-          limit: 32,
+          offset: page * 64,
+          limit: 64,
           where: {
             subjectId: Number(todayThemesResp.data.dailyThemes[0].id),
             ratings: ["G", "R15"],
