@@ -1,5 +1,4 @@
 import {} from "react"
-import { RefreshCcwIcon } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import {
@@ -112,8 +111,7 @@ export function AppSideMenu(props: Props) {
                 variant={"secondary"}
                 className="flex w-full transform cursor-pointer items-center"
               >
-                <RefreshCcwIcon className="mr-1 w-3" />
-                <p className="text-sm">{"対象年齢"}</p>
+                <p className="text-sm">{"全年齢"}</p>
               </Button>
             ))}
           {!isSubscriptionUser &&

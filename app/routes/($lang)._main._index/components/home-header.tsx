@@ -31,15 +31,30 @@ function HomeHeader(props: Props) {
 
   const [searchText, setSearchText] = useState("")
 
+  const checkSensitivePath = () => {
+    return window.location.pathname.includes("/sensitive")
+  }
+
+  const sensitivePath = checkSensitivePath()
+
+  const getSensitiveLink = (path: string) => {
+    if (sensitivePath) {
+      return `/sensitive${path}`
+    }
+    return path
+  }
+
   const onSearch = () => {
     const trimmedText = searchText.trim()
     if (trimmedText !== "") {
       const baseUrl = `/tags/${trimmedText}`
-      window.location.href = baseUrl
+      window.location.href = getSensitiveLink(baseUrl)
     } else {
-      window.location.href = "/search"
+      window.location.href = getSensitiveLink("/search")
     }
   }
+
+  const title = sensitivePath ? "Aipictors R18" : props.title ?? "Aipictors β"
 
   // 新着のお知らせがあるかどうか
   const isExistedNewNotification = useQuery(
@@ -108,9 +123,7 @@ function HomeHeader(props: Props) {
                 />
               )}
               <div className="hidden flex-grow flex-row items-center md:flex">
-                <span className="font-bold text-xl">
-                  {props.title ?? "Aipictors β"}
-                </span>
+                <span className="font-bold text-xl">{title}</span>
               </div>
             </Link>
           </div>
@@ -118,10 +131,10 @@ function HomeHeader(props: Props) {
         <div className="flex w-full justify-end gap-x-2">
           <div className="hidden w-full items-center space-x-2 md:flex">
             <div className="flex w-full justify-start space-x-2 font-semibold">
-              <Link to={"/themes"}>
+              <Link to={getSensitiveLink("/themes")}>
                 <Button variant={"ghost"}>{"お題"}</Button>
               </Link>
-              <Link to={"/rankings"}>
+              <Link to={getSensitiveLink("/rankings")}>
                 <Button variant={"ghost"}>{"ランキング"}</Button>
               </Link>
               <div className="w-full flex-1">
@@ -139,6 +152,7 @@ function HomeHeader(props: Props) {
           </div>
           {authContext.isLoggedIn && (
             <>
+              {/* 投稿と生成のリンクには /sensitive を付けない */}
               <Link to={"/generation"}>
                 <Button variant={"ghost"}>{"生成"}</Button>
               </Link>

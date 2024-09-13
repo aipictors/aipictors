@@ -13,6 +13,8 @@ import { HomeContents } from "~/routes/($lang)._main._index/components/home-cont
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
 import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.HOME_SENSITIVE)
@@ -160,6 +162,8 @@ export default function Index() {
           recommendedTags: data.recommendedTags,
           promotionWorks: data.promotionWorks,
           newUserWorks: data.newUserWorks,
+          newPostedUsers: data.newPostedUsers,
+          newComments: data.newComments,
         }}
         isSensitive={true}
         isCropped={false}
@@ -263,6 +267,22 @@ const query = graphql(
     ) {
       ...HomeNewUsersWorks
     }
+    newPostedUsers: newPostedUsers(
+      offset: 0,
+      limit: 8,
+    ) {
+      ...HomeNewPostedUsers
+    }
+    newComments: newComments(
+      offset: 0,
+      limit: 8,
+      where: {
+        isSensitive: true,
+        ratings: [R18, R18G],
+      }
+    ) {
+      ...HomeNewComments
+    }
     promotionWorks: works(
       offset: 0,
       limit: $promotionWorksLimit,
@@ -308,5 +328,7 @@ const query = graphql(
     HomeTagFragment,
     HomeTagWorkFragment,
     HomeNewUsersWorksFragment,
+    HomeNewPostedUsersFragment,
+    HomeNewCommentsFragment,
   ],
 )
