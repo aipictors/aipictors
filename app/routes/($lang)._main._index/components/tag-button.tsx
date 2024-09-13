@@ -2,7 +2,11 @@ import { Link } from "@remix-run/react"
 
 type Props = {
   name: string
+  title?: string
   link: string
+  isDisabled?: boolean
+  isTagName?: boolean
+  border?: boolean
 }
 
 /**
@@ -27,7 +31,11 @@ const hashCode = (text: string) => {
  * @returns
  * TODO_2024_08: 別のファイルに移動する
  */
-const stringToColor = (text: string) => {
+const stringToColor = (text: string, isDisabled: boolean) => {
+  if (isDisabled) {
+    return "hsl(0, 0%, 50%)" // グレー色
+  }
+
   const hash = hashCode(text)
   const hue = Math.abs(hash) % 360
   const saturation = 32
@@ -36,13 +44,42 @@ const stringToColor = (text: string) => {
 }
 
 export function TagButton(props: Props) {
-  return (
-    <Link to={`/tags/${props.link}`}>
+  const borderStyle = props.border
+    ? "border-4 border-blue-500"
+    : "border-4 border-transparent"
+
+  return props.isDisabled ? (
+    <div
+      className={`rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white ${borderStyle} box-border`}
+      style={{
+        backgroundColor: stringToColor(props.name, props.isDisabled ?? false),
+      }}
+    >
+      {props.title && (
+        <div className="text-center font-bold text-md">{props.title}</div>
+      )}
+      {props.isTagName ? (
+        <div className="text-center font-bold">#{props.name}</div>
+      ) : (
+        <div className="text-center font-bold">{props.name}</div>
+      )}
+    </div>
+  ) : (
+    <Link to={`${props.link}`}>
       <div
-        className="rounded-md bg-blue-500 p-1 pr-2 pl-2 text-white"
-        style={{ backgroundColor: stringToColor(props.name) }}
+        className={`rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white ${borderStyle} box-border`}
+        style={{
+          backgroundColor: stringToColor(props.name, props.isDisabled ?? false),
+        }}
       >
-        #{props.name}
+        {props.title && (
+          <div className="text-center font-bold text-md">{props.title}</div>
+        )}
+        {props.isTagName ? (
+          <div className="text-center font-bold">#{props.name}</div>
+        ) : (
+          <div className="text-center font-bold">{props.name}</div>
+        )}
       </div>
     </Link>
   )

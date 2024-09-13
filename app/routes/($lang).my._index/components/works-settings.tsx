@@ -67,112 +67,106 @@ export function WorksSetting(props: Props) {
 
   return (
     <>
-      <div className="mb-4">
-        <>
-          <div className="mt-4 mb-4">
-            <div className="flex space-x-4">
-              {/* 公開範囲 */}
-              <Select
-                value={props.accessType ? props.accessType : ""}
-                onValueChange={(value) => {
-                  if (value === "ALL") {
-                    props.setAccessType(null)
-                    return
-                  }
-                  props.setAccessType(value as IntrospectionEnum<"AccessType">)
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      props.accessType
-                        ? toAccessTypeText(props.accessType)
-                        : "公開範囲"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">{"公開範囲"}</SelectItem>
-                  <SelectItem value="PUBLIC">{"公開"}</SelectItem>
-                  <SelectItem value="SILENT">{"公開(新着無)"}</SelectItem>
-                  <SelectItem value="LIMITED">{"限定公開"}</SelectItem>
-                  <SelectItem value="PRIVATE">{"非公開"}</SelectItem>
-                  <SelectItem value="DRAFT">{"下書き"}</SelectItem>
-                </SelectContent>
-              </Select>
-              {/* 作品種別 */}
-              <Select
-                value={props.workType ? props.workType : ""}
-                onValueChange={(value) => {
-                  if (value === "ALL") {
-                    props.setWorkType(null)
-                    return
-                  }
-                  props.setWorkType(value as IntrospectionEnum<"WorkType">)
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      props.workType ? toWorkTypeText(props.workType) : "種類"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">{"種類"}</SelectItem>
-                  <SelectItem value="WORK">{"画像"}</SelectItem>
-                  <SelectItem value="VIDEO">{"動画"}</SelectItem>
-                  <SelectItem value="NOVEL">{"小説"}</SelectItem>
-                  <SelectItem value="COLUMN">{"コラム"}</SelectItem>
-                </SelectContent>
-              </Select>
+      <div className="flex space-x-4">
+        {/* 公開範囲 */}
+        <Select
+          value={props.accessType ? props.accessType : ""}
+          onValueChange={(value) => {
+            if (value === "ALL") {
+              props.setAccessType(null)
+              return
+            }
+            props.setAccessType(value as IntrospectionEnum<"AccessType">)
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue
+              placeholder={
+                props.accessType
+                  ? toAccessTypeText(props.accessType)
+                  : "公開範囲"
+              }
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">{"公開範囲"}</SelectItem>
+            <SelectItem value="PUBLIC">{"公開"}</SelectItem>
+            <SelectItem value="SILENT">{"公開(新着無)"}</SelectItem>
+            <SelectItem value="LIMITED">{"限定公開"}</SelectItem>
+            <SelectItem value="PRIVATE">{"非公開"}</SelectItem>
+            <SelectItem value="DRAFT">{"下書き"}</SelectItem>
+          </SelectContent>
+        </Select>
+        {/* 作品種別 */}
+        <Select
+          value={props.workType ? props.workType : ""}
+          onValueChange={(value) => {
+            if (value === "ALL") {
+              props.setWorkType(null)
+              return
+            }
+            props.setWorkType(value as IntrospectionEnum<"WorkType">)
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue
+              placeholder={
+                props.workType ? toWorkTypeText(props.workType) : "種類"
+              }
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">{"種類"}</SelectItem>
+            <SelectItem value="WORK">{"画像"}</SelectItem>
+            <SelectItem value="VIDEO">{"動画"}</SelectItem>
+            <SelectItem value="NOVEL">{"小説"}</SelectItem>
+            <SelectItem value="COLUMN">{"コラム"}</SelectItem>
+          </SelectContent>
+        </Select>
 
-              {/* 年齢制限 */}
-              <Select
-                value={props.rating ? props.rating : ""}
-                onValueChange={(value) => {
-                  if (value === "ALL") {
-                    props.setRating(null)
-                    return
-                  }
-                  props.setRating(value as IntrospectionEnum<"Rating">)
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      props.rating ? toRatingText(props.rating) : "年齢制限"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">{"年齢制限"}</SelectItem>
-                  <SelectItem value="G">{"全年齢"}</SelectItem>
-                  <SelectItem value="R15">{"R15"}</SelectItem>
-                  <SelectItem value="R18">{"R18"}</SelectItem>
-                  <SelectItem value="R18G">{"R18G"}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </>
-        <div className="block md:hidden">
-          <WorksListSortableSetting
-            nowSort={props.sort}
-            nowOrderBy={props.orderBy}
-            allOrderBy={allSortType}
-            setSort={props.setSort}
-            onClickTitleSortButton={props.onClickTitleSortButton}
-            onClickLikeSortButton={props.onClickLikeSortButton}
-            onClickBookmarkSortButton={props.onClickBookmarkSortButton}
-            onClickCommentSortButton={props.onClickCommentSortButton}
-            onClickViewSortButton={props.onClickViewSortButton}
-            onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
-            onClickDateSortButton={props.onClickDateSortButton}
-            onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
-            onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
-          />
-        </div>
+        {/* 年齢制限 */}
+        <Select
+          value={props.rating ? props.rating : ""}
+          onValueChange={(value) => {
+            if (value === "ALL") {
+              props.setRating(null)
+              return
+            }
+            props.setRating(value as IntrospectionEnum<"Rating">)
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue
+              placeholder={
+                props.rating ? toRatingText(props.rating) : "年齢制限"
+              }
+            />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">{"年齢制限"}</SelectItem>
+            <SelectItem value="G">{"全年齢"}</SelectItem>
+            <SelectItem value="R15">{"R15"}</SelectItem>
+            <SelectItem value="R18">{"R18"}</SelectItem>
+            <SelectItem value="R18G">{"R18G"}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="block md:hidden">
+        <WorksListSortableSetting
+          nowSort={props.sort}
+          nowOrderBy={props.orderBy}
+          allOrderBy={allSortType}
+          setSort={props.setSort}
+          onClickTitleSortButton={props.onClickTitleSortButton}
+          onClickLikeSortButton={props.onClickLikeSortButton}
+          onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+          onClickCommentSortButton={props.onClickCommentSortButton}
+          onClickViewSortButton={props.onClickViewSortButton}
+          onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+          onClickDateSortButton={props.onClickDateSortButton}
+          onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+          onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+        />
       </div>
     </>
   )

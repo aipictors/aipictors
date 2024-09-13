@@ -15,13 +15,16 @@ export function HomeNewCommentsSection(props: Props) {
     <div className="flex flex-col space-y-4">
       <h2 className="font-semibold">新規コメント</h2>
       {props.comments.map((comment) => (
-        <div key={comment.comment?.id} className="flex items-center space-x-2">
+        <div
+          key={comment.comment?.id}
+          className="flex items-center space-x-2 opacity-80"
+        >
           {comment.work?.smallThumbnailImageURL && (
             <Link
-              to={`/posts/${comment.work}`}
+              to={`/posts/${comment.work.id}`}
               className="flex items-center space-x-2"
             >
-              <div className="opacity-60">
+              <div>
                 <CroppedWorkSquare
                   workId={comment.work.id}
                   imageUrl={comment.work?.smallThumbnailImageURL}
@@ -57,10 +60,10 @@ export function HomeNewCommentsSection(props: Props) {
                   <img
                     src={comment.sticker.imageUrl}
                     alt="sticker"
-                    className="h-8 w-8 rounded-md opacity-60 md:h-12 md:w-12"
+                    className="h-8 w-8 rounded-md md:h-12 md:w-12"
                   />
                 )}
-                <div className="text-sm opacity-60">
+                <div className="text-sm">
                   {toElapsedTimeText(comment.createdAt)}
                 </div>
               </div>

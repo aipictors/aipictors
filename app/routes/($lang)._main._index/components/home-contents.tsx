@@ -1,5 +1,5 @@
 import type { FragmentOf } from "gql.tada"
-import { ArrowDownWideNarrow, RefreshCcwIcon } from "lucide-react"
+import { ArrowDownWideNarrow } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import {
@@ -39,18 +39,10 @@ import {
 } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { Button } from "~/components/ui/button"
-import { Link, useNavigate } from "@remix-run/react"
 import { Separator } from "~/components/ui/separator"
-import {
-  HomeNewUsersSection,
-  type HomeNewPostedUsersFragment,
-} from "~/routes/($lang)._main._index/components/home-new-users-section"
-import {
-  type HomeNewCommentsFragment,
-  HomeNewCommentsSection,
-} from "~/routes/($lang)._main._index/components/home-new-comments"
+import { AppSideMenu } from "~/components/app/app-side-menu"
+import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
+import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -88,6 +80,7 @@ const useUpdateQueryParams = () => {
  */
 export function HomeContents(props: Props) {
   const [searchParams] = useSearchParams()
+
   const updateQueryParams = useUpdateQueryParams()
 
   const [isMounted, setIsMounted] = useState(false)
@@ -191,17 +184,6 @@ export function HomeContents(props: Props) {
     updateQueryParams(searchParams)
   }
 
-  // ハイドレーションエラー対策
-  // if (
-  //   !isMounted &&
-  //   searchParams.get("tab") &&
-  //   searchParams.get("tab") !== "home"
-  // ) {
-  //   return null
-  // }
-
-  const navigate = useNavigate()
-
   return (
     <Tabs
       defaultValue={searchParams.get("tab") || "home"}
@@ -224,7 +206,7 @@ export function HomeContents(props: Props) {
       </TabsList>
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
         {!props.isSensitive && props.homeParticles && (
-          <div className="block md:flex md:space-x-4">
+          <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex flex-col space-y-4 md:w-[80%]">
               <div className="hidden md:block">
                 {props.homeParticles.releaseList && (
@@ -239,6 +221,12 @@ export function HomeContents(props: Props) {
                   hotTags={props.homeParticles.hotTags}
                 />
               </div>
+              {!props.isSensitive && (
+                <HomeWorksUsersRecommendedSection
+                  isSensitive={props.isSensitive}
+                  works={props.homeParticles.promotionWorks}
+                />
+              )}
               <HomeWorksTagSection
                 tag={props.homeParticles.firstTag}
                 works={props.homeParticles.firstTagWorks}
@@ -262,69 +250,17 @@ export function HomeContents(props: Props) {
                 tags={props.homeParticles.recommendedTags}
                 isSensitive={props.isSensitive}
               />
-              {!props.isSensitive && (
-                <HomeWorksUsersRecommendedSection
-                  isSensitive={props.isSensitive}
-                  works={props.homeParticles.promotionWorks}
-                />
-              )}
             </div>
             <Separator
               orientation="vertical"
               className="hidden h-[100vh] w-[1px] md:block"
             />
-            <div className="flex flex-col space-y-4 md:w-[20%]">
-              <div className="relative grid gap-4">
-                {!props.isSensitive ? (
-                  <AppConfirmDialog
-                    title={"確認"}
-                    description={
-                      "センシティブな作品を表示します、あなたは18歳以上ですか？"
-                    }
-                    onNext={() => {
-                      navigate("/sensitive")
-                    }}
-                    cookieKey={"check-sensitive-ranking"}
-                    onCancel={() => {}}
-                  >
-                    <Button
-                      variant={"secondary"}
-                      className="flex w-full transform cursor-pointer items-center"
-                    >
-                      <p className="text-sm">{"センシティブ"}</p>
-                    </Button>
-                  </AppConfirmDialog>
-                ) : (
-                  <Button
-                    onClick={() => {
-                      navigate("/")
-                    }}
-                    variant={"secondary"}
-                    className="flex w-full transform cursor-pointer items-center"
-                  >
-                    <RefreshCcwIcon className="mr-1 w-3" />
-                    <p className="text-sm">{"対象年齢"}</p>
-                  </Button>
-                )}
-                <Link to="/generation">
-                  <img
-                    src="https://assets.aipictors.com/Aipictors_01.webp"
-                    alt="Aipictors Logo"
-                  />
-                </Link>
-                {props.homeParticles.newPostedUsers && (
-                  <HomeNewUsersSection
-                    users={props.homeParticles.newPostedUsers}
-                  />
-                )}
-                {props.homeParticles.newComments &&
-                  props.homeParticles.newComments.length > 0 && (
-                    <HomeNewCommentsSection
-                      comments={props.homeParticles.newComments}
-                    />
-                  )}
-              </div>
-            </div>
+            <AppSideMenu
+              homeParticles={props.homeParticles}
+              isSensitive={props.isSensitive ?? false}
+              isShowSensitiveButton={true}
+              isShowGenerationAds={true}
+            />
           </div>
         )}
         {props.isSensitive && props.homeParticles && (

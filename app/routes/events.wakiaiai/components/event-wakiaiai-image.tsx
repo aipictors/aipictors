@@ -6,10 +6,10 @@ type Props = {
   alt: string
   imageURL: string
   linkURL?: string
-  linkTitle: string
+  linkTitle?: string
 }
 
-export function EventImage(props: Props) {
+export function EventWakiaiaiImage(props: Props) {
   return (
     <div className="relative">
       <img
@@ -26,7 +26,7 @@ export function EventImage(props: Props) {
         >
           <Button className="rounded-full">
             <MousePointerClickIcon />
-            <span className="ml-2">{props.linkTitle}</span>
+            {props.linkTitle && <span className="ml-2">{props.linkTitle}</span>}
           </Button>
         </Link>
       )}

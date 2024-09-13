@@ -1,4 +1,4 @@
-import type { EventUser } from "~/routes/($lang).events/types/event-user"
+import type { EventUser } from "~/routes/events.wakiaiai/types/event-user"
 
 export const eventUsers: EventUser[] = [
   {
@@ -236,6 +236,54 @@ export const eventUsers: EventUser[] = [
     iconImageURL:
       "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_ShunkaCule.png?alt=media&token=3bc69687-e927-4760-abe3-dbb805d745dc",
     twitterId: "ShunkaCule",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "Narumi",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_InaseAiIst.png?alt=media&token=369d3a13-dce6-40d0-b63d-9ef52232d33c",
+    twitterId: "InaseAiIst",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "滝川海老郎",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_syuribox.png?alt=media&token=ae3d963a-5f11-46a9-851c-940ac4859d33",
+    twitterId: "syuribox",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "ぐす",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_vqmp7pwqbefqkog.jpg?alt=media&token=5f20bc73-765a-4889-8473-57ab777426a4",
+    twitterId: "vqmp7pwqbefqkog",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "ももろみ",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_tmh_red.png?alt=media&token=28a35fc5-93ba-4fb6-b63e-2295aeb2cdfe",
+    twitterId: "tmh_red",
     aipictorsId: null,
     siteURL: null,
     siteTitle: null,

@@ -11,7 +11,7 @@ export default function Route() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <article className="container-2">
+    <article className="container-shadcn-ui">
       <div className="space-y-4">
         {data.promptonRequest?.deliverables.map((work) => (
           <RequestArticleWork key={work.id} work={work} />

@@ -19,7 +19,7 @@ export default function FlutterLayout() {
   }, [])
 
   return (
-    <main className="container min-h-screen">
+    <main className="container-shadcn-ui min-h-screen">
       <Outlet />
     </main>
   )

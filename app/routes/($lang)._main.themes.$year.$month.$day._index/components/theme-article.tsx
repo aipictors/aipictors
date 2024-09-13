@@ -9,8 +9,7 @@ import {
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
-import { Minus, Plus, RefreshCcwIcon } from "lucide-react"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { Minus, Plus } from "lucide-react"
 import {
   ThemeList,
   type ThemeListItemFragment,
@@ -96,40 +95,6 @@ export function ThemeArticle(props: Props) {
           <h2 className="text-xl">{`作品数: ${props.worksCount}`}</h2>
           <p className="text-sm opacity-80">作品は1日ごとに集計されます</p>
         </div>
-        {!props.isSensitive ? (
-          <AppConfirmDialog
-            title={"確認"}
-            description={
-              "センシティブな作品を表示します、あなたは18歳以上ですか？"
-            }
-            onNext={() => {
-              navigate(
-                `/sensitive/themes/${props.year}/${props.month}/${props.day}`,
-              )
-            }}
-            cookieKey={"check-sensitive-ranking"}
-            onCancel={() => {}}
-          >
-            <Button
-              variant={"secondary"}
-              className="-translate-x-1/2 absolute bottom-1 left-1/2 flex w-32 transform cursor-pointer items-center"
-            >
-              <RefreshCcwIcon className="mr-1 w-3" />
-              <p className="text-sm">{"対象年齢"}</p>
-            </Button>
-          </AppConfirmDialog>
-        ) : (
-          <Button
-            onClick={() => {
-              navigate(`/themes/${props.year}/${props.month}/${props.day}`)
-            }}
-            variant={"secondary"}
-            className="-translate-x-1/2 absolute bottom-1 left-1/2 flex w-32 transform cursor-pointer items-center"
-          >
-            <RefreshCcwIcon className="mr-1 w-3" />
-            <p className="text-sm">{"対象年齢"}</p>
-          </Button>
-        )}
       </div>
       <div className="flex items-center space-x-2">
         <Button

@@ -157,6 +157,9 @@ export const WorksListTableRowFragment = graphql(
     commentsCount
     viewsCount
     isPromotion
+    smallThumbnailImageHeight
+    smallThumbnailImageWidth
+    thumbnailImagePosition
   }`,
 )
 

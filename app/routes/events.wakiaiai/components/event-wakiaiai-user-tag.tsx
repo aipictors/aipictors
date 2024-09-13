@@ -1,11 +1,11 @@
-import type { EventUserType } from "~/routes/($lang).events/types/event-user-type"
+import type { EventUserType } from "~/routes/events.wakiaiai/types/event-user-type"
 import { FlameIcon, ImageIcon, ShoppingBagIcon } from "lucide-react"
 
 type Props = {
   type: EventUserType
 }
 
-export function EventUserTag(props: Props) {
+export function EventWakiaiaiUserTag(props: Props) {
   if (props.type === "SPONSOR") {
     return (
       <div className="flex items-center">

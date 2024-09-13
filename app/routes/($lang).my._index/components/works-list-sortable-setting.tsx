@@ -3,6 +3,8 @@ import { Drawer, DrawerContent, DrawerTrigger } from "~/components/ui/drawer"
 import type { SortType } from "~/types/sort-type"
 import { SortListSelector } from "~/components/sort-list-selector"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { Button } from "~/components/ui/button"
+import { Dialog, DialogTrigger, DialogContent } from "~/components/ui/dialog"
 
 type Props = {
   nowSort: SortType
@@ -14,7 +16,7 @@ type Props = {
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
   onClickViewSortButton: () => void
-  onClickAccessTypeSortButton: () => void
+  onClickAccessTypeSortButton?: () => void
   onClickDateSortButton: () => void
   onClickWorkTypeSortButton: () => void
   onClickIsPromotionSortButton: () => void
@@ -106,17 +108,20 @@ export function WorksListSortableSetting(props: Props) {
     }
   }
 
-  const onClickAccessTypeSortButton = () => {
-    if (props.nowOrderBy === "ACCESS_TYPE") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
-    } else {
-      props.onClickAccessTypeSortButton()
-    }
-  }
+  const onClickAccessTypeSortButton =
+    props.onClickAccessTypeSortButton !== undefined
+      ? () => {
+          if (props.nowOrderBy === "ACCESS_TYPE") {
+            if (props.nowSort === "ASC") {
+              props.setSort("DESC")
+            } else {
+              props.setSort("ASC")
+            }
+          } else if (props.onClickAccessTypeSortButton) {
+            props.onClickAccessTypeSortButton()
+          }
+        }
+      : undefined
 
   const onClickDateSortButton = () => {
     if (props.nowOrderBy === "DATE_CREATED") {
@@ -156,78 +161,255 @@ export function WorksListSortableSetting(props: Props) {
 
   return (
     <>
-      <Drawer>
-        <DrawerTrigger>
-          <div className="mb-4 text-md">
+      <div className="block md:hidden">
+        <Drawer>
+          <DrawerTrigger>
             <div className="flex items-center">
               {getLabel(props.nowOrderBy)}
               {props.nowSort === "ASC" ? <ChevronUp /> : <ChevronDown />}
             </div>
-          </div>
-        </DrawerTrigger>
-        <DrawerContent>
-          <SortListSelector
-            sortList={[
-              {
-                sort: "ASC",
-                sortType: "LIKES_COUNT",
-                label: "いいね！順",
-                callback: onClickLikeSortButton,
-              },
-              {
-                sort: "ASC",
-                sortType: "BOOKMARKS_COUNT",
-                label: "ブックマーク順",
-                callback: onClickBookmarkSortButton,
-              },
-              {
-                sort: "ASC",
-                sortType: "COMMENTS_COUNT",
-                label: "コメント順",
-                callback: onClickCommentSortButton,
-              },
-              {
-                sort: "ASC",
-                sortType: "VIEWS_COUNT",
-                label: "閲覧数順",
-                callback: onClickViewSortButton,
-              },
-              {
-                sort: "ASC",
-                sortType: "NAME",
-                label: "タイトル順",
-                callback: onClickTitleSortButton,
-              },
-              {
-                sort: "ASC",
-                sortType: "WORK_TYPE",
-                label: "種別順",
-                callback: onClickWorkTypeSortButton,
-              },
-              {
-                sort: "ASC",
-                sortType: "WORK_TYPE",
-                label: "宣伝作品",
-                callback: onClickIsPromotionSortButton,
-              },
-              {
-                sort: "ASC",
-                sortType: "ACCESS_TYPE",
-                label: "状態順",
-                callback: onClickAccessTypeSortButton,
-              },
-              {
-                sort: "ASC",
-                sortType: "DATE_CREATED",
-                label: "日付順",
-                callback: onClickDateSortButton,
-              },
-            ]}
-            nowSort={props.nowSort}
-            nowSortType={props.nowOrderBy}
-          />
-        </DrawerContent>
-      </Drawer>
+          </DrawerTrigger>
+          <DrawerContent>
+            <SortListSelector
+              sortList={
+                onClickAccessTypeSortButton
+                  ? [
+                      {
+                        sort: "ASC",
+                        sortType: "LIKES_COUNT",
+                        label: "いいね！順",
+                        callback: onClickLikeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "BOOKMARKS_COUNT",
+                        label: "ブックマーク順",
+                        callback: onClickBookmarkSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "COMMENTS_COUNT",
+                        label: "コメント順",
+                        callback: onClickCommentSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "VIEWS_COUNT",
+                        label: "閲覧数順",
+                        callback: onClickViewSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "NAME",
+                        label: "タイトル順",
+                        callback: onClickTitleSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "WORK_TYPE",
+                        label: "種別順",
+                        callback: onClickWorkTypeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "IS_PROMOTION",
+                        label: "宣伝作品",
+                        callback: onClickIsPromotionSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "ACCESS_TYPE",
+                        label: "状態順",
+                        callback: onClickAccessTypeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "DATE_CREATED",
+                        label: "日付順",
+                        callback: onClickDateSortButton,
+                      },
+                    ]
+                  : [
+                      {
+                        sort: "ASC",
+                        sortType: "LIKES_COUNT",
+                        label: "いいね！順",
+                        callback: onClickLikeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "BOOKMARKS_COUNT",
+                        label: "ブックマーク順",
+                        callback: onClickBookmarkSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "COMMENTS_COUNT",
+                        label: "コメント順",
+                        callback: onClickCommentSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "VIEWS_COUNT",
+                        label: "閲覧数順",
+                        callback: onClickViewSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "NAME",
+                        label: "タイトル順",
+                        callback: onClickTitleSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "WORK_TYPE",
+                        label: "種別順",
+                        callback: onClickWorkTypeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "IS_PROMOTION",
+                        label: "宣伝作品",
+                        callback: onClickIsPromotionSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "DATE_CREATED",
+                        label: "日付順",
+                        callback: onClickDateSortButton,
+                      },
+                    ]
+              }
+              nowSort={props.nowSort}
+              nowSortType={props.nowOrderBy}
+            />
+          </DrawerContent>
+        </Drawer>
+      </div>
+      <div className="hidden md:block">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="secondary" className="w-full">
+              {"並び順"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <SortListSelector
+              sortList={
+                onClickAccessTypeSortButton
+                  ? [
+                      {
+                        sort: "ASC",
+                        sortType: "LIKES_COUNT",
+                        label: "いいね！順",
+                        callback: onClickLikeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "BOOKMARKS_COUNT",
+                        label: "ブックマーク順",
+                        callback: onClickBookmarkSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "COMMENTS_COUNT",
+                        label: "コメント順",
+                        callback: onClickCommentSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "VIEWS_COUNT",
+                        label: "閲覧数順",
+                        callback: onClickViewSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "NAME",
+                        label: "タイトル順",
+                        callback: onClickTitleSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "WORK_TYPE",
+                        label: "種別順",
+                        callback: onClickWorkTypeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "IS_PROMOTION",
+                        label: "宣伝作品",
+                        callback: onClickIsPromotionSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "ACCESS_TYPE",
+                        label: "状態順",
+                        callback: onClickAccessTypeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "DATE_CREATED",
+                        label: "日付順",
+                        callback: onClickDateSortButton,
+                      },
+                    ]
+                  : [
+                      {
+                        sort: "ASC",
+                        sortType: "LIKES_COUNT",
+                        label: "いいね！順",
+                        callback: onClickLikeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "BOOKMARKS_COUNT",
+                        label: "ブックマーク順",
+                        callback: onClickBookmarkSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "COMMENTS_COUNT",
+                        label: "コメント順",
+                        callback: onClickCommentSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "VIEWS_COUNT",
+                        label: "閲覧数順",
+                        callback: onClickViewSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "NAME",
+                        label: "タイトル順",
+                        callback: onClickTitleSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "WORK_TYPE",
+                        label: "種別順",
+                        callback: onClickWorkTypeSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "WORK_TYPE",
+                        label: "宣伝作品",
+                        callback: onClickIsPromotionSortButton,
+                      },
+                      {
+                        sort: "ASC",
+                        sortType: "DATE_CREATED",
+                        label: "日付順",
+                        callback: onClickDateSortButton,
+                      },
+                    ]
+              }
+              nowSort={props.nowSort}
+              nowSortType={props.nowOrderBy}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
     </>
   )
 }

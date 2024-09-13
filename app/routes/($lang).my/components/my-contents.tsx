@@ -3,6 +3,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContext, useEffect } from "react"
 import { useLocation, useNavigate } from "@remix-run/react"
 import React from "react"
+import { Button } from "~/components/ui/button"
 
 type Props = Readonly<{
   outlet: React.ReactNode
@@ -56,12 +57,12 @@ export function MyContents(props: Props) {
   return (
     <>
       <div
-        className="m-auto w-full"
+        className="m-auto flex w-full flex-col space-y-2"
         style={{
           margin: "0 auto",
         }}
       >
-        <div>
+        <div className="hidden md:block">
           <Tabs
             className="mt-2 mb-8"
             value={myContentType}
@@ -131,6 +132,71 @@ export function MyContents(props: Props) {
             </TabsList>
           </Tabs>
         </div>
+        <div className="block md:hidden">
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              onClick={() => {
+                setMyContentType("HOME")
+                navigate("/my")
+              }}
+              value="HOME"
+              variant={"secondary"}
+            >
+              {"ホーム"}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("POSTS")
+                navigate("/my/posts")
+              }}
+              value="POSTS"
+              variant={"secondary"}
+            >
+              {"作品"}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("ALBUMS")
+                navigate("/my/albums")
+              }}
+              value="ALBUMS"
+              variant={"secondary"}
+            >
+              {"シリーズ"}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("RECOMMENDED")
+                navigate("/my/recommended")
+              }}
+              value="RECOMMENDED"
+              variant={"secondary"}
+            >
+              {"推薦"}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("BOOKMARKS")
+                navigate("/my/bookmarks")
+              }}
+              value="BOOKMARKS"
+              variant={"secondary"}
+            >
+              {"ブックマーク"}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("LIKES")
+                navigate("/my/likes")
+              }}
+              value="LIKES"
+              variant={"secondary"}
+            >
+              {"いいね"}
+            </Button>
+          </div>
+        </div>
+
         {props.outlet}
       </div>
     </>

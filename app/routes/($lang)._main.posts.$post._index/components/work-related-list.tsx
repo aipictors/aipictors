@@ -43,7 +43,7 @@ export function WorkRelatedList(props: Props) {
                 size={32}
                 targetWorkId={work.id}
                 targetWorkOwnerUserId={work.userId}
-                defaultLiked={false}
+                defaultLiked={work.isLiked}
                 defaultLikedCount={0}
                 isBackgroundNone={true}
                 strokeWidth={2}

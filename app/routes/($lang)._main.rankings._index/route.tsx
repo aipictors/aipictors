@@ -10,8 +10,17 @@ import {
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
+import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 
 export async function loader(params: LoaderFunctionArgs) {
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(
+    params.request,
+    "/sensitive/rankings",
+  )
+  if (redirectResult) {
+    return redirectResult
+  }
+
   const client = createClient()
 
   // 昨日の日付を取得

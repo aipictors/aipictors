@@ -2,10 +2,13 @@ import { ParamsError } from "~/errors/params-error"
 import { createClient } from "~/lib/client"
 import { TagWorkSection } from "~/routes/($lang)._main.tags._index/components/tag-work-section"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import { json, useParams, useSearchParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import React, { useEffect } from "react"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
 
 export async function loader(props: LoaderFunctionArgs) {
   const client = createClient()
@@ -21,6 +24,14 @@ export async function loader(props: LoaderFunctionArgs) {
       : Number.parseInt(url.searchParams.get("page") as string)
     : 0
 
+  const orderBy = url.searchParams.get("orderBy")
+    ? (url.searchParams.get("orderBy") as IntrospectionEnum<"WorkOrderBy">)
+    : "LIKES_COUNT"
+
+  const sort = url.searchParams.get("sort")
+    ? (url.searchParams.get("sort") as SortType)
+    : "DESC"
+
   const isSensitive = url.searchParams.get("sensitive") === "1"
 
   const worksResp = await client.query({
@@ -29,8 +40,9 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 32,
       limit: 32,
       where: {
-        search: decodeURIComponent(props.params.tag),
-        orderBy: "LIKES_COUNT",
+        tagNames: [decodeURIComponent(props.params.tag)],
+        orderBy: orderBy,
+        sort: sort,
         isSensitive: isSensitive,
       },
     },
@@ -38,7 +50,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json({
     tag: decodeURIComponent(props.params.tag),
-    works: worksResp.data.works,
+    works: worksResp.data.tagWorks,
     worksCount: worksResp.data.worksCount,
     page: page,
     isSensitive: isSensitive,
@@ -54,14 +66,117 @@ export default function Tag() {
 
   const data = useLoaderData<typeof loader>()
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [workType, setWorkType] =
+    React.useState<IntrospectionEnum<"WorkType"> | null>(
+      (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
+    )
+
+  const [WorkOrderby, setWorkOrderby] = React.useState<
+    IntrospectionEnum<"WorkOrderBy">
+  >(
+    (searchParams.get("orderBy") as IntrospectionEnum<"WorkOrderBy">) ||
+      "LIKES_COUNT",
+  )
+
+  const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
+    (searchParams.get("sort") as SortType) || "DESC",
+  )
+
+  const [rating, setRating] =
+    React.useState<IntrospectionEnum<"Rating"> | null>(
+      (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
+    )
+
+  const onClickTitleSortButton = () => {
+    setWorkOrderby("NAME")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickLikeSortButton = () => {
+    setWorkOrderby("LIKES_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickBookmarkSortButton = () => {
+    setWorkOrderby("BOOKMARKS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickCommentSortButton = () => {
+    setWorkOrderby("COMMENTS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickViewSortButton = () => {
+    setWorkOrderby("VIEWS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickAccessTypeSortButton = () => {
+    setWorkOrderby("ACCESS_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickDateSortButton = () => {
+    setWorkOrderby("DATE_CREATED")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickWorkTypeSortButton = () => {
+    setWorkOrderby("WORK_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickIsPromotionSortButton = () => {
+    setWorkOrderby("IS_PROMOTION")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
+
+  // URLパラメータの監視と更新
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (workType) {
+      params.set("workType", workType)
+    }
+    params.set("orderBy", WorkOrderby)
+    params.set("sort", worksOrderDeskAsc)
+    params.set("page", page.toString())
+
+    // isSensitiveのパラメータが1なら、セット
+    if (data.isSensitive) {
+      params.set("sensitive", "1")
+    }
+
+    setSearchParams(params)
+  }, [page, workType, WorkOrderby, worksOrderDeskAsc])
+
   return (
     <>
       <TagWorkSection
         works={data.works}
         worksCount={data.worksCount}
         tag={decodeURIComponent(params.tag)}
-        page={data.page}
+        page={page}
+        setPage={setPage}
         isSensitive={data.isSensitive}
+        onClickTitleSortButton={onClickTitleSortButton}
+        onClickLikeSortButton={onClickLikeSortButton}
+        onClickBookmarkSortButton={onClickBookmarkSortButton}
+        onClickCommentSortButton={onClickCommentSortButton}
+        onClickViewSortButton={onClickViewSortButton}
+        onClickAccessTypeSortButton={onClickAccessTypeSortButton}
+        onClickDateSortButton={onClickDateSortButton}
+        onClickWorkTypeSortButton={onClickWorkTypeSortButton}
+        onClickIsPromotionSortButton={onClickIsPromotionSortButton}
+        setWorkType={setWorkType}
+        setRating={setRating}
+        setSort={setWorksOrderDeskAsc}
+        sort={worksOrderDeskAsc}
+        orderBy={WorkOrderby}
       />
     </>
   )
@@ -69,7 +184,7 @@ export default function Tag() {
 
 const tagWorksAndCountQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
+    tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
     }
     worksCount(where: $where)
@@ -79,7 +194,7 @@ const tagWorksAndCountQuery = graphql(
 
 export const tagWorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
+    tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
     }
   }`,

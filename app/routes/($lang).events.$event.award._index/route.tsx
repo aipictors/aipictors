@@ -16,7 +16,9 @@ export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
 
   const urlParams = new URL(props.request.url).searchParams
+
   const pageParam = urlParams.get("page")
+
   const page = pageParam ? Number(pageParam) : 0
 
   if (event === undefined) {

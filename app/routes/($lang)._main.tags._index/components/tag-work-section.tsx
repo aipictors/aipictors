@@ -13,13 +13,32 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
 import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/tag-action-other"
 import { CircleAlertIcon } from "lucide-react"
+import { WorksListSortableSetting } from "~/routes/($lang).my._index/components/works-list-sortable-setting"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   worksCount: number
   tag: string
   page: number
+  setPage: (page: number) => void
   isSensitive: boolean
+  sort: SortType
+  orderBy: IntrospectionEnum<"WorkOrderBy">
+  setAccessType?: (accessType: IntrospectionEnum<"AccessType"> | null) => void
+  setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
+  setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
+  setSort: (sort: SortType) => void
+  onClickTitleSortButton: () => void
+  onClickLikeSortButton: () => void
+  onClickBookmarkSortButton: () => void
+  onClickCommentSortButton: () => void
+  onClickViewSortButton: () => void
+  onClickAccessTypeSortButton: () => void
+  onClickDateSortButton: () => void
+  onClickWorkTypeSortButton: () => void
+  onClickIsPromotionSortButton: () => void
 }
 
 export function TagWorkSection(props: Props) {
@@ -36,16 +55,26 @@ export function TagWorkSection(props: Props) {
       offset: props.page * 32,
       limit: 32,
       where: {
-        search: props.tag,
-        orderBy: "LIKES_COUNT",
+        tagNames: [props.tag],
+        orderBy: props.orderBy,
+        sort: props.sort,
         isSensitive: props.isSensitive,
       },
     },
   })
 
-  const works = resp?.works ?? props.works
+  const works = resp?.tagWorks ?? props.works
 
   const firstWork = works.length ? works[0] : null
+
+  const allSortType = [
+    "LIKES_COUNT",
+    "BOOKMARKS_COUNT",
+    "COMMENTS_COUNT",
+    "VIEWS_COUNT",
+    "DATE_CREATED",
+    "NAME",
+  ] as IntrospectionEnum<"WorkOrderBy">[]
 
   return (
     <div className="flex flex-col space-y-6">
@@ -88,6 +117,21 @@ export function TagWorkSection(props: Props) {
         <TagFollowButton className="w-full" tag={props.tag} isFollow={false} />
         <TagActionOther isSensitive={props.isSensitive} tag={props.tag} />
       </div>
+      <WorksListSortableSetting
+        nowSort={props.sort}
+        nowOrderBy={props.orderBy}
+        allOrderBy={allSortType}
+        setSort={props.setSort}
+        onClickTitleSortButton={props.onClickTitleSortButton}
+        onClickLikeSortButton={props.onClickLikeSortButton}
+        onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+        onClickCommentSortButton={props.onClickCommentSortButton}
+        onClickViewSortButton={props.onClickViewSortButton}
+        onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+        onClickDateSortButton={props.onClickDateSortButton}
+        onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+        onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+      />
       <ResponsivePhotoWorksAlbum works={works} />
       <div className="h-8" />
       <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -96,11 +140,7 @@ export function TagWorkSection(props: Props) {
           perPage={32}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(
-              props.isSensitive
-                ? `/tags/${props.tag}/?sensitive=1&page=${page}`
-                : `/tags/${props.tag}/?page=${page}`,
-            )
+            props.setPage(page)
           }}
         />
       </div>

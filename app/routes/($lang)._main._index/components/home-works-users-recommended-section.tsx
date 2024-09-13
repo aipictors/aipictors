@@ -29,10 +29,11 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
       limit: config.query.homeWorkCount.promotion,
       where: {
         isRecommended: true,
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
+        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         ...(props.style && {
           style: props.style,
         }),
+        isNowCreatedAt: true,
       },
     },
   })

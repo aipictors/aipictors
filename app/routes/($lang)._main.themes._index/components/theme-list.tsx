@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { createCalendarCells } from "~/routes/($lang)._main.themes._index/utils/create-calendar-cells"
-import { useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 type Props = {
@@ -53,6 +53,8 @@ export function ThemeList(props: Props) {
       isToday: isToday,
       date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
       thumbnailUrl: theme?.firstWork?.smallThumbnailImageURL ?? null,
+      proposerId: theme?.proposer?.id ?? null,
+      proposerName: theme?.proposer?.name ?? null,
     }
   })
 
@@ -84,7 +86,7 @@ export function ThemeList(props: Props) {
       return
     }
 
-    navigate(`/themes/${year}/${month}/${day}`)
+    navigate(`/themes/${year}/${month}/${day}?tab=list`)
   }
 
   return (
@@ -150,6 +152,16 @@ export function ThemeList(props: Props) {
                   {block.title}
                 </div>
               )}
+              {block.proposerId && block.proposerId?.length !== 0 && (
+                <Link
+                  to={`/users/${block.proposerId}`}
+                  className="absolute right-0 bottom-0 left-0 bg-black bg-opacity-60 p-0 text-center text-sm text-white opacity-40"
+                >
+                  {block.proposerName}
+                  {"さん案"}
+                </Link>
+              )}
+              {block.isToday}
             </div>
           ))}
         </div>
@@ -170,6 +182,11 @@ export const ThemeListItemFragment = graphql(
     firstWork {
       id
       smallThumbnailImageURL
+    }
+    proposer {
+      id
+      name
+      iconUrl
     }
   }`,
 )

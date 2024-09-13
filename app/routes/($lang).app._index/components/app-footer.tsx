@@ -3,7 +3,12 @@ import { Link } from "@remix-run/react"
 
 export function AppFooter() {
   return (
-    <footer className={cn("container max-w-none", "space-y-2 border-t py-4")}>
+    <footer
+      className={cn(
+        "container-shadcn-ui max-w-none",
+        "space-y-2 border-t py-4",
+      )}
+    >
       <div className="flex flex-col md:flex-row">
         <div className="flex space-x-4">
           <Link to={"/app/terms"} className="text-sm">

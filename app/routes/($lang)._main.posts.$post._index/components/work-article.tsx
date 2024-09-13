@@ -317,6 +317,7 @@ export const workArticleFragment = graphql(
         smallThumbnailImageHeight
         thumbnailImagePosition
         subWorksCount
+        isLiked
       }
       promptonUser {
         id
@@ -453,6 +454,7 @@ export const sensitiveWorkArticleFragment = graphql(
         smallThumbnailImageHeight
         thumbnailImagePosition
         subWorksCount
+        isLiked
       }
       promptonUser {
         id

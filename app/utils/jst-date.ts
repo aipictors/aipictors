@@ -1,9 +1,9 @@
 /**
- * 日本時間の取得
+ * JSTかどうかを判断し、JSTならオフセットを考慮、そうでないならそのまま返す関数
  */
 export const getJstDate = (data?: Date) => {
-  if (!data) {
-    return new Date(new Date().getTime() + 9 * 60 * 60 * 1000)
-  }
-  return new Date(data.getTime() + 9 * 60 * 60 * 1000)
+  const date = data || new Date()
+  const options = { timeZone: "Asia/Tokyo" }
+  const str = date.toLocaleString(undefined, options)
+  return new Date(str)
 }

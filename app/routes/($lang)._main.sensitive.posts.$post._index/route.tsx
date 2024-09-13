@@ -14,6 +14,8 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { getJstDate } from "~/utils/jst-date"
+import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -76,12 +78,34 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const now = getJstDate(new Date())
+
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+  // ランキング
+  const awardWorks = await client.query({
+    query: homeAwardWorksQuery,
+    variables: {
+      offset: 0,
+      limit: 4,
+      where: {
+        isSensitive: true,
+        year: yesterday.getFullYear(),
+        month: yesterday.getMonth() + 1,
+        day: yesterday.getDate(),
+      },
+    },
+  })
+
+  console.log(awardWorks)
+
   return json(
     {
       post: props.params.post,
       work: workResp.data.work,
       workComments: workCommentsResp.data.work.comments,
       newComments: newComments.data.newComments,
+      awardWorks: awardWorks.data.workAwards,
     },
     {
       headers: {
@@ -129,6 +153,7 @@ export default function Work() {
       comments={data.workComments}
       isSensitive={true}
       newComments={data.newComments}
+      awardWorks={data.awardWorks}
     />
   )
 }

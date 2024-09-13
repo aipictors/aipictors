@@ -2,9 +2,11 @@ import { createClient } from "~/lib/client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { ThemeArticleContainer } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article-container"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
+import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
+import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
+import { getJstDate } from "~/utils/jst-date"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -13,6 +15,14 @@ export async function loader(props: LoaderFunctionArgs) {
     props.params.day === undefined
   ) {
     throw new Response("Invalid date", { status: 400 })
+  }
+
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(
+    props.request,
+    `/sensitive/themes/${props.params.year}/${props.params.month}/${props.params.day}`,
+  )
+  if (redirectResult) {
+    return redirectResult
   }
 
   const client = createClient()
@@ -24,18 +34,21 @@ export async function loader(props: LoaderFunctionArgs) {
   const day = Number.parseInt(props.params.day)
 
   const url = new URL(props.request.url)
+
   const page = url.searchParams.get("page")
     ? Number.parseInt(url.searchParams.get("page") as string) > 100
       ? 0
       : Number.parseInt(url.searchParams.get("page") as string)
     : 0
 
+  const tab = url.searchParams.get("tab")
+
   const dailyThemesResp = await client.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
-      limit: 1,
-      where: { year, month, day },
+      limit: 31,
+      where: { year, month },
     },
   })
 
@@ -44,6 +57,15 @@ export async function loader(props: LoaderFunctionArgs) {
   if (dailyTheme === null) {
     throw new Response("Not found", { status: 404 })
   }
+
+  const targetThemesResp = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 1,
+      where: { year, month, day },
+    },
+  })
 
   const monthlyThemes = await client.query({
     query: dailyThemesQuery,
@@ -57,12 +79,12 @@ export async function loader(props: LoaderFunctionArgs) {
   const worksResp = await client.query({
     query: themeWorksAndCountQuery,
     variables: {
-      offset: page * 32,
-      limit: 32,
+      offset: page * 64,
+      limit: 64,
       where: {
-        subjectId: Number(dailyThemesResp.data.dailyThemes[0].id),
+        subjectId: Number(targetThemesResp.data.dailyThemes[0].id),
         ratings: ["G", "R15"],
-        orderBy: "LIKES_COUNT",
+        orderBy: "DATE_CREATED",
         isNowCreatedAt: true,
       },
     },
@@ -79,8 +101,30 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const formatDate = (date: Date) => date.toISOString().split("T")[0]
 
-  console.log(formatDate(sevenDaysAgo))
-  console.log(formatDate(sevenDaysAfter))
+  const today = getJstDate(new Date())
+
+  const todayYear = today.getFullYear()
+
+  const todayMonth = today.getMonth() + 1
+
+  const todayDay = today.getDate()
+
+  const jstStartDate = getJstDate(new Date(today.setDate(today.getDate() + 1)))
+
+  const jstEndDate = getJstDate(new Date(today.setDate(today.getDate() + 7)))
+
+  const startDate = jstStartDate.toISOString().split("T")[0]
+
+  const endDate = jstEndDate.toISOString().split("T")[0]
+
+  const afterSevenDayThemesResp = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 7,
+      where: { startDate, endDate },
+    },
+  })
 
   const dailyBeforeThemes = await client.query({
     query: dailyThemesQuery,
@@ -94,6 +138,15 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const todayThemesResp = await client.query({
+    query: dailyThemesQuery,
+    variables: {
+      offset: 0,
+      limit: 32,
+      where: { year: todayYear, month: todayMonth, day: todayDay },
+    },
+  })
+
   return json({
     dailyTheme,
     worksResp,
@@ -103,27 +156,38 @@ export async function loader(props: LoaderFunctionArgs) {
     page,
     monthlyThemes,
     dailyBeforeThemes,
+    afterSevenDayThemes: afterSevenDayThemesResp.data.dailyThemes,
+    dailyThemes: dailyThemesResp.data.dailyThemes,
+    todayTheme: todayThemesResp.data.dailyThemes.length
+      ? todayThemesResp.data.dailyThemes[0]
+      : null,
+    targetThemesResp: targetThemesResp.data.dailyThemes,
+    tab,
+    themeId: Number(targetThemesResp.data.dailyThemes[0].id),
   })
 }
 
 export default function SensitiveDayThemePage() {
   const data = useLoaderData<typeof loader>()
 
+  console.log(data.tab !== "list" ? "calender" : "list")
+
   return (
     <article>
-      <ThemeArticleContainer
+      <ThemeContainer
+        dailyThemes={data.dailyThemes}
+        targetThemes={data.targetThemesResp}
+        todayTheme={data.todayTheme}
         works={data.worksResp.data.works}
-        worksCount={data.worksResp.data.worksCount}
-        firstWork={data.dailyTheme.firstWork}
-        title={`${data.year}/${data.month}/${data.day}のお題「${data.dailyTheme.title}」`}
-        year={data.year}
-        month={data.month}
-        day={data.day}
-        page={data.page}
-        isSensitive={false}
-        themeId={data.dailyTheme.id}
-        dailyThemes={data.monthlyThemes.data.dailyThemes}
+        afterSevenDayThemes={data.afterSevenDayThemes}
         dailyBeforeThemes={data.dailyBeforeThemes.data.dailyThemes}
+        worksCount={data.worksResp.data.worksCount}
+        page={data.page}
+        year={data.year}
+        day={data.day}
+        month={data.month}
+        defaultTab={data.tab !== "list" ? "calender" : "list"}
+        themeId={data.themeId}
       />
     </article>
   )
@@ -145,6 +209,11 @@ const dailyThemesQuery = graphql(
       worksCount
       firstWork {
         ...PhotoAlbumWork
+      }
+      proposer {
+        id
+        name
+        iconUrl
       }
     }
   }`,

@@ -27,6 +27,7 @@ export function HomeNewUsersWorksSection(props: Props) {
       limit: config.query.homeWorkCount.newUser,
       where: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
+        isNowCreatedAt: true,
       },
     },
   })

@@ -22,6 +22,7 @@ import { useContext } from "react"
 import { useTheme } from "next-themes"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
+import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
 
 const HomeHeaderNotLoggedInMenu = () => {
   const authContext = useContext(AuthContext)
@@ -115,6 +116,9 @@ const HomeHeaderNotLoggedInMenu = () => {
               />
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
+        </DropdownMenuSub>
+        <DropdownMenuSub>
+          <ToggleSensitive />
         </DropdownMenuSub>
       </DropdownMenuContent>
     </DropdownMenu>

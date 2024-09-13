@@ -2,7 +2,10 @@ import { AppAboutHeader } from "~/routes/($lang).app._index/components/app-about
 import { AppFooter } from "~/routes/($lang).app._index/components/app-footer"
 import type { MetaFunction } from "@remix-run/cloudflare"
 
-export default function FlutterApp() {
+/**
+ * アプリの紹介ページ
+ */
+export default function Route() {
   return (
     <>
       <AppAboutHeader />

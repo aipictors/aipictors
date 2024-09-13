@@ -2,17 +2,30 @@ import { Badge } from "~/components/ui/badge"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import type { SortType } from "~/types/sort-type"
 import {
+  EllipsisIcon,
   EyeIcon,
   FolderIcon,
   HeartIcon,
   MessageCircle,
   PencilIcon,
+  TrashIcon,
 } from "lucide-react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { Link } from "@remix-run/react"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { useMutation } from "@apollo/client/index"
+import { toast } from "sonner"
+import { useState } from "react"
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "~/components/ui/popover"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   works: FragmentOf<typeof MobileWorkListItemFragment>[]
@@ -61,65 +74,119 @@ export function WorksSpList(props: Props) {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }
 
+  const [deleteWork, { loading: isLoadingDeleteWork }] =
+    useMutation(deleteWorkMutation)
+
+  const [deletedIds, setDeletedIds] = useState<string[]>([])
+
+  const onDeleteWork = async (workId: string) => {
+    await deleteWork({
+      variables: {
+        input: {
+          workId: workId,
+        },
+      },
+    })
+    toast("作品を削除しました")
+
+    setDeletedIds([...deletedIds, workId])
+  }
+
   return (
     <>
-      {props.works.map((work, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-        <div key={index}>
-          <div className="flex border-b">
-            <Link to={postUrl(work)}>
-              <img
-                src={work.smallThumbnailImageURL}
-                alt=""
-                className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
-              />
-            </Link>
-            <div className="w-full">
-              <div className="w-full max-w-40 space-y-4 overflow-hidden text-ellipsis">
-                <Link to={postUrl(work)}>
-                  <div className="w-full font-bold">
-                    {truncateTitle(work.title, 32)}
+      {props.works
+        .filter((work) => !deletedIds.includes(work.id))
+        .map((work, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+          <div key={index} className="flex flex-col">
+            <div className="flex space-x-4 border-b pt-2 pb-2">
+              <Link to={postUrl(work)}>
+                <CroppedWorkSquare
+                  workId={work.id}
+                  imageUrl={work.smallThumbnailImageURL}
+                  size="sm"
+                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  imageWidth={work.smallThumbnailImageWidth}
+                  imageHeight={work.smallThumbnailImageHeight}
+                />
+              </Link>
+              <div className="flex w-full flex-col space-y-2">
+                <div className="w-full max-w-64 space-y-2 overflow-hidden text-ellipsis">
+                  <Link to={postUrl(work)}>
+                    <div className="w-full font-bold">
+                      {truncateTitle(work.title, 32)}
+                    </div>
+                  </Link>
+                  <div className="space-x-2">
+                    <Badge variant={"secondary"}>
+                      {toAccessTypeText(work.accessType)}
+                    </Badge>
+                    <Badge variant={"secondary"}>
+                      {toWorkTypeText(work.type)}
+                    </Badge>
                   </div>
-                </Link>
-                <div className="space-x-2">
-                  <Badge variant={"secondary"}>
-                    {toAccessTypeText(work.accessType)}
-                  </Badge>
-                  <Badge variant={"secondary"}>
-                    {toWorkTypeText(work.type)}
-                  </Badge>
+                </div>
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex items-center">
+                    <FolderIcon className="mr-1 h-4 w-4" />
+                    {work.bookmarksCount}
+                  </div>
+                  <div className="flex items-center">
+                    <HeartIcon className="mr-1 h-4 w-4" />
+                    {work.likesCount}
+                  </div>
+                  <div className="flex items-center">
+                    <EyeIcon className="mr-1 h-4 w-4" />
+                    {work.viewsCount}
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <MessageCircle className="mr-1 h-4 w-4" />
+                  {work.commentsCount}
                 </div>
                 <div className="text-sm opacity-80">
                   {toDateTimeText(work.createdAt)}
                 </div>
               </div>
-              <div className="flex w-full items-center justify-between">
-                <div className="flex items-center">
-                  <FolderIcon className="mr-1 h-4 w-4" />
-                  {work.bookmarksCount}
+              <div className="flex h-8 items-center">
+                <div className="flex w-16 justify-center">
+                  <Link to={editUrl(work.id, work.type)}>
+                    <PencilIcon />
+                  </Link>
                 </div>
-                <div className="flex items-center">
-                  <HeartIcon className="mr-1 h-4 w-4" />
-                  {work.likesCount}
-                </div>
-                <div className="flex items-center">
-                  <EyeIcon className="mr-1 h-4 w-4" />
-                  {work.viewsCount}
-                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button size={"icon"} variant="secondary">
+                      <EllipsisIcon className="w-16" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80">
+                    <div className="flex justify-center">
+                      <AppConfirmDialog
+                        title={"確認"}
+                        description={`作品「${work.title}」を削除しますか？`}
+                        onNext={async () => {
+                          await onDeleteWork(work.id)
+                        }}
+                        onCancel={() => {}}
+                      >
+                        <Button
+                          variant={"secondary"}
+                          className="flex w-full items-center space-x-2"
+                        >
+                          <TrashIcon
+                            className={isLoadingDeleteWork ? "opacity-80" : ""}
+                          />
+                          <p>{"削除する"}</p>
+                        </Button>
+                      </AppConfirmDialog>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
-              <div className="flex items-center">
-                <MessageCircle className="mr-1 h-4 w-4" />
-                {work.commentsCount}
-              </div>
-            </div>
-            <div className="flex w-16 justify-center">
-              <Link to={editUrl(work.id, work.type)}>
-                <PencilIcon />
-              </Link>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
     </>
   )
 }
@@ -127,16 +194,28 @@ export function WorksSpList(props: Props) {
 export const MobileWorkListItemFragment = graphql(
   `fragment MobileWorkListItem on WorkNode @_unmask {
     id
+    uuid
     title
-    smallThumbnailImageURL
     type
     commentsCount
     viewsCount
+    smallThumbnailImageURL
     likesCount
     bookmarksCount
     createdAt
     accessType
     uuid
     isPromotion
+    smallThumbnailImageHeight
+    smallThumbnailImageWidth
+    thumbnailImagePosition
+  }`,
+)
+
+const deleteWorkMutation = graphql(
+  `mutation DeleteWork($input: DeleteWorkInput!) {
+    deleteWork(input: $input) {
+      id
+    }
   }`,
 )

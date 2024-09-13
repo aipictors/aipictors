@@ -655,18 +655,19 @@ html {
 }
 
 /**
- * @see https://github.com/shadcn-ui/ui/blob/9f156a1b890cc043b8fe01037abb6625bd3f588a/packages/cli/src/utils/templates.ts#L28
+ * @see https://github.com/shadcn-ui/ui/blob/main/packages/cli/src/utils/templates.ts#L30
+ * { theme: { container: { padding: "2rem" } } }
  */
-.container-2 {
+.container-shadcn-ui {
   @apply container;
   @apply px-[2rem];
 }
 
 /**
- * @see https://github.com/shadcn-ui/ui/blob/0fae3fd93ae749aca708bdfbbbeddc5d576bfb2e/apps/www/styles/globals.css#L76
+ * @see https://github.com/shadcn-ui/ui/blob/main/apps/www/styles/globals.css#L100
  */
  @media (max-width: 640px) {
-  .container-2 {
+  .container-shadcn-ui {
     @apply px-4;
   }
 }

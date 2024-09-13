@@ -61,6 +61,7 @@ export default function Work() {
       work={data.work}
       comments={data.workComments}
       newComments={data.newComments}
+      awardWorks={[]}
     />
   )
 }
