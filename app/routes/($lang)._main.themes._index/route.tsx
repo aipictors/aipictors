@@ -141,6 +141,8 @@ export async function loader({ request }: { request: Request }) {
       where: {
         startDate: formatDate(sevenDaysAgo),
         endDate: formatDate(sevenDaysAfter),
+        orderBy: "DATE_STARTED",
+        sort: "ASC",
       },
     },
   })

@@ -134,6 +134,8 @@ export async function loader(props: LoaderFunctionArgs) {
       where: {
         startDate: formatDate(sevenDaysAgo),
         endDate: formatDate(sevenDaysAfter),
+        orderBy: "DATE_STARTED",
+        sort: "ASC",
       },
     },
   })
