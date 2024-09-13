@@ -23,38 +23,36 @@ type Props = {
 }
 
 /**
- * 作品一覧
+ * 並び順のラベルを取得する関数
+ */
+const getLabel = (nowOrderBy: IntrospectionEnum<"WorkOrderBy">) => {
+  switch (nowOrderBy) {
+    case "LIKES_COUNT":
+      return "いいね！順"
+    case "BOOKMARKS_COUNT":
+      return "ブックマーク順"
+    case "COMMENTS_COUNT":
+      return "コメント順"
+    case "VIEWS_COUNT":
+      return "閲覧数順"
+    case "DATE_CREATED":
+      return "日付順"
+    case "NAME":
+      return "タイトル順"
+    case "IS_PROMOTION":
+      return "宣伝作品順"
+    default:
+      return "日付順"
+  }
+}
+
+/**
+ * 作品一覧の並び順設定コンポーネント
  */
 export function WorksListSortableSetting(props: Props) {
-  const getLabel = (nowOrderBy: IntrospectionEnum<"WorkOrderBy">) => {
-    switch (nowOrderBy) {
-      case "LIKES_COUNT":
-        return "いいね！順"
-      case "BOOKMARKS_COUNT":
-        return "ブックマーク順"
-      case "COMMENTS_COUNT":
-        return "コメント順"
-      case "VIEWS_COUNT":
-        return "閲覧数順"
-      case "DATE_CREATED":
-        return "日付順"
-      case "NAME":
-        return "タイトル順"
-      case "IS_PROMOTION":
-        return "宣伝作品"
-      default:
-        return "日付順"
-    }
-  }
-
   const onClickLikeSortButton = () => {
-    // もしいま同じソート種別なら降順を変更する
     if (props.nowOrderBy === "LIKES_COUNT") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
+      props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {
       props.onClickLikeSortButton()
     }
@@ -62,11 +60,7 @@ export function WorksListSortableSetting(props: Props) {
 
   const onClickBookmarkSortButton = () => {
     if (props.nowOrderBy === "BOOKMARKS_COUNT") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
+      props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {
       props.onClickBookmarkSortButton()
     }
@@ -74,11 +68,7 @@ export function WorksListSortableSetting(props: Props) {
 
   const onClickCommentSortButton = () => {
     if (props.nowOrderBy === "COMMENTS_COUNT") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
+      props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {
       props.onClickCommentSortButton()
     }
@@ -86,11 +76,7 @@ export function WorksListSortableSetting(props: Props) {
 
   const onClickViewSortButton = () => {
     if (props.nowOrderBy === "VIEWS_COUNT") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
+      props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {
       props.onClickViewSortButton()
     }
@@ -98,11 +84,7 @@ export function WorksListSortableSetting(props: Props) {
 
   const onClickTitleSortButton = () => {
     if (props.nowOrderBy === "NAME") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
+      props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {
       props.onClickTitleSortButton()
     }
@@ -112,24 +94,16 @@ export function WorksListSortableSetting(props: Props) {
     props.onClickAccessTypeSortButton !== undefined
       ? () => {
           if (props.nowOrderBy === "ACCESS_TYPE") {
-            if (props.nowSort === "ASC") {
-              props.setSort("DESC")
-            } else {
-              props.setSort("ASC")
-            }
-          } else if (props.onClickAccessTypeSortButton) {
-            props.onClickAccessTypeSortButton()
+            props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
+          } else {
+            props.onClickAccessTypeSortButton?.()
           }
         }
       : undefined
 
   const onClickDateSortButton = () => {
     if (props.nowOrderBy === "DATE_CREATED") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
+      props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {
       props.onClickDateSortButton()
     }
@@ -137,11 +111,7 @@ export function WorksListSortableSetting(props: Props) {
 
   const onClickWorkTypeSortButton = () => {
     if (props.nowOrderBy === "WORK_TYPE") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
+      props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {
       props.onClickWorkTypeSortButton()
     }
@@ -149,11 +119,7 @@ export function WorksListSortableSetting(props: Props) {
 
   const onClickIsPromotionSortButton = () => {
     if (props.nowOrderBy === "IS_PROMOTION") {
-      if (props.nowSort === "ASC") {
-        props.setSort("DESC")
-      } else {
-        props.setSort("ASC")
-      }
+      props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {
       props.onClickIsPromotionSortButton()
     }
@@ -213,7 +179,7 @@ export function WorksListSortableSetting(props: Props) {
                       {
                         sort: "ASC",
                         sortType: "IS_PROMOTION",
-                        label: "宣伝作品",
+                        label: "宣伝作品順",
                         callback: onClickIsPromotionSortButton,
                       },
                       {
@@ -269,7 +235,7 @@ export function WorksListSortableSetting(props: Props) {
                       {
                         sort: "ASC",
                         sortType: "IS_PROMOTION",
-                        label: "宣伝作品",
+                        label: "宣伝作品順",
                         callback: onClickIsPromotionSortButton,
                       },
                       {
@@ -290,7 +256,8 @@ export function WorksListSortableSetting(props: Props) {
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="secondary" className="w-full">
-              {"並び順"}
+              {getLabel(props.nowOrderBy)}{" "}
+              {props.nowSort === "ASC" ? <ChevronUp /> : <ChevronDown />}
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -337,7 +304,7 @@ export function WorksListSortableSetting(props: Props) {
                       {
                         sort: "ASC",
                         sortType: "IS_PROMOTION",
-                        label: "宣伝作品",
+                        label: "宣伝作品順",
                         callback: onClickIsPromotionSortButton,
                       },
                       {
@@ -392,8 +359,8 @@ export function WorksListSortableSetting(props: Props) {
                       },
                       {
                         sort: "ASC",
-                        sortType: "WORK_TYPE",
-                        label: "宣伝作品",
+                        sortType: "IS_PROMOTION",
+                        label: "宣伝作品順",
                         callback: onClickIsPromotionSortButton,
                       },
                       {
