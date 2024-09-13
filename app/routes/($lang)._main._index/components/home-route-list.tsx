@@ -2,7 +2,7 @@ import { NavigationLogoutDialogButton } from "~/components/logout-navigation-dia
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate, useLocation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
@@ -27,6 +27,11 @@ type Props = {
 
 export function HomeRouteList(props: Props) {
   const authContext = useContext(AuthContext)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // `sensitive` フラグが現在の URL に含まれているかチェック
+  const isSensitive = location.pathname.includes("/sensitive")
 
   const closeHeaderMenu = () => {
     if (props.onClickMenuItem) {
@@ -34,63 +39,69 @@ export function HomeRouteList(props: Props) {
     }
   }
 
-  const navigate = useNavigate()
+  // 規約や概要ページには sensitive を付けないリンクの生成関数
+  const createLink = (path: string) => {
+    if (isSensitive && !["/about", "/terms"].includes(path)) {
+      return `/sensitive${path}`
+    }
+    return path
+  }
 
   return (
     <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
       <HomeNavigationButton
         onClick={closeHeaderMenu}
-        href={"/"}
+        href={createLink("/")}
         icon={HomeIcon}
       >
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        href={"/generation"}
+        href={createLink("/generation")}
         icon={AwardIcon}
         onClick={closeHeaderMenu}
       >
         {"画像生成"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        href={"/themes"}
+        href={createLink("/themes")}
         icon={LightbulbIcon}
         onClick={closeHeaderMenu}
       >
         {"お題"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        onClick={closeHeaderMenu}
-        href={"/stickers"}
+        href={createLink("/stickers")}
         icon={StampIcon}
+        onClick={closeHeaderMenu}
       >
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        href={"/rankings"}
+        href={createLink("/rankings")}
         icon={AwardIcon}
         onClick={closeHeaderMenu}
       >
         {"ランキング"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        onClick={closeHeaderMenu}
-        href={"/events"}
+        href={createLink("/events")}
         icon={StarIcon}
+        onClick={closeHeaderMenu}
       >
         {"イベント"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        onClick={closeHeaderMenu}
-        href={"/milestones"}
+        href={createLink("/milestones")}
         icon={RocketIcon}
+        onClick={closeHeaderMenu}
       >
         {"開発予定"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        onClick={closeHeaderMenu}
-        href={"/releases"}
+        href={createLink("/releases")}
         icon={RocketIcon}
+        onClick={closeHeaderMenu}
       >
         {"更新情報"}
       </HomeNavigationButton>
@@ -98,14 +109,14 @@ export function HomeRouteList(props: Props) {
         <Separator />
       </div>
       <HomeNavigationButton
-        href={"/posts/2d"}
+        href={createLink("/posts/2d")}
         icon={ImageIcon}
         onClick={closeHeaderMenu}
       >
         {"イラスト"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        href={"/posts/3d"}
+        href={createLink("/posts/3d")}
         icon={BookImageIcon}
         onClick={closeHeaderMenu}
       >
@@ -135,7 +146,7 @@ export function HomeRouteList(props: Props) {
       )}
       {authContext.isLoggedIn && (
         <HomeNavigationButton
-          href={"/settings/account/login"}
+          href={createLink("/settings/account/login")}
           icon={UserIcon}
           onClick={closeHeaderMenu}
         >
@@ -144,7 +155,7 @@ export function HomeRouteList(props: Props) {
       )}
       {authContext.isLoggedIn && (
         <HomeNavigationButton
-          href={"/support/chat"}
+          href={createLink("/support/chat")}
           icon={MessageCircleIcon}
           onClick={closeHeaderMenu}
         >
@@ -152,7 +163,7 @@ export function HomeRouteList(props: Props) {
         </HomeNavigationButton>
       )}
       <HomeNavigationButton
-        href={"/plus"}
+        href={createLink("/plus")}
         icon={GemIcon}
         onClick={closeHeaderMenu}
       >
@@ -160,7 +171,7 @@ export function HomeRouteList(props: Props) {
       </HomeNavigationButton>
       {authContext.isLoggedIn && (
         <HomeNavigationButton
-          href={"/settings"}
+          href={createLink("/settings")}
           icon={SettingsIcon}
           onClick={closeHeaderMenu}
         >

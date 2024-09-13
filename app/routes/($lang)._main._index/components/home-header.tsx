@@ -16,6 +16,8 @@ import { Link, useNavigation } from "@remix-run/react"
 import { Loader2Icon, MenuIcon, Search } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
+import { graphql } from "gql.tada"
+import { useQuery } from "@apollo/client/index"
 
 type Props = {
   title?: string
@@ -38,6 +40,12 @@ function HomeHeader(props: Props) {
       window.location.href = "/search"
     }
   }
+
+  // 新着のお知らせがあるかどうか
+  const isExistedNewNotification = useQuery(
+    viewerIsExistedNewNotificationQuery,
+    {},
+  )
 
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
 
@@ -131,12 +139,6 @@ function HomeHeader(props: Props) {
           </div>
           {authContext.isLoggedIn && (
             <>
-              <Link
-                className="hidden md:block"
-                to={"https://www.aipictors.com/"}
-              >
-                <Button variant={"ghost"}>{"旧版トップ"}</Button>
-              </Link>
               <Link to={"/generation"}>
                 <Button variant={"ghost"}>{"生成"}</Button>
               </Link>
@@ -163,5 +165,13 @@ function HomeHeader(props: Props) {
     </Suspense>
   )
 }
+
+const viewerIsExistedNewNotificationQuery = graphql(
+  `query ViewerIsExistedNewNotification {
+    viewer {
+      isExistedNewNotification
+    }
+  }`,
+)
 
 export default HomeHeader
