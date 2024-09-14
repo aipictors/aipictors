@@ -185,9 +185,7 @@ export function SelectCreatedWorksDialog(props: Props) {
             </Tabs>
             <ScrollArea className="max-h-80 overflow-y-auto md:max-h-[100%]">
               {tab === "NO_SELECTED" && (
-                <>
-                  <div className="flex flex-wrap">{renderWorks(works)}</div>
-                </>
+                <div className="flex flex-wrap">{renderWorks(works)}</div>
               )}
               {tab === "SELECTED" && (
                 <div className="flex flex-wrap">

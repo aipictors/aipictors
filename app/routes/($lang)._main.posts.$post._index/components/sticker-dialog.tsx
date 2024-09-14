@@ -92,26 +92,24 @@ export function StickerDialog(props: Props) {
 
         <ScrollArea className="w-full">
           {type === "CREATED" && (
-            <>
-              <div className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center">
-                {stickers?.viewer?.userStickers?.map((sticker) => (
-                  <StickerButton
-                    key={sticker.id}
-                    imageUrl={sticker.imageUrl ?? ""}
-                    title={sticker.title}
-                    onClick={() => {
-                      props.onSend(sticker.id, sticker.imageUrl ?? "")
-                      props.onClose()
-                    }}
-                  />
-                ))}
-                <AddStickerButton
-                  onAddedSicker={() => {
-                    refetch()
+            <div className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center">
+              {stickers?.viewer?.userStickers?.map((sticker) => (
+                <StickerButton
+                  key={sticker.id}
+                  imageUrl={sticker.imageUrl ?? ""}
+                  title={sticker.title}
+                  onClick={() => {
+                    props.onSend(sticker.id, sticker.imageUrl ?? "")
+                    props.onClose()
                   }}
                 />
-              </div>
-            </>
+              ))}
+              <AddStickerButton
+                onAddedSicker={() => {
+                  refetch()
+                }}
+              />
+            </div>
           )}
           {type === "RELATED" && (
             <div className="m-auto flex max-h-[64vh] max-w-[80vw] flex-wrap items-center">

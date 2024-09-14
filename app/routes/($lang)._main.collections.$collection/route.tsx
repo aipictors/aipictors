@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { CollectionArticle } from "~/routes/($lang)._main.collections.$collection/components/collection-article"
 import { CollectionWorkListItemFragment } from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
 import { json, useLoaderData } from "@remix-run/react"
@@ -20,9 +20,7 @@ export async function loader(props: LoaderFunctionArgs) {
     ? Number.parseInt(searchParams.get("page") || "1", 10)
     : 0
 
-  const client = createClient()
-
-  const collectionResp = await client.query({
+  const collectionResp = await loaderClient.query({
     query: folderQuery,
     variables: {
       nanoid: props.params.collection,
@@ -44,7 +42,7 @@ export default function Collections() {
   const params = useParams()
 
   if (params.collection === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

@@ -32,6 +32,12 @@ export function MyContents(props: Props) {
     if (path.includes("likes")) {
       return "LIKES"
     }
+    if (path.includes("views")) {
+      return "VIEWS"
+    }
+    if (path.includes("reports")) {
+      return "REPORTS"
+    }
     return "HOME"
   }
 
@@ -129,6 +135,26 @@ export function MyContents(props: Props) {
               >
                 {"いいね"}
               </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setMyContentType("VIEWS")
+                  navigate("/my/views")
+                }}
+                className="w-full"
+                value="VIEWS"
+              >
+                {"閲覧履歴"}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setMyContentType("REPORTS")
+                  navigate("/my/reports")
+                }}
+                className="w-full"
+                value="REPORTS"
+              >
+                {"運営からのお知らせ"}
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -193,6 +219,26 @@ export function MyContents(props: Props) {
               variant={"secondary"}
             >
               {"いいね"}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("VIEWS")
+                navigate("/my/views")
+              }}
+              value="VIEWS"
+              variant={"secondary"}
+            >
+              {"閲覧履歴"}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("REPORTS")
+                navigate("/my/reports")
+              }}
+              value="REPORTS"
+              variant={"secondary"}
+            >
+              {"運営からのお知らせ"}
             </Button>
           </div>
         </div>

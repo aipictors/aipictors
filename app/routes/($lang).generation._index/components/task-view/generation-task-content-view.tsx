@@ -50,8 +50,7 @@ export function GenerationTaskContentPreview() {
             imageGenerationTask.imageUrl &&
             imageGenerationTask.thumbnailUrl && (
               <img
-                // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                className={`max-h-[72vh] generation-image-${imageGenerationTask.id}`}
+                className={`generation-image-${imageGenerationTask.id} max-h-[72vh]`}
                 src={imageGenerationTask.imageUrl}
                 alt={"-"}
               />

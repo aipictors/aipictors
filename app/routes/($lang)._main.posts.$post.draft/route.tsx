@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
@@ -14,23 +14,21 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const workResp = await client.query({
+  const workResp = await loaderClient.query({
     query: workQuery,
     variables: {
       id: props.params.post,
     },
   })
 
-  const workCommentsResp = await client.query({
+  const workCommentsResp = await loaderClient.query({
     query: workCommentsQuery,
     variables: {
       workId: props.params.post,
     },
   })
 
-  const newComments = await client.query({
+  const newComments = await loaderClient.query({
     query: newCommentsQuery,
     variables: {
       workId: props.params.post,
@@ -49,7 +47,7 @@ export default function Work() {
   const params = useParams()
 
   if (params.post === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

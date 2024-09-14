@@ -1,6 +1,6 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   UserContents,
   UserProfileFragment,
@@ -25,9 +25,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const userResp = await client.query({
+  const userResp = await loaderClient.query({
     query: userQuery,
     variables: {
       userId: decodeURIComponent(props.params.user),
@@ -47,7 +45,7 @@ export default function UserLayout() {
   const params = useParams<"user">()
 
   if (params.user === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

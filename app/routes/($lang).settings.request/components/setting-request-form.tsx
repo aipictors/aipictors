@@ -91,20 +91,18 @@ export function SettingRequestForm() {
             </div>
           )}
           {promptonUserId && (
-            <>
-              <div className="flex">
-                <div className="flex w-full items-center justify-between">
-                  <Label htmlFor="airplane-mode">
-                    {"サポートの送信を許可する"}
-                  </Label>
-                  <Switch
-                    onCheckedChange={setFeatureCheck}
-                    checked={featureCheck}
-                    id="airplane-mode"
-                  />
-                </div>
+            <div className="flex">
+              <div className="flex w-full items-center justify-between">
+                <Label htmlFor="airplane-mode">
+                  {"サポートの送信を許可する"}
+                </Label>
+                <Switch
+                  onCheckedChange={setFeatureCheck}
+                  checked={featureCheck}
+                  id="airplane-mode"
+                />
               </div>
-            </>
+            </div>
           )}
           <Button
             disabled={isUpdatingUserSetting}

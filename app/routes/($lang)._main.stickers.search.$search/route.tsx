@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   StickerList,
   StickerListItemFragment,
@@ -16,9 +16,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const stickers = await client.query({
+  const stickers = await loaderClient.query({
     query: stickersQuery,
     variables: {
       offset: 0,
@@ -45,7 +43,7 @@ export default function Stickers() {
   const params = useParams()
 
   if (params.search === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

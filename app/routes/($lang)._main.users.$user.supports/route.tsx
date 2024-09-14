@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { UserSupport } from "~/routes/($lang)._main.users.$user.supports/components/user-support"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
@@ -11,9 +11,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const userResp = await client.query({
+  const userResp = await loaderClient.query({
     query: userQuery,
     variables: {
       userId: props.params.user,
@@ -33,7 +31,7 @@ export default function UserSupports() {
   const params = useParams()
 
   if (params.user === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

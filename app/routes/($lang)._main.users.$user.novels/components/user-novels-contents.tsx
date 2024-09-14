@@ -22,7 +22,7 @@ export function UserNovelsContents(props: Props) {
   const params = useParams()
 
   if (params.user === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
   const authContext = useContext(AuthContext)
 

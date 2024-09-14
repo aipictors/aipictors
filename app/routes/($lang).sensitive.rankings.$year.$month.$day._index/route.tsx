@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -16,8 +16,6 @@ export const meta: MetaFunction = () => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const client = createClient()
-
   if (
     props.params.year === undefined ||
     props.params.month === undefined ||
@@ -32,7 +30,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const day = Number.parseInt(props.params.day)
 
-  const workAwardsResp = await client.query({
+  const workAwardsResp = await loaderClient.query({
     query: workAwardsQuery,
     variables: {
       offset: 0,
@@ -61,7 +59,7 @@ export default function SensitiveAwardsPage() {
     params.month === undefined ||
     params.day === undefined
   ) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const year = Number.parseInt(params.year)

@@ -10,7 +10,7 @@ import { ProfileEditorForm } from "~/routes/($lang)._main.new.profile._index/com
 export async function loader() {
   // const client = createClient()
 
-  // const resp = await client.query({
+  // const resp = await loaderClient.query({
   //   query: imageModelsQuery,
   //   variables: {
   //     limit: 64,

@@ -276,7 +276,8 @@ const objectToText = (obj: Record<string, string | number>): string => {
 }
 
 const controlCodeToSpace = (str: string): string => {
-  return str.replace(/[\n\r\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, " ")
+  // @biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
+  return str.replace(/[\n\r\v\f\x7F-\x9F]/g, " ")
 }
 
 const arrayBufferUTF8ToString = (arrayBuffer: ArrayBuffer): string => {

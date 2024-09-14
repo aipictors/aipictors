@@ -195,8 +195,7 @@ export function GenerationTaskEditableCard(props: Props) {
         props.task.thumbnailUrl !== "" &&
         props.task.thumbnailUrl !== null ? (
           <img
-            // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`m-auto generation-image-${props.taskNanoid}`}
+            className={`generation-image-${props.taskNanoid} m-auto`}
             src={
               context.config.taskListThumbnailType === "light"
                 ? props.task.thumbnailUrl

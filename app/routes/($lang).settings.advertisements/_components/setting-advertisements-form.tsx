@@ -348,34 +348,40 @@ export function SettingAdvertisementsForm() {
           <div className="flex flex-col space-x-2 space-y-2 md:flex-row">
             <div className="flex space-x-2">
               <div className="flex w-24 items-center space-x-2">
-                <Checkbox
-                  id="activeFilter"
-                  checked={isActive === true}
-                  onCheckedChange={(checked) => {
-                    setIsActive(checked === true)
-                  }}
-                />
-                <label htmlFor="activeFilter">{"有効"}</label>
+                <label htmlFor="activeFilter">
+                  {"有効"}{" "}
+                  <Checkbox
+                    id="activeFilter"
+                    checked={isActive === true}
+                    onCheckedChange={(checked) => {
+                      setIsActive(checked === true)
+                    }}
+                  />
+                </label>
               </div>
               <div className="flex w-40 items-center space-x-2">
-                <Checkbox
-                  id="sensitiveFilter"
-                  checked={isSensitiveFilter === true}
-                  onCheckedChange={(checked) =>
-                    setIsSensitiveFilter(checked === true ? true : undefined)
-                  }
-                />
-                <label htmlFor="sensitiveFilter">{"センシティブ"}</label>
+                <label htmlFor="sensitiveFilter">
+                  {"センシティブ"}{" "}
+                  <Checkbox
+                    id="sensitiveFilter"
+                    checked={isSensitiveFilter === true}
+                    onCheckedChange={(checked) =>
+                      setIsSensitiveFilter(checked === true ? true : undefined)
+                    }
+                  />
+                </label>
               </div>
               <div className="flex w-40 items-center space-x-2">
-                <Checkbox
-                  id="ageFilter"
-                  checked={isSensitiveFilter === false}
-                  onCheckedChange={(checked) =>
-                    setIsSensitiveFilter(checked === true ? false : undefined)
-                  }
-                />
-                <label htmlFor="ageFilter">{"全年齢"}</label>
+                <label htmlFor="ageFilter">
+                  {"全年齢"}{" "}
+                  <Checkbox
+                    id="ageFilter"
+                    checked={isSensitiveFilter === false}
+                    onCheckedChange={(checked) =>
+                      setIsSensitiveFilter(checked === true ? false : undefined)
+                    }
+                  />
+                </label>
               </div>
             </div>
             <Button

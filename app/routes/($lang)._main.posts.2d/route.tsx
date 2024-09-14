@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type { MetaFunction } from "@remix-run/cloudflare"
@@ -47,8 +47,6 @@ export async function loader() {
 
   const randomCategories = getRandomCategories()
 
-  const client = createClient()
-
   const now = getJstDate()
 
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
@@ -67,7 +65,7 @@ export async function loader() {
     pastGenerationDate.setTime(now.getTime())
   }
 
-  const result = await client.query({
+  const result = await loaderClient.query({
     query: query,
     variables: {
       adWorksLimit: config.query.homeWorkCount.ad,

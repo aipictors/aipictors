@@ -10,7 +10,7 @@ import { UserSettingsForm } from "~/routes/($lang)._main.new.settings._index/com
 export async function loader() {
   // const client = createClient()
 
-  // const resp = await client.query({
+  // const resp = await loaderClient.query({
   //   query: imageModelsQuery,
   //   variables: {
   //     limit: 64,

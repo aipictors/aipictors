@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
 import {
   WorkList,
@@ -21,9 +21,7 @@ export async function loader(props: LoaderFunctionArgs) {
     })
   }
 
-  const client = createClient()
-
-  const worksResp = await client.query({
+  const worksResp = await loaderClient.query({
     query: worksQuery,
     variables: {
       offset: 0,

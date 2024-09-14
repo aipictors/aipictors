@@ -9,7 +9,7 @@ export default function RecipientMessages() {
   const params = useParams()
 
   if (params.recipient === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   return <ChatMessageView recipientId={params.recipient} />

@@ -1,9 +1,13 @@
 /**
  * URLの不一致によるエラー
- * biome-ignore lint/complexity/noStaticOnlyClass: <explanation>
  */
-export class ParamsError extends Error {
-  static {
-    ParamsError.prototype.name = "ParamsError"
-  }
+
+export function ParamsError(message?: string) {
+  const error = new Error(message)
+  error.name = "ParamsError"
+  Object.setPrototypeOf(error, ParamsError.prototype)
+  return error
 }
+
+ParamsError.prototype = Object.create(Error.prototype)
+ParamsError.prototype.constructor = ParamsError

@@ -7,7 +7,7 @@ import {
 } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   EventWorkList,
   EventWorkListItemFragment,
@@ -41,9 +41,7 @@ export async function loader(props: LoaderFunctionArgs) {
     return redirectResult
   }
 
-  const client = createClient()
-
-  const eventsResp = await client.query({
+  const eventsResp = await loaderClient.query({
     query: appEventQuery,
     variables: {
       limit: 64,

@@ -264,37 +264,49 @@ export function HomeContents(props: Props) {
           </div>
         )}
         {props.isSensitive && props.homeParticles && (
-          <>
-            <div>
-              <HomeTagList
-                themeTitle={props.homeParticles.dailyThemeTitle}
-                hotTags={props.homeParticles.hotTags}
+          <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
+            <div className="flex flex-col space-y-4 md:w-[80%]">
+              <div>
+                <HomeTagList
+                  themeTitle={props.homeParticles.dailyThemeTitle}
+                  hotTags={props.homeParticles.hotTags}
+                />
+              </div>
+              <HomeWorksTagSection
+                tag={props.homeParticles.firstTag}
+                works={props.homeParticles.firstTagWorks}
+                secondTag={props.homeParticles.secondTag}
+                secondWorks={props.homeParticles.secondTagWorks}
+                isSensitive={props.isSensitive}
+                isCropped={props.isCropped}
+              />
+              <HomeNewUsersWorksSection
+                works={props.homeParticles.newUserWorks}
+                isSensitive={props.isSensitive}
+              />
+              <HomeAwardWorkSection
+                awardDateText={props.homeParticles.awardDateText}
+                title={"前日ランキング"}
+                awards={props.homeParticles.workAwards}
+                isSensitive={props.isSensitive}
+              />
+              <HomeTagsSection
+                title={"人気タグ"}
+                tags={props.homeParticles.recommendedTags}
+                isSensitive={props.isSensitive}
               />
             </div>
-            <HomeWorksTagSection
-              tag={props.homeParticles.firstTag}
-              works={props.homeParticles.firstTagWorks}
-              secondTag={props.homeParticles.secondTag}
-              secondWorks={props.homeParticles.secondTagWorks}
-              isSensitive={props.isSensitive}
-              isCropped={props.isCropped}
+            <Separator
+              orientation="vertical"
+              className="hidden h-[100vh] w-[1px] md:block"
             />
-            <HomeNewUsersWorksSection
-              works={props.homeParticles.newUserWorks}
-              isSensitive={props.isSensitive}
+            <AppSideMenu
+              homeParticles={props.homeParticles}
+              isSensitive={props.isSensitive ?? false}
+              isShowSensitiveButton={true}
+              isShowGenerationAds={true}
             />
-            <HomeAwardWorkSection
-              awardDateText={props.homeParticles.awardDateText}
-              title={"前日ランキング"}
-              awards={props.homeParticles.workAwards}
-              isSensitive={props.isSensitive}
-            />
-            <HomeTagsSection
-              title={"人気タグ"}
-              tags={props.homeParticles.recommendedTags}
-              isSensitive={props.isSensitive}
-            />
-          </>
+          </div>
         )}
       </TabsContent>
       <TabsContent value="new">

@@ -1,5 +1,5 @@
 import { ArticlePage } from "~/components/page/article-page"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   imageModelCardFragment,
   ImageModelList,
@@ -14,9 +14,7 @@ import { META } from "~/config"
  * モデルの一覧
  */
 export async function loader() {
-  const client = createClient()
-
-  const resp = await client.query({
+  const resp = await loaderClient.query({
     query: imageModelsQuery,
     variables: {
       limit: 64,

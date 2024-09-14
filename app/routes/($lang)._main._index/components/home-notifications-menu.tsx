@@ -14,29 +14,34 @@ import {
   AwardIcon,
   BellIcon,
   HeartIcon,
+  MailIcon,
   MessageCircle,
   UserRoundCheck,
 } from "lucide-react"
 import { Suspense, useState } from "react"
+import { HomeMessagesContents } from "~/routes/($lang)._main._index/components/home-messages-contents"
 
 /**
  * ヘッダーのお知らせメニュー
  */
 export function HomeNotificationsMenu() {
-  const tabValues: IntrospectionEnum<"NotificationType">[] = [
+  // "MESSAGE"タブを追加
+  const tabValues: (IntrospectionEnum<"NotificationType"> | "MESSAGE")[] = [
     "LIKED_WORK",
     "WORK_COMMENT",
     "WORK_AWARD",
     "FOLLOW",
+    "MESSAGE",
   ]
 
   const defaultTab = tabValues[0]
 
-  const [activeTab, setActiveTab] =
-    useState<IntrospectionEnum<"NotificationType">>(defaultTab)
+  const [activeTab, setActiveTab] = useState<
+    IntrospectionEnum<"NotificationType"> | "MESSAGE"
+  >(defaultTab)
 
   const handleTabClick = (value: string) => {
-    setActiveTab(value as IntrospectionEnum<"NotificationType">)
+    setActiveTab(value as IntrospectionEnum<"NotificationType"> | "MESSAGE")
   }
 
   return (
@@ -48,7 +53,7 @@ export function HomeNotificationsMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <div className="flex w-96 flex-col">
-          <Tabs defaultValue={defaultTab}>
+          <Tabs value={activeTab} onValueChange={handleTabClick}>
             <div className="border-b">
               <TabsList className="flex justify-center">
                 {tabValues.map((tabValue) => (
@@ -56,7 +61,6 @@ export function HomeNotificationsMenu() {
                     className="w-full"
                     key={tabValue}
                     value={tabValue}
-                    onClick={() => handleTabClick(tabValue)}
                   >
                     {tabValue === "LIKED_WORK" && <HeartIcon className="w-4" />}
                     {tabValue === "WORK_COMMENT" && (
@@ -66,6 +70,7 @@ export function HomeNotificationsMenu() {
                     {tabValue === "FOLLOW" && (
                       <UserRoundCheck className="w-4" />
                     )}
+                    {tabValue === "MESSAGE" && <MailIcon className="w-4" />}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -79,10 +84,11 @@ export function HomeNotificationsMenu() {
                 </div>
               }
             >
-              {activeTab !== "WORK_COMMENT" && (
+              {activeTab !== "WORK_COMMENT" && activeTab !== "MESSAGE" && (
                 <HomeNotificationsContents type={activeTab} />
               )}
               {activeTab === "WORK_COMMENT" && <HomeNotificationCommentsTabs />}
+              {activeTab === "MESSAGE" && <HomeMessagesContents />}
             </Suspense>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
@@ -13,6 +13,8 @@ import { HomeContents } from "~/routes/($lang)._main._index/components/home-cont
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
 import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.HOME_SENSITIVE)
@@ -50,8 +52,6 @@ export async function loader() {
   }
 
   const randomCategories = getRandomCategories()
-
-  const client = createClient()
 
   const now = getJstDate()
 
@@ -92,7 +92,7 @@ export async function loader() {
     pastGenerationDate.setTime(now.getTime())
   }
 
-  const result = await client.query({
+  const result = await loaderClient.query({
     query: query,
     variables: {
       awardDay: yesterday.getDate(),
@@ -149,7 +149,7 @@ export default function Index() {
     <>
       <HomeContents
         homeParticles={{
-          dailyThemeTitle: data.dailyTheme ? data.dailyTheme.title ?? "" : "",
+          dailyThemeTitle: data.dailyTheme ? (data.dailyTheme.title ?? "") : "",
           hotTags: data.hotTags,
           firstTag: data.firstTag,
           firstTagWorks: data.firstTagWorks,
@@ -160,6 +160,8 @@ export default function Index() {
           recommendedTags: data.recommendedTags,
           promotionWorks: data.promotionWorks,
           newUserWorks: data.newUserWorks,
+          newPostedUsers: data.newPostedUsers,
+          newComments: data.newComments,
         }}
         isSensitive={true}
         isCropped={false}
@@ -263,6 +265,22 @@ const query = graphql(
     ) {
       ...HomeNewUsersWorks
     }
+    newPostedUsers: newPostedUsers(
+      offset: 0,
+      limit: 8,
+    ) {
+      ...HomeNewPostedUsers
+    }
+    newComments: newComments(
+      offset: 0,
+      limit: 8,
+      where: {
+        isSensitive: true,
+        ratings: [R18, R18G],
+      }
+    ) {
+      ...HomeNewComments
+    }
     promotionWorks: works(
       offset: 0,
       limit: $promotionWorksLimit,
@@ -308,5 +326,7 @@ const query = graphql(
     HomeTagFragment,
     HomeTagWorkFragment,
     HomeNewUsersWorksFragment,
+    HomeNewPostedUsersFragment,
+    HomeNewCommentsFragment,
   ],
 )

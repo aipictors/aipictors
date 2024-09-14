@@ -24,32 +24,42 @@ export function PostFormItemView(props: Props) {
         >
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="PUBLIC" id="view-public" />
-              <label htmlFor="view-public">{"公開"}</label>
+              <label htmlFor="view-public">
+                {"公開"}
+                <RadioGroupItem value="PUBLIC" id="view-public" />
+              </label>
             </div>
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="PRIVATE" id="view-archive" />
-              <label htmlFor="view-archive">{"非公開"}</label>
+              <label htmlFor="view-archive">
+                {"非公開"}
+                <RadioGroupItem value="PRIVATE" id="view-archive" />
+              </label>
             </div>
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="LIMITED" id="view-limited" />
-              <label htmlFor="view-limited">{"限定公開"}</label>
+              <label htmlFor="view-limited">
+                {"限定公開"}
+                <RadioGroupItem value="LIMITED" id="view-limited" />
+              </label>
             </div>
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="SILENT" id="view-silent" />
-              <label htmlFor="view-silent">{"新着非公開"}</label>
+              <label htmlFor="view-silent">
+                {"新着非公開"}
+                <RadioGroupItem value="SILENT" id="view-silent" />
+              </label>
             </div>
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="DRAFT" id="view-draft" />
-              <label htmlFor="view-draft">{"下書き"}</label>
+              <label htmlFor="view-draft">
+                {"下書き"}
+                <RadioGroupItem value="DRAFT" id="view-draft" />
+              </label>
             </div>
           </div>
         </RadioGroup>

@@ -36,5 +36,9 @@ export const SenderMessageFragment = graphql(
     text
     isRead
     createdAt
+    user {
+      iconUrl
+      name
+    }
   }`,
 )

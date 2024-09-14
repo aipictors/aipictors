@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -13,8 +13,6 @@ export async function loader(props: LoaderFunctionArgs) {
   if (props.params.model === undefined) {
     throw new Response(null, { status: 404 })
   }
-
-  const client = createClient()
 
   const url = new URL(props.request.url)
 
@@ -32,7 +30,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const hasPrompt = searchParams.get("prompt") === "1"
 
-  const resp = await client.query({
+  const resp = await loaderClient.query({
     query: aiModelQuery,
     variables: {
       search: props.params.model,
@@ -88,17 +86,17 @@ export default function ModelPage() {
   const params = useParams()
 
   if (params.model === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
 
   if (data.data === null) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   if (!data.data.name) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   return (

@@ -1,6 +1,6 @@
 import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { AlbumArticleHeaderFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-header"
 
 /**
@@ -16,9 +16,7 @@ export const loader = async (props: LoaderFunctionArgs) => {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const albumResp = await client.query({
+  const albumResp = await loaderClient.query({
     query: LoaderQuery__DEPRECATED__,
     variables: {
       where: {

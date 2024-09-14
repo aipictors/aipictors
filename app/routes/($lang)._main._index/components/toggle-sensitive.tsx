@@ -12,17 +12,18 @@ export function ToggleSensitive() {
 
   const revalidator = useRevalidator()
 
-  // Cookieから"sensitive"フラグをチェック
+  // CookieまたはURLから"sensitive"フラグをチェック
   useEffect(() => {
     const cookieValue = document.cookie
       .split("; ")
       .find((row) => row.startsWith("sensitive="))
       ?.split("=")[1]
 
-    if (cookieValue === "1") {
+    // Cookieに"sensitive"が設定されているか、URLに"/sensitive"が含まれているかを確認
+    if (cookieValue === "1" || location.pathname.includes("/sensitive")) {
       setSensitive(true)
     }
-  }, [])
+  }, [location.pathname])
 
   const toggleSensitive = () => {
     if (sensitive) {
