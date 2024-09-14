@@ -7,7 +7,6 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { cn } from "~/lib/cn"
 import { config } from "~/config"
 import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/components/config-view/generation-config-clip-skip"
 import { GenerationConfigControlNet } from "~/routes/($lang).generation._index/components/config-view/generation-config-control-net"
@@ -127,7 +126,7 @@ export function GenerationConfigView() {
       tooltip={"イラストに使用するモデルです、絵柄を変更できます。"}
     >
       <ScrollArea type="always">
-        <div className={"flex flex-col gap-y-4 px-0 md:px-4 md:max-h-[80vh] md:max-h-full"}>
+        <div className={"flex flex-col gap-y-4 px-0 md:max-h-[80vh] md:px-4"}>
           <GenerationConfigModels
             models={context.models}
             favoritedModelIds={context.config.favoriteModelIds}

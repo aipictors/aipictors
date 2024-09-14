@@ -62,7 +62,7 @@ export function GenerationNegativePromptView() {
         "生成したくないイラストを英単語で書いてください。初期値は高品質なイラストの生成に役立つ値が入力されています。"
       }
     >
-      <div className="relative flex h-full flex-col gap-y-2 md:px-4 pb-2 md:pb-4">
+      <div className="relative flex h-full flex-col gap-y-2 pb-2 md:px-4 md:pb-4">
         <Textarea
           className="h-full min-h-32 resize-none font-mono md:min-h-16"
           placeholder={"EasyNegativeなど"}

@@ -7,7 +7,6 @@ import { GenerationImagePostButton } from "~/routes/($lang).generation._index/co
 import { GenerationTaskActionDropdownMenu } from "~/routes/($lang).generation._index/components/task-view/generation-task-action-dropdown-menu"
 import { GenerationTaskCountSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-count-select"
 import { GenerationTaskPreviewModeButton } from "~/routes/($lang).generation._index/components/task-view/generation-task-preview-mode-button"
-import { GenerationTaskProtectedSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-protected-select"
 import { GenerationTaskRatingSelect } from "~/routes/($lang).generation._index/components/task-view/generation-task-rating-select"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"

@@ -14,7 +14,6 @@ import { GenerationTaskDeleteButton } from "~/routes/($lang).generation._index/c
 import {
   GenerationResultProtectButtonFragment,
   GenerationResultProtectButtonTaskFragment,
-  GenerationTaskProtectedButton,
 } from "~/routes/($lang).generation._index/components/generation-task-protected-button"
 import { graphql, type FragmentOf } from "gql.tada"
 
