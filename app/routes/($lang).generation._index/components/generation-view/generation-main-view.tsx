@@ -34,7 +34,7 @@ export function GenerationMainView(props: Props) {
           <div className="min-w-80 flex-1 overflow-hidden">
             {props.negativePromptEditor}
           </div>
-          <div className="gap-y-4 px-4 pb-4">
+          <div className="gap-y-4 md:px-4 pb-4">
             <Separator />
           </div>
         </div>
