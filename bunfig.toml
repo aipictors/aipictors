@@ -6,3 +6,6 @@ save = true
 [run]
 # equivalent to `bun --bun` for all `bun run` commands
 bun = true
+
+[test]
+preload = ["./scripts/test/happydom.ts", "./scripts/test/testing-library.ts"]
