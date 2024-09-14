@@ -150,6 +150,9 @@ function HomeHeader(props: Props) {
             </Button>
             <Separator orientation="vertical" />
           </div>
+          <Link className="hidden md:block" to={"https://www.aipictors.com/"}>
+            <Button variant={"ghost"}>{"旧版トップ"}</Button>
+          </Link>
           {authContext.isLoggedIn && (
             <>
               {/* 投稿と生成のリンクには /sensitive を付けない */}
