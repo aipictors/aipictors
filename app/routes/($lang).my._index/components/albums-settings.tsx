@@ -51,45 +51,43 @@ export function AlbumsSetting(props: Props) {
   return (
     <>
       <div className="mb-4">
-        <>
-          <div
-            className="mt-4 mb-4"
-            style={{
-              maxHeight: maxHeight,
-              overflow: "hidden",
-              transition: "max-height 0.3s ease-out, opacity 0.3s ease-out",
-              opacity: opacity,
-            }}
-          >
-            <div className="flex space-x-4">
-              <Select
-                value={props.rating ? props.rating : ""}
-                onValueChange={(value) => {
-                  if (value === "ALL") {
-                    props.setRating(null)
-                    return
+        <div
+          className="mt-4 mb-4"
+          style={{
+            maxHeight: maxHeight,
+            overflow: "hidden",
+            transition: "max-height 0.3s ease-out, opacity 0.3s ease-out",
+            opacity: opacity,
+          }}
+        >
+          <div className="flex space-x-4">
+            <Select
+              value={props.rating ? props.rating : ""}
+              onValueChange={(value) => {
+                if (value === "ALL") {
+                  props.setRating(null)
+                  return
+                }
+                props.setRating(value as IntrospectionEnum<"AlbumRating">)
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={
+                    props.rating
+                      ? toRatingText(props.rating)
+                      : "すべての年齢制限"
                   }
-                  props.setRating(value as IntrospectionEnum<"AlbumRating">)
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      props.rating
-                        ? toRatingText(props.rating)
-                        : "すべての年齢制限"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">{"すべての年齢制限"}</SelectItem>
-                  <SelectItem value="G">{"全年齢"}</SelectItem>
-                  <SelectItem value="R18">{"R18"}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">{"すべての年齢制限"}</SelectItem>
+                <SelectItem value="G">{"全年齢"}</SelectItem>
+                <SelectItem value="R18">{"R18"}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </>
+        </div>
         <div className="block md:hidden">
           <AlbumsListSortableSetting
             nowSort={props.sort}

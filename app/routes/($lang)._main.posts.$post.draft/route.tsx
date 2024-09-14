@@ -49,7 +49,7 @@ export default function Work() {
   const params = useParams()
 
   if (params.post === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

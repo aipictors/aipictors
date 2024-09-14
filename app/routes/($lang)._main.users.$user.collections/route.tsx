@@ -6,7 +6,7 @@ export default function UserCollections() {
   const params = useParams()
 
   if (params.user === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   return <UserCollectionList />

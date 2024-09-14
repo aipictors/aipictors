@@ -116,15 +116,15 @@ export default function EditImage() {
             },
           },
           thumbnailPosX:
-            work?.smallThumbnailImageWidth ??
-            0 > (work?.smallThumbnailImageHeight ?? 0)
-              ? work?.thumbnailImagePosition ?? 0
+            (work?.smallThumbnailImageWidth ??
+            0 > (work?.smallThumbnailImageHeight ?? 0))
+              ? (work?.thumbnailImagePosition ?? 0)
               : 0,
           thumbnailPosY:
-            work?.smallThumbnailImageWidth ??
-            0 > (work?.smallThumbnailImageHeight ?? 0)
+            (work?.smallThumbnailImageWidth ??
+            0 > (work?.smallThumbnailImageHeight ?? 0))
               ? 0
-              : work?.thumbnailImagePosition ?? 0,
+              : (work?.thumbnailImagePosition ?? 0),
           isSelectedGenerationImage: work?.isGeneration ?? false,
         },
       })
@@ -217,16 +217,16 @@ export default function EditImage() {
     selectedImageGenerationIds: [],
     thumbnailBase64: work?.largeThumbnailImageURL ?? "",
     thumbnailPosX:
-      work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0)
-        ? work?.thumbnailImagePosition ?? 0
+      (work?.smallThumbnailImageWidth ??
+      0 > (work?.smallThumbnailImageHeight ?? 0))
+        ? (work?.thumbnailImagePosition ?? 0)
         : 0,
     thumbnailPosY:
-      work?.smallThumbnailImageWidth ??
+      (work?.smallThumbnailImageWidth ??
       0 > (work?.smallThumbnailImageHeight ?? 0) ??
-      0
+      0)
         ? 0
-        : work?.thumbnailImagePosition ?? 0,
+        : (work?.thumbnailImagePosition ?? 0),
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
@@ -389,7 +389,7 @@ export default function EditImage() {
       const smallThumbnailUrl =
         formResult.output.thumbnailBase64.startsWith("https://") ||
         smallThumbnail === null
-          ? work.smallThumbnailImageURL ?? ""
+          ? (work.smallThumbnailImageURL ?? "")
           : await uploadPublicImage(
               smallThumbnail.base64,
               viewer?.viewer?.token,
@@ -402,7 +402,7 @@ export default function EditImage() {
       const largeThumbnailUrl =
         formResult.output.thumbnailBase64.startsWith("https://") ||
         largeThumbnail === null
-          ? work.largeThumbnailImageURL ?? ""
+          ? (work.largeThumbnailImageURL ?? "")
           : await uploadPublicImage(
               largeThumbnail.base64,
               viewer?.viewer?.token,
@@ -493,17 +493,17 @@ export default function EditImage() {
             smallThumbnailImageURL: smallThumbnailUrl,
             smallThumbnailImageWidth: smallThumbnail
               ? smallThumbnail.width
-              : work.smallThumbnailImageWidth ?? 0,
+              : (work.smallThumbnailImageWidth ?? 0),
             smallThumbnailImageHeight: smallThumbnail
               ? smallThumbnail.height
-              : work.smallThumbnailImageHeight ?? 0,
+              : (work.smallThumbnailImageHeight ?? 0),
             largeThumbnailImageURL: largeThumbnailUrl,
             largeThumbnailImageWidth: largeThumbnail
               ? largeThumbnail.width
-              : work.largeThumbnailImageWidth ?? 0,
+              : (work.largeThumbnailImageWidth ?? 0),
             largeThumbnailImageHeight: largeThumbnail
               ? largeThumbnail.height
-              : work.largeThumbnailImageHeight ?? 0,
+              : (work.largeThumbnailImageHeight ?? 0),
             videoUrl: null,
             ogpImageUrl: ogpBase64Url,
             imageHeight: mainImageSize.height,

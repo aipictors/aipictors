@@ -666,7 +666,7 @@ html {
 /**
  * @see https://github.com/shadcn-ui/ui/blob/main/apps/www/styles/globals.css#L100
  */
- @media (max-width: 640px) {
+@media (max-width: 640px) {
   .container-shadcn-ui {
     @apply px-4;
   }

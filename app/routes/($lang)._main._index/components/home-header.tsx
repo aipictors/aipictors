@@ -54,7 +54,7 @@ function HomeHeader(props: Props) {
     }
   }
 
-  const title = sensitivePath ? "Aipictors R18" : props.title ?? "Aipictors β"
+  const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors β")
 
   // 新着のお知らせがあるかどうか
   const isExistedNewNotification = useQuery(

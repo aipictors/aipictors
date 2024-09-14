@@ -47,7 +47,7 @@ export function PassPlanList(props: Props) {
 
   const currentPass = data
     ? data.viewer
-      ? data.viewer.currentPass ?? null
+      ? (data.viewer.currentPass ?? null)
       : null
     : null
 

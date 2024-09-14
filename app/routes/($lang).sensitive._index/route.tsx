@@ -151,7 +151,7 @@ export default function Index() {
     <>
       <HomeContents
         homeParticles={{
-          dailyThemeTitle: data.dailyTheme ? data.dailyTheme.title ?? "" : "",
+          dailyThemeTitle: data.dailyTheme ? (data.dailyTheme.title ?? "") : "",
           hotTags: data.hotTags,
           firstTag: data.firstTag,
           firstTagWorks: data.firstTagWorks,
