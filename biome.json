@@ -9,6 +9,7 @@
     "ignore": ["app/graphql-env.d.ts", "storybook-static/**"]
   },
   "linter": {
+    "ignore": ["app/components/ui/**", "./tailwind.config.ts"],
     "rules": {
       "recommended": true,
       "correctness": {

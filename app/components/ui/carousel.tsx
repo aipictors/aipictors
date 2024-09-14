@@ -1,18 +1,20 @@
-import type {
-  EmblaCarouselType as CarouselApi,
-  EmblaOptionsType as CarouselOptions,
-  EmblaPluginType as CarouselPlugin,
-} from "embla-carousel"
-import useEmblaCarousel from "embla-carousel-react"
-import { ArrowLeft, ArrowRight } from "lucide-react"
 import * as React from "react"
+import useEmblaCarousel, {
+  type UseEmblaCarouselType,
+} from "embla-carousel-react"
+import { ArrowLeft, ArrowRight } from "lucide-react"
 
-import { Button } from "~/components/ui/button"
 import { cn } from "~/lib/cn"
+import { Button } from "~/components/ui/button"
+
+type CarouselApi = UseEmblaCarouselType[1]
+type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
+type CarouselOptions = UseCarouselParameters[0]
+type CarouselPlugin = UseCarouselParameters[1]
 
 type CarouselProps = {
   opts?: CarouselOptions
-  plugins?: CarouselPlugin[]
+  plugins?: CarouselPlugin
   orientation?: "horizontal" | "vertical"
   setApi?: (api: CarouselApi) => void
 }
@@ -134,6 +136,7 @@ const Carousel = React.forwardRef<
           ref={ref}
           onKeyDownCapture={handleKeyDown}
           className={cn("relative", className)}
+          role="region"
           aria-roledescription="carousel"
           {...props}
         >
