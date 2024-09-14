@@ -1,6 +1,7 @@
 import type * as ResizablePrimitive from "react-resizable-panels"
 import { cn } from "~/lib/cn"
 import { ResizablePanel } from "~/components/ui/resizable"
+import { getCookie } from "~/utils/get-cookie"
 import { setCookie } from "~/utils/set-cookie"
 
 type Props = React.ComponentProps<
@@ -18,7 +19,11 @@ export function ResizablePanelWithMemory(props: Props) {
    * Cookieからサイズを取得
    */
   const getCookieValue = () => {
-    return undefined
+    const size = getCookie(`size-${props.id}`)
+    if (size === null) {
+      return undefined
+    }
+    return Number(size)
   }
 
   /**
