@@ -625,6 +625,13 @@ html {
   }
 }
 
+/**
+ * ヘッダーの高さ
+ */
+.h-header {
+  height: 72px;
+}
+
 @keyframes heart-beat {
   50% {
     transform: scale(0.75);

@@ -349,7 +349,7 @@ export function SettingAdvertisementsForm() {
             <div className="flex space-x-2">
               <div className="flex w-24 items-center space-x-2">
                 <label htmlFor="activeFilter">
-                  {"有効"}{" "}
+                  {"有効"}
                   <Checkbox
                     id="activeFilter"
                     checked={isActive === true}
@@ -361,7 +361,7 @@ export function SettingAdvertisementsForm() {
               </div>
               <div className="flex w-40 items-center space-x-2">
                 <label htmlFor="sensitiveFilter">
-                  {"センシティブ"}{" "}
+                  {"センシティブ"}
                   <Checkbox
                     id="sensitiveFilter"
                     checked={isSensitiveFilter === true}
@@ -373,7 +373,7 @@ export function SettingAdvertisementsForm() {
               </div>
               <div className="flex w-40 items-center space-x-2">
                 <label htmlFor="ageFilter">
-                  {"全年齢"}{" "}
+                  {"全年齢"}
                   <Checkbox
                     id="ageFilter"
                     checked={isSensitiveFilter === false}
