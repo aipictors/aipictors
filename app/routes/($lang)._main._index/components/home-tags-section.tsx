@@ -26,6 +26,7 @@ export function HomeTagsSection(props: Props) {
       </h2>
       <Carousel
         opts={{ dragFree: true, loop: true }}
+        // @ts-ignore
         plugins={[plugin.current]}
         onMouseEnter={plugin.current.stop}
         onMouseLeave={plugin.current.reset}
