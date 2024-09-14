@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import {
   HomeBanners,
@@ -75,8 +75,6 @@ export async function loader({ request }: { request: Request }) {
 
   const randomCategories = getRandomCategories()
 
-  const client = createClient()
-
   const now = getJstDate()
 
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
@@ -125,7 +123,7 @@ export async function loader({ request }: { request: Request }) {
     endpoint: `releases?orders=-createdAt&limit=${4}&offset=0`,
   })
 
-  const result = await client.query({
+  const result = await loaderClient.query({
     query: query,
     variables: {
       awardDay: yesterday.getDate(),

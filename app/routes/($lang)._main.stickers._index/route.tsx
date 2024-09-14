@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   StickerList,
   StickerListItemFragment,
@@ -21,9 +21,7 @@ export const meta: MetaFunction = () => {
 }
 
 export async function loader() {
-  const client = createClient()
-
-  const stickersResp = await client.query({
+  const stickersResp = await loaderClient.query({
     query: stickersQuery,
     variables: {
       offset: 0,
@@ -32,7 +30,7 @@ export async function loader() {
     },
   })
 
-  const favoritedStickersResp = await client.query({
+  const favoritedStickersResp = await loaderClient.query({
     query: stickersQuery,
     variables: {
       offset: 0,
@@ -44,7 +42,7 @@ export async function loader() {
     },
   })
 
-  const usedStickersResp = await client.query({
+  const usedStickersResp = await loaderClient.query({
     query: stickersQuery,
     variables: {
       offset: 0,

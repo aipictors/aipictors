@@ -1,24 +1,22 @@
 import { AuthContextProvider } from "~/components/auth-context-provider"
 import { AutoLoginProvider } from "~/components/auto-login-provider"
-import { createClient } from "~/lib/client"
 import { config } from "~/config"
 import { ApolloProvider } from "@apollo/client/index"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { initializeAnalytics } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { getMessaging, onMessage, getToken } from "firebase/messaging"
+import { apolloClient } from "~/lib/client"
 type Props = {
   children: React.ReactNode
 }
-
-const client = createClient()
 
 const queryClient = new QueryClient()
 
 export function ContextProviders(props: Props) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ApolloProvider client={client}>
+      <ApolloProvider client={apolloClient}>
         <AuthContextProvider>
           <AutoLoginProvider>{props.children}</AutoLoginProvider>
         </AuthContextProvider>

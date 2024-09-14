@@ -3,7 +3,7 @@ import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Input } from "~/components/ui/input"
 import { Slider } from "~/components/ui/slider"
 import { AuthContext } from "~/contexts/auth-context"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { MetaFunction } from "@remix-run/cloudflare"
@@ -40,24 +40,22 @@ export const meta: MetaFunction = () => {
 }
 
 export async function loader() {
-  const client = createClient()
-
-  const promptCategoriesReq = client.query({
+  const promptCategoriesReq = loaderClient.query({
     query: promptCategoriesQuery,
     variables: {},
   })
 
-  const negativePromptCategoriesReq = client.query({
+  const negativePromptCategoriesReq = loaderClient.query({
     query: negativePromptCategoriesQuery,
     variables: {},
   })
 
-  const imageModelsReq = client.query({
+  const imageModelsReq = loaderClient.query({
     query: imageModelsQuery,
     variables: {},
   })
 
-  const imageLoraModelsReq = client.query({
+  const imageLoraModelsReq = loaderClient.query({
     query: imageLoraModelsQuery,
     variables: {},
   })

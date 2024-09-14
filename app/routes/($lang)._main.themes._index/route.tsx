@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   json,
   type MetaFunction,
@@ -43,13 +43,11 @@ export async function loader({ request }: { request: Request }) {
       : Number.parseInt(url.searchParams.get("page") as string)
     : 0
 
-  const client = createClient()
-
   const year = new Date().getFullYear()
 
   const month = new Date().getMonth() + 1
 
-  const dailyThemesResp = await client.query({
+  const dailyThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -66,7 +64,7 @@ export async function loader({ request }: { request: Request }) {
 
   const todayDay = today.getDate()
 
-  const todayThemesResp = await client.query({
+  const todayThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -76,7 +74,7 @@ export async function loader({ request }: { request: Request }) {
   })
 
   const worksResp = todayThemesResp.data.dailyThemes.length
-    ? await client.query({
+    ? await loaderClient.query({
         query: themeWorksQuery,
         variables: {
           offset: 64 * page,
@@ -106,7 +104,7 @@ export async function loader({ request }: { request: Request }) {
 
   const endDate = jstEndDate.toISOString().split("T")[0]
 
-  const afterSevenDayThemesResp = await client.query({
+  const afterSevenDayThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -133,7 +131,7 @@ export async function loader({ request }: { request: Request }) {
 
   const formatDate = (date: Date) => date.toISOString().split("T")[0]
 
-  const dailyBeforeThemes = await client.query({
+  const dailyBeforeThemes = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,

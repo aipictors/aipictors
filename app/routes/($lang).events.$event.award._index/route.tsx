@@ -3,7 +3,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { RefreshCcwIcon } from "lucide-react"
 import {
@@ -25,9 +25,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const eventsResp = await client.query({
+  const eventsResp = await loaderClient.query({
     query: appEventQuery,
     variables: {
       limit: 200,

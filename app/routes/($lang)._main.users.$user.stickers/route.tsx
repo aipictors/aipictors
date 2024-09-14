@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   UserStickerList,
   UserStickerListItemFragment,
@@ -15,9 +15,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const stickersResp = await client.query({
+  const stickersResp = await loaderClient.query({
     query: userStickersQuery,
     variables: {
       userId: props.params.user,
