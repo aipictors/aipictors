@@ -182,38 +182,36 @@ export function InPaintingDialog(props: Props) {
 
   return (
     props.isOpen && (
-      <>
-        <FullScreenContainer onClose={props.onClose} enabledScroll={isDrawing}>
-          <div className="h-[100%] w-[80%]">
-            <PrivateImagePaintCanvas
-              fileName={props.imageUrl}
-              token={props.token}
-              onChangeBrushImageBase64={(value) => {
-                setMaskBase64(value)
-              }}
-              setIsDrawing={(value) => {
-                setIsDrawing(value)
-              }}
-            />
-          </div>
-          <InPaintingImageForm
-            taskId={props.taskId}
+      <FullScreenContainer onClose={props.onClose} enabledScroll={isDrawing}>
+        <div className="h-[100%] w-[80%]">
+          <PrivateImagePaintCanvas
+            fileName={props.imageUrl}
             token={props.token}
-            imageUrl={props.imageUrl}
-            userNanoid={props.userNanoid}
-            configSeed={props.configSeed}
-            configSteps={props.configSteps}
-            configSampler={props.configSampler}
-            configScale={props.configScale}
-            configSizeType={props.configSizeType}
-            configModel={props.configModel}
-            configVae={props.configVae}
-            configClipSkip={props.configClipSkip}
-            onClose={props.onClose}
-            maskBase64={maskImage64}
+            onChangeBrushImageBase64={(value) => {
+              setMaskBase64(value)
+            }}
+            setIsDrawing={(value) => {
+              setIsDrawing(value)
+            }}
           />
-        </FullScreenContainer>
-      </>
+        </div>
+        <InPaintingImageForm
+          taskId={props.taskId}
+          token={props.token}
+          imageUrl={props.imageUrl}
+          userNanoid={props.userNanoid}
+          configSeed={props.configSeed}
+          configSteps={props.configSteps}
+          configSampler={props.configSampler}
+          configScale={props.configScale}
+          configSizeType={props.configSizeType}
+          configModel={props.configModel}
+          configVae={props.configVae}
+          configClipSkip={props.configClipSkip}
+          onClose={props.onClose}
+          maskBase64={maskImage64}
+        />
+      </FullScreenContainer>
     )
   )
 }

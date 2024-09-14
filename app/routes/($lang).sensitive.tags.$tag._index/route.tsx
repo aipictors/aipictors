@@ -59,7 +59,7 @@ export default function Tag() {
   const params = useParams()
 
   if (params.tag === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

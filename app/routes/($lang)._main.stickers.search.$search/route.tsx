@@ -45,7 +45,7 @@ export default function Stickers() {
   const params = useParams()
 
   if (params.search === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

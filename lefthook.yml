@@ -38,5 +38,5 @@ pre-commit:
   commands:
     check:
       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
-      run: bunx @biomejs/biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      run: bunx @biomejs/biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true {staged_files} --reporter=summary
       stage_fixed: true

@@ -205,24 +205,34 @@ export function AddStickerDialog(props: Props) {
                 className="flex items-center space-x-2"
               >
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="CHARACTER" id="person-check" />
-                  <label htmlFor="person-check">{"人物"}</label>
+                  <label htmlFor="person-check">
+                    {"人物"}
+                    <RadioGroupItem value="CHARACTER" id="person-check" />
+                  </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="ANIMAL" id="animal-check" />
-                  <label htmlFor="animal-check">{"動物"}</label>
+                  <label htmlFor="animal-check">
+                    {"動物"}
+                    <RadioGroupItem value="ANIMAL" id="animal-check" />
+                  </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="MACHINE" id="machine-check" />
-                  <label htmlFor="machine-check">{"機械"}</label>
+                  <label htmlFor="machine-check">
+                    {"機械"}
+                    <RadioGroupItem value="MACHINE" id="machine-check" />
+                  </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="BACKGROUND" id="background-check" />
-                  <label htmlFor="background-check">{"背景"}</label>
+                  <label htmlFor="background-check">
+                    {"背景"}
+                    <RadioGroupItem value="BACKGROUND" id="background-check" />
+                  </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="OBJECT" id="object-check" />
-                  <label htmlFor="object-check">{"物"}</label>
+                  <label htmlFor="object-check">
+                    {"物"}
+                    <RadioGroupItem value="OBJECT" id="object-check" />
+                  </label>
                 </div>
               </RadioGroup>
               <p>タグ</p>
@@ -234,24 +244,34 @@ export function AddStickerDialog(props: Props) {
                 className="flex items-center space-x-2"
               >
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="楽しい" id="happy-check" />
-                  <label htmlFor="happy-check">{"楽しい"}</label>
+                  <label htmlFor="happy-check">
+                    {"楽しい"}
+                    <RadioGroupItem value="楽しい" id="happy-check" />
+                  </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="嬉しい" id="enjoy-check" />
-                  <label htmlFor="enjoy-check">{"嬉しい"}</label>
+                  <label htmlFor="enjoy-check">
+                    {"嬉しい"}
+                    <RadioGroupItem value="嬉しい" id="enjoy-check" />
+                  </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="お祝い" id="celebration-check" />
-                  <label htmlFor="celebration-check">{"お祝い"}</label>
+                  <label htmlFor="celebration-check">
+                    {"お祝い"}
+                    <RadioGroupItem value="お祝い" id="celebration-check" />
+                  </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="悲しい" id="sad-check" />
-                  <label htmlFor="sad-check">{"悲しい"}</label>
+                  <label htmlFor="sad-check">
+                    {"悲しい"}
+                    <RadioGroupItem value="悲しい" id="sad-check" />
+                  </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <RadioGroupItem value="その他" id="other-check" />
-                  <label htmlFor="other-check">{"その他"}</label>
+                  <label htmlFor="other-check">
+                    {"その他"}
+                    <RadioGroupItem value="その他" id="other-check" />
+                  </label>
                 </div>
               </RadioGroup>
             </div>

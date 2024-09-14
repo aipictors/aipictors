@@ -27,14 +27,18 @@ export function PostFormItemType(props: Props) {
         >
           <div className="md:w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="NOVEL" id="novel-check" />
-              <label htmlFor="novel-check">{"小説"}</label>
+              <label htmlFor="novel-check">
+                {"小説"}
+                <RadioGroupItem value="NOVEL" id="novel-check" />
+              </label>
             </div>
           </div>
           <div className="w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="COLUMN" id="column-check" />
-              <label htmlFor="column-check">{"コラム"}</label>
+              <label htmlFor="column-check">
+                {"コラム"}
+                <RadioGroupItem value="COLUMN" id="column-check" />
+              </label>
             </div>
           </div>
         </RadioGroup>

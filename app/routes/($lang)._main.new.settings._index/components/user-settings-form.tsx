@@ -117,7 +117,7 @@ export function UserSettingsForm() {
             </p>
             <ToggleGroup
               className="flex-wrap justify-start gap-x-2"
-              value={isUpdatingUserSetting ? "" : rating ?? ""}
+              value={isUpdatingUserSetting ? "" : (rating ?? "")}
               onValueChange={(value) => setRating(value)}
               type="single"
             >

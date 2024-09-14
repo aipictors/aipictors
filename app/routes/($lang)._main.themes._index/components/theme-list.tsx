@@ -47,7 +47,7 @@ export function ThemeList(props: Props) {
     return {
       id: `/${props.year}-${props.month}-${index}`,
       day: day,
-      title: !shouldHideTitle ? theme?.title ?? null : null, // 7日後以降はお題内容を表示しない
+      title: !shouldHideTitle ? (theme?.title ?? null) : null, // 7日後以降はお題内容を表示しない
       isSunday: dayOfWeek === 0, // 日曜日
       isSaturday: dayOfWeek === 6, // 土曜日
       isToday: isToday,

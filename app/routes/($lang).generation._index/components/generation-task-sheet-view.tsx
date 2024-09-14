@@ -324,7 +324,7 @@ export function GenerationTaskSheetView(props: Props) {
 
   const imageGenerationTask =
     props.task.id !== context.config.viewTaskId
-      ? cachedImage ?? cachedResultImage
+      ? (cachedImage ?? cachedResultImage)
       : props.task
 
   useEffect(() => {

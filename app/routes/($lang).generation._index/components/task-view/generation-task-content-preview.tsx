@@ -39,8 +39,7 @@ export function GenerationTaskContentPreview() {
         userToken ? (
           <div className="m-auto max-h-[100vh]">
             <img
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-              className={`max-h-[64vh] generation-image-${imageGenerationTask.id}`}
+              className={`generation-image-${imageGenerationTask.id} max-h-[64vh]`}
               src={
                 context.config.taskListThumbnailType === "light"
                   ? imageGenerationTask.thumbnailUrl
@@ -63,8 +62,7 @@ export function GenerationTaskContentPreview() {
         userToken ? (
           <div className="m-auto max-h-[100vh]">
             <img
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-              className={`max-h-[64vh] generation-image-${imageGenerationResult.id}`}
+              className={`generation-image-${imageGenerationResult.id} max-h-[64vh]`}
               src={
                 context.config.taskListThumbnailType === "light"
                   ? imageGenerationResult.thumbnailUrl

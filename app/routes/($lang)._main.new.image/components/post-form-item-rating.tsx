@@ -55,14 +55,18 @@ export function PostFormItemRating(props: Props) {
           </div>
           <div className="w-1/3 md:w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="R18" id="machine-check" />
-              <label htmlFor="machine-check">{"R18"}</label>
+              <label htmlFor="machine-check">
+                {"R18"}
+                <RadioGroupItem value="R18" id="machine-check" />
+              </label>
             </div>
           </div>
           <div className="w-1/3 md:w-auto">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="R18G" id="background-check" />
-              <label htmlFor="background-check">{"R18G"}</label>
+              <label htmlFor="background-check">
+                {"R18G"}
+                <RadioGroupItem value="R18G" id="background-check" />
+              </label>
             </div>
           </div>
         </RadioGroup>

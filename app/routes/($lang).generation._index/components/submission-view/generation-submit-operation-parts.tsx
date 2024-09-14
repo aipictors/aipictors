@@ -214,46 +214,42 @@ export function GenerationSubmitOperationParts(props: Props) {
         {authContext.isLoggedIn &&
           context.user !== null &&
           context.user?.hasSignedImageGenerationTerms !== true && (
-            <>
-              <GenerationTermsButton
-                termsMarkdownText={props.termsText}
-                isLoading={props.isCreatingTask}
-                onSubmit={props.onSignTerms}
-                triggerChildren={
-                  <GradientBorderButton
-                    disabled={props.isCreatingTask}
-                    onClick={() => {}}
-                    className="w-full text-balance"
-                    isNoBackground={true}
-                  >
-                    {props.isCreatingTask ? "処理中.." : "生成"}
-                  </GradientBorderButton>
-                }
-              />
-            </>
+            <GenerationTermsButton
+              termsMarkdownText={props.termsText}
+              isLoading={props.isCreatingTask}
+              onSubmit={props.onSignTerms}
+              triggerChildren={
+                <GradientBorderButton
+                  disabled={props.isCreatingTask}
+                  onClick={() => {}}
+                  className="w-full text-balance"
+                  isNoBackground={true}
+                >
+                  {props.isCreatingTask ? "処理中.." : "生成"}
+                </GradientBorderButton>
+              }
+            />
           )}
         {/* プレミアムの場合はサブスク案内ダイアログなしver */}
         {isCurrentPremiumPlan() &&
           context.user?.hasSignedImageGenerationTerms === true && (
-            <>
-              <GenerationSubmitButton
-                onClick={async () => {
-                  await props.onCreateTask()
-                }}
-                isLoading={props.isCreatingTask}
-                isDisabled={context.config.isDisabled}
-                generatingCount={generatingCount}
-                maxGeneratingCount={
-                  props.availableImageGenerationMaxTasksCount - props.tasksCount
-                }
-                buttonActionCaption={getSubmitButtonLabel(
-                  !!context.config.i2iImageBase64,
-                  context.config.promptText,
-                  context.config.seed,
-                  generatingCount,
-                )}
-              />
-            </>
+            <GenerationSubmitButton
+              onClick={async () => {
+                await props.onCreateTask()
+              }}
+              isLoading={props.isCreatingTask}
+              isDisabled={context.config.isDisabled}
+              generatingCount={generatingCount}
+              maxGeneratingCount={
+                props.availableImageGenerationMaxTasksCount - props.tasksCount
+              }
+              buttonActionCaption={getSubmitButtonLabel(
+                !!context.config.i2iImageBase64,
+                context.config.promptText,
+                context.config.seed,
+                generatingCount,
+              )}
+            />
           )}
         {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
         {!isCurrentPremiumPlan() &&
@@ -261,25 +257,23 @@ export function GenerationSubmitOperationParts(props: Props) {
             props.availableImageGenerationMaxTasksCount -
               (context.config.upscaleSize === 2 ? 2 : 1) &&
           context.user?.hasSignedImageGenerationTerms === true && (
-            <>
-              <GenerationSubmitButton
-                onClick={async () => {
-                  await props.onCreateTask()
-                }}
-                isLoading={props.isCreatingTask}
-                isDisabled={context.config.isDisabled}
-                generatingCount={generatingCount}
-                maxGeneratingCount={
-                  props.availableImageGenerationMaxTasksCount - props.tasksCount
-                }
-                buttonActionCaption={getSubmitButtonLabel(
-                  !!context.config.i2iImageBase64,
-                  context.config.promptText,
-                  context.config.seed,
-                  generatingCount,
-                )}
-              />
-            </>
+            <GenerationSubmitButton
+              onClick={async () => {
+                await props.onCreateTask()
+              }}
+              isLoading={props.isCreatingTask}
+              isDisabled={context.config.isDisabled}
+              generatingCount={generatingCount}
+              maxGeneratingCount={
+                props.availableImageGenerationMaxTasksCount - props.tasksCount
+              }
+              buttonActionCaption={getSubmitButtonLabel(
+                !!context.config.i2iImageBase64,
+                context.config.promptText,
+                context.config.seed,
+                generatingCount,
+              )}
+            />
           )}
         {/* 通常の生成ボタン */}
         {!isCurrentPremiumPlan() &&

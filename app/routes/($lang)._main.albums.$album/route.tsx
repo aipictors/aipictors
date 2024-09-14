@@ -57,7 +57,7 @@ export default function albums() {
   const params = useParams()
 
   if (params.album === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

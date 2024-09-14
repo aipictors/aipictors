@@ -171,11 +171,11 @@ export default function MonthThemes() {
   const params = useParams()
 
   if (params.year === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   if (params.month === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   const [searchParams] = useSearchParams()

@@ -9,7 +9,7 @@ export default function Novels() {
   const params = useParams()
 
   if (params.novel === undefined) {
-    throw new ParamsError()
+    throw ParamsError()
   }
 
   return (
