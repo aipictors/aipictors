@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams, useSearchParams } from "@remix-run/react"
@@ -44,13 +44,11 @@ export async function loader(props: LoaderFunctionArgs) {
       : Number.parseInt(url.searchParams.get("page") as string)
     : 0
 
-  const client = createClient()
-
   const year = Number.parseInt(props.params.year)
 
   const month = Number.parseInt(props.params.month)
 
-  const dailyThemesResp = await client.query({
+  const dailyThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -67,7 +65,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const todayDay = today.getDate()
 
-  const todayThemesResp = await client.query({
+  const todayThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -77,7 +75,7 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   const worksResp = todayThemesResp.data.dailyThemes.length
-    ? await client.query({
+    ? await loaderClient.query({
         query: themeWorksQuery,
         variables: {
           offset: page * 64,
@@ -107,7 +105,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const endDate = jstEndDate.toISOString().split("T")[0]
 
-  const afterSevenDayThemesResp = await client.query({
+  const afterSevenDayThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -134,7 +132,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const formatDate = (date: Date) => date.toISOString().split("T")[0]
 
-  const dailyBeforeThemes = await client.query({
+  const dailyBeforeThemes = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,

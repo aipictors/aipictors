@@ -10,7 +10,7 @@ import { SettingsCompleted } from "~/routes/($lang)._main.settings.completed._in
 export async function loader() {
   // const client = createClient()
 
-  // const resp = await client.query({
+  // const resp = await loaderClient.query({
   //   query: imageModelsQuery,
   //   variables: {
   //     limit: 64,

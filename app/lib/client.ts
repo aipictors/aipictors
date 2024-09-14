@@ -49,14 +49,12 @@ const contextSetter: ContextSetter = async (_, context) => {
 
 const authLink = setContext(contextSetter)
 
-export function createClient() {
-  const cache = new InMemoryCache({
-    typePolicies: typePolicies,
-  })
+const cache = new InMemoryCache({
+  typePolicies: typePolicies,
+})
 
-  return new ApolloClient({
-    ssrMode: false,
-    link: authLink.concat(httpLink),
-    cache: cache,
-  })
-}
+export const apolloClient = new ApolloClient({
+  ssrMode: false,
+  link: authLink.concat(httpLink),
+  cache: cache,
+})

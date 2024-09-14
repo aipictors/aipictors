@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { TagWorkSection } from "~/routes/($lang)._main.tags._index/components/tag-work-section"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams, useSearchParams } from "@remix-run/react"
@@ -11,8 +11,6 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 
 export async function loader(props: LoaderFunctionArgs) {
-  const client = createClient()
-
   if (props.params.tag === undefined) {
     throw new Response(null, { status: 404 })
   }
@@ -32,7 +30,7 @@ export async function loader(props: LoaderFunctionArgs) {
     ? (url.searchParams.get("sort") as SortType)
     : "DESC"
 
-  const worksResp = await client.query({
+  const worksResp = await loaderClient.query({
     query: tagWorksAndCountQuery,
     variables: {
       offset: page * 32,

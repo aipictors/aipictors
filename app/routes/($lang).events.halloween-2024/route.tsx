@@ -6,7 +6,7 @@ import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wa
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, Link, useLoaderData } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { graphql } from "gql.tada"
 import {
   EventWorkList,
@@ -20,9 +20,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const pageParam = urlParams.get("page")
   const page = pageParam ? Number(pageParam) : 0
 
-  const client = createClient()
-
-  const eventsResp = await client.query({
+  const eventsResp = await loaderClient.query({
     query: appEventQuery,
     variables: {
       limit: 64,

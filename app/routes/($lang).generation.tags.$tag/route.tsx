@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   TagReferencedWorkSection,
   TagWorkFragment,
@@ -14,9 +14,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const worksResp = await client.query({
+  const worksResp = await loaderClient.query({
     query: worksQuery,
     variables: {
       offset: 0,

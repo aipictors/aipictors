@@ -1,6 +1,6 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
 import { json, useLoaderData } from "@remix-run/react"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import {
@@ -10,8 +10,6 @@ import {
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 
 export async function loader(params: LoaderFunctionArgs) {
-  const client = createClient()
-
   // 昨日の日付を取得
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
@@ -37,7 +35,7 @@ export async function loader(params: LoaderFunctionArgs) {
     },
   }
 
-  const workAwardsResp = await client.query({
+  const workAwardsResp = await loaderClient.query({
     query: workAwardsQuery,
     variables: variables,
   })

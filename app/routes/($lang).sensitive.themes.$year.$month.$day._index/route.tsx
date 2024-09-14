@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -16,8 +16,6 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response("Invalid date", { status: 400 })
   }
 
-  const client = createClient()
-
   const year = Number.parseInt(props.params.year)
 
   const month = Number.parseInt(props.params.month)
@@ -34,7 +32,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const tab = url.searchParams.get("tab")
 
-  const dailyThemesResp = await client.query({
+  const dailyThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -49,7 +47,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response("Not found", { status: 404 })
   }
 
-  const targetThemesResp = await client.query({
+  const targetThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -58,7 +56,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  const monthlyThemes = await client.query({
+  const monthlyThemes = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -67,7 +65,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  const worksResp = await client.query({
+  const worksResp = await loaderClient.query({
     query: themeWorksAndCountQuery,
     variables: {
       offset: page * 64,
@@ -108,7 +106,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const endDate = jstEndDate.toISOString().split("T")[0]
 
-  const afterSevenDayThemesResp = await client.query({
+  const afterSevenDayThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -117,7 +115,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  const dailyBeforeThemes = await client.query({
+  const dailyBeforeThemes = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,
@@ -131,7 +129,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  const todayThemesResp = await client.query({
+  const todayThemesResp = await loaderClient.query({
     query: dailyThemesQuery,
     variables: {
       offset: 0,

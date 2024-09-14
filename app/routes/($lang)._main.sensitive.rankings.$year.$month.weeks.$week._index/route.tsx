@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -24,15 +24,13 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
   const year = Number.parseInt(props.params.year)
 
   const month = Number.parseInt(props.params.month)
 
   const week = Number.parseInt(props.params.week)
 
-  const workAwardsResp = await client.query({
+  const workAwardsResp = await loaderClient.query({
     query: workAwardsQuery,
     variables: {
       offset: 0,

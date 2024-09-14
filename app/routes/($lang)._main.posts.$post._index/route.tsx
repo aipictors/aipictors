@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
@@ -23,9 +23,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const workResp = await client.query({
+  const workResp = await loaderClient.query({
     query: workQuery,
     variables: {
       id: props.params.post,
@@ -57,7 +55,7 @@ export async function loader(props: LoaderFunctionArgs) {
     })
   }
 
-  const workCommentsResp = await client.query({
+  const workCommentsResp = await loaderClient.query({
     query: workCommentsQuery,
     variables: {
       workId: props.params.post,
@@ -68,7 +66,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const newComments = await client.query({
+  const newComments = await loaderClient.query({
     query: newCommentsQuery,
     variables: {
       workId: props.params.post,
@@ -80,7 +78,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
   // ランキング
-  const awardWorks = await client.query({
+  const awardWorks = await loaderClient.query({
     query: homeAwardWorksQuery,
     variables: {
       offset: 0,
