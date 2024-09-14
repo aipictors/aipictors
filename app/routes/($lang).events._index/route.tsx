@@ -1,5 +1,5 @@
 import { AuthContext } from "~/contexts/auth-context"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { EventsList } from "~/routes/($lang).events._index/components/events-list"
 import {
   json,
@@ -17,13 +17,11 @@ export const meta: MetaFunction = () => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const client = createClient()
-
   const urlParams = new URLSearchParams(props.request.url.split("?")[1])
   const pageParam = urlParams.get("page")
   const page = pageParam ? Number(pageParam) : 0
 
-  const eventsResp = await client.query({
+  const eventsResp = await loaderClient.query({
     query: appEventsQuery,
     variables: {
       offset: page * 16,

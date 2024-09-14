@@ -1,6 +1,6 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { config } from "~/config"
 import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
 import { GenerationConfigProvider } from "~/routes/($lang).generation._index/components/generation-config-provider"
@@ -41,29 +41,27 @@ export const meta: MetaFunction = () => {
 
 export async function loader() {
   try {
-    const client = createClient()
-
-    const promptCategoriesReq = client.query({
+    const promptCategoriesReq = loaderClient.query({
       query: promptCategoriesQuery,
       variables: {},
     })
 
-    const negativePromptCategoriesReq = client.query({
+    const negativePromptCategoriesReq = loaderClient.query({
       query: negativePromptCategoriesQuery,
       variables: {},
     })
 
-    const controlNetCategoriesReq = client.query({
+    const controlNetCategoriesReq = loaderClient.query({
       query: controlNetCategoriesQuery,
       variables: {},
     })
 
-    const imageModelsReq = client.query({
+    const imageModelsReq = loaderClient.query({
       query: imageModelsQuery,
       variables: {},
     })
 
-    const imageLoraModelsReq = client.query({
+    const imageLoraModelsReq = loaderClient.query({
       query: imageLoraModelsQuery,
       variables: {},
     })

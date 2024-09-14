@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   UserAlbumList,
   UserAlbumListItemFragment,
@@ -14,9 +14,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const albumsResp = await client.query({
+  const albumsResp = await loaderClient.query({
     query: userAlbumsQuery,
     variables: {
       offset: 0,

@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   HomeTagList,
   HomeTagListItemFragment,
@@ -11,9 +11,7 @@ import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 
 export async function loader() {
-  const client = createClient()
-
-  const worksResp = await client.query({
+  const worksResp = await loaderClient.query({
     query: LoaderWorksQuery,
     variables: {
       offset: 0,
@@ -22,7 +20,7 @@ export async function loader() {
     },
   })
 
-  const hotTagsResp = await client.query({
+  const hotTagsResp = await loaderClient.query({
     query: LoaderTagsQuery,
     variables: {},
   })

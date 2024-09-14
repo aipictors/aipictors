@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { Link, type MetaFunction, json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { META } from "~/config"
@@ -26,9 +26,7 @@ export const meta: MetaFunction = () => {
 }
 
 export async function loader() {
-  const client = createClient()
-
-  const resp = await client.query({
+  const resp = await loaderClient.query({
     query: milestonesQuery,
     variables: {
       repository: "aipictors",
@@ -37,7 +35,7 @@ export async function loader() {
 
   const milestones = resp.data.milestones
 
-  const appResp = await client.query({
+  const appResp = await loaderClient.query({
     query: milestonesQuery,
     variables: {
       repository: "app",

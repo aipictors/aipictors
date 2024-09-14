@@ -1,4 +1,4 @@
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import {
   WorkList,
   WorkListItemFragment,
@@ -7,9 +7,7 @@ import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 
 export async function loader() {
-  const client = createClient()
-
-  const worksResp = await client.query({
+  const worksResp = await loaderClient.query({
     query: worksQuery,
     variables: {
       offset: 0,

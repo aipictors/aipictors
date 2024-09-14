@@ -1,5 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
 import {
   AlbumArticleHeader,
@@ -32,9 +32,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const user = props.params.user
 
-  const client = createClient()
-
-  const result = await client.query({
+  const result = await loaderClient.query({
     query: LoaderQuery,
     variables: {
       where: {

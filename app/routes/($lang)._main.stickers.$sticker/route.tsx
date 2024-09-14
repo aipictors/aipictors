@@ -3,7 +3,7 @@ import {
   StickerArticleFragment,
 } from "~/routes/($lang)._main.stickers.$sticker/components/sticker-article"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { createClient } from "~/lib/client"
+import { loaderClient } from "~/lib/loader-client"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
@@ -17,9 +17,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const client = createClient()
-
-  const stickerResp = await client.query({
+  const stickerResp = await loaderClient.query({
     query: stickerQuery,
     variables: {
       id: props.params.sticker,
@@ -34,7 +32,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const favoritedStickersResp = await client.query({
+  const favoritedStickersResp = await loaderClient.query({
     query: stickersQuery,
     variables: {
       offset: 0,
