@@ -122,12 +122,12 @@ export function GenerationTaskListActions(props: Props) {
               onChange={props.onChangeRating}
             />
           )}
-          {!props.isEditMode && (
+          {/* {!props.isEditMode && (
             <GenerationTaskProtectedSelect
               defaultValue={props.protect}
               onChange={props.onChangeProtect}
             />
-          )}
+          )} */}
           {state !== "HISTORY_LIST_FULL" && (
             <div className="hidden md:block">
               <GenerationTaskPreviewModeButton

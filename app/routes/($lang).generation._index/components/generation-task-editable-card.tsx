@@ -238,7 +238,7 @@ export function GenerationTaskEditableCard(props: Props) {
         />
       )}
       {/* 保護ボタン */}
-      {(isHovered || isProtected) && props.taskNanoid && (
+      {/* {(isHovered || isProtected) && props.taskNanoid && (
         <GenerationTaskProtectedButton
           isProtected={isProtected}
           taskNanoid={props.taskNanoid}
@@ -247,7 +247,7 @@ export function GenerationTaskEditableCard(props: Props) {
             setIsProtected(isProtected)
           }}
         />
-      )}
+      )} */}
     </div>
   )
 }
