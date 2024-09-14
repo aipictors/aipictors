@@ -11,4 +11,4 @@ declare global {
   const afterEach: typeof import("bun:test")["afterEach"]
   const beforeEach: typeof import("bun:test")["beforeEach"]
 }
-export {}
+export type {}
