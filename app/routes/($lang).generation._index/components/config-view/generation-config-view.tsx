@@ -127,12 +127,7 @@ export function GenerationConfigView() {
       tooltip={"イラストに使用するモデルです、絵柄を変更できます。"}
     >
       <ScrollArea type="always">
-        <div
-          className={cn(
-            "flex flex-col gap-y-4 px-0 md:px-4 md:max-h-[100vh]",
-            "max-h-auto md:max-h-full",
-          )}
-        >
+        <div className={"flex flex-col gap-y-4 px-0 md:px-4 md:max-h-[80vh] md:max-h-full"}>
           <GenerationConfigModels
             models={context.models}
             favoritedModelIds={context.config.favoriteModelIds}
