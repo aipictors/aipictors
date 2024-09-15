@@ -14,7 +14,7 @@ import {
 } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql, type ResultOf } from "gql.tada"
-import { useContext, useEffect } from "react"
+import { startTransition, useContext, useEffect } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -53,7 +53,9 @@ export function GenerationQueryProvider(props: Props) {
           imageGenerationWaitCount.toString(),
         )
         if (needFetch) {
-          refetch()
+          startTransition(() => {
+            refetch()
+          })
         }
       }
     }, 2000)
@@ -63,7 +65,9 @@ export function GenerationQueryProvider(props: Props) {
   }, [inProgressImageGenerationTasksCount, imageGenerationWaitCount])
 
   useEffect(() => {
-    refetch()
+    startTransition(() => {
+      refetch()
+    })
   }, [authContext.isLoggedIn])
 
   return (
