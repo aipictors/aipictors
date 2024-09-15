@@ -13,7 +13,6 @@
     "immer",
     "lucide",
     "menlo",
-    "nextjs",
     "noto",
     "ourt",
     "pixelify",
@@ -44,30 +43,21 @@
     "*.tsbuildinfo": true,
     ".firebase": true,
     ".idea": true,
-    ".next": true,
     ".sentryclirc": true,
-    ".yarn": true,
-    "build-storybook.log": true,
-    "dist": true,
-    "graphql/__generated__": true,
-    "next-env.d.ts": true,
-    "package-lock.json": true,
-    "pnpm-lock.yaml": true,
-    "bun.lockb": true,
+    ".wrangler": true,
     "build": true,
-    ".wrangler": true
+    "build-storybook.log": true,
+    "bun.lockb": true,
+    "dist": true
   },
   "search.exclude": {
-    "*.lock": true,
     "app/graphql-env.d.ts": true,
-    "package-lock.json": true,
     "public": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.autoImportFileExcludePatterns": [
     "@emotion",
     "@radix-ui",
-    "next/dist",
     "postcss",
     "process",
     "react-day-picker",
@@ -82,7 +72,11 @@
     "TODO",
     "TODO_2024_07",
     "TODO_2024_08",
-    "TODO_2024_09"
+    "TODO_2024_09",
+    "TODO_2024_10",
+    "TODO_2024_11",
+    "TODO_2024_12",
+    "TODO_2025_01"
   ],
   "todo-tree.highlights.customHighlight": {
     "TODO_2024_07": {
@@ -94,6 +88,22 @@
       "iconColour": "red"
     },
     "TODO_2024_09": {
+      "background": "fuchsia",
+      "iconColour": "red"
+    },
+    "TODO_2024_10": {
+      "background": "fuchsia",
+      "iconColour": "red"
+    },
+    "TODO_2024_11": {
+      "background": "fuchsia",
+      "iconColour": "red"
+    },
+    "TODO_2024_12": {
+      "background": "fuchsia",
+      "iconColour": "red"
+    },
+    "TODO_2025_01": {
       "background": "fuchsia",
       "iconColour": "red"
     }
