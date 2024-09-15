@@ -36,10 +36,7 @@ const getUtcDateString = (date: Date) => {
 }
 
 export async function loader({ request }: { request: Request }) {
-  const redirectResult = redirectUrlWithOptionalSensitiveParam(
-    request,
-    "/sensitive",
-  )
+  const redirectResult = redirectUrlWithOptionalSensitiveParam(request, "/porn")
   if (redirectResult) {
     return redirectResult
   }

@@ -42,7 +42,7 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  // センシティブな作品の場合は/sensitive/にリダイレクト
+  // センシティブな作品の場合は/porn/にリダイレクト
   if (
     workResp.data.work.rating === "R18" ||
     workResp.data.work.rating === "R18G"
@@ -50,7 +50,7 @@ export async function loader(props: LoaderFunctionArgs) {
     return json(null, {
       status: 302,
       headers: {
-        Location: `/sensitive/posts/${props.params.post}`,
+        Location: `/porn/posts/${props.params.post}`,
       },
     })
   }

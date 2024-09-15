@@ -15,7 +15,7 @@ export const SearchHeader = () => {
     const trimmedText = searchText.trim()
     if (trimmedText !== "") {
       const baseUrl = isSensitive
-        ? `/sensitive/tags/${trimmedText}`
+        ? `/porn/tags/${trimmedText}`
         : `/tags/${trimmedText}`
       window.location.href = baseUrl
     } else {

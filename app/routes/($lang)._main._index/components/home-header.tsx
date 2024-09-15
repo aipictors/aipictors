@@ -33,11 +33,11 @@ function HomeHeader(props: Props) {
 
   const [searchText, setSearchText] = useState("")
 
-  const sensitivePath = location.pathname.includes("/sensitive")
+  const sensitivePath = location.pathname.includes("/porn")
 
   const getSensitiveLink = (path: string) => {
     if (sensitivePath) {
-      return `/sensitive${path}`
+      return `/porn${path}`
     }
     return path
   }
@@ -156,7 +156,7 @@ function HomeHeader(props: Props) {
           </Link>
           {authContext.isLoggedIn && (
             <>
-              {/* 投稿と生成のリンクには /sensitive を付けない */}
+              {/* 投稿と生成のリンクには /porn を付けない */}
               <Link to={"/generation"}>
                 <Button variant={"ghost"}>{"生成"}</Button>
               </Link>

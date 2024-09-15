@@ -33,7 +33,7 @@ export function HomeRouteList(props: Props) {
   const navigate = useNavigate()
 
   // `sensitive` フラグが現在の URL に含まれているかチェック
-  const isSensitive = location.pathname.includes("/sensitive")
+  const isSensitive = location.pathname.includes("/porn")
 
   const closeHeaderMenu = () => {
     if (props.onClickMenuItem) {
@@ -44,7 +44,7 @@ export function HomeRouteList(props: Props) {
   // 規約や概要ページには sensitive を付けないリンクの生成関数
   const createLink = (path: string) => {
     if (isSensitive && !["/about", "/terms"].includes(path)) {
-      return `/sensitive${path}`
+      return `/porn${path}`
     }
     return path
   }
@@ -53,8 +53,8 @@ export function HomeRouteList(props: Props) {
     // センシティブフラグを削除（Cookieの有効期限を過去に設定）
     document.cookie = "sensitive=1; max-age=0; path=/"
 
-    // URLから/sensitiveを取り除きリダイレクト
-    const newUrl = location.pathname.replace("/sensitive", "")
+    // URLから/pornを取り除きリダイレクト
+    const newUrl = location.pathname.replace("/porn", "")
 
     navigate(newUrl === "" ? "/" : newUrl, { replace: true }) // URLを更新してリダイレクト
   }
@@ -157,7 +157,7 @@ export function HomeRouteList(props: Props) {
           "センシティブ版のトップページに遷移します。あなたは18歳以上ですか？"
         }
         onNext={() => {
-          navigate("/sensitive")
+          navigate("/porn")
           closeHeaderMenu()
         }}
         cookieKey={"check-sensitive"}

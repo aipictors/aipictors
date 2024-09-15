@@ -15,7 +15,7 @@ import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with
 export async function loader(params: LoaderFunctionArgs) {
   const redirectResult = redirectUrlWithOptionalSensitiveParam(
     params.request,
-    "/sensitive/rankings",
+    "/porn/rankings",
   )
   if (redirectResult) {
     return redirectResult

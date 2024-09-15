@@ -121,7 +121,7 @@ export function ThemeContainer(props: Props) {
 
     if (props.isSensitive) {
       navigate(
-        `/sensitive/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+        `/porn/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
       )
     } else {
       navigate(
@@ -139,7 +139,7 @@ export function ThemeContainer(props: Props) {
 
     if (props.isSensitive) {
       navigate(
-        `/sensitive/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
+        `/porn/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
       )
     } else {
       navigate(
@@ -168,7 +168,7 @@ export function ThemeContainer(props: Props) {
     const month = date.getMonth() + 1
     const day = date.getDate()
     if (props.isSensitive) {
-      navigate(`/sensitive/themes/${year}/${month}/${day}`)
+      navigate(`/porn/themes/${year}/${month}/${day}`)
     } else {
       navigate(`/themes/${year}/${month}/${day}`)
     }
@@ -287,7 +287,7 @@ export function ThemeContainer(props: Props) {
                     <TagButton
                       link={
                         props.isSensitive
-                          ? `/sensitive/themes/${theme.year}/${theme.month}/${theme.day}`
+                          ? `/porn/themes/${theme.year}/${theme.month}/${theme.day}`
                           : `/themes/${theme.year}/${theme.month}/${theme.day}`
                       }
                       name={theme.title}
@@ -319,10 +319,10 @@ export function ThemeContainer(props: Props) {
                 if (props.isSensitive) {
                   if (props.day) {
                     navigate(
-                      `/sensitive/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
+                      `/porn/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
                     )
                   } else {
-                    navigate(`/sensitive/themes?page=${page}`)
+                    navigate(`/porn/themes?page=${page}`)
                   }
                 } else {
                   if (props.day) {

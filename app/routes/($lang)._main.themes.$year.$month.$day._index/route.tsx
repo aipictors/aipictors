@@ -19,7 +19,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const redirectResult = redirectUrlWithOptionalSensitiveParam(
     props.request,
-    `/sensitive/themes/${props.params.year}/${props.params.month}/${props.params.day}`,
+    `/porn/themes/${props.params.year}/${props.params.month}/${props.params.day}`,
   )
   if (redirectResult) {
     return redirectResult

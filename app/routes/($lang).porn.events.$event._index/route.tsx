@@ -8,7 +8,7 @@ import { RefreshCcwIcon } from "lucide-react"
 import {
   EventSensitiveWorkList,
   EventSensitiveWorkListItemFragment,
-} from "~/routes/($lang).sensitive.events.$event._index/components/event-sensitive-work-list"
+} from "~/routes/($lang).porn.events.$event._index/components/event-sensitive-work-list"
 import { Button } from "~/components/ui/button"
 
 export async function loader(props: LoaderFunctionArgs) {

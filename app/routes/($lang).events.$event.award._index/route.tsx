@@ -105,7 +105,7 @@ export default function FollowingLayout() {
                   "センシティブ版を表示します。あなたは18歳以上ですか？"
                 }
                 onNext={() => {
-                  navigate(`/sensitive/events/${data.appEvent.slug}`)
+                  navigate(`/porn/events/${data.appEvent.slug}`)
                 }}
                 cookieKey={"check-sensitive-ranking"}
                 onCancel={() => {}}
