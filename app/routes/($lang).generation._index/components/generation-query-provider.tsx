@@ -10,10 +10,11 @@ import {
   ImageGenerationUserStatusContextFragment,
   ImageLoraModelContextFragment,
   ImageModelContextFragment,
+  NegativePromptCategoryContextFragment,
   PromptCategoryContextFragment,
 } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql, type ResultOf } from "gql.tada"
+import { graphql, readFragment, type ResultOf } from "gql.tada"
 import { startTransition, useContext, useEffect } from "react"
 
 type Props = {
@@ -28,18 +29,38 @@ type Props = {
 export function GenerationQueryProvider(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data: viewer } = useSuspenseQuery(ViewerCurrentPassQuery, {
+  const { data: currentPassQueryResult } = useSuspenseQuery(CurrentPassQuery, {
     skip: authContext.isNotLoggedIn,
   })
 
-  const { data: status, refetch } = useSuspenseQuery(StatusQuery)
+  const { data: statusQueryResult, refetch } = useSuspenseQuery(StatusQuery)
+
+  const currentPass = readFragment(
+    CurrentPassContextFragment,
+    currentPassQueryResult?.viewer?.currentPass,
+  )
+
+  const engineStatus = readFragment(
+    ImageGenerationEngineStatusContextFragment,
+    statusQueryResult.imageGenerationEngineStatus,
+  )
+
+  const user = readFragment(
+    ImageGenerationUserContextFragment,
+    currentPassQueryResult?.viewer?.user,
+  )
+
+  const userStatus = readFragment(
+    ImageGenerationUserStatusContextFragment,
+    statusQueryResult.viewer,
+  )
 
   const isTimeout = useFocusTimeout()
 
   const inProgressImageGenerationTasksCount =
-    status.viewer?.inProgressImageGenerationTasksCount ?? 0
+    userStatus?.inProgressImageGenerationTasksCount ?? 0
 
-  const imageGenerationWaitCount = status.viewer?.imageGenerationWaitCount ?? 0
+  const imageGenerationWaitCount = userStatus?.imageGenerationWaitCount ?? 0
 
   useEffect(() => {
     const time = setInterval(async () => {
@@ -74,10 +95,10 @@ export function GenerationQueryProvider(props: Props) {
     <GenerationQueryContext.Provider
       value={{
         ...props.generationQueryContext,
-        user: viewer?.viewer?.user ?? null,
-        currentPass: viewer?.viewer?.currentPass ?? null,
-        engineStatus: status.imageGenerationEngineStatus ?? null,
-        userStatus: status.viewer ?? null,
+        engineStatus,
+        userStatus,
+        currentPass: currentPass ?? null,
+        user: user ?? null,
       }}
     >
       {props.children}
@@ -85,8 +106,8 @@ export function GenerationQueryProvider(props: Props) {
   )
 }
 
-const ViewerCurrentPassQuery = graphql(
-  `query ViewerCurrentPass {
+const CurrentPassQuery = graphql(
+  `query CurrentPassQuery {
     viewer {
       id
       currentPass {
@@ -101,7 +122,7 @@ const ViewerCurrentPassQuery = graphql(
 )
 
 const StatusQuery = graphql(
-  `query ViewerImageGenerationStatus {
+  `query StatusQuery {
     imageGenerationEngineStatus {
       ...ImageGenerationEngineStatusContextFragment
     }
@@ -131,7 +152,7 @@ export const GenerationQueryContextQuery = graphql(
       ...ImageModelContextFragment
     }
     negativePromptCategories {
-      ...PromptCategoryContextFragment
+      ...NegativePromptCategoryContextFragment
     }
     promptCategories {
       ...PromptCategoryContextFragment
@@ -142,5 +163,6 @@ export const GenerationQueryContextQuery = graphql(
     ImageLoraModelContextFragment,
     ImageModelContextFragment,
     PromptCategoryContextFragment,
+    NegativePromptCategoryContextFragment,
   ],
 )

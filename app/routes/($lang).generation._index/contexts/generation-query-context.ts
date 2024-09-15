@@ -3,7 +3,9 @@ import { createContext } from "react"
 
 type Context = {
   promptCategories: FragmentOf<typeof PromptCategoryContextFragment>[]
-  negativePromptCategories: FragmentOf<typeof PromptCategoryContextFragment>[]
+  negativePromptCategories: FragmentOf<
+    typeof NegativePromptCategoryContextFragment
+  >[]
   controlNetCategories: FragmentOf<typeof ControlNetCategoryContextFragment>[]
   imageModels: FragmentOf<typeof ImageModelContextFragment>[]
   imageLoraModels: FragmentOf<typeof ImageLoraModelContextFragment>[]
@@ -62,6 +64,18 @@ export const ControlNetCategoryContextFragment = graphql(
 
 export const PromptCategoryContextFragment = graphql(
   `fragment PromptCategoryContextFragment on PromptCategoryNode @_unmask {
+    id
+    name
+    prompts {
+      id
+      name
+      words
+    }
+  }`,
+)
+
+export const NegativePromptCategoryContextFragment = graphql(
+  `fragment NegativePromptCategoryContextFragment on PromptCategoryNode @_unmask {
     id
     name
     prompts {
