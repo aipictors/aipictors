@@ -27,11 +27,13 @@ type Props = {
 
 export function HomeRouteList(props: Props) {
   const authContext = useContext(AuthContext)
+
   const location = useLocation()
+
   const navigate = useNavigate()
 
   // `sensitive` フラグが現在の URL に含まれているかチェック
-  const isSensitive = location.pathname.includes("/sensitive")
+  const isSensitive = location.pathname.includes("/porn")
 
   const closeHeaderMenu = () => {
     if (props.onClickMenuItem) {
@@ -42,20 +44,36 @@ export function HomeRouteList(props: Props) {
   // 規約や概要ページには sensitive を付けないリンクの生成関数
   const createLink = (path: string) => {
     if (isSensitive && !["/about", "/terms"].includes(path)) {
-      return `/sensitive${path}`
+      return `/porn${path}`
     }
     return path
   }
 
+  const toggleSensitive = () => {
+    // センシティブフラグを削除（Cookieの有効期限を過去に設定）
+    document.cookie = "sensitive=1; max-age=0; path=/"
+
+    // URLから/pornを取り除きリダイレクト
+    const newUrl = location.pathname.replace("/porn", "")
+
+    navigate(newUrl === "" ? "/" : newUrl, { replace: true }) // URLを更新してリダイレクト
+  }
+
   return (
     <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
-      <HomeNavigationButton
-        onClick={closeHeaderMenu}
-        href={createLink("/")}
-        icon={HomeIcon}
-      >
+      <HomeNavigationButton onClick={closeHeaderMenu} icon={HomeIcon}>
         {"ホーム"}
+        {isSensitive && " - R18"}
       </HomeNavigationButton>
+      {isSensitive && (
+        <HomeNavigationButton
+          onClick={toggleSensitive}
+          href={"/"}
+          icon={HomeIcon}
+        >
+          {"ホーム - 全年齢"}
+        </HomeNavigationButton>
+      )}
       <HomeNavigationButton
         href={createLink("/generation")}
         icon={AwardIcon}
@@ -76,6 +94,13 @@ export function HomeRouteList(props: Props) {
         onClick={closeHeaderMenu}
       >
         {"スタンプ広場"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        href={createLink("/?tab=follow-new")}
+        icon={StampIcon}
+        onClick={closeHeaderMenu}
+      >
+        {"フォロー新着"}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/rankings")}
@@ -128,7 +153,7 @@ export function HomeRouteList(props: Props) {
           "センシティブ版のトップページに遷移します。あなたは18歳以上ですか？"
         }
         onNext={() => {
-          navigate("/sensitive")
+          navigate("/porn")
           closeHeaderMenu()
         }}
         cookieKey={"check-sensitive"}

@@ -12,7 +12,7 @@ import HomeHeaderNotLoggedInMenu from "~/routes/($lang)._main._index/components/
 import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
 import { HomeUserNavigationMenu } from "~/routes/($lang)._main._index/components/home-user-navigation-menu"
-import { Link, useNavigation } from "@remix-run/react"
+import { Link, useNavigation, useLocation, useNavigate } from "@remix-run/react"
 import { Loader2Icon, MenuIcon, Search } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
@@ -26,20 +26,18 @@ type Props = {
 
 function HomeHeader(props: Props) {
   const navigation = useNavigation()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const authContext = useContext(AuthContext)
 
   const [searchText, setSearchText] = useState("")
 
-  const checkSensitivePath = () => {
-    return window.location.pathname.includes("/sensitive")
-  }
-
-  const sensitivePath = checkSensitivePath()
+  const sensitivePath = location.pathname.includes("/porn")
 
   const getSensitiveLink = (path: string) => {
     if (sensitivePath) {
-      return `/sensitive${path}`
+      return `/porn${path}`
     }
     return path
   }
@@ -48,9 +46,9 @@ function HomeHeader(props: Props) {
     const trimmedText = searchText.trim()
     if (trimmedText !== "") {
       const baseUrl = `/tags/${trimmedText}`
-      window.location.href = getSensitiveLink(baseUrl)
+      navigate(getSensitiveLink(baseUrl))
     } else {
-      window.location.href = getSensitiveLink("/search")
+      navigate(getSensitiveLink("/search"))
     }
   }
 
@@ -137,6 +135,9 @@ function HomeHeader(props: Props) {
               <Link to={getSensitiveLink("/rankings")}>
                 <Button variant={"ghost"}>{"ランキング"}</Button>
               </Link>
+              <Link to={getSensitiveLink("/?tab=follow-new")}>
+                <Button variant={"ghost"}>{"フォロー新着"}</Button>
+              </Link>
               <div className="w-full flex-1">
                 <Input
                   onChange={onChangeSearchText}
@@ -150,9 +151,12 @@ function HomeHeader(props: Props) {
             </Button>
             <Separator orientation="vertical" />
           </div>
+          <Link className="hidden md:block" to={"https://www.aipictors.com/"}>
+            <Button variant={"ghost"}>{"旧版トップ"}</Button>
+          </Link>
           {authContext.isLoggedIn && (
             <>
-              {/* 投稿と生成のリンクには /sensitive を付けない */}
+              {/* 投稿と生成のリンクには /porn を付けない */}
               <Link to={"/generation"}>
                 <Button variant={"ghost"}>{"生成"}</Button>
               </Link>

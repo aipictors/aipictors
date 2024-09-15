@@ -70,7 +70,7 @@ export function GenerationPromptView() {
           </>
         }
       >
-        <div className="relative flex h-full flex-col gap-y-2 px-4 pb-1 md:pb-4">
+        <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
           <Textarea
             className="hidden h-full min-h-48 resize-none font-mono md:block md:min-h-16"
             placeholder={

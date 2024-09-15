@@ -58,7 +58,7 @@ export function GenerationView(props: Props) {
             </ResizablePanel>
           </ResizablePanelGroup>
         </main>
-        {props.footer}{" "}
+        {props.footer}
       </div>
     )
   }

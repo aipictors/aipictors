@@ -29,7 +29,7 @@ const useUpdateQueryParams = () => {
 export async function loader({ request }: { request: Request }) {
   const redirectResult = redirectUrlWithOptionalSensitiveParam(
     request,
-    "/sensitive/themes",
+    "/porn/themes",
   )
   if (redirectResult) {
     return redirectResult
@@ -119,7 +119,7 @@ export async function loader({ request }: { request: Request }) {
     Number(todayDay),
   )
 
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 1)
 
   const sevenDaysAfter = new Date(
     Number(todayYear),

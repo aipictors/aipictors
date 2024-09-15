@@ -31,7 +31,6 @@ import {
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
-import { FeedContents } from "~/routes/($lang)._main._index/components/feed-contents"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import {
   HomeNewUsersWorksSection,
@@ -43,6 +42,8 @@ import { Separator } from "~/components/ui/separator"
 import { AppSideMenu } from "~/components/app/app-side-menu"
 import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
+import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -87,7 +88,9 @@ export function HomeContents(props: Props) {
 
   const [newWorksPage, setNewWorksPage] = useState(0)
 
-  const [feedPage, setFeedPage] = useState(0)
+  const [followUserFeedPage, setFollowUserFeedPage] = useState(0)
+
+  const [followTagFeedPage, setFollowTagFeedPage] = useState(0)
 
   const [workType, setWorkType] =
     useState<IntrospectionEnum<"WorkType"> | null>(null)
@@ -193,13 +196,19 @@ export function HomeContents(props: Props) {
       <TabsList>
         <TabsTrigger value="home">{"ホーム"}</TabsTrigger>
         <TabsTrigger value="new">{"新着・人気"}</TabsTrigger>
-        <TabsTrigger value="timeline">
+        <TabsTrigger value="follow-new">
           <div className="flex items-center space-x-2">
-            <p>{"タイムライン"}</p>
+            <p>{"フォロー新着"}</p>
             <CrossPlatformTooltip
-              text={
-                "フォローしたユーザ、お気に入り登録したタグの新着作品が表示されます"
-              }
+              text={"フォローしたユーザの新着作品が表示されます"}
+            />
+          </div>
+        </TabsTrigger>
+        <TabsTrigger value="follow-tag">
+          <div className="flex items-center space-x-2">
+            <p>{"お気に入りタグ新着"}</p>
+            <CrossPlatformTooltip
+              text={"お気に入り登録したタグの新着作品が表示されます"}
             />
           </div>
         </TabsTrigger>
@@ -383,12 +392,18 @@ export function HomeContents(props: Props) {
           </Suspense>
         </div>
       </TabsContent>
-
-      <TabsContent value="timeline">
-        <FeedContents
+      <TabsContent value="follow-user">
+        <FollowUserFeedContents
           isSensitive={props.isSensitive}
-          page={feedPage}
-          setPage={setFeedPage}
+          page={followUserFeedPage}
+          setPage={setFollowUserFeedPage}
+        />
+      </TabsContent>
+      <TabsContent value="follow-tag">
+        <FollowTagsFeedContents
+          isSensitive={props.isSensitive}
+          page={followTagFeedPage}
+          setPage={setFollowTagFeedPage}
         />
       </TabsContent>
     </Tabs>

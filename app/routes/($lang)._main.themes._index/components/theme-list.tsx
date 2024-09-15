@@ -118,50 +118,55 @@ export function ThemeList(props: Props) {
             </div>
           ))}
           {blocks.map((block) => (
-            // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-            <div
-              key={block.id}
-              onClick={() => handleCellClick(block.date)}
-              className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
-            >
+            <div key={block.id} className="relative">
               <div
-                className={`absolute text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
+                onClick={() => handleCellClick(block.date)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleCellClick(block.date)
+                  }
+                }}
+                className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
               >
-                {block.day}
-              </div>
-              {block.thumbnailUrl && (
-                <img
-                  src={block.thumbnailUrl}
-                  alt=""
-                  className="absolute top-0 left-0 m-0 h-full w-full object-cover"
-                />
-              )}
-              {block.thumbnailUrl && (
-                <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
-              )}
-              {block.title && block.thumbnailUrl && (
-                <>
-                  <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 w-24 transform rounded-md p-2 text-center font-bold text-white">
+                <div
+                  className={`absolute text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
+                >
+                  {block.day}
+                </div>
+                {block.thumbnailUrl && (
+                  <img
+                    src={block.thumbnailUrl}
+                    alt=""
+                    className="absolute top-0 left-0 m-0 h-full w-full object-cover"
+                  />
+                )}
+                {block.thumbnailUrl && (
+                  <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
+                )}
+                {block.title && block.thumbnailUrl && (
+                  <>
+                    <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 w-24 transform rounded-md p-2 text-center font-bold text-white">
+                      {block.title}
+                    </div>
+                    <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-30 opacity-88" />
+                  </>
+                )}
+                {block.title && !block.thumbnailUrl && (
+                  <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 w-24 transform rounded-md p-2 text-center font-bold">
                     {block.title}
                   </div>
-                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-30 opacity-88" />
-                </>
-              )}
-              {block.title && !block.thumbnailUrl && (
-                <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 w-24 transform rounded-md p-2 text-center font-bold">
-                  {block.title}
-                </div>
-              )}
+                )}
+                {block.isToday}
+              </div>
               {block.proposerId && block.proposerId?.length !== 0 && (
                 <Link
                   to={`/users/${block.proposerId}`}
-                  className="absolute right-0 bottom-0 left-0 bg-black bg-opacity-60 p-0 text-center text-sm text-white opacity-40"
+                  className="absolute right-0 bottom-0 left-0 z-10 bg-black bg-opacity-60 p-0 text-center text-sm text-white opacity-40"
                 >
                   {block.proposerName}
                   {"さん案"}
                 </Link>
               )}
-              {block.isToday}
             </div>
           ))}
         </div>

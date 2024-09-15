@@ -14,7 +14,6 @@ import { GenerationTaskDeleteButton } from "~/routes/($lang).generation._index/c
 import {
   GenerationResultProtectButtonFragment,
   GenerationResultProtectButtonTaskFragment,
-  GenerationTaskProtectedButton,
 } from "~/routes/($lang).generation._index/components/generation-task-protected-button"
 import { graphql, type FragmentOf } from "gql.tada"
 
@@ -238,7 +237,7 @@ export function GenerationTaskEditableCard(props: Props) {
         />
       )}
       {/* 保護ボタン */}
-      {(isHovered || isProtected) && props.taskNanoid && (
+      {/* {(isHovered || isProtected) && props.taskNanoid && (
         <GenerationTaskProtectedButton
           isProtected={isProtected}
           taskNanoid={props.taskNanoid}
@@ -247,7 +246,7 @@ export function GenerationTaskEditableCard(props: Props) {
             setIsProtected(isProtected)
           }}
         />
-      )}
+      )} */}
     </div>
   )
 }

@@ -35,7 +35,7 @@
     "declarationMap": true,
     "plugins": [
       {
-        "name": "@0no-co/graphqlsp",
+        "name": "gql.tada/ts-plugin",
         "schema": "https://aipics.dev",
         "tadaOutputLocation": "app/graphql-env.d.ts"
       }

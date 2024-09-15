@@ -70,7 +70,7 @@ export function AiModelHeader(props: Props) {
               <Switch
                 onClick={() => {
                   navigate(
-                    `/sensitive/models/${props.name}?r18g=${props.isMoreRatings ? "0" : "1"}&prompt=${props.hasPrompt ? "1" : "0"}`,
+                    `/porn/models/${props.name}?r18g=${props.isMoreRatings ? "0" : "1"}&prompt=${props.hasPrompt ? "1" : "0"}`,
                   )
                 }}
                 checked={props.isMoreRatings}
@@ -95,7 +95,7 @@ export function AiModelHeader(props: Props) {
               onClick={() => {
                 if (props.isSensitive) {
                   navigate(
-                    `/sensitive/models/${props.name}?r18g=${props.isMoreRatings ? "1" : "0"}&prompt=${props.hasPrompt ? "0" : "1"}`,
+                    `/porn/models/${props.name}?r18g=${props.isMoreRatings ? "1" : "0"}&prompt=${props.hasPrompt ? "0" : "1"}`,
                   )
                 } else {
                   navigate(
@@ -122,7 +122,7 @@ export function AiModelHeader(props: Props) {
                       "センシティブな作品を表示します、あなたは18歳以上ですか？"
                     }
                     onNext={() => {
-                      navigate(`/sensitive/models/${props.name}`)
+                      navigate(`/porn/models/${props.name}`)
                     }}
                     cookieKey={"check-sensitive-ranking"}
                     onCancel={() => {}}

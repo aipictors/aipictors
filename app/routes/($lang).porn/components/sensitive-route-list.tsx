@@ -15,49 +15,49 @@ export function SensitiveRouteList() {
       <HomeNavigationButton href={"/"} icon={Undo2Icon}>
         {"全年齢"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive"} icon={HomeIcon}>
+      <HomeNavigationButton href={"/porn"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/themes"} icon={LightbulbIcon}>
+      <HomeNavigationButton href={"/porn/themes"} icon={LightbulbIcon}>
         {"お題"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/rankings"} icon={AwardIcon}>
+      <HomeNavigationButton href={"/porn/rankings"} icon={AwardIcon}>
         {"ランキング"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/albums"} icon={LibraryBigIcon}>
+      <HomeNavigationButton href={"/porn/albums"} icon={LibraryBigIcon}>
         {"シリーズ"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/collections"} icon={FolderIcon}>
+      <HomeNavigationButton href={"/porn/collections"} icon={FolderIcon}>
         {"コレクション"}
       </HomeNavigationButton>
       <div className="py-2">
         <Separator />
       </div>
-      <HomeNavigationButton href={"/sensitive/posts/3d"}>
+      <HomeNavigationButton href={"/porn/posts/3d"}>
         {"フォト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/posts/3d/a"}>
+      <HomeNavigationButton href={"/porn/posts/3d/a"}>
         {"フォトA"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/posts/3d/b"}>
+      <HomeNavigationButton href={"/porn/posts/3d/b"}>
         {"フォトB"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/posts/3d/c"}>
+      <HomeNavigationButton href={"/porn/posts/3d/c"}>
         {"フォトC"}
       </HomeNavigationButton>
       <div className="py-2">
         <Separator />
       </div>
-      <HomeNavigationButton href={"/sensitive/posts/2d"}>
+      <HomeNavigationButton href={"/porn/posts/2d"}>
         {"イラスト"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/posts/2d/a"}>
+      <HomeNavigationButton href={"/porn/posts/2d/a"}>
         {"イラストA"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/posts/2d/b"}>
+      <HomeNavigationButton href={"/porn/posts/2d/b"}>
         {"イラストB"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/sensitive/posts/2d/c"}>
+      <HomeNavigationButton href={"/porn/posts/2d/c"}>
         {"イラストC"}
       </HomeNavigationButton>
       <div className="py-2">

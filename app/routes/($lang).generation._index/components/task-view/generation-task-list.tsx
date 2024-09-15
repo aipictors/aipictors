@@ -159,7 +159,7 @@ export function GenerationTaskList(props: Props) {
 
   return (
     <>
-      <ScrollArea type="always">
+      <ScrollArea type="always" className="md:px-4">
         {/* <Suspense fallback={<AppLoadingPage />}> */}
         <div
           className={cn("grid gap-2 pt-0", {

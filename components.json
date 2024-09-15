@@ -4,7 +4,7 @@
   "rsc": false,
   "tsx": true,
   "tailwind": {
-    "config": "tailwind.config.ts",
+    "config": "tailwind.config.shadcn.ts",
     "css": "app/tailwind.css",
     "baseColor": "stone",
     "cssVariables": true

@@ -58,7 +58,7 @@ export function UserHomeMain(props: Props) {
                 "センシティブな作品を表示します、あなたは18歳以上ですか？"
               }
               onNext={() => {
-                navigate(`/sensitive/users/${props.user.login}`)
+                navigate(`/porn/users/${props.user.login}`)
               }}
               cookieKey={"check-sensitive-ranking"}
               onCancel={() => {}}
@@ -95,7 +95,7 @@ export function UserHomeMain(props: Props) {
                 "センシティブな作品を表示します、あなたは18歳以上ですか？"
               }
               onNext={() => {
-                navigate(`/sensitive/users/${props.user.login}`)
+                navigate(`/porn/users/${props.user.login}`)
               }}
               cookieKey={"check-sensitive-ranking"}
               onCancel={() => {}}

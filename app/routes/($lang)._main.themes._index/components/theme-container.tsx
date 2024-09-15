@@ -3,8 +3,7 @@ import { useContext, useEffect, useState } from "react"
 import { Link, useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
 import type { FragmentOf } from "gql.tada"
-import { ArrowLeftIcon, ArrowRightIcon, CalendarIcon } from "lucide-react"
-
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
 import { AppPageHeader } from "~/components/app/app-page-header"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { ResponsivePagination } from "~/components/responsive-pagination"
@@ -122,7 +121,7 @@ export function ThemeContainer(props: Props) {
 
     if (props.isSensitive) {
       navigate(
-        `/sensitive/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+        `/porn/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
       )
     } else {
       navigate(
@@ -140,7 +139,7 @@ export function ThemeContainer(props: Props) {
 
     if (props.isSensitive) {
       navigate(
-        `/sensitive/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
+        `/porn/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
       )
     } else {
       navigate(
@@ -169,7 +168,7 @@ export function ThemeContainer(props: Props) {
     const month = date.getMonth() + 1
     const day = date.getDate()
     if (props.isSensitive) {
-      navigate(`/sensitive/themes/${year}/${month}/${day}`)
+      navigate(`/porn/themes/${year}/${month}/${day}`)
     } else {
       navigate(`/themes/${year}/${month}/${day}`)
     }
@@ -186,31 +185,6 @@ export function ThemeContainer(props: Props) {
         fallbackURL="https://www.aipictors.com/idea"
       />
       <AppPageHeader title={"お題"} description={description} />
-
-      <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
-        <div className="flex space-x-2">
-          <Button onClick={handlePreviousDay} className="flex items-center p-2">
-            <ArrowLeftIcon />
-            {"前日"}
-          </Button>
-          <Button onClick={handleNextDay} className="flex items-center p-2">
-            {"翌日"}
-            <ArrowRightIcon />
-          </Button>
-        </div>
-        <div className="flex items-center space-x-2">
-          <CalendarIcon className="h-5 w-5 text-gray-400" />
-          <Input
-            type="date"
-            value={date}
-            onChange={handleDateChange}
-            className="w-[200px]"
-          />
-          <Button onClick={handleTodayClick} variant="outline">
-            {"本日"}
-          </Button>
-        </div>
-      </div>
 
       {!props.day && props.todayTheme && (
         <div className="relative overflow-hidden rounded-md">
@@ -233,23 +207,59 @@ export function ThemeContainer(props: Props) {
       )}
 
       {props.day && props.targetThemes && props.targetThemes.length > 0 && (
-        <div className="relative h-48 overflow-hidden rounded-md">
-          <img
-            src={props.targetThemes[0].firstWork?.smallThumbnailImageURL ?? ""}
-            alt={""}
-            className="absolute top-0 left-0 z-0 m-auto blur-[240px]"
-          />
-          <img
-            src={props.targetThemes[0].firstWork?.smallThumbnailImageURL ?? ""}
-            alt={""}
-            className="absolute top-0 left-0 m-auto object-contain"
-          />
-          <div className="absolute top-0 left-0 w-full bg-black bg-opacity-60 p-4 text-center font-semibold text-lg text-white">
-            <h1 className="font-bold text-2xl">{`${props.year}/${props.month}/${props.day}のお題「${props.targetThemes[0].title}」`}</h1>
-            <h2 className="text-xl">{`作品数: ${props.worksCount}`}</h2>
+        <div className="relative h-24 overflow-hidden rounded-md">
+          <div className="relative overflow-hidden rounded-md">
+            <Link
+              to={`/themes/${props.targetThemes[0].year}/${props.targetThemes[0].month}/${props.targetThemes[0].day}`}
+              className="relative block h-24 overflow-hidden rounded-md p-4"
+            >
+              <h2 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 transform text-center font-bold text-white">
+                <p>{`${props.targetThemes[0].year}月${props.targetThemes[0].month}月${props.targetThemes[0].day}日`}</p>
+                <p className="text-mx">「{props.targetThemes[0].title}」</p>
+                <p className="text-md">{`作品数: ${props.worksCount}`}</p>
+              </h2>
+              <img
+                className="absolute top-0 left-0 w-full"
+                src={props.targetThemes[0].firstWork?.smallThumbnailImageURL}
+                alt={props.targetThemes[0].title}
+              />
+              <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
+            </Link>
           </div>
         </div>
       )}
+
+      <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
+        <div className="flex space-x-2">
+          <Button
+            variant={"secondary"}
+            onClick={handlePreviousDay}
+            className="flex items-center p-2"
+          >
+            <ArrowLeftIcon />
+            {"前日"}
+          </Button>
+          <Button
+            variant={"secondary"}
+            onClick={handleNextDay}
+            className="flex items-center p-2"
+          >
+            {"翌日"}
+            <ArrowRightIcon />
+          </Button>
+          <div className="flex items-center space-x-2">
+            <Input
+              type="date"
+              value={date}
+              onChange={handleDateChange}
+              className="w-[200px]"
+            />
+          </div>
+          <Button onClick={handleTodayClick} variant="outline">
+            {"本日"}
+          </Button>
+        </div>
+      </div>
 
       <Tabs
         defaultValue={tab}
@@ -277,7 +287,7 @@ export function ThemeContainer(props: Props) {
                     <TagButton
                       link={
                         props.isSensitive
-                          ? `/sensitive/themes/${theme.year}/${theme.month}/${theme.day}`
+                          ? `/porn/themes/${theme.year}/${theme.month}/${theme.day}`
                           : `/themes/${theme.year}/${theme.month}/${theme.day}`
                       }
                       name={theme.title}
@@ -309,10 +319,10 @@ export function ThemeContainer(props: Props) {
                 if (props.isSensitive) {
                   if (props.day) {
                     navigate(
-                      `/sensitive/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
+                      `/porn/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
                     )
                   } else {
-                    navigate(`/sensitive/themes?page=${page}`)
+                    navigate(`/porn/themes?page=${page}`)
                   }
                 } else {
                   if (props.day) {

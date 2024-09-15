@@ -127,7 +127,7 @@ export function HomeRouteList() {
               </HomeNavigationButton>
             </CarouselItem>
             <CarouselItem className="basis-1/1 xl:basis-1/8">
-              <HomeNavigationButton href={"/sensitive"} icon={BoxIcon}>
+              <HomeNavigationButton href={"/porn"} icon={BoxIcon}>
                 {"センシティブ"}
               </HomeNavigationButton>
             </CarouselItem>
