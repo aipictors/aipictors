@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "GraphQL.vscode-graphql",
     "GraphQL.vscode-graphql-syntax",
     "biomejs.biome",
     "bradlc.vscode-tailwindcss",
