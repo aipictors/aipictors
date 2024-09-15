@@ -119,7 +119,7 @@ export async function loader({ request }: { request: Request }) {
     Number(todayDay),
   )
 
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 1)
 
   const sevenDaysAfter = new Date(
     Number(todayYear),
