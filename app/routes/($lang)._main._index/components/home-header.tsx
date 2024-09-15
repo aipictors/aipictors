@@ -137,6 +137,9 @@ function HomeHeader(props: Props) {
               <Link to={getSensitiveLink("/rankings")}>
                 <Button variant={"ghost"}>{"ランキング"}</Button>
               </Link>
+              <Link to={getSensitiveLink("/?tab=follow-new")}>
+                <Button variant={"ghost"}>{"フォロー新着"}</Button>
+              </Link>
               <div className="w-full flex-1">
                 <Input
                   onChange={onChangeSearchText}

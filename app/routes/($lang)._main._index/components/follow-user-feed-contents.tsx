@@ -22,7 +22,7 @@ type Props = {
   setPage: (page: number) => void
 }
 
-export function FeedContents(props: Props) {
+export function FollowUserFeedContents(props: Props) {
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) {
@@ -50,8 +50,11 @@ export function FeedContents(props: Props) {
     variables: {
       offset: 32 * props.page,
       limit: 32,
-      userId: authContext.userId,
-      where: {
+      feedWhere: {
+        userId: authContext.userId,
+        type: "FOLLOW_USER",
+      },
+      feedPostsWhere: {
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
       },
     },
@@ -269,9 +272,9 @@ export const workFieldsFragment = graphql(
 )
 
 const feedQuery = graphql(
-  `query Feed($userId: ID!, $limit: Int!, $offset: Int!, $where: FeedPostsWhereInput) {
-    feed(userId: $userId) {
-      posts(limit: $limit, offset: $offset, where: $where) {
+  `query Feed($limit: Int!, $offset: Int!, $feedWhere: FeedWhereInput!, $feedPostsWhere: FeedPostsWhereInput) {
+    feed(where: $feedWhere) {
+      posts(limit: $limit, offset: $offset, where: $feedPostsWhere) {
         id
         work {
           ...PartialWorkFields

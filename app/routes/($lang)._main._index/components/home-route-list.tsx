@@ -78,6 +78,13 @@ export function HomeRouteList(props: Props) {
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
+        href={createLink("/?tab=follow-new")}
+        icon={StampIcon}
+        onClick={closeHeaderMenu}
+      >
+        {"フォロー新着"}
+      </HomeNavigationButton>
+      <HomeNavigationButton
         href={createLink("/rankings")}
         icon={AwardIcon}
         onClick={closeHeaderMenu}
