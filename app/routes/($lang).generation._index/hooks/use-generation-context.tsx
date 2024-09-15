@@ -608,8 +608,7 @@ export function useGenerationContext() {
   }
 
   return {
-    viewer: dataContext.viewer,
-    engineStatus: dataContext.engineStatus,
+    ...dataContext,
     config: configContext,
     get maxTasksCount() {
       return maxTasksCount()
@@ -627,13 +626,6 @@ export function useGenerationContext() {
         return (text as string).replace(/<lora:|>/g, "")
       }) as string[]
     },
-    promptCategories: dataContext.promptCategories,
-    negativePromptCategories: dataContext.negativePromptCategories,
-    controlNetCategories: dataContext.controlNetCategories,
-    models: dataContext.models,
-    loraModels: dataContext.loraModels,
-    user: dataContext.user,
-    currentPass: dataContext.currentPass,
     reset,
     resetImageInputSetting,
     resetForInit,

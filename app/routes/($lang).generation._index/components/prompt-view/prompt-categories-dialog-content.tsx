@@ -12,13 +12,13 @@ import {
 } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { PromptCategoryIcon } from "~/routes/($lang).generation._index/components/prompt-view/prompt-category-icon"
-import type { promptCategoryContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import type { PromptCategoryContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {
   selectedPromptIds: string[]
   onClose(): void
-  promptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
+  promptCategories: FragmentOf<typeof PromptCategoryContextFragment>[]
   onSelect(id: string): void
 }
 

@@ -1,13 +1,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { ConfigModelButton } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
 import { GenerationModelListButton } from "~/routes/($lang).generation._index/components/config-view/generation-model-list-button"
-import type { imageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import type { ImageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { FragmentOf } from "gql.tada"
 import { CheckIcon } from "lucide-react"
 
 type Props = {
-  models: FragmentOf<typeof imageModelContextFragment>[]
+  models: FragmentOf<typeof ImageModelContextFragment>[]
   currentModelId: string
   favoritedModelIds: number[]
   /**
@@ -48,7 +48,7 @@ export function GenerationConfigModels(props: Props) {
   // 表示する一覧を追加
   const currentModels = currentModelIds
     .map((modelId) => {
-      return context.models.find((model) => {
+      return context.imageModels.find((model) => {
         return Number(model.id) === Number(modelId)
       })
     })

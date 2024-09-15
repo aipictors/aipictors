@@ -11,14 +11,14 @@ import { cn } from "~/lib/cn"
 import { removeDuplicates } from "~/utils/remove-duplicates"
 import { ConfigModelButton } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
 import { ImageModelCard } from "~/routes/($lang).generation._index/components/config-view/image-model-card"
-import type { imageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import type { ImageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { toCategoryName } from "~/routes/($lang).generation._index/utils/to-category-name"
 import type { FragmentOf } from "gql.tada"
 import { StarIcon } from "lucide-react"
 import { useState } from "react"
 
 type Props = {
-  models: FragmentOf<typeof imageModelContextFragment>[]
+  models: FragmentOf<typeof ImageModelContextFragment>[]
   selectedModelId: string | null
   favoritedModelIds: number[]
   isInitFavorited: boolean

@@ -7,12 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table"
-import type { imageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import type { ImageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {
   markdownText: string
-  models: FragmentOf<typeof imageModelContextFragment>[]
+  models: FragmentOf<typeof ImageModelContextFragment>[]
 }
 
 export function GenerationDocument(props: Props) {

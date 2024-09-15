@@ -52,7 +52,7 @@ export function GenerationConfigView() {
   /**
    * 選択中のモデル
    */
-  const currentModel = context.models.find((model) => {
+  const currentModel = context.imageModels.find((model) => {
     return model.id === context.config.modelId
   })
 
@@ -96,13 +96,13 @@ export function GenerationConfigView() {
    * 最大生成枚数
    */
   const availableImageGenerationMaxTasksCount =
-    queryData.viewer.availableImageGenerationMaxTasksCount ?? 10
+    queryData.userStatus?.availableImageGenerationMaxTasksCount ?? 10
 
   const inProgressImageGenerationTasksCost =
-    queryData.viewer.inProgressImageGenerationTasksCost ?? 0
+    queryData.userStatus?.inProgressImageGenerationTasksCost ?? 0
 
   const remainingImageGenerationTasksCount =
-    queryData.viewer.remainingImageGenerationTasksCount
+    queryData.userStatus?.remainingImageGenerationTasksCount ?? 0
 
   useEffect(() => {
     if (authContext.isLoading) return
@@ -128,7 +128,7 @@ export function GenerationConfigView() {
       <ScrollArea type="always">
         <div className={"flex flex-col gap-y-4 px-0 md:px-4"}>
           <GenerationConfigModels
-            models={context.models}
+            models={context.imageModels}
             favoritedModelIds={context.config.favoriteModelIds}
             currentModelId={context.config.modelId}
             currentModelIds={context.config.modelIds}

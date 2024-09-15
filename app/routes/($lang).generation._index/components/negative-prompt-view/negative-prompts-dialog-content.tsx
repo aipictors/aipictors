@@ -12,13 +12,13 @@ import {
 } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { NegativePromptCategoryIcon } from "~/routes/($lang).generation._index/components/negative-prompt-view/negative-prompt-category-icon"
-import type { promptCategoryContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import type { PromptCategoryContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import type { FragmentOf } from "gql.tada"
 
 type Props = {
   selectedNegativePromptIds: string[]
   onClose(): void
-  negativePromptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
+  negativePromptCategories: FragmentOf<typeof PromptCategoryContextFragment>[]
   onSelect(id: string): void
 }
 

@@ -4,18 +4,14 @@ import { loaderClient } from "~/lib/loader-client"
 import { config } from "~/config"
 import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
 import { GenerationConfigProvider } from "~/routes/($lang).generation._index/components/generation-config-provider"
-import { GenerationQueryProvider } from "~/routes/($lang).generation._index/components/generation-query-provider"
 import {
-  controlNetCategoryContextFragment,
-  imageLoraModelContextFragment,
-  imageModelContextFragment,
-  promptCategoryContextFragment,
-} from "~/routes/($lang).generation._index/contexts/generation-query-context"
+  GenerationQueryContextQuery,
+  GenerationQueryProvider,
+} from "~/routes/($lang).generation._index/components/generation-query-provider"
 import { ApolloError } from "@apollo/client/index"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, json, useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import { useContext } from "react"
+import { Suspense, useContext } from "react"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "無料AIイラスト生成 - スマホ対応"
@@ -41,54 +37,15 @@ export const meta: MetaFunction = () => {
 
 export async function loader() {
   try {
-    const promptCategoriesReq = loaderClient.query({
-      query: promptCategoriesQuery,
+    const result = await loaderClient.query({
+      query: GenerationQueryContextQuery,
       variables: {},
     })
 
-    const negativePromptCategoriesReq = loaderClient.query({
-      query: negativePromptCategoriesQuery,
-      variables: {},
-    })
-
-    const controlNetCategoriesReq = loaderClient.query({
-      query: controlNetCategoriesQuery,
-      variables: {},
-    })
-
-    const imageModelsReq = loaderClient.query({
-      query: imageModelsQuery,
-      variables: {},
-    })
-
-    const imageLoraModelsReq = loaderClient.query({
-      query: imageLoraModelsQuery,
-      variables: {},
-    })
-
-    const resp = await Promise.all([
-      negativePromptCategoriesReq,
-      promptCategoriesReq,
-      imageModelsReq,
-      imageLoraModelsReq,
-      controlNetCategoriesReq,
-    ])
-
-    const [
-      negativePromptCategoriesResp,
-      promptCategoriesResp,
-      imageModelsResp,
-      imageLoraModelsResp,
-      controlNetCategoriesResp,
-    ] = resp
-
-    return json({
-      promptCategories: promptCategoriesResp.data.promptCategories,
-      negativePromptCategories:
-        negativePromptCategoriesResp.data.negativePromptCategories,
-      imageModels: imageModelsResp.data.imageModels,
-      imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
-      controlNetCategories: controlNetCategoriesResp.data.controlNetCategories,
+    return json(result.data, {
+      headers: {
+        "Cache-Control": config.cacheControl.short,
+      },
     })
   } catch (error) {
     if (error instanceof ApolloError) {
@@ -117,64 +74,15 @@ export default function GenerationLayout() {
   return (
     <>
       <HomeHeader title="Aipictors画像生成" />
-      <GenerationQueryProvider
-        promptCategories={data.promptCategories}
-        negativePromptCategories={data.negativePromptCategories}
-        controlNetCategories={data.controlNetCategories}
-        imageModels={data.imageModels}
-        imageLoraModels={data.imageLoraModels}
-      >
-        <GenerationConfigProvider>
-          <div className="container max-w-none px-8">
-            <Outlet />
-          </div>
-        </GenerationConfigProvider>
-      </GenerationQueryProvider>
+      <Suspense fallback={<AppLoadingPage />}>
+        <GenerationQueryProvider generationQueryContext={data}>
+          <GenerationConfigProvider>
+            <div className="container max-w-none px-8">
+              <Outlet />
+            </div>
+          </GenerationConfigProvider>
+        </GenerationQueryProvider>
+      </Suspense>
     </>
   )
 }
-
-const controlNetCategoriesQuery = graphql(
-  `query ControlNetCategories {
-    controlNetCategories {
-      ...ControlNetCategoryContext
-    }
-  }`,
-  [controlNetCategoryContextFragment],
-)
-
-const imageLoraModelsQuery = graphql(
-  `query ImageLoraModels {
-    imageLoraModels {
-      ...ImageLoraModelContext
-    }
-  }`,
-  [imageLoraModelContextFragment],
-)
-
-const imageModelsQuery = graphql(
-  `query ImageModels {
-    imageModels {
-      ...ImageModelContext
-    }
-  }`,
-  [imageModelContextFragment],
-)
-
-const negativePromptCategoriesQuery = graphql(
-  `query NegativePromptCategories {
-    negativePromptCategories {
-      ...PromptCategoryContext
-    }
-  }`,
-  [promptCategoryContextFragment],
-)
-
-const promptCategoriesQuery = graphql(
-  `query PromptCategories {
-    promptCategories {
-      ...PromptCategoryContext
-    }
-  }`,
-  [promptCategoryContextFragment],
-)

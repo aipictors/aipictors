@@ -102,8 +102,8 @@ export function GenerationTaskListView(props: Props) {
     taskRefetch()
     resultRefetch()
   }, [
-    queryData.viewer.inProgressImageGenerationTasksCount ||
-      queryData.viewer.inProgressImageGenerationReservedTasksCount,
+    queryData.userStatus?.inProgressImageGenerationTasksCount ||
+      queryData.userStatus?.inProgressImageGenerationReservedTasksCount,
   ])
 
   /**

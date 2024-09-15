@@ -2,26 +2,23 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import { checkInGenerationProgressStatus } from "~/utils/check-in-generation-progress-status"
 import {
-  type controlNetCategoryContextFragment,
-  currentPassContextFragment,
+  ControlNetCategoryContextFragment,
+  CurrentPassContextFragment,
   GenerationQueryContext,
-  imageGenerationStatusContextFragment,
-  imageGenerationViewerContextFragment,
-  type imageLoraModelContextFragment,
-  type imageModelContextFragment,
-  type promptCategoryContextFragment,
+  ImageGenerationEngineStatusContextFragment,
+  ImageGenerationUserContextFragment,
+  ImageGenerationUserStatusContextFragment,
+  ImageLoraModelContextFragment,
+  ImageModelContextFragment,
+  PromptCategoryContextFragment,
 } from "~/routes/($lang).generation._index/contexts/generation-query-context"
-import { useQuery } from "@apollo/client/index"
-import { type FragmentOf, graphql } from "gql.tada"
+import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql, type ResultOf } from "gql.tada"
 import { useContext, useEffect } from "react"
 
 type Props = {
   children: React.ReactNode
-  promptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
-  negativePromptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
-  controlNetCategories: FragmentOf<typeof controlNetCategoryContextFragment>[]
-  imageModels: FragmentOf<typeof imageModelContextFragment>[]
-  imageLoraModels: FragmentOf<typeof imageLoraModelContextFragment>[]
+  generationQueryContext: ResultOf<typeof GenerationQueryContextQuery>
 }
 
 /**
@@ -31,23 +28,18 @@ type Props = {
 export function GenerationQueryProvider(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const {
-    data: viewer,
-    refetch,
-    error,
-  } = useQuery(viewerCurrentPassQuery, {
+  const { data: viewer } = useSuspenseQuery(ViewerCurrentPassQuery, {
     skip: authContext.isNotLoggedIn,
   })
 
-  const { data: status, refetch: refetchViewerImageGenerationStatus } =
-    useQuery(viewerImageGenerationStatusQuery)
+  const { data: status, refetch } = useSuspenseQuery(StatusQuery)
 
   const isTimeout = useFocusTimeout()
 
   const inProgressImageGenerationTasksCount =
-    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
+    status.viewer?.inProgressImageGenerationTasksCount ?? 0
 
-  const imageGenerationWaitCount = status?.viewer?.imageGenerationWaitCount ?? 0
+  const imageGenerationWaitCount = status.viewer?.imageGenerationWaitCount ?? 0
 
   useEffect(() => {
     const time = setInterval(async () => {
@@ -61,7 +53,7 @@ export function GenerationQueryProvider(props: Props) {
           imageGenerationWaitCount.toString(),
         )
         if (needFetch) {
-          refetchViewerImageGenerationStatus()
+          refetch()
         }
       }
     }, 2000)
@@ -71,36 +63,17 @@ export function GenerationQueryProvider(props: Props) {
   }, [inProgressImageGenerationTasksCount, imageGenerationWaitCount])
 
   useEffect(() => {
-    refetchViewerImageGenerationStatus()
+    refetch()
   }, [authContext.isLoggedIn])
 
   return (
     <GenerationQueryContext.Provider
       value={{
-        promptCategories: props.promptCategories,
-        negativePromptCategories: props.negativePromptCategories,
-        controlNetCategories: props.controlNetCategories,
-        models: props.imageModels,
-        loraModels: props.imageLoraModels,
+        ...props.generationQueryContext,
         user: viewer?.viewer?.user ?? null,
         currentPass: viewer?.viewer?.currentPass ?? null,
-        engineStatus: status?.imageGenerationEngineStatus ?? {
-          normalTasksCount: 0,
-          standardTasksCount: 0,
-          normalPredictionGenerationWait: 0,
-          standardPredictionGenerationWait: 0,
-        },
-        viewer: status?.viewer ?? {
-          remainingImageGenerationTasksCount: 0,
-          inProgressImageGenerationTasksCount: 0,
-          inProgressImageGenerationTasksCost: 0,
-          inProgressImageGenerationReservedTasksCount: 0,
-          remainingImageGenerationTasksTotalCount: 0,
-          availableImageGenerationMaxTasksCount: 0,
-          imageGenerationWaitCount: 0,
-          availableImageGenerationLoraModelsCount: 0,
-          availableConsecutiveImageGenerationsCount: 0,
-        },
+        engineStatus: status.imageGenerationEngineStatus ?? null,
+        userStatus: status.viewer ?? null,
       }}
     >
       {props.children}
@@ -108,25 +81,62 @@ export function GenerationQueryProvider(props: Props) {
   )
 }
 
-const viewerCurrentPassQuery = graphql(
+const ViewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      ...CurrentPassContext
+      currentPass {
+        ...CurrentPassContextFragment
+      }
+      user {
+        ...ImageGenerationUserContextFragment
+      }
     }
   }`,
-  [currentPassContextFragment],
+  [CurrentPassContextFragment, ImageGenerationUserContextFragment],
 )
 
-const viewerImageGenerationStatusQuery = graphql(
+const StatusQuery = graphql(
   `query ViewerImageGenerationStatus {
     imageGenerationEngineStatus {
-      ...ImageGenerationStatusContext
+      ...ImageGenerationEngineStatusContextFragment
     }
     viewer {
       id
-      ...ImageGenerationViewerContext
+      ...ImageGenerationUserStatusContextFragment
     }
   }`,
-  [imageGenerationStatusContextFragment, imageGenerationViewerContextFragment],
+  [
+    ImageGenerationEngineStatusContextFragment,
+    ImageGenerationUserStatusContextFragment,
+  ],
+)
+
+/**
+ * Loaderで実行する
+ */
+export const GenerationQueryContextQuery = graphql(
+  `query GenerationQueryContextQuery {
+    controlNetCategories {
+      ...ControlNetCategoryContextFragment
+    }
+    imageLoraModels {
+      ...ImageLoraModelContextFragment
+    }
+    imageModels {
+      ...ImageModelContextFragment
+    }
+    negativePromptCategories {
+      ...PromptCategoryContextFragment
+    }
+    promptCategories {
+      ...PromptCategoryContextFragment
+    }
+  }`,
+  [
+    ControlNetCategoryContextFragment,
+    ImageLoraModelContextFragment,
+    ImageModelContextFragment,
+    PromptCategoryContextFragment,
+  ],
 )

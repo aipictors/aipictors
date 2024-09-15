@@ -9,14 +9,14 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { ImageModelsList } from "~/routes/($lang).generation._index/components/config-view/generation-image-model-list"
-import type { imageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import type { ImageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
-  models: FragmentOf<typeof imageModelContextFragment>[]
+  models: FragmentOf<typeof ImageModelContextFragment>[]
   selectedModelId: string | null
   favoritedModelIds: number[]
   isInitFavorited: boolean
