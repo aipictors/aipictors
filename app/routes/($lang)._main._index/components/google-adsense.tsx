@@ -1,5 +1,4 @@
 import { config } from "~/config"
-import { currentPassContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -60,8 +59,23 @@ const viewerCurrentPassQuery = graphql(
   `query ViewerCurrentPass {
     viewer {
       id
-      ...CurrentPassContext
+      currentPass {
+        id
+        type
+        payment {
+          id
+          amount
+          stripePaymentIntentId
+        }
+        isDisabled
+        periodStart
+        periodEnd
+        trialPeriodStart
+        trialPeriodEnd
+        createdAt
+        price
+      }
     }
   }`,
-  [currentPassContextFragment],
+  [],
 )

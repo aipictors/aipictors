@@ -122,6 +122,7 @@ export function SettingsNavigation() {
 const viewerIsAdvertiserQuery = graphql(
   `query ViewerIsAdvertiser {
     viewer {
+      id
       isAdvertiser
     }
   }`,

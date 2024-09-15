@@ -715,6 +715,7 @@ export const AdvertisementsFragment = graphql(
 const viewerAdvertisementsQuery = graphql(
   `query ViewerAdvertisements($limit: Int!, $offset: Int!, $where: CustomerAdvertisementsWhereInput) {
     viewer {
+      id
       customerAdvertisements(limit: $limit, offset: $offset, where: $where) {
         ...AdvertisementsFields
       }

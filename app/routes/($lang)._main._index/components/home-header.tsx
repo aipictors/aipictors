@@ -187,6 +187,7 @@ function HomeHeader(props: Props) {
 const viewerIsExistedNewNotificationQuery = graphql(
   `query ViewerIsExistedNewNotification {
     viewer {
+      id
       isExistedNewNotification
     }
   }`,
