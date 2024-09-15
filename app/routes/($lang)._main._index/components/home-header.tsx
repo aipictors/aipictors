@@ -12,7 +12,7 @@ import HomeHeaderNotLoggedInMenu from "~/routes/($lang)._main._index/components/
 import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
 import { HomeUserNavigationMenu } from "~/routes/($lang)._main._index/components/home-user-navigation-menu"
-import { Link, useNavigation } from "@remix-run/react"
+import { Link, useNavigation, useLocation, useNavigate } from "@remix-run/react"
 import { Loader2Icon, MenuIcon, Search } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
@@ -26,16 +26,14 @@ type Props = {
 
 function HomeHeader(props: Props) {
   const navigation = useNavigation()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const authContext = useContext(AuthContext)
 
   const [searchText, setSearchText] = useState("")
 
-  const checkSensitivePath = () => {
-    return window.location.pathname.includes("/sensitive")
-  }
-
-  const sensitivePath = checkSensitivePath()
+  const sensitivePath = location.pathname.includes("/sensitive")
 
   const getSensitiveLink = (path: string) => {
     if (sensitivePath) {
@@ -48,9 +46,9 @@ function HomeHeader(props: Props) {
     const trimmedText = searchText.trim()
     if (trimmedText !== "") {
       const baseUrl = `/tags/${trimmedText}`
-      window.location.href = getSensitiveLink(baseUrl)
+      navigate(getSensitiveLink(baseUrl))
     } else {
-      window.location.href = getSensitiveLink("/search")
+      navigate(getSensitiveLink("/search"))
     }
   }
 

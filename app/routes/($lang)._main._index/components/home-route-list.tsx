@@ -27,7 +27,9 @@ type Props = {
 
 export function HomeRouteList(props: Props) {
   const authContext = useContext(AuthContext)
+
   const location = useLocation()
+
   const navigate = useNavigate()
 
   // `sensitive` フラグが現在の URL に含まれているかチェック
@@ -47,6 +49,16 @@ export function HomeRouteList(props: Props) {
     return path
   }
 
+  const toggleSensitive = () => {
+    // センシティブフラグを削除（Cookieの有効期限を過去に設定）
+    document.cookie = "sensitive=1; max-age=0; path=/"
+
+    // URLから/sensitiveを取り除きリダイレクト
+    const newUrl = location.pathname.replace("/sensitive", "")
+
+    navigate(newUrl === "" ? "/" : newUrl, { replace: true }) // URLを更新してリダイレクト
+  }
+
   return (
     <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
       <HomeNavigationButton
@@ -55,7 +67,17 @@ export function HomeRouteList(props: Props) {
         icon={HomeIcon}
       >
         {"ホーム"}
+        {isSensitive && " - 全年齢"}
       </HomeNavigationButton>
+      {isSensitive && (
+        <HomeNavigationButton
+          onClick={toggleSensitive}
+          href={"/"}
+          icon={HomeIcon}
+        >
+          {"ホーム - R18"}
+        </HomeNavigationButton>
+      )}
       <HomeNavigationButton
         href={createLink("/generation")}
         icon={AwardIcon}
