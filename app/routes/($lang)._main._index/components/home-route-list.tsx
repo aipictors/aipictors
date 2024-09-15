@@ -67,7 +67,7 @@ export function HomeRouteList(props: Props) {
         icon={HomeIcon}
       >
         {"ホーム"}
-        {isSensitive && " - 全年齢"}
+        {isSensitive && " - R18"}
       </HomeNavigationButton>
       {isSensitive && (
         <HomeNavigationButton
@@ -75,7 +75,7 @@ export function HomeRouteList(props: Props) {
           href={"/"}
           icon={HomeIcon}
         >
-          {"ホーム - R18"}
+          {"ホーム - 全年齢"}
         </HomeNavigationButton>
       )}
       <HomeNavigationButton
