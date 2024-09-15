@@ -632,6 +632,14 @@ html {
   height: 72px;
 }
 
+.bg-line-theme {
+  background-color: #06C755;
+}
+
+.bg-clear-bright-blue {
+  background-color: #0197FD;
+}
+
 @keyframes heart-beat {
   50% {
     transform: scale(0.75);
