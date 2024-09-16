@@ -5,13 +5,16 @@ import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { Images } from "lucide-react"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { cn } from "~/lib/cn"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   targetRowHeight?: number
   direction?: "rows" | "columns"
   size?: "small" | "medium" | "large"
-  isHideProfile?: boolean
+  isShowProfile?: boolean
 }
 
 /**
@@ -83,7 +86,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
           // isSensitive: work.rating === "R18" || work.rating === "R18G",
           // subWorksCount: work.subWorksCount,
           // to: `/posts/${work.id}`,
-          href: `/posts/${work.id}`,
+          // href: `/posts/${work.id}`,
           context: work,
         }))}
         sizes={{
@@ -96,7 +99,12 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
         render={{
           extras: (_, { photo, index }) => (
             <div key={index}>
-              <div className="absolute right-0 bottom-0 z-10">
+              <div
+                className={cn(
+                  "absolute right-0 z-10",
+                  props.isShowProfile ? "bottom-12" : "bottom-0",
+                )}
+              >
                 <LikeButton
                   size={56}
                   targetWorkId={photo.context.id}
@@ -108,35 +116,59 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   likedCount={photo.context.likesCount}
                 />
               </div>
+              {photo.context.subWorksCount > 0 && (
+                <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                  <Images className="h-3 w-3 text-white" />
+                  <div className="font-bold text-white text-xs">
+                    {photo.context.subWorksCount + 1}
+                  </div>
+                </div>
+              )}
+              {props.isShowProfile && (
+                <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
+                  <Link
+                    className="w-48 font-bold"
+                    to={`/posts/${photo.context.id}`}
+                  >
+                    <p className="overflow-hidden text-ellipsis text-nowrap text-xs">
+                      {photo.context.title}
+                    </p>
+                  </Link>
+                  <Link to={`/users/${photo.context.user.id}`}>
+                    <div className="flex items-center space-x-2">
+                      <img
+                        src={ExchangeIconUrl(photo.context.user.iconUrl)}
+                        alt={photo.context.user.name}
+                        className="h-4 w-4 rounded-full"
+                      />
+                      <span className="text-nowrap font-bold text-sm ">
+                        {photo.context.user.name}
+                      </span>
+                    </div>
+                  </Link>
+                </div>
+              )}
             </div>
           ),
           // ),
           // ),
-          link: (props, context) => (
-            <Link to={`/posts/${context.photo.context.id}`} {...props} />
-          ),
-          // image(props, context) {
-          //   return (
-          //     <Link
-          //       to={`/posts/${context.photo.context.id}`}
-          //       className="block overflow-hidden rounded"
-          //     >
-          //       <img
-          //         {...props}
-          //         alt={props.alt}
-          //         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-          //       />
-          //       {context.photo.context.subWorksCount > 0 && (
-          //         <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-          //           <Images className="h-3 w-3 text-white" />
-          //           <div className="font-bold text-white text-xs">
-          //             {context.photo.context.subWorksCount + 1}
-          //           </div>
-          //         </div>
-          //       )}
-          //     </Link>
-          //   )
-          // },
+          // link: (props, context) => (
+          //   <Link to={`/posts/${context.photo.context.id}`} {...props} />
+          // ),
+          image(props, context) {
+            return (
+              <Link
+                className="block overflow-hidden rounded"
+                to={`/posts/${context.photo.context.id}`}
+              >
+                <img
+                  {...props}
+                  alt={props.alt}
+                  className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+                />
+              </Link>
+            )
+          },
         }}
       />
     </SSR>

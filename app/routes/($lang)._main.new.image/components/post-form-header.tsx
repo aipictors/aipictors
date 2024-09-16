@@ -27,7 +27,7 @@ export function PostFormHeader(props: Props) {
         disabled={props.type === "image"}
         onClick={() => handleNavigation("/new/image")}
       >
-        <Image size={16} />
+        <Image className="hidden md:block" size={16} />
         <div className="text-center">イラスト</div>
       </Button>
       <Button
@@ -40,7 +40,7 @@ export function PostFormHeader(props: Props) {
         disabled={props.type === "animation"}
         onClick={() => handleNavigation("/new/animation")}
       >
-        <Film size={16} />
+        <Film className="hidden md:block" size={16} />
         <div className="text-center">動画</div>
       </Button>
       <Button
@@ -53,7 +53,7 @@ export function PostFormHeader(props: Props) {
         disabled={props.type === "text"}
         onClick={() => handleNavigation("/new/text")}
       >
-        <TextIcon size={16} />
+        <TextIcon className="hidden md:block" size={16} />
         <div className="text-center">小説・コラム</div>
       </Button>
     </div>

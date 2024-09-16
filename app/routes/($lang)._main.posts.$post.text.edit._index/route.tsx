@@ -606,10 +606,11 @@ export default function EditText() {
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
         />
+        <div className="h-4" />
         <Button
           disabled={disabledSubmit}
+          className="fixed bottom-0 left-0 w-full max-w-[1200px] rounded-none md:left-auto md:rounded-md"
           size={"lg"}
-          className="w-full"
           type="submit"
           onClick={onPost}
         >

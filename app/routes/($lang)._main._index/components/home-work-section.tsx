@@ -23,6 +23,7 @@ type Props = {
   link?: string
   isCropped?: boolean
   targetRowHeight?: number
+  isShowProfile?: boolean
 }
 
 export function HomeWorkSection(props: Props) {
@@ -62,8 +63,7 @@ export function HomeWorkSection(props: Props) {
         <ResponsivePhotoWorksAlbum
           works={props.works}
           targetRowHeight={props.targetRowHeight}
-          // size="large"
-          // isHideProfile={true}
+          isShowProfile={props.isShowProfile}
         />
       )}
     </section>

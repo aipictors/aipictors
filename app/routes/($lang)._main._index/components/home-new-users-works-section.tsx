@@ -41,6 +41,7 @@ export function HomeNewUsersWorksSection(props: Props) {
           title={"新規クリエイターの初投稿作品"}
           works={workDisplayed}
           isCropped={true}
+          isShowProfile={false}
         />
       )}
     </>

@@ -230,34 +230,38 @@ export function ThemeContainer(props: Props) {
       )}
 
       <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">
-        <div className="flex space-x-2">
-          <Button
-            variant={"secondary"}
-            onClick={handlePreviousDay}
-            className="flex items-center p-2"
-          >
-            <ArrowLeftIcon />
-            {"前日"}
-          </Button>
-          <Button
-            variant={"secondary"}
-            onClick={handleNextDay}
-            className="flex items-center p-2"
-          >
-            {"翌日"}
-            <ArrowRightIcon />
-          </Button>
-          <div className="flex items-center space-x-2">
-            <Input
-              type="date"
-              value={date}
-              onChange={handleDateChange}
-              className="w-[200px]"
-            />
+        <div className="flex flex-col gap-x-2 gap-y-4 md:flex-row">
+          <div className="flex gap-x-2">
+            <Button
+              variant={"secondary"}
+              onClick={handlePreviousDay}
+              className="flex items-center p-2"
+            >
+              <ArrowLeftIcon />
+              {"前日"}
+            </Button>
+            <Button
+              variant={"secondary"}
+              onClick={handleNextDay}
+              className="flex items-center p-2"
+            >
+              {"翌日"}
+              <ArrowRightIcon />
+            </Button>
           </div>
-          <Button onClick={handleTodayClick} variant="outline">
-            {"本日"}
-          </Button>
+          <div className="flex gap-x-2">
+            <div className="flex items-center space-x-2">
+              <Input
+                type="date"
+                value={date}
+                onChange={handleDateChange}
+                className="w-[200px]"
+              />
+            </div>
+            <Button onClick={handleTodayClick} variant="outline">
+              {"本日"}
+            </Button>
+          </div>
         </div>
       </div>
 

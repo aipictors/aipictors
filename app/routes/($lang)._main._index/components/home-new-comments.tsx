@@ -1,4 +1,3 @@
-import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
@@ -20,22 +19,17 @@ export function HomeNewCommentsSection(props: Props) {
           className="flex items-center space-x-2 opacity-80"
         >
           {comment.work?.smallThumbnailImageURL && (
-            <Link
-              to={`/posts/${comment.work.id}`}
-              className="flex items-center space-x-2"
-            >
-              <div>
-                <CroppedWorkSquare
-                  workId={comment.work.id}
-                  imageUrl={comment.work?.smallThumbnailImageURL}
-                  size="sm"
-                  thumbnailImagePosition={
-                    comment.work?.thumbnailImagePosition ?? 0
-                  }
-                  imageWidth={comment.work?.smallThumbnailImageWidth}
-                  imageHeight={comment.work?.smallThumbnailImageHeight}
-                />
-              </div>
+            <div className="flex items-center space-x-2">
+              <CroppedWorkSquare
+                workId={comment.work.id}
+                imageUrl={comment.work?.smallThumbnailImageURL}
+                size="sm"
+                thumbnailImagePosition={
+                  comment.work?.thumbnailImagePosition ?? 0
+                }
+                imageWidth={comment.work?.smallThumbnailImageWidth}
+                imageHeight={comment.work?.smallThumbnailImageHeight}
+              />
               <div className="flex flex-col space-y-2">
                 {comment.comment && comment.comment.text.length > 0 && (
                   <>
@@ -67,7 +61,7 @@ export function HomeNewCommentsSection(props: Props) {
                   {toElapsedTimeText(comment.createdAt)}
                 </div>
               </div>
-            </Link>
+            </div>
           )}
         </div>
       ))}

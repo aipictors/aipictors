@@ -26,6 +26,7 @@ export function PostFormItemDate(props: Props) {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               props.setDate(event.target.value)
             }
+            className="w-40"
           />
           <Input
             type="time"
@@ -33,6 +34,7 @@ export function PostFormItemDate(props: Props) {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               props.setTime(event.target.value)
             }
+            className="w-24"
           />
         </div>
         {hasValue && (

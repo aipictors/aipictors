@@ -428,7 +428,7 @@ export default function NewImage() {
         }
         return "REAL"
       },
-      "REAL" as "ILLUSTRATION" | "REAL" | "SEMI_REAL",
+      "ILLUSTRATION" as "ILLUSTRATION" | "REAL" | "SEMI_REAL",
     )
 
     const strictestRating = validResults.reduce(
@@ -483,7 +483,7 @@ export default function NewImage() {
         message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
         fallbackURL="https://www.aipictors.com/post"
       />
-      <div className="space-y-4">
+      <div className="max-w-[1200px] space-y-4">
         <div className="relative">
           <PostFormHeader type="image" />
           {state.isOpenLoadingAi && (
@@ -523,7 +523,13 @@ export default function NewImage() {
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
         />
-        <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
+        <div className="h-4" />
+        <Button
+          className="fixed bottom-0 left-0 w-full max-w-[1200px] rounded-none md:left-auto md:rounded-md"
+          size={"lg"}
+          type="submit"
+          onClick={onPost}
+        >
           {"投稿"}
         </Button>
       </div>

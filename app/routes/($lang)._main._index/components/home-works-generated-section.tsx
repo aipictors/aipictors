@@ -43,6 +43,7 @@ export function HomeWorksGeneratedSection(props: Props) {
         works={workDisplayed}
         link="https://www.aipictors.com/search/?promptstatus=2&order=favorite"
         isCropped={false}
+        isShowProfile={true}
       />
     </>
   )

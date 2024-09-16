@@ -428,7 +428,13 @@ export default function NewText() {
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
         />
-        <Button size={"lg"} className="w-full" type="submit" onClick={onPost}>
+        <div className="h-4" />
+        <Button
+          className="fixed bottom-0 left-0 w-full max-w-[1200px] rounded-none md:left-auto md:rounded-md"
+          size={"lg"}
+          type="submit"
+          onClick={onPost}
+        >
           {"投稿"}
         </Button>
       </div>

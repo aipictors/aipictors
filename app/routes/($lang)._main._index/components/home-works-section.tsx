@@ -69,6 +69,7 @@ export function HomeWorksSection(props: Props) {
           title={""}
           works={worksResp?.works || []}
           isCropped={props.isCropped}
+          isShowProfile={true}
         />
       )}
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (

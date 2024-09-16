@@ -82,6 +82,7 @@ export function HomeWorksRecommendedSection(props: Props) {
         title={"おすすめ"}
         works={suggestedWorks}
         isCropped={false}
+        isShowProfile={true}
       />
     </>
   )

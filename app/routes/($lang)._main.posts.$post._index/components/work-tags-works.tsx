@@ -34,7 +34,7 @@ export function WorkTagsWorks(props: Props) {
 
   const tagWork = suggestedWorkResp?.works ?? []
 
-  return <ResponsivePhotoWorksAlbum isHideProfile={true} works={tagWork} />
+  return <ResponsivePhotoWorksAlbum isShowProfile={true} works={tagWork} />
 }
 
 const TagsWorkFragment = graphql(
