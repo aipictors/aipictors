@@ -27,7 +27,7 @@ export function GenerationConfigLoraModels() {
   /**
    * 選択されたLoRAモデル
    */
-  const selectedModels = context.loraModels.filter((model) => {
+  const selectedModels = context.imageLoraModels.filter((model) => {
     return currentLoraModelNames.includes(model.name)
   })
 
@@ -76,7 +76,7 @@ export function GenerationConfigLoraModels() {
       )}
       <LoraModelListDialogButton
         isOpen={isOpen}
-        models={context.loraModels}
+        models={context.imageLoraModels}
         selectedModelNames={currentLoraModelNames}
         availableImageGenerationMaxTasksCount={
           availableImageGenerationMaxTasksCount

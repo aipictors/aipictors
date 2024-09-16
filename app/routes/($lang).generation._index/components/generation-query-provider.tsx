@@ -2,26 +2,24 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import { checkInGenerationProgressStatus } from "~/utils/check-in-generation-progress-status"
 import {
-  type controlNetCategoryContextFragment,
-  currentPassContextFragment,
+  ControlNetCategoryContextFragment,
+  CurrentPassContextFragment,
   GenerationQueryContext,
-  imageGenerationStatusContextFragment,
-  imageGenerationViewerContextFragment,
-  type imageLoraModelContextFragment,
-  type imageModelContextFragment,
-  type promptCategoryContextFragment,
+  ImageGenerationEngineStatusContextFragment,
+  ImageGenerationUserContextFragment,
+  ImageGenerationUserStatusContextFragment,
+  ImageLoraModelContextFragment,
+  ImageModelContextFragment,
+  NegativePromptCategoryContextFragment,
+  PromptCategoryContextFragment,
 } from "~/routes/($lang).generation._index/contexts/generation-query-context"
-import { useQuery } from "@apollo/client/index"
-import { type FragmentOf, graphql } from "gql.tada"
-import { useContext, useEffect } from "react"
+import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql, readFragment, type ResultOf } from "gql.tada"
+import { startTransition, useContext, useEffect } from "react"
 
 type Props = {
   children: React.ReactNode
-  promptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
-  negativePromptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
-  controlNetCategories: FragmentOf<typeof controlNetCategoryContextFragment>[]
-  imageModels: FragmentOf<typeof imageModelContextFragment>[]
-  imageLoraModels: FragmentOf<typeof imageLoraModelContextFragment>[]
+  generationQueryContext: ResultOf<typeof GenerationQueryContextQuery>
 }
 
 /**
@@ -31,23 +29,38 @@ type Props = {
 export function GenerationQueryProvider(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const {
-    data: viewer,
-    refetch,
-    error,
-  } = useQuery(viewerCurrentPassQuery, {
+  const { data: currentPassQueryResult } = useSuspenseQuery(CurrentPassQuery, {
     skip: authContext.isNotLoggedIn,
   })
 
-  const { data: status, refetch: refetchViewerImageGenerationStatus } =
-    useQuery(viewerImageGenerationStatusQuery)
+  const { data: statusQueryResult, refetch } = useSuspenseQuery(StatusQuery)
+
+  const currentPass = readFragment(
+    CurrentPassContextFragment,
+    currentPassQueryResult?.viewer?.currentPass,
+  )
+
+  const engineStatus = readFragment(
+    ImageGenerationEngineStatusContextFragment,
+    statusQueryResult.imageGenerationEngineStatus,
+  )
+
+  const user = readFragment(
+    ImageGenerationUserContextFragment,
+    currentPassQueryResult?.viewer?.user,
+  )
+
+  const userStatus = readFragment(
+    ImageGenerationUserStatusContextFragment,
+    statusQueryResult.viewer,
+  )
 
   const isTimeout = useFocusTimeout()
 
   const inProgressImageGenerationTasksCount =
-    status?.viewer?.inProgressImageGenerationTasksCount ?? 0
+    userStatus?.inProgressImageGenerationTasksCount ?? 0
 
-  const imageGenerationWaitCount = status?.viewer?.imageGenerationWaitCount ?? 0
+  const imageGenerationWaitCount = userStatus?.imageGenerationWaitCount ?? 0
 
   useEffect(() => {
     const time = setInterval(async () => {
@@ -61,7 +74,9 @@ export function GenerationQueryProvider(props: Props) {
           imageGenerationWaitCount.toString(),
         )
         if (needFetch) {
-          refetchViewerImageGenerationStatus()
+          startTransition(() => {
+            refetch()
+          })
         }
       }
     }, 2000)
@@ -71,36 +86,19 @@ export function GenerationQueryProvider(props: Props) {
   }, [inProgressImageGenerationTasksCount, imageGenerationWaitCount])
 
   useEffect(() => {
-    refetchViewerImageGenerationStatus()
+    startTransition(() => {
+      refetch()
+    })
   }, [authContext.isLoggedIn])
 
   return (
     <GenerationQueryContext.Provider
       value={{
-        promptCategories: props.promptCategories,
-        negativePromptCategories: props.negativePromptCategories,
-        controlNetCategories: props.controlNetCategories,
-        models: props.imageModels,
-        loraModels: props.imageLoraModels,
-        user: viewer?.viewer?.user ?? null,
-        currentPass: viewer?.viewer?.currentPass ?? null,
-        engineStatus: status?.imageGenerationEngineStatus ?? {
-          normalTasksCount: 0,
-          standardTasksCount: 0,
-          normalPredictionGenerationWait: 0,
-          standardPredictionGenerationWait: 0,
-        },
-        viewer: status?.viewer ?? {
-          remainingImageGenerationTasksCount: 0,
-          inProgressImageGenerationTasksCount: 0,
-          inProgressImageGenerationTasksCost: 0,
-          inProgressImageGenerationReservedTasksCount: 0,
-          remainingImageGenerationTasksTotalCount: 0,
-          availableImageGenerationMaxTasksCount: 0,
-          imageGenerationWaitCount: 0,
-          availableImageGenerationLoraModelsCount: 0,
-          availableConsecutiveImageGenerationsCount: 0,
-        },
+        ...props.generationQueryContext,
+        engineStatus,
+        userStatus,
+        currentPass: currentPass ?? null,
+        user: user ?? null,
       }}
     >
       {props.children}
@@ -108,25 +106,63 @@ export function GenerationQueryProvider(props: Props) {
   )
 }
 
-const viewerCurrentPassQuery = graphql(
-  `query ViewerCurrentPass {
+const CurrentPassQuery = graphql(
+  `query CurrentPassQuery {
     viewer {
       id
-      ...CurrentPassContext
+      currentPass {
+        ...CurrentPassContextFragment
+      }
+      user {
+        ...ImageGenerationUserContextFragment
+      }
     }
   }`,
-  [currentPassContextFragment],
+  [CurrentPassContextFragment, ImageGenerationUserContextFragment],
 )
 
-const viewerImageGenerationStatusQuery = graphql(
-  `query ViewerImageGenerationStatus {
+const StatusQuery = graphql(
+  `query StatusQuery {
     imageGenerationEngineStatus {
-      ...ImageGenerationStatusContext
+      ...ImageGenerationEngineStatusContextFragment
     }
     viewer {
       id
-      ...ImageGenerationViewerContext
+      ...ImageGenerationUserStatusContextFragment
     }
   }`,
-  [imageGenerationStatusContextFragment, imageGenerationViewerContextFragment],
+  [
+    ImageGenerationEngineStatusContextFragment,
+    ImageGenerationUserStatusContextFragment,
+  ],
+)
+
+/**
+ * Loaderで実行する
+ */
+export const GenerationQueryContextQuery = graphql(
+  `query GenerationQueryContextQuery {
+    controlNetCategories {
+      ...ControlNetCategoryContextFragment
+    }
+    imageLoraModels {
+      ...ImageLoraModelContextFragment
+    }
+    imageModels {
+      ...ImageModelContextFragment
+    }
+    negativePromptCategories {
+      ...NegativePromptCategoryContextFragment
+    }
+    promptCategories {
+      ...PromptCategoryContextFragment
+    }
+  }`,
+  [
+    ControlNetCategoryContextFragment,
+    ImageLoraModelContextFragment,
+    ImageModelContextFragment,
+    PromptCategoryContextFragment,
+    NegativePromptCategoryContextFragment,
+  ],
 )

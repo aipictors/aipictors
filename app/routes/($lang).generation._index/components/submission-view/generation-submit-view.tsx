@@ -301,7 +301,7 @@ export function GenerationSubmissionView(props: Props) {
       return null
     }
 
-    const model = context.models.find((model) => {
+    const model = context.imageModels.find((model) => {
       return model.id === context.config.modelId
     })
     if (typeof model === "undefined") {
@@ -494,37 +494,37 @@ export function GenerationSubmissionView(props: Props) {
    * 最大生成枚数
    */
   const availableImageGenerationMaxTasksCount =
-    queryData.viewer.availableImageGenerationMaxTasksCount ?? 10
+    queryData.userStatus?.availableImageGenerationMaxTasksCount ?? 10
 
   /**
    * 生成中コスト
    */
   const inProgressImageGenerationTasksCost =
-    queryData.viewer.inProgressImageGenerationTasksCost ?? 0
+    queryData.userStatus?.inProgressImageGenerationTasksCost ?? 0
 
   /**
    * 生成済みコスト
    */
   const remainingImageGenerationTasksCount =
-    queryData.viewer.remainingImageGenerationTasksCount
+    queryData.userStatus?.remainingImageGenerationTasksCount ?? 0
 
   /**
    * 同時生成最大枚数
    */
   const maxTasksCount =
-    queryData.viewer.availableConsecutiveImageGenerationsCount ?? 0
+    queryData.userStatus?.availableConsecutiveImageGenerationsCount ?? 0
 
   /**
    * 生成中の枚数
    */
   const inProgressImageGenerationTasksCount =
-    queryData.viewer.inProgressImageGenerationTasksCount ?? 0
+    queryData.userStatus?.inProgressImageGenerationTasksCount ?? 0
 
   /**
    * 予約生成中の枚数
    */
   const inProgressImageGenerationReservedTasksCount =
-    queryData.viewer.inProgressImageGenerationReservedTasksCount ?? 0
+    queryData.userStatus?.inProgressImageGenerationReservedTasksCount ?? 0
 
   const [searchParams] = useSearchParams()
 

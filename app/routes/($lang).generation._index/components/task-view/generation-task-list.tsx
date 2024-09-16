@@ -210,7 +210,8 @@ export function GenerationTaskList(props: Props) {
             maxCount={
               (props.protect === 0 || props.protect === -1) &&
               (props.rating === 0 || props.rating === -1)
-                ? queryData.viewer.remainingImageGenerationTasksTotalCount
+                ? (queryData.userStatus
+                    ?.remainingImageGenerationTasksTotalCount ?? 0)
                 : componentTasks.length
             }
             currentPage={props.currentPage}

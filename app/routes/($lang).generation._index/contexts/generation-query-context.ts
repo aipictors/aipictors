@@ -2,65 +2,35 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { createContext } from "react"
 
 type Context = {
-  promptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
-  negativePromptCategories: FragmentOf<typeof promptCategoryContextFragment>[]
-  controlNetCategories: FragmentOf<typeof controlNetCategoryContextFragment>[]
-  models: FragmentOf<typeof imageModelContextFragment>[]
-  loraModels: FragmentOf<typeof imageLoraModelContextFragment>[]
-  user: FragmentOf<typeof imageGenerationUserContextFragment> | null
-  currentPass: FragmentOf<typeof imageGenerationPassContextFragment> | null
-  engineStatus: FragmentOf<typeof imageGenerationStatusContextFragment>
-  viewer: FragmentOf<typeof imageGenerationViewerContextFragment>
+  promptCategories: FragmentOf<typeof PromptCategoryContextFragment>[]
+  negativePromptCategories: FragmentOf<
+    typeof NegativePromptCategoryContextFragment
+  >[]
+  controlNetCategories: FragmentOf<typeof ControlNetCategoryContextFragment>[]
+  imageModels: FragmentOf<typeof ImageModelContextFragment>[]
+  imageLoraModels: FragmentOf<typeof ImageLoraModelContextFragment>[]
+  user: FragmentOf<typeof ImageGenerationUserContextFragment> | null
+  currentPass: FragmentOf<typeof CurrentPassContextFragment> | null
+  engineStatus: FragmentOf<
+    typeof ImageGenerationEngineStatusContextFragment
+  > | null
+  userStatus: FragmentOf<typeof ImageGenerationUserStatusContextFragment> | null
 }
 
 export const GenerationQueryContext = createContext<Context>({
   promptCategories: [],
   negativePromptCategories: [],
   controlNetCategories: [],
-  models: [],
-  loraModels: [],
-  user: null,
+  imageModels: [],
+  imageLoraModels: [],
   currentPass: null,
-  engineStatus: {
-    normalTasksCount: 0,
-    standardTasksCount: 0,
-    normalPredictionGenerationWait: 0,
-    standardPredictionGenerationWait: 0,
-  },
-  viewer: {
-    remainingImageGenerationTasksCount: 0,
-    inProgressImageGenerationTasksCount: 0,
-    inProgressImageGenerationTasksCost: 0,
-    inProgressImageGenerationReservedTasksCount: 0,
-    remainingImageGenerationTasksTotalCount: 0,
-    availableImageGenerationMaxTasksCount: 0,
-    imageGenerationWaitCount: 0,
-    availableImageGenerationLoraModelsCount: 0,
-    availableConsecutiveImageGenerationsCount: 0,
-  },
+  user: null,
+  engineStatus: null,
+  userStatus: null,
 })
 
-export const imageGenerationPassContextFragment = graphql(
-  `fragment ImageGenerationPassContext on PassNode @_unmask {
-    id
-    type
-    payment {
-      id
-      amount
-      stripePaymentIntentId
-    }
-    isDisabled
-    periodStart
-    periodEnd
-    trialPeriodStart
-    trialPeriodEnd
-    createdAt
-    price
-  }`,
-)
-
-export const imageModelContextFragment = graphql(
-  `fragment ImageModelContext on ImageModelNode @_unmask {
+export const ImageModelContextFragment = graphql(
+  `fragment ImageModelContextFragment on ImageModelNode @_unmask {
     id
     name
     displayName
@@ -75,8 +45,8 @@ export const imageModelContextFragment = graphql(
   }`,
 )
 
-export const controlNetCategoryContextFragment = graphql(
-  `fragment ControlNetCategoryContext on ControlNetCategoryNode @_unmask {
+export const ControlNetCategoryContextFragment = graphql(
+  `fragment ControlNetCategoryContextFragment on ControlNetCategoryNode @_unmask {
     id
     name
     enName
@@ -92,8 +62,8 @@ export const controlNetCategoryContextFragment = graphql(
   }`,
 )
 
-export const promptCategoryContextFragment = graphql(
-  `fragment PromptCategoryContext on PromptCategoryNode @_unmask {
+export const PromptCategoryContextFragment = graphql(
+  `fragment PromptCategoryContextFragment on PromptCategoryNode @_unmask {
     id
     name
     prompts {
@@ -104,8 +74,20 @@ export const promptCategoryContextFragment = graphql(
   }`,
 )
 
-export const imageLoraModelContextFragment = graphql(
-  `fragment ImageLoraModelContext on ImageLoraModelNode @_unmask {
+export const NegativePromptCategoryContextFragment = graphql(
+  `fragment NegativePromptCategoryContextFragment on PromptCategoryNode @_unmask {
+    id
+    name
+    prompts {
+      id
+      name
+      words
+    }
+  }`,
+)
+
+export const ImageLoraModelContextFragment = graphql(
+  `fragment ImageLoraModelContextFragment on ImageLoraModelNode @_unmask {
     id
     name
     description
@@ -117,31 +99,36 @@ export const imageLoraModelContextFragment = graphql(
   }`,
 )
 
-export const imageGenerationUserContextFragment = graphql(
-  `fragment ImageGenerationUserContext on UserNode @_unmask {
+export const ImageGenerationUserContextFragment = graphql(
+  `fragment ImageGenerationUserContextFragment on UserNode @_unmask {
     id
     nanoid
     hasSignedImageGenerationTerms
   }`,
 )
 
-export const currentPassContextFragment = graphql(
-  `fragment CurrentPassContext on Viewer @_unmask {
+export const CurrentPassContextFragment = graphql(
+  `fragment CurrentPassContextFragment on PassNode @_unmask {
     id
-    user {
+    type
+    payment {
       id
-      nanoid
-      hasSignedImageGenerationTerms
+      amount
+      stripePaymentIntentId
     }
-    currentPass {
-      ...ImageGenerationPassContext
-    }
+    isDisabled
+    periodStart
+    periodEnd
+    trialPeriodStart
+    trialPeriodEnd
+    createdAt
+    price
   }`,
-  [imageGenerationPassContextFragment],
+  [],
 )
 
-export const imageGenerationStatusContextFragment = graphql(
-  `fragment ImageGenerationStatusContext on ImageGenerationEngineStatus @_unmask {
+export const ImageGenerationEngineStatusContextFragment = graphql(
+  `fragment ImageGenerationEngineStatusContextFragment on ImageGenerationEngineStatus @_unmask {
     normalTasksCount
     standardTasksCount
     normalPredictionGenerationWait
@@ -149,8 +136,8 @@ export const imageGenerationStatusContextFragment = graphql(
   }`,
 )
 
-export const imageGenerationViewerContextFragment = graphql(
-  `fragment ImageGenerationViewerContext on Viewer @_unmask {
+export const ImageGenerationUserStatusContextFragment = graphql(
+  `fragment ImageGenerationUserStatusContextFragment on Viewer @_unmask {
     remainingImageGenerationTasksCount
     inProgressImageGenerationTasksCount
     inProgressImageGenerationTasksCost

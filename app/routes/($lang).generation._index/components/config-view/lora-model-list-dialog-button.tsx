@@ -9,13 +9,13 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { LoraImageModelList } from "~/routes/($lang).generation._index/components/config-view/lora-image-model-list"
-import type { imageLoraModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
+import type { ImageLoraModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import type { FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
 
 type Props = {
   isOpen: boolean
-  models: FragmentOf<typeof imageLoraModelContextFragment>[]
+  models: FragmentOf<typeof ImageLoraModelContextFragment>[]
   selectedModelNames: string[]
   availableImageGenerationMaxTasksCount: number
   onSelect(name: string, isAdded: boolean): void
