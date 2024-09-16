@@ -11,7 +11,13 @@ import { PencilIcon } from "lucide-react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/cn"
 
-export function ModerationReportsContainer({ maxCount }: Props) {
+type Props = {
+  page: number
+  maxCount: number
+  setPage: (page: number) => void
+}
+
+export function ModerationReportsContainer(props: Props) {
   const [page, setPage] = useState(0)
   const [statusFilter, setStatusFilter] = useState<
     "ALL" | "DONE" | "NO_NEED_ACTION" | "UNHANDLED"
@@ -244,7 +250,3 @@ const moderationReportsQuery = graphql(
 `,
   [ModerationReportFragment],
 )
-
-type Props = {
-  maxCount: number
-}

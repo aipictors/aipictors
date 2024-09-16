@@ -78,7 +78,7 @@ export function AiModelArticle(props: Props) {
           works={works}
           targetRowHeight={240}
           size="small"
-          isHideProfile={true}
+          isShowProfile={true}
         />
         <ResponsivePagination
           perPage={16}
