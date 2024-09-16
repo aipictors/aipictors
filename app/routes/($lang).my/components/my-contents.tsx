@@ -264,7 +264,7 @@ export function MyContents(props: Props) {
                 myContentType === "REPORTS" && "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"運営からのお知らせ"}
+              {"運営お知らせ"}
             </Button>
           </div>
         </div>

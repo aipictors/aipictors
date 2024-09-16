@@ -8,9 +8,14 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { Link } from "@remix-run/react"
 import { Button } from "~/components/ui/button"
 import { PencilIcon } from "lucide-react"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { cn } from "~/lib/cn"
 
 export function ModerationReportsContainer({ maxCount }: Props) {
   const [page, setPage] = useState(0)
+  const [statusFilter, setStatusFilter] = useState<
+    "ALL" | "DONE" | "NO_NEED_ACTION" | "UNHANDLED"
+  >("ALL")
 
   const authContext = useContext(AuthContext)
 
@@ -73,15 +78,62 @@ export function ModerationReportsContainer({ maxCount }: Props) {
     return "/"
   }
 
+  const filteredReportList = reportList.filter((report) => {
+    if (statusFilter === "ALL") return true
+    return report.status === statusFilter
+  })
+
   return (
     <div className="container mx-auto p-4">
-      {reportList.map(
+      <div className="mb-4 flex space-x-4">
+        <Button
+          onClick={() => setStatusFilter("ALL")}
+          variant={"secondary"}
+          className={cn(
+            "px-4 py-2 transition-colors duration-200",
+            statusFilter === "ALL" ? "opacity-50" : "",
+          )}
+        >
+          すべて
+        </Button>
+        <Button
+          onClick={() => setStatusFilter("DONE")}
+          variant={"secondary"}
+          className={cn(
+            "px-4 py-2 transition-colors duration-200",
+            statusFilter === "DONE" ? "opacity-50" : "",
+          )}
+        >
+          対応完了
+        </Button>
+        <Button
+          onClick={() => setStatusFilter("NO_NEED_ACTION")}
+          variant={"secondary"}
+          className={cn(
+            "px-4 py-2 transition-colors duration-200",
+            statusFilter === "NO_NEED_ACTION" ? "opacity-50" : "",
+          )}
+        >
+          対応不要
+        </Button>
+        <Button
+          onClick={() => setStatusFilter("UNHANDLED")}
+          variant={"secondary"}
+          className={cn(
+            "px-4 py-2 transition-colors duration-200",
+            statusFilter === "UNHANDLED" ? "opacity-50" : "",
+          )}
+        >
+          未対応
+        </Button>
+      </div>
+      {filteredReportList.map(
         (report) =>
           report && (
             <Card key={report.id.toString()} className="rounded-none">
-              <CardContent className="flex flex-col space-x-2 space-y-2 p-4 md:flex-row">
-                <div className="m-auto h-32 w-32">
-                  {report.work && (
+              <CardContent className="flex flex-col items-center space-x-2 space-y-2 p-4 md:flex-row">
+                {report.work && (
+                  <div className="h-32 w-32">
                     <CroppedWorkSquare
                       workId={report.work?.id}
                       subWorksCount={report.work.subWorksCount}
@@ -93,9 +145,9 @@ export function ModerationReportsContainer({ maxCount }: Props) {
                       imageWidth={report.work.smallThumbnailImageWidth}
                       imageHeight={report.work.smallThumbnailImageHeight}
                     />
-                  )}
-                </div>
-                <div className="flex flex-col space-y-2">
+                  </div>
+                )}
+                <div className="flex w-full flex-col space-y-2">
                   <span className="font-bold">「{report.work?.title}」</span>
                   <p className="mb-2">{report.reportMessage}</p>
                   {report.customMessage && (
@@ -127,7 +179,17 @@ export function ModerationReportsContainer({ maxCount }: Props) {
                   )}
                 </div>
                 {report.work && (
-                  <Link to={editUrl(report.work?.id, report.work.type)}>
+                  <Link
+                    className="w-full md:w-auto"
+                    to={editUrl(
+                      report.work?.id,
+                      report.work?.type as
+                        | "COLUMN"
+                        | "NOVEL"
+                        | "VIDEO"
+                        | "WORK",
+                    )}
+                  >
                     <Button
                       className="w-full space-x-2"
                       aria-label={"編集"}
@@ -142,12 +204,6 @@ export function ModerationReportsContainer({ maxCount }: Props) {
             </Card>
           ),
       )}
-      {/* <ResponsivePagination
-        currentPage={page}
-        onPageChange={handlePageChange}
-        maxCount={0}
-        perPage={0}
-      /> */}
     </div>
   )
 }
