@@ -9,9 +9,11 @@ import {
   BoxIcon,
   GemIcon,
   HomeIcon,
+  Image,
   ImageIcon,
   LightbulbIcon,
   MessageCircleIcon,
+  PictureInPicture2,
   RocketIcon,
   SettingsIcon,
   StampIcon,
@@ -97,7 +99,7 @@ export function HomeRouteList(props: Props) {
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/?tab=follow-new")}
-        icon={StampIcon}
+        icon={Image}
         onClick={closeHeaderMenu}
       >
         {"フォロー新着"}

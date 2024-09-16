@@ -48,11 +48,16 @@ export function ThemeWorksList(props: Props) {
             <br />「{props.todayTheme.title}」
           </h2>
           <img
-            className="absolute top-0 left-0 w-full"
+            className="absolute top-0 left-0 w-full blur-xl"
             src={props.todayTheme.firstWork?.smallThumbnailImageURL}
             alt={props.todayTheme.title}
           />
           <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
+          <img
+            className="absolute top-0 left-0 h-40"
+            src={props.todayTheme.firstWork?.smallThumbnailImageURL}
+            alt={props.todayTheme.title}
+          />
         </Link>
       )}
       {/* {props.afterThemes && props.afterThemes.length > 0 && (
