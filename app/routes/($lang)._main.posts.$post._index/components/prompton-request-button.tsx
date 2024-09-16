@@ -1,5 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { GiftIcon } from "lucide-react"
+import { redirect } from "@remix-run/node"
 
 type Props = {
   promptonId: string
@@ -10,7 +11,7 @@ type Props = {
  */
 export function PromptonRequestButton({ promptonId, ...rest }: Props) {
   const onClick = () => {
-    window.open(`https://prompton.io/aipic/${promptonId}`, "_blank")
+    redirect(`https://prompton.io/aipic/${promptonId}`)
   }
 
   return (

@@ -9,6 +9,7 @@ import type { workArticleFragment } from "~/routes/($lang)._main.posts.$post._in
 import type { FragmentOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
 import { useEffect } from "react"
+import { redirect } from "@remix-run/node"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -32,10 +33,10 @@ export function WorkNextAndPrevious(props: Props) {
 
       if (typeof document !== "undefined") {
         if (e.code === "KeyQ" && props.work?.nextWork) {
-          window.location.href = `/posts/${props.work?.nextWork.id}`
+          redirect(`/posts/${props.work?.nextWork.id}`)
         }
         if (e.code === "KeyE" && props.work?.previousWork) {
-          window.location.href = `/posts/${props.work?.previousWork.id}`
+          redirect(`/posts/${props.work?.previousWork.id}`)
         }
       }
     }

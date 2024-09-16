@@ -2,21 +2,18 @@ import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams, useSearchParams } from "@remix-run/react"
+import {
+  json,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
-import {} from "~/components/ui/tabs"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
-
-const useUpdateQueryParams = () => {
-  const updateQueryParams = (newParams: URLSearchParams) => {
-    const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
-  }
-  return updateQueryParams
-}
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -167,6 +164,18 @@ export default function MonthThemes() {
   }
 
   const [searchParams] = useSearchParams()
+
+  const location = useLocation()
+
+  const navigate = useNavigate()
+
+  const useUpdateQueryParams = () => {
+    const updateQueryParams = (newParams: URLSearchParams) => {
+      const newUrl = `${location.pathname}?${newParams.toString()}`
+      navigate(newUrl, { replace: true })
+    }
+    return updateQueryParams
+  }
 
   const updateQueryParams = useUpdateQueryParams()
 

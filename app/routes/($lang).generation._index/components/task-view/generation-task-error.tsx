@@ -1,13 +1,16 @@
 import { Button } from "~/components/ui/button"
 import { FrownIcon } from "lucide-react"
 import { useCallback } from "react"
+import { useRevalidator } from "@remix-run/react"
 
 /**
  * エラーになった履歴
  */
 export function GenerationTaskError() {
+  const revalidator = useRevalidator()
+
   const reloadPage = useCallback(() => {
-    window.location.reload()
+    revalidator.revalidate()
   }, [])
 
   return (
@@ -18,8 +21,7 @@ export function GenerationTaskError() {
       </span>
       <Button onClick={reloadPage} className="mt-4">
         更新
-      </Button>{" "}
-      {/* 更新ボタンを追加 */}
+      </Button>
     </div>
   )
 }

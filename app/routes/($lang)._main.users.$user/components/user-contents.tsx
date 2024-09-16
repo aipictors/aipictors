@@ -88,39 +88,32 @@ export function UserContents(props: Props) {
         <Suspense fallback={<AppLoadingPage />}>
           {activeTab === "ポートフォリオ" && (
             <>
-              <Card className="flex flex-col gap-y-4 p-4">
-                <p className="flex items-center space-x-2 text-sm opacity-80">
-                  <CalendarHeartIcon className="h-4 w-4" />
-                  {props.user.createdAt < 1672953307 ? (
-                    <>
-                      <p>
-                        {new Date(1672953307 * 1000).toLocaleDateString(
-                          "ja-JP",
-                          {
-                            timeZone: "Asia/Tokyo",
-                            year: "numeric",
-                            month: "2-digit",
-                          },
-                        )}
-                      </p>
-                      <p>以前開始</p>
-                    </>
-                  ) : (
-                    <>
-                      <p>
-                        {new Date(1672953307 * 1000).toLocaleDateString(
-                          "ja-JP",
-                          {
-                            timeZone: "Asia/Tokyo",
-                            year: "numeric",
-                            month: "2-digit",
-                          },
-                        )}
-                      </p>
-                      <p>頃開始</p>
-                    </>
-                  )}
-                </p>
+              <Card className="flex flex-col space-y-4 p-4">
+                {props.user.createdAt < 1672953307 ? (
+                  <div className="flex items-center space-x-2 text-sm opacity-80">
+                    <CalendarHeartIcon className="h-4 w-4" />
+                    <p>
+                      {new Date(1672953307 * 1000).toLocaleDateString("ja-JP", {
+                        timeZone: "Asia/Tokyo",
+                        year: "numeric",
+                        month: "2-digit",
+                      })}
+                    </p>
+                    <p>以前開始</p>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2 text-sm opacity-80">
+                    <CalendarHeartIcon className="h-4 w-4" />
+                    <p>
+                      {new Date(1672953307 * 1000).toLocaleDateString("ja-JP", {
+                        timeZone: "Asia/Tokyo",
+                        year: "numeric",
+                        month: "2-digit",
+                      })}
+                    </p>
+                    <p>頃開始</p>
+                  </div>
+                )}
                 {props.user.biography && (
                   <p className="text-sm">
                     {formatBiography(props.user.biography)}

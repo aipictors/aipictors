@@ -12,7 +12,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
-import { useSearchParams } from "react-router-dom"
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import {
@@ -33,19 +33,24 @@ type Props = {
   isSensitive?: boolean
 }
 
-const useUpdateQueryParams = () => {
-  const updateQueryParams = (newParams: URLSearchParams) => {
-    const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
-  }
-  return updateQueryParams
-}
-
 /**
  * 3Dホームのコンテンツ一覧
  */
 export function Home3dContents(props: Props) {
   const [searchParams] = useSearchParams()
+
+  const navigate = useNavigate()
+
+  const location = useLocation()
+
+  const useUpdateQueryParams = () => {
+    const updateQueryParams = (newParams: URLSearchParams) => {
+      const newUrl = `${location.pathname}?${newParams.toString()}`
+      navigate(newUrl, { replace: true })
+    }
+    return updateQueryParams
+  }
+
   const updateQueryParams = useUpdateQueryParams()
 
   const [isMounted, setIsMounted] = useState(false)
