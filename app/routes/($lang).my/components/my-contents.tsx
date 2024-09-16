@@ -4,6 +4,7 @@ import { useContext, useEffect } from "react"
 import { useLocation, useNavigate } from "@remix-run/react"
 import React from "react"
 import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/cn"
 
 type Props = Readonly<{
   outlet: React.ReactNode
@@ -167,6 +168,9 @@ export function MyContents(props: Props) {
               }}
               value="HOME"
               variant={"secondary"}
+              className={cn(
+                myContentType === "HOME" && "bg-gray-200 dark:bg-zinc-900",
+              )}
             >
               {"ホーム"}
             </Button>
@@ -177,6 +181,9 @@ export function MyContents(props: Props) {
               }}
               value="POSTS"
               variant={"secondary"}
+              className={cn(
+                myContentType === "POSTS" && "bg-gray-200 dark:bg-zinc-900",
+              )}
             >
               {"作品"}
             </Button>
@@ -187,6 +194,9 @@ export function MyContents(props: Props) {
               }}
               value="ALBUMS"
               variant={"secondary"}
+              className={cn(
+                myContentType === "ALBUMS" && "bg-gray-200 dark:bg-zinc-900",
+              )}
             >
               {"シリーズ"}
             </Button>
@@ -197,6 +207,10 @@ export function MyContents(props: Props) {
               }}
               value="RECOMMENDED"
               variant={"secondary"}
+              className={cn(
+                myContentType === "RECOMMENDED" &&
+                  "bg-gray-200 dark:bg-zinc-900",
+              )}
             >
               {"推薦"}
             </Button>
@@ -207,6 +221,9 @@ export function MyContents(props: Props) {
               }}
               value="BOOKMARKS"
               variant={"secondary"}
+              className={cn(
+                myContentType === "BOOKMARKS" && "bg-gray-200 dark:bg-zinc-900",
+              )}
             >
               {"ブックマーク"}
             </Button>
@@ -217,6 +234,9 @@ export function MyContents(props: Props) {
               }}
               value="LIKES"
               variant={"secondary"}
+              className={cn(
+                myContentType === "LIKES" && "bg-gray-200 dark:bg-zinc-900",
+              )}
             >
               {"いいね"}
             </Button>
@@ -227,6 +247,9 @@ export function MyContents(props: Props) {
               }}
               value="VIEWS"
               variant={"secondary"}
+              className={cn(
+                myContentType === "VIEWS" && "bg-gray-200 dark:bg-zinc-900",
+              )}
             >
               {"閲覧履歴"}
             </Button>
@@ -237,6 +260,9 @@ export function MyContents(props: Props) {
               }}
               value="REPORTS"
               variant={"secondary"}
+              className={cn(
+                myContentType === "REPORTS" && "bg-gray-200 dark:bg-zinc-900",
+              )}
             >
               {"運営からのお知らせ"}
             </Button>

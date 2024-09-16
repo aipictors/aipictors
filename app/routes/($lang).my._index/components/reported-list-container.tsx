@@ -1,53 +1,159 @@
-import { AuthContext } from "~/contexts/auth-context"
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { useQuery } from "@apollo/client/index"
+import { AuthContext } from "~/contexts/auth-context"
 import { graphql } from "gql.tada"
+import { Card, CardContent } from "~/components/ui/card"
+import { Badge } from "~/components/ui/badge"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { Link } from "@remix-run/react"
+import { Button } from "~/components/ui/button"
+import { PencilIcon } from "lucide-react"
 
-type Props = {
-  page: number
-  maxCount: number
-  setPage: (page: number) => void
-}
+export function ModerationReportsContainer({ maxCount }: Props) {
+  const [page, setPage] = useState(0)
 
-/**
- * 運営からのお知らせ一覧コンテナ
- */
-export function ModerationReportsContainer(props: Props) {
   const authContext = useContext(AuthContext)
+
+  const itemsPerPage = 120
 
   if (
     authContext.isLoading ||
     authContext.isNotLoggedIn ||
-    authContext.userId === undefined ||
     !authContext.userId
   ) {
     return null
   }
-  const { data: reports, refetch } = useQuery(moderationReportsQuery, {
+
+  const {
+    data: reports,
+    refetch,
+    loading,
+  } = useQuery(moderationReportsQuery, {
     skip: authContext.isLoading,
     variables: {
-      offset: 120 * props.page,
-      limit: 120,
+      offset: itemsPerPage * page,
+      limit: itemsPerPage,
       where: {},
     },
   })
 
   const reportList = reports?.moderationReports ?? []
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage)
+    refetch()
+  }
+
+  const statusLabel = (
+    status: "DONE" | "NO_NEED_ACTION" | "UNHANDLED" | null,
+  ) => {
+    switch (status) {
+      case "DONE":
+        return "対応完了"
+      case "NO_NEED_ACTION":
+        return "対応不要"
+      case "UNHANDLED":
+        return "未対応"
+      default:
+        return "未対応"
+    }
+  }
+
+  const editUrl = (id: string, workType: IntrospectionEnum<"WorkType">) => {
+    if (workType === "WORK") {
+      return `/posts/${id}/image/edit`
+    }
+    if (workType === "VIDEO") {
+      return `/posts/${id}/animation/edit`
+    }
+    if (workType === "COLUMN" || workType === "NOVEL") {
+      return `/posts/${id}/text/edit`
+    }
+
+    return "/"
+  }
+
   return (
-    <>
-      <p>{"メンテナンス中です。"}</p>
-      <div>
-        {reportList.map((report) => (
-          <div key={report.id.toString()}>{report.reportMessage}</div>
-        ))}
-      </div>
-    </>
+    <div className="container mx-auto p-4">
+      {reportList.map(
+        (report) =>
+          report && (
+            <Card key={report.id.toString()} className="rounded-none">
+              <CardContent className="flex flex-col space-x-2 space-y-2 p-4 md:flex-row">
+                <div className="m-auto h-32 w-32">
+                  {report.work && (
+                    <CroppedWorkSquare
+                      workId={report.work?.id}
+                      subWorksCount={report.work.subWorksCount}
+                      imageUrl={report.work.smallThumbnailImageURL}
+                      thumbnailImagePosition={
+                        report.work.thumbnailImagePosition ?? 0
+                      }
+                      size="md"
+                      imageWidth={report.work.smallThumbnailImageWidth}
+                      imageHeight={report.work.smallThumbnailImageHeight}
+                    />
+                  )}
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <span className="font-bold">「{report.work?.title}」</span>
+                  <p className="mb-2">{report.reportMessage}</p>
+                  {report.customMessage && (
+                    <p className="text-sm italic">
+                      追加メッセージ: {report.customMessage}
+                    </p>
+                  )}
+                  <div className="flex space-x-2">
+                    <Badge
+                      variant={report.isRead ? "secondary" : "destructive"}
+                    >
+                      {report.isRead ? "既読" : "未読"}
+                    </Badge>
+                    <Badge
+                      variant={
+                        report.status === "NO_NEED_ACTION" ||
+                        report.status === "DONE"
+                          ? "secondary"
+                          : "default"
+                      }
+                    >
+                      {statusLabel(report.status)}
+                    </Badge>
+                  </div>
+                  {report.responseMessage && (
+                    <p className="text-muted-foreground text-sm">
+                      {"あなたの返信"}:「{report.responseMessage}」
+                    </p>
+                  )}
+                </div>
+                {report.work && (
+                  <Link to={editUrl(report.work?.id, report.work.type)}>
+                    <Button
+                      className="w-full space-x-2"
+                      aria-label={"編集"}
+                      variant="secondary"
+                    >
+                      <PencilIcon width={16} />
+                      <p>編集</p>
+                    </Button>
+                  </Link>
+                )}
+              </CardContent>
+            </Card>
+          ),
+      )}
+      {/* <ResponsivePagination
+        currentPage={page}
+        onPageChange={handlePageChange}
+        maxCount={0}
+        perPage={0}
+      /> */}
+    </div>
   )
 }
 
-export const ModerationReportFragment = graphql(
-  `fragment ModerationReportItem on ModerationReportNode @_unmask {
+const ModerationReportFragment = graphql(`
+  fragment ModerationReportItem on ModerationReportNode @_unmask {
     id
     createdAt
     work {
@@ -57,20 +163,32 @@ export const ModerationReportFragment = graphql(
         id
         name
       }
+      smallThumbnailImageURL
+      subWorksCount
+      thumbnailImagePosition
+      smallThumbnailImageWidth
+      smallThumbnailImageHeight
+      type
     }
     customMessage
     isRead
     responseMessage
     status
     reportMessage
-  }`,
-)
+  }
+`)
 
 const moderationReportsQuery = graphql(
-  `query ModerationReports($offset: Int!, $limit: Int!, $where: ModerationReportsWhereInput!) {
+  `
+  query ModerationReports($offset: Int!, $limit: Int!, $where: ModerationReportsWhereInput!) {
     moderationReports(offset: $offset, limit: $limit, where: $where) {
       ...ModerationReportItem
     }
-  }`,
+  }
+`,
   [ModerationReportFragment],
 )
+
+type Props = {
+  maxCount: number
+}

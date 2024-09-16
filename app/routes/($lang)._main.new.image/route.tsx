@@ -525,7 +525,7 @@ export default function NewImage() {
         />
         <div className="h-4" />
         <Button
-          className="fixed bottom-0 left-0 w-full max-w-[1200px] rounded-none md:left-auto md:rounded-md"
+          className="fixed bottom-0 left-0 w-full rounded-none xl:left-auto xl:max-w-[1200px] xl:rounded-md"
           size={"lg"}
           type="submit"
           onClick={onPost}

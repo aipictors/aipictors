@@ -4,6 +4,7 @@ import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import { Link } from "@remix-run/react"
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircle } from "lucide-react"
 import { type FragmentOf, graphql } from "gql.tada"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
   works: FragmentOf<typeof BookmarkWorksSpListItemFragment>[]
@@ -40,7 +41,9 @@ export function BookmarkWorksSpList(props: Props) {
                 <Badge variant={"secondary"}>
                   {toAccessTypeText(work.accessType)}
                 </Badge>
-                <div className="text-sm opacity-80">{work.createdAt}</div>
+                <div className="text-sm opacity-80">
+                  {toDateTimeText(work.createdAt)}
+                </div>
               </div>
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center">

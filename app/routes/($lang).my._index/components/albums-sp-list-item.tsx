@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
   album: FragmentOf<typeof MobileAlbumListItemFragment>
@@ -71,7 +72,7 @@ export function AlbumsSpListItem(props: Props) {
                   <div className="w-full font-bold">{props.album.title}</div>
                 </Link>
                 <div className="text-sm opacity-80">
-                  {props.album.createdAt}
+                  {toDateTimeText(props.album.createdAt)}
                 </div>
               </div>
             </div>
