@@ -1,6 +1,7 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { GiftIcon } from "lucide-react"
 import { useContext } from "react"
+import { redirect } from "@remix-run/node"
 
 type Props = {
   promptonId: string
@@ -20,7 +21,7 @@ export function PromptonRequestColorfulButton(props: Props) {
   }
 
   const onClick = () => {
-    window.open(`https://prompton.io/aipic/${props.promptonId}`, "_blank")
+    redirect(`https://prompton.io/aipic/${props.promptonId}`)
   }
 
   return (

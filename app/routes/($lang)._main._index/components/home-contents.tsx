@@ -44,6 +44,7 @@ import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/c
 import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
 import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
+import { useNavigate, useLocation } from "@remix-run/react"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -68,19 +69,24 @@ type Props = {
   isCropped?: boolean
 }
 
-const useUpdateQueryParams = () => {
-  const updateQueryParams = (newParams: URLSearchParams) => {
-    const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
-  }
-  return updateQueryParams
-}
-
 /**
  * ホームのコンテンツ一覧
  */
 export function HomeContents(props: Props) {
   const [searchParams] = useSearchParams()
+
+  const navigate = useNavigate()
+
+  const location = useLocation()
+
+  const useUpdateQueryParams = () => {
+    const updateQueryParams = (newParams: URLSearchParams) => {
+      const newUrl = `${location.pathname}?${newParams.toString()}`
+      navigate(newUrl, { replace: true })
+    }
+
+    return updateQueryParams
+  }
 
   const updateQueryParams = useUpdateQueryParams()
 

@@ -164,6 +164,7 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
   }
 
   useEffect(() => {
+    if (typeof document === "undefined") return
     if (isDragging) {
       window.addEventListener("mousemove", handleMouseMove)
       window.addEventListener("mouseup", handleMouseUp)

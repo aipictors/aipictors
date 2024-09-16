@@ -1,4 +1,6 @@
 import { Button } from "~/components/ui/button"
+import { useRevalidator } from "@remix-run/react"
+import { redirect } from "@remix-run/node"
 
 type Props = Readonly<{
   status: number
@@ -10,6 +12,8 @@ type Props = Readonly<{
  * @see https://v0.dev/t/YFhY3hdw0jD
  */
 export function AppErrorPage(props: Props) {
+  const revalidator = useRevalidator()
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <p className="mt-4 text-center font-bold text-md md:text-xl">
@@ -27,7 +31,7 @@ export function AppErrorPage(props: Props) {
         <Button
           className="rounded-md px-8 py-2"
           onClick={() => {
-            window.location.href = "https://www.aipictors.com/"
+            redirect("https://www.aipictors.com/")
           }}
           variant={"secondary"}
         >
@@ -36,7 +40,7 @@ export function AppErrorPage(props: Props) {
         <Button
           className="rounded-md px-8 py-2"
           onClick={() => {
-            window.location.reload()
+            revalidator.revalidate()
           }}
         >
           {"再読み込み"}

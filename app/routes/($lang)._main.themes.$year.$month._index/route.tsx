@@ -10,11 +10,12 @@ import { getJstDate } from "~/utils/jst-date"
 import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 import {} from "~/components/ui/tabs"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
+import { redirect } from "@remix-run/node"
 
 const useUpdateQueryParams = () => {
   const updateQueryParams = (newParams: URLSearchParams) => {
     const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
+    redirect(newUrl)
   }
   return updateQueryParams
 }
