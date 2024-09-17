@@ -87,13 +87,13 @@ export function ModerationReportsContainer(props: Props) {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-4 flex-col md:flex-row flex gap-x-4 gap-y-4 md:gap-y-9">
+      <div className="mb-4 flex flex-col gap-x-4 gap-y-4 md:flex-row md:gap-y-9">
         <div className="flex space-x-4">
           <Button
             onClick={() => setStatusFilter("ALL")}
             variant={"secondary"}
             className={cn(
-              "px-4 py-2 transition-colors duration-200 md:w-auto w-full",
+              "w-full px-4 py-2 transition-colors duration-200 md:w-auto",
               statusFilter === "ALL" ? "opacity-50" : "",
             )}
           >
@@ -103,7 +103,7 @@ export function ModerationReportsContainer(props: Props) {
             onClick={() => setStatusFilter("DONE")}
             variant={"secondary"}
             className={cn(
-              "px-4 py-2 transition-colors duration-200 md:w-auto w-full",
+              "w-full px-4 py-2 transition-colors duration-200 md:w-auto",
               statusFilter === "DONE" ? "opacity-50" : "",
             )}
           >
@@ -115,7 +115,7 @@ export function ModerationReportsContainer(props: Props) {
             onClick={() => setStatusFilter("NO_NEED_ACTION")}
             variant={"secondary"}
             className={cn(
-              "px-4 py-2 transition-colors duration-200 md:w-auto w-full",
+              "w-full px-4 py-2 transition-colors duration-200 md:w-auto",
               statusFilter === "NO_NEED_ACTION" ? "opacity-50" : "",
             )}
           >
@@ -125,7 +125,7 @@ export function ModerationReportsContainer(props: Props) {
             onClick={() => setStatusFilter("UNHANDLED")}
             variant={"secondary"}
             className={cn(
-              "px-4 py-2 transition-colors duration-200 md:w-auto w-full",
+              "w-full px-4 py-2 transition-colors duration-200 md:w-auto",
               statusFilter === "UNHANDLED" ? "opacity-50" : "",
             )}
           >
