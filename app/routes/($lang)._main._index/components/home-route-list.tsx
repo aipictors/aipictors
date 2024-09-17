@@ -13,7 +13,6 @@ import {
   ImageIcon,
   LightbulbIcon,
   MessageCircleIcon,
-  PictureInPicture2,
   RocketIcon,
   SettingsIcon,
   StampIcon,
@@ -98,7 +97,7 @@ export function HomeRouteList(props: Props) {
         {"スタンプ広場"}
       </HomeNavigationButton>
       <HomeNavigationButton
-        href={createLink("/?tab=follow-new")}
+        href={createLink("/?tab=follow-user")}
         icon={Image}
         onClick={closeHeaderMenu}
       >

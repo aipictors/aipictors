@@ -118,6 +118,7 @@ export default function NewImage() {
     useGenerationParams: true,
     usePromotionFeature: false,
     useTagFeature: true,
+    correctionMessage: "",
   })
 
   const onChangeImageInformation = (imageInformation: PNGInfo) => {
@@ -522,6 +523,7 @@ export default function NewImage() {
             endAt: viewer?.appEvents[0]?.endAt ?? 0,
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
+          needFix={false}
         />
         <div className="h-4" />
         <Button

@@ -167,6 +167,12 @@ export const postAnimationFormInputReducer = (
         reservationTime: action.payload,
       }
     }
+    case "SET_CORRECTION_MESSAGE": {
+      return {
+        ...state,
+        correctionMessage: action.payload,
+      }
+    }
     case "INITIALIZE": {
       return {
         ...state,
@@ -189,6 +195,7 @@ export const postAnimationFormInputReducer = (
         aiModelId: action.payload.aiModelId,
         reservationDate: action.payload.reservationDate,
         reservationTime: action.payload.reservationTime,
+        correctionMessage: action.payload.correctionMessage,
       }
     }
   }

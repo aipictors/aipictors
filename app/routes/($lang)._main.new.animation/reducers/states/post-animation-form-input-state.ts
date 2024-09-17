@@ -36,4 +36,5 @@ export const vPostAnimationFormInputState = object({
   useGenerationParams: boolean(),
   usePromotionFeature: boolean(),
   useTagFeature: boolean(),
+  correctionMessage: nullable(string()),
 })

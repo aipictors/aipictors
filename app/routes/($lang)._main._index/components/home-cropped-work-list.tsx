@@ -7,6 +7,7 @@ import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 type Props = {
   works: FragmentOf<typeof HomeCoppedWorkFragment>[]
   isRanking?: boolean
+  isShowProfile?: boolean
 }
 
 /**
@@ -22,7 +23,11 @@ export function HomeCroppedWorkList(props: Props) {
       <section className="hidden grid-cols-2 gap-4 md:grid md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {props.works.map((work) => (
           <div className="flex flex-col space-y-2" key={work.id}>
-            <Link to={`/posts/${work.id}`} key={work.id} className="relative">
+            <Link
+              to={`/posts/${work.id}`}
+              key={work.id}
+              className="group relative overflow-hidden rounded-md"
+            >
               <div
                 className="w-full overflow-hidden"
                 style={{ paddingBottom: "100%" }}
@@ -31,13 +36,13 @@ export function HomeCroppedWorkList(props: Props) {
                   src={work.largeThumbnailImageURL}
                   alt={work.title}
                   loading="lazy"
-                  className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover md:block"
+                  className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 md:block"
                 />
                 <img
                   src={work.smallThumbnailImageURL}
                   alt={work.title}
                   loading="lazy"
-                  className="absolute top-0 left-0 block h-full w-full rounded-md object-cover md:hidden"
+                  className="absolute top-0 left-0 block h-full w-full rounded-md object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 md:hidden"
                 />
                 <div className="absolute right-2 bottom-2">
                   <LikeButton
@@ -67,46 +72,52 @@ export function HomeCroppedWorkList(props: Props) {
       </section>
       <section className="grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {props.works.map((work) => (
-          <Link to={`/posts/${work.id}`} key={work.id} className="relative">
-            <div
-              className="w-full overflow-hidden"
-              style={{ paddingBottom: "100%" }}
-            >
-              <img
-                src={work.largeThumbnailImageURL}
-                alt={work.title}
-                loading="lazy"
-                className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover md:block"
-              />
-              <img
-                src={work.smallThumbnailImageURL}
-                alt={work.title}
-                loading="lazy"
-                className="absolute top-0 left-0 block h-full w-full object-cover md:hidden"
-              />
-              <div className="absolute right-2 bottom-2">
-                <LikeButton
-                  size={56}
-                  targetWorkId={work.id}
-                  targetWorkOwnerUserId={work.user.id}
-                  defaultLiked={work.isLiked}
-                  defaultLikedCount={0}
-                  isBackgroundNone={true}
-                  strokeWidth={2}
-                  isParticle={true}
+          <div key={work.id}>
+            <Link to={`/posts/${work.id}`} className="relative">
+              <div
+                className="w-full overflow-hidden"
+                style={{ paddingBottom: "100%" }}
+              >
+                <img
+                  src={work.largeThumbnailImageURL}
+                  alt={work.title}
+                  loading="lazy"
+                  className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover md:block"
                 />
+                <img
+                  src={work.smallThumbnailImageURL}
+                  alt={work.title}
+                  loading="lazy"
+                  className="absolute top-0 left-0 block h-full w-full object-cover md:hidden "
+                />
+                <div className="absolute right-2 bottom-2">
+                  <LikeButton
+                    size={56}
+                    targetWorkId={work.id}
+                    targetWorkOwnerUserId={work.user.id}
+                    defaultLiked={work.isLiked}
+                    defaultLikedCount={0}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                    isParticle={true}
+                  />
+                </div>
               </div>
-            </div>
-            {/* <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-            {work.title}
-          </p>
-          <UserNameBadge
-            userId={work.user.id}
-            userIconImageURL={IconUrl(work.user.iconUrl)}
-            name={work.user.name}
-            width={"lg"}
-          /> */}
-          </Link>
+            </Link>
+            {props.isShowProfile && (
+              <>
+                <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                  {work.title}
+                </p>
+                <UserNameBadge
+                  userId={work.user.id}
+                  userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
+                  name={work.user.name}
+                  width={"md"}
+                />{" "}
+              </>
+            )}
+          </div>
         ))}
       </section>
     </>

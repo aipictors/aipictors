@@ -127,6 +127,10 @@ export const vPostTextFormInputAction = union([
     payload: string(),
   }),
   object({
+    type: literal("SET_CORRECTION_MESSAGE"),
+    payload: string(),
+  }),
+  object({
     type: literal("INITIALIZE"),
     payload: object({
       date: instance(Date),

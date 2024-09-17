@@ -283,6 +283,7 @@ export default function EditText() {
       work?.isTagEditable === undefined ? true : work?.isTagEditable,
     md: work?.md ?? "",
     type: work?.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
+    correctionMessage: "",
   })
 
   const now = getJstDate(new Date())
@@ -348,6 +349,14 @@ export default function EditText() {
         toast(issue.message)
         return
       }
+      return
+    }
+
+    if (
+      !inputState.correctionMessage &&
+      work?.moderatorReport?.status === "UNHANDLED"
+    ) {
+      toast("修正メッセージを入力してください")
       return
     }
 
@@ -521,6 +530,10 @@ export default function EditText() {
                   ? "PUBLIC"
                   : "PRIVATE",
             md: inputState.md,
+            correctionMessage:
+              work?.moderatorReport?.status === "UNHANDLED"
+                ? inputState.correctionMessage
+                : undefined,
           },
         },
       })
@@ -605,6 +618,7 @@ export default function EditText() {
             endAt: viewer?.appEvents[0]?.endAt ?? 0,
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
+          needFix={work?.moderatorReport?.status === "UNHANDLED"}
         />
         <div className="h-4" />
         <Button
@@ -783,6 +797,10 @@ const workQuery = graphql(
       subWorks {
         id
         imageUrl
+      }
+      moderatorReport {
+        status
+        reportMessage
       }
     }
   }`,

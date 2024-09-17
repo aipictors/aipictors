@@ -173,6 +173,12 @@ export const postImageFormInputReducer = (
         imageInformation: action.payload,
       }
     }
+    case "SET_CORRECTION_MESSAGE": {
+      return {
+        ...state,
+        correctionMessage: action.payload,
+      }
+    }
     case "INITIALIZE": {
       return {
         ...state,
@@ -196,6 +202,7 @@ export const postImageFormInputReducer = (
         reservationDate: action.payload.reservationDate,
         reservationTime: action.payload.reservationTime,
         imageInformation: action.payload.imageInformation,
+        correctionMessage: action.payload.correctionMessage,
       }
     }
   }

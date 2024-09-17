@@ -196,7 +196,7 @@ export function HomeContents(props: Props) {
       <TabsList>
         <TabsTrigger value="home">{"ホーム"}</TabsTrigger>
         <TabsTrigger value="new">{"新着・人気"}</TabsTrigger>
-        <TabsTrigger value="follow-new">
+        <TabsTrigger value="follow-user">
           <div className="flex items-center space-x-2">
             <p>{"フォロー新着"}</p>
             <CrossPlatformTooltip

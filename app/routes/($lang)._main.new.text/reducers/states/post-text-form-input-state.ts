@@ -40,5 +40,6 @@ export const vPostTextFormInputState = object({
   usePromotionFeature: boolean(),
   useTagFeature: boolean(),
   md: string(),
+  correctionMessage: nullable(string()),
   type: nullable(vPostType),
 })

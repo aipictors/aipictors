@@ -18,6 +18,7 @@ import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/comp
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 import type { PostAnimationFormInputAction } from "~/routes/($lang)._main.new.animation/reducers/actions/post-animation-form-input-action"
 import type { PostAnimationFormInputState } from "~/routes/($lang)._main.new.animation/reducers/states/post-animation-form-input-state"
+import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
 
 type Props = {
   dispatch: Dispatch<PostAnimationFormInputAction>
@@ -35,6 +36,7 @@ type Props = {
     slug: string | null
   }
   aiModels: FragmentOf<typeof PostAnimationFormAiModelFragment>[]
+  needFix: boolean
 }
 
 // 日本時間の日付を計算する関数
@@ -139,6 +141,14 @@ export function PostAnimationFormInput(props: Props) {
 
   return (
     <div className="space-y-4">
+      {props.needFix && (
+        <PostFormItemFix
+          onChange={(value) => {
+            props.dispatch({ type: "SET_CORRECTION_MESSAGE", payload: value })
+          }}
+          value={props.state.correctionMessage ?? ""}
+        />
+      )}
       <PostFormItemTitle
         onChange={(title) => {
           props.dispatch({ type: "SET_TITLE", payload: title })

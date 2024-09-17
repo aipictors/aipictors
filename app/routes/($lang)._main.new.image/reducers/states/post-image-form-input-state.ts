@@ -40,4 +40,5 @@ export const vPostImageFormInputState = object({
   useGenerationParams: boolean(),
   usePromotionFeature: boolean(),
   useTagFeature: boolean(),
+  correctionMessage: nullable(string()),
 })

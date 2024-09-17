@@ -118,6 +118,10 @@ export const vPostImageFormInputAction = union([
     payload: nullable(vImageInformation),
   }),
   object({
+    type: literal("SET_CORRECTION_MESSAGE"),
+    payload: string(),
+  }),
+  object({
     type: literal("INITIALIZE"),
     payload: object({
       date: instance(Date),
@@ -144,6 +148,7 @@ export const vPostImageFormInputAction = union([
       reservationDate: nullable(string()),
       reservationTime: nullable(string()),
       imageInformation: nullable(vImageInformation),
+      correctionMessage: nullable(string()),
     }),
   }),
 ])

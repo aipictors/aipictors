@@ -23,6 +23,7 @@ import type { PostTextFormInputAction } from "~/routes/($lang)._main.new.text/re
 import type { PostTextFormInputState } from "~/routes/($lang)._main.new.text/reducers/states/post-text-form-input-state"
 import { PostFormItemMd } from "~/routes/($lang)._main.new.image/components/post-form-item-md"
 import { PostFormItemType } from "~/routes/($lang)._main.new.image/components/post-form-item-text-type"
+import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -41,6 +42,7 @@ type Props = {
     slug: string | null
   }
   aiModels: FragmentOf<typeof PostTextFormAiModelFragment>[]
+  needFix: boolean
 }
 
 // 日本時間の日付を計算する関数
@@ -164,6 +166,14 @@ export function PostTextFormInput(props: Props) {
 
   return (
     <div className="space-y-4">
+      {props.needFix && (
+        <PostFormItemFix
+          onChange={(value) => {
+            props.dispatch({ type: "SET_CORRECTION_MESSAGE", payload: value })
+          }}
+          value={props.state.correctionMessage ?? ""}
+        />
+      )}
       <PostFormItemTitle
         onChange={(title) => {
           props.dispatch({ type: "SET_TITLE", payload: title })

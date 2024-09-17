@@ -8,6 +8,7 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { Images } from "lucide-react"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { cn } from "~/lib/cn"
+import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -60,118 +61,137 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
   }
 
   return (
-    <SSR breakpoints={[300, 600, 900, 1200]}>
-      <RowsPhotoAlbum
-        photos={props.works.map((work) => ({
-          key: work.id,
-          src:
-            props.size === "large"
-              ? work.largeThumbnailImageURL
-              : work.smallThumbnailImageURL,
-          width:
-            props.size === "large"
-              ? work.largeThumbnailImageWidth
-              : work.smallThumbnailImageWidth,
-          height:
-            props.size === "large"
-              ? work.largeThumbnailImageHeight
-              : work.smallThumbnailImageHeight,
-          // workId: work.id, // 各作品のID
-          // userId: work.user.id, // 作品の所有者のID
-          // userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
-          // userName: work.user.name, // 作品の所有者の名前
-          // workOwnerUserId: work.user.id,
-          // isLiked: work.isLiked,
-          // title: work.title,
-          // isSensitive: work.rating === "R18" || work.rating === "R18G",
-          // subWorksCount: work.subWorksCount,
-          // to: `/posts/${work.id}`,
-          // href: `/posts/${work.id}`,
-          context: work,
-        }))}
-        sizes={{
-          size: "calc(100vw - 240px)",
-          sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
-        }}
-        componentsProps={{
-          image: { loading: "lazy" },
-        }}
-        render={{
-          extras: (_, { photo, index }) => (
-            <div key={index}>
-              <div
-                className={cn(
-                  "absolute right-0 z-10",
-                  props.isShowProfile ? "bottom-12" : "bottom-0",
-                )}
-              >
-                <LikeButton
-                  size={56}
-                  targetWorkId={photo.context.id}
-                  targetWorkOwnerUserId={photo.context.user.id}
-                  defaultLiked={photo.context.isLiked}
-                  defaultLikedCount={0}
-                  isBackgroundNone={true}
-                  strokeWidth={2}
-                  likedCount={photo.context.likesCount}
-                />
-              </div>
-              {photo.context.subWorksCount > 0 && (
-                <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                  <Images className="h-3 w-3 text-white" />
-                  <div className="font-bold text-white text-xs">
-                    {photo.context.subWorksCount + 1}
-                  </div>
-                </div>
-              )}
-              {props.isShowProfile && (
-                <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
-                  <Link
-                    className="w-48 font-bold"
-                    to={`/posts/${photo.context.id}`}
-                  >
-                    <p className="overflow-hidden text-ellipsis text-nowrap text-xs">
-                      {photo.context.title}
-                    </p>
-                  </Link>
-                  <Link to={`/users/${photo.context.user.id}`}>
-                    <div className="flex items-center space-x-2">
+    <>
+      <div className="hidden md:block">
+        <SSR breakpoints={[300, 600, 900, 1200]}>
+          <RowsPhotoAlbum
+            photos={props.works.map((work) => ({
+              key: work.id,
+              src:
+                props.size === "large"
+                  ? work.largeThumbnailImageURL
+                  : work.smallThumbnailImageURL,
+              width:
+                props.size === "large"
+                  ? work.largeThumbnailImageWidth
+                  : work.smallThumbnailImageWidth,
+              height:
+                props.size === "large"
+                  ? work.largeThumbnailImageHeight
+                  : work.smallThumbnailImageHeight,
+              // workId: work.id, // 各作品のID
+              // userId: work.user.id, // 作品の所有者のID
+              // userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
+              // userName: work.user.name, // 作品の所有者の名前
+              // workOwnerUserId: work.user.id,
+              // isLiked: work.isLiked,
+              // title: work.title,
+              // isSensitive: work.rating === "R18" || work.rating === "R18G",
+              // subWorksCount: work.subWorksCount,
+              // to: `/posts/${work.id}`,
+              // href: `/posts/${work.id}`,
+              context: work,
+            }))}
+            sizes={{
+              size: "calc(100vw - 240px)",
+              sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
+            }}
+            componentsProps={{
+              image: { loading: "lazy" },
+            }}
+            render={{
+              extras: (_, { photo, index }) => (
+                <div key={index}>
+                  <div className="absolute top-0 z-10 w-full rounded-md">
+                    <Link
+                      className="block h-full w-full overflow-hidden rounded"
+                      to={`/posts/${photo.context.id}`}
+                    >
                       <img
-                        src={ExchangeIconUrl(photo.context.user.iconUrl)}
-                        alt={photo.context.user.name}
-                        className="h-4 w-4 rounded-full"
+                        src={photo.src}
+                        alt={photo.context.title}
+                        className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
                       />
-                      <span className="text-nowrap font-bold text-sm ">
-                        {photo.context.user.name}
-                      </span>
+                    </Link>
+                  </div>
+                  <div
+                    className={cn(
+                      "absolute right-0 z-10",
+                      props.isShowProfile ? "bottom-12" : "bottom-0",
+                    )}
+                  >
+                    <LikeButton
+                      size={56}
+                      targetWorkId={photo.context.id}
+                      targetWorkOwnerUserId={photo.context.user.id}
+                      defaultLiked={photo.context.isLiked}
+                      defaultLikedCount={0}
+                      isBackgroundNone={true}
+                      strokeWidth={2}
+                      likedCount={photo.context.likesCount}
+                    />
+                  </div>
+                  {photo.context.subWorksCount > 0 && (
+                    <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                      <Images className="h-3 w-3 text-white" />
+                      <div className="font-bold text-white text-xs">
+                        {photo.context.subWorksCount + 1}
+                      </div>
                     </div>
-                  </Link>
+                  )}
+                  {props.isShowProfile && (
+                    <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
+                      <Link
+                        className="w-48 font-bold"
+                        to={`/posts/${photo.context.id}`}
+                      >
+                        <p className="overflow-hidden text-ellipsis text-nowrap text-xs">
+                          {photo.context.title}
+                        </p>
+                      </Link>
+                      <Link to={`/users/${photo.context.user.id}`}>
+                        <div className="flex items-center space-x-2">
+                          <img
+                            src={ExchangeIconUrl(photo.context.user.iconUrl)}
+                            alt={photo.context.user.name}
+                            className="h-4 w-4 rounded-full"
+                          />
+                          <span className="text-nowrap font-bold text-sm ">
+                            {photo.context.user.name}
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          ),
-          // ),
-          // ),
-          // link: (props, context) => (
-          //   <Link to={`/posts/${context.photo.context.id}`} {...props} />
-          // ),
-          image(props, context) {
-            return (
-              <Link
-                className="block overflow-hidden rounded"
-                to={`/posts/${context.photo.context.id}`}
-              >
-                <img
-                  {...props}
-                  alt={props.alt}
-                  className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                />
-              </Link>
-            )
-          },
-        }}
-      />
-    </SSR>
+              ),
+              // ),
+              // ),
+              // link: (props, context) => (
+              //   <Link to={`/posts/${context.photo.context.id}`} {...props} />
+              // ),
+              // image(props, context) {
+              //   return (
+              //     <Link
+              //       className="block overflow-hidden rounded"
+              //       to={`/posts/${context.photo.context.id}`}
+              //     >
+              //       <img
+              //         {...props}
+              //         alt={props.alt}
+              //         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+              //       />
+              //     </Link>
+              //   )
+              // },
+            }}
+          />
+        </SSR>
+      </div>
+      <div className="block md:hidden">
+        <HomeCroppedWorkList works={props.works} isShowProfile={true} />
+      </div>
+    </>
   )
 }
 

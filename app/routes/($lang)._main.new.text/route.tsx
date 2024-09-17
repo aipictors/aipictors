@@ -109,6 +109,7 @@ export default function NewText() {
     useTagFeature: true,
     md: "",
     type: "COLUMN",
+    correctionMessage: "",
   })
 
   useEffect(() => {
@@ -427,6 +428,7 @@ export default function NewText() {
             endAt: viewer?.appEvents[0]?.endAt ?? 0,
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
+          needFix={false}
         />
         <div className="h-4" />
         <Button

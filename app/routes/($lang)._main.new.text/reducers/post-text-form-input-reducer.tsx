@@ -185,6 +185,12 @@ export const postTextFormInputReducer = (
         md: action.payload,
       }
     }
+    case "SET_CORRECTION_MESSAGE": {
+      return {
+        ...state,
+        correctionMessage: action.payload,
+      }
+    }
     case "INITIALIZE": {
       return {
         ...state,

@@ -22,6 +22,7 @@ import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
+import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -40,6 +41,7 @@ type Props = {
     slug: string | null
   }
   aiModels: FragmentOf<typeof PostImageFormAiModelFragment>[]
+  needFix: boolean
 }
 
 const getJSTDate = () => {
@@ -165,6 +167,14 @@ export function PostImageFormInput(props: Props) {
 
   return (
     <div className="space-y-4">
+      {props.needFix && (
+        <PostFormItemFix
+          onChange={(value) => {
+            props.dispatch({ type: "SET_CORRECTION_MESSAGE", payload: value })
+          }}
+          value={props.state.correctionMessage ?? ""}
+        />
+      )}
       <PostFormItemTitle
         onChange={(title) => {
           props.dispatch({ type: "SET_TITLE", payload: title })
@@ -184,8 +194,10 @@ export function PostImageFormInput(props: Props) {
         onChangeCaption={(caption) => {
           props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
         }}
-        title={props.state.enTitle}
-        caption={props.state.enCaption}
+        title={props.state.title}
+        caption={props.state.caption}
+        enTitle={props.state.enTitle}
+        enCaption={props.state.enCaption}
       />
       <PostFormItemRating
         rating={props.state.ratingRestriction}

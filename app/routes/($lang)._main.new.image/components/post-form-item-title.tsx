@@ -11,6 +11,8 @@ type Props = {
  * タイトル入力
  */
 export function PostFormItemTitle(props: Props) {
+  const isFilled = props.value && props.value.trim() !== ""
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
@@ -28,7 +30,7 @@ export function PostFormItemTitle(props: Props) {
           type="text"
           name="title"
           placeholder={props.label ? props.label : "タイトル"}
-          className="w-full"
+          className={`${isFilled ? "w-full border-green-500" : "w-full border-gray-300"}`}
         />
       </CardContent>
     </Card>

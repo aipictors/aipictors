@@ -69,6 +69,7 @@ export default function NewAnimation() {
       useGenerationParams: true,
       usePromotionFeature: false,
       useTagFeature: true,
+      correctionMessage: "",
     },
   )
 
@@ -343,6 +344,7 @@ export default function NewAnimation() {
             endAt: viewer?.appEvents[0]?.endAt ?? 0,
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
+          needFix={false}
         />
         <div className="h-4" />
         <Button

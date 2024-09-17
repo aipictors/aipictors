@@ -24,6 +24,7 @@ const initialState: PostImageFormInputState = {
   reservationDate: null,
   reservationTime: null,
   useGenerationParams: true,
+  correctionMessage: "",
 }
 
 describe("SET_RESERVATION_DATE", () => {

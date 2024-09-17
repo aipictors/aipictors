@@ -27,14 +27,6 @@ export function ModerationReportsContainer(props: Props) {
 
   const itemsPerPage = 120
 
-  if (
-    authContext.isLoading ||
-    authContext.isNotLoggedIn ||
-    !authContext.userId
-  ) {
-    return null
-  }
-
   const {
     data: reports,
     refetch,
@@ -44,9 +36,13 @@ export function ModerationReportsContainer(props: Props) {
     variables: {
       offset: itemsPerPage * page,
       limit: itemsPerPage,
-      where: {},
+      where: {
+        userId: authContext.userId,
+      },
     },
   })
+
+  console.log(reports)
 
   const reportList = reports?.moderationReports ?? []
 

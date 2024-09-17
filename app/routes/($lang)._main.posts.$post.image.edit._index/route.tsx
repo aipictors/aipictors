@@ -171,6 +171,7 @@ export default function EditImage() {
           useGenerationParams: work?.promptAccessType === "PUBLIC",
           usePromotionFeature: work?.isPromotion ?? false,
           useTagFeature: work?.isTagEditable ?? false,
+          correctionMessage: "",
         },
       })
     }
@@ -280,6 +281,7 @@ export default function EditImage() {
       work?.isPromotion === undefined ? false : work?.isPromotion,
     useTagFeature:
       work?.isTagEditable === undefined ? true : work?.isTagEditable,
+    correctionMessage: "",
   })
 
   const now = getJstDate(new Date())
@@ -342,6 +344,14 @@ export default function EditImage() {
         toast(issue.message)
         return
       }
+      return
+    }
+
+    if (
+      !inputState.correctionMessage &&
+      work?.moderatorReport?.status === "UNHANDLED"
+    ) {
+      toast("修正メッセージを入力してください")
       return
     }
 
@@ -514,6 +524,10 @@ export default function EditImage() {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
+            correctionMessage:
+              work?.moderatorReport?.status === "UNHANDLED"
+                ? inputState.correctionMessage
+                : undefined,
           },
         },
       })
@@ -598,6 +612,7 @@ export default function EditImage() {
             endAt: viewer?.appEvents[0]?.endAt ?? 0,
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
+          needFix={work?.moderatorReport?.status === "UNHANDLED"}
         />
         <div className="h-4" />
         <Button
@@ -775,6 +790,10 @@ const workQuery = graphql(
       subWorks {
         id
         imageUrl
+      }
+      moderatorReport {
+        status
+        reportMessage
       }
     }
   }`,

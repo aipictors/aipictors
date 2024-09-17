@@ -11,6 +11,8 @@ type Props = {
  * キャプション入力
  */
 export function PostFormItemCaption(props: Props) {
+  const isFilled = props.caption && props.caption.trim() !== ""
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
@@ -24,7 +26,7 @@ export function PostFormItemCaption(props: Props) {
           value={props.caption}
           maxLength={3000}
           placeholder={props.label ? props.label : "キャプション"}
-          className="w-full"
+          className={`${isFilled ? "w-full border-green-500" : "w-full border-gray-300"}`}
         />
       </CardContent>
     </Card>

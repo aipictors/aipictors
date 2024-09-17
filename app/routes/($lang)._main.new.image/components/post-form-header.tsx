@@ -11,8 +11,16 @@ type Props = {
 export function PostFormHeader(props: Props) {
   const navigate = useNavigate()
 
-  const handleNavigation = (path: string) => {
-    navigate(path)
+  const handleImageNavigation = () => {
+    window.location.href = "/new/image"
+  }
+
+  const handleAnimationNavigation = () => {
+    window.location.href = "/new/animation"
+  }
+
+  const handleTextNavigation = () => {
+    window.location.href = "/new/text"
   }
 
   return (
@@ -25,7 +33,7 @@ export function PostFormHeader(props: Props) {
           "rounded-t rounded-r-none rounded-b-none",
         )}
         disabled={props.type === "image"}
-        onClick={() => handleNavigation("/new/image")}
+        onClick={handleImageNavigation}
       >
         <Image className="hidden md:block" size={16} />
         <div className="text-center">イラスト</div>
@@ -38,7 +46,7 @@ export function PostFormHeader(props: Props) {
           "rounded-t rounded-r-none rounded-b-none rounded-l-none",
         )}
         disabled={props.type === "animation"}
-        onClick={() => handleNavigation("/new/animation")}
+        onClick={handleAnimationNavigation}
       >
         <Film className="hidden md:block" size={16} />
         <div className="text-center">動画</div>
@@ -51,7 +59,7 @@ export function PostFormHeader(props: Props) {
           "rounded-t rounded-b-none rounded-l-none",
         )}
         disabled={props.type === "text"}
-        onClick={() => handleNavigation("/new/text")}
+        onClick={handleTextNavigation}
       >
         <TextIcon className="hidden md:block" size={16} />
         <div className="text-center">小説・コラム</div>
