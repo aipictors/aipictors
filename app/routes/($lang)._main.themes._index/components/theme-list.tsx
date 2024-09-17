@@ -140,7 +140,7 @@ export function ThemeList(props: Props) {
                 className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "border-2 border-blue-500" : ""}`}
               >
                 <div
-                  className={`absolute z-10 font-bold text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : "text-black"} ${block.thumbnailUrl && !block.isFuture ? "text-white" : ""}`}
+                  className={`absolute z-10 text-right font-bold text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : "text-black"}${block.thumbnailUrl && !block.isFuture ? "text-white" : ""}`}
                 >
                   {block.day}
                 </div>
