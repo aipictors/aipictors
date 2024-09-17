@@ -31,14 +31,17 @@ export function ToggleSensitive() {
       document.cookie = "sensitive=1; max-age=0; path=/"
 
       // URLから/rを取り除きリダイレクト
-      const newUrl = location.pathname.replace("/r", "")
+      const newUrl =
+        location.pathname.replace("/r", "") === ""
+          ? "/"
+          : location.pathname.replace("/r", "")
 
-      navigate(newUrl === "" ? "/" : newUrl, { replace: true }) // URLを更新してリダイレクト
+      console.log(newUrl)
+
+      window.location.href = newUrl
     } else {
       // センシティブフラグを設定
       document.cookie = "sensitive=1; path=/"
-
-      revalidator.revalidate()
 
       window.location.reload() // Cookie変更後にリロード
     }

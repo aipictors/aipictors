@@ -55,12 +55,18 @@ function HomeHeader(props: Props) {
   const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors β")
 
   // 新着のお知らせがあるかどうか
-  const isExistedNewNotification = useQuery(
+  const isExistedNewNotificationData = useQuery(
     viewerIsExistedNewNotificationQuery,
     {},
   )
 
+  const isExistedNewNotification =
+    isExistedNewNotificationData.data?.viewer?.isExistedNewNotification
+
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
+
+  const [isExistedNewNotificationState, setIsExistedNewNotificationState] =
+    useState(isExistedNewNotification ?? false)
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
@@ -166,7 +172,18 @@ function HomeHeader(props: Props) {
             </>
           )}
           {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
-          {authContext.isLoggedIn && <HomeNotificationsMenu />}
+          {authContext.isLoggedIn && (
+            <HomeNotificationsMenu
+              isExistedNewNotification={isExistedNewNotificationState}
+              setIsExistedNewNotificationState={
+                setIsExistedNewNotificationState
+              }
+              checkedNotificationTimes={
+                isExistedNewNotificationData.data?.viewer
+                  ?.checkedNotificationTimes ?? []
+              }
+            />
+          )}
           <Suspense>
             {authContext.isLoggedIn && (
               <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
@@ -184,13 +201,24 @@ function HomeHeader(props: Props) {
   )
 }
 
+export const CheckedNotificationTimesFragment = graphql(
+  `fragment CheckedNotificationTimes on CheckedNotificationTimeNode @_unmask {
+    type
+    checkedTime
+  }`,
+)
+
 const viewerIsExistedNewNotificationQuery = graphql(
   `query ViewerIsExistedNewNotification {
     viewer {
       id
       isExistedNewNotification
+      checkedNotificationTimes {
+        ...CheckedNotificationTimes
+      }
     }
   }`,
+  [CheckedNotificationTimesFragment],
 )
 
 export default HomeHeader
