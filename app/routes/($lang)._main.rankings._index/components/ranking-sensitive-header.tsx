@@ -57,12 +57,12 @@ export function RankingSensitiveHeader(props: Props) {
     let newPath = ""
 
     if (viewType === "マンスリー") {
-      newPath = `/porn/rankings/${year}/${month}`
+      newPath = `/r/rankings/${year}/${month}`
     } else if (viewType === "デイリー") {
       const actualDay = day === 0 || day == null ? 1 : day
-      newPath = `/porn/rankings/${year}/${month}/${actualDay}`
+      newPath = `/r/rankings/${year}/${month}/${actualDay}`
     } else if (viewType === "ウィークリー") {
-      newPath = `/porn/rankings/${year}/${month}/weeks/${weekIndex}`
+      newPath = `/r/rankings/${year}/${month}/weeks/${weekIndex}`
     }
 
     if (location.pathname !== newPath) {

@@ -35,7 +35,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const redirectResult = redirectUrlWithOptionalSensitiveParam(
     props.request,
-    `/porn/events/${event}`,
+    `/r/events/${event}`,
   )
   if (redirectResult) {
     return redirectResult
@@ -145,7 +145,7 @@ export default function FollowingLayout() {
                   "センシティブ版を表示します。あなたは18歳以上ですか？"
                 }
                 onNext={() => {
-                  navigate(`/porn/events/${data.appEvent.slug}`)
+                  navigate(`/r/events/${data.appEvent.slug}`)
                 }}
                 cookieKey={"check-sensitive-ranking"}
                 onCancel={() => {}}

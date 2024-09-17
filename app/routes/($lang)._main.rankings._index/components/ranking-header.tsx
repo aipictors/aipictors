@@ -218,7 +218,7 @@ export function RankingHeader(props: Props) {
               "センシティブな作品を表示します、あなたは18歳以上ですか？"
             }
             onNext={() => {
-              navigate("/porn/rankings")
+              navigate("/r/rankings")
             }}
             cookieKey={"check-sensitive-ranking"}
             onCancel={() => {}}

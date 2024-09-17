@@ -29,7 +29,7 @@ const useUpdateQueryParams = () => {
 export async function loader({ request }: { request: Request }) {
   const redirectResult = redirectUrlWithOptionalSensitiveParam(
     request,
-    "/porn/themes",
+    "/r/themes",
   )
   if (redirectResult) {
     return redirectResult

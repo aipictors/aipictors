@@ -19,8 +19,8 @@ export function ToggleSensitive() {
       .find((row) => row.startsWith("sensitive="))
       ?.split("=")[1]
 
-    // Cookieに"sensitive"が設定されているか、URLに"/porn"が含まれているかを確認
-    if (cookieValue === "1" || location.pathname.includes("/porn")) {
+    // Cookieに"sensitive"が設定されているか、URLに"/r"が含まれているかを確認
+    if (cookieValue === "1" || location.pathname.includes("/r")) {
       setSensitive(true)
     }
   }, [location.pathname])
@@ -30,8 +30,8 @@ export function ToggleSensitive() {
       // センシティブフラグを削除（Cookieの有効期限を過去に設定）
       document.cookie = "sensitive=1; max-age=0; path=/"
 
-      // URLから/pornを取り除きリダイレクト
-      const newUrl = location.pathname.replace("/porn", "")
+      // URLから/rを取り除きリダイレクト
+      const newUrl = location.pathname.replace("/r", "")
 
       navigate(newUrl === "" ? "/" : newUrl, { replace: true }) // URLを更新してリダイレクト
     } else {

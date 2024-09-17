@@ -121,7 +121,7 @@ export function ThemeContainer(props: Props) {
 
     if (props.isSensitive) {
       navigate(
-        `/porn/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+        `/r/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
       )
     } else {
       navigate(
@@ -139,7 +139,7 @@ export function ThemeContainer(props: Props) {
 
     if (props.isSensitive) {
       navigate(
-        `/porn/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
+        `/r/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
       )
     } else {
       navigate(
@@ -168,7 +168,7 @@ export function ThemeContainer(props: Props) {
     const month = date.getMonth() + 1
     const day = date.getDate()
     if (props.isSensitive) {
-      navigate(`/porn/themes/${year}/${month}/${day}`)
+      navigate(`/r/themes/${year}/${month}/${day}`)
     } else {
       navigate(`/themes/${year}/${month}/${day}`)
     }
@@ -291,7 +291,7 @@ export function ThemeContainer(props: Props) {
                     <TagButton
                       link={
                         props.isSensitive
-                          ? `/porn/themes/${theme.year}/${theme.month}/${theme.day}`
+                          ? `/r/themes/${theme.year}/${theme.month}/${theme.day}`
                           : `/themes/${theme.year}/${theme.month}/${theme.day}`
                       }
                       name={theme.title}
@@ -323,10 +323,10 @@ export function ThemeContainer(props: Props) {
                 if (props.isSensitive) {
                   if (props.day) {
                     navigate(
-                      `/porn/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
+                      `/r/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
                     )
                   } else {
-                    navigate(`/porn/themes?page=${page}`)
+                    navigate(`/r/themes?page=${page}`)
                   }
                 } else {
                   if (props.day) {

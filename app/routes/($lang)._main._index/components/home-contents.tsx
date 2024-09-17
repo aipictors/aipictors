@@ -398,18 +398,22 @@ export function HomeContents(props: Props) {
         </div>
       </TabsContent>
       <TabsContent value="follow-user">
-        <FollowUserFeedContents
-          isSensitive={props.isSensitive}
-          page={followUserFeedPage}
-          setPage={setFollowUserFeedPage}
-        />
+        <Suspense fallback={<AppLoadingPage />}>
+          <FollowUserFeedContents
+            isSensitive={props.isSensitive}
+            page={followUserFeedPage}
+            setPage={setFollowUserFeedPage}
+          />
+        </Suspense>
       </TabsContent>
       <TabsContent value="follow-tag">
-        <FollowTagsFeedContents
-          isSensitive={props.isSensitive}
-          page={followTagFeedPage}
-          setPage={setFollowTagFeedPage}
-        />
+        <Suspense fallback={<AppLoadingPage />}>
+          <FollowTagsFeedContents
+            isSensitive={props.isSensitive}
+            page={followTagFeedPage}
+            setPage={setFollowTagFeedPage}
+          />
+        </Suspense>
       </TabsContent>
     </Tabs>
   )

@@ -128,7 +128,7 @@ export function ThemeArticle(props: Props) {
                       className="block h-full"
                       to={
                         props.isSensitive
-                          ? `/porn/themes/${theme.year}/${theme.month}/${theme.day}`
+                          ? `/r/themes/${theme.year}/${theme.month}/${theme.day}`
                           : `/themes/${theme.year}/${theme.month}/${theme.day}`
                       }
                     >

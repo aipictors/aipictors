@@ -91,7 +91,7 @@ export function AppSideMenu(props: Props) {
                   "センシティブな作品を表示します、あなたは18歳以上ですか？"
                 }
                 onNext={() => {
-                  navigate("/porn")
+                  navigate("/r")
                 }}
                 cookieKey={"check-sensitive-ranking"}
                 onCancel={() => {}}

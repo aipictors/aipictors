@@ -30,7 +30,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const redirectResult = redirectUrlWithOptionalSensitiveParam(
     props.request,
-    `/porn/users/${props.params.user}`,
+    `/r/users/${props.params.user}`,
   )
   if (redirectResult) {
     return redirectResult

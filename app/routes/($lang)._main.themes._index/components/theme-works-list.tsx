@@ -32,7 +32,7 @@ export function ThemeWorksList(props: Props) {
       return
     }
     navigate(
-      `/porn/themes/${props.todayTheme?.year}/${props.todayTheme?.month}/${props.todayTheme?.day}`,
+      `/r/themes/${props.todayTheme?.year}/${props.todayTheme?.month}/${props.todayTheme?.day}`,
     )
   }
 
@@ -92,7 +92,7 @@ export function ThemeWorksList(props: Props) {
                     "センシティブな作品を表示します、あなたは18歳以上ですか？"
                   }
                   onNext={() => {
-                    navigate("/porn/themes")
+                    navigate("/r/themes")
                   }}
                   cookieKey={"check-sensitive-ranking"}
                   onCancel={() => {}}
