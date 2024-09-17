@@ -73,17 +73,11 @@ export function HomeCroppedWorkList(props: Props) {
       <section className="grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {props.works.map((work) => (
           <div key={work.id}>
-            <Link to={`/posts/${work.id}`} className="relative">
+            <Link to={`/posts/${work.id}`} className="relative overflow-hidden">
               <div
                 className="w-full overflow-hidden"
                 style={{ paddingBottom: "100%" }}
               >
-                <img
-                  src={work.largeThumbnailImageURL}
-                  alt={work.title}
-                  loading="lazy"
-                  className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover md:block"
-                />
                 <img
                   src={work.smallThumbnailImageURL}
                   alt={work.title}
@@ -114,7 +108,7 @@ export function HomeCroppedWorkList(props: Props) {
                   userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
                   name={work.user.name}
                   width={"md"}
-                />{" "}
+                />
               </>
             )}
           </div>

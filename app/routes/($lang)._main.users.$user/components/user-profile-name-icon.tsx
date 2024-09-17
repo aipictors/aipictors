@@ -2,6 +2,7 @@ import { OmissionNumber } from "~/components/omission-number"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -70,5 +71,19 @@ export const UserProfileIconFragment = graphql(
     worksCount
     iconUrl
     headerImageUrl
+    promptonUser {
+      id
+    }
+    twitterAccountId
+    instagramAccountId
+    githubAccountId
+    mailAddress
+    featuredWorks {
+      ...HomeWork
+    }
+    featuredSensitiveWorks {
+      ...HomeWork
+    }
   }`,
+  [HomeWorkFragment],
 )

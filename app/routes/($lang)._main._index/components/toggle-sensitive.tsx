@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Label } from "~/components/ui/label"
 import { Switch } from "~/components/ui/switch"
-import { useNavigate, useLocation, useRevalidator } from "react-router-dom" // React Routerを使用
+import { useNavigate, useLocation } from "react-router-dom" // React Routerを使用
 
 export function ToggleSensitive() {
   const [sensitive, setSensitive] = useState(false)
@@ -10,42 +10,27 @@ export function ToggleSensitive() {
 
   const location = useLocation() // 現在のURLを取得
 
-  const revalidator = useRevalidator()
-
-  // CookieまたはURLから"sensitive"フラグをチェック
+  // URLから"sensitive"フラグをチェック
   useEffect(() => {
-    const cookieValue = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("sensitive="))
-      ?.split("=")[1]
-
-    // Cookieに"sensitive"が設定されているか、URLに"/r"が含まれているかを確認
-    if (cookieValue === "1" || location.pathname.includes("/r")) {
+    // URLに"/r"が含まれているかを確認
+    if (location.pathname.includes("/r")) {
       setSensitive(true)
+    } else {
+      setSensitive(false)
     }
   }, [location.pathname])
 
   const toggleSensitive = () => {
     if (sensitive) {
-      // センシティブフラグを削除（Cookieの有効期限を過去に設定）
-      document.cookie = "sensitive=1; max-age=0; path=/"
-
-      // URLから/rを取り除きリダイレクト
       const newUrl =
         location.pathname.replace("/r", "") === ""
           ? "/"
           : location.pathname.replace("/r", "")
-
-      console.log(newUrl)
-
       window.location.href = newUrl
     } else {
-      // センシティブフラグを設定
-      document.cookie = "sensitive=1; path=/"
-
-      window.location.reload() // Cookie変更後にリロード
+      window.location.href = `/r${location.pathname}`
+      console.log(`/r/${location.pathname}`)
     }
-
     setSensitive(!sensitive)
   }
 

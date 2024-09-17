@@ -4,7 +4,7 @@ import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$pos
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user/components/profile-edit-dialog"
 import { UserActionShare } from "~/routes/($lang)._main.users.$user/components/user-action-share"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user/components/user-action-other"
@@ -12,9 +12,10 @@ import { RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useNavigate } from "@remix-run/react"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
+import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 
 type Props = {
-  user: FragmentOf<typeof userHomeMainFragment>
+  user: FragmentOf<typeof UserProfileIconFragment>
   userId: string
   isSensitive?: boolean
 }
@@ -22,8 +23,7 @@ type Props = {
 export function UserHomeMain(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data: userInfo } = useSuspenseQuery(userQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  const { data: userInfo } = useQuery(userQuery, {
     variables: {
       userId: decodeURIComponent(props.userId),
     },

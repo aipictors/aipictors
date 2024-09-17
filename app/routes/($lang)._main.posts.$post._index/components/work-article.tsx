@@ -144,26 +144,29 @@ export function WorkArticle(props: Props) {
             {props.work.model !== undefined &&
               props.work.model !== null &&
               props.work.model?.length !== 0 && (
-                <Badge variant="secondary" className="text-sm">
-                  {"使用モデル名:"}
-                  <Link
-                    to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
+                <Link
+                  to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
+                >
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center space-x-2"
                   >
-                    {props.work.model}
-                  </Link>
-                </Badge>
+                    <span className="text-md">{"使用モデル名:"}</span>
+                    <span className="text-md">{props.work.model}</span>
+                  </Badge>
+                </Link>
               )}
             {props.work.rating !== null && (
               <Badge
                 variant="secondary"
                 className="flex items-center space-x-2"
               >
-                <span className="text-sm">{"対象年齢:"}</span>
+                <span className="text-md">{"対象年齢:"}</span>
                 {toRatingText(props.work.rating)}
               </Badge>
             )}
             <Badge variant="secondary" className="flex items-center space-x-2">
-              <span className="text-sm">{"テイスト:"}</span>
+              <span className="text-md">{"テイスト:"}</span>
               {toStyleText(props.work.style)}
             </Badge>
 
@@ -172,31 +175,31 @@ export function WorkArticle(props: Props) {
                 variant="secondary"
                 className="flex items-center space-x-2"
               >
-                <span className="text-sm">{"宣伝作品"}</span>
+                <span className="text-md">{"宣伝作品"}</span>
               </Badge>
             )}
             {props.work.dailyRanking && (
               <Badge
                 variant="secondary"
-                className="text-sm"
+                className="text-md"
               >{`デイリー入賞 ${props.work.dailyRanking} 位`}</Badge>
             )}
             {props.work.weeklyRanking && (
               <Badge
                 variant="secondary"
-                className="text-sm"
+                className="text-md"
               >{`ウィークリー入賞 ${props.work.dailyRanking} 位`}</Badge>
             )}
             {props.work.monthlyRanking && (
               <Badge
                 variant="secondary"
-                className="text-sm"
+                className="text-md"
               >{`マンスリー入賞 ${props.work.dailyRanking} 位`}</Badge>
             )}
           </div>
           {props.work.dailyTheme && (
             <div className="flex items-center">
-              <span className="text-sm">{"参加お題:"}</span>
+              <span className="text-md">{"参加お題:"}</span>
               <Link
                 to={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
               >

@@ -87,47 +87,51 @@ export function ModerationReportsContainer(props: Props) {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-4 flex space-x-4">
-        <Button
-          onClick={() => setStatusFilter("ALL")}
-          variant={"secondary"}
-          className={cn(
-            "px-4 py-2 transition-colors duration-200",
-            statusFilter === "ALL" ? "opacity-50" : "",
-          )}
-        >
-          すべて
-        </Button>
-        <Button
-          onClick={() => setStatusFilter("DONE")}
-          variant={"secondary"}
-          className={cn(
-            "px-4 py-2 transition-colors duration-200",
-            statusFilter === "DONE" ? "opacity-50" : "",
-          )}
-        >
-          対応完了
-        </Button>
-        <Button
-          onClick={() => setStatusFilter("NO_NEED_ACTION")}
-          variant={"secondary"}
-          className={cn(
-            "px-4 py-2 transition-colors duration-200",
-            statusFilter === "NO_NEED_ACTION" ? "opacity-50" : "",
-          )}
-        >
-          対応不要
-        </Button>
-        <Button
-          onClick={() => setStatusFilter("UNHANDLED")}
-          variant={"secondary"}
-          className={cn(
-            "px-4 py-2 transition-colors duration-200",
-            statusFilter === "UNHANDLED" ? "opacity-50" : "",
-          )}
-        >
-          未対応
-        </Button>
+      <div className="mb-4 flex-col md:flex-row flex gap-x-4 gap-y-4 md:gap-y-9">
+        <div className="flex space-x-4">
+          <Button
+            onClick={() => setStatusFilter("ALL")}
+            variant={"secondary"}
+            className={cn(
+              "px-4 py-2 transition-colors duration-200 md:w-auto w-full",
+              statusFilter === "ALL" ? "opacity-50" : "",
+            )}
+          >
+            すべて
+          </Button>
+          <Button
+            onClick={() => setStatusFilter("DONE")}
+            variant={"secondary"}
+            className={cn(
+              "px-4 py-2 transition-colors duration-200 md:w-auto w-full",
+              statusFilter === "DONE" ? "opacity-50" : "",
+            )}
+          >
+            対応完了
+          </Button>
+        </div>
+        <div className="flex space-x-4">
+          <Button
+            onClick={() => setStatusFilter("NO_NEED_ACTION")}
+            variant={"secondary"}
+            className={cn(
+              "px-4 py-2 transition-colors duration-200 md:w-auto w-full",
+              statusFilter === "NO_NEED_ACTION" ? "opacity-50" : "",
+            )}
+          >
+            対応不要
+          </Button>
+          <Button
+            onClick={() => setStatusFilter("UNHANDLED")}
+            variant={"secondary"}
+            className={cn(
+              "px-4 py-2 transition-colors duration-200 md:w-auto w-full",
+              statusFilter === "UNHANDLED" ? "opacity-50" : "",
+            )}
+          >
+            未対応
+          </Button>
+        </div>
       </div>
       {filteredReportList.map(
         (report) =>

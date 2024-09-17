@@ -4,7 +4,6 @@ import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
-import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 import { getJstDate } from "~/utils/jst-date"
 
@@ -15,14 +14,6 @@ export async function loader(props: LoaderFunctionArgs) {
     props.params.day === undefined
   ) {
     throw new Response("Invalid date", { status: 400 })
-  }
-
-  const redirectResult = redirectUrlWithOptionalSensitiveParam(
-    props.request,
-    `/r/themes/${props.params.year}/${props.params.month}/${props.params.day}`,
-  )
-  if (redirectResult) {
-    return redirectResult
   }
 
   const year = Number.parseInt(props.params.year)

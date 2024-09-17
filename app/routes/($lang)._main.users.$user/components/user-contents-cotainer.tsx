@@ -11,21 +11,29 @@ import {
   HomeWorkFragment,
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { useQuery } from "@apollo/client/index"
+import { graphql, type FragmentOf } from "gql.tada"
 import { useContext } from "react"
 
 type Props = {
   userId: string
   userLogin: string
   isSensitive?: boolean
+  works: FragmentOf<typeof HomeWorkFragment>[]
+  novelWorks: FragmentOf<typeof HomeNovelsWorkListItemFragment>[]
+  columnWorks: FragmentOf<typeof HomeWorkFragment>[]
+  videoWorks: FragmentOf<typeof HomeVideosWorkListItemFragment>[]
+  worksCount: number
+  novelWorksCount: number
+  columnWorksCount: number
+  videoWorksCount: number
 }
 
 export function UserContentsContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   // 人気画像作品
-  const { data: workRes } = useSuspenseQuery(worksQuery, {
+  const { data: workRes } = useQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
@@ -40,11 +48,11 @@ export function UserContentsContainer(props: Props) {
     },
   })
 
-  const worksCountResp = useSuspenseQuery(worksCountQuery, {
+  const worksCountResp = useQuery(worksCountQuery, {
     skip: authContext.isLoading,
     variables: {
       where: {
-        userId: authContext.userId,
+        userId: props.userId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         isSensitive: props.isSensitive,
         isNowCreatedAt: true,
@@ -53,7 +61,7 @@ export function UserContentsContainer(props: Props) {
   })
 
   // 人気小説作品
-  const { data: novelWorkRes } = useSuspenseQuery(worksQuery, {
+  const { data: novelWorkRes } = useQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
@@ -69,12 +77,12 @@ export function UserContentsContainer(props: Props) {
     },
   })
 
-  const novelWorksCountResp = useSuspenseQuery(worksCountQuery, {
+  const novelWorksCountResp = useQuery(worksCountQuery, {
     skip: authContext.isLoading,
     variables: {
       where: {
         workType: "NOVEL",
-        userId: authContext.userId,
+        userId: props.userId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         isSensitive: props.isSensitive,
         isNowCreatedAt: true,
@@ -83,7 +91,7 @@ export function UserContentsContainer(props: Props) {
   })
 
   // 人気コラム作品
-  const { data: columnWorkRes } = useSuspenseQuery(worksQuery, {
+  const { data: columnWorkRes } = useQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
@@ -99,12 +107,12 @@ export function UserContentsContainer(props: Props) {
     },
   })
 
-  const columnWorksCountResp = useSuspenseQuery(worksCountQuery, {
+  const columnWorksCountResp = useQuery(worksCountQuery, {
     skip: authContext.isLoading,
     variables: {
       where: {
         workType: "COLUMN",
-        userId: authContext.userId,
+        userId: props.userId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         isSensitive: props.isSensitive,
         isNowCreatedAt: true,
@@ -113,7 +121,7 @@ export function UserContentsContainer(props: Props) {
   })
 
   // 人気動画作品
-  const { data: videoWorkRes } = useSuspenseQuery(worksQuery, {
+  const { data: videoWorkRes } = useQuery(worksQuery, {
     skip: authContext.isLoading,
     variables: {
       offset: 0,
@@ -129,12 +137,12 @@ export function UserContentsContainer(props: Props) {
     },
   })
 
-  const videoWorksCountResp = useSuspenseQuery(worksCountQuery, {
+  const videoWorksCountResp = useQuery(worksCountQuery, {
     skip: authContext.isLoading,
     variables: {
       where: {
         workType: "VIDEO",
-        userId: authContext.userId,
+        userId: props.userId,
         ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
         isSensitive: props.isSensitive,
         isNowCreatedAt: true,
@@ -142,27 +150,38 @@ export function UserContentsContainer(props: Props) {
     },
   })
 
-  const works = [...(workRes?.works || [])]
+  const works = workRes?.works ?? props.works
 
-  const novelWorks = [...(novelWorkRes?.works || [])]
+  const novelWorks = novelWorkRes?.works || props.novelWorks
 
-  const columnWorks = [...(columnWorkRes?.works || [])]
+  const columnWorks = columnWorkRes?.works || props.columnWorks
 
-  const videoWorks = [...(videoWorkRes?.works || [])]
+  const videoWorks = videoWorkRes?.works || props.videoWorks
+
+  const worksCount = worksCountResp.data?.worksCount ?? props.worksCount
+
+  const novelWorksCount =
+    novelWorksCountResp.data?.worksCount ?? props.novelWorksCount
+
+  const columnWorksCount =
+    columnWorksCountResp.data?.worksCount ?? props.columnWorksCount
+
+  const videoWorksCount =
+    videoWorksCountResp.data?.worksCount ?? props.videoWorksCount
 
   return (
     <div className="space-y-4">
-      {worksCountResp.data?.worksCount !== 0 && (
+      {worksCount !== 0 && (
         <HomeWorkSection works={works} title={"人気作品"} isCropped={false} />
       )}
-      {novelWorksCountResp.data?.worksCount !== 0 && (
+      {novelWorksCount !== 0 && (
         <HomeNovelsWorksSection
           works={novelWorks}
           title={"人気小説"}
           isCropped={false}
         />
       )}
-      {columnWorksCountResp.data?.worksCount !== 0 && (
+      {columnWorksCount !== 0 && (
         <HomeNovelsWorksSection
           works={columnWorks}
           title={"人気コラム"}
@@ -170,7 +189,7 @@ export function UserContentsContainer(props: Props) {
         />
       )}
 
-      {videoWorksCountResp.data?.worksCount !== 0 && (
+      {videoWorksCount !== 0 && (
         <HomeVideosWorksSection
           works={videoWorks}
           title={"人気動画"}

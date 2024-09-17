@@ -57,11 +57,6 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
             to={`/posts/${props.works[0].id}`}
             className="max-h-32 overflow-hidden rounded"
           >
-            <img
-              {...props}
-              alt={props.works[0].title}
-              className="max-h-32 overflow-hidden rounded"
-            />
             <video
               src={props.works[0].url ?? ""}
               // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>

@@ -1,40 +1,28 @@
 import { ConstructionAlert } from "~/components/construction-alert"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import {
-  UserContents,
-  UserProfileFragment,
-} from "~/routes/($lang)._main.users.$user/components/user-contents"
-import {
-  UserHomeMain,
-  userHomeMainFragment,
-} from "~/routes/($lang)._main.users.$user/components/user-home-main"
-import {
-  UserProfileIconFragment,
-  UserProfileNameIcon,
-} from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
+import { UserProfileFragment } from "~/routes/($lang)._main.users.$user/components/user-contents"
+import { userHomeMainFragment } from "~/routes/($lang)._main.users.$user/components/user-home-main"
+import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData, useParams } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Suspense } from "react"
-import { Lumiflex } from "uvcanvas"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
-import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
+import { UserPage } from "~/routes/($lang)._main.users.$user/components/user-page"
+import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
+import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResult = redirectUrlWithOptionalSensitiveParam(
-    props.request,
-    `/r/users/${props.params.user}`,
-  )
-  if (redirectResult) {
-    return redirectResult
-  }
+  // const urlParams = new URLSearchParams(props.request.url.split("?")[1])
+  // const pageParam = urlParams.get("page")
+  // const page = pageParam ? Number(pageParam) : 0
 
   const userResp = await loaderClient.query({
     query: userQuery,
@@ -47,8 +35,122 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  const workRes = await loaderClient.query({
+    query: worksQuery,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: userResp.data.user.id,
+        ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const worksCount = await loaderClient.query({
+    query: worksCountQuery,
+    variables: {
+      where: {
+        userId: userResp.data.user.id,
+        ratings: ["G", "R15"],
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const novelWorkRes = await loaderClient.query({
+    query: worksQuery,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: userResp.data.user.id,
+        workType: "NOVEL",
+        ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const novelWorksCount = await loaderClient.query({
+    query: worksCountQuery,
+    variables: {
+      where: {
+        workType: "NOVEL",
+        userId: userResp.data.user.id,
+        ratings: ["G", "R15"],
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const columnWorkRes = await loaderClient.query({
+    query: worksQuery,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: userResp.data.user.id,
+        workType: "COLUMN",
+        ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const columnWorksCount = await loaderClient.query({
+    query: worksCountQuery,
+    variables: {
+      where: {
+        workType: "COLUMN",
+        userId: userResp.data.user.id,
+        ratings: ["G", "R15"],
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const videoWorkRes = await loaderClient.query({
+    query: worksQuery,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: userResp.data.user.id,
+        workType: "VIDEO",
+        ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const videoWorksCount = await loaderClient.query({
+    query: worksCountQuery,
+    variables: {
+      where: {
+        workType: "VIDEO",
+        userId: userResp.data.user.id,
+        ratings: ["G", "R15"],
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
   return json({
     user: userResp.data.user,
+    works: workRes.data.works,
+    worksCount: worksCount.data.worksCount,
+    novelWorks: novelWorkRes.data.works,
+    novelWorksCount: novelWorksCount.data.worksCount,
+    columnWorks: columnWorkRes.data.works,
+    columnWorksCount: columnWorksCount.data.worksCount,
+    videoWorks: videoWorkRes.data.works,
+    videoWorksCount: videoWorksCount.data.worksCount,
   })
 }
 
@@ -89,87 +191,23 @@ export default function UserLayout() {
 
   return (
     <>
-      <Suspense>
-        <ConstructionAlert
-          type="WARNING"
-          message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
-          fallbackURL={`https://www.aipictors.com/users/${params.user}`}
-          deadline={"2024-07-30"}
-        />
-        <div className="flex w-full flex-col justify-center">
-          <div className="relative">
-            <div className="relative">
-              {data.user.headerImageUrl ? (
-                <div className="relative min-h-[168px] md:min-h-[320px]">
-                  {data.user.headerImageUrl ? (
-                    <>
-                      <div
-                        className="absolute top-0 left-0 z-10 z-standard flex h-full min-h-[168px] w-full items-center justify-center md:min-h-[320px]"
-                        style={{
-                          background: "center top / contain no-repeat",
-                          backgroundImage: `url(${data.user.headerImageUrl})`,
-                          maxHeight: "240px",
-                        }}
-                      />
-                      <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
-                    </>
-                  ) : (
-                    <>
-                      <div
-                        className="absolute top-0 left-0 z-10 z-standard flex h-16 min-h-[168px] w-full items-center justify-center opacity-50 md:min-h-[320px]"
-                        style={{
-                          background: "center top / contain no-repeat",
-                          maxHeight: "240px",
-                        }}
-                      >
-                        <Lumiflex />
-                      </div>
-                      <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
-                    </>
-                  )}
-                  <div className="relative m-auto">
-                    <div className="absolute top-0 left-0 max-h-full min-h-[168px] w-full max-w-full overflow-hidden md:min-h-[320px]">
-                      <img
-                        className="block h-full max-h-full min-h-[168px] w-full max-w-full scale-125 object-cover object-center blur-[64px] transition-opacity duration-500 md:min-h-[320px]"
-                        src={data.user.headerImageUrl}
-                        alt=""
-                      />
-                    </div>
-                    <div className="absolute bottom-0 left-8 z-30">
-                      <UserProfileNameIcon user={data.user} />
-                    </div>
-                  </div>
-                  {/* <div className="absolute right-0 bottom-0 left-0 z-20 h-[25%] bg-gradient-to-t from-[rgba(0,0,0,0.30)] to-transparent p-4 pb-3">
-                    &nbsp;
-                  </div> */}
-                </div>
-              ) : (
-                <>
-                  <div className="relative min-h-[168px] overflow-hidden md:min-h-[320px]">
-                    <div className="relative m-auto">
-                      <img
-                        className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
-                        src={ExchangeIconUrl(data.user.iconUrl)}
-                        alt=""
-                      />
-                    </div>
-                    <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
-                  </div>
-                  <div className="absolute top-0 left-8 z-20">
-                    <UserProfileNameIcon user={data.user} />
-                  </div>
-                </>
-              )}
-            </div>
-            <Suspense>
-              <UserHomeMain user={data.user} userId={data.user.id} />
-            </Suspense>
-          </div>
-          <Suspense>
-            <UserContents user={data.user} />
-          </Suspense>
-        </div>
-      </Suspense>
+      <ConstructionAlert
+        type="WARNING"
+        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
+        fallbackURL={`https://www.aipictors.com/users/${params.user}`}
+        deadline={"2024-07-30"}
+      />
+      <UserPage
+        user={data.user}
+        works={data.works}
+        novelWorks={data.novelWorks}
+        columnWorks={data.columnWorks}
+        videoWorks={data.videoWorks}
+        worksCount={data.worksCount}
+        novelWorksCount={data.novelWorksCount}
+        columnWorksCount={data.columnWorksCount}
+        videoWorksCount={data.videoWorksCount}
+      />
     </>
   )
 }
@@ -185,4 +223,25 @@ const userQuery = graphql(
     }
   }`,
   [userHomeMainFragment, UserProfileFragment, UserProfileIconFragment],
+)
+
+const worksCountQuery = graphql(
+  `query WorksCount($where: WorksWhereInput) {
+    worksCount(where: $where)
+  }`,
+)
+
+const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...HomeWork,
+      ...HomeNovelsWorkListItem
+      ...HomeVideosWorkListItem
+    }
+  }`,
+  [
+    HomeWorkFragment,
+    HomeNovelsWorkListItemFragment,
+    HomeVideosWorkListItemFragment,
+  ],
 )

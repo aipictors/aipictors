@@ -12,7 +12,6 @@ import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
-import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 import {} from "~/components/ui/tabs"
 import {} from "~/components/ui/card"
 import {} from "~/components/ui/carousel"
@@ -27,14 +26,6 @@ const useUpdateQueryParams = () => {
 }
 
 export async function loader({ request }: { request: Request }) {
-  const redirectResult = redirectUrlWithOptionalSensitiveParam(
-    request,
-    "/r/themes",
-  )
-  if (redirectResult) {
-    return redirectResult
-  }
-
   const url = new URL(request.url)
 
   const page = url.searchParams.get("page")

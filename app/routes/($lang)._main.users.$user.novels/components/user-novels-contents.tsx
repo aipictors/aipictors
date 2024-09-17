@@ -5,7 +5,7 @@ import {
   UserNovelList,
   UserNovelListItemFragment,
 } from "~/routes/($lang)._main.users.$user.novels/components/user-novel-list"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { useParams } from "@remix-run/react"
 import { useContext } from "react"
 import { graphql } from "gql.tada"
@@ -26,8 +26,7 @@ export function UserNovelsContents(props: Props) {
   }
   const authContext = useContext(AuthContext)
 
-  const { data: workRes } = useSuspenseQuery(worksQuery, {
-    skip: authContext.isLoading,
+  const { data: workRes } = useQuery(worksQuery, {
     variables: {
       offset: props.page * 32,
       limit: 32,
@@ -42,8 +41,7 @@ export function UserNovelsContents(props: Props) {
     },
   })
 
-  const worksCountResp = useSuspenseQuery(worksCountQuery, {
-    skip: authContext.isLoading,
+  const worksCountResp = useQuery(worksCountQuery, {
     variables: {
       where: {
         userId: props.userId,

@@ -20,7 +20,6 @@ import {
 } from "~/routes/($lang).events.$event._index/components/event-award-work-list"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
-import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -31,14 +30,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   if (event === undefined) {
     throw new Response(null, { status: 404 })
-  }
-
-  const redirectResult = redirectUrlWithOptionalSensitiveParam(
-    props.request,
-    `/r/events/${event}`,
-  )
-  if (redirectResult) {
-    return redirectResult
   }
 
   const eventsResp = await loaderClient.query({

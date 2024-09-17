@@ -7,7 +7,6 @@ import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
-import { redirectUrlWithOptionalSensitiveParam } from "~/utils/redirect-url-with-optional-sensitive-param"
 import {} from "~/components/ui/tabs"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 
@@ -26,14 +25,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   if (props.params.month === undefined) {
     throw new Response(null, { status: 404 })
-  }
-
-  const redirectResult = redirectUrlWithOptionalSensitiveParam(
-    props.request,
-    `/r/themes/${props.params.year}/${props.params.month}`,
-  )
-  if (redirectResult) {
-    return redirectResult
   }
 
   const url = new URL(props.request.url)

@@ -6,7 +6,7 @@ import {
   HomeWorkFragment,
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 
@@ -21,8 +21,7 @@ type Props = {
 export function UserWorksContents(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data: workRes } = useSuspenseQuery(worksQuery, {
-    skip: authContext.isLoading,
+  const { data: workRes } = useQuery(worksQuery, {
     variables: {
       offset: props.page * 32,
       limit: 32,
@@ -37,8 +36,7 @@ export function UserWorksContents(props: Props) {
     },
   })
 
-  const worksCountResp = useSuspenseQuery(worksCountQuery, {
-    skip: authContext.isLoading,
+  const worksCountResp = useQuery(worksCountQuery, {
     variables: {
       where: {
         userId: props.userId,

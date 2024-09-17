@@ -1,6 +1,6 @@
 import {} from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { Button } from "~/components/ui/button"
@@ -19,8 +19,7 @@ export function UserTabs(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const worksCountResp = useSuspenseQuery(worksCountQuery, {
-    skip: authContext.isLoading,
+  const worksCountResp = useQuery(worksCountQuery, {
     variables: {
       where: {
         userId: props.userId,
@@ -34,8 +33,7 @@ export function UserTabs(props: Props) {
 
   const worksCount = worksCountResp.data?.worksCount ?? 0
 
-  const novelsCountResp = useSuspenseQuery(worksCountQuery, {
-    skip: authContext.isLoading,
+  const novelsCountResp = useQuery(worksCountQuery, {
     variables: {
       where: {
         userId: props.userId,
@@ -49,8 +47,7 @@ export function UserTabs(props: Props) {
 
   const novelsCount = novelsCountResp.data?.worksCount ?? 0
 
-  const columnsCountResp = useSuspenseQuery(worksCountQuery, {
-    skip: authContext.isLoading,
+  const columnsCountResp = useQuery(worksCountQuery, {
     variables: {
       where: {
         userId: props.userId,
@@ -64,8 +61,7 @@ export function UserTabs(props: Props) {
 
   const columnsCount = columnsCountResp.data?.worksCount ?? 0
 
-  const videosCountResp = useSuspenseQuery(worksCountQuery, {
-    skip: authContext.isLoading,
+  const videosCountResp = useQuery(worksCountQuery, {
     variables: {
       where: {
         userId: props.userId,
@@ -79,8 +75,7 @@ export function UserTabs(props: Props) {
 
   const videosCount = videosCountResp.data?.worksCount ?? 0
 
-  const albumsCountResp = useSuspenseQuery(albumsCountQuery, {
-    skip: authContext.isLoading,
+  const albumsCountResp = useQuery(albumsCountQuery, {
     variables: {
       where: {
         ownerUserId: props.userId,
@@ -94,8 +89,7 @@ export function UserTabs(props: Props) {
 
   const albumsCount = albumsCountResp.data?.albumsCount ?? 0
 
-  const folderCountResp = useSuspenseQuery(foldersCountQuery, {
-    skip: authContext.isLoading,
+  const folderCountResp = useQuery(foldersCountQuery, {
     variables: {
       where: {
         userId: props.userId,
@@ -107,8 +101,7 @@ export function UserTabs(props: Props) {
 
   const foldersCount = folderCountResp.data?.foldersCount ?? 0
 
-  const stickersCountResp = useSuspenseQuery(stickersCountQuery, {
-    skip: authContext.isLoading,
+  const stickersCountResp = useQuery(stickersCountQuery, {
     variables: {
       where: {
         creatorUserId: props.userId,
@@ -142,6 +135,9 @@ export function UserTabs(props: Props) {
           key={removeParentheses(tabValue)}
           onClick={() => handleTabClick(removeParentheses(tabValue))}
           variant="secondary"
+          className={
+            removeParentheses(tabValue) === props.activeTab ? "opacity-50" : ""
+          }
         >
           {tabValue}
         </Button>

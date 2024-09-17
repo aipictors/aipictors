@@ -14,10 +14,21 @@ import { Suspense, useState } from "react"
 import { CalendarHeartIcon } from "lucide-react"
 import { Link } from "@remix-run/react"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
+import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
+import type { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import type { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 
 type Props = {
-  user: FragmentOf<typeof UserProfileFragment>
+  user: FragmentOf<typeof UserProfileIconFragment>
   isSensitive?: boolean
+  works?: FragmentOf<typeof HomeWorkFragment>[]
+  novelWorks?: FragmentOf<typeof HomeNovelsWorkListItemFragment>[]
+  columnWorks?: FragmentOf<typeof HomeWorkFragment>[]
+  videoWorks?: FragmentOf<typeof HomeVideosWorkListItemFragment>[]
+  worksCount?: number
+  novelWorksCount?: number
+  columnWorksCount?: number
+  videoWorksCount?: number
 }
 
 export function UserContents(props: Props) {
@@ -150,19 +161,29 @@ export function UserContents(props: Props) {
               {props.isSensitive ? (
                 <UserPickupContents
                   userPickupWorks={props.user.featuredSensitiveWorks ?? []}
+                  userId={props.user.id}
+                  isSensitive={true}
                 />
               ) : (
                 <UserPickupContents
                   userPickupWorks={props.user.featuredWorks ?? []}
+                  userId={props.user.id}
+                  isSensitive={false}
                 />
               )}
-              <Suspense fallback={<AppLoadingPage />}>
-                <UserContentsContainer
-                  userId={props.user.id}
-                  userLogin={props.user.login}
-                  isSensitive={props.isSensitive}
-                />
-              </Suspense>
+              <UserContentsContainer
+                userId={props.user.id}
+                userLogin={props.user.login}
+                isSensitive={props.isSensitive}
+                works={props.works ?? []}
+                novelWorks={props.novelWorks ?? []}
+                columnWorks={props.columnWorks ?? []}
+                videoWorks={props.videoWorks ?? []}
+                worksCount={props.worksCount ?? 0}
+                novelWorksCount={props.novelWorksCount ?? 0}
+                columnWorksCount={props.columnWorksCount ?? 0}
+                videoWorksCount={props.videoWorksCount ?? 0}
+              />
             </>
           )}
           {activeTab === "画像" && (
