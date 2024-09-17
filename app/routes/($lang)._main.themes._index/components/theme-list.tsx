@@ -3,6 +3,7 @@ import { createCalendarCells } from "~/routes/($lang)._main.themes._index/utils/
 import { Link, useNavigate } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+
 type Props = {
   year: number
   month: number
@@ -44,6 +45,10 @@ export function ThemeList(props: Props) {
       ? new Date(props.year, props.month - 1, day) > sevenDaysAfter
       : false
 
+    const isFuture = day
+      ? new Date(props.year, props.month - 1, day) > currentDateInJapan
+      : false
+
     return {
       id: `/${props.year}-${props.month}-${index}`,
       day: day,
@@ -51,8 +56,11 @@ export function ThemeList(props: Props) {
       isSunday: dayOfWeek === 0, // 日曜日
       isSaturday: dayOfWeek === 6, // 土曜日
       isToday: isToday,
+      isFuture: isFuture,
       date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
-      thumbnailUrl: theme?.firstWork?.smallThumbnailImageURL ?? null,
+      thumbnailUrl: isFuture
+        ? null
+        : (theme?.firstWork?.smallThumbnailImageURL ?? null),
       proposerId: theme?.proposer?.id ?? null,
       proposerName: theme?.proposer?.name ?? null,
     }
@@ -118,7 +126,10 @@ export function ThemeList(props: Props) {
             </div>
           ))}
           {blocks.map((block) => (
-            <div key={block.id} className="relative">
+            <div
+              key={block.id}
+              className={`relative ${block.isSaturday ? "border-green-500" : block.isSunday ? "border-red-500" : ""}`}
+            >
               <div
                 onClick={() => handleCellClick(block.date)}
                 onKeyPress={(e) => {
@@ -126,24 +137,24 @@ export function ThemeList(props: Props) {
                     handleCellClick(block.date)
                   }
                 }}
-                className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "bg-blue-200 dark:bg-blue-800" : ""}`}
+                className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "border-2 border-blue-500" : ""}`}
               >
                 <div
-                  className={`absolute text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : ""}`}
+                  className={`absolute z-10 font-bold text-right text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : "text-black"} ${block.thumbnailUrl && !block.isFuture ? "text-white" : ""}`}
                 >
                   {block.day}
                 </div>
-                {block.thumbnailUrl && (
+                {block.thumbnailUrl && !block.isFuture && (
                   <img
                     src={block.thumbnailUrl}
                     alt=""
                     className="absolute top-0 left-0 m-0 h-full w-full object-cover"
                   />
                 )}
-                {block.thumbnailUrl && (
+                {block.thumbnailUrl && !block.isFuture && (
                   <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
                 )}
-                {block.title && block.thumbnailUrl && (
+                {block.title && block.thumbnailUrl && !block.isFuture && (
                   <>
                     <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 w-24 transform rounded-md p-2 text-center font-bold text-white">
                       {block.title}
@@ -156,7 +167,6 @@ export function ThemeList(props: Props) {
                     {block.title}
                   </div>
                 )}
-                {block.isToday}
               </div>
               {block.proposerId && block.proposerId?.length !== 0 && (
                 <Link
