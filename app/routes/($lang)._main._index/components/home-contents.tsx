@@ -195,10 +195,14 @@ export function HomeContents(props: Props) {
     >
       <TabsList>
         <TabsTrigger value="home">{"ホーム"}</TabsTrigger>
-        <TabsTrigger value="new">{"新着・人気"}</TabsTrigger>
+        <TabsTrigger value="new">
+          <p className="hidden md:block">{"新着・人気"}</p>
+          <p className="block md:hidden">{"新着"}</p>
+        </TabsTrigger>
         <TabsTrigger value="follow-user">
           <div className="flex items-center space-x-2">
-            <p>{"フォロー新着"}</p>
+            <p className="hidden md:block">{"フォロー新着"}</p>
+            <p className="block md:hidden">{"フォロー"}</p>
             <CrossPlatformTooltip
               text={"フォローしたユーザの新着作品が表示されます"}
             />
@@ -206,7 +210,8 @@ export function HomeContents(props: Props) {
         </TabsTrigger>
         <TabsTrigger value="follow-tag">
           <div className="flex items-center space-x-2">
-            <p>{"お気に入りタグ新着"}</p>
+            <p className="hidden md:block">{"お気に入りタグ新着"}</p>
+            <p className="block md:hidden">{"タグ"}</p>
             <CrossPlatformTooltip
               text={"お気に入り登録したタグの新着作品が表示されます"}
             />

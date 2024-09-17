@@ -117,7 +117,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   <div
                     className={cn(
                       "absolute right-0 z-10",
-                      props.isShowProfile ? "bottom-12" : "bottom-0",
+                      props.isShowProfile ? "bottom-14" : "bottom-0",
                     )}
                   >
                     <LikeButton
@@ -145,7 +145,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                         className="w-48 font-bold"
                         to={`/posts/${photo.context.id}`}
                       >
-                        <p className="overflow-hidden text-ellipsis text-nowrap text-xs">
+                        <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
                           {photo.context.title}
                         </p>
                       </Link>
@@ -154,9 +154,9 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                           <img
                             src={ExchangeIconUrl(photo.context.user.iconUrl)}
                             alt={photo.context.user.name}
-                            className="h-4 w-4 rounded-full"
+                            className="h-6 w-6 rounded-full"
                           />
-                          <span className="text-nowrap font-bold text-sm ">
+                          <span className="text-nowrap font-bold text-sm">
                             {photo.context.user.name}
                           </span>
                         </div>

@@ -110,7 +110,7 @@ export function FollowUserFeedContents(props: Props) {
     .map((work) => work)
 
   return (
-    <div>
+    <div className="flex flex-col space-y-4">
       <div className="mb-4 flex justify-end">
         <Button onClick={() => setIsTimelineView(!isTimelineView)}>
           {isTimelineView ? "一覧形式に切り替え" : "タイムライン形式に切り替え"}
@@ -272,8 +272,8 @@ export function FollowUserFeedContents(props: Props) {
         </div>
       )}
       <ResponsivePagination
-        perPage={120}
-        maxCount={120}
+        perPage={96}
+        maxCount={96}
         currentPage={props.page}
         onPageChange={(page: number) => {
           props.setPage(page)

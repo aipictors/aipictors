@@ -1,28 +1,29 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group"
 import { Button } from "~/components/ui/button"
 import React from "react"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { Separator } from "~/components/ui/separator"
 import { graphql } from "gql.tada"
+import { Switch } from "~/components/ui/switch"
+import { Label } from "~/components/ui/label"
+import { Separator } from "~/components/ui/separator"
 
 /**
  * 表示するコンテンツの年齢設定制限フォーム
  */
 export function SettingRestrictionForm() {
-  const [rating, setRating] = React.useState("G")
+  const [showR15InNormalMode, setShowR15InNormalMode] = React.useState(false)
+  const [showSensitiveModeToggle, setShowSensitiveModeToggle] =
+    React.useState(false)
+  const [showR18GInSensitiveMode, setShowR18GInSensitiveMode] =
+    React.useState(false)
 
   const authContext = useContext(AuthContext)
 
-  const {
-    data: userSetting,
-    loading,
-    refetch: refetchSetting,
-  } = useQuery(userSettingQuery, {
+  const { data: userSetting, loading } = useQuery(userSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
@@ -30,25 +31,34 @@ export function SettingRestrictionForm() {
     updateUserSettingMutation,
   )
 
-  const { data: isBlurResp, refetch: tokenRefetch } = useSuspenseQuery(
-    viewerIsBlurSensitiveImageQuery,
-  )
+  const { data: isBlurResp } = useSuspenseQuery(viewerIsBlurSensitiveImageQuery)
 
   const isBlurDefault = isBlurResp?.viewer?.isBlurSensitiveImage
 
   const [isBlur, setIsBlur] = React.useState(isBlurDefault)
 
   const onSave = async () => {
+    // 設定に基づいてpreferenceRatingを決定
+    let preferenceRating: IntrospectionEnum<"PreferenceRating"> = "G"
+
+    if (showSensitiveModeToggle) {
+      if (showR18GInSensitiveMode) {
+        preferenceRating = "R18G"
+      } else {
+        preferenceRating = "R18"
+      }
+    } else {
+      if (showR15InNormalMode) {
+        preferenceRating = "R15"
+      } else {
+        preferenceRating = "G"
+      }
+    }
+
     await updateUserSetting({
       variables: {
         input: {
-          preferenceRating: rating as IntrospectionEnum<"PreferenceRating">,
-        },
-      },
-    })
-    await updateUserSetting({
-      variables: {
-        input: {
+          preferenceRating: preferenceRating,
           isBlurSensitiveImage: isBlur,
         },
       },
@@ -59,48 +69,78 @@ export function SettingRestrictionForm() {
   useEffect(() => {
     const preferenceRating = userSetting?.userSetting?.preferenceRating
 
-    const nowRating = preferenceRating ? preferenceRating : "R18"
-
-    setRating(nowRating)
+    // preferenceRatingに応じて初期値を設定
+    if (preferenceRating) {
+      if (preferenceRating === "G") {
+        setShowR15InNormalMode(false)
+        setShowSensitiveModeToggle(false)
+        setShowR18GInSensitiveMode(false)
+      } else if (preferenceRating === "R15") {
+        setShowR15InNormalMode(true)
+        setShowSensitiveModeToggle(false)
+        setShowR18GInSensitiveMode(false)
+      } else if (preferenceRating === "R18") {
+        setShowR15InNormalMode(true) // R15は含まれると仮定
+        setShowSensitiveModeToggle(true)
+        setShowR18GInSensitiveMode(false)
+      } else if (preferenceRating === "R18G") {
+        setShowR15InNormalMode(true) // R15は含まれると仮定
+        setShowSensitiveModeToggle(true)
+        setShowR18GInSensitiveMode(true)
+      }
+    } else {
+      setShowR15InNormalMode(false)
+      setShowSensitiveModeToggle(false)
+      setShowR18GInSensitiveMode(false)
+    }
 
     setIsBlur(isBlurDefault)
   }, [userSetting])
 
   return (
     <div className="space-y-4">
-      <div className="space-y-4">
-        <ToggleGroup
-          className="justify-start space-x-1"
-          value={loading ? "" : rating}
-          onValueChange={(value) => setRating(value)}
-          type="single"
-        >
-          <ToggleGroupItem value="G" aria-label="G">
-            <p className="test-sm">全年齢</p>
-          </ToggleGroupItem>
-          <ToggleGroupItem value="R15" aria-label="R15">
-            <p className="test-sm">全年齢+R15</p>
-          </ToggleGroupItem>
-          <ToggleGroupItem value="R18G" aria-label="R18G">
-            <p className="test-sm">全年齢+R15R+18G</p>
-          </ToggleGroupItem>
-          <ToggleGroupItem value="R18" aria-label="R18">
-            <p className="test-sm">すべて</p>
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-      <Separator />
-      {/* <div className="flex">
+      <div className="flex flex-col space-y-4">
         <div className="flex w-full items-center justify-between">
-          <Label htmlFor="airplane-mode">{"センシティブ画像をぼかす"}</Label>
+          <Label htmlFor="show-r15">{"(通常モード時)R15作品を表示する"}</Label>
           <Switch
-            onCheckedChange={setIsBlur}
-            checked={isBlur}
-            id="airplane-mode"
+            onCheckedChange={setShowR15InNormalMode}
+            checked={showR15InNormalMode}
+            id="show-r15"
+            disabled={showSensitiveModeToggle} // センシティブモード時は無効化
           />
         </div>
-      </div> */}
-
+        <div className="flex w-full items-center justify-between">
+          <Label htmlFor="show-sensitive-toggle">
+            {"センシティブモード切り替えボタンをメニューに表示する"}
+          </Label>
+          <Switch
+            onCheckedChange={(checked) => {
+              setShowSensitiveModeToggle(checked)
+              if (checked) {
+                // センシティブモードを有効にしたら、R15の表示設定を有効化
+                setShowR15InNormalMode(true)
+              } else {
+                // センシティブモードを無効にしたら、R18Gの表示設定を無効化
+                setShowR18GInSensitiveMode(false)
+              }
+            }}
+            checked={showSensitiveModeToggle}
+            id="show-sensitive-toggle"
+          />
+        </div>
+        <div className="flex w-full items-center justify-between">
+          <Label htmlFor="show-r18g">
+            {"(センシティブモード時)R18G作品を表示する"}
+          </Label>
+          <Switch
+            onCheckedChange={setShowR18GInSensitiveMode}
+            checked={showR18GInSensitiveMode}
+            id="show-r18g"
+            disabled={!showSensitiveModeToggle} // センシティブモードが有効でないと無効化
+          />
+        </div>
+      </div>
+      <Separator />
       <Button
         disabled={isUpdatingUserSetting}
         onClick={onSave}
@@ -116,34 +156,29 @@ export function SettingRestrictionForm() {
   )
 }
 
-const userSettingQuery = graphql(
-  `query UserSetting {
+const userSettingQuery = graphql(`
+  query UserSetting {
     userSetting {
       id
       userId
-      favoritedImageGenerationModelIds
       preferenceRating
-      featurePromptonRequest
-      isAnonymousLike
-      isAnonymousSensitiveLike
-      isNotifyComment
     }
-  }`,
-)
+  }
+`)
 
-const viewerIsBlurSensitiveImageQuery = graphql(
-  `query ViewerIsBlurSensitiveImage {
+const viewerIsBlurSensitiveImageQuery = graphql(`
+  query ViewerIsBlurSensitiveImage {
     viewer {
       id
       isBlurSensitiveImage
     }
-  }`,
-)
+  }
+`)
 
-const updateUserSettingMutation = graphql(
-  `mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
+const updateUserSettingMutation = graphql(`
+  mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
     updateUserSetting(input: $input) {
       preferenceRating
     }
-  }`,
-)
+  }
+`)

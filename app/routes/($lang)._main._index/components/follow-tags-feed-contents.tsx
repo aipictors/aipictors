@@ -18,6 +18,7 @@ import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 
 type Props = {
   isSensitive?: boolean
@@ -41,8 +42,8 @@ export function FollowTagsFeedContents(props: Props) {
     {
       skip: authContext.isLoading || authContext.isNotLoggedIn,
       variables: {
-        offset: 32 * props.page,
-        limit: 32,
+        offset: 96 * props.page,
+        limit: 96,
         feedWhere: {
           userId: authContext.userId ?? "-1",
           type: "FOLLOW_TAG",
@@ -109,7 +110,7 @@ export function FollowTagsFeedContents(props: Props) {
     .map((work) => work)
 
   return (
-    <div>
+    <div className="flex flex-col space-y-4">
       <div className="mb-4 flex justify-end">
         <Button onClick={() => setIsTimelineView(!isTimelineView)}>
           {isTimelineView ? "一覧形式に切り替え" : "タイムライン形式に切り替え"}
@@ -270,6 +271,14 @@ export function FollowTagsFeedContents(props: Props) {
           />
         </div>
       )}
+      <ResponsivePagination
+        perPage={96}
+        maxCount={96}
+        currentPage={props.page}
+        onPageChange={(page: number) => {
+          props.setPage(page)
+        }}
+      />
     </div>
   )
 }

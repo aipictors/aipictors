@@ -23,6 +23,7 @@ import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/c
 import { toRatingText } from "~/utils/work/to-rating-text"
 import { Badge } from "~/components/ui/badge"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { toStyleText } from "~/utils/work/to-style-text"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -161,6 +162,11 @@ export function WorkArticle(props: Props) {
                 {toRatingText(props.work.rating)}
               </Badge>
             )}
+            <Badge variant="secondary" className="flex items-center space-x-2">
+              <span className="text-sm">{"テイスト:"}</span>
+              {toStyleText(props.work.style)}
+            </Badge>
+
             {props.work.isPromotion === true && (
               <Badge
                 variant="secondary"
