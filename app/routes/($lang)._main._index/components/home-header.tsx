@@ -33,12 +33,18 @@ function HomeHeader(props: Props) {
 
   const [searchText, setSearchText] = useState("")
 
-  const sensitivePath = location.pathname.includes("/r")
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
 
   const getSensitiveLink = (path: string) => {
+    // パスが /r または /r で始まる場合を判定
+    if (/^\/r($|\s)/.test(path)) {
+      return "" // 無効なパスの場合は空文字列を返す（または他の処理）
+    }
+
     if (sensitivePath) {
       return `/r${path}`
     }
+
     return path
   }
 

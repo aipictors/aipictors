@@ -34,7 +34,7 @@ export function HomeRouteList(props: Props) {
   const navigate = useNavigate()
 
   // `sensitive` フラグが現在の URL に含まれているかチェック
-  const isSensitive = location.pathname.includes("/r")
+  const isSensitive = /\/r($|\/)/.test(location.pathname)
 
   const closeHeaderMenu = () => {
     if (props.onClickMenuItem) {

@@ -181,19 +181,19 @@ export function WorkArticle(props: Props) {
             {props.work.dailyRanking && (
               <Badge
                 variant="secondary"
-                className="text-md"
+                className="flex items-center space-x-2"
               >{`デイリー入賞 ${props.work.dailyRanking} 位`}</Badge>
             )}
             {props.work.weeklyRanking && (
               <Badge
                 variant="secondary"
-                className="text-md"
+                className="flex items-center space-x-2"
               >{`ウィークリー入賞 ${props.work.dailyRanking} 位`}</Badge>
             )}
             {props.work.monthlyRanking && (
               <Badge
                 variant="secondary"
-                className="text-md"
+                className="flex items-center space-x-2"
               >{`マンスリー入賞 ${props.work.dailyRanking} 位`}</Badge>
             )}
           </div>

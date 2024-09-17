@@ -12,8 +12,8 @@ export function ToggleSensitive() {
 
   // URLから"sensitive"フラグをチェック
   useEffect(() => {
-    // URLに"/r"が含まれているかを確認
-    if (location.pathname.includes("/r")) {
+    // URLに"/r"が含まれているかを確認 (正規表現を使用)
+    if (/\/r($|\/)/.test(location.pathname)) {
       setSensitive(true)
     } else {
       setSensitive(false)
@@ -23,13 +23,13 @@ export function ToggleSensitive() {
   const toggleSensitive = () => {
     if (sensitive) {
       const newUrl =
-        location.pathname.replace("/r", "") === ""
+        location.pathname.replace(/^\/r/, "") === ""
           ? "/"
-          : location.pathname.replace("/r", "")
+          : location.pathname.replace(/^\/r/, "")
       window.location.href = newUrl
     } else {
       window.location.href = `/r${location.pathname}`
-      console.log(`/r/${location.pathname}`)
+      console.log(`/r${location.pathname}`)
     }
     setSensitive(!sensitive)
   }
