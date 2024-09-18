@@ -100,6 +100,7 @@ export function UserPage(props: Props) {
         novelWorksCount={props.novelWorksCount}
         columnWorksCount={props.columnWorksCount}
         videoWorksCount={props.videoWorksCount}
+        isSensitive={props.isSensitive}
       />
     </div>
   )

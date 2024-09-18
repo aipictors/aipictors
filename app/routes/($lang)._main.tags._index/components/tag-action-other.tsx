@@ -32,7 +32,7 @@ export function TagActionOther(props: Props) {
                 "センシティブな作品を表示します、あなたは18歳以上ですか？"
               }
               onNext={() => {
-                navigate(`/tags/${props.tag}?sensitive=1`)
+                navigate(`/r/tags/${props.tag}`)
               }}
               cookieKey={"check-sensitive-ranking"}
               onCancel={() => {}}

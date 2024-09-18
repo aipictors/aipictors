@@ -33,7 +33,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const isSensitive = url.searchParams.get("sensitive") === "1"
 
   const worksResp = await loaderClient.query({
-    query: tagWorksAndCountQuery,
+    query: tagWorksQuery,
     variables: {
       offset: page * 32,
       limit: 32,
@@ -46,10 +46,20 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const tagWorksCountResp = await loaderClient.query({
+    query: tagWorksCountQuery,
+    variables: {
+      where: {
+        tagName: decodeURIComponent(props.params.tag),
+        ratings: ["G", "R15"],
+      },
+    },
+  })
+
   return json({
     tag: decodeURIComponent(props.params.tag),
     works: worksResp.data.tagWorks,
-    worksCount: worksResp.data.worksCount,
+    worksCount: tagWorksCountResp.data.tagWorksCount,
     page: page,
     isSensitive: isSensitive,
   })
@@ -180,16 +190,6 @@ export default function Tag() {
   )
 }
 
-const tagWorksAndCountQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    tagWorks(offset: $offset, limit: $limit, where: $where) {
-      ...PhotoAlbumWork
-    }
-    worksCount(where: $where)
-  }`,
-  [PhotoAlbumWorkFragment],
-)
-
 export const tagWorksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     tagWorks(offset: $offset, limit: $limit, where: $where) {
@@ -197,4 +197,10 @@ export const tagWorksQuery = graphql(
     }
   }`,
   [PhotoAlbumWorkFragment],
+)
+
+const tagWorksCountQuery = graphql(
+  `query TagWorksCount($where: TagWorksCountWhereInput!) {
+    tagWorksCount(where: $where)
+  }`,
 )

@@ -76,12 +76,12 @@ export function ModerationStyleReportDialog(props: Props) {
       <DialogTrigger asChild>
         <Button className="flex items-center gap-2" variant="outline">
           <FlagIcon />
-          {"年齢種別を変更して報告する"}
+          {"テイストを変更して通知する"}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{"年齢種別を変更して報告する"}</DialogTitle>
+          <DialogTitle>{"テイストを変更して通知する"}</DialogTitle>
         </DialogHeader>
         <h4 className="text-md">{"報告内容"}</h4>
         <Select onValueChange={(value) => setRating(value)}>
