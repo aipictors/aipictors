@@ -216,6 +216,11 @@ export default function NewImage() {
   }
 
   const onPost = async () => {
+    if (authContext.isNotLoggedIn) {
+      toast("ログインしてください")
+      return
+    }
+
     if (formResult.success === false) {
       for (const issue of formResult.issues) {
         toast(issue.message)
@@ -485,6 +490,12 @@ export default function NewImage() {
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="max-w-[1200px] space-y-4">
+        {authContext.isNotLoggedIn && (
+          <p className="text-center font-bold text-md">
+            {"ログインすると投稿できるようになります"}
+          </p>
+        )}
+
         <div className="relative">
           <PostFormHeader type="image" />
           {state.isOpenLoadingAi && (

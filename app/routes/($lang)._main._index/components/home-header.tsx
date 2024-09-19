@@ -169,17 +169,12 @@ function HomeHeader(props: Props) {
           <Link className="hidden md:block" to={"https://www.aipictors.com/"}>
             <Button variant={"ghost"}>{"旧版トップ"}</Button>
           </Link>
-          {authContext.isLoggedIn && (
-            <>
-              {/* 投稿と生成のリンクには /r を付けない */}
-              <Link to={"/generation"}>
-                <Button variant={"ghost"}>{"生成"}</Button>
-              </Link>
-              <Link to={"/new/image"}>
-                <Button variant={"ghost"}>{"投稿"}</Button>
-              </Link>
-            </>
-          )}
+          <Link to={"/generation"}>
+            <Button variant={"ghost"}>{"生成"}</Button>
+          </Link>
+          <Link to={"/new/image"}>
+            <Button variant={"ghost"}>{"投稿"}</Button>
+          </Link>
           {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
           {authContext.isLoggedIn && (
             <HomeNotificationsMenu
