@@ -1,9 +1,18 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import { useNavigate, useLocation } from "@remix-run/react"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon, RefreshCcwIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
+import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/components/ui/carousel"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 
 type Props = {
   year: number
@@ -20,9 +29,18 @@ export function RankingHeader(props: Props) {
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
   >(props.day ? "デイリー" : props.weekIndex ? "ウィークリー" : "マンスリー")
+  const [date, setDate] = useState("")
   const navigate = useNavigate()
   const location = useLocation()
   const isFirstRender = useRef(true)
+
+  // ステート変更を監視して遷移するためのuseEffectを追加
+  useEffect(() => {
+    if (!isFirstRender.current) {
+      handleNavigate(year, month, day)
+      setDate(new Date(year, month - 1, day || 1).toISOString().split("T")[0]) // カレンダーの日付を同期
+    }
+  }, [year, month, day, weekIndex])
 
   useEffect(() => {
     setYear(props.year)
@@ -37,12 +55,24 @@ export function RankingHeader(props: Props) {
     }
   }, [])
 
-  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setYear(Number(e.target.value))
-  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setMonth(Number(e.target.value))
-  const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setDay(Number(e.target.value))
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDate(e.target.value)
+    const selectedDate = new Date(e.target.value)
+    setYear(selectedDate.getFullYear())
+    setMonth(selectedDate.getMonth() + 1)
+    setDay(selectedDate.getDate())
+  }
+
+  const handleTodayClick = () => {
+    const today = new Date()
+    const previousDay = new Date(today)
+    previousDay.setDate(today.getDate() - 1)
+    setYear(previousDay.getFullYear())
+    setMonth(previousDay.getMonth() + 1)
+    setDay(previousDay.getDate())
+    setDate(previousDay.toISOString().split("T")[0])
+    setViewType("デイリー") // 日間に切り替え
+  }
 
   const handleViewChange = (
     view: "マンスリー" | "デイリー" | "ウィークリー",
@@ -50,20 +80,29 @@ export function RankingHeader(props: Props) {
     setViewType(view)
     if (view === "ウィークリー") {
       setWeekIndex(1)
+    } else if (view === "デイリー") {
+      // 日間に切り替え時に最新の日付に移動
+      const today = new Date()
+      const previousDay = new Date(today)
+      previousDay.setDate(today.getDate() - 1)
+      setYear(previousDay.getFullYear())
+      setMonth(previousDay.getMonth() + 1)
+      setDay(previousDay.getDate())
     }
   }
 
-  const handleNavigate = () => {
-    let newPath = ""
-
-    if (viewType === "マンスリー") {
-      newPath = `/rankings/${year}/${month}`
-    } else if (viewType === "デイリー") {
-      const actualDay = day === 0 || day == null ? 1 : day
-      newPath = `/rankings/${year}/${month}/${actualDay}`
-    } else if (viewType === "ウィークリー") {
-      newPath = `/rankings/${year}/${month}/weeks/${weekIndex}`
-    }
+  const handleNavigate = (
+    newYear: number = year,
+    newMonth: number = month,
+    newDay: number | null = day,
+  ) => {
+    const actualDay = newDay === 0 || newDay == null ? 1 : newDay
+    const newPath =
+      viewType === "デイリー"
+        ? `/rankings/${newYear}/${newMonth}/${actualDay}`
+        : viewType === "ウィークリー"
+          ? `/rankings/${newYear}/${newMonth}/weeks/${weekIndex}`
+          : `/rankings/${newYear}/${newMonth}`
 
     if (location.pathname !== newPath) {
       navigate(newPath)
@@ -76,22 +115,22 @@ export function RankingHeader(props: Props) {
       setYear(newDate.getFullYear())
       setMonth(newDate.getMonth() + 1)
       setDay(newDate.getDate())
-    } else if (viewType === "マンスリー") {
+    }
+
+    if (viewType === "マンスリー") {
+      setMonth((prevMonth) => (prevMonth === 1 ? 12 : prevMonth - 1))
       if (month === 1) {
-        setMonth(12)
         setYear((prevYear) => prevYear - 1)
-      } else {
-        setMonth((prevMonth) => prevMonth - 1)
       }
-    } else if (viewType === "ウィークリー") {
-      if (weekIndex > 1) {
-        setWeekIndex(weekIndex - 1)
-      } else {
+    }
+
+    if (viewType === "ウィークリー") {
+      setWeekIndex((prevIndex) => (prevIndex > 1 ? prevIndex - 1 : 4))
+      if (weekIndex === 1) {
         const newDate = new Date(year, month - 1, 1)
         newDate.setDate(newDate.getDate() - 1)
         setYear(newDate.getFullYear())
         setMonth(newDate.getMonth() + 1)
-        setWeekIndex(4) // Assuming 4 weeks in the previous month
       }
     }
   }
@@ -102,92 +141,110 @@ export function RankingHeader(props: Props) {
       setYear(newDate.getFullYear())
       setMonth(newDate.getMonth() + 1)
       setDay(newDate.getDate())
-    } else if (viewType === "マンスリー") {
+    }
+
+    if (viewType === "マンスリー") {
+      setMonth((prevMonth) => (prevMonth === 12 ? 1 : prevMonth + 1))
       if (month === 12) {
-        setMonth(1)
         setYear((prevYear) => prevYear + 1)
-      } else {
-        setMonth((prevMonth) => prevMonth + 1)
       }
-    } else if (viewType === "ウィークリー") {
-      if (weekIndex < 4) {
-        setWeekIndex(weekIndex + 1)
-      } else {
+    }
+
+    if (viewType === "ウィークリー") {
+      setWeekIndex((prevIndex) => (prevIndex < 4 ? prevIndex + 1 : 1))
+      if (weekIndex === 4) {
         const newDate = new Date(year, month, 1)
         newDate.setDate(newDate.getDate() + 30)
         setYear(newDate.getFullYear())
         setMonth(newDate.getMonth() + 1)
-        setWeekIndex(1)
       }
     }
   }
 
+  const generateCarouselItems = () => {
+    const today = new Date()
+    today.setDate(today.getDate() - 1) // ランキングは前日まで
+    const items: { link: string; name: string; border: boolean }[] = []
+
+    if (viewType === "デイリー") {
+      for (let index = 0; index < 7; index++) {
+        const date = new Date(today)
+        date.setDate(today.getDate() - (6 - index))
+        const formattedDate = `${date.getFullYear()}/${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`
+        items.push({
+          link: `/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
+          name: formattedDate,
+          border: formattedDate === `${year}/${month}/${day}`,
+        })
+      }
+    }
+
+    if (viewType === "マンスリー") {
+      for (let index = 0; index < 3; index++) {
+        const date = new Date(today)
+        date.setMonth(today.getMonth() + index)
+        const formattedMonth = `${date.getFullYear()}/${(date.getMonth() - 2)
+          .toString()
+          .padStart(2, "0")}`
+        items.push({
+          link: `/rankings/${date.getFullYear()}/${date.getMonth() - 2}`,
+          name: formattedMonth,
+          border: formattedMonth === `${year}/${month}`,
+        })
+      }
+    }
+
+    if (viewType === "ウィークリー") {
+      for (let index = 0; index < 4; index++) {
+        const weekNumber = index + 1 // 1週目から4週目を順に追加
+        items.push({
+          link: `/rankings/${year}/${month}/weeks/${weekNumber}`,
+          name: `${weekNumber}週目`,
+          border: weekIndex === weekNumber,
+        })
+      }
+    }
+
+    return items
+  }
+
   const maxDay = new Date(year, month, 0).getDate()
   const maxYear = new Date().getFullYear()
+  const carouselItems = generateCarouselItems()
 
   return (
     <Card className="flex flex-col items-center space-y-4 p-4">
-      <p className="text-center font-bold text-md">ランキング</p>
-      <div className="flex items-center">
-        <Button variant={"ghost"} className="mr-2" onClick={handlePrevious}>
-          <ChevronLeftIcon />
-        </Button>
-        <div className="flex items-center space-x-2">
-          <input
-            type="number"
-            value={year}
-            onChange={handleYearChange}
-            className="w-16 rounded-md border border-gray-300 text-center"
-            min={"2023"}
-            max={maxYear}
-          />
-          <span>年</span>
-          <input
-            type="number"
-            value={month}
-            onChange={handleMonthChange}
-            className="w-12 rounded-md border border-gray-300 text-center"
-            min="1"
-            max="12"
-          />
-          <span>月</span>
-          {viewType === "デイリー" && day && (
-            <>
-              <input
-                type="number"
-                value={day}
-                onChange={handleDayChange}
-                className="w-12 rounded-md border border-gray-300 text-center"
-                min="1"
-                max={maxDay}
-              />
-              <span>日</span>
-            </>
-          )}
-          {viewType === "ウィークリー" && (
-            <>
-              <input
-                type="number"
-                value={weekIndex}
-                onChange={(e) => setWeekIndex(Number(e.target.value))}
-                className="w-12 rounded-md border border-gray-300 text-center"
-                min="1"
-                max="4"
-              />
-              <span>週</span>
-            </>
-          )}
-        </div>
-        <Button variant={"ghost"} className="ml-2" onClick={handleNext}>
-          <ChevronRightIcon />
-        </Button>
-      </div>
-      <div className="flex w-full max-w-72 flex-col space-y-4 md:max-w-96">
+      {viewType === "マンスリー" && (
+        <p className="text-center font-bold text-md">{"マンスリー"}</p>
+      )}
+      {viewType === "デイリー" && (
+        <p className="text-center font-bold text-md">{"デイリー"}</p>
+      )}
+      {viewType === "ウィークリー" && (
+        <p className="text-center font-bold text-md">{"ウィークリー"}</p>
+      )}
+
+      <p className="text-center font-bold text-md">
+        {year}年{month}月
+        {day
+          ? `${day}日`
+          : weekIndex && viewType !== "マンスリー"
+            ? `${weekIndex}週目`
+            : ""}
+        のランキング
+      </p>
+      <div className="flex w-full max-w-72 flex-col space-y-4 md:max-w-72">
         <div className="flex w-full justify-between space-x-1 md:space-x-4">
           <Button
             variant={"secondary"}
             onClick={() => handleViewChange("マンスリー")}
-            className={viewType === "マンスリー" ? "rounded-lg " : "rounded-lg"}
+            className={
+              viewType === "マンスリー"
+                ? "rounded-lg border-blue-500"
+                : "rounded-lg"
+            }
             disabled={viewType === "マンスリー"}
           >
             月間
@@ -195,7 +252,11 @@ export function RankingHeader(props: Props) {
           <Button
             variant={"secondary"}
             onClick={() => handleViewChange("デイリー")}
-            className={viewType === "デイリー" ? "rounded-lg " : "rounded-lg"}
+            className={
+              viewType === "デイリー"
+                ? "rounded-lg border-blue-500"
+                : "rounded-lg"
+            }
             disabled={viewType === "デイリー"}
           >
             日間
@@ -204,39 +265,76 @@ export function RankingHeader(props: Props) {
             variant={"secondary"}
             onClick={() => handleViewChange("ウィークリー")}
             className={
-              viewType === "ウィークリー" ? "rounded-lg " : "rounded-lg"
+              viewType === "ウィークリー"
+                ? "rounded-lg border-blue-500"
+                : "rounded-lg"
             }
             disabled={viewType === "ウィークリー"}
           >
             週間
           </Button>
         </div>
-        <div className="flex w-full justify-between space-x-1 md:space-x-4">
-          {/* <AppConfirmDialog
-            title={"確認"}
-            description={
-              "センシティブな作品を表示します、あなたは18歳以上ですか？"
-            }
-            onNext={() => {
-              navigate("/r/rankings")
-            }}
-            cookieKey={"check-sensitive-ranking"}
-            onCancel={() => {}}
-          >
-            <div className="flex w-32 cursor-pointer items-center">
-              <RefreshCcwIcon className="mr-1 w-3" />
-              <p className="text-sm">{"対象年齢"}</p>
-            </div>
-          </AppConfirmDialog> */}
-
-          <Button
-            className="w-72 md:w-96"
-            variant={"secondary"}
-            onClick={handleNavigate}
-          >
-            {"変更した内容で表示"}
+      </div>
+      <div className="flex flex-col items-center gap-x-2 space-y-2 md:flex-row">
+        <div className="flex items-center space-x-4">
+          <Button variant={"ghost"} onClick={handlePrevious}>
+            <ChevronLeftIcon />
+            前へ
+          </Button>
+          <Button variant={"ghost"} onClick={handleNext}>
+            次へ
+            <ChevronRightIcon />
           </Button>
         </div>
+        <div className="flex items-center space-x-2">
+          <input
+            type="date"
+            value={date}
+            onChange={handleDateChange}
+            className="w-[200px] rounded-md border border-gray-300"
+            max={new Date().toISOString().split("T")[0]} // 今日の日付以降は選べない
+          />
+          <Button onClick={handleTodayClick} variant="outline">
+            最新
+          </Button>
+        </div>
+        <AppConfirmDialog
+          title={"確認"}
+          description={
+            "センシティブな作品を表示します、あなたは18歳以上ですか？"
+          }
+          onNext={() => {
+            navigate("/r/rankings")
+          }}
+          cookieKey={"check-sensitive-ranking"}
+          onCancel={() => {}}
+        >
+          <Button className="w-full" variant={"secondary"}>
+            <RefreshCcwIcon className="mr-2 w-4" />
+            {"対象年齢"}
+          </Button>
+        </AppConfirmDialog>
+      </div>
+      <div className="mt-4 flex max-w-72 space-x-4 md:max-w-full">
+        <Carousel
+          className="relative overflow-hidden"
+          opts={{ dragFree: true, loop: false, align: "center" }}
+        >
+          <CarouselContent>
+            {carouselItems.map((item, index) => (
+              <CarouselItem key={item.link} className="basis-auto">
+                <TagButton
+                  key={index.toString()}
+                  link={item.link}
+                  name={item.name}
+                  border={item.border} // 選択したタグにボーダーを追加
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute top-1/2 left-0" />
+          <CarouselNext className="absolute top-1/2 right-0" />
+        </Carousel>
       </div>
     </Card>
   )

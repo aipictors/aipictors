@@ -39,16 +39,16 @@ export function RankingWorkList(props: Props) {
 
   return (
     <>
-      <div className="hidden flex-wrap justify-center gap-x-8 gap-y-8 md:flex">
+      <div className="hidden flex-wrap justify-center gap-x-4 gap-y-4 md:flex">
         {workAwards.map((workItem, index) => {
           return (
             <div
               // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
               key={index}
-              className="relative flex flex-col space-y-2"
+              className="relative flex flex-col space-y-4"
             >
               {workItem.work && (
-                <>
+                <div className="relative flex w-32 flex-col space-y-2">
                   <div className="relative">
                     <CroppedWorkSquare
                       workId={workItem.work.id}
@@ -87,7 +87,7 @@ export function RankingWorkList(props: Props) {
                     likesCount={workItem.work.likesCount}
                     snapshotLikedCount={workItem.snapshotLikedCount}
                   />
-                </>
+                </div>
               )}
             </div>
           )
@@ -137,9 +137,8 @@ export function RankingWorkList(props: Props) {
                       workItem.work.user.iconUrl,
                     )}
                     name={workItem.work.user.name}
-                    width={"md"}
+                    width={"sm"}
                     likesCount={workItem.work.likesCount}
-                    snapshotLikedCount={workItem.snapshotLikedCount}
                   />
                 </>
               )}

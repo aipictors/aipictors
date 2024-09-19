@@ -20,10 +20,6 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  // const urlParams = new URLSearchParams(props.request.url.split("?")[1])
-  // const pageParam = urlParams.get("page")
-  // const page = pageParam ? Number(pageParam) : 0
-
   const userResp = await loaderClient.query({
     query: userQuery,
     variables: {

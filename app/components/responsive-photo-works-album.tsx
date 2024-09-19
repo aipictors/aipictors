@@ -5,7 +5,7 @@ import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { Images } from "lucide-react"
+import { Heart, Images } from "lucide-react"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { cn } from "~/lib/cn"
 import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
@@ -149,18 +149,26 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                           {photo.context.title}
                         </p>
                       </Link>
-                      <Link to={`/users/${photo.context.user.id}`}>
-                        <div className="flex items-center space-x-2">
-                          <img
-                            src={ExchangeIconUrl(photo.context.user.iconUrl)}
-                            alt={photo.context.user.name}
-                            className="h-6 w-6 rounded-full"
-                          />
-                          <span className="text-nowrap font-bold text-sm">
-                            {photo.context.user.name}
+                      <div className="flex items-center justify-between">
+                        <Link to={`/users/${photo.context.user.id}`}>
+                          <div className="flex items-center space-x-2">
+                            <img
+                              src={ExchangeIconUrl(photo.context.user.iconUrl)}
+                              alt={photo.context.user.name}
+                              className="h-6 w-6 rounded-full"
+                            />
+                            <span className="truncate text-sm">
+                              {photo.context.user.name}
+                            </span>
+                          </div>
+                        </Link>
+                        <div className="absolute right-0 ml-auto flex items-center space-x-1 rounded-md bg-card p-1">
+                          <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                          <span className="text-xs">
+                            {photo.context.likesCount}
                           </span>
                         </div>
-                      </Link>
+                      </div>
                     </div>
                   )}
                 </div>

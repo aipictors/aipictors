@@ -37,7 +37,7 @@ export function UserHomeMain(props: Props) {
 
   return (
     <div className="relative m-auto h-72 w-full md:h-24">
-      <div className="absolute top-0 right-0 z-10 md:hidden">
+      <div className="absolute top-2 right-0 z-10 md:hidden">
         <div className="flex space-x-2">
           {props.isSensitive ? (
             <Button
@@ -133,7 +133,6 @@ export function UserHomeMain(props: Props) {
           )}
         </div>
       </div>
-
       <div className="absolute top-24 left-0 flex w-[100%] flex-col space-y-1 px-8 md:hidden">
         <div className="mb-4 flex md:mb-0 md:hidden">
           <div className="w-32">

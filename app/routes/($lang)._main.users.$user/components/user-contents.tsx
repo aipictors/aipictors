@@ -275,6 +275,10 @@ export const UserProfileFragment = graphql(
     featuredSensitiveWorks {
       ...HomeWork
     }
+    pass {
+      type
+    }
+    isModerator
   }`,
   [HomeWorkFragment],
 )

@@ -123,7 +123,7 @@ export function HomeAwardWorkSection(props: Props) {
                     userId={work.userId}
                     userIconImageURL={ExchangeIconUrl(work.userIcon)}
                     name={work.userName}
-                    width={"lg"}
+                    width={"md"}
                   />
                 )}
                 <div className="flex items-center space-x-1">

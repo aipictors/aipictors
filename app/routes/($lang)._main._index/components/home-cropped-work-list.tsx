@@ -66,6 +66,7 @@ export function HomeCroppedWorkList(props: Props) {
               userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
               name={work.user.name}
               width={"lg"}
+              likesCount={work.likesCount}
             />
           </div>
         ))}
@@ -108,6 +109,7 @@ export function HomeCroppedWorkList(props: Props) {
                   userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
                   name={work.user.name}
                   width={"md"}
+                  likesCount={work.likesCount}
                 />
               </>
             )}

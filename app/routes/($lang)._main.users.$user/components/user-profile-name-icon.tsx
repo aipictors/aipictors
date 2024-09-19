@@ -3,6 +3,8 @@ import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components
 import { type FragmentOf, graphql } from "gql.tada"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
+import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user/components/user-subscription-icon"
+import { UserModeratorIcon } from "~/routes/($lang)._main.users.$user/components/user-moderator-icon"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -22,9 +24,13 @@ export function UserProfileNameIcon(props: Props) {
             size={"auto"}
           />
           <div className="hidden md:block">
-            <h1 className="text-nowrap font-bold text-2xl text-white">
-              {props.user.name}
-            </h1>
+            <div className="flex items-center space-x-2">
+              <h1 className="text-nowrap font-bold text-2xl text-white">
+                {props.user.name}
+              </h1>
+              <UserSubscriptionIcon passType={props.user.pass?.type} />
+              <UserModeratorIcon isModerator={props.user.isModerator} />
+            </div>
             <h2 className="text-nowrap font-bold text-sm text-white opacity-50">
               @{props.user.login}
             </h2>
@@ -47,7 +53,11 @@ export function UserProfileNameIcon(props: Props) {
           </div>
         </div>
         <div className="block md:hidden">
-          <h1 className="text-nowrap font-bold text-md">{props.user.name}</h1>
+          <div className="flex items-center space-x-2">
+            <h1 className="text-nowrap font-bold text-md">{props.user.name}</h1>
+            <UserSubscriptionIcon passType={props.user.pass?.type} />
+            <UserModeratorIcon isModerator={props.user.isModerator} />
+          </div>
           <h2 className="font-bold text-sm opacity-50">@{props.user.login}</h2>
         </div>
       </div>
@@ -84,6 +94,10 @@ export const UserProfileIconFragment = graphql(
     featuredSensitiveWorks {
       ...HomeWork
     }
+    pass {
+      type
+    }
+    isModerator
   }`,
   [HomeWorkFragment],
 )

@@ -18,9 +18,15 @@ type Props = {
 export function UserNameBadge(props: Props) {
   const width = () => {
     if (props.width === "sm") {
+      if (props.snapshotLikedCount) {
+        return "max-w-16"
+      }
       return "max-w-20"
     }
     if (props.width === "md") {
+      if (props.snapshotLikedCount) {
+        return "max-w-14"
+      }
       return "max-w-32"
     }
 
@@ -66,7 +72,7 @@ export function UserNameBadge(props: Props) {
     <Link className="flex flex-col gap-y-2" to={`/users/${props.userId}`}>
       <div
         // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        className={`flex items-center overflow-hidden text-ellipsis ${width()} ${padding()}`}
+        className={`flex items-center overflow-hidden text-ellipsis ${padding()}`}
       >
         <div className="flex items-center space-x-2">
           <img
@@ -81,9 +87,7 @@ export function UserNameBadge(props: Props) {
             {props.name}
           </p>
         </div>
-      </div>
-      <div>
-        {props.likesCount && (
+        {props.likesCount !== undefined && (
           <div className="ml-auto items-center">
             <div className="flex items-center space-x-1">
               <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
