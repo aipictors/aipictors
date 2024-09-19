@@ -261,7 +261,6 @@ export function HomeUserNavigationMenu(props: Props) {
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
-
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <GlobeIcon className="mr-2 inline-block w-4" />
