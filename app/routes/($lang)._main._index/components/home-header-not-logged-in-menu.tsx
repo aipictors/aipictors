@@ -14,6 +14,7 @@ import {
 } from "~/components/ui/dropdown-menu"
 import {
   EllipsisVerticalIcon,
+  GlobeIcon,
   MoonIcon,
   SettingsIcon,
   SunIcon,
@@ -23,8 +24,11 @@ import { useTheme } from "next-themes"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
+import { useNavigate, useLocation } from "react-router-dom"
+import { useLocale } from "~/hooks/use-locale"
+import { useTranslation } from "~/hooks/use-translation"
 
-const HomeHeaderNotLoggedInMenu = () => {
+export const HomeHeaderNotLoggedInMenu = () => {
   const authContext = useContext(AuthContext)
 
   const { theme, setTheme } = useTheme()
@@ -69,6 +73,29 @@ const HomeHeaderNotLoggedInMenu = () => {
     )
   }
 
+  const t = useTranslation()
+
+  const locale = useLocale()
+
+  const navigate = useNavigate()
+
+  const location = useLocation()
+
+  const setLocale = (locale: string) => {
+    const currentLocale = location.pathname.match(/^\/(ja|en)/)?.[1] || ""
+
+    const newUrl =
+      locale === "ja"
+        ? currentLocale
+          ? location.pathname.replace(`/${currentLocale}`, "")
+          : location.pathname
+        : currentLocale
+          ? location.pathname.replace(`/${currentLocale}`, "/en")
+          : `/en${location.pathname}`
+
+    navigate(newUrl)
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -82,6 +109,33 @@ const HomeHeaderNotLoggedInMenu = () => {
             {getThemeIcon()}
             {"テーマ"}
           </DropdownMenuSubTrigger>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <GlobeIcon className="mr-2 inline-block w-4" />
+              {t("言語", "Language")}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuLabel>
+                  {t("言語変更", "Change Language")}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={locale}
+                  onValueChange={(newLocale) => {
+                    setLocale(newLocale)
+                  }}
+                >
+                  <DropdownMenuRadioItem value="ja">
+                    {t("日本語", "Japanese")}
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="en">
+                    {t("英語", "English")}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
               <DropdownMenuLabel>{"テーマ変更"}</DropdownMenuLabel>
@@ -124,5 +178,3 @@ const HomeHeaderNotLoggedInMenu = () => {
     </DropdownMenu>
   )
 }
-
-export default HomeHeaderNotLoggedInMenu
