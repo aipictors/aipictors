@@ -119,7 +119,8 @@ export async function loader(props: LoaderFunctionArgs) {
     Number(todayDay),
   )
 
-  sevenDaysAfter.setDate(sevenDaysAgo.getDate() + 14)
+  sevenDaysAfter.setDate(sevenDaysAgo.getDate() + 8)
+  sevenDaysAfter.setHours(sevenDaysAgo.getHours() + 9)
 
   const formatDate = (date: Date) => date.toISOString().split("T")[0]
 
