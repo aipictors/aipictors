@@ -104,15 +104,15 @@ export function HomeUserNavigationMenu(props: Props) {
 
   const setLocale = (locale: string) => {
     const currentLocale = location.pathname.match(/^\/(ja|en)/)?.[1] || ""
+    let newUrl = location.pathname
 
-    const newUrl =
-      locale === "ja"
-        ? currentLocale
-          ? location.pathname.replace(`/${currentLocale}`, "")
-          : location.pathname
-        : currentLocale
-          ? location.pathname.replace(`/${currentLocale}`, "/en")
-          : `/en${location.pathname}`
+    if (locale === "ja" && currentLocale) {
+      newUrl = location.pathname.replace(`/${currentLocale}`, "")
+    } else if (locale !== "ja") {
+      newUrl = currentLocale
+        ? location.pathname.replace(`/${currentLocale}`, "/en")
+        : `/en${location.pathname}`
+    }
 
     navigate(newUrl)
   }

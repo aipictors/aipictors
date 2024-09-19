@@ -25,6 +25,7 @@ import { Badge } from "~/components/ui/badge"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { toStyleText } from "~/utils/work/to-style-text"
 import { format } from "date-fns"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -53,6 +54,8 @@ export function WorkArticle(props: Props) {
   useEffect(() => {
     setTagNames(props.work.tagNames)
   }, [props.work.tagNames])
+
+  const t = useTranslation()
 
   return (
     <article className="flex flex-col space-y-4">
@@ -112,7 +115,14 @@ export function WorkArticle(props: Props) {
           targetWorkOwnerUserId={props.work.user.id}
           isDisabledShare={props.isDraft}
         />
-        <h1 className="font-bold text-lg">{props.work.title}</h1>
+        <h1 className="font-bold text-lg">
+          {t(
+            props.work.title,
+            props.work.enTitle.length > 0
+              ? props.work.enTitle
+              : props.work.title,
+          )}
+        </h1>
         <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}
           {appContext.userId === props.work.user.id && (
@@ -229,7 +239,10 @@ export function WorkArticle(props: Props) {
           />
         </div>
         <p className="overflow-hidden whitespace-pre-wrap break-words">
-          {props.work.description}
+          {t(
+            props.work.description ?? "",
+            props.work.enDescription ?? props.work.description ?? "",
+          )}
         </p>
         {props.work.promptAccessType === "PRIVATE" &&
           props.work.user.id === appContext.userId && (
