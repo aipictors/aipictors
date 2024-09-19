@@ -290,6 +290,42 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "響　晶",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_HibikiAkira0616.png?alt=media&token=7aaaa9dd-3618-4557-94ec-57992293abc7",
+    twitterId: "HibikiAkira0616",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "東海アニメ研究会「Zeele」",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_TokaiAnime.jpg?alt=media&token=88e157d2-1432-470f-81aa-9fd6705d8688",
+    twitterId: "TokaiAnime",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
+    name: "さつき＠うさぎ好き",
+    types: ["EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fmasukarasulove.gif?alt=media&token=d25ff6ce-b206-4bf9-a9dc-d2dd0e85a5cd",
+    twitterId: "masukarasulove",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "Aipictors",
     types: ["EXHIBIT"],
     message: null,
