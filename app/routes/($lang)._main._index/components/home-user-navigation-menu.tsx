@@ -17,6 +17,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import {
   CoffeeIcon,
   GemIcon,
+  GlobeIcon,
   LogOutIcon,
   MessageCircleIcon,
   MoonIcon,
@@ -33,6 +34,8 @@ import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
+import { useTranslation } from "~/hooks/use-translation"
+import { useLocale } from "~/hooks/use-locale"
 
 type Props = {
   onLogout(): void
@@ -51,6 +54,10 @@ export function HomeUserNavigationMenu(props: Props) {
   const { data: userSetting } = useSuspenseQuery(userSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
+
+  const t = useTranslation()
+
+  const locale = useLocale()
 
   const promptonUser = data?.viewer?.user?.promptonUser?.id ?? ""
 
@@ -90,6 +97,20 @@ export function HomeUserNavigationMenu(props: Props) {
     const colorSuffix = suffix ?? ""
     setTheme(newMode + colorSuffix)
   }
+
+  const setLocale = (locale: string) => {
+    const currentLocale = /\/(ja|en)/.test(window.location.pathname)
+      ? window.location.pathname.match(/\/(ja|en)/)?.[1]
+      : ""
+
+    const newLocale = locale === "ja" ? "" : "en"
+    const newUrl = currentLocale
+      ? window.location.pathname.replace(`/${currentLocale}`, `/${newLocale}`)
+      : `/${newLocale}${window.location.pathname}`
+
+    window.location.href = newUrl
+  }
+
   const setMode = (theme: string) => {
     if (theme === "system" || theme === "light" || theme === "dark") {
       return theme
@@ -231,6 +252,34 @@ export function HomeUserNavigationMenu(props: Props) {
                   icon={<SettingsIcon className="mr-2 inline-block w-4" />}
                   label="その他のカラー"
                 />
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <GlobeIcon className="mr-2 inline-block w-4" />
+              {t("言語", "Language")}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuLabel>
+                  {t("言語変更", "Change Language")}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={locale}
+                  onValueChange={(newLocale) => {
+                    setLocale(newLocale)
+                  }}
+                >
+                  <DropdownMenuRadioItem value="ja">
+                    {t("日本語", "Japanese")}
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="en">
+                    {t("英語", "English")}
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
