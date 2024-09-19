@@ -1,6 +1,6 @@
 import { useLocation } from "@remix-run/react"
 
-export const useTranslation = () => {
+export function useTranslation() {
   const { pathname } = useLocation()
 
   // パスに基づいて言語を決定

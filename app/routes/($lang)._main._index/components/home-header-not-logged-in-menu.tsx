@@ -28,7 +28,7 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 
-const HomeHeaderNotLoggedInMenu = () => {
+export const HomeHeaderNotLoggedInMenu = () => {
   const authContext = useContext(AuthContext)
 
   const { theme, setTheme } = useTheme()
@@ -178,5 +178,3 @@ const HomeHeaderNotLoggedInMenu = () => {
     </DropdownMenu>
   )
 }
-
-export default HomeHeaderNotLoggedInMenu
