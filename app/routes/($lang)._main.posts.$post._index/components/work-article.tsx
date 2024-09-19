@@ -24,6 +24,7 @@ import { toRatingText } from "~/utils/work/to-rating-text"
 import { Badge } from "~/components/ui/badge"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { toStyleText } from "~/utils/work/to-style-text"
+import { format } from "date-fns"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -43,6 +44,11 @@ export function WorkArticle(props: Props) {
   const [tagNames, setTagNames] = useState<string[]>(props.work.tagNames)
 
   const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
+
+  const toDateTextUrl = (time: number, dateFormat: string) => {
+    const date = new Date(time * 1000)
+    return format(date, dateFormat)
+  }
 
   useEffect(() => {
     setTagNames(props.work.tagNames)
@@ -179,10 +185,14 @@ export function WorkArticle(props: Props) {
               </Badge>
             )}
             {props.work.dailyRanking && (
-              <Badge
-                variant="secondary"
-                className="flex items-center space-x-2"
-              >{`デイリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+              <Link
+                to={`/rankings/${toDateTextUrl(props.work.createdAt, "yyyy/MM/dd")}`}
+              >
+                <Badge
+                  variant="secondary"
+                  className="flex items-center space-x-2"
+                >{`デイリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+              </Link>
             )}
             {props.work.weeklyRanking && (
               <Badge
@@ -191,10 +201,14 @@ export function WorkArticle(props: Props) {
               >{`ウィークリー入賞 ${props.work.dailyRanking} 位`}</Badge>
             )}
             {props.work.monthlyRanking && (
-              <Badge
-                variant="secondary"
-                className="flex items-center space-x-2"
-              >{`マンスリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+              <Link
+                to={`/rankings/${toDateTextUrl(props.work.createdAt, "yyyy/MM")}`}
+              >
+                <Badge
+                  variant="secondary"
+                  className="flex items-center space-x-2"
+                >{`マンスリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+              </Link>
             )}
           </div>
           {props.work.dailyTheme && (

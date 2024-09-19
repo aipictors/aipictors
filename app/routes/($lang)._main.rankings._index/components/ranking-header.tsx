@@ -38,7 +38,9 @@ export function RankingHeader(props: Props) {
   useEffect(() => {
     if (!isFirstRender.current) {
       handleNavigate(year, month, day)
-      setDate(new Date(year, month - 1, day || 1).toISOString().split("T")[0]) // カレンダーの日付を同期
+      const jstDate = new Date(year, month - 1, day || 1)
+      jstDate.setHours(jstDate.getHours() + 9) // 日本時間に合わせる
+      setDate(jstDate.toISOString().split("T")[0])
     }
   }, [year, month, day, weekIndex])
 
