@@ -31,7 +31,7 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { useTheme } from "next-themes"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
-import { Link } from "@remix-run/react"
+import { Link, useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
 import { useTranslation } from "~/hooks/use-translation"
@@ -79,6 +79,10 @@ export function HomeUserNavigationMenu(props: Props) {
 
   const { theme, setTheme } = useTheme()
 
+  const navigate = useNavigate()
+
+  const location = useLocation()
+
   const setColorTheme = (newMode: string) => {
     if (newMode === "system") {
       setTheme(newMode)
@@ -99,16 +103,18 @@ export function HomeUserNavigationMenu(props: Props) {
   }
 
   const setLocale = (locale: string) => {
-    const currentLocale = /\/(ja|en)/.test(window.location.pathname)
-      ? window.location.pathname.match(/\/(ja|en)/)?.[1]
-      : ""
+    const currentLocale = location.pathname.match(/^\/(ja|en)/)?.[1] || ""
 
-    const newLocale = locale === "ja" ? "" : "en"
-    const newUrl = currentLocale
-      ? window.location.pathname.replace(`/${currentLocale}`, `/${newLocale}`)
-      : `/${newLocale}${window.location.pathname}`
+    const newUrl =
+      locale === "ja"
+        ? currentLocale
+          ? location.pathname.replace(`/${currentLocale}`, "")
+          : location.pathname
+        : currentLocale
+          ? location.pathname.replace(`/${currentLocale}`, "/en")
+          : `/en${location.pathname}`
 
-    window.location.href = newUrl
+    navigate(newUrl)
   }
 
   const setMode = (theme: string) => {
