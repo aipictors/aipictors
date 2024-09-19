@@ -7,7 +7,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 export const toRatingText = (type: IntrospectionEnum<"Rating">) => {
   switch (type) {
     case "G":
-      return "G"
+      return "全年齢"
     case "R15":
       return "R15"
     case "R18":
