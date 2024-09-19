@@ -1,5 +1,4 @@
 import type { FragmentOf } from "gql.tada"
-import { ArrowDownWideNarrow } from "lucide-react"
 import { Suspense, useEffect, useState } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import {
@@ -11,7 +10,6 @@ import {
 } from "~/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useSearchParams } from "react-router-dom"
 import {
   HomeAwardWorkSection,
@@ -44,6 +42,10 @@ import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/c
 import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
 import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
+import { Button } from "~/components/ui/button"
+import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
+import { ArrowDownWideNarrow } from "lucide-react"
+import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -187,6 +189,14 @@ export function HomeContents(props: Props) {
     updateQueryParams(searchParams)
   }
 
+  const [workView, setWorkView] = useState(searchParams.get("view") || "new")
+
+  const handleWorkViewChange = (view: string) => {
+    setWorkView(view)
+    searchParams.set("view", view)
+    updateQueryParams(searchParams)
+  }
+
   return (
     <Tabs
       defaultValue={searchParams.get("tab") || "home"}
@@ -323,80 +333,123 @@ export function HomeContents(props: Props) {
           </div>
         )}
       </TabsContent>
-      <TabsContent value="new">
-        <div className="space-y-4">
-          <div className="flex space-x-4">
-            <Select
-              value={workType ? workType : ""}
-              onValueChange={handleWorkTypeChange}
-            >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={workType ? toWorkTypeText(workType) : "種類"}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">{"種類"}</SelectItem>
-                <SelectItem value="WORK">{"画像"}</SelectItem>
-                <SelectItem value="VIDEO">{"動画"}</SelectItem>
-                <SelectItem value="NOVEL">{"小説"}</SelectItem>
-                <SelectItem value="COLUMN">{"コラム"}</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={
-                isPromptPublic === null
-                  ? "ALL"
-                  : isPromptPublic
-                    ? "prompt"
-                    : "no-prompt"
-              }
-              onValueChange={handlePromptChange}
-            >
-              <SelectTrigger>
-                <SelectValue
-                  placeholder={
-                    isPromptPublic === null
-                      ? "プロンプト有無"
-                      : isPromptPublic
-                        ? "あり"
-                        : "なし"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">{"プロンプト有無"}</SelectItem>
-                <SelectItem value="prompt">{"あり"}</SelectItem>
-                <SelectItem value="no-prompt">{"なし"}</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={sortType ? sortType : ""}
-              onValueChange={handleSortTypeChange}
-            >
-              <SelectTrigger>
-                <ArrowDownWideNarrow />
-                <SelectValue placeholder={sortType ? sortType : "最新"} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="DATE_CREATED">{"最新"}</SelectItem>
-                <SelectItem value="LIKES_COUNT">{"最も人気"}</SelectItem>
-                <SelectItem value="COMMENTS_COUNT">{"コメント数"}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Suspense fallback={<AppLoadingPage />}>
-            <HomeWorksSection
-              page={newWorksPage}
-              setPage={setNewWorksPage}
-              isSensitive={props.isSensitive}
-              workType={workType}
-              isPromptPublic={isPromptPublic}
-              sortType={sortType}
-            />
-          </Suspense>
+      <TabsContent value="new" className="flex flex-col space-y-4">
+        <div className="flex space-x-4">
+          <Button
+            variant={workView === "new" ? "default" : "secondary"}
+            onClick={() => handleWorkViewChange("new")}
+          >
+            {"新着"}
+          </Button>
+          <Button
+            variant={
+              searchParams.get("view") === "popular" ? "default" : "secondary"
+            }
+            onClick={() => handleWorkViewChange("popular")}
+          >
+            <div className="flex space-x-2">
+              <p>{"人気"}</p>
+              <CrossPlatformTooltip
+                text={"最近投稿された人気作品が表示されます"}
+              />
+            </div>
+          </Button>
         </div>
+        {workView === "new" ? (
+          <div className="space-y-4">
+            {/* 新着作品の表示 */}
+            <div className="space-y-4">
+              <div className="flex space-x-4">
+                <Select
+                  value={workType ? workType : ""}
+                  onValueChange={handleWorkTypeChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={workType ? toWorkTypeText(workType) : "種類"}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">{"種類"}</SelectItem>
+                    <SelectItem value="WORK">{"画像"}</SelectItem>
+                    <SelectItem value="VIDEO">{"動画"}</SelectItem>
+                    <SelectItem value="NOVEL">{"小説"}</SelectItem>
+                    <SelectItem value="COLUMN">{"コラム"}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={
+                    isPromptPublic === null
+                      ? "ALL"
+                      : isPromptPublic
+                        ? "prompt"
+                        : "no-prompt"
+                  }
+                  onValueChange={handlePromptChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={
+                        isPromptPublic === null
+                          ? "プロンプト有無"
+                          : isPromptPublic
+                            ? "あり"
+                            : "なし"
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">{"プロンプト有無"}</SelectItem>
+                    <SelectItem value="prompt">{"あり"}</SelectItem>
+                    <SelectItem value="no-prompt">{"なし"}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={sortType ? sortType : ""}
+                  onValueChange={handleSortTypeChange}
+                >
+                  <SelectTrigger>
+                    <ArrowDownWideNarrow />
+                    <SelectValue placeholder={sortType ? sortType : "最新"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DATE_CREATED">{"最新"}</SelectItem>
+                    <SelectItem value="LIKES_COUNT">{"最も人気"}</SelectItem>
+                    <SelectItem value="COMMENTS_COUNT">
+                      {"コメント数"}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Suspense fallback={<AppLoadingPage />}>
+                <HomeWorksSection
+                  page={newWorksPage}
+                  setPage={setNewWorksPage}
+                  isSensitive={props.isSensitive}
+                  workType={workType}
+                  isPromptPublic={isPromptPublic}
+                  sortType={sortType}
+                />
+              </Suspense>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* 人気作品の表示 */}
+            <Suspense fallback={<AppLoadingPage />}>
+              <HomeHotWorksSection
+                page={newWorksPage}
+                setPage={setNewWorksPage}
+                isSensitive={props.isSensitive}
+                workType={workType}
+                isPromptPublic={isPromptPublic}
+                sortType={sortType}
+              />
+            </Suspense>
+          </div>
+        )}
       </TabsContent>
+
       <TabsContent value="follow-user">
         <Suspense fallback={<AppLoadingPage />}>
           <FollowUserFeedContents
