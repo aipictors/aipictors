@@ -32,6 +32,7 @@ import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * エディタの設定
@@ -120,10 +121,15 @@ export function GenerationConfigView() {
     context.resetForInit()
   }, [])
 
+  const t = useTranslation()
+
   return (
     <GenerationViewCard
-      title={"モデル"}
-      tooltip={"イラストに使用するモデルです、絵柄を変更できます。"}
+      title={t("モデル", "Model")}
+      tooltip={t(
+        "イラストに使用するモデルです、絵柄を変更できます。",
+        "The model used for the illustration, you can change the design.",
+      )}
     >
       <ScrollArea type="always">
         <div className={"flex flex-col gap-y-4 px-0 md:px-4"}>
@@ -186,7 +192,7 @@ export function GenerationConfigView() {
             <AccordionItem value="setting">
               <AccordionTrigger>
                 <div className="text-left">
-                  <p>詳細設定</p>
+                  <p>{t("詳細設定", "Detailed settings")}</p>
                   <p className="text-sm opacity-40">
                     Scale:{context.config.scale}, Steps:{context.config.steps},
                     Sampler:{context.config.sampler}, Vae:{context.config.vae}

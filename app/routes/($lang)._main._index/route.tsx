@@ -7,7 +7,7 @@ import {
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
@@ -21,6 +21,7 @@ import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-respo
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { ConstructionAlert } from "~/components/construction-alert"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.HOME)
@@ -34,7 +35,13 @@ const getUtcDateString = (date: Date) => {
   return `${year}/${month}/${day}`
 }
 
-export async function loader({ request }: { request: Request }) {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   // 下記カテゴリからランダムに2つ選んで返す
   const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
 
@@ -165,6 +172,10 @@ export async function loader({ request }: { request: Request }) {
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <>

@@ -7,6 +7,7 @@ import { PromptCategoriesDialogContent } from "~/routes/($lang).generation._inde
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { BookTextIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * Format prompt text
@@ -50,16 +51,21 @@ export function GenerationPromptView() {
 
   const { value, setTrue, setFalse } = useBoolean()
 
+  const t = useTranslation()
+
   return (
     <>
       <GenerationViewCard
-        title={"プロンプト"}
-        tooltip={"生成したいイラストの要素をキーワードから選んでください。"}
+        title={t("プロンプト", "Prompts")}
+        tooltip={t(
+          "生成したいイラストの要素をキーワードから選んでください。",
+          "Select the elements you want to generate from the keywords",
+        )}
         action={
           <>
             <div className="hidden xl:block">
               <Button variant={"secondary"} size={"sm"}>
-                {"キーワード"}
+                {t("キーワード", "Keywords")}
               </Button>
             </div>
             <div className="block xl:hidden">
@@ -73,9 +79,10 @@ export function GenerationPromptView() {
         <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
           <Textarea
             className="hidden h-full min-h-48 resize-none font-mono md:block md:min-h-16"
-            placeholder={
-              "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece"
-            }
+            placeholder={t(
+              "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece",
+              "Please enter the elements you want to generate in keywords",
+            )}
             value={context.config.promptText}
             onChange={(event) => {
               context.updatePrompt(event.target.value)
@@ -86,7 +93,10 @@ export function GenerationPromptView() {
           />
           <AutoResizeTextarea
             className="block h-full min-h-48 resize-none font-mono md:hidden md:min-h-16"
-            placeholder={"生成キーワード例: 1 girl, masterpiece"}
+            placeholder={t(
+              "生成キーワード例: 1 girl, masterpiece",
+              "Please enter the elements you want to generate in keywords",
+            )}
             value={context.config.promptText}
             onChange={(event) => {
               context.updatePrompt(event.target.value)
@@ -110,7 +120,7 @@ export function GenerationPromptView() {
                 size={"sm"}
                 className="sticky bottom-0 w-full"
               >
-                {"キーワードから選ぶ"}
+                {t("キーワードから選ぶ", "Select from keywords")}
               </Button>
             </DialogTrigger>
             <PromptCategoriesDialogContent

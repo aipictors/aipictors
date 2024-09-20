@@ -8,6 +8,7 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { GenerationConfigMemoSavingContent } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-saving-contents"
 import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   refetchMemos: () => void
@@ -23,6 +24,8 @@ export function GenerationConfigMemoOperationParts(props: Props) {
     setIsOpen(false)
   }
 
+  const t = useTranslation()
+
   return (
     <>
       <Button
@@ -31,7 +34,7 @@ export function GenerationConfigMemoOperationParts(props: Props) {
         }}
         className="mb-2 h-10 md:mb-0"
       >
-        {"現在の設定をメモする"}
+        {t("現在の設定をメモする", "Save current settings")}
       </Button>
       <Dialog
         open={isOpen}
@@ -41,7 +44,9 @@ export function GenerationConfigMemoOperationParts(props: Props) {
       >
         <DialogContent>
           <DialogHeader />
-          <div>{"保存したプリセットは復元できます"}</div>
+          <div>
+            {t("保存したプリセットは復元できます", "Presets can be restored.")}
+          </div>
           <ScrollArea className="h-full">
             <GenerationConfigMemoSavingContent
               refetchMemos={props.refetchMemos}
@@ -55,7 +60,7 @@ export function GenerationConfigMemoOperationParts(props: Props) {
                 closeDialog()
               }}
             >
-              {"閉じる"}
+              {t("閉じる", "Close")}
             </Button>
           </DialogFooter>
         </DialogContent>

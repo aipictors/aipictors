@@ -210,6 +210,8 @@ export const PhotoAlbumWorkFragment = graphql(
   `fragment PhotoAlbumWork on WorkNode @_unmask {
     id
     title
+    enTitle
+    enDescription
     accessType
     adminAccessType
     type

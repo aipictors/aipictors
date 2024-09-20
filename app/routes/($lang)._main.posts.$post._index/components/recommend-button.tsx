@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { Loader2Icon } from "lucide-react"
 import { graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   workId: string
@@ -14,6 +15,8 @@ type Props = {
 }
 
 export function RecommendButton(props: Props) {
+  const t = useTranslation()
+
   const authContext = useContext(AuthContext)
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {
@@ -94,7 +97,7 @@ export function RecommendButton(props: Props) {
           {isDeleting ? (
             <Loader2Icon className="h-4 w-4 animate-spin" />
           ) : (
-            <p>{"推薦済み"}</p>
+            <p>{t("推薦済み", "Recommended")}</p>
           )}
         </Button>
       ) : (
@@ -102,7 +105,7 @@ export function RecommendButton(props: Props) {
           {isCreating ? (
             <Loader2Icon className="h-4 w-4 animate-spin" />
           ) : (
-            <p>{"推薦"}</p>
+            <p>{t("推薦", "Recommend")}</p>
           )}
         </Button>
       )}

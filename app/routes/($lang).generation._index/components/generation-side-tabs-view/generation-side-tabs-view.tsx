@@ -1,4 +1,5 @@
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { useTranslation } from "~/hooks/use-translation"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
@@ -14,6 +15,8 @@ export function GenerationSideTabsView() {
     return snap.value
   })
 
+  const t = useTranslation()
+
   return (
     <>
       {state === "HISTORY_LIST_FULL" || state === "WORK_LIST_FULL" ? (
@@ -27,7 +30,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="HISTORY_LIST_FULL"
             >
-              履歴
+              {t("履歴", "History")}
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -37,7 +40,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="WORK_LIST_FULL"
             >
-              検索
+              {t("検索", "Search")}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -51,7 +54,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="PROMPT_VIEW"
             >
-              履歴
+              {t("履歴", "History")}
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -60,7 +63,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="WORKS_FROM_MODEL"
             >
-              作品検索
+              {t("作品検索", "Search posts")}
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -69,7 +72,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="COMMUNICATION"
             >
-              ご意見
+              {t("ご意見", "Feedback")}
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -78,7 +81,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="LINKS"
             >
-              アンケート
+              {t("アンケート", "Survey")}
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -89,7 +92,7 @@ export function GenerationSideTabsView() {
               className="w-full"
               value="OLD_LINK"
             >
-              旧版
+              {t("旧版", "Old")}
             </TabsTrigger>
           </TabsList>
         </Tabs>

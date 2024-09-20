@@ -4,6 +4,7 @@ import { Slider } from "~/components/ui/slider"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * i2i向け画像設定
@@ -29,14 +30,19 @@ export function GenerationConfigI2i() {
     context.changeI2iImageBase64("")
   }
 
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
         <span className="text-nowrap font-bold">
-          {"画像から生成（SDXL以外）"}
+          {t("画像から生成（SDXL以外）", "Generate from image (except SDXL)")}
         </span>
         <CrossPlatformTooltip
-          text={"任意の画像から、画像生成することができます ※機能紹介動画"}
+          text={t(
+            "任意の画像から、画像生成することができます ※機能紹介動画",
+            "You can generate images from any image ※ Function introduction video",
+          )}
           detailLink={"https://youtu.be/d1nKrnUy3wY?feature=shared"}
           isTargetBlank={true}
         />
@@ -52,12 +58,13 @@ export function GenerationConfigI2i() {
         <div className="flex items-center gap-x-2">
           <div className="flex w-20 items-center">
             <span className="w-12 whitespace-nowrap text-nowrap text-sm">
-              {"変更度"}
+              {t("変更度", "Change rate")}
             </span>
             <CrossPlatformTooltip
-              text={
-                "変更度が小さいほど元の画像が残ります。推奨値は0.5~0.6です。"
-              }
+              text={t(
+                "変更度が小さいほど元の画像が残ります。推奨値は0.5~0.6です。",
+                "The smaller the change, the more the original image remains. The recommended value is 0.5 to 0.6.",
+              )}
             />
           </div>
           <Slider

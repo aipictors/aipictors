@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 /**
@@ -5,12 +6,14 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
  * @param
  */
 export const toStyleText = (style: IntrospectionEnum<"ImageStyle">) => {
+  const t = useTranslation()
+
   switch (style) {
     case "ILLUSTRATION":
-      return "イラスト"
+      return t("イラスト", "Illustration")
     case "REAL":
-      return "リアル"
+      return t("リアル", "Real")
     case "SEMI_REAL":
-      return "セミリアル"
+      return t("セミリアル", "SemiReal")
   }
 }

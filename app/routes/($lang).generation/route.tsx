@@ -12,6 +12,7 @@ import { ApolloError } from "@apollo/client/index"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, json, useLoaderData } from "@remix-run/react"
 import { Suspense, useContext } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 export const meta: MetaFunction = () => {
   const metaTitle = "無料AIイラスト生成 - スマホ対応"
@@ -63,6 +64,8 @@ export function HydrateFallback() {
 }
 
 export default function GenerationLayout() {
+  const t = useTranslation()
+
   const data = useLoaderData<typeof loader>()
 
   const authContext = useContext(AuthContext)
@@ -73,7 +76,7 @@ export default function GenerationLayout() {
 
   return (
     <>
-      <HomeHeader title="Aipictors画像生成" />
+      <HomeHeader title={t("Aipictors画像生成", "Aipictors Generator")} />
       <Suspense fallback={<AppLoadingPage />}>
         <GenerationQueryProvider generationQueryContext={data}>
           <GenerationConfigProvider>

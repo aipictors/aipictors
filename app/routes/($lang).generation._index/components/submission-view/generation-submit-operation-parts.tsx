@@ -25,6 +25,7 @@ import { SubscriptionDialogContent } from "~/routes/($lang).generation._index/co
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isCreatingTask: boolean
@@ -40,8 +41,9 @@ type Props = {
 
 /**
  * 生成ボタンのラベル
- * @param mode
  * @param isSetI2iImage
+ * @param prompts
+ * @param seed
  */
 export function getSubmitButtonLabel(
   isSetI2iImage: boolean,
@@ -49,21 +51,26 @@ export function getSubmitButtonLabel(
   seed: number,
   inProgressImageGenerationTasksCount: number,
 ) {
-  const seedLabel = seed === -1 ? "" : "(Seed固定)"
+  const t = useTranslation()
+
+  const seedLabel = seed === -1 ? "" : t("(Seed固定)", "(Seed fixed)")
 
   if (!prompts) {
     if (isSetI2iImage) {
-      return `画像からランダム生成${seedLabel}`
+      return t(
+        `画像からランダム生成${seedLabel}`,
+        `Random generation from image ${seedLabel}`,
+      )
     }
-    return `ランダム生成${seedLabel}`
+    return t(`ランダム生成${seedLabel}`, `Random generation ${seedLabel}`)
   }
   if (isSetI2iImage) {
-    return `画像から生成${seedLabel}`
+    return t(`画像から生成${seedLabel}`, `Generate from image ${seedLabel}`)
   }
   if (inProgressImageGenerationTasksCount > 0) {
-    return `追加生成${seedLabel}`
+    return t(`追加生成${seedLabel}`, `Add generation ${seedLabel}`)
   }
-  return `生成${seedLabel}`
+  return t(`生成${seedLabel}`, `Generate ${seedLabel}`)
 }
 
 /**
@@ -73,6 +80,7 @@ export function GenerationSubmitOperationParts(props: Props) {
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   const isCurrentPremiumPlan = () => {
     if (context.currentPass?.type === "PREMIUM") {
@@ -135,7 +143,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   onChange={context.changeGenerationCount}
                   count={context.config.generationCount}
                 />
-                {"枚"}
+                {t("枚", "pieces")}
                 <Button
                   className="mr-2"
                   size={"icon"}
@@ -155,7 +163,7 @@ export function GenerationSubmitOperationParts(props: Props) {
               onChange={context.changeGenerationCount}
               count={context.config.generationCount}
             />
-            <div className="mr-2">枚</div>
+            <div className="mr-2">{t("枚", "pieces")}</div>
           </div>
         </div>
         {/* 未ログインならログイン、ユーザ情報取得中もdisabledな状態で表示 */}
@@ -173,18 +181,18 @@ export function GenerationSubmitOperationParts(props: Props) {
               />
               <div className="text-center leading-3">
                 <Label htmlFor="extras-mode" className="block text-center">
-                  高解像度
+                  {t("高解像度", "High Resolution")}
                 </Label>
                 <Label
                   htmlFor="extras-mode"
                   className="block text-center text-xs"
                 >
-                  2枚消費
+                  {t("2枚消費", "Consumes 2 pieces")}
                 </Label>
               </div>
             </div>
             <LoginDialogButton
-              label="生成"
+              label={t("生成", "Generate")}
               isLoading={
                 authContext.isLoading ||
                 (authContext.isLoggedIn && context.user === null)
@@ -197,7 +205,7 @@ export function GenerationSubmitOperationParts(props: Props) {
                   isNoBackground={true}
                 >
                   <div className="flex items-center">
-                    {"生成"}
+                    {t("生成", "Generate")}
                     {(authContext.isLoading ||
                       (authContext.isLoggedIn && context.user === null)) && (
                       <span className="ml-2 animate-spin">
@@ -225,7 +233,9 @@ export function GenerationSubmitOperationParts(props: Props) {
                   className="w-full text-balance"
                   isNoBackground={true}
                 >
-                  {props.isCreatingTask ? "処理中.." : "生成"}
+                  {props.isCreatingTask
+                    ? t("処理中..", "Processing..")
+                    : t("生成", "Generate")}
                 </GradientBorderButton>
               }
             />
@@ -299,13 +309,13 @@ export function GenerationSubmitOperationParts(props: Props) {
                         htmlFor="extras-mode"
                         className="block text-center"
                       >
-                        高解像度
+                        {t("高解像度", "High Resolution")}
                       </Label>
                       <Label
                         htmlFor="extras-mode"
                         className="block text-center text-xs"
                       >
-                        2枚消費
+                        {t("2枚消費", "Consumes 2 pieces")}
                       </Label>
                     </div>
                   </div>
@@ -332,14 +342,16 @@ export function GenerationSubmitOperationParts(props: Props) {
               <DialogContent className="min-w-[64vw]">
                 <DialogHeader>
                   <DialogTitle>
-                    {
-                      "Aipictorsの生成機能をご利用いただき、ありがとうございます。"
-                    }
+                    {t(
+                      "Aipictorsの生成機能をご利用いただき、ありがとうございます。",
+                      "Thank you for using Aipictors' generation feature.",
+                    )}
                   </DialogTitle>
                   <DialogDescription>
-                    {
-                      "Aipictors+に加入することで生成枚数などの特典を受けることができます。"
-                    }
+                    {t(
+                      "Aipictors+に加入することで生成枚数などの特典を受けることができます。",
+                      "By subscribing to Aipictors+, you can enjoy additional benefits like increased generation count.",
+                    )}
                   </DialogDescription>
                 </DialogHeader>
                 <SubscriptionDialogContent />

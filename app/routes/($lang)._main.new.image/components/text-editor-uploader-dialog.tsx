@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { Loader2Icon, XIcon } from "lucide-react"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   token: string
@@ -27,23 +28,28 @@ export function TextEditorUploaderDialog(props: Props) {
 
   const [isUploading, setIsUploading] = useState(false)
 
+  const t = useTranslation()
+
   const resizeImage = (file: File, maxSize: number): Promise<string | null> => {
     return new Promise((resolve, reject) => {
       const img = new Image()
       const reader = new FileReader()
 
       reader.onload = (e) => {
-        if (!e.target?.result) return reject("画像読み込みに失敗しました")
+        if (!e.target?.result)
+          return reject(t("画像読み込みに失敗しました", "Failed to load image"))
         img.src = e.target.result as string
       }
 
-      reader.onerror = () => reject("画像読み込みに失敗しました")
+      reader.onerror = () =>
+        reject(t("画像読み込みに失敗しました", "Failed to load image"))
       reader.readAsDataURL(file)
 
       img.onload = () => {
         const canvas = document.createElement("canvas")
         const ctx = canvas.getContext("2d")
-        if (!ctx) return reject("画像読み込みに失敗しました")
+        if (!ctx)
+          return reject(t("画像読み込みに失敗しました", "Failed to load image"))
 
         let width = img.width
         let height = img.height
@@ -68,7 +74,8 @@ export function TextEditorUploaderDialog(props: Props) {
         resolve(resizedBase64)
       }
 
-      img.onerror = () => reject("画像読み込みに失敗しました")
+      img.onerror = () =>
+        reject(t("画像読み込みに失敗しました", "Failed to load image"))
     })
   }
 
@@ -77,7 +84,7 @@ export function TextEditorUploaderDialog(props: Props) {
   ) => {
     const file = event.target.files?.[0]
     if (!file) {
-      toast("画像を選択してください")
+      toast(t("画像を選択してください", "Please select an image"))
       return
     }
 
@@ -85,19 +92,22 @@ export function TextEditorUploaderDialog(props: Props) {
     if (resizedImage) {
       setImageBase64(resizedImage)
     } else {
-      toast("画像のリサイズに失敗しました")
+      toast(t("画像のリサイズに失敗しました", "Failed to resize the image"))
     }
   }
 
   const onUpload = async () => {
     if (!imageBase64) {
-      toast("画像を選択してください")
+      toast(t("画像を選択してください", "Please select an image"))
       return
     }
 
     if (count >= 20) {
       toast(
-        "画像アップロード上限です、下書きで一時投稿ののち、時間を置いて画面更新してください",
+        t(
+          "画像アップロード上限です、下書きで一時投稿ののち、時間を置いて画面更新してください",
+          "You have reached the image upload limit. Please save as a draft and refresh the page after some time.",
+        ),
       )
       return
     }
@@ -113,7 +123,7 @@ export function TextEditorUploaderDialog(props: Props) {
       setImageBase64(null)
       setCount(count + 1)
     } else {
-      toast("画像のアップロードに失敗しました")
+      toast(t("画像のアップロードに失敗しました", "Failed to upload the image"))
     }
   }
 
@@ -132,7 +142,9 @@ export function TextEditorUploaderDialog(props: Props) {
       <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
         <Card>
           <CardContent className="space-y-2 p-4">
-            <p className="font-bold text-sm">{"本文に差し込む画像"}</p>
+            <p className="font-bold text-sm">
+              {t("本文に差し込む画像", "Image to insert in text")}
+            </p>
             <input type="file" accept="image/*" onChange={handleImageUpload} />
             <Button
               className="w-full items-center"
@@ -143,7 +155,7 @@ export function TextEditorUploaderDialog(props: Props) {
               {isUploading ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : (
-                <p>{"画像をアップロード"}</p>
+                <p>{t("画像をアップロード", "Upload Image")}</p>
               )}
             </Button>
             <ScrollArea className="max-h-80 overflow-auto p-4">
@@ -157,7 +169,7 @@ export function TextEditorUploaderDialog(props: Props) {
                     <div className="h-16 w-16 overflow-hidden rounded">
                       <img
                         src={url}
-                        alt="uploaded"
+                        alt={t("アップロードされた画像", "uploaded")}
                         className="m-auto max-w-16"
                       />
                     </div>

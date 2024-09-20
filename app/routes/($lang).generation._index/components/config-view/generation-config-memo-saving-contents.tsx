@@ -16,6 +16,7 @@ import { graphql } from "gql.tada"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onClose: () => void
@@ -72,6 +73,8 @@ export function GenerationConfigMemoSavingContent(props: Props) {
     },
   )
 
+  const t = useTranslation()
+
   const onCreateMemo = async () => {
     await createMemo({
       variables: {
@@ -97,41 +100,43 @@ export function GenerationConfigMemoSavingContent(props: Props) {
 
   return (
     <>
-      {"*タイトル"}
-      <Input
-        onChange={(event) => {
-          setTitle(event.target.value)
-        }}
-        type="text"
-        value={title}
-        placeholder="タイトル"
-      />
-      {"説明（省略可）"}
+      <>
+        {t("*タイトル", "*Title")}
+        <Input
+          onChange={(event) => {
+            setTitle(event.target.value)
+          }}
+          type="text"
+          value={title}
+          placeholder={t("タイトル", "Title")}
+        />
+      </>
+      {t("説明（省略可）", "Description (optional)")}
       <Input
         onChange={(event) => {
           setDescription(event.target.value)
         }}
         type="text"
         value={description}
-        placeholder="説明（省略可）"
+        placeholder={t("説明（省略可）", "Description (optional)")}
       />
-      {"プロンプト"}
+      {t("プロンプト", "Prompts")}
       <Textarea
         onChange={(event) => {
           setPrompts(event.target.value)
         }}
         value={prompts}
-        placeholder="プロンプト"
+        placeholder={t("プロンプト", "Prompts")}
       >
         {prompts}
       </Textarea>
-      {"ネガティブプロンプト"}
+      {t("ネガティブプロンプト", "Negative Prompts")}
       <Textarea
         onChange={(event) => {
           setNegativePrompts(event.target.value)
         }}
         value={negativePrompts}
-        placeholder="ネガティブプロンプト"
+        placeholder={t("ネガティブプロンプト", "Negative Prompts")}
       >
         {negativePrompts}
       </Textarea>
@@ -230,7 +235,7 @@ export function GenerationConfigMemoSavingContent(props: Props) {
           className="mt-8 mb-4 w-full"
           onClick={() => {
             if (title === "") {
-              toast("タイトルを入力してください")
+              toast(t("タイトルを入力してください", "Please enter a title"))
               return
             }
             props.onClose()

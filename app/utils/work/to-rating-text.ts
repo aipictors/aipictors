@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 /**
@@ -5,9 +6,11 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
  * @param
  */
 export const toRatingText = (type: IntrospectionEnum<"Rating">) => {
+  const t = useTranslation()
+
   switch (type) {
     case "G":
-      return "全年齢"
+      return t("全年齢", "G")
     case "R15":
       return "R15"
     case "R18":

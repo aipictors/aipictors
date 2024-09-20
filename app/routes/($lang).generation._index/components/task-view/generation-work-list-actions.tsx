@@ -9,6 +9,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { MaximizeIcon, MinimizeIcon, XIcon } from "lucide-react"
 import { useState } from "react"
 import { Input } from "~/components/ui/input"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   thumbnailSize: number
@@ -42,6 +43,8 @@ export function GenerationWorkListActions(props: Props) {
     context.updateSearchWorksModelIdAndName(null, null)
   }
 
+  const t = useTranslation()
+
   return (
     <>
       {/* 作品一覧（検索）の操作一覧 */}
@@ -53,7 +56,7 @@ export function GenerationWorkListActions(props: Props) {
             required
             type="text"
             name="title"
-            placeholder="検索ワード"
+            placeholder={t("検索ワード", "Search word")}
             className="flex items-center gap-x-4 px-4 pb-2 md:px-4 xl:px-4"
             onChange={(event) => {
               setPreviewWord(event.target.value)
@@ -65,7 +68,7 @@ export function GenerationWorkListActions(props: Props) {
             }}
             variant={"secondary"}
           >
-            検索
+            {t("検索", "Search")}
           </Button>
           {state !== "WORK_LIST_FULL" && (
             <div className="hidden md:block">
@@ -86,7 +89,10 @@ export function GenerationWorkListActions(props: Props) {
               <Toggle
                 onClick={openFullTask}
                 variant={"outline"}
-                title="作品一覧の全画面モード切替"
+                title={t(
+                  "作品一覧の全画面モード切替",
+                  "Toggle full screen mode",
+                )}
               >
                 {state === "WORK_LIST_FULL" ? (
                   <MinimizeIcon className="w-4" />
@@ -100,7 +106,8 @@ export function GenerationWorkListActions(props: Props) {
         <div className="mt-2" />
         {context.config.searchModelName && (
           <Badge variant="secondary">
-            {context.config.searchModelName}モデル
+            {context.config.searchModelName}
+            {t("モデル", "Model")}
             <Button
               variant={"destructive"}
               size={"icon"}

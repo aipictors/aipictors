@@ -5,6 +5,7 @@ import type { ImageModelContextFragment } from "~/routes/($lang).generation._ind
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { FragmentOf } from "gql.tada"
 import { CheckIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   models: FragmentOf<typeof ImageModelContextFragment>[]
@@ -104,15 +105,17 @@ export function GenerationConfigModels(props: Props) {
     return input
   }
 
+  const t = useTranslation()
+
   return (
     <>
       <Tabs defaultValue="normal">
         <TabsList className="w-full">
           <TabsTrigger className="w-full" value="normal">
-            最近
+            {t("最近", "Recent")}
           </TabsTrigger>
           <TabsTrigger className="w-full" value="favorite">
-            お気に入り
+            {t("お気に入り", "Favorite")}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="normal">
@@ -196,7 +199,7 @@ export function GenerationConfigModels(props: Props) {
           </div>
           <div className="mt-4">
             <GenerationModelListButton
-              label="すべてのお気に入りモデル"
+              label={t("すべてのお気に入りモデル", "All favorite models")}
               isInitFavorited={true}
               favoritedModelIds={props.favoritedModelIds}
               models={props.models}

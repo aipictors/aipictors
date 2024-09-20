@@ -15,6 +15,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
 import { useState } from "react"
 import { useBoolean } from "usehooks-ts"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * ControlNet設定
@@ -65,7 +66,7 @@ export function GenerationConfigControlNet() {
     context.changeControlNetModuleAndModelAndWeight(model, module, weight)
   }
 
-  const controlNetCategories = context.controlNetCategories
+  const t = useTranslation()
 
   return (
     <div className="flex flex-col gap-y-2">
@@ -74,7 +75,10 @@ export function GenerationConfigControlNet() {
           {"ControlNet（SDXL以外）"}
         </span>
         <CrossPlatformTooltip
-          text={"参考画像からより厳密な画像生成ができます。"}
+          text={t(
+            "参考画像からより厳密な画像生成ができます。",
+            "You can generate more accurate images from reference images.",
+          )}
         />
       </div>
       <CropImageField
@@ -87,28 +91,6 @@ export function GenerationConfigControlNet() {
         onDeleteImage={onDeleteImage}
         onCrop={onCrop}
       />
-      {/* {context.config.controlNetModule === null &&
-        controlNetCategories &&
-        controlNetCategories?.[0]?.contents &&
-        // GenerationConfigControlNetTemplateButton
-        controlNetCategories.map((item) => (
-          <GenerationConfigControlNetTemplateButton
-            key={item.contents[0].module}
-            module={item.contents[0].module}
-            model={""}
-            weight={1}
-            imageUrl={item.contents[0].imageUrl}
-            thumbnailImageUrl={item.contents[0].thumbnailImageUrl}
-            onClick={(module, model, weight, imageBase64) => {
-              setModule(module)
-              setModel(model)
-              setWeight(weight)
-              context.changeControlNetImageBase64(imageBase64)
-              setTrue()
-            }}
-          />
-        ))} */}
-
       {context.config.controlNetModule !== null && (
         <div className="text-sm">Module: {context.config.controlNetModule}</div>
       )}
@@ -134,8 +116,8 @@ export function GenerationConfigControlNet() {
               variant={"secondary"}
             >
               {context.config.controlNetModule !== null
-                ? "コントロールを変更"
-                : "コントロールを追加"}
+                ? t("コントロールを変更", "Change control")
+                : t("コントロールを追加", "Add control")}
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -159,7 +141,7 @@ export function GenerationConfigControlNet() {
                 }}
                 disabled={isSelectorOpen}
               >
-                {"キャンセル"}
+                {t("キャンセル", "Cancel")}
               </Button>
               <Button
                 onClick={() => {
@@ -169,7 +151,7 @@ export function GenerationConfigControlNet() {
                 disabled={isSelectorOpen}
                 className="mb-4 md:mb-0"
               >
-                {"追加"}
+                {t("追加", "Add")}
               </Button>
             </DialogFooter>
           </DialogContent>

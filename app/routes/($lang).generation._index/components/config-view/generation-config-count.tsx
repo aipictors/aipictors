@@ -4,6 +4,7 @@ import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/
 import { GenerationQueryContext } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useContext, useEffect } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   availableImageGenerationMaxTasksCount: number
@@ -30,18 +31,26 @@ export function GenerationConfigCount(props: Props) {
     }
   }, [])
 
+  const t = useTranslation()
+
   return (
     <>
       <div className="gap-x-2">
         <div className="flex items-center gap-x-2">
           <span className="text-nowrap font-bold">
-            {"生成枚数（予約生成）"}
+            {t("生成枚数（予約生成）", "Generation count (reserve generation)")}
           </span>
           <CrossPlatformTooltip
             text={
               !isStandardOrPremium
-                ? "サブスクSTANDARD以上で1度の生成枚数を増やすことができます。"
-                : "同時生成枚数以上を指定した場合は、予約生成となり順次生成が行われていきます。"
+                ? t(
+                    "サブスクSTANDARD以上で1度の生成枚数を増やすことができます。",
+                    "You can increase the number of images generated at once with a subscription STANDARD or higher.",
+                  )
+                : t(
+                    "同時生成枚数以上を指定した場合は、予約生成となり順次生成が行われていきます。",
+                    "If you specify more than the number of images generated at the same time, it will be reserved generation and will be generated sequentially.",
+                  )
             }
           />
         </div>

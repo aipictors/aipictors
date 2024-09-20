@@ -5,11 +5,14 @@ import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Input } from "~/components/ui/input"
+import { useTranslation } from "~/hooks/use-translation"
 
 export const SearchHeader = () => {
   const [searchText, setSearchText] = useState("")
 
   const [isSensitive, setIsSensitive] = useState(false)
+
+  const t = useTranslation()
 
   const onSearch = () => {
     const trimmedText = searchText.trim()
@@ -19,7 +22,7 @@ export const SearchHeader = () => {
         : `/tags/${trimmedText}`
       window.location.href = baseUrl
     } else {
-      toast("検索ワードを入力してください")
+      toast(t("検索ワードを入力してください", "Please enter a search word"))
     }
   }
 

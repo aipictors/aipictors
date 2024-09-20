@@ -102,7 +102,7 @@ export function WorkArticle(props: Props) {
         {props.work.isGeneration && (
           <Link to={`/generation?work=${props.work.id}`}>
             <Button variant={"secondary"} className="w-full">
-              参照生成する
+              {t("参照生成する", "Generate reference")}
             </Button>
           </Link>
         )}
@@ -167,7 +167,10 @@ export function WorkArticle(props: Props) {
                     variant="secondary"
                     className="flex items-center space-x-2"
                   >
-                    <span className="text-md">{"使用モデル名:"}</span>
+                    <span className="text-md">
+                      {t("使用モデル名", "model name used")}
+                      {":"}
+                    </span>
                     <span className="text-md">{props.work.model}</span>
                   </Badge>
                 </Link>
@@ -177,12 +180,18 @@ export function WorkArticle(props: Props) {
                 variant="secondary"
                 className="flex items-center space-x-2"
               >
-                <span className="text-md">{"対象年齢:"}</span>
+                <span className="text-md">
+                  {t("対象年齢", "target age")}
+                  {":"}
+                </span>
                 {toRatingText(props.work.rating)}
               </Badge>
             )}
             <Badge variant="secondary" className="flex items-center space-x-2">
-              <span className="text-md">{"テイスト:"}</span>
+              <span className="text-md">
+                {t("スタイル", "style")}
+                {":"}
+              </span>
               {toStyleText(props.work.style)}
             </Badge>
 
@@ -223,7 +232,10 @@ export function WorkArticle(props: Props) {
           </div>
           {props.work.dailyTheme && (
             <div className="flex items-center">
-              <span className="text-md">{"参加お題:"}</span>
+              <span className="text-md">
+                {t("参加お題", "participation theme")}
+                {":"}
+              </span>
               <Link
                 to={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
               >

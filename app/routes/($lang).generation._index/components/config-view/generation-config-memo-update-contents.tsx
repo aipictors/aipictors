@@ -16,6 +16,7 @@ import { graphql } from "gql.tada"
 import { Loader2, Trash2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onClose: () => void
@@ -70,6 +71,8 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
     },
   )
 
+  const t = useTranslation()
+
   const [deleteMemo, { loading: isDeletingMemo }] = useMutation(
     deleteImageGenerationMemoMutation,
   )
@@ -83,7 +86,7 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
       },
     })
     props.refetchMemos()
-    toast("削除しました")
+    toast(t("削除しました", "Deleted"))
     props.onClose()
   }
 
@@ -153,46 +156,46 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
       null,
     )
 
-    toast("設定を復元しました")
+    toast(t("設定を復元しました", "Restored settings"))
   }
 
   return (
     <>
-      {"*タイトル"}
+      {t("*タイトル", "*Title")}
       <Input
         onChange={(event) => {
           setTitle(event.target.value)
         }}
         type="text"
         value={title}
-        placeholder="タイトル"
+        placeholder={t("*タイトル", "*Title")}
       />
-      {"説明（省略可）"}
+      {t("説明（省略可）", "Description (optional)")}
       <Input
         onChange={(event) => {
           setDescription(event.target.value)
         }}
         type="text"
         value={description}
-        placeholder="説明（省略可）"
+        placeholder={t("説明（省略可）", "Description (optional)")}
       />
-      {"プロンプト"}
+      {t("プロンプト", "Prompt")}
       <Textarea
         onChange={(event) => {
           setPrompts(event.target.value)
         }}
         value={prompts}
-        placeholder="プロンプト"
+        placeholder={t("プロンプト", "Prompt")}
       >
         {prompts}
       </Textarea>
-      {"ネガティブプロンプト"}
+      {t("ネガティブプロンプト", "Negative Prompt")}
       <Textarea
         onChange={(event) => {
           setNegativePrompts(event.target.value)
         }}
         value={negativePrompts}
-        placeholder="ネガティブプロンプト"
+        placeholder={t("ネガティブプロンプト", "Negative Prompt")}
       >
         {negativePrompts}
       </Textarea>
@@ -205,7 +208,7 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
             }}
             type="number"
             value={steps}
-            placeholder="Steps"
+            placeholder={t("Steps", "Steps")}
           />
         </div>
         <div className="w-full">
@@ -216,7 +219,7 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
             }}
             type="number"
             value={scale}
-            placeholder="Scale"
+            placeholder={t("Scale", "Scale")}
           />
         </div>
         <div className="w-full">
@@ -227,7 +230,7 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
             }}
             type="number"
             value={seed}
-            placeholder="Seeds"
+            placeholder={t("Seeds", "Seeds")}
           />
         </div>
       </div>
@@ -240,7 +243,7 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
             }}
             type="number"
             value={clipSkip}
-            placeholder="ClipSkip"
+            placeholder={t("ClipSkip", "ClipSkip")}
           />
         </div>
         <div className="w-full">
@@ -289,8 +292,11 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
           <Loader2 className="mr-2 w-16 animate-spin" />
         ) : (
           <AppConfirmDialog
-            title={"設定を削除する"}
-            description={"選択したメモを削除しますか？"}
+            title={t("設定を削除する", "Delete settings")}
+            description={t(
+              "選択したメモを削除しますか？",
+              "Do you want to delete the selected memo?",
+            )}
             onNext={onDelete}
             onCancel={() => {}}
           >
@@ -307,7 +313,7 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
             onRestore()
           }}
         >
-          {"使用する"}
+          {t("使用する", "Use")}
         </Button>
         {isUpdatingMemo ? (
           <Loader2 className="w-16 animate-spin" />
@@ -317,14 +323,14 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
             className="w-full"
             onClick={() => {
               if (title === "") {
-                toast("タイトルを入力してください")
+                toast(t("タイトルを入力してください", "Please enter a title"))
                 return
               }
               props.onClose()
               onCreateMemo()
             }}
           >
-            {"保存する"}
+            {t("保存する", "Save")}
           </Button>
         )}
       </div>

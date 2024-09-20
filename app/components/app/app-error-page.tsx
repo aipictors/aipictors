@@ -1,4 +1,5 @@
 import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = Readonly<{
   status: number
@@ -10,13 +11,21 @@ type Props = Readonly<{
  * @see https://v0.dev/t/YFhY3hdw0jD
  */
 export function AppErrorPage(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <p className="mt-4 text-center font-bold text-md md:text-xl">
-        {"通信エラーが発生したため、"}
+        {t(
+          "通信エラーが発生したため、",
+          "An error occurred due to a communication error,",
+        )}
       </p>
       <p className="mt-0 text-center font-bold text-md md:text-xl">
-        {"しばらくしてから画面更新をお願いいたします。"}
+        {t(
+          "しばらくしてから画面更新をお願いいたします。",
+          "Please refresh the screen after a while.",
+        )}
       </p>
       <img
         src="https://files.aipictors.com/cry-pictorchan-with-shadow.webp"
@@ -31,7 +40,7 @@ export function AppErrorPage(props: Props) {
           }}
           variant={"secondary"}
         >
-          {"トップ"}
+          {t("トップ", "Home")}
         </Button>
         <Button
           className="rounded-md px-8 py-2"
@@ -39,7 +48,7 @@ export function AppErrorPage(props: Props) {
             window.location.reload()
           }}
         >
-          {"再読み込み"}
+          {t("再読み込み", "Reload")}
         </Button>
       </div>
 

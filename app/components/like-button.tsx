@@ -6,6 +6,7 @@ import { LoginDialogButton } from "~/components/login-dialog-button"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { KeyCodes } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   size?: number
@@ -25,14 +26,20 @@ type Props = {
 }
 
 export function LikeButton(props: Props) {
+  const t = useTranslation()
+
   const authContext = useContext(AuthContext)
+
   const [createWorkLike, { loading: isCreateLoading }] = useMutation(
     createWorkLikeMutation,
   )
+
   const [deleteWorkLike, { loading: isDeleteLoading }] = useMutation(
     deleteWorkLikeMutation,
   )
+
   const [isLiked, setIsLiked] = useState(props.defaultLiked)
+
   const [likedCount, setLikedCount] = useState(props.defaultLikedCount)
 
   /**
@@ -117,10 +124,13 @@ export function LikeButton(props: Props) {
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return (
       <LoginDialogButton
-        label="いいね"
+        label={t("いいね", "Like")}
         isLoading={authContext.isLoading || authContext.isLoggedIn}
         isWidthFull={true}
-        description={"ログインして、いいねしてみましょう！"}
+        description={t(
+          "ログインして、いいねしてみましょう！",
+          "Log in and try liking it!",
+        )}
         triggerChildren={
           <button
             className={`${

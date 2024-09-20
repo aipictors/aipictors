@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/dropdown-menu"
 import {
   EllipsisVerticalIcon,
-  GlobeIcon,
+  Languages,
   MoonIcon,
   SettingsIcon,
   SunIcon,
@@ -83,16 +83,19 @@ export const HomeHeaderNotLoggedInMenu = () => {
 
   const setLocale = (locale: string) => {
     const currentLocale = location.pathname.match(/^\/(ja|en)/)?.[1] || ""
-    let newUrl = location.pathname
 
-    if (locale === "ja" && currentLocale) {
-      newUrl = location.pathname.replace(`/${currentLocale}`, "")
-    } else if (locale !== "ja") {
-      newUrl = currentLocale
-        ? location.pathname.replace(`/${currentLocale}`, "/en")
-        : `/en${location.pathname}`
-    }
+    // クッキーにロケールを保存
+    document.cookie = `locale=${locale}; path=/;`
 
+    // 新しいURLを条件に応じて設定
+    const newUrl =
+      locale === "ja" && currentLocale
+        ? location.pathname.replace(`/${currentLocale}`, "")
+        : locale !== "ja" && currentLocale
+          ? location.pathname.replace(`/${currentLocale}`, "/en")
+          : `/en${location.pathname}`
+
+    // navigateを使用してURLを変更
     navigate(newUrl)
   }
 
@@ -107,12 +110,12 @@ export const HomeHeaderNotLoggedInMenu = () => {
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             {getThemeIcon()}
-            {"テーマ"}
+            {t("テーマ", "theme")}
           </DropdownMenuSubTrigger>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <GlobeIcon className="mr-2 inline-block w-4" />
-              {t("言語", "Language")}
+              <Languages className="mr-2 inline-block w-4" />
+              {t("言語/Language", "言語/Language")}
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
@@ -127,10 +130,10 @@ export const HomeHeaderNotLoggedInMenu = () => {
                   }}
                 >
                   <DropdownMenuRadioItem value="ja">
-                    {t("日本語", "Japanese")}
+                    {t("日本語", "日本語")}
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="en">
-                    {t("英語", "English")}
+                    {t("English", "English")}
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
               </DropdownMenuSubContent>

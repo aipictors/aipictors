@@ -25,6 +25,8 @@ import { setUserToken } from "~/utils/set-user-token"
 import { jwtDecode } from "jwt-decode"
 import { GenerationLinksView } from "~/routes/($lang).generation._index/components/task-view/generation-links-view"
 import { GenerationFormFooter } from "~/routes/($lang).generation._index/components/generation-form-footer"
+import type { LoaderFunctionArgs } from "react-router-dom"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 /**
  * 画像生成
@@ -121,7 +123,13 @@ export default function GenerationPage() {
   )
 }
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   return json(
     { status: 200 },
     {

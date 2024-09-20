@@ -9,6 +9,7 @@ import {
 } from "~/components/ui/accordion"
 import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   prompt: string | null
@@ -26,6 +27,8 @@ type Props = {
  */
 export function WorkArticleGenerationParameters(props: Props) {
   const [viewGenerationType, setViewGenerationType] = useState("prompt")
+
+  const t = useTranslation()
 
   if (
     !(
@@ -195,14 +198,14 @@ export function WorkArticleGenerationParameters(props: Props) {
           <AccordionItem value="setting">
             <AccordionTrigger>
               <Button variant={"secondary"} className="w-full">
-                生成情報
+                {t("生成情報", "Generation Information")}
               </Button>
             </AccordionTrigger>
             <AccordionContent className="space-y-2">
               <div className="space-y-2">
                 {props.prompt && (
                   <div className="space-y-2">
-                    <p className="text-md">{"プロンプト"}</p>
+                    <p className="text-md">{t("プロンプト", "Prompts")}</p>
                     <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
                       {props.prompt}
                     </Card>
@@ -213,13 +216,15 @@ export function WorkArticleGenerationParameters(props: Props) {
                       variant={"secondary"}
                       className="w-full"
                     >
-                      {"コピー"}
+                      {t("コピー", "Copy")}
                     </Button>
                   </div>
                 )}
                 {props.negativePrompt && (
                   <div className="space-y-2">
-                    <p className="text-md">{"ネガティブプロンプト"}</p>
+                    <p className="text-md">
+                      {t("ネガティブプロンプト", "Negative Prompts")}
+                    </p>
                     <Card className="m-0 max-h-32 overflow-y-auto whitespace-pre-wrap p-2">
                       {props.negativePrompt}
                     </Card>
@@ -230,7 +235,7 @@ export function WorkArticleGenerationParameters(props: Props) {
                       variant={"secondary"}
                       className="w-full"
                     >
-                      {"コピー"}
+                      {t("コピー", "Copy")}
                     </Button>
                   </div>
                 )}

@@ -13,12 +13,19 @@ import { createMeta } from "~/utils/create-meta"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 import { getJstDate } from "~/utils/jst-date"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
 }
 
 export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
   }
@@ -112,12 +119,27 @@ export async function loader(props: LoaderFunctionArgs) {
   )
 }
 
-export const meta: MetaFunction = ({ data }) => {
-  if (!data) {
+export const meta: MetaFunction = (props) => {
+  if (!props.data) {
+    if (props.params.lang === "en") {
+      return [{ title: "Aipictors works page" }]
+    }
     return [{ title: "Aipictorsの作品ページ" }]
   }
 
-  const work = data as { work: FragmentOf<typeof workArticleFragment> }
+  const work = props.data as { work: FragmentOf<typeof workArticleFragment> }
+
+  if (props.params.lang === "en") {
+    return createMeta(META.POSTS, {
+      title: `${work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title} - Aipictors`,
+      description:
+        work.work.enDescription ||
+        "Here is the Aipictors works page, where you can view AI illustrations and other works",
+      url: work.work.smallThumbnailImageURL?.length
+        ? work.work.smallThumbnailImageURL
+        : "",
+    })
+  }
 
   const userPart = work.work.user ? ` - ${work.work.user?.name}の作品` : ""
 

@@ -14,6 +14,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 import { useMutation } from "@apollo/client/index"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   models: FragmentOf<typeof ImageModelContextFragment>[]
@@ -62,6 +63,8 @@ export function GenerationModelListButton(props: Props) {
     }
   }
 
+  const t = useTranslation()
+
   return (
     <Dialog
       open={value}
@@ -77,14 +80,17 @@ export function GenerationModelListButton(props: Props) {
           variant={"secondary"}
           onClick={setTrue}
         >
-          {props.label ? props.label : "すべてのモデル"}
+          {props.label ? props.label : t("すべてのモデル", "All models")}
         </Button>
       </DialogTrigger>
       <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
-          <DialogTitle>{"モデルを選択"}</DialogTitle>
+          <DialogTitle>{t("モデルを選択", "Select a model")}</DialogTitle>
           <DialogDescription className="hidden md:block xl:block">
-            {"使用するモデルを選択してください"}
+            {t(
+              "使用するモデルを選択してください",
+              "Please select the model to use",
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="items-top flex space-x-2">
@@ -100,7 +106,10 @@ export function GenerationModelListButton(props: Props) {
               htmlFor="use-recommended-prompt"
               className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              モデルの推奨プロンプトを設定する
+              {t(
+                "モデルの推奨プロンプトを設定する",
+                "Set the recommended prompt for the model",
+              )}
             </label>
           </div>
         </div>

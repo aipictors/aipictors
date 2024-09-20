@@ -3,6 +3,7 @@ import { graphql, type FragmentOf } from "gql.tada"
 import { Link } from "@remix-run/react"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof HomeCoppedWorkFragment>[]
@@ -17,6 +18,8 @@ export function HomeCroppedWorkList(props: Props) {
   if (!props.works || props.works.length === 0) {
     return null
   }
+
+  const t = useTranslation()
 
   return (
     <>
@@ -40,7 +43,10 @@ export function HomeCroppedWorkList(props: Props) {
                 />
                 <img
                   src={work.smallThumbnailImageURL}
-                  alt={work.title}
+                  alt={t(
+                    work.title,
+                    work.enTitle.length > 0 ? work.enTitle : work.title,
+                  )}
                   loading="lazy"
                   className="absolute top-0 left-0 block h-full w-full rounded-md object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 md:hidden"
                 />
@@ -59,7 +65,10 @@ export function HomeCroppedWorkList(props: Props) {
               </div>
             </Link>
             <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-              {work.title}
+              {t(
+                work.title,
+                work.enTitle.length > 0 ? work.enTitle : work.title,
+              )}
             </p>
             <UserNameBadge
               userId={work.user.id}
@@ -127,6 +136,8 @@ export const HomeCoppedWorkFragment = graphql(
   `fragment HomeCoppedWork on WorkNode @_unmask {
     id
     title
+    enTitle
+    enDescription
     accessType
     adminAccessType
     type

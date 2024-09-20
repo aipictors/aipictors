@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { useContext } from "react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onClickMenuItem?: () => void
@@ -60,10 +61,12 @@ export function HomeRouteList(props: Props) {
     navigate(newUrl === "" ? "/" : newUrl, { replace: true }) // URLを更新してリダイレクト
   }
 
+  const t = useTranslation()
+
   return (
     <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
       <HomeNavigationButton onClick={closeHeaderMenu} icon={HomeIcon}>
-        {"ホーム"}
+        {t("ホーム", "Home")}
         {isSensitive && " - R18"}
       </HomeNavigationButton>
       {isSensitive && (
@@ -72,7 +75,7 @@ export function HomeRouteList(props: Props) {
           href={"/"}
           icon={HomeIcon}
         >
-          {"ホーム - 全年齢"}
+          {t("ホーム - 全年齢", "Home - G")}
         </HomeNavigationButton>
       )}
       <HomeNavigationButton
@@ -80,56 +83,49 @@ export function HomeRouteList(props: Props) {
         icon={AwardIcon}
         onClick={closeHeaderMenu}
       >
-        {"画像生成"}
+        {t("画像生成", "Generate image")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/themes")}
         icon={LightbulbIcon}
         onClick={closeHeaderMenu}
       >
-        {"お題"}
+        {t("お題", "Themes")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/stickers")}
         icon={StampIcon}
         onClick={closeHeaderMenu}
       >
-        {"スタンプ広場"}
+        {t("スタンプ広場", "Stickers")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/?tab=follow-user")}
         icon={Image}
         onClick={closeHeaderMenu}
       >
-        {"フォロー新着"}
+        {t("フォロー新着", "Followed new posts")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/rankings")}
         icon={AwardIcon}
         onClick={closeHeaderMenu}
       >
-        {"ランキング"}
+        {t("ランキング", "Ranking")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/events")}
         icon={StarIcon}
         onClick={closeHeaderMenu}
       >
-        {"イベント"}
-      </HomeNavigationButton>
-      <HomeNavigationButton
-        href={createLink("/milestones")}
-        icon={RocketIcon}
-        onClick={closeHeaderMenu}
-      >
-        {"開発予定"}
+        {t("イベント", "Events")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/releases")}
         icon={RocketIcon}
         onClick={closeHeaderMenu}
       >
-        {"更新情報"}
+        {t("更新情報", "Update Information")}
       </HomeNavigationButton>
       <div className={"py-2"}>
         <Separator />
@@ -139,20 +135,21 @@ export function HomeRouteList(props: Props) {
         icon={ImageIcon}
         onClick={closeHeaderMenu}
       >
-        {"イラスト"}
+        {t("イラスト", "Illust")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/posts/3d")}
         icon={BookImageIcon}
         onClick={closeHeaderMenu}
       >
-        {"フォト"}
+        {t("フォト", "Photo")}
       </HomeNavigationButton>
       <AppConfirmDialog
         title={"確認"}
-        description={
-          "センシティブ版のトップページに遷移します。あなたは18歳以上ですか？"
-        }
+        description={t(
+          "センシティブ版のトップページに遷移します。あなたは18歳以上ですか？",
+          "You are about to navigate to the sensitive content homepage. Are you 18 years or older?",
+        )}
         onNext={() => {
           navigate("/r")
           closeHeaderMenu()
@@ -161,7 +158,7 @@ export function HomeRouteList(props: Props) {
         onCancel={() => {}}
       >
         <HomeNavigationButton icon={BoxIcon}>
-          {"センシティブ"}
+          {t("センシティブ", "Sensitive")}
         </HomeNavigationButton>
       </AppConfirmDialog>
 
@@ -176,7 +173,7 @@ export function HomeRouteList(props: Props) {
           icon={UserIcon}
           onClick={closeHeaderMenu}
         >
-          {"アカウント"}
+          {t("アカウント", "Account")}
         </HomeNavigationButton>
       )}
       {authContext.isLoggedIn && (
@@ -185,7 +182,7 @@ export function HomeRouteList(props: Props) {
           icon={MessageCircleIcon}
           onClick={closeHeaderMenu}
         >
-          {"お問い合わせ"}
+          {t("お問い合わせ", "Contact")}
         </HomeNavigationButton>
       )}
       <HomeNavigationButton
@@ -201,17 +198,17 @@ export function HomeRouteList(props: Props) {
           icon={SettingsIcon}
           onClick={closeHeaderMenu}
         >
-          {"設定"}
+          {t("設定", "Settings")}
         </HomeNavigationButton>
       )}
       {authContext.isLoggedIn && <NavigationLogoutDialogButton />}
       <footer>
         <div className="flex flex-col space-y-2 p-2">
           <Link className="text-xs opacity-80" to="/about">
-            {"概要"}
+            {t("概要", "About")}
           </Link>
           <Link className="text-xs opacity-80" to="/terms">
-            {"利用規約"}
+            {t("利用規約", "Terms")}
           </Link>
           <p className="text-xs opacity-80">{"©2024 Aipictors Co.,Ltd."}</p>
         </div>

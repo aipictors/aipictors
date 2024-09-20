@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Label } from "~/components/ui/label"
 import { Switch } from "~/components/ui/switch"
 import { useNavigate, useLocation } from "react-router-dom" // React Routerを使用
+import { useTranslation } from "~/hooks/use-translation"
 
 export function ToggleSensitive() {
   const [sensitive, setSensitive] = useState(false)
@@ -34,6 +35,8 @@ export function ToggleSensitive() {
     setSensitive(!sensitive)
   }
 
+  const t = useTranslation()
+
   return (
     <div className="flex items-center space-x-2">
       <Switch
@@ -43,7 +46,7 @@ export function ToggleSensitive() {
         aria-label="Toggle sensitive content"
       />
       <Label htmlFor="sensitive-toggle" className="font-medium text-sm">
-        {"センシティブ"}
+        {t("センシティブ", "Sensitive")}
       </Label>
     </div>
   )

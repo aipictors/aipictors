@@ -17,7 +17,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import {
   CoffeeIcon,
   GemIcon,
-  GlobeIcon,
+  Languages,
   LogOutIcon,
   MessageCircleIcon,
   MoonIcon,
@@ -104,16 +104,19 @@ export function HomeUserNavigationMenu(props: Props) {
 
   const setLocale = (locale: string) => {
     const currentLocale = location.pathname.match(/^\/(ja|en)/)?.[1] || ""
-    let newUrl = location.pathname
 
-    if (locale === "ja" && currentLocale) {
-      newUrl = location.pathname.replace(`/${currentLocale}`, "")
-    } else if (locale !== "ja") {
-      newUrl = currentLocale
-        ? location.pathname.replace(`/${currentLocale}`, "/en")
-        : `/en${location.pathname}`
-    }
+    // クッキーにロケールを保存
+    document.cookie = `locale=${locale}; path=/;`
 
+    // 新しいURLを条件に応じて設定
+    const newUrl =
+      locale === "ja" && currentLocale
+        ? location.pathname.replace(`/${currentLocale}`, "")
+        : locale !== "ja" && currentLocale
+          ? location.pathname.replace(`/${currentLocale}`, "/en")
+          : `/en${location.pathname}`
+
+    // navigateを使用してURLを変更
     navigate(newUrl)
   }
 
@@ -172,51 +175,55 @@ export function HomeUserNavigationMenu(props: Props) {
           <div className="flex items-center gap-x-2 p-2">
             <Link to="/following" className="w-16">
               <p>{followCount}</p>
-              <p className="text-xs opacity-80">{"フォロー中"}</p>
+              <p className="text-xs opacity-80">
+                {t("フォロー中", "Following")}
+              </p>
             </Link>
             <Link to="/followers" className="w-16">
               <p>{followerCount}</p>
-              <p className="text-xs opacity-80">{"フォロワー"}</p>
+              <p className="text-xs opacity-80">
+                {t("フォロー中", "Followers")}
+              </p>
             </Link>
           </div>
           <MenuItemLink
             href={`/users/${authContext.login}`}
             icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
-            label="マイページ"
+            label={t("マイページ", "My page")}
           />
           <MenuItemLink
             href={"/my"}
             icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
-            label="ダッシュボード"
+            label={t("ダッシュボード", "Dashboard")}
           />
           <MenuItemLink
             href={"/my/posts"}
             icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
-            label="自分の作品"
+            label={t("自分の作品", "My posts")}
           />
           {featurePromptonRequest &&
             (promptonUser === "" && viewerUserToken ? (
               <MenuItemLink
                 href={`https://prompton.io/integration?token=${viewerUserToken}`}
                 icon={<CoffeeIcon className="mr-2 inline-block w-4" />}
-                label="支援管理"
+                label={t("支援管理", "Support management")}
               />
             ) : (
               <MenuItemLink
                 href={"https://prompton.io/viewer/requests"}
                 icon={<CoffeeIcon className="mr-2 inline-block w-4" />}
-                label="支援管理"
+                label={t("支援管理", "Support management")}
               />
             ))}
           <MenuItemLink
             href="/settings/account/login"
             icon={<UserIcon className="mr-2 inline-block w-4" />}
-            label="アカウント"
+            label={t("アカウント", "Account")}
           />
           <MenuItemLink
             href="/support/chat"
             icon={<MessageCircleIcon className="mr-2 inline-block w-4" />}
-            label="お問い合わせ"
+            label={t("お問い合わせ", "Contact")}
           />
           <MenuItemLink
             href="/plus"
@@ -226,16 +233,18 @@ export function HomeUserNavigationMenu(props: Props) {
           <MenuItemLink
             href="/settings"
             icon={<SettingsIcon className="mr-2 inline-block w-4" />}
-            label="設定"
+            label={t("設定", "Settings")}
           />
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               {getThemeIcon()}
-              {"テーマ"}
+              {t("テーマ", "Theme")}
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <DropdownMenuLabel>{"テーマ変更"}</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  {t("テーマ変更", "Change Theme")}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
                   value={mode}
@@ -244,27 +253,27 @@ export function HomeUserNavigationMenu(props: Props) {
                   }}
                 >
                   <DropdownMenuRadioItem value="system">
-                    デバイスモード使用
+                    {t("デバイスモード使用", "Use device mode")}
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="light">
-                    ライト
+                    {t("ライト", "Light")}
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="dark">
-                    ダーク
+                    {t("ダーク", "Dark")}
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
                 <MenuItemLink
                   href="/settings/color"
                   icon={<SettingsIcon className="mr-2 inline-block w-4" />}
-                  label="その他のカラー"
+                  label={t("その他のカラー", "Other colors")}
                 />
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <GlobeIcon className="mr-2 inline-block w-4" />
-              {t("言語", "Language")}
+              <Languages className="mr-2 inline-block w-4" />
+              {t("言語/Language", "言語/Language")}
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
@@ -279,10 +288,10 @@ export function HomeUserNavigationMenu(props: Props) {
                   }}
                 >
                   <DropdownMenuRadioItem value="ja">
-                    {t("日本語", "Japanese")}
+                    {t("日本語", "日本語")}
                   </DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="en">
-                    {t("英語", "English")}
+                    {t("English", "English")}
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
               </DropdownMenuSubContent>
@@ -297,7 +306,7 @@ export function HomeUserNavigationMenu(props: Props) {
             )}
           <DropdownMenuItem onClick={props.onLogout}>
             <LogOutIcon className="mr-2 inline-block w-4" />
-            <p>ログアウト</p>
+            <p>{t("ログアウト", "Logout")}</p>
           </DropdownMenuItem>
         </div>
       </DropdownMenuContent>

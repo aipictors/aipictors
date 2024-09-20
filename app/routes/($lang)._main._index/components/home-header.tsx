@@ -18,6 +18,7 @@ import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title?: string
@@ -100,6 +101,8 @@ function HomeHeader(props: Props) {
     setIsOpen(false)
   }
 
+  const t = useTranslation()
+
   return (
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader>
@@ -145,19 +148,21 @@ function HomeHeader(props: Props) {
           <div className="hidden w-full items-center space-x-2 md:flex">
             <div className="flex w-full justify-start space-x-2 font-semibold">
               <Link to={getSensitiveLink("/themes")}>
-                <Button variant={"ghost"}>{"お題"}</Button>
+                <Button variant={"ghost"}>{t("お題", "Theme")}</Button>
               </Link>
               <Link to={getSensitiveLink("/rankings")}>
-                <Button variant={"ghost"}>{"ランキング"}</Button>
+                <Button variant={"ghost"}>{t("ランキング", "Ranking")}</Button>
               </Link>
               <Link to={getSensitiveLink("/?tab=follow-user")}>
-                <Button variant={"ghost"}>{"フォロー新着"}</Button>
+                <Button variant={"ghost"}>
+                  {t("フォロー新着", "Followed new posts")}
+                </Button>
               </Link>
               <div className="w-full flex-1">
                 <Input
                   onChange={onChangeSearchText}
                   onKeyDown={handleKeyDown}
-                  placeholder={"作品を検索"}
+                  placeholder={t("作品を検索", "Search for posts")}
                 />
               </div>
             </div>
@@ -167,13 +172,13 @@ function HomeHeader(props: Props) {
             <Separator orientation="vertical" />
           </div>
           <Link className="hidden md:block" to={"https://www.aipictors.com/"}>
-            <Button variant={"ghost"}>{"旧版トップ"}</Button>
+            <Button variant={"ghost"}>{t("旧版トップ", "Old")}</Button>
           </Link>
           <Link to={"/generation"}>
-            <Button variant={"ghost"}>{"生成"}</Button>
+            <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
           </Link>
           <Link to={"/new/image"}>
-            <Button variant={"ghost"}>{"投稿"}</Button>
+            <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
           </Link>
           {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
           {authContext.isLoggedIn && (

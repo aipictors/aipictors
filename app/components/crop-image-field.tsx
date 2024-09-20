@@ -5,6 +5,7 @@ import { Input } from "~/components/ui/input"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { ArrowUpFromLineIcon, XIcon } from "lucide-react"
 import { useCallback, useState, useRef } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isHidePreviewImage: boolean
@@ -151,6 +152,8 @@ export function CropImageField(props: Props) {
     )
   }
 
+  const t = useTranslation()
+
   return (
     <>
       {props.children ? (
@@ -170,7 +173,7 @@ export function CropImageField(props: Props) {
           <div className="rounded-lg border p-4">
             <ArrowUpFromLineIcon className="m-auto h-4 w-4 opacity-80" />
             <div className="text-center text-sm opacity-80">
-              画像アップロード
+              {t("画像アップロード", "Upload image")}
             </div>
           </div>
           <Input

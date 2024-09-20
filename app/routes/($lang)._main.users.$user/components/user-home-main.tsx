@@ -13,6 +13,7 @@ import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useNavigate } from "@remix-run/react"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -28,6 +29,8 @@ export function UserHomeMain(props: Props) {
       userId: decodeURIComponent(props.userId),
     },
   })
+
+  const t = useTranslation()
 
   const isFollow = userInfo?.user?.isFollowee ?? false
 
@@ -48,15 +51,16 @@ export function UserHomeMain(props: Props) {
             >
               <div className="flex cursor-pointer items-center">
                 <RefreshCcwIcon className="mr-1 w-3" />
-                <p className="text-sm">{"全年齢"}</p>
+                <p className="text-sm">{t("全年齢", "G")}</p>
               </div>
             </Button>
           ) : (
             <AppConfirmDialog
-              title={"確認"}
-              description={
-                "センシティブな作品を表示します、あなたは18歳以上ですか？"
-              }
+              title={t("確認", "Confirm")}
+              description={t(
+                "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                "Do you want to display sensitive content? Are you over 18 years old?",
+              )}
               onNext={() => {
                 navigate(`/r/users/${props.user.login}`)
               }}
@@ -66,7 +70,7 @@ export function UserHomeMain(props: Props) {
               <Button variant={"secondary"}>
                 <div className="flex cursor-pointer items-center">
                   <RefreshCcwIcon className="mr-1 w-3" />
-                  <p className="text-sm">{"対象年齢"}</p>
+                  <p className="text-sm">{t("対象年齢", "Target Age")}</p>
                 </div>
               </Button>
             </AppConfirmDialog>
@@ -85,15 +89,16 @@ export function UserHomeMain(props: Props) {
             >
               <div className="flex cursor-pointer items-center">
                 <RefreshCcwIcon className="mr-1 w-3" />
-                <p className="text-sm">{"全年齢"}</p>
+                <p className="text-sm">{t("全年齢", "G")}</p>
               </div>
             </Button>
           ) : (
             <AppConfirmDialog
               title={"確認"}
-              description={
-                "センシティブな作品を表示します、あなたは18歳以上ですか？"
-              }
+              description={t(
+                "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                "Do you want to display sensitive content? Are you over 18 years old?",
+              )}
               onNext={() => {
                 navigate(`/r/users/${props.user.login}`)
               }}
@@ -103,7 +108,7 @@ export function UserHomeMain(props: Props) {
               <Button variant={"secondary"}>
                 <div className="flex cursor-pointer items-center">
                   <RefreshCcwIcon className="mr-1 w-3" />
-                  <p className="text-sm">{"対象年齢"}</p>
+                  <p className="text-sm">{t("対象年齢", "Target Age")}</p>
                 </div>
               </Button>
             </AppConfirmDialog>
@@ -114,10 +119,14 @@ export function UserHomeMain(props: Props) {
             targetUserId={props.user.id}
             isFollow={isFollow}
             triggerChildren={
-              <Button className="font-bold">フォローする</Button>
+              <Button className="font-bold">
+                {t("フォローする", "Follow")}
+              </Button>
             }
             unFollowTriggerChildren={
-              <Button variant={"secondary"}>フォロー中</Button>
+              <Button variant={"secondary"}>
+                {t("フォロー中", "Following")}
+              </Button>
             }
           />
           {props.user.promptonUser !== null &&
@@ -139,13 +148,17 @@ export function UserHomeMain(props: Props) {
             <div className="white mt-4 font-bold text-md">
               {toOmissionNumberText(props.user.followersCount)}
             </div>
-            <div className="white mt-1 text-sm opacity-50">{"フォロワー"}</div>
+            <div className="white mt-1 text-sm opacity-50">
+              {t("フォロワー", "Followers")}
+            </div>
           </div>
           <div className="w-32">
             <div className="white mt-4 font-bold text-md">
               {toOmissionNumberText(props.user.receivedLikesCount)}
             </div>
-            <div className="white mt-1 text-sm opacity-50">{"いいね"}</div>
+            <div className="white mt-1 text-sm opacity-50">
+              {t("いいね", "Liked")}
+            </div>
           </div>
         </div>
         {authContext.userId !== props.user.id && (
@@ -169,7 +182,9 @@ export function UserHomeMain(props: Props) {
         {authContext.userId === props.user.id && (
           <ProfileEditDialog
             triggerChildren={
-              <Button className="w-full rounded-full">プロフィール編集</Button>
+              <Button className="w-full rounded-full">
+                {t("プロフィール編集", "Edit Profile")}
+              </Button>
             }
           />
         )}

@@ -4,6 +4,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { cn } from "~/lib/cn"
 import { graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   targetUserId: string
@@ -20,6 +21,8 @@ export function FollowButton(props: Props) {
   const authContext = useContext(AuthContext)
 
   const [isFollow, setIsFollow] = useState(props.isFollow)
+
+  const t = useTranslation()
 
   useEffect(() => {
     setIsFollow(props.isFollow)
@@ -69,7 +72,7 @@ export function FollowButton(props: Props) {
         `h-8 w-full font-bold rounded-full bg-clear-bright-blue p-1 text-white transition duration-500 hover:opacity-80 ${props.className}`
       }
     >
-      {"フォローする"}
+      {t("フォローする", "follow")}
     </button>
   )
 
@@ -82,7 +85,7 @@ export function FollowButton(props: Props) {
         `h-8 w-full font-bold rounded-full bg-gray-500 opacity-50 p-1 text-white transition duration-500 hover:opacity-30 ${props.className}`
       }
     >
-      {"フォロー中"}
+      {t("フォロー中", "following")}
     </button>
   )
 
@@ -90,10 +93,13 @@ export function FollowButton(props: Props) {
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return (
       <LoginDialogButton
-        label="フォロー"
+        label={t("フォローする", "Follow")}
         isLoading={authContext.isLoading || authContext.isLoggedIn}
         isWidthFull={true}
-        description={"ユーザフォローして投稿を確認してみましょう！"}
+        description={t(
+          "ログインして、フォローしてみましょう！",
+          "Log in and try following!",
+        )}
         triggerChildren={triggerNode}
       />
     )

@@ -12,6 +12,7 @@ import { LoraImageModelList } from "~/routes/($lang).generation._index/component
 import type { ImageLoraModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import type { FragmentOf } from "gql.tada"
 import { useBoolean } from "usehooks-ts"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isOpen: boolean
@@ -24,6 +25,8 @@ type Props = {
 
 export function LoraModelListDialogButton(props: Props) {
   const { value, setTrue, setFalse } = useBoolean()
+
+  const t = useTranslation()
 
   return (
     <Dialog
@@ -40,32 +43,40 @@ export function LoraModelListDialogButton(props: Props) {
           variant={"secondary"}
           onClick={setTrue}
         >
-          {"LoRA（エフェクト）を追加"}
+          {t("LoRA（エフェクト）を追加", "Add LoRA (Effect)")}
         </Button>
       </DialogTrigger>
       <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
         <DialogHeader>
           <DialogTitle className="hidden md:block xl:block">
-            {"LoRAを選択"}
+            {t("LoRAを選択", "Select LoRA")}
           </DialogTitle>
           <DialogDescription>
             <p className="hidden md:block xl:block">
-              {"使用するLoRA(エフェクト)を選択してください"}
+              {t(
+                "使用するLoRA(エフェクト)を選択してください",
+                "Select LoRA (Effect) to use",
+              )}
             </p>
-            <p>{`使用できるLoRA数 :${props.selectedModelNames.length}/${props.availableImageGenerationMaxTasksCount}`}</p>
+            <p>
+              {t(
+                `使用できるLoRA数 :${props.selectedModelNames.length}/${props.availableImageGenerationMaxTasksCount}`,
+                `Number of usable LoRAs :${props.selectedModelNames.length}/${props.availableImageGenerationMaxTasksCount}`,
+              )}
+            </p>
           </DialogDescription>
         </DialogHeader>
         <LoraImageModelList
           models={props.models.map((model) => ({
             ...model,
-            genre: model.genre || "その他",
+            genre: model.genre || t("その他", "Other"),
           }))}
           selectedModelNames={props.selectedModelNames}
           onSelect={props.onSelect}
         />
         <DialogFooter>
           <Button className="w-full" onClick={setFalse}>
-            {"完了"}
+            {t("完了", "Done")}
           </Button>
         </DialogFooter>
       </DialogContent>

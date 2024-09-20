@@ -9,6 +9,7 @@ import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post._index/co
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { RecommendButton } from "~/routes/($lang)._main.posts.$post._index/components/recommend-button"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title?: string
@@ -29,6 +30,8 @@ type Props = {
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
  */
 export function WorkAction(props: Props) {
+  const t = useTranslation()
+
   const appContext = useContext(AuthContext)
 
   const onDownload = async () => {
@@ -45,7 +48,7 @@ export function WorkAction(props: Props) {
       <div className="flex space-x-2">
         <LikeButton
           size={40}
-          text={"いいね"}
+          text={t("いいね", "Like")}
           defaultLiked={props.defaultLiked}
           defaultLikedCount={props.workLikesCount}
           targetWorkId={props.targetWorkId}
