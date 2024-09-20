@@ -29,6 +29,8 @@ export const WorkListItemFragment = graphql(
   `fragment WorkListItem on WorkNode @_unmask {
     id
     title
+    enTitle
+    enDescription
     accessType
     adminAccessType
     type
