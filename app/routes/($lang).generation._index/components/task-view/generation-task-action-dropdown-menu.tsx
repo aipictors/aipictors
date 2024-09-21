@@ -18,6 +18,8 @@ import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2, MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
+
 type Props = {
   thumbnailType: TaskListThumbnailType
   taskContentPositionType: TaskContentPositionType
@@ -32,6 +34,7 @@ type Props = {
  */
 export function GenerationTaskActionDropdownMenu(props: Props) {
   const context = useGenerationContext()
+  const t = useTranslation()
 
   /**
    * 予約生成が可能かどうか
@@ -57,7 +60,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
   const onDeleteReservedTasks = async () => {
     try {
       await deleteReservedTasks()
-      toast("予約タスクを削除しました")
+      toast(t("予約タスクを削除しました", "Reserved tasks deleted"))
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -71,17 +74,21 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
         <Button
           variant={"ghost"}
           size={"icon"}
-          title="サムネイルサイズ変更など"
+          title={t("サムネイルサイズ変更など", "Change thumbnail size, etc.")}
         >
           <MoreHorizontalIcon className="w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>{"サムネイル画質"}</DropdownMenuSubTrigger>
+          <DropdownMenuSubTrigger>
+            {t("サムネイル画質", "Thumbnail Quality")}
+          </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-              <DropdownMenuLabel>{"画質変更"}</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {t("画質変更", "Change Quality")}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem
                 checked={props.thumbnailType === "light"}
@@ -90,7 +97,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                   "light",
                 )}
               >
-                低画質
+                {t("低画質", "Low Quality")}
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={props.thumbnailType === "original"}
@@ -99,7 +106,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                   "original",
                 )}
               >
-                高画質
+                {t("高画質", "High Quality")}
               </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
@@ -107,11 +114,13 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
         <div className="hidden md:block">
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              {"履歴詳細の表示場所"}
+              {t("履歴詳細の表示場所", "History Detail Position")}
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <DropdownMenuLabel>{"場所変更"}</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  {t("場所変更", "Change Position")}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem
                   checked={props.taskContentPositionType === "left"}
@@ -120,7 +129,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                     "left",
                   )}
                 >
-                  左
+                  {t("左", "Left")}
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem
                   checked={props.taskContentPositionType === "right"}
@@ -129,7 +138,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                     "right",
                   )}
                 >
-                  右
+                  {t("右", "Right")}
                 </DropdownMenuCheckboxItem>
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
@@ -137,24 +146,26 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
         </div>
         {isEnabledReservedGeneration() && (
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>{"一括操作"}</DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger>
+              {t("一括操作", "Bulk Actions")}
+            </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
-                <DropdownMenuLabel>{"項目"}</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("項目", "Items")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <Button
                   onClick={props.onSelectAll}
                   variant={"ghost"}
                   className="w-full text-left"
                 >
-                  {"一括選択"}
+                  {t("一括選択", "Select All")}
                 </Button>
                 <Button
                   onClick={props.onCancelAll}
                   variant={"ghost"}
                   className="w-full text-left"
                 >
-                  {"一括解除"}
+                  {t("一括解除", "Deselect All")}
                 </Button>
                 {!isDeletingReservedTasks ? (
                   <Button
@@ -162,7 +173,7 @@ export function GenerationTaskActionDropdownMenu(props: Props) {
                     variant={"ghost"}
                     className="w-full"
                   >
-                    {"予約一括削除"}
+                    {t("予約一括削除", "Delete All Reserved")}
                   </Button>
                 ) : (
                   <Loader2 className="w-4 animate-spin" />

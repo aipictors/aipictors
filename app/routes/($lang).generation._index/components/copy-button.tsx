@@ -1,5 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   text: string
@@ -8,14 +9,22 @@ type Props = {
 }
 
 export function CopyButton(props: Props) {
+  const t = useTranslation()
+
   const copyToClipboard = () => {
     navigator.clipboard
       .writeText(props.text)
       .then(() => {
-        toast("クリップボードにコピーされました")
+        toast(t("クリップボードにコピーされました", "Copied to clipboard"))
       })
       .catch((err) => {
-        console.error("クリップボードへのコピーに失敗しました:", err)
+        console.error(
+          t(
+            "クリップボードへのコピーに失敗しました:",
+            "Failed to copy to clipboard",
+          ),
+          err,
+        )
       })
   }
 
@@ -30,7 +39,7 @@ export function CopyButton(props: Props) {
       } m-0 pad-16 w-full whitespace-normal`}
       onClick={copyToClipboard}
     >
-      <p className="break-all text-left">コピー</p>
+      <p className="break-all text-left">{t("コピー", "Copy")}</p>
     </Button>
   )
 }

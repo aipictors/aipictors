@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip"
 import { HelpCircleIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   value: number
@@ -13,6 +14,8 @@ type Props = {
 }
 
 export function GenerationConfigStep(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
@@ -23,7 +26,12 @@ export function GenerationConfigStep(props: Props) {
               <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>{"Steps値を大きくするほどイラストがより洗練されます。"}</p>
+              <p>
+                {t(
+                  "Steps値を大きくするほどイラストがより洗練されます。",
+                  "The higher the Steps value, the more refined the illustration becomes.",
+                )}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

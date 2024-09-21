@@ -15,6 +15,7 @@ import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { MaximizeIcon, MinimizeIcon } from "lucide-react"
 import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   rating: number
@@ -48,6 +49,7 @@ type Props = {
  */
 export function GenerationTaskListActions(props: Props) {
   const [deleteTask] = useMutation(deleteImageGenerationResultMutation)
+  const t = useTranslation()
 
   const [isAllSelected, setIsAllSelected] = useState(false)
 
@@ -64,7 +66,6 @@ export function GenerationTaskListActions(props: Props) {
         deleteTask({
           variables: {
             input: {
-              // props.taskId ではなく、ループ内の taskId を使用
               nanoid: taskId,
             },
           },
@@ -93,15 +94,18 @@ export function GenerationTaskListActions(props: Props) {
       <div className="flex items-center px-2 pb-2 md:px-4 xl:px-4">
         <div className="flex w-full items-center space-x-4">
           <Toggle
-            title="履歴を複数選択してダウンロード、一括削除などを行えます"
+            title={t(
+              "履歴を複数選択してダウンロード、一括削除などを行えます",
+              "Select multiple history items for bulk download, deletion, etc.",
+            )}
             onClick={props.onToggleEditMode}
             variant="outline"
           >
-            {props.isEditMode ? "解除" : "選択"}
+            {props.isEditMode ? t("解除", "Deselect") : t("選択", "Select")}
           </Toggle>
           {props.isEditMode && (
             <Button
-              title="一括選択、解除できます"
+              title={t("一括選択、解除できます", "Bulk select or deselect")}
               onClick={() => {
                 setIsAllSelected(!isAllSelected)
                 if (isAllSelected) {
@@ -112,7 +116,9 @@ export function GenerationTaskListActions(props: Props) {
               }}
               variant="outline"
             >
-              {isAllSelected ? "一括解除" : "一括選択"}
+              {isAllSelected
+                ? t("一括解除", "Deselect All")
+                : t("一括選択", "Select All")}
             </Button>
           )}
           {!props.isEditMode && (
@@ -121,12 +127,6 @@ export function GenerationTaskListActions(props: Props) {
               onChange={props.onChangeRating}
             />
           )}
-          {/* {!props.isEditMode && (
-            <GenerationTaskProtectedSelect
-              defaultValue={props.protect}
-              onChange={props.onChangeProtect}
-            />
-          )} */}
           {state !== "HISTORY_LIST_FULL" && (
             <div className="hidden md:block">
               <GenerationTaskPreviewModeButton
@@ -150,7 +150,10 @@ export function GenerationTaskListActions(props: Props) {
             <Toggle
               onClick={openFullHistory}
               variant={"outline"}
-              title="履歴一覧の全画面モード切替"
+              title={t(
+                "履歴一覧の全画面モード切替",
+                "Toggle full-screen mode for history list",
+              )}
             >
               {state === "HISTORY_LIST_FULL" ? (
                 <MinimizeIcon className="w-4" />
@@ -167,21 +170,30 @@ export function GenerationTaskListActions(props: Props) {
           disabled={false}
           onDelete={onTrashTasks}
           isDeletedLoading={isDeletedLoading}
-          title="複数選択して一括削除できます。"
+          title={t(
+            "複数選択して一括削除できます。",
+            "You can bulk delete selected items.",
+          )}
           isEnable={isEmpty}
         />
         {/* ダウンロード */}
         <GenerationImageDownloadButton
           disabled={false}
           selectedTaskIds={props.selectedTaskIds}
-          title="複数選択して一括ダウンロードできます。"
+          title={t(
+            "複数選択して一括ダウンロードできます。",
+            "You can bulk download selected items.",
+          )}
           isEnable={isEmpty}
         />
         {/* 投稿 */}
         <GenerationImagePostButton
           disabled={false}
           selectedTaskIds={props.selectedTaskIds}
-          title="複数選択して一括投稿できます。"
+          title={t(
+            "複数選択して一括投稿できます。",
+            "You can bulk post selected items.",
+          )}
           isEnable={isEmpty}
         />
         <GenerationTaskActionDropdownMenu

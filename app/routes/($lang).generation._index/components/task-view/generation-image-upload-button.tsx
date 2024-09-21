@@ -2,6 +2,7 @@ import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"
 import { FileUp } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   disabled: boolean
@@ -14,6 +15,8 @@ type Props = {
  * 生成画像の投稿ボタン
  */
 export function GenerationImagePostButton(props: Props) {
+  const t = useTranslation()
+
   const onClick = async () => {
     const url = `/new/image?generation=${props.selectedTaskIds.join("%7C")}`
     window.open(url, "_blank")
@@ -22,7 +25,12 @@ export function GenerationImagePostButton(props: Props) {
   return props.isEnable ? (
     <Button
       onClick={() => {
-        toast("投稿対象の履歴を選択してください。")
+        toast(
+          t(
+            "投稿対象の履歴を選択してください。",
+            "Please select the history to post.",
+          ),
+        )
       }}
       title={props.title}
       disabled={props.disabled}
@@ -31,13 +39,16 @@ export function GenerationImagePostButton(props: Props) {
     >
       <div className="mx-2 flex items-center">
         <FileUp className="w-4" />
-        投稿
+        {t("投稿", "Post")}
       </div>
     </Button>
   ) : (
     <AppConfirmDialog
-      title={"投稿する"}
-      description={"投稿サイトAipictorsに作品を投稿しますか？"}
+      title={t("投稿する", "Post")}
+      description={t(
+        "投稿サイトAipictorsに作品を投稿しますか？",
+        "Do you want to post this to Aipictors?",
+      )}
       onNext={onClick}
       onCancel={() => {}}
       cookieKey={"generation_post"}
@@ -52,7 +63,7 @@ export function GenerationImagePostButton(props: Props) {
       >
         <div className="mx-2 flex items-center">
           <FileUp className="w-4" />
-          投稿
+          {t("投稿", "Post")}
         </div>
       </Button>
     </AppConfirmDialog>

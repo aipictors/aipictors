@@ -19,12 +19,14 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb"
 import {} from "~/components/ui/dialog"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * 画像生成についての説明
  */
 export function PlanPage() {
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   const [mutation, { loading: isLoading }] = useMutation(
     createPassCheckoutSessionMutation,
@@ -41,7 +43,9 @@ export function PlanPage() {
       })
       const pageURL = result.data?.createPassCheckoutSession ?? null
       if (pageURL === null) {
-        toast("セッションの作成に失敗しました。")
+        toast(
+          t("セッションの作成に失敗しました。", "Failed to create session."),
+        )
         return
       }
       window.location.assign(pageURL)
@@ -57,17 +61,21 @@ export function PlanPage() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/generation">生成トップ</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/generation/about">
-              生成機能について
+            <BreadcrumbLink href="/generation">
+              {t("生成トップ", "Top")}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/generation/plans">プラン</BreadcrumbLink>
+            <BreadcrumbLink href="/generation/about">
+              {t("生成機能について", "About Image Generation")}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/generation/plans">
+              {t("プラン", "Plans")}
+            </BreadcrumbLink>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -79,9 +87,12 @@ export function PlanPage() {
       />
       <PlusNoteList />
       <div className="flex justify-center gap-x-2 py-4">
-        <Link to="/generation/terms">利用規約</Link>
+        <Link to="/generation/terms">{t("利用規約", "Terms of Service")}</Link>
         <Link to="/specified-commercial-transaction-act">
-          特定商取引法に基づく表記
+          {t(
+            "特定商取引法に基づく表記",
+            "Specified Commercial Transaction Act",
+          )}
         </Link>
       </div>
     </main>

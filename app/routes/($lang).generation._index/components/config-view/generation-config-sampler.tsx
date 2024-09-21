@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/tooltip"
 import { config } from "~/config"
 import { HelpCircleIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   value: string
@@ -20,6 +21,8 @@ type Props = {
 }
 
 export function GenerationConfigSampler(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
@@ -30,7 +33,12 @@ export function GenerationConfigSampler(props: Props) {
               <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>{"ノイズの除去の手法です。"}</p>
+              <p>
+                {t(
+                  "ノイズの除去の手法です。",
+                  "This is a noise removal method.",
+                )}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

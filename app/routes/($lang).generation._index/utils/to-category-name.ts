@@ -1,31 +1,35 @@
+import { useTranslation } from "~/hooks/use-translation"
+
 export function toCategoryName(category: string | null) {
+  const t = useTranslation()
+
   if (category === "ILLUSTRATION_GIRL") {
-    return "美少女イラスト"
+    return t("美少女イラスト", "Illustration: Girl")
   }
 
   if (category === "ANIME_GIRL") {
-    return "美少女アニメ"
+    return t("美少女アニメ", "Anime: Girl")
   }
 
   if (category === "ANIMAL") {
-    return "獣系"
+    return t("獣系", "Animal")
   }
 
   if (category === "BIKINI_MODEL") {
-    return "グラビア"
+    return t("グラビア", "Bikini Model")
   }
 
   if (category === "ILLUSTRATION_BOY") {
-    return "美男子イラスト"
+    return t("美男子イラスト", "Illustration: Boy")
   }
 
   if (category === "FIGURE") {
-    return "美少女フィギュア"
+    return t("美少女フィギュア", "Figure: Girl")
   }
 
   if (category === "BACKGROUND") {
-    return "背景"
+    return t("背景", "Background")
   }
 
-  return "全て"
+  return t("全て", "All")
 }

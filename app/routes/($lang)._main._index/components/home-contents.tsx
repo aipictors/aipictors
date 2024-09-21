@@ -46,6 +46,7 @@ import { Button } from "~/components/ui/button"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import { ArrowDownWideNarrow } from "lucide-react"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+import { useTranslation } from "~/hooks/use-translation"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -82,6 +83,7 @@ const useUpdateQueryParams = () => {
  * ホームのコンテンツ一覧
  */
 export function HomeContents(props: Props) {
+  const t = useTranslation()
   const [searchParams] = useSearchParams()
 
   const updateQueryParams = useUpdateQueryParams()
@@ -204,26 +206,36 @@ export function HomeContents(props: Props) {
       className="space-y-4"
     >
       <TabsList>
-        <TabsTrigger value="home">{"ホーム"}</TabsTrigger>
+        <TabsTrigger value="home">{t("ホーム", "Home")}</TabsTrigger>
         <TabsTrigger value="new">
-          <p className="hidden md:block">{"新着・人気"}</p>
-          <p className="block md:hidden">{"新着"}</p>
+          <p className="hidden md:block">{t("新着・人気", "New & Popular")}</p>
+          <p className="block md:hidden">{t("新着", "New")}</p>
         </TabsTrigger>
         <TabsTrigger value="follow-user">
           <div className="flex items-center space-x-2">
-            <p className="hidden md:block">{"フォロー新着"}</p>
-            <p className="block md:hidden">{"フォロー"}</p>
+            <p className="hidden md:block">
+              {t("フォロー新着", "Followed Users")}
+            </p>
+            <p className="block md:hidden">{t("フォロー", "Followed")}</p>
             <CrossPlatformTooltip
-              text={"フォローしたユーザの新着作品が表示されます"}
+              text={t(
+                "フォローしたユーザの新着作品が表示されます",
+                "Displays works from followed users",
+              )}
             />
           </div>
         </TabsTrigger>
         <TabsTrigger value="follow-tag">
           <div className="flex items-center space-x-2">
-            <p className="hidden md:block">{"お気に入りタグ新着"}</p>
-            <p className="block md:hidden">{"タグ"}</p>
+            <p className="hidden md:block">
+              {t("お気に入りタグ新着", "Favorite Tags")}
+            </p>
+            <p className="block md:hidden">{t("タグ", "Tags")}</p>
             <CrossPlatformTooltip
-              text={"お気に入り登録したタグの新着作品が表示されます"}
+              text={t(
+                "お気に入り登録したタグの新着作品が表示されます",
+                "Displays works from favorite tags",
+              )}
             />
           </div>
         </TabsTrigger>
@@ -265,12 +277,12 @@ export function HomeContents(props: Props) {
               />
               <HomeAwardWorkSection
                 awardDateText={props.homeParticles.awardDateText}
-                title={"前日ランキング"}
+                title={t("前日ランキング", "Previous Day Ranking")}
                 awards={props.homeParticles.workAwards}
                 isSensitive={props.isSensitive}
               />
               <HomeTagsSection
-                title={"人気タグ"}
+                title={t("人気タグ", "Popular Tags")}
                 tags={props.homeParticles.recommendedTags}
                 isSensitive={props.isSensitive}
               />
@@ -310,12 +322,12 @@ export function HomeContents(props: Props) {
               />
               <HomeAwardWorkSection
                 awardDateText={props.homeParticles.awardDateText}
-                title={"前日ランキング"}
+                title={t("前日ランキング", "Previous Day Ranking")}
                 awards={props.homeParticles.workAwards}
                 isSensitive={props.isSensitive}
               />
               <HomeTagsSection
-                title={"人気タグ"}
+                title={t("人気タグ", "Popular Tags")}
                 tags={props.homeParticles.recommendedTags}
                 isSensitive={props.isSensitive}
               />
@@ -339,7 +351,7 @@ export function HomeContents(props: Props) {
             variant={workView === "new" ? "default" : "secondary"}
             onClick={() => handleWorkViewChange("new")}
           >
-            {"新着"}
+            {t("新着", "New")}
           </Button>
           <Button
             variant={
@@ -348,9 +360,12 @@ export function HomeContents(props: Props) {
             onClick={() => handleWorkViewChange("popular")}
           >
             <div className="flex space-x-2">
-              <p>{"人気"}</p>
+              <p>{t("人気", "Popular")}</p>
               <CrossPlatformTooltip
-                text={"最近投稿された人気作品が表示されます"}
+                text={t(
+                  "最近投稿された人気作品が表示されます",
+                  "Recently popular works",
+                )}
               />
             </div>
           </Button>
@@ -366,15 +381,19 @@ export function HomeContents(props: Props) {
                 >
                   <SelectTrigger>
                     <SelectValue
-                      placeholder={workType ? toWorkTypeText(workType) : "種類"}
+                      placeholder={
+                        workType ? toWorkTypeText(workType) : t("種類", "Type")
+                      }
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ALL">{"種類"}</SelectItem>
-                    <SelectItem value="WORK">{"画像"}</SelectItem>
-                    <SelectItem value="VIDEO">{"動画"}</SelectItem>
-                    <SelectItem value="NOVEL">{"小説"}</SelectItem>
-                    <SelectItem value="COLUMN">{"コラム"}</SelectItem>
+                    <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
+                    <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
+                    <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
+                    <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
+                    <SelectItem value="COLUMN">
+                      {t("コラム", "Column")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <Select
@@ -391,17 +410,19 @@ export function HomeContents(props: Props) {
                     <SelectValue
                       placeholder={
                         isPromptPublic === null
-                          ? "プロンプト有無"
+                          ? t("プロンプト有無", "Prompt")
                           : isPromptPublic
-                            ? "あり"
-                            : "なし"
+                            ? t("あり", "Yes")
+                            : t("なし", "No")
                       }
                     />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ALL">{"プロンプト有無"}</SelectItem>
-                    <SelectItem value="prompt">{"あり"}</SelectItem>
-                    <SelectItem value="no-prompt">{"なし"}</SelectItem>
+                    <SelectItem value="ALL">
+                      {t("プロンプト有無", "Prompt")}
+                    </SelectItem>
+                    <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
+                    <SelectItem value="no-prompt">{t("なし", "No")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select
@@ -410,13 +431,19 @@ export function HomeContents(props: Props) {
                 >
                   <SelectTrigger>
                     <ArrowDownWideNarrow />
-                    <SelectValue placeholder={sortType ? sortType : "最新"} />
+                    <SelectValue
+                      placeholder={sortType ? sortType : t("最新", "Latest")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="DATE_CREATED">{"最新"}</SelectItem>
-                    <SelectItem value="LIKES_COUNT">{"最も人気"}</SelectItem>
+                    <SelectItem value="DATE_CREATED">
+                      {t("最新", "Latest")}
+                    </SelectItem>
+                    <SelectItem value="LIKES_COUNT">
+                      {t("最も人気", "Most Liked")}
+                    </SelectItem>
                     <SelectItem value="COMMENTS_COUNT">
-                      {"コメント数"}
+                      {t("コメント数", "Most Comments")}
                     </SelectItem>
                   </SelectContent>
                 </Select>

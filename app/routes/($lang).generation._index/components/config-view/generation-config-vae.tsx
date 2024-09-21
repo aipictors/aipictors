@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/tooltip"
 import { config } from "~/config"
 import { HelpCircleIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   value: string
@@ -23,6 +24,8 @@ type Props = {
  * VAEの設定
  */
 export function GenerationConfigVae(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
@@ -33,7 +36,12 @@ export function GenerationConfigVae(props: Props) {
               <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>{"出力される色や線を調整します。"}</p>
+              <p>
+                {t(
+                  "出力される色や線を調整します。",
+                  "Adjusts the output colors and lines.",
+                )}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

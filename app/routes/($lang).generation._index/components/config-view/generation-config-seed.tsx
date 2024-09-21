@@ -7,6 +7,7 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip"
 import { DicesIcon, HelpCircleIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   value: number
@@ -14,6 +15,8 @@ type Props = {
 }
 
 export function GenerationConfigSeed(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
@@ -25,9 +28,10 @@ export function GenerationConfigSeed(props: Props) {
             </TooltipTrigger>
             <TooltipContent>
               <p>
-                {
-                  "キャラや構図などを固定したいときに使用します。-1にするとランダムになります。"
-                }
+                {t(
+                  "キャラや構図などを固定したいときに使用します。-1にするとランダムになります。",
+                  "Use this when you want to lock characters or composition. Set to -1 for random.",
+                )}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -58,7 +62,7 @@ export function GenerationConfigSeed(props: Props) {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{"Seed値をランダムにする"}</p>
+                <p>{t("Seed値をランダムにする", "Randomize Seed value")}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

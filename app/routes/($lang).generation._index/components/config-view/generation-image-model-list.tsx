@@ -16,6 +16,7 @@ import { toCategoryName } from "~/routes/($lang).generation._index/utils/to-cate
 import type { FragmentOf } from "gql.tada"
 import { StarIcon } from "lucide-react"
 import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   models: FragmentOf<typeof ImageModelContextFragment>[]
@@ -28,12 +29,10 @@ type Props = {
 }
 
 export function ImageModelsList(props: Props) {
+  const t = useTranslation()
   const [selectedType, selectType] = useState("ALL")
-
   const [selectedCategory, selectCategory] = useState("ALL")
-
   const [isSelectorOpen, setIsSelectorOpen] = useState(false)
-
   const [showFavoriteModels, setShowFavoriteModels] = useState(
     props.isInitFavorited,
   )
@@ -111,7 +110,7 @@ export function ImageModelsList(props: Props) {
           onValueChange={selectCategory}
         >
           <SelectTrigger className="w-32 sm:w-40">
-            <SelectValue placeholder={"カテゴリ"} />
+            <SelectValue placeholder={t("カテゴリ", "Category")} />
           </SelectTrigger>
           <SelectContent>
             {["ALL", ...modelCategories].map((category) => (
@@ -134,12 +133,12 @@ export function ImageModelsList(props: Props) {
           onValueChange={selectType}
         >
           <SelectTrigger className="w-32 sm:w-40">
-            <SelectValue placeholder={"種別"} />
+            <SelectValue placeholder={t("種別", "Type")} />
           </SelectTrigger>
           <SelectContent>
             {["ALL", ...modelTypes].map((type) => (
               <SelectItem key={type} value={type}>
-                {type === "ALL" ? "全て" : type}
+                {type === "ALL" ? t("全て", "All") : type}
               </SelectItem>
             ))}
           </SelectContent>
@@ -149,7 +148,7 @@ export function ImageModelsList(props: Props) {
           onClick={() => {
             setShowFavoriteModels((prev) => !prev)
           }}
-          aria-label={"お気に入り"}
+          aria-label={t("お気に入り", "Favorites")}
           size={"icon"}
           variant="ghost"
         >
@@ -183,7 +182,7 @@ export function ImageModelsList(props: Props) {
                     />
                     <Button
                       className="absolute top-2 right-2"
-                      aria-label={"お気に入り"}
+                      aria-label={t("お気に入り", "Favorites")}
                       size={"icon"}
                       variant="ghost"
                       onClick={() => {
@@ -231,7 +230,7 @@ export function ImageModelsList(props: Props) {
 
                     <Button
                       className="absolute top-8 right-2"
-                      aria-label={"お気に入り"}
+                      aria-label={t("お気に入り", "Favorites")}
                       size={"icon"}
                       variant="ghost"
                       onClick={() => {

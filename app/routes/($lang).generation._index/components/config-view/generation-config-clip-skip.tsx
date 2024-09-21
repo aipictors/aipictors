@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip"
 import { HelpCircleIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   value: number
@@ -16,6 +17,8 @@ type Props = {
  * ClipSkipの設定
  */
 export function GenerationConfigClipSkip(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
@@ -26,7 +29,12 @@ export function GenerationConfigClipSkip(props: Props) {
               <HelpCircleIcon className="w-4" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>{"絵柄の雰囲気が変わります"}</p>
+              <p>
+                {t(
+                  "絵柄の雰囲気が変わります",
+                  "The style of the image may change",
+                )}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

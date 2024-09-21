@@ -2,6 +2,7 @@ import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"
 import { Loader2Icon, Trash2Icon } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title?: string
@@ -15,6 +16,8 @@ type Props = {
  * 画像生成の一括削除ボタン
  */
 export function GenerationTasksDeleteButton(props: Props) {
+  const t = useTranslation()
+
   if (props.isDeletedLoading) {
     return (
       <Button onClick={() => {}} variant={"ghost"} size={"icon"}>
@@ -26,7 +29,12 @@ export function GenerationTasksDeleteButton(props: Props) {
   return props.isEnable ? (
     <Button
       onClick={() => {
-        toast("削除対象の履歴を選択してください。")
+        toast(
+          t(
+            "削除対象の履歴を選択してください。",
+            "Please select the history to delete.",
+          ),
+        )
       }}
       title={props.title}
       disabled={props.disabled}
@@ -37,8 +45,11 @@ export function GenerationTasksDeleteButton(props: Props) {
     </Button>
   ) : (
     <AppConfirmDialog
-      title={"確認"}
-      description={"本当に削除しますか？"}
+      title={t("確認", "Confirm")}
+      description={t(
+        "本当に削除しますか？",
+        "Are you sure you want to delete this?",
+      )}
       onNext={props.onDelete}
       onCancel={() => {}}
     >

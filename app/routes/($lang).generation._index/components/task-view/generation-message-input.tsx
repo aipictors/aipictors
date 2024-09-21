@@ -3,6 +3,7 @@ import { Textarea } from "~/components/ui/textarea"
 import { RiCloseCircleLine } from "@remixicon/react"
 import { Send } from "lucide-react"
 import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isLoading: boolean
@@ -11,8 +12,8 @@ type Props = {
 
 export function GenerationMessageInput(props: Props) {
   const [message, setMessage] = useState("")
-
   const [selectedImages, setSelectedImages] = useState<string[]>([])
+  const t = useTranslation()
 
   const handleSubmit = () => {
     props.onSubmit(message)
@@ -42,7 +43,10 @@ export function GenerationMessageInput(props: Props) {
       ))}
       <Textarea
         className="h-auto resize-none rounded-md border p-2"
-        placeholder="メッセージを入力してください"
+        placeholder={t(
+          "メッセージを入力してください",
+          "Please enter a message",
+        )}
         value={message}
         onChange={(event) => setMessage(event.target.value)}
       />

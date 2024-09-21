@@ -10,6 +10,7 @@ import {
 } from "~/components/ui/breadcrumb"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { useTranslation } from "~/hooks/use-translation"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.GENERATION_TERMS, undefined, props.params.lang)
@@ -19,27 +20,35 @@ export const meta: MetaFunction = (props) => {
  * 画像生成機能の利用規約
  */
 export default function GenerationTerms() {
+  const t = useTranslation()
+
   return (
     <>
       <div className="w-full space-y-8">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/generation">生成トップ</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/generation/about">
-                生成機能について
+              <BreadcrumbLink href="/generation">
+                {t("生成トップ", "Top")}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/generation/terns">利用規約</BreadcrumbLink>
+              <BreadcrumbLink href="/generation/about">
+                {t("生成機能について", "About Image Generation")}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/generation/terms">
+                {t("利用規約", "Terms of Service")}
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="font-bold text-2xl">{"利用規約"}</h1>
+        <h1 className="font-bold text-2xl">
+          {t("利用規約", "Terms of Service")}
+        </h1>
         <AppMarkdown>{termsMarkdownText}</AppMarkdown>
       </div>
     </>

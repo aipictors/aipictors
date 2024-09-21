@@ -33,7 +33,7 @@ export function SettingLanguageUsedForPromptView() {
           </TabsTrigger>
           <TabsTrigger value="jp" className="w-full">
             <div className="flex items-center space-x-2">
-              <p>{t("日本語", "Japanese")}</p>
+              <p>{t("日本語で生成", "Generate in English")}</p>
               <CrossPlatformTooltip
                 text={t(
                   "プロンプトを日本語で入力することができるようになります",

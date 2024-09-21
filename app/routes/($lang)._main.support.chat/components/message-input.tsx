@@ -3,6 +3,7 @@ import { Textarea } from "~/components/ui/textarea"
 import { RiCloseCircleLine } from "@remixicon/react"
 import { Send } from "lucide-react"
 import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isLoading: boolean
@@ -11,50 +12,14 @@ type Props = {
 
 export function MessageInput(props: Props) {
   const [message, setMessage] = useState("")
-
   const [selectedImages, setSelectedImages] = useState<string[]>([])
+  const t = useTranslation()
 
   const handleSubmit = () => {
     props.onSubmit(message)
     setSelectedImages([])
     setMessage("")
   }
-
-  // const fileInputRef = useRef<HTMLInputElement | null>(null)
-
-  // const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-  //   const files = event.target.files
-  //   if (files && files.length > 0) {
-  //     const promises: Promise<string>[] = []
-
-  //     for (let i = 0; i < files.length; i++) {
-  //       const file = files[i]
-  //       const promise = new Promise<string>((resolve) => {
-  //         const reader = new FileReader()
-  //         reader.onload = (e) => {
-  //           if (e.target) {
-  //             resolve(e.target.result as string)
-  //           }
-  //         }
-  //         reader.readAsDataURL(file)
-  //       })
-  //       promises.push(promise)
-  //     }
-
-  //     try {
-  //       const newImages = await Promise.all(promises)
-  //       setSelectedImages((prevImages) => [...prevImages, ...newImages])
-  //     } catch (error) {
-  //       console.error("Error loading images:", error)
-  //     }
-  //   }
-  // }
-
-  // const handleButtonClick = () => {
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.click()
-  //   }
-  // }
 
   const isSendButtonEnabled = message.trim() !== "" || selectedImages.length > 0
 
@@ -78,7 +43,10 @@ export function MessageInput(props: Props) {
       ))}
       <Textarea
         className="h-auto resize-none rounded-md border p-2"
-        placeholder="メッセージを入力してください"
+        placeholder={t(
+          "メッセージを入力してください",
+          "Please enter a message",
+        )}
         value={message}
         onChange={(event) => setMessage(event.target.value)}
       />

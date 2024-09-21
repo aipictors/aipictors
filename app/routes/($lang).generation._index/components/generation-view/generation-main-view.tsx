@@ -31,6 +31,7 @@ export function GenerationMainView(props: Props) {
       <div className="flex flex-1 flex-col gap-2 overflow-hidden lg:flex-row">
         <div className="lg:min-w-64 xl:min-w-80">{props.config}</div>
         <div className="flex flex-col gap-4 md:flex-row lg:min-w-64 lg:flex-col xl:min-w-96">
+          {props.settingLanguageUsedForPromptView}
           <div className="flex-1 overflow-hidden">{props.promptEditor}</div>
           <div className="min-w-80 flex-1 overflow-hidden">
             {props.negativePromptEditor}

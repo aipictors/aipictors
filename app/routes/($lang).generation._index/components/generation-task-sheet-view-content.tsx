@@ -37,6 +37,7 @@ import { CopyButton } from "~/routes/($lang).generation._index/components/copy-b
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql, type FragmentOf } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   task:
@@ -74,6 +75,7 @@ type Props = {
  */
 export function GenerationTaskSheetViewContent(props: Props) {
   const context = useGenerationContext()
+  const t = useTranslation()
 
   /**
    * カンマ前までの文字列を取得
@@ -218,7 +220,9 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 </>
               ) : (
                 <>
-                  <p className="text-center">{"予約生成中"}</p>
+                  <p className="text-center">
+                    {t("予約生成中", "Generating...")}
+                  </p>
                   <div className="relative bg-gray-100 p-8 dark:bg-gray-900">
                     <Skeleton
                       className={"m-auto h-[400px] w-[400px] rounded-xl"}
@@ -255,28 +259,34 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   }
                 >
                   <GenerationMenuButton
-                    title={"同じ情報で生成する"}
+                    title={t(
+                      "同じ情報で生成する",
+                      "Generate with same settings",
+                    )}
                     onClick={() => {}}
-                    text={"再利用"}
+                    text={t("再利用", "Reuse")}
                     icon={ArrowUpRightSquare}
                   />
                 </GenerationReferenceDialog>
                 <AppConfirmDialog
-                  title={"投稿する"}
-                  description={"投稿サイトAipictorsに作品を投稿しますか？"}
+                  title={t("投稿する", "Post")}
+                  description={t(
+                    "投稿サイトAipictorsに作品を投稿しますか？",
+                    "Do you want to post this to Aipictors?",
+                  )}
                   onNext={props.onPost}
                   onCancel={() => {}}
                   cookieKey={"generation_post"}
                 >
                   <GenerationMenuButton
-                    title={"投稿する"}
+                    title={t("投稿する", "Post")}
                     onClick={() => {}}
-                    text={"投稿"}
+                    text={t("投稿", "Post")}
                     icon={FileUp}
                   />
                 </AppConfirmDialog>
                 <GenerationMenuButton
-                  title={"生成情報をコピーする"}
+                  title={t("生成情報をコピーする", "Copy generation info")}
                   onClick={() =>
                     props.copyGeneration(props.GenerationParameters)
                   }
@@ -284,7 +294,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 />
                 {props.task?.imageUrl && (
                   <GenerationMenuButton
-                    title={"画像を保存する"}
+                    title={t("画像を保存する", "Save image")}
                     onClick={() =>
                       userToken &&
                       props.saveGenerationImage(props.task.imageUrl ?? "")
@@ -293,7 +303,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   />
                 )}
                 <GenerationMenuButton
-                  title={"保護する"}
+                  title={t("保護する", "Protect image")}
                   onClick={() => props.toggleProtectedImage(props.task.id)}
                   icon={
                     props.isProtected ? LockKeyholeIcon : LockKeyholeOpenIcon
@@ -301,15 +311,18 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   isLoading={props.isProtectedLoading}
                 />
                 <AppConfirmDialog
-                  title={"確認"}
-                  description={"本当に削除しますか？"}
+                  title={t("確認", "Confirm")}
+                  description={t(
+                    "本当に削除しますか？",
+                    "Are you sure you want to delete this?",
+                  )}
                   onNext={() => {
                     props.onDelete()
                   }}
                   onCancel={() => {}}
                 >
                   <GenerationMenuButton
-                    title={"生成履歴を削除する"}
+                    title={t("生成履歴を削除する", "Delete generation history")}
                     onClick={() => () => {}}
                     icon={Trash2}
                     isLoading={props.isDeletedLoading}
@@ -331,9 +344,12 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 />
                 <div className="ml-auto">
                   <GenerationMenuButton
-                    title={"インペイント機能で一部分を再生成して修正する"}
+                    title={t(
+                      "インペイント機能で一部分を再生成して修正する",
+                      "Inpaint to regenerate part of the image",
+                    )}
                     onClick={props.onInPaint}
-                    text={"部分修正"}
+                    text={t("部分修正", "Inpaint")}
                     icon={PenIcon}
                   />
                 </div>
@@ -345,13 +361,13 @@ export function GenerationTaskSheetViewContent(props: Props) {
           )}
           <div className="flex gap-x-2">
             <div className="basis-1/3 space-y-1">
-              <p className="font-bold">{"Size"}</p>
+              <p className="font-bold">{t("Size", "Size")}</p>
               <p>
                 {width}x{height}
               </p>
             </div>
             <div className="basis-1/3 space-y-1">
-              <p className="font-bold">{"Model"}</p>
+              <p className="font-bold">{t("Model", "Model")}</p>
               <p>{extractStringBeforeComma(props.task.model?.name)}</p>
             </div>
           </div>
@@ -359,7 +375,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
             <Separator />
           </div>
           <div className="space-y-2">
-            <p className="font-bold">{"prompt"}</p>
+            <p className="font-bold">{t("prompt", "Prompt")}</p>
             <AutoResizeTextarea
               disabled={true}
               className="max-h-24 w-[100%] overflow-y-auto rounded-md border p-2 text-sm disabled:opacity-100"
@@ -374,7 +390,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
           {props.task.promptsText && (
             <>
               <div className="space-y-2">
-                <p className="font-bold">{"元の文章"}</p>
+                <p className="font-bold">{t("元の文章", "Original Text")}</p>
                 <AutoResizeTextarea
                   disabled={true}
                   className="max-h-24 w-[100%] overflow-y-auto rounded-md border p-2 text-sm disabled:opacity-100"
@@ -389,7 +405,9 @@ export function GenerationTaskSheetViewContent(props: Props) {
             </>
           )}
           <div className="space-y-2">
-            <p className="font-bold">{"NegativePrompt"}</p>
+            <p className="font-bold">
+              {t("NegativePrompt", "Negative Prompt")}
+            </p>
             <AutoResizeTextarea
               disabled={true}
               className="max-h-24 w-[100%] overflow-y-auto rounded-md border p-2 text-sm disabled:opacity-100"
@@ -404,15 +422,15 @@ export function GenerationTaskSheetViewContent(props: Props) {
           </div>
           <div className="mb-1 flex space-x-4">
             <div className="w-full space-y-1">
-              <p className="font-bold">{"Scale"}</p>
+              <p className="font-bold">{t("Scale", "Scale")}</p>
               <p>{props.task.scale}</p>
             </div>
             <div className="w-full space-y-1">
-              <p className="font-bold">{"Steps"}</p>
+              <p className="font-bold">{t("Steps", "Steps")}</p>
               <p>{props.task.steps}</p>
             </div>
             <div className="w-full space-y-1">
-              <p className="font-bold">{"Sampler"}</p>
+              <p className="font-bold">{t("Sampler", "Sampler")}</p>
               <p>{props.task.sampler}</p>
             </div>
           </div>
@@ -421,11 +439,11 @@ export function GenerationTaskSheetViewContent(props: Props) {
           </div>
           <div className="flex space-x-4">
             <div className="w-full space-y-1">
-              <p className="font-bold">{"ClipSkip"}</p>
+              <p className="font-bold">{t("ClipSkip", "ClipSkip")}</p>
               <p>{props.task.clipSkip}</p>
             </div>
             <div className="w-full space-y-1">
-              <p className="font-bold">{"Vae"}</p>
+              <p className="font-bold">{t("Vae", "VAE")}</p>
               <p>
                 {props.task.vae
                   ?.replace(".ckpt", "")
@@ -433,7 +451,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
               </p>
             </div>
             <div className="w-full space-y-1">
-              <p className="font-bold">{"Seed"}</p>
+              <p className="font-bold">{t("Seed", "Seed")}</p>
               <p>{props.task.seed}</p>
             </div>
           </div>
@@ -445,13 +463,13 @@ export function GenerationTaskSheetViewContent(props: Props) {
               <div className="flex space-x-4">
                 {props.task.controlNetModule && (
                   <div className="w-full space-y-1">
-                    <p className="font-bold">{"Module"}</p>
+                    <p className="font-bold">{t("Module", "Module")}</p>
                     <p>{props.task.controlNetModule}</p>
                   </div>
                 )}
                 {props.task.controlNetWeight && (
                   <div className="w-full space-y-1">
-                    <p className="font-bold">{"Weight"}</p>
+                    <p className="font-bold">{t("Weight", "Weight")}</p>
                     <p>{props.task.controlNetWeight}</p>
                   </div>
                 )}
@@ -464,7 +482,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
           </div>
           {props.task.completedAt && (
             <div className="w-full space-y-1">
-              <p className="font-bold">{"生成日時"}</p>
+              <p className="font-bold">{t("生成日時", "Generation Date")}</p>
               <p>{toDateTimeText(props.task.completedAt)}</p>
             </div>
           )}

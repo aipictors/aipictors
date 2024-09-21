@@ -1,6 +1,7 @@
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { cn } from "~/lib/utils"
 import { Loader2Icon, XIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onDelete(): void
@@ -11,6 +12,8 @@ type Props = {
  * 画像生成の削除ボタン
  */
 export function GenerationTaskDeleteButton(props: Props) {
+  const t = useTranslation()
+
   return (
     <button
       disabled={props.isDeletedLoading}
@@ -25,8 +28,11 @@ export function GenerationTaskDeleteButton(props: Props) {
           <Loader2Icon color="black" className={"animate-spin"} />
         ) : (
           <AppConfirmDialog
-            title={"確認"}
-            description={"本当に削除しますか？"}
+            title={t("確認", "Confirm")}
+            description={t(
+              "本当に削除しますか？",
+              "Are you sure you want to delete this?",
+            )}
             onNext={props.onDelete}
             onCancel={() => {}}
           >
