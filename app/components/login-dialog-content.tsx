@@ -15,11 +15,14 @@ import { graphql } from "gql.tada"
 import { Suspense } from "react"
 import { LineLoggedInWithUrlButton } from "~/components/line-logged-in-with-url-button"
 import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * ログイン
  */
 export function LoginDialogContent() {
+  const t = useTranslation()
+
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
@@ -36,11 +39,11 @@ export function LoginDialogContent() {
       })
       const token = result.data?.loginWithPassword.token ?? null
       if (token === null) {
-        toast("ログインに失敗しました。")
+        toast(t("ログインに失敗しました。", "Login failed."))
         return
       }
       await signInWithCustomToken(getAuth(), token)
-      toast("ログインしました。")
+      toast(t("ログインしました。", "Login successful."))
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -51,56 +54,47 @@ export function LoginDialogContent() {
   return (
     <>
       <div className="my-2 space-y-2">
-        <p className="text-sm">{"SNSアカウントでログイン"}</p>
         <p className="text-sm">
-          {
-            "ここからアカウントを「作成」した場合は旧版にはパスワード認証のみ可能です"
-          }
+          {t("SNSアカウントでログイン", "Login with social accounts")}
+        </p>
+        <p className="text-sm">
+          {t(
+            "ここからアカウントを「作成」した場合は旧版にはパスワード認証のみ可能です",
+            "If you create an account from here, only password authentication is available in the old version.",
+          )}
         </p>
         <div className="flex flex-col gap-2">
           <SocialLoginButton
-            disabled={
-              isLoading
-              // || turnstileStatus !== "solved"
-            }
+            disabled={isLoading}
             provider={new GoogleAuthProvider()}
-            buttonText="Googleで続ける"
+            buttonText={t("Googleで続ける", "Continue with Google")}
             icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
           />
           <SocialLoginButton
-            disabled={
-              isLoading
-              // || turnstileStatus !== "solved"
-            }
+            disabled={isLoading}
             provider={new TwitterAuthProvider()}
-            buttonText="𝕏(Twitter)で続ける"
+            buttonText={t("𝕏(Twitter)で続ける", "Continue with X (Twitter)")}
             icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
           />
           <Suspense
             fallback={<LineLoggedInButton disabled={true} onClick={() => {}} />}
           >
-            <LineLoggedInWithUrlButton text={"LINEで続ける"} />
+            <LineLoggedInWithUrlButton
+              text={t("LINEで続ける", "Continue with LINE")}
+            />
           </Suspense>
         </div>
       </div>
       <Separator />
       <div className="my-2 w-full space-y-2">
-        <p className="text-sm">{"またはアカウント情報でログイン"}</p>
+        <p className="text-sm">
+          {t(
+            "またはアカウント情報でログイン",
+            "Or log in with your account information",
+          )}
+        </p>
         <PasswordLoginForm onSubmit={onLogin} isLoading={isLoading} />
       </div>
-      {/* <Separator />
-      <div className={"flex w-full flex-col gap-y-2"}>
-        <span className="text-sm">{"アカウントをお持ちで無い方はこちら"}</span>
-        <Link
-          className="w-full"
-          target="_blank"
-          to={"https://www.aipictors.com/login/"}
-        >
-          <Button className="w-full" variant={"secondary"} disabled={isLoading}>
-            {"アカウント作成"}
-          </Button>
-        </Link>
-      </div> */}
     </>
   )
 }

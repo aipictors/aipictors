@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   children: React.ReactNode
@@ -20,13 +21,15 @@ type Props = {
  * 参照生成ダイアログ
  */
 export function GenerationReferenceDialog(props: Props) {
+  const t = useTranslation()
+
   return (
     <>
       <Dialog>
         <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>復元</DialogTitle>
+            <DialogTitle>{t("復元", "Restore")}</DialogTitle>
           </DialogHeader>
           <div className="flex items-center gap-2">
             <Button
@@ -34,26 +37,29 @@ export function GenerationReferenceDialog(props: Props) {
               variant={"secondary"}
               size={"sm"}
             >
-              再利用
+              {t("再利用", "Reuse")}
             </Button>
             <Button
               onClick={props.onReferenceWithSeed}
               variant={"secondary"}
               size={"sm"}
             >
-              再利用（Seed込み）
+              {t("再利用（Seed込み）", "Reuse (with Seed)")}
             </Button>
           </div>
           {props.isShowControlNetCaption && (
             <div className="mt-2">
               <p className="text-gray-500 text-sm">
-                {"※ControlNetの設定は復元されません。"}
+                {t(
+                  "※ControlNetの設定は復元されません。",
+                  "※ControlNet settings will not be restored.",
+                )}
               </p>
             </div>
           )}
           <DialogFooter>
             <DialogClose>
-              <Button>{"閉じる"}</Button>
+              <Button>{t("閉じる", "Close")}</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
 import { Checkbox } from "~/components/ui/checkbox"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = Readonly<{
   description: string
@@ -26,6 +27,7 @@ type Props = Readonly<{
 }>
 
 export function AppConfirmDialog(props: Props) {
+  const t = useTranslation()
   const [isCheck, setIsCheck] = useState(false)
   const [shouldSkipDialog, setShouldSkipDialog] = useState(false)
 
@@ -41,7 +43,7 @@ export function AppConfirmDialog(props: Props) {
   const onNext = () => {
     if (props.cookieKey && isCheck) {
       const expiryDate = new Date()
-      expiryDate.setDate(expiryDate.getDate() + 7) // Cookie expires in 1 week
+      expiryDate.setDate(expiryDate.getDate() + 7)
       document.cookie = `${props.cookieKey}=true; expires=${expiryDate.toUTCString()}; path=/`
     }
     props.onNext()
@@ -64,10 +66,10 @@ export function AppConfirmDialog(props: Props) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={props.onCancel}>
-            {props.cancelLabel ?? "いいえ"}
+            {props.cancelLabel ?? t("いいえ", "No")}
           </AlertDialogCancel>
           <AlertDialogAction onClick={onNext}>
-            {props.nextLabel ?? "はい"}
+            {props.nextLabel ?? t("はい", "Yes")}
           </AlertDialogAction>
         </AlertDialogFooter>
         {props.cookieKey && (
@@ -83,7 +85,7 @@ export function AppConfirmDialog(props: Props) {
               htmlFor="hide-check"
               className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              今後表示しない
+              {t("今後表示しない", "Do not show again")}
             </label>
           </div>
         )}

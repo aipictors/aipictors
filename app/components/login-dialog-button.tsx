@@ -10,6 +10,7 @@ import {
 } from "~/components/ui/dialog"
 import { cn } from "~/lib/utils"
 import { LoaderIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   label?: string
@@ -31,6 +32,8 @@ type Props = {
  * ログイン
  */
 export function LoginDialogButton(props: Props) {
+  const t = useTranslation()
+
   return (
     <Dialog>
       <DialogTrigger disabled={props.isLoading} asChild>
@@ -42,7 +45,7 @@ export function LoginDialogButton(props: Props) {
             disabled={props.isLoading}
             className={cn(props.isWidthFull ? "w-full" : "")}
           >
-            {props.label ? props.label : "ログイン"}
+            {props.label ? props.label : t("ログイン", "Login")}
             {props.isLoading && (
               <span className="ml-2 animate-spin">
                 <LoaderIcon />
@@ -53,10 +56,16 @@ export function LoginDialogButton(props: Props) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{"ログイン"}</DialogTitle>
+          <DialogTitle>{t("ログイン", "Login")}</DialogTitle>
           <DialogDescription>
-            {props.imageUrl && <img alt="補足" src={props.imageUrl} />}
-            {props.description || "ここから先はログインが必要みたい。"}
+            {props.imageUrl && (
+              <img alt={t("補足", "Supplementary")} src={props.imageUrl} />
+            )}
+            {props.description ||
+              t(
+                "ここから先はログインが必要みたい。",
+                "It seems you need to log in to proceed.",
+              )}
           </DialogDescription>
         </DialogHeader>
         <LoginDialogContent />

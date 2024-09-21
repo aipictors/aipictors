@@ -3,6 +3,7 @@ import { Input } from "~/components/ui/input"
 import type { FormLogin } from "~/types/form-login"
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onSubmit(form: FormLogin): void
@@ -14,6 +15,8 @@ export function PasswordLoginForm(props: Props) {
 
   const [password, setPassword] = useState("")
 
+  const t = useTranslation()
+
   const onLogin = () => {
     props.onSubmit({ login: username, password: password })
   }
@@ -22,7 +25,7 @@ export function PasswordLoginForm(props: Props) {
     <div className="w-full space-y-2">
       <Input
         disabled={props.isLoading}
-        placeholder={"ユーザID"}
+        placeholder={t("ユーザID", "User ID")}
         value={username}
         onChange={(event) => {
           setUsername(event.target.value)
@@ -30,7 +33,7 @@ export function PasswordLoginForm(props: Props) {
       />
       <Input
         disabled={props.isLoading}
-        placeholder={"パスワード"}
+        placeholder={t("パスワード", "Password")}
         type={"password"}
         value={password}
         onChange={(event) => {
@@ -41,7 +44,7 @@ export function PasswordLoginForm(props: Props) {
         {props.isLoading ? (
           <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
         ) : (
-          <span>{"ログイン"}</span>
+          <span>{t("ログイン", "Login")}</span>
         )}
       </Button>
     </div>

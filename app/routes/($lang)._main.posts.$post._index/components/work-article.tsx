@@ -61,7 +61,10 @@ export function WorkArticle(props: Props) {
     <article className="flex flex-col space-y-4">
       <ConstructionAlert
         type="WARNING"
-        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
+        message={t(
+          "リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！",
+          "The renewal version is still under development, so there may be bugs! Some features have been re-released! Please continue using the old version for now.",
+        )}
         fallbackURL={`https://www.aipictors.com/works/${props.work.id}`}
         deadline={"2024-07-30"}
       />
@@ -200,7 +203,9 @@ export function WorkArticle(props: Props) {
                 variant="secondary"
                 className="flex items-center space-x-2"
               >
-                <span className="text-md">{"宣伝作品"}</span>
+                <span className="text-md">
+                  {t("宣伝作品", "Promotional work")}
+                </span>
               </Badge>
             )}
             {props.work.dailyRanking && (
@@ -210,14 +215,20 @@ export function WorkArticle(props: Props) {
                 <Badge
                   variant="secondary"
                   className="flex items-center space-x-2"
-                >{`デイリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+                >
+                  {t("デイリー入賞", "Daily Rank")} {props.work.dailyRanking}{" "}
+                  {t("位", "Rank")}
+                </Badge>
               </Link>
             )}
             {props.work.weeklyRanking && (
               <Badge
                 variant="secondary"
                 className="flex items-center space-x-2"
-              >{`ウィークリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+              >
+                {t("ウィークリー入賞", "Weekly Rank")} {props.work.dailyRanking}{" "}
+                {t("位", "Rank")}
+              </Badge>
             )}
             {props.work.monthlyRanking && (
               <Link
@@ -226,7 +237,10 @@ export function WorkArticle(props: Props) {
                 <Badge
                   variant="secondary"
                   className="flex items-center space-x-2"
-                >{`マンスリー入賞 ${props.work.dailyRanking} 位`}</Badge>
+                >
+                  {t("マンスリー入賞", "Monthly Rank")}{" "}
+                  {props.work.dailyRanking} {t("位", "Rank")}
+                </Badge>
               </Link>
             )}
           </div>
@@ -260,7 +274,12 @@ export function WorkArticle(props: Props) {
           props.work.user.id === appContext.userId && (
             <p className="flex items-center gap-x-2 font-bold opacity-60">
               <ShieldAlert className="block h-6 w-6" />
-              <p>{"生成情報は非公開状態です、ご自身のみ閲覧可能です"}</p>
+              <p>
+                {t(
+                  "生成情報は非公開状態です、ご自身のみ閲覧可能です",
+                  "Generation information is private and only viewable by you.",
+                )}
+              </p>
             </p>
           )}
         <WorkArticleGenerationParameters
