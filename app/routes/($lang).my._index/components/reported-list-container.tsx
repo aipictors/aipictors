@@ -9,7 +9,7 @@ import { Link } from "@remix-run/react"
 import { Button } from "~/components/ui/button"
 import { PencilIcon } from "lucide-react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 
 type Props = {
   page: number

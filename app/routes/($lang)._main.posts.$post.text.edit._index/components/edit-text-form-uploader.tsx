@@ -1,5 +1,5 @@
 import FullScreenContainer from "~/components/full-screen-container"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { getExtractInfoFromBase64 } from "~/utils/get-extract-info-from-png"
 import { config } from "~/config"
 import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"

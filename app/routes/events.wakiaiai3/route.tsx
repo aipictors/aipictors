@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { eventUsers } from "~/routes/events.wakiaiai3/assets/event-users"
 import { EventWakiaiaiCreatorCard } from "~/routes/events.wakiaiai/components/event-wakiaiai-creator-card"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"

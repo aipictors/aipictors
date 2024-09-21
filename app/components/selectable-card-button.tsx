@@ -1,4 +1,4 @@
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 // import Theme from "~/routes/($lang)._main.themes.$year.$month.$day._index/route"
 import { CheckIcon } from "lucide-react"
 

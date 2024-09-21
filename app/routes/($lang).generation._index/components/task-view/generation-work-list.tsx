@@ -1,6 +1,6 @@
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Skeleton } from "~/components/ui/skeleton"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
 import { FallbackTaskCard } from "~/routes/($lang).generation._index/components/fallback-task-card"
 import {

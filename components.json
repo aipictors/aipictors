@@ -7,10 +7,14 @@
     "config": "tailwind.config.shadcn.ts",
     "css": "app/tailwind.css",
     "baseColor": "stone",
-    "cssVariables": true
+    "cssVariables": true,
+    "prefix": ""
   },
   "aliases": {
     "components": "~/components",
-    "utils": "~/lib/cn"
+    "utils": "~/lib/utils",
+    "ui": "~/components/ui",
+    "lib": "~/lib",
+    "hooks": "~/hooks"
   }
 }

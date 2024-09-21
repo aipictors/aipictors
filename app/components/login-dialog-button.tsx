@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { LoaderIcon } from "lucide-react"
 
 type Props = {

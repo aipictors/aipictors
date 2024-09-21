@@ -5,7 +5,7 @@ import { AppAnalytics } from "~/components/app/app-analytics"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import { ContextProviders } from "~/components/context-providers"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import type { LinksFunction } from "@remix-run/cloudflare"
 import {
   Links,

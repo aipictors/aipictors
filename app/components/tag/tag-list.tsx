@@ -1,6 +1,6 @@
 import React from "react"
 import type { Tag as TagType } from "~/components/tag/tag-input"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { Tag, type TagProps } from "~/components/tag/tag"
 
 export type TagListProps = {

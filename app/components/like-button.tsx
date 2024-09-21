@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext, useCallback } from "react"
 import { Heart } from "lucide-react"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { useMutation } from "@apollo/client/index"

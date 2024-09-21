@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { eventUsers } from "~/routes/events.wakiaiai/assets/event-users"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
