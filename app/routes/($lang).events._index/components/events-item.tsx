@@ -7,11 +7,7 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = FragmentOf<typeof appEventItemFragment>
 
-/**
- * 時刻の文字列を返す（UTC時間を日本時間に変換）
- * @param time UNIXタイムスタンプ（秒）
- */
-export const toEventDateTimeText = (time: number) => {
+const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
 
   // UTC時間から日本時間（UTC+9）に変換

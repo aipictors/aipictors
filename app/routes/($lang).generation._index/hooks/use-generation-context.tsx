@@ -430,6 +430,15 @@ export function useGenerationContext() {
   }
 
   /**
+   * 言語モードを変更する
+   * @param value
+   */
+  const changeLanguageUsedForPrompt = (item: string | null) => {
+    const value = configAction.changeLanguageUsedForPrompt(item).getState()
+    actor.send({ type: "UPDATE_CONFIG", value })
+  }
+
+  /**
    * controlNetThresholdAを変更する
    * @param value
    */
@@ -680,5 +689,6 @@ export function useGenerationContext() {
     updateViewTaskId: updateViewTaskId,
     updateThumbnailSizeInPromptView: updateThumbnailSizeInPromptView,
     updateThumbnailSizeInHistoryListFull: updateThumbnailSizeInHistoryListFull,
+    changeLanguageUsedForPrompt,
   }
 }

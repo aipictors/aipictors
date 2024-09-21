@@ -54,6 +54,7 @@ const zProps = object({
   controlNetHrOption: nullable(string()),
   currentUserToken: nullable(string()),
   generationCount: number(),
+  languageUsedForPrompt: nullable(string()),
 })
 
 type Props = InferOutput<typeof zProps>
@@ -152,6 +153,8 @@ export class GenerationConfigState implements Props {
   readonly currentUserToken!: Props["currentUserToken"]
 
   readonly generationCount!: Props["generationCount"]
+
+  readonly languageUsedForPrompt!: Props["languageUsedForPrompt"]
 
   constructor(props: Props) {
     Object.assign(this, props)

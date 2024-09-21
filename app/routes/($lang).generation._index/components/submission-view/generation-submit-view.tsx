@@ -429,6 +429,8 @@ export function GenerationSubmissionView(props: Props) {
               model: modelName,
               vae: context.config.vae ?? "",
               prompt: context.config.promptText,
+              isPromptGenerationEnabled:
+                context.config.languageUsedForPrompt === "jp",
               negativePrompt: context.config.negativePromptText,
               seed: seeds[i],
               steps: context.config.steps,
@@ -456,6 +458,8 @@ export function GenerationSubmissionView(props: Props) {
               model: modelName,
               vae: context.config.vae ?? "",
               prompt: promptsTexts[i],
+              isPromptGenerationEnabled:
+                context.config.languageUsedForPrompt === "jp",
               negativePrompt: context.config.negativePromptText,
               seed: seeds[i],
               steps: context.config.steps,

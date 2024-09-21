@@ -48,6 +48,7 @@ const config = new GenerationConfigState({
   controlNetWeight: 1,
   currentUserToken: "",
   generationCount: 1,
+  languageUsedForPrompt: null,
 })
 
 describe("ImageGenerationAction", () => {

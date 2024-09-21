@@ -7,6 +7,7 @@ import { useMediaQuery } from "usehooks-ts"
 type Props = {
   config: React.ReactNode
   promptEditor: React.ReactNode
+  settingLanguageUsedForPromptView: React.ReactNode
   negativePromptEditor: React.ReactNode
   taskContentPreview: React.ReactNode
   taskDetails: React.ReactNode
@@ -76,7 +77,11 @@ export function GenerationMainView(props: Props) {
           id="generation-main"
           className="flex flex-col gap-4 md:flex-row lg:min-w-40 lg:flex-col xl:min-w-40"
         >
-          <ResizablePanelGroup direction="vertical">
+          <ResizablePanelGroup
+            direction="vertical"
+            className="flex flex-col space-y-2"
+          >
+            {props.settingLanguageUsedForPromptView}
             <ResizablePanelWithMemory id="generation-editor">
               <div className="h-full flex-1 overflow-hidden">
                 {props.promptEditor}

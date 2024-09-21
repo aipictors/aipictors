@@ -132,6 +132,8 @@ export function InPaintingImageForm(props: Props) {
           input: {
             count: 1,
             prompt: promptText,
+            isPromptGenerationEnabled:
+              context.config.languageUsedForPrompt === "jp",
             negativePrompt: "",
             sampler: props.configSampler,
             seed: -1,

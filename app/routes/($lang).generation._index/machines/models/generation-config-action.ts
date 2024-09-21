@@ -711,6 +711,19 @@ export class GenerationConfigAction {
   }
 
   /**
+   * 日本語モードを変更する
+   * @param value
+   * @returns
+   */
+  changeLanguageUsedForPrompt(value: string | null) {
+    const state = new GenerationConfigState({
+      ...this.state,
+      languageUsedForPrompt: value,
+    })
+    return new GenerationConfigAction(state, this.props)
+  }
+
+  /**
    * controlNetThresholdAを変更する
    * @param value
    * @returns

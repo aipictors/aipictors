@@ -80,6 +80,7 @@ export function GenerationConfigProvider(props: Props) {
     previewImageURL: null,
     currentUserToken: null,
     generationCount: 1,
+    languageUsedForPrompt: null,
   })
 
   const stateText =

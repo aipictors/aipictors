@@ -27,6 +27,7 @@ import { GenerationLinksView } from "~/routes/($lang).generation._index/componen
 import { GenerationFormFooter } from "~/routes/($lang).generation._index/components/generation-form-footer"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { SettingLanguageUsedForPromptView } from "~/routes/($lang).generation._index/components/setting-language-used-for-prompt-view/setting-language-used-for-prompt-view"
 
 /**
  * 画像生成
@@ -82,6 +83,9 @@ export default function GenerationPage() {
       main={
         <GenerationMainView
           config={<GenerationConfigView />}
+          settingLanguageUsedForPromptView={
+            <SettingLanguageUsedForPromptView />
+          }
           promptEditor={<GenerationPromptView />}
           negativePromptEditor={<GenerationNegativePromptView />}
           taskContentPreview={<GenerationTaskContentPreview />}

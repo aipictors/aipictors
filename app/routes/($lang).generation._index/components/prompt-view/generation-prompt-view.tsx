@@ -56,11 +56,22 @@ export function GenerationPromptView() {
   return (
     <>
       <GenerationViewCard
-        title={t("プロンプト", "Prompts")}
-        tooltip={t(
-          "生成したいイラストの要素をキーワードから選んでください。",
-          "Select the elements you want to generate from the keywords",
-        )}
+        title={
+          context.config.languageUsedForPrompt === null
+            ? t("プロンプト", "Prompts")
+            : t("生成内容（日本語）", "Text For Generation")
+        }
+        tooltip={
+          context.config.languageUsedForPrompt === null
+            ? t(
+                "生成したいイラストの要素をキーワードから選んでください。",
+                "Select the elements you want to generate from the keywords",
+              )
+            : t(
+                "生成したいイラストを言葉で入力してください。文章からAIでプロンプトを自動生成します。",
+                "Please enter the illustration you want to generate in words.",
+              )
+        }
         action={
           <>
             <div className="hidden xl:block">
@@ -79,10 +90,17 @@ export function GenerationPromptView() {
         <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
           <Textarea
             className="hidden h-full min-h-48 resize-none font-mono md:block md:min-h-16"
-            placeholder={t(
-              "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece",
-              "Please enter the elements you want to generate in keywords",
-            )}
+            placeholder={
+              context.config.languageUsedForPrompt === null
+                ? t(
+                    "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece",
+                    "Please enter the elements you want to generate in keywords",
+                  )
+                : t(
+                    "生成したいイラストを言葉で入力してください。例: かわいい女の子",
+                    "Please enter the illustration you want to generate in words. Example: cute girl",
+                  )
+            }
             value={context.config.promptText}
             onChange={(event) => {
               context.updatePrompt(event.target.value)
@@ -93,10 +111,17 @@ export function GenerationPromptView() {
           />
           <AutoResizeTextarea
             className="block h-full min-h-48 resize-none font-mono md:hidden md:min-h-16"
-            placeholder={t(
-              "生成キーワード例: 1 girl, masterpiece",
-              "Please enter the elements you want to generate in keywords",
-            )}
+            placeholder={
+              context.config.languageUsedForPrompt === null
+                ? t(
+                    "生成キーワード例: 1 girl, masterpiece",
+                    "Please enter the elements you want to generate in keywords",
+                  )
+                : t(
+                    "生成キーワード例: 1 女の子, 名作",
+                    "Please input words you want to generate",
+                  )
+            }
             value={context.config.promptText}
             onChange={(event) => {
               context.updatePrompt(event.target.value)
@@ -106,30 +131,32 @@ export function GenerationPromptView() {
             }}
             minHeight="120px"
           />
-          <Dialog
-            open={value}
-            onOpenChange={(isOpen) => {
-              if (isOpen) return
-              setFalse()
-            }}
-          >
-            <DialogTrigger asChild>
-              <Button
-                onClick={setTrue}
-                variant={"secondary"}
-                size={"sm"}
-                className="sticky bottom-0 w-full"
-              >
-                {t("キーワードから選ぶ", "Select from keywords")}
-              </Button>
-            </DialogTrigger>
-            <PromptCategoriesDialogContent
-              selectedPromptIds={selectedPromptIds}
-              onClose={setFalse}
-              promptCategories={context.promptCategories}
-              onSelect={onSelectPromptId}
-            />
-          </Dialog>
+          {context.config.languageUsedForPrompt === null && (
+            <Dialog
+              open={value}
+              onOpenChange={(isOpen) => {
+                if (isOpen) return
+                setFalse()
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button
+                  onClick={setTrue}
+                  variant={"secondary"}
+                  size={"sm"}
+                  className="sticky bottom-0 w-full"
+                >
+                  {t("キーワードから選ぶ", "Select from keywords")}
+                </Button>
+              </DialogTrigger>
+              <PromptCategoriesDialogContent
+                selectedPromptIds={selectedPromptIds}
+                onClose={setFalse}
+                promptCategories={context.promptCategories}
+                onSelect={onSelectPromptId}
+              />
+            </Dialog>
+          )}
         </div>
       </GenerationViewCard>
     </>
