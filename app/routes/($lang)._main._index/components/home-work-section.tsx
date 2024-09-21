@@ -12,7 +12,7 @@ import {
 import { Link } from "@remix-run/react"
 import { RiQuestionLine } from "@remixicon/react"
 import { graphql, type FragmentOf } from "gql.tada"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
 import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 

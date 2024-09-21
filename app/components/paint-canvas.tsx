@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { Slider } from "~/components/ui/slider"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import MosaicCanvas from "~/components/mosaic-canvas"
 
 type Props = {

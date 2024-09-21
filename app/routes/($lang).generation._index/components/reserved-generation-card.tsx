@@ -1,4 +1,4 @@
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"

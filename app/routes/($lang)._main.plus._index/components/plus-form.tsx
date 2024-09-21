@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { toDateText } from "~/utils/to-date-text"
 import { PassBenefitList } from "~/routes/($lang)._main.plus._index/components/pass-benefit-list"
 import { PassImageGenerationBenefitList } from "~/routes/($lang)._main.plus._index/components/pass-image-generation-benefit-list"

@@ -2,7 +2,7 @@ import { useMutation } from "@apollo/client/index"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 

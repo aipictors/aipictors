@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 
 const Table = React.forwardRef<
   HTMLTableElement,
@@ -99,7 +99,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-muted-foreground text-sm", className)}
+    className={cn("mt-4 text-sm text-muted-foreground", className)}
     {...props}
   />
 ))

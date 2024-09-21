@@ -1,5 +1,5 @@
 import { AppPageCenter } from "~/components/app/app-page-center"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 
 type Props = Readonly<{
   children: React.ReactNode
