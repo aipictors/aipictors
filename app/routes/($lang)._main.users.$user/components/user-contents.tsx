@@ -8,7 +8,6 @@ import { UserPickupContents } from "~/routes/($lang)._main.users.$user/component
 import { UserStickersContents } from "~/routes/($lang)._main.users.$user/components/user-stickers-contents"
 import { UserNovelsContents } from "~/routes/($lang)._main.users.$user.novels/components/user-novels-contents"
 import { UserTabs } from "~/routes/($lang)._main.users.$user/components/user-tabs"
-import { UserWorksContents } from "~/routes/($lang)._main.users.$user/components/user-works-contents "
 import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useState } from "react"
 import { CalendarHeartIcon } from "lucide-react"
@@ -17,6 +16,8 @@ import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-
 import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 import type { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import type { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import { useTranslation } from "~/hooks/use-translation"
+import { UserWorksContents } from "~/routes/($lang)._main.users.$user/components/user-works-contents "
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -32,20 +33,15 @@ type Props = {
 }
 
 export function UserContents(props: Props) {
-  const [activeTab, setActiveTab] = useState("ポートフォリオ")
+  const t = useTranslation() // useTranslationフックの追加
+  const [activeTab, setActiveTab] = useState(t("ポートフォリオ", "Portfolio"))
 
   const [workPage, setWorkPage] = useState(0)
-
   const [novelPage, setNovelPage] = useState(0)
-
   const [columnPage, setColumnPage] = useState(0)
-
   const [videoPage, setVideoPage] = useState(0)
-
   const [albumsPage, setAlbumsPage] = useState(0)
-
   const [foldersPage, setFoldersPage] = useState(0)
-
   const [stickersPage, setStickersPage] = useState(0)
 
   const formatBiography = (biography: string): (string | JSX.Element)[] => {
@@ -97,7 +93,7 @@ export function UserContents(props: Props) {
       />
       <div className="flex min-h-96 flex-col gap-y-4">
         <Suspense fallback={<AppLoadingPage />}>
-          {activeTab === "ポートフォリオ" && (
+          {activeTab === t("ポートフォリオ", "Portfolio") && (
             <>
               <Card className="flex flex-col gap-y-4 p-4">
                 <p className="flex items-center space-x-2 text-sm opacity-80">
@@ -114,7 +110,7 @@ export function UserContents(props: Props) {
                           },
                         )}
                       </p>
-                      <p>以前開始</p>
+                      <p>{t("以前開始", "Started before")}</p>
                     </>
                   ) : (
                     <>
@@ -128,13 +124,21 @@ export function UserContents(props: Props) {
                           },
                         )}
                       </p>
-                      <p>頃開始</p>
+                      <p>{t("頃開始", "Started around")}</p>
                     </>
                   )}
                 </p>
                 {props.user.biography && (
                   <p className="text-sm">
-                    {formatBiography(props.user.biography)}
+                    {formatBiography(
+                      t(
+                        props.user.biography,
+                        props.user.enBiography &&
+                          props.user.enBiography.length > 0
+                          ? props.user.enBiography
+                          : (props.user.biography ?? ""),
+                      ),
+                    )}
                   </p>
                 )}
                 <div className="flex items-center gap-x-4">
@@ -186,7 +190,7 @@ export function UserContents(props: Props) {
               />
             </>
           )}
-          {activeTab === "画像" && (
+          {activeTab === t("画像", "Images") && (
             <UserWorksContents
               userId={props.user.id}
               page={workPage}
@@ -195,7 +199,7 @@ export function UserContents(props: Props) {
               isSensitive={props.isSensitive}
             />
           )}
-          {activeTab === "小説" && (
+          {activeTab === t("小説", "Novels") && (
             <UserNovelsContents
               userId={props.user.id}
               page={novelPage}
@@ -204,7 +208,7 @@ export function UserContents(props: Props) {
               isSensitive={props.isSensitive}
             />
           )}
-          {activeTab === "動画" && (
+          {activeTab === t("動画", "Videos") && (
             <UserWorksContents
               userId={props.user.id}
               page={videoPage}
@@ -213,7 +217,7 @@ export function UserContents(props: Props) {
               isSensitive={props.isSensitive}
             />
           )}
-          {activeTab === "コラム" && (
+          {activeTab === t("コラム", "Columns") && (
             <UserNovelsContents
               userId={props.user.id}
               page={columnPage}
@@ -222,7 +226,7 @@ export function UserContents(props: Props) {
               isSensitive={props.isSensitive}
             />
           )}
-          {activeTab === "シリーズ" && (
+          {activeTab === t("シリーズ", "Series") && (
             <UserAlbumsContents
               userId={props.user.id}
               page={albumsPage}
@@ -232,7 +236,7 @@ export function UserContents(props: Props) {
               sort="DESC"
             />
           )}
-          {activeTab === "コレクション" && (
+          {activeTab === t("コレクション", "Collections") && (
             <UserFoldersContents
               userId={props.user.id}
               page={foldersPage}
@@ -243,7 +247,7 @@ export function UserContents(props: Props) {
               isSensitive={props.isSensitive}
             />
           )}
-          {activeTab === "スタンプ" && (
+          {activeTab === t("スタンプ", "Stamps") && (
             <UserStickersContents
               userId={props.user.id}
               page={stickersPage}

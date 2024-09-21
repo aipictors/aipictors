@@ -7,19 +7,24 @@ import { graphql } from "gql.tada"
 import { CircleCheckBigIcon, Loader2Icon, XIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳フックをインポート
 
 /**
  * WebFCMTokenを更新するフォーム
  */
 export function SettingFcmForm() {
+  const t = useTranslation() // 翻訳フックを使用
+
   if (!("Notification" in window)) {
-    return "PCブラウザに対応しています。スマートフォンのブラウザには対応していません。"
+    return t(
+      "PCブラウザに対応しています。スマートフォンのブラウザには対応していません。",
+      "Supported on PC browsers only. Not supported on smartphone browsers.",
+    )
   }
 
   const [mutation, { loading: isLoading }] = useMutation(
     updateAccountWebFcmTokenMutation,
   )
-
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {
@@ -27,7 +32,6 @@ export function SettingFcmForm() {
   })
 
   const [webFcmToken, setWebFcmToken] = useState(data?.viewer?.user.webFcmToken)
-
   const [isLoadingNotifySetting, setIsLoadingNotifySetting] = useState(false)
 
   const onClick = async () => {
@@ -45,15 +49,16 @@ export function SettingFcmForm() {
             token: token,
           },
         },
-      }).then(async (result) => {
-        toast("通知を受信する設定をしました。")
+      }).then(async () => {
+        toast(
+          t("通知を受信する設定をしました。", "Notification settings updated."),
+        )
         setWebFcmToken(token)
         setIsLoadingNotifySetting(false)
       })
     } catch (error) {
       setIsLoadingNotifySetting(false)
     }
-    setIsLoadingNotifySetting(false)
   }
 
   const onDeleteToken = async () => {
@@ -67,31 +72,40 @@ export function SettingFcmForm() {
             token: null,
           },
         },
-      }).then(async (result) => {
-        toast("通知を受信する設定を解除しました。")
+      }).then(async () => {
+        toast(
+          t(
+            "通知を受信する設定を解除しました。",
+            "Notification settings removed.",
+          ),
+        )
         setWebFcmToken(null)
         setIsLoadingNotifySetting(false)
       })
     } catch (error) {
       setIsLoadingNotifySetting(false)
     }
-    setIsLoadingNotifySetting(false)
   }
 
   const onClickTestNotify = async () => {
     if ("Notification" in window) {
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
-          new Notification("テスト通知", {
-            body: "テスト通知",
+          new Notification(t("テスト通知", "Test Notification"), {
+            body: t("テスト通知", "Test Notification"),
             icon: "https://www.aipictors.com/wp-content/uploads/notification_thumbnail.png",
           })
         } else {
-          toast("通知設定がOFFです。")
+          toast(t("通知設定がOFFです。", "Notifications are off."))
         }
       })
     } else {
-      toast("このデバイスは通知をサポートしていません。")
+      toast(
+        t(
+          "このデバイスは通知をサポートしていません。",
+          "This device does not support notifications.",
+        ),
+      )
     }
   }
 
@@ -103,7 +117,7 @@ export function SettingFcmForm() {
           disabled={isLoadingNotifySetting}
           className="mr-4"
         >
-          {"通知を受信する"}
+          {t("通知を受信する", "Enable Notifications")}
           {isLoadingNotifySetting && (
             <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
           )}
@@ -116,7 +130,7 @@ export function SettingFcmForm() {
             className="mr-4"
             variant={"secondary"}
           >
-            {"Push通知解除"}
+            {t("Push通知解除", "Disable Push Notifications")}
             {isLoadingNotifySetting && (
               <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
             )}
@@ -128,19 +142,26 @@ export function SettingFcmForm() {
           disabled={isLoading}
           variant={"secondary"}
         >
-          {"テスト通知"}
+          {t("テスト通知", "Test Notification")}
         </Button>
         <div className="mt-4 space-y-2">
           <div className="flex items-center">
             {Notification.permission !== "granted" ? (
               <>
                 <XIcon className="h-4 w-4" />
-                <span className="text-sm">ブラウザの通知設定がOFF</span>
+                <span className="text-sm">
+                  {t(
+                    "ブラウザの通知設定がOFF",
+                    "Browser notifications are OFF",
+                  )}
+                </span>
               </>
             ) : (
               <>
                 <CircleCheckBigIcon className="h-4 w-4" />
-                <span className="text-sm">ブラウザの通知設定がON</span>
+                <span className="text-sm">
+                  {t("ブラウザの通知設定がON", "Browser notifications are ON")}
+                </span>
               </>
             )}
           </div>
@@ -149,14 +170,20 @@ export function SettingFcmForm() {
               <>
                 <XIcon className="h-4 w-4" />
                 <span className="text-sm">
-                  通知に必要な情報をサーバに未送信
+                  {t(
+                    "通知に必要な情報をサーバに未送信",
+                    "Notification data not sent to server",
+                  )}
                 </span>
               </>
             ) : (
               <>
                 <CircleCheckBigIcon className="h-4 w-4" />
                 <span className="text-sm">
-                  通知に必要な情報をサーバに送信済み
+                  {t(
+                    "通知に必要な情報をサーバに送信済み",
+                    "Notification data sent to server",
+                  )}
                 </span>
               </>
             )}

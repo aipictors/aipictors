@@ -1,9 +1,9 @@
-import {} from "~/components/ui/tabs"
-import { AuthContext } from "~/contexts/auth-context"
+import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext } from "react"
 import { Button } from "~/components/ui/button"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   activeTab: string
@@ -13,11 +13,12 @@ type Props = {
 }
 
 export function UserTabs(props: Props) {
+  const t = useTranslation() // useTranslationを使用
+  const authContext = useContext(AuthContext)
+
   const handleTabClick = (value: string) => {
     props.setActiveTab(value)
   }
-
-  const authContext = useContext(AuthContext)
 
   const worksCountResp = useQuery(worksCountQuery, {
     variables: {
@@ -30,7 +31,6 @@ export function UserTabs(props: Props) {
       },
     },
   })
-
   const worksCount = worksCountResp.data?.worksCount ?? 0
 
   const novelsCountResp = useQuery(worksCountQuery, {
@@ -44,7 +44,6 @@ export function UserTabs(props: Props) {
       },
     },
   })
-
   const novelsCount = novelsCountResp.data?.worksCount ?? 0
 
   const columnsCountResp = useQuery(worksCountQuery, {
@@ -58,7 +57,6 @@ export function UserTabs(props: Props) {
       },
     },
   })
-
   const columnsCount = columnsCountResp.data?.worksCount ?? 0
 
   const videosCountResp = useQuery(worksCountQuery, {
@@ -72,7 +70,6 @@ export function UserTabs(props: Props) {
       },
     },
   })
-
   const videosCount = videosCountResp.data?.worksCount ?? 0
 
   const albumsCountResp = useQuery(albumsCountQuery, {
@@ -86,7 +83,6 @@ export function UserTabs(props: Props) {
       },
     },
   })
-
   const albumsCount = albumsCountResp.data?.albumsCount ?? 0
 
   const folderCountResp = useQuery(foldersCountQuery, {
@@ -98,7 +94,6 @@ export function UserTabs(props: Props) {
       },
     },
   })
-
   const foldersCount = folderCountResp.data?.foldersCount ?? 0
 
   const stickersCountResp = useQuery(stickersCountQuery, {
@@ -108,19 +103,26 @@ export function UserTabs(props: Props) {
       },
     },
   })
-
   const stickersCount = stickersCountResp.data?.stickersCount ?? 0
 
   const tabList = () => {
     return [
-      "ポートフォリオ",
-      ...(worksCount > 0 ? [`画像(${worksCount})`] : []),
-      ...(novelsCount > 0 ? [`小説(${novelsCount})`] : []),
-      ...(columnsCount > 0 ? [`コラム(${columnsCount})`] : []),
-      ...(videosCount > 0 ? [`動画(${videosCount})`] : []),
-      ...(albumsCount > 0 ? [`シリーズ(${albumsCount})`] : []),
-      ...(foldersCount > 0 ? [`コレクション(${foldersCount})`] : []),
-      ...(stickersCount > 0 ? [`スタンプ(${stickersCount})`] : []),
+      t("ポートフォリオ", "Portfolio"),
+      ...(worksCount > 0 ? [`${t("画像", "Images")}(${worksCount})`] : []),
+      ...(novelsCount > 0 ? [`${t("小説", "Novels")}(${novelsCount})`] : []),
+      ...(columnsCount > 0
+        ? [`${t("コラム", "Columns")}(${columnsCount})`]
+        : []),
+      ...(videosCount > 0 ? [`${t("動画", "Videos")}(${videosCount})`] : []),
+      ...(albumsCount > 0
+        ? [`${t("シリーズ", "Series")}(${albumsCount})`]
+        : []),
+      ...(foldersCount > 0
+        ? [`${t("コレクション", "Collections")}(${foldersCount})`]
+        : []),
+      ...(stickersCount > 0
+        ? [`${t("スタンプ", "Stamps")}(${stickersCount})`]
+        : []),
     ]
   }
 

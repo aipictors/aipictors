@@ -1,10 +1,10 @@
 import { Button, type ButtonProps } from "~/components/ui/button"
-import {} from "~/components/ui/popover"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { graphql } from "gql.tada"
 import { LoaderIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation" // useTranslation フックをインポート
 
 type Props = {
   id: string
@@ -12,6 +12,7 @@ type Props = {
 } & Pick<ButtonProps, "variant">
 
 export function UserMuteButton(props: Props) {
+  const t = useTranslation() // useTranslation フックを使う
   const [mute, { loading: isMuteLoading }] = useMutation(muteUserMutation)
 
   const [unMute, { loading: isUnMuteLoading }] = useMutation(unMuteUserMutation)
@@ -30,7 +31,7 @@ export function UserMuteButton(props: Props) {
         },
       },
     })
-    toast("ユーザーをミュートしました")
+    toast(t("ユーザーをミュートしました", "Muted the user"))
     setIsMute(true)
   }
 
@@ -42,7 +43,7 @@ export function UserMuteButton(props: Props) {
         },
       },
     })
-    toast("ユーザーのミュートを解除しました")
+    toast(t("ユーザーのミュートを解除しました", "Unmuted the user"))
     setIsMute(false)
   }
 
@@ -56,9 +57,9 @@ export function UserMuteButton(props: Props) {
           <LoaderIcon />
         </span>
       ) : isMute ? (
-        "ミュート解除"
+        t("ミュート解除", "Unmute")
       ) : (
-        "ミュート"
+        t("ミュート", "Mute")
       )}
     </Button>
   )

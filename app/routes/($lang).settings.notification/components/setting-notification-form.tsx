@@ -2,18 +2,20 @@ import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/components/setting-fcm-form"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳用フック
+import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/components/setting-fcm-form"
 
 /**
  * 通知設定フォーム
  */
 export function SettingNotificationForm() {
   const authContext = useContext(AuthContext)
+  const t = useTranslation() // 翻訳フックを使用
 
   const { data: userSetting, refetch: refetchSetting } = useQuery(
     userSettingQuery,
@@ -57,19 +59,22 @@ export function SettingNotificationForm() {
         },
       },
     })
-    toast("保存しました")
+    toast(t("保存しました", "Settings saved"))
   }
 
   return (
     <>
       <div className="space-y-4">
-        <p className="font-bold">{"匿名いいね"}</p>
+        <p className="font-bold">{t("匿名いいね", "Anonymous Likes")}</p>
         <div className="flex justify-between">
           <label
             htmlFor="1"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"全年齢作品を匿名でいいねする"}
+            {t(
+              "全年齢作品を匿名でいいねする",
+              "Like general content anonymously",
+            )}
           </label>
           <Checkbox
             onCheckedChange={(value: boolean) => {
@@ -84,7 +89,10 @@ export function SettingNotificationForm() {
             htmlFor="2"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"センシティブ作品を匿名でいいねする"}
+            {t(
+              "センシティブ作品を匿名でいいねする",
+              "Like sensitive content anonymously",
+            )}
           </label>
           <Checkbox
             onCheckedChange={(value: boolean) => {
@@ -96,13 +104,16 @@ export function SettingNotificationForm() {
         </div>
       </div>
       <div className="space-y-4">
-        <p className="font-bold">{"通知"}</p>
+        <p className="font-bold">{t("通知", "Notifications")}</p>
         <div className="flex justify-between">
           <label
             htmlFor="5"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"コメントの通知を受け取る"}
+            {t(
+              "コメントの通知を受け取る",
+              "Receive notifications for comments",
+            )}
           </label>
           <Checkbox
             onCheckedChange={(value: boolean) => {
@@ -121,37 +132,59 @@ export function SettingNotificationForm() {
         {isUpdatingUserSetting ? (
           <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
         ) : (
-          "更新する"
+          t("更新する", "Update")
         )}
       </Button>
       <Separator />
       <div className="w-full space-y-4">
-        <p className="font-bold text-2xl">{"Push通知設定"}</p>
-        <p>Push通知を設定することができます。</p>
-        <p>
-          PCブラウザに対応しています。スマートフォンのブラウザは対応していません。スマートフォンの場合は、今後アプリで通知に対応する予定です。
-          通知を受信できるブラウザは1つのみとなります。最後に設定したブラウザ宛に通知されます。
+        <p className="font-bold text-2xl">
+          {t("Push通知設定", "Push Notification Settings")}
         </p>
         <p>
-          Push通知内容、サイト上の通知内容と共通です。現行サイトの右上プロフィールアイコン
-          → 設定 → 通知・いいね、から選択できます。
+          {t(
+            "Push通知を設定することができます。",
+            "You can configure push notifications.",
+          )}
+        </p>
+        <p>
+          {t(
+            "PCブラウザに対応しています。スマートフォンのブラウザは対応していません。スマートフォンの場合は、今後アプリで通知に対応する予定です。通知を受信できるブラウザは1つのみとなります。最後に設定したブラウザ宛に通知されます。",
+            "Supported on PC browsers only. Smartphone browsers are not supported. Future app support for notifications is planned.",
+          )}
+        </p>
+        <p>
+          {t(
+            "Push通知内容、サイト上の通知内容と共通です。現行サイトの右上プロフィールアイコン → 設定 → 通知・いいね、から選択できます。",
+            "Push notification settings are shared with site notifications, accessible via the profile icon → settings → notifications.",
+          )}
         </p>
         <Separator />
         <SettingFcmForm />
         <Separator />
         <p>
-          Push通知を受け取るためには、上記ボタンクリック後に、ブラウザの設定で通知を許可してください。
+          {t(
+            "Push通知を受け取るためには、上記ボタンクリック後に、ブラウザの設定で通知を許可してください。",
+            "After configuring, enable notifications in your browser settings.",
+          )}
         </p>
         <p>
-          設定後にテスト通知が届きます。通知が表示されない場合は以下を確認してください。
+          {t(
+            "設定後にテスト通知が届きます。通知が表示されない場合は以下を確認してください。",
+            "A test notification will be sent after configuration. If not received, check the following.",
+          )}
         </p>
-        <p>■Windows11の場合</p>
+        <p>{t("■Windows11の場合", "■ For Windows 11")}</p>
         <p>
-          設定 →
-          通知、で通知がONになっていること、ご利用のブラウザの通知がONになっていることを確認してください。
+          {t(
+            "設定 → 通知、で通知がONになっていること、ご利用のブラウザの通知がONになっていることを確認してください。",
+            "Ensure notifications are ON in settings → notifications, and in your browser.",
+          )}
         </p>
         <p>
-          設定 → フォーカス、でフォーカスをONにしていないか確認してください。
+          {t(
+            "設定 → フォーカス、でフォーカスをONにしていないか確認してください。",
+            "Check focus mode is not enabled in settings → focus.",
+          )}
         </p>
       </div>
     </>

@@ -37,7 +37,7 @@ export function SettingLanguageUsedForPromptView() {
               <CrossPlatformTooltip
                 text={t(
                   "プロンプトを日本語で入力することができるようになります",
-                  "You will be able to input prompts in Japanese",
+                  "You will be able to input prompts in Text",
                 )}
               />
             </div>

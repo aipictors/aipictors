@@ -7,6 +7,7 @@ import {
 import { Share2 } from "lucide-react"
 import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/components/work-action-copy-url"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   login: string
@@ -14,6 +15,8 @@ type Props = {
 }
 
 export function UserActionShare(props: Props) {
+  const t = useTranslation()
+
   const currentUrl = `${"https://www.aipictors.com/users/"}${props.login}`
 
   return (
@@ -26,12 +29,14 @@ export function UserActionShare(props: Props) {
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">マイページを共有する</h4>
+            <h4 className="font-medium leading-none">
+              {t("マイページを共有する", "Share My Page")}
+            </h4>
           </div>
           <div className="grid gap-2">
             <CopyWorkUrlButton currentUrl={currentUrl} />
             <XIntent
-              text={`「AIイラスト投稿サイトAipictors」${props.name}のマイページ\n`}
+              text={`${t("AIイラスト投稿サイトAipictors", "AI Illustration Posting Site Aipictors")} ${props.name}${t("のマイページ", "'s My Page")}\n`}
               url={`${currentUrl}\n`}
               hashtags={["Aipictors", "AIIllust"]}
             />
