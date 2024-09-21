@@ -1,4 +1,4 @@
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { StarIcon } from "lucide-react"

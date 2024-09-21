@@ -2,7 +2,7 @@ import { useNavigate } from "@remix-run/react"
 import { Image } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Film, FileText as TextIcon } from "lucide-react" // 仮のアイコン、必要に応じて変更してください
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 
 type Props = {
   type: "image" | "animation" | "text"

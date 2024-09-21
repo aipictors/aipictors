@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { removeDuplicates } from "~/utils/remove-duplicates"
 import { ConfigModelButton } from "~/routes/($lang).generation._index/components/config-view/config-model-button"
 import { ImageModelCard } from "~/routes/($lang).generation._index/components/config-view/image-model-card"

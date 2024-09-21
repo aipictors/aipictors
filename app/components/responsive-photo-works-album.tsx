@@ -7,7 +7,7 @@ import { LikeButton } from "~/components/like-button"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { Heart, Images } from "lucide-react"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 
 type Props = {

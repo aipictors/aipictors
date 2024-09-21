@@ -1,4 +1,4 @@
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { Link } from "@remix-run/react"
 
 export function AppFooter() {

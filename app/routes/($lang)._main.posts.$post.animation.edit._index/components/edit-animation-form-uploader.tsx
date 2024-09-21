@@ -1,4 +1,4 @@
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
 import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
 import type { Dispatch } from "react"

@@ -1,5 +1,5 @@
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { Loader2Icon, XIcon } from "lucide-react"
 
 type Props = {

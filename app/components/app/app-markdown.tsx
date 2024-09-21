@@ -1,6 +1,6 @@
 import "zenn-content-css"
 
-import { cn } from "~/lib/cn"
+import { cn } from "~/lib/utils"
 import { marked } from "marked"
 import type React from "react"
 
