@@ -1,5 +1,4 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { toDateTimeText } from "~/utils/to-date-time-text"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -11,6 +10,21 @@ import {
   EventAwardWorkListItemFragment,
 } from "~/routes/($lang).events.$event.award._index/components/event-award-paging-work-list"
 import { Button } from "~/components/ui/button"
+import { format } from "date-fns"
+import { useTranslation } from "~/hooks/use-translation"
+
+const toEventDateTimeText = (time: number) => {
+  const t = useTranslation()
+
+  // UTC時間から日本時間（UTC+9）に変換
+  const date = new Date(time * 1000)
+  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+
+  return t(
+    format(japanTime, "yyyy年MM月dd日 HH時mm分"),
+    format(japanTime, "yyyy/MM/dd HH:mm"),
+  )
+}
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -89,8 +103,8 @@ export default function FollowingLayout() {
               dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
             ></div>
             <div className="mr-auto text-sm">
-              {toDateTimeText(data.appEvent.startAt)}～
-              {toDateTimeText(data.appEvent.endAt)}
+              {toEventDateTimeText(data.appEvent.startAt)}～
+              {toEventDateTimeText(data.appEvent.endAt)}
             </div>
             <div className="mt-2 mr-auto text-sm">
               応募作品数: {data.appEvent.worksCount?.toString() ?? "0"}

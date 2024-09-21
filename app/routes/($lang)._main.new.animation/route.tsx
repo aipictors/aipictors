@@ -374,8 +374,8 @@ export default function NewAnimation() {
   )
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.NEW_ANIMATION)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.NEW_ANIMATION, undefined, props.params.lang)
 }
 
 const ViewerQuery = graphql(

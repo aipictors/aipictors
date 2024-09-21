@@ -6,8 +6,8 @@ import { Suspense, useContext } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.NOTIFICATIONS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.NOTIFICATIONS, undefined, props.params.lang)
 }
 
 /**

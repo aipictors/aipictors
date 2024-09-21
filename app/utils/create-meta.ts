@@ -3,6 +3,7 @@ import { config, type MetaData } from "~/config"
 export function createMeta(
   data: MetaData,
   dynamicData?: { [key: string]: string },
+  lang?: string,
 ) {
   const replacePlaceholders = (str: string) => {
     if (!dynamicData) return str
@@ -11,28 +12,44 @@ export function createMeta(
 
   const {
     title: metaTitle,
+    enTitle: metaEnTitle,
     description: metaDescription = metadata.descriptionJA,
+    enDescription: metaEnDescription,
     image: metaImage = config.defaultOgpImageUrl,
     isIndex: metaIndex = true,
     isTop = false,
   } = data
 
   // テンプレートを動的に置換
-  const title = replacePlaceholders(
-    metaTitle
-      ? `${metaTitle} - ${metadata.nameJA} - ${metadata.catchphraseJA}`
-      : metadata.titleJA,
-  )
+  const title =
+    lang === "en"
+      ? replacePlaceholders(
+          metaEnTitle && metaEnTitle?.length > 0
+            ? `${metaEnTitle} - ${metadata.nameEN} - ${metadata.catchphraseEN}`
+            : metadata.titleEN,
+        )
+      : replacePlaceholders(
+          metaTitle
+            ? `${metaTitle} - ${metadata.nameJA} - ${metadata.catchphraseJA}`
+            : metadata.titleJA,
+        )
 
   const imageUrl = metaImage?.length
     ? replacePlaceholders(metaImage)
     : metaImage
 
-  const description = replacePlaceholders(
-    metaDescription.length > 155
-      ? `${metaDescription.substring(0, 152)}...`
-      : metaDescription,
-  )
+  const description =
+    lang === "en"
+      ? replacePlaceholders(
+          metaEnDescription && metaEnDescription.length > 155
+            ? `${metaEnDescription.substring(0, 152)}...`
+            : metaEnDescription || "",
+        )
+      : replacePlaceholders(
+          metaDescription.length > 155
+            ? `${metaDescription.substring(0, 152)}...`
+            : metaDescription || "",
+        )
 
   const metaTags = [
     { title: title },

@@ -1,5 +1,4 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { toDateTimeText } from "~/utils/to-date-time-text"
 import {
   json,
   type MetaFunction,
@@ -20,6 +19,21 @@ import {
 } from "~/routes/($lang).events.$event._index/components/event-award-work-list"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
+import { format } from "date-fns"
+
+const toEventDateTimeText = (time: number) => {
+  const t = useTranslation()
+
+  // UTC時間から日本時間（UTC+9）に変換
+  const date = new Date(time * 1000)
+  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+
+  return t(
+    format(japanTime, "yyyy年MM月dd日 HH時mm分"),
+    format(japanTime, "yyyy/MM/dd HH:mm"),
+  )
+}
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -119,8 +133,8 @@ export default function FollowingLayout() {
             )}
             {data.appEvent.startAt && data.appEvent.endAt && (
               <div className="mr-auto text-sm">
-                {toDateTimeText(data.appEvent.startAt)}～
-                {toDateTimeText(data.appEvent.endAt)}
+                {toEventDateTimeText(data.appEvent.startAt)}～
+                {toEventDateTimeText(data.appEvent.endAt)}
               </div>
             )}
             <div className="mt-2 mr-auto text-sm">

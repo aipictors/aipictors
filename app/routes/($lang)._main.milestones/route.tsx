@@ -21,8 +21,8 @@ import { graphql } from "gql.tada"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.MILESTONES)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.MILESTONES, undefined, props.params.lang)
 }
 
 export async function loader() {

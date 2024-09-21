@@ -341,6 +341,7 @@ export enum KeyCodes {
 
 export interface MetaData {
   title?: string
+  enTitle?: string
   description?: string
   enDescription?: string
   image?: string | null
@@ -349,46 +350,49 @@ export interface MetaData {
 }
 
 /**
- * メタ情報の設定
+ * Meta information settings
  */
 export const META: { [key: string]: MetaData } = {
   /**
-   * インデックスあり
+   * Indexed pages
    */
   HOME: {
     title: "ホーム",
+    enTitle: "Home",
     description:
       "AI画像投稿サイト・生成サイト「Aipictors」で作品を公開してみよう!最新のAIイラストを楽しむことができます、グラビアからイラストまでジャンルは様々！無料でイラスト生成することもできます！",
+    enDescription:
+      "Aipictors is an AI image posting and generation site. You can enjoy the latest AI illustrations, from gravure to illustrations. You can also generate illustrations for free!",
     isIndex: true,
   },
   HOME_2D: {
     title: "イラスト一覧",
-    description: `${new Date().getFullYear()}年の最新のAIイラスト一覧です！様々なモデルで作成された人気作品をチェックしよう！`,
+    description: `The latest AI illustration list of ${new Date().getFullYear()}! Check out popular works created with various models!`,
     isIndex: true,
   },
   HOME_3D: {
     title: "フォト一覧",
-    description: `${new Date().getFullYear()}年の最新の3D、フォト画像一覧です！様々なモデルで作成された人気作品をチェックしよう！`,
+    description: `The latest 3D and photo images of ${new Date().getFullYear()}! Check out popular works created with various models!`,
     isIndex: true,
   },
   HOME_SENSITIVE: {
     title: "センシティブ一覧",
-    description: `${new Date().getFullYear()}年の最新のセンシティブ画像一覧です！様々なモデルで作成された人気作品をチェックしよう！`,
+    description: `The latest sensitive images of ${new Date().getFullYear()}! Check out popular works created with various models!`,
     isIndex: true,
   },
   RELEASES: {
     title: "リリース情報",
-    description: "最新のAipictorsのリリース情報をチェックできます",
+    description: "Check the latest release information of Aipictors",
     isIndex: true,
   },
   MILESTONES: {
     title: "開発予定",
-    description: "最新のAipictorsの開発予定情報をチェックできます",
+    description: "Check the latest development roadmap of Aipictors",
     isIndex: true,
   },
   EVENTS: {
     title: "イベント一覧",
-    description: `${new Date().getFullYear()}年の最新のAIイラストイベント情報をチェックできます`,
+    description: `Check out the latest AI illustration events in ${new Date().getFullYear()}`,
     isIndex: true,
   },
   EVENTS_INDEX: {
@@ -399,24 +403,24 @@ export const META: { [key: string]: MetaData } = {
   },
   RANKINGS: {
     title: "ランキング",
-    description: "Aipictorsのランキング情報をチェックできます",
+    description: "Check Aipictors ranking information",
     isIndex: true,
   },
   THEMES: {
     title: "お題",
     description:
-      "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。",
+      "Themes are updated daily. Create and post AI illustrations based on the theme! Updated at midnight.",
     isIndex: true,
   },
   ABOUT: {
     title: "このサイトについて",
     description:
-      "当サービスはAIで生成されたイラストのコンテンツをテーマにコミュニケーション、創作活動するプラットフォームです",
+      "This service is a platform for communication and creative activities centered on AI-generated illustrations",
     isIndex: true,
   },
   TERNS: {
     title: "利用規約",
-    description: "Aipictorsの利用規約についての情報です",
+    description: "Information about the Aipictors terms of use",
     isIndex: true,
   },
   USERS: {
@@ -433,53 +437,53 @@ export const META: { [key: string]: MetaData } = {
   },
   CONTRIBUTORS: {
     title: "貢献者一覧",
-    description: "Aipictorsの貢献者一覧です",
+    description: "List of contributors to Aipictors",
     image: "https://assets.aipictors.com/geometric_shapes.webp",
     isIndex: true,
   },
   RANKINGS_MONTHLY: {
     title: "月間ランキング",
-    description: "AIイラスト月間ランキングの情報です",
+    description: "AI illustration monthly ranking information",
     isIndex: true,
   },
   RANKINGS_WEEK: {
     title: "週間ランキング",
-    description: "AIイラスト週間ランキングの情報です",
+    description: "AI illustration weekly ranking information",
     isIndex: true,
   },
   RANKINGS_DAY: {
     title: "デイリーランキング",
-    description: "AIイラストのデイリーランキングの情報です",
+    description: "AI illustration daily ranking information",
     isIndex: true,
   },
   SENSITIVE_RANKINGS_DAY: {
     title: "センシティブデイリーランキング",
-    description: "センシティブなAIイラストのデイリーランキングの情報です",
+    description: "Sensitive AI illustration daily ranking information",
     isIndex: true,
   },
   SENSITIVE_RANKINGS_WEEK: {
     title: "センシティブ週間ランキング",
-    description: "センシティブなAIイラスト週間ランキングの情報です",
+    description: "Sensitive AI illustration weekly ranking information",
     isIndex: true,
   },
   SENSITIVE_RANKINGS_MONTHLY: {
     title: "センシティブ月間ランキング",
-    description: "センシティブなAIイラスト月間ランキングの情報です",
+    description: "Sensitive AI illustration monthly ranking information",
     isIndex: true,
   },
   SENSITIVE_THEME_RANKINGS_WEEK: {
     title: "センシティブ週間お題ランキング",
-    description: "センシティブなAIイラスト週間お題ランキングの情報です",
+    description: "Sensitive AI illustration weekly theme ranking information",
     isIndex: true,
   },
   SEARCH: {
     title: "検索",
-    description: "最新のAIイラストを検索することができます",
+    description: "You can search the latest AI illustrations",
     isIndex: true,
   },
   MODELS: {
     title: "モデル一覧",
-    description: "モデル一覧から生成された作品を確認することができます",
+    description: "Check works generated from the model list",
     isIndex: true,
   },
   MODEL: {
@@ -490,164 +494,165 @@ export const META: { [key: string]: MetaData } = {
   },
   LOGIN: {
     title: "ログイン",
-    description: "ログインしてAipictorsを楽しもう！",
+    description: "Log in and enjoy Aipictors!",
     isIndex: true,
   },
   GENERATION_ABOUT: {
     title: "生成機能について",
-    description: "イラスト、リアル系まで生成できるジャンルは無限大！",
+    description: "Generate anything from illustrations to realistic images!",
     image: "{{url}}",
     isIndex: true,
   },
   GENERATION_PLANS: {
     title: "生成機能のプラン",
-    description: "生成機能のプランについてご紹介いたします",
+    description: "Introducing the plans for the generation feature",
     isIndex: true,
   },
   GENERATION_TERMS: {
     title: "生成機能の利用規約",
-    description: "生成機能の利用規約についてご説明いたします",
+    description: "Explanation of the terms of use for the generation feature",
     isIndex: true,
   },
   /**
-   * インデックスなし
+   * Non-indexed pages
    */
   SUPPORT_CHAT: {
     title: "お問い合わせ",
-    description: "運営とのチャットでサポートを受けることができます",
+    description:
+      "You can receive support through chat with the management team",
     isIndex: false,
   },
   PLUS: {
     title: "サブスクリプション",
-    description: "サブスクリプションを管理、更新することができます",
+    description: "Manage and update your subscription",
     isIndex: false,
   },
   NEW_IMAGE: {
     title: "画像投稿",
-    description: "画像を投稿することができます",
+    description: "You can post images",
     isIndex: false,
   },
   NEW_ANIMATION: {
     title: "動画投稿",
-    description: "動画を投稿することができます",
+    description: "You can post videos",
     isIndex: false,
   },
   NEW_TEXT: {
     title: "小説・コラム投稿",
-    description: "小説・コラムを投稿することができます",
+    description: "You can post novels and columns",
     isIndex: false,
   },
   NOTIFICATIONS: {
     title: "通知履歴",
-    description: "通知を確認することができます",
+    description: "You can check your notification history",
     isIndex: false,
   },
   CREATOR: {
     title: "支援リクエスト",
-    description: "支援リクエストを確認できます",
+    description: "You can check your support requests",
     isIndex: false,
   },
   NEW_PROFILE: {
     title: "プロフィール作成",
-    description: "プロフィールを作成することができます",
+    description: "You can create your profile",
     isIndex: false,
   },
   NEW_SETTINGS: {
     title: "ユーザ設定作成",
-    description: "ユーザ設定を作成することができます",
+    description: "You can create your user settings",
     isIndex: false,
   },
   COMPLETED_SETTINGS: {
     title: "設定完了！",
-    description: "設定が完了したときに表示されるページです",
+    description: "This page is displayed when the settings are completed",
     isIndex: false,
   },
   /**
-   * 設定
+   * Settings
    */
   SETTINGS_ACCOUNT: {
     title: "アカウント設定",
-    description: "アカウントに関する設定を行うことができます",
+    description: "You can configure your account settings",
     isIndex: false,
   },
   SETTINGS_NOTIFICATION: {
     title: "通知・いいね設定",
-    description: "通知・いいねに関する設定を行うことができます",
+    description: "You can configure your notification and like settings",
     isIndex: false,
   },
   SETTINGS_ACCOUNT_PASSWORD: {
     title: "パスワード設定",
-    description: "パスワードに関する設定を行うことができます",
+    description: "You can configure your password settings",
     isIndex: false,
   },
   SETTINGS_MUTE_USERS: {
     title: "ユーザミュート設定",
-    description: "ユーザミュートに関する設定を行うことができます",
+    description: "You can configure your user mute settings",
     isIndex: false,
   },
   SETTINGS_COLOR: {
     title: "カラー設定",
-    description: "カラーに関する設定を行うことができます",
+    description: "You can configure your color settings",
     isIndex: false,
   },
   SETTINGS_SUPPORT: {
     title: "サポート設定",
-    description: "サポートに関する設定を行うことができます",
+    description: "You can configure your support settings",
     isIndex: false,
   },
   SETTINGS_STICKERS: {
     title: "スタンプ設定",
-    description: "スタンプに関する設定を行うことができます",
+    description: "You can configure your sticker settings",
     isIndex: false,
   },
   SETTINGS_MUTE_TAGS: {
     title: "タグミュート設定",
-    description: "タグミュートに関する設定を行うことができます",
+    description: "You can configure your tag mute settings",
     isIndex: false,
   },
   SETTINGS_LOGIN: {
     title: "ログイン設定",
-    description: "ログインに関する設定を行うことができます",
+    description: "You can configure your login settings",
     isIndex: false,
   },
   SETTINGS_RESTRICTION: {
     title: "表示コンテンツ設定",
-    description: "表示コンテンツに関する設定を行うことができます",
+    description: "You can configure your content display settings",
     isIndex: false,
   },
   SETTINGS_PROFILE: {
     title: "プロフィール設定",
-    description: "プロフィールに関する設定を行うことができます",
+    description: "You can configure your profile settings",
     isIndex: false,
   },
   SETTINGS_ADVERTISEMENTS: {
     title: "広告設定",
-    description: "広告設定を行うことができます",
+    description: "You can configure your advertisement settings",
     isIndex: false,
   },
   /**
-   * ダッシュボード
+   * Dashboard
    */
   MY_BOOKMARKS: {
     title: "ブックマーク",
-    description: "自身のブックマークした作品一覧です。",
+    description: "List of your bookmarked works",
     isIndex: false,
   },
   MY_ALBUMS: {
     title: "シリーズ一覧",
-    description: "自身のシリーズを管理することができます",
+    description: "You can manage your series",
     isIndex: false,
   },
   MY_POSTS: {
     title: "作品一覧",
-    description: "自身の作品を管理することができます",
+    description: "You can manage your works",
     isIndex: false,
   },
   MY_RECOMMENDED: {
     title: "推薦作品一覧",
-    description: "自身の推薦した作品を管理することができます",
+    description: "You can manage your recommended works",
     isIndex: false,
   },
 
-  // 他のページも同様に追加
+  // Add other pages similarly
 }

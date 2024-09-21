@@ -4,8 +4,8 @@ import { AppMarkdown } from "~/components/app/app-markdown"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.TERNS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.TERNS, undefined, props.params.lang)
 }
 
 export default function Terms() {

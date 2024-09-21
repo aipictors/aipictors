@@ -4,8 +4,8 @@ import { META } from "~/config"
 import { LoginForm } from "~/routes/($lang)._main.login/components/login-form"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.LOGIN)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.LOGIN, undefined, props.params.lang)
 }
 
 /**

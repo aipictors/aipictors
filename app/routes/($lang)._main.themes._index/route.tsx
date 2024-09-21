@@ -153,8 +153,8 @@ export async function loader({ request }: { request: Request }) {
   })
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.THEMES)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.THEMES, undefined, props.params.lang)
 }
 
 export default function Themes() {

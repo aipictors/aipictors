@@ -3,8 +3,8 @@ import type { MetaFunction } from "@remix-run/cloudflare"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.CONTRIBUTORS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.CONTRIBUTORS, undefined, props.params.lang)
 }
 
 /**

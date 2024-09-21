@@ -564,8 +564,8 @@ export default function NewImage() {
   )
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.NEW_IMAGE)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.NEW_IMAGE, undefined, props.params.lang)
 }
 
 const ViewerQuery = graphql(

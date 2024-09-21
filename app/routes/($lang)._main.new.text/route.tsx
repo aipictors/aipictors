@@ -458,8 +458,8 @@ export default function NewText() {
   )
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.NEW_TEXT)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.NEW_TEXT, undefined, props.params.lang)
 }
 
 const viewerQuery = graphql(

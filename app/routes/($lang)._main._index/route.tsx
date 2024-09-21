@@ -23,8 +23,8 @@ import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/component
 import { ConstructionAlert } from "~/components/construction-alert"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.HOME)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.HOME, undefined, props.params.lang)
 }
 
 const getUtcDateString = (date: Date) => {

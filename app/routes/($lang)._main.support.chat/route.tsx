@@ -4,8 +4,8 @@ import { META } from "~/config"
 import { SupportChatView } from "~/routes/($lang)._main.support.chat/components/dynamic-support-chat-view"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.SUPPORT_CHAT)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.SUPPORT_CHAT, undefined, props.params.lang)
 }
 
 export default function SupportChat() {

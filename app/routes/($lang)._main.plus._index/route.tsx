@@ -5,8 +5,8 @@ import { PlusForm } from "~/routes/($lang)._main.plus._index/components/plus-for
 import { PlusNoteList } from "~/routes/($lang)._main.plus._index/components/plus-note-list"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.PLUS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.PLUS, undefined, props.params.lang)
 }
 
 /**

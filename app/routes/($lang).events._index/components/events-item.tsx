@@ -1,10 +1,28 @@
 import { Card, CardHeader } from "~/components/ui/card"
-import { toDateTimeText } from "~/utils/to-date-time-text"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { getJstDate } from "~/utils/jst-date"
+import { format } from "date-fns"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = FragmentOf<typeof appEventItemFragment>
+
+/**
+ * 時刻の文字列を返す（UTC時間を日本時間に変換）
+ * @param time UNIXタイムスタンプ（秒）
+ */
+export const toEventDateTimeText = (time: number) => {
+  const t = useTranslation()
+
+  // UTC時間から日本時間（UTC+9）に変換
+  const date = new Date(time * 1000)
+  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+
+  return t(
+    format(japanTime, "yyyy年MM月dd日 HH時mm分"),
+    format(japanTime, "yyyy/MM/dd HH:mm"),
+  )
+}
 
 /**
  * イベントアイテム
@@ -47,7 +65,8 @@ export function EventItem(props: Props) {
           </div>
           <div className="font-medium text-sm">{props.title}</div>
           <div className="text-sm">
-            {toDateTimeText(props.startAt)}～{toDateTimeText(props.endAt)}
+            {toEventDateTimeText(props.startAt)}～
+            {toEventDateTimeText(props.endAt)}
           </div>
         </CardHeader>
       </Card>

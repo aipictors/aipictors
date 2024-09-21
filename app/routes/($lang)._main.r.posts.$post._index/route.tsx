@@ -113,22 +113,37 @@ export async function loader(props: LoaderFunctionArgs) {
   )
 }
 
-export const meta: MetaFunction = ({ data }) => {
-  if (!data) {
+export const meta: MetaFunction = (props) => {
+  if (!props.data) {
     return [{ title: "Aipictorsの作品ページ" }]
   }
 
-  const work = data as { work: FragmentOf<typeof workArticleFragment> }
+  const work = props.data as { work: FragmentOf<typeof workArticleFragment> }
 
-  const userPart = work.work.user ? ` - ${work.work.user?.name}の作品` : ""
+  const userPart =
+    props.params.lang === "en"
+      ? work.work.user
+        ? ` - ${work.work.user?.name}`
+        : ""
+      : work.work.user
+        ? ` - ${work.work.user?.name}の作品`
+        : ""
 
-  return createMeta(META.POSTS, {
-    title: `${work.work.title}${userPart}`,
-    description:
-      work.work.description ||
-      "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
-    url: config.defaultSensitiveOgpImageUrl,
-  })
+  return createMeta(
+    META.POSTS,
+    {
+      title: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.title : work.work.title) : work.work.title}${userPart}`,
+      description:
+        props.params.lang === "en"
+          ? work.work.enDescription ||
+            work.work.description ||
+            "Aipictors work page"
+          : work.work.description ||
+            "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
+      url: config.defaultSensitiveOgpImageUrl,
+    },
+    props.params.lang,
+  )
 }
 
 export default function Work() {

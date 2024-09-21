@@ -51,8 +51,8 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.RANKINGS_DAY)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.RANKINGS_DAY, undefined, props.params.lang)
 }
 
 /**

@@ -10,8 +10,8 @@ import type {
   MicroCmsApiReleaseResponse,
 } from "~/types/micro-cms-release-response"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.RELEASES)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.RELEASES, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {

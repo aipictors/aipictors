@@ -57,8 +57,8 @@ export default function Search() {
   )
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.SEARCH)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.SEARCH, undefined, props.params.lang)
 }
 
 const worksQuery = graphql(

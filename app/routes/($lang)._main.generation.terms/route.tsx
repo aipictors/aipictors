@@ -11,8 +11,8 @@ import {
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.GENERATION_TERMS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.GENERATION_TERMS, undefined, props.params.lang)
 }
 
 /**

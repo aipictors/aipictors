@@ -3,8 +3,8 @@ import { Link } from "@remix-run/react"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.ABOUT)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.ABOUT, undefined, props.params.lang)
 }
 
 /**

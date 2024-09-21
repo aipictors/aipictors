@@ -21,8 +21,8 @@ export async function loader() {
   return json({})
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.NEW_SETTINGS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.NEW_SETTINGS, undefined, props.params.lang)
 }
 
 export default function NewSettingsPage() {

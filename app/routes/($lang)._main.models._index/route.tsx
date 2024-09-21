@@ -27,8 +27,8 @@ export async function loader() {
   })
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.MODELS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.MODELS, undefined, props.params.lang)
 }
 
 export default function ModelsPage() {

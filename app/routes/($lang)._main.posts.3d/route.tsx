@@ -10,8 +10,8 @@ import { Home3dContents } from "~/routes/($lang)._main.posts.3d/conponents/home-
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.HOME_3D)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.HOME_3D, undefined, props.params.lang)
 }
 
 const getUtcDateString = (date: Date) => {
