@@ -5,12 +5,15 @@ import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user/components/user-subscription-icon"
 import { UserModeratorIcon } from "~/routes/($lang)._main.users.$user/components/user-moderator-icon"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
 }
 
 export function UserProfileNameIcon(props: Props) {
+  const t = useTranslation()
+
   return (
     <header className="relative">
       <div
@@ -40,14 +43,16 @@ export function UserProfileNameIcon(props: Props) {
                   <OmissionNumber number={props.user.followersCount} />
                 </div>
                 <div className="white mt-4 text-md opacity-50">
-                  {"フォロワー"}
+                  {t("フォロワー", "Followers")}
                 </div>
               </div>
               <div className="w-32">
                 <div className="white mt-4 font-bold text-xl">
                   <OmissionNumber number={props.user.receivedLikesCount} />
                 </div>
-                <div className="white mt-4 text-md opacity-50">{"いいね"}</div>
+                <div className="white mt-4 text-md opacity-50">
+                  {t("いいね", "Likes")}
+                </div>
               </div>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "@remix-run/react"
 import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 
 type Props = {
@@ -13,16 +14,18 @@ export function HomeReleaseList({ releaseList }: Props) {
     navigate("/releases")
   }
 
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-md">お知らせ</h2>
+        <h2 className="text-md">{t("お知らせ", "Announcements")}</h2>
         <Button
           onClick={onMore}
           variant={"secondary"}
           className="rounded-md px-4 py-1"
         >
-          {"お知らせ一覧"}
+          {t("お知らせ一覧", "View All Announcements")}
         </Button>
       </div>
       <div className="">

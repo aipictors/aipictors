@@ -3,18 +3,26 @@
 import { Button } from "~/components/ui/button"
 import { RiFileCopyLine } from "@remixicon/react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   currentUrl: string
 }
 
 export function CopyWorkUrlButton({ currentUrl }: Props) {
+  const t = useTranslation()
+
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl)
-      toast("URLがクリップボードにコピーされました。")
+      toast(
+        t(
+          "URLがクリップボードにコピーされました。",
+          "URL has been copied to clipboard.",
+        ),
+      )
     } catch (err) {
-      toast("URLのコピーに失敗しました。")
+      toast(t("URLのコピーに失敗しました。", "Failed to copy URL."))
       console.error(err)
     }
   }
@@ -26,7 +34,7 @@ export function CopyWorkUrlButton({ currentUrl }: Props) {
       onClick={handleCopyUrl}
     >
       <RiFileCopyLine />
-      URLをコピー
+      {t("URLをコピー", "Copy URL")}
     </Button>
   )
 }

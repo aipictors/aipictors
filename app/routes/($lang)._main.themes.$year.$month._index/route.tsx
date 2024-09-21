@@ -174,13 +174,6 @@ export default function MonthThemes() {
 
   const data = useLoaderData<typeof loader>()
 
-  const year = Number.parseInt(params.year)
-
-  const month = Number.parseInt(params.month)
-
-  const description =
-    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
-
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
     updateQueryParams(searchParams)

@@ -13,6 +13,7 @@ import {
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * ヘッダーのメッセージ一覧内容
@@ -31,9 +32,9 @@ export function HomeMessagesContents() {
     },
   })
 
-  console.log(supportMessages)
-
   const messages = supportMessages?.viewer?.supportMessages ?? []
+
+  const t = useTranslation()
 
   if (messages.length === 0) {
     return (
@@ -44,7 +45,9 @@ export function HomeMessagesContents() {
             className="m-auto w-48 md:w-64"
             src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/pictor-chan-sorry-image.png"
           />
-          <p className="text-center text-xl opacity-60">{"通知はありません"}</p>
+          <p className="text-center text-xl opacity-60">
+            {t("通知はありません", "There are no notifications")}
+          </p>
         </div>
       </>
     )

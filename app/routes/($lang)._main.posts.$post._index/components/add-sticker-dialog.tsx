@@ -22,6 +22,7 @@ import { uploadPublicImage } from "~/utils/upload-public-image"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import { graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onAddedSicker?: () => void
@@ -33,6 +34,8 @@ type Props = {
  */
 export function AddStickerDialog(props: Props) {
   const authContext = useContext(AuthContext)
+
+  const t = useTranslation()
 
   const [imageBase64, setImageBase64] = useState("")
 
@@ -56,55 +59,44 @@ export function AddStickerDialog(props: Props) {
     createUserStickerMutation,
   )
 
-  /**
-   * クロップ完了
-   * @param croppedImage クロップした画像
-   */
   const onCrop = async (croppedImage: string) => {
     const base64 = await getBase64FromImageUrl(croppedImage)
     setImageBase64(base64)
   }
 
-  /**
-   * ダイアログを閉じたときの処理
-   */
   const onClose = () => {
     setIsOpen(false)
   }
 
-  /**
-   * 画像削除
-   */
   const onDeleteImage = () => {
     setImageBase64("")
   }
 
   const uploadSticker = async () => {
     if (imageBase64 === "") {
-      toast("画像を選択してください")
+      toast(t("画像を選択してください", "Please select an image"))
       return
     }
 
     if (authContext.isLoading || authContext.isNotLoggedIn) {
-      toast("ログインしてください")
+      toast(t("ログインしてください", "Please log in"))
       return
     }
 
     if (isPublic && title === "") {
-      toast("タイトルを入力してください")
+      toast(t("タイトルを入力してください", "Please enter a title"))
       return
     }
 
     const imageFileName = `${createRandomString(30)}.webp`
 
-    // 画像をアップロードする処理
     const uploadedImageUrl = await uploadPublicImage(
       imageBase64,
       token?.viewer?.token,
     )
 
     if (uploadedImageUrl === "") {
-      toast("画像のアップロードに失敗しました")
+      toast(t("画像のアップロードに失敗しました", "Failed to upload the image"))
       return
     }
 
@@ -124,7 +116,7 @@ export function AddStickerDialog(props: Props) {
       })
 
       if (!newSticker || !newSticker.data) {
-        toast("スタンプの作成に失敗しました")
+        toast(t("スタンプの作成に失敗しました", "Failed to create the sticker"))
         return
       }
 
@@ -140,7 +132,7 @@ export function AddStickerDialog(props: Props) {
         props.onAddedSicker()
       }
 
-      toast("スタンプを追加しました")
+      toast(t("スタンプを追加しました", "Sticker added successfully"))
       onClose()
     } catch (error) {
       if (error instanceof Error) {
@@ -160,7 +152,7 @@ export function AddStickerDialog(props: Props) {
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
         <DialogHeader>
-          <DialogTitle>{"スタンプ追加"}</DialogTitle>
+          <DialogTitle>{t("スタンプ追加", "Add Sticker")}</DialogTitle>
         </DialogHeader>
         <CropImageField
           isHidePreviewImage={imageBase64 === ""}
@@ -183,20 +175,23 @@ export function AddStickerDialog(props: Props) {
               htmlFor="public-sticker"
               className="ml-2 font-medium text-sm"
             >
-              誰でも使えるように公開する
+              {t(
+                "誰でも使えるように公開する",
+                "Make public for everyone to use",
+              )}
             </label>
           </div>
           {isPublic && (
             <div className="space-y-2">
-              <p className="mt-2">タイトル</p>
+              <p className="mt-2">{t("タイトル", "Title")}</p>
               <Input
                 onChange={(event) => {
                   setTitle(event.target.value)
                 }}
                 value={title}
-                placeholder="タイトル"
+                placeholder={t("タイトル", "Title")}
               />
-              <p>ジャンル</p>
+              <p>{t("ジャンル", "Genre")}</p>
               <RadioGroup
                 value={genre}
                 onValueChange={(value) => {
@@ -206,36 +201,36 @@ export function AddStickerDialog(props: Props) {
               >
                 <div className="items-center space-x-2">
                   <label htmlFor="person-check">
-                    {"人物"}
+                    {t("人物", "Character")}
                     <RadioGroupItem value="CHARACTER" id="person-check" />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
                   <label htmlFor="animal-check">
-                    {"動物"}
+                    {t("動物", "Animal")}
                     <RadioGroupItem value="ANIMAL" id="animal-check" />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
                   <label htmlFor="machine-check">
-                    {"機械"}
+                    {t("機械", "Machine")}
                     <RadioGroupItem value="MACHINE" id="machine-check" />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
                   <label htmlFor="background-check">
-                    {"背景"}
+                    {t("背景", "Background")}
                     <RadioGroupItem value="BACKGROUND" id="background-check" />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
                   <label htmlFor="object-check">
-                    {"物"}
+                    {t("物", "Object")}
                     <RadioGroupItem value="OBJECT" id="object-check" />
                   </label>
                 </div>
               </RadioGroup>
-              <p>タグ</p>
+              <p>{t("タグ", "Tag")}</p>
               <RadioGroup
                 value={tag.toString()}
                 onValueChange={(value) => {
@@ -245,31 +240,31 @@ export function AddStickerDialog(props: Props) {
               >
                 <div className="items-center space-x-2">
                   <label htmlFor="happy-check">
-                    {"楽しい"}
+                    {t("楽しい", "Fun")}
                     <RadioGroupItem value="楽しい" id="happy-check" />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
                   <label htmlFor="enjoy-check">
-                    {"嬉しい"}
+                    {t("嬉しい", "Happy")}
                     <RadioGroupItem value="嬉しい" id="enjoy-check" />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
                   <label htmlFor="celebration-check">
-                    {"お祝い"}
+                    {t("お祝い", "Celebration")}
                     <RadioGroupItem value="お祝い" id="celebration-check" />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
                   <label htmlFor="sad-check">
-                    {"悲しい"}
+                    {t("悲しい", "Sad")}
                     <RadioGroupItem value="悲しい" id="sad-check" />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
                   <label htmlFor="other-check">
-                    {"その他"}
+                    {t("その他", "Other")}
                     <RadioGroupItem value="その他" id="other-check" />
                   </label>
                 </div>
@@ -283,7 +278,7 @@ export function AddStickerDialog(props: Props) {
             className="m-auto w-full"
             onClick={onClose}
           >
-            {"キャンセル"}
+            {t("キャンセル", "Cancel")}
           </Button>
           {isLoading || isCreatingUserSticker ? (
             <Button
@@ -299,7 +294,7 @@ export function AddStickerDialog(props: Props) {
               className="m-auto w-full"
               onClick={uploadSticker}
             >
-              {"追加"}
+              {t("追加", "Add")}
             </Button>
           )}
         </DialogFooter>

@@ -7,6 +7,7 @@ import {
 } from "~/components/ui/select"
 import { toNotificationTypeName } from "~/routes/($lang).generation._index/utils/to-notify-type-name"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   notificationType: IntrospectionEnum<"NotificationType"> | null
@@ -19,6 +20,8 @@ type Props = {
  * 通知履歴設定
  */
 export function NotificationListSetting(props: Props) {
+  const t = useTranslation()
+
   return (
     <>
       <div className="mt-4 mb-4">
@@ -40,16 +43,22 @@ export function NotificationListSetting(props: Props) {
                 placeholder={
                   props.notificationType
                     ? toNotificationTypeName(props.notificationType)
-                    : "すべての通知"
+                    : t("すべての通知", "All notifications")
                 }
               />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="LIKED_WORK">{"いいね"}</SelectItem>
-              <SelectItem value="WORK_COMMENT">{"コメント"}</SelectItem>
-              <SelectItem value="COMMENT_REPLY">{"返信"}</SelectItem>
-              <SelectItem value="FOLLOW">{"フォロー"}</SelectItem>
-              <SelectItem value="WORK_AWARD">{"ランキング"}</SelectItem>
+              <SelectItem value="LIKED_WORK">{t("いいね", "Likes")}</SelectItem>
+              <SelectItem value="WORK_COMMENT">
+                {t("コメント", "Comments")}
+              </SelectItem>
+              <SelectItem value="COMMENT_REPLY">
+                {t("返信", "Replies")}
+              </SelectItem>
+              <SelectItem value="FOLLOW">{t("フォロー", "Follows")}</SelectItem>
+              <SelectItem value="WORK_AWARD">
+                {t("ランキング", "Ranking")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>

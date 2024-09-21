@@ -7,6 +7,7 @@ import {
 import { Share2 } from "lucide-react"
 import { CopyWorkUrlButton } from "./work-action-copy-url"
 import { XIntent } from "./work-action-share-x"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title?: string
@@ -15,6 +16,7 @@ type Props = {
 }
 
 export function SharePopover(props: Props) {
+  const t = useTranslation()
   const currentUrl = `https://www.aipictors.com/works/${props.id}`
 
   return (
@@ -27,9 +29,16 @@ export function SharePopover(props: Props) {
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">作品を共有する</h4>
+            <h4 className="font-medium leading-none">
+              {t("作品を共有する", "Share work")}
+            </h4>
             {props.isDisabledShare && (
-              <p>下書きもしくは予約作品のため、共有できません</p>
+              <p>
+                {t(
+                  "下書きもしくは予約作品のため、共有できません",
+                  "Cannot share draft or scheduled works",
+                )}
+              </p>
             )}
           </div>
           {!props.isDisabledShare && (
@@ -40,14 +49,6 @@ export function SharePopover(props: Props) {
                 url={`${currentUrl}\n`}
                 hashtags={["Aipictors", "AIIllust"]}
               />
-              {/* <Button
-            disabled
-            className="flex items-center gap-2"
-            variant="outline"
-          >
-            <Files />
-            イラストをコピー
-          </Button> */}
             </div>
           )}
         </div>

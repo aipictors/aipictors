@@ -8,6 +8,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isSensitive?: boolean
@@ -40,11 +41,13 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
 
   const workDisplayed = recommendedWorksResp?.works ?? props.works
 
+  const t = useTranslation()
+
   return (
     <>
       {workDisplayed.length > 0 && (
         <HomeWorkSection
-          title={"ユーザからの推薦"}
+          title={t("ユーザからの推薦", "Recommended by users")}
           works={workDisplayed}
           isCropped={false}
           link={

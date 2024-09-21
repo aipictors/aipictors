@@ -1,31 +1,34 @@
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useTranslation } from "~/hooks/use-translation"
 
 export function toNotificationTypeName(
   type: IntrospectionEnum<"NotificationType"> | null,
 ) {
+  const t = useTranslation()
+
   if (type === "LIKED_WORK") {
-    return "いいね"
+    return t("いいね", "Liked")
   }
 
   if (type === "LIKED_WORKS_SUMMARY") {
-    return "いいね集計"
+    return t("いいね集計", "Like Summary")
   }
 
   if (type === "WORK_COMMENT") {
-    return "コメント"
+    return t("コメント", "Comment")
   }
 
   if (type === "COMMENT_REPLY") {
-    return "返信"
+    return t("返信", "Reply")
   }
 
   if (type === "FOLLOW") {
-    return "フォロー"
+    return t("フォロー", "Follow")
   }
 
   if (type === "WORK_AWARD") {
-    return "ランキング"
+    return t("ランキング", "Ranking")
   }
 
-  return "全て"
+  return t("全て", "All")
 }

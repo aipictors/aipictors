@@ -3,7 +3,6 @@ import {
   json,
   type MetaFunction,
   useLoaderData,
-  useNavigate,
   useSearchParams,
 } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -160,20 +159,9 @@ export const meta: MetaFunction = (props) => {
 export default function Themes() {
   const data = useLoaderData<typeof loader>()
 
-  const navigate = useNavigate()
-
   const [searchParams] = useSearchParams()
 
   const updateQueryParams = useUpdateQueryParams()
-
-  const handleTabChange = (tab: string) => {
-    searchParams.set("tab", tab)
-    updateQueryParams(searchParams)
-  }
-  const description =
-    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
-
-  const isSensitive = false
 
   return (
     <>

@@ -20,6 +20,7 @@ import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { AppSideMenu } from "~/components/app/app-side-menu"
 import type { HomeAwardWorksFragment } from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   post: string
@@ -60,6 +61,8 @@ export function WorkContainer(props: Props) {
   const randomTag =
     tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
 
+  const t = useTranslation()
+
   return (
     <div
       className="space-y-4 overflow-hidden"
@@ -95,6 +98,7 @@ export function WorkContainer(props: Props) {
                 userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography ?? ""}
+                userEnBiography={work.user.enBiography ?? null}
                 userPromptonId={work.user.promptonUser?.id}
                 userWorksCount={work.user.worksCount}
               />
@@ -110,6 +114,7 @@ export function WorkContainer(props: Props) {
               userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
               userFollowersCount={work.user.followersCount}
               userBiography={work.user.biography ?? ""}
+              userEnBiography={work.user.enBiography ?? null}
               userPromptonId={work.user.promptonUser?.id}
               userWorksCount={work.user.worksCount}
             />
@@ -133,7 +138,7 @@ export function WorkContainer(props: Props) {
           <>
             <div className="flex justify-between">
               <h2 className="items-center space-x-2 font-bold text-md">
-                {"おすすめ"}
+                {t("おすすめ", "Recommended")}
               </h2>
             </div>
             <WorkTagsWorks

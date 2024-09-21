@@ -9,6 +9,7 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user/components/sticker-info-dialog"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   userId: string
@@ -37,6 +38,8 @@ type Props = {
  * 作品へのコメント
  */
 export function WorkComment(props: Props) {
+  const t = useTranslation()
+
   const [deleteMutation, { loading: isDeleteLoading }] = useMutation(
     deleteCommentMutation,
   )
@@ -101,12 +104,17 @@ export function WorkComment(props: Props) {
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
                   <AppConfirmDialog
-                    title={"確認"}
-                    description={"コメントを削除しますか？"}
+                    title={t("確認", "Confirm")}
+                    description={t(
+                      "コメントを削除しますか？",
+                      "Do you want to delete this comment?",
+                    )}
                     onNext={onDeleteComment}
                     onCancel={() => {}}
                   >
-                    <p className="cursor-pointer text-xs">{"削除"}</p>
+                    <p className="cursor-pointer text-xs">
+                      {t("削除", "Delete")}
+                    </p>
                   </AppConfirmDialog>
                 )}
               </>
@@ -114,7 +122,7 @@ export function WorkComment(props: Props) {
               <>
                 {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
                 <button onClick={() => setOpenReplyInput(!openReplyInput)}>
-                  <p className="cursor-pointer text-xs">{"返信"}</p>
+                  <p className="cursor-pointer text-xs">{t("返信", "Reply")}</p>
                 </button>
                 {props.stickerImageURL &&
                   props.stickerAccessType === "PUBLIC" && (

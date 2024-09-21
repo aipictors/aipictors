@@ -7,6 +7,7 @@ import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isSensitive?: boolean
@@ -34,11 +35,13 @@ export function HomeNewUsersWorksSection(props: Props) {
 
   const workDisplayed = newUsersWorksResp?.newUserWorks ?? props.works
 
+  const t = useTranslation()
+
   return (
     <>
       {workDisplayed.length > 0 && (
         <HomeWorkSection
-          title={"新規クリエイターの初投稿作品"}
+          title={t("新規クリエイターの初投稿作品", "New creators' first works")}
           works={workDisplayed}
           isCropped={true}
           isShowProfile={false}

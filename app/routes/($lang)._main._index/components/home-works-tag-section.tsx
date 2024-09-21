@@ -8,6 +8,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isSensitive?: boolean
@@ -69,10 +70,12 @@ export function HomeWorksTagSection(props: Props) {
     ...(secondWorkDisplayed ?? []),
   ]
 
+  const t = useTranslation()
+
   return (
     <>
       <HomeWorkSection
-        title={"タグ作品"}
+        title={t("タグ作品", "Tag Works")}
         works={combinedWorks}
         isCropped={props.isCropped}
       />

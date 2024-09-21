@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   targetWorkId: string
@@ -16,6 +17,7 @@ type Props = {
  */
 export function WorkActionBookmark(props: Props) {
   const [isBookmarked, setIsBookmarked] = useState(props.defaultBookmarked)
+  const t = useTranslation()
 
   const [createFolderWork, { loading: isCreatingFolderWork }] = useMutation(
     createFolderWorkMutation,
@@ -38,7 +40,7 @@ export function WorkActionBookmark(props: Props) {
               },
             },
           })
-          toast("ブックマークに追加しました。")
+          toast(t("ブックマークに追加しました。", "Added to bookmarks."))
         } else {
           await deleteFolderWork({
             variables: {
@@ -49,7 +51,7 @@ export function WorkActionBookmark(props: Props) {
             },
           })
 
-          toast("ブックマークから削除しました。")
+          toast(t("ブックマークから削除しました。", "Removed from bookmarks."))
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -65,7 +67,7 @@ export function WorkActionBookmark(props: Props) {
 
   return (
     <Button
-      aria-label={"ブックマークに追加"}
+      aria-label={t("ブックマークに追加", "Add to bookmarks")}
       size={"icon"}
       variant="secondary"
       onClick={onCreateWorkBookmark}

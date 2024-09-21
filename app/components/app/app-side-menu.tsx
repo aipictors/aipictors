@@ -1,4 +1,3 @@
-import {} from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import {
@@ -19,6 +18,7 @@ import {
   HomeAwardWorksSection,
   type HomeAwardWorksFragment,
 } from "~/routes/($lang)._main._index/components/home-award-works"
+import { useTranslation } from "~/hooks/use-translation"
 
 type homeParticles = {
   newPostedUsers?: FragmentOf<typeof HomeNewPostedUsersFragment>[]
@@ -37,15 +37,14 @@ type Props = {
 }
 
 const toJST = (date: Date) => {
-  return addHours(date, 9) // UTCに対して+9時間でJSTに変換
+  return addHours(date, 9) // Convert UTC to JST (+9 hours)
 }
 
 /**
- * サイドメニュー
+ * Side menu component
  */
 export function AppSideMenu(props: Props) {
   const navigate = useNavigate()
-
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
@@ -63,7 +62,7 @@ export function AppSideMenu(props: Props) {
 
   const onClickAdvertisement = async () => {
     if (advertisements?.randomCustomerAdvertisement) {
-      // 広告クリック数を更新
+      // Update advertisement click count
       await updateClickedCountCustomerAdvertisement({
         variables: {
           id: advertisements.randomCustomerAdvertisement.id,
@@ -79,6 +78,8 @@ export function AppSideMenu(props: Props) {
     passData?.type === "STANDARD" ||
     passData?.type === "PREMIUM"
 
+  const t = useTranslation()
+
   return (
     <>
       <div className="flex w-full flex-col space-y-4">
@@ -86,10 +87,11 @@ export function AppSideMenu(props: Props) {
           {props.isShowSensitiveButton &&
             (!props.isSensitive ? (
               <AppConfirmDialog
-                title={"確認"}
-                description={
-                  "センシティブな作品を表示します、あなたは18歳以上ですか？"
-                }
+                title={t("確認", "Confirmation")}
+                description={t(
+                  "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                  "This content contains sensitive material. Are you over 18?",
+                )}
                 onNext={() => {
                   navigate("/r")
                 }}
@@ -100,7 +102,7 @@ export function AppSideMenu(props: Props) {
                   variant={"secondary"}
                   className="flex w-full transform cursor-pointer items-center"
                 >
-                  <p className="text-sm">{"センシティブ"}</p>
+                  <p className="text-sm">{t("センシティブ", "Sensitive")}</p>
                 </Button>
               </AppConfirmDialog>
             ) : (
@@ -111,7 +113,7 @@ export function AppSideMenu(props: Props) {
                 variant={"secondary"}
                 className="flex w-full transform cursor-pointer items-center"
               >
-                <p className="text-sm">{"全年齢"}</p>
+                <p className="text-sm">{t("全年齢", "All Ages")}</p>
               </Button>
             ))}
           {!isSubscriptionUser &&
@@ -131,9 +133,10 @@ export function AppSideMenu(props: Props) {
                 </Link>
                 <div className="absolute top-0 right-0">
                   <CrossPlatformTooltip
-                    text={
-                      "提携広告です、広告主様を募集中です。メールまたはDMにてご連絡ください。"
-                    }
+                    text={t(
+                      "提携広告です、広告主様を募集中です。メールまたはDMにてご連絡ください。",
+                      "This is a partnered advertisement. We are accepting new advertisers. Please contact us via email or DM.",
+                    )}
                   />
                 </div>
               </div>

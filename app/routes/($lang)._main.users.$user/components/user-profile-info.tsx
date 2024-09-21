@@ -1,6 +1,7 @@
 import type React from "react"
 import { useState } from "react"
 import { RiEye2Line, RiHeartLine } from "@remixicon/react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type UserProfileInfoProps = {
   name: string
@@ -20,6 +21,7 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
   biography,
 }) => {
   const [showFullBiography, setShowFullBiography] = useState(false)
+  const t = useTranslation()
 
   const toggleBiography = () => {
     setShowFullBiography(!showFullBiography)
@@ -42,10 +44,14 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
             <RiEye2Line className="mr-1" />
             {receivedViewsCount}
           </span>
-          <span className="text-base">入賞回数{awardsCount}回</span>
+          <span className="text-base">
+            {t("入賞回数", "Awards")} {awardsCount} {t("回", "times")}
+          </span>
         </div>
         <div className="text-base">
-          <span>{followersCount}フォロワー</span>
+          <span>
+            {followersCount} {t("フォロワー", "followers")}
+          </span>
         </div>
         {biography && (
           <div>
@@ -59,7 +65,7 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
                   className="cursor-pointer text-blue-500"
                   onClick={toggleBiography}
                 >
-                  {" Read More"}
+                  {t(" 続きを読む", "Read More")}
                 </span>
               )}
             </p>

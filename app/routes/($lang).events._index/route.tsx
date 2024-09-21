@@ -11,6 +11,7 @@ import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { useTranslation } from "~/hooks/use-translation"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)
@@ -43,10 +44,12 @@ export default function FollowingLayout() {
 
   const events = useLoaderData<typeof loader>()
 
+  const t = useTranslation()
+
   return (
     <>
       <h1 className="text-center font-bold text-2xl">
-        AIイラスト - 開催イベント一覧
+        {t("AIイラスト - 開催イベント一覧", "AI Illustration - Event List")}
       </h1>
       <EventsList appEvents={events.appEvents} />
     </>

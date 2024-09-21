@@ -1,6 +1,7 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { GiftIcon } from "lucide-react"
 import { useContext } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   promptonId: string
@@ -10,10 +11,11 @@ type Props = {
 }
 
 /**
- * 投稿者への支援ボタン
+ * 投稿者への支援ボタン (Support Button for the Poster)
  */
 export function PromptonRequestColorfulButton(props: Props) {
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   if (authContext.userId === props.targetUserId) {
     return null
@@ -36,7 +38,7 @@ export function PromptonRequestColorfulButton(props: Props) {
             <GiftIcon className="h-4 w-4" />
           </span>
         )}
-        <span className="font-bold">サポートする</span>
+        <span className="font-bold">{t("サポートする", "Support")}</span>
       </div>
     </button>
   )

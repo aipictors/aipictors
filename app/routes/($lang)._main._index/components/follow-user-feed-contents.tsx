@@ -19,6 +19,7 @@ import {
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { ResponsivePagination } from "~/components/responsive-pagination"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isSensitive?: boolean
@@ -28,13 +29,18 @@ type Props = {
 
 export function FollowUserFeedContents(props: Props) {
   const authContext = useContext(AuthContext)
+
   const [isTimelineView, setIsTimelineView] = useState(false)
+
   const [hiddenComments, setHiddenComments] = useState<{
     [key: string]: boolean
   }>({})
+
   const [subWorksVisible, setSubWorksVisible] = useState<{
     [key: string]: boolean
   }>({})
+
+  const t = useTranslation()
 
   // クエリを状態に応じて切り替える
   const { data } = useSuspenseQuery(
@@ -67,9 +73,10 @@ export function FollowUserFeedContents(props: Props) {
     return (
       <div className="flex h-64 items-center justify-center">
         <p className="text-center">
-          {
-            "ログインすることでユーザやタグをフォローして、タイムラインで作品を楽しむことができます"
-          }
+          {t(
+            "ログインすることでユーザやタグをフォローして、タイムラインで作品を楽しむことができます",
+            "You can enjoy works on the timeline by following users and tags by logging in",
+          )}
         </p>
       </div>
     )
@@ -79,9 +86,10 @@ export function FollowUserFeedContents(props: Props) {
     return (
       <div className="flex h-64 items-center justify-center">
         <p className="text-center">
-          {
-            "まだデータがありません、ユーザやタグをフォローして最新の作品をキャッチアップしましょう！"
-          }
+          {t(
+            "まだデータがありません、ユーザやタグをフォローして最新の作品をキャッチアップしましょう！",
+            "No data yet, follow users and tags to catch up on the latest works!",
+          )}
         </p>
       </div>
     )
@@ -113,7 +121,9 @@ export function FollowUserFeedContents(props: Props) {
     <div className="flex flex-col space-y-4">
       <div className="mb-4 flex justify-end">
         <Button onClick={() => setIsTimelineView(!isTimelineView)}>
-          {isTimelineView ? "一覧形式に切り替え" : "タイムライン形式に切り替え"}
+          {isTimelineView
+            ? t("一覧形式に切り替え", "Switch to List View")
+            : t("タイムライン形式に切り替え", "Switch to Timeline View")}
         </Button>
       </div>
       {isTimelineView ? (
@@ -168,8 +178,11 @@ export function FollowUserFeedContents(props: Props) {
                                   }
                                 >
                                   {!subWorksVisible[work.id]
-                                    ? `もっと見る(${work.subWorks.length})`
-                                    : "閉じる"}
+                                    ? t(
+                                        `もっと見る(${work.subWorks.length})`,
+                                        `Show More (${work.subWorks.length})`,
+                                      )
+                                    : t("閉じる", "Close")}
                                 </Button>
                                 {subWorksVisible[work.id] &&
                                   work.subWorks.map(
@@ -198,7 +211,7 @@ export function FollowUserFeedContents(props: Props) {
                             <div className="flex items-center">
                               <LikeButton
                                 size={40}
-                                text={"いいね"}
+                                text={t("いいね", "Like")}
                                 targetWorkId={work.id}
                                 targetWorkOwnerUserId={work.user.id}
                                 defaultLiked={work.isLiked}

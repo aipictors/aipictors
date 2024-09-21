@@ -6,8 +6,9 @@ import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
-import { graphql } from "gql.tada"
 import { Skeleton } from "~/components/ui/skeleton"
+import { useTranslation } from "~/hooks/use-translation"
+import { graphql } from "gql.tada"
 
 type Props = {
   userId: string
@@ -16,6 +17,7 @@ type Props = {
   userIconImageURL?: string
   userFollowersCount: number
   userBiography: string | null
+  userEnBiography: string | null
   userPromptonId?: string
   userWorksCount: number
 }
@@ -25,6 +27,8 @@ type Props = {
  */
 export function WorkUser(props: Props) {
   const appContext = useContext(AuthContext)
+
+  const t = useTranslation()
 
   const { data = null } = useQuery(userFolloweesQuery, {
     skip: appContext.isLoading || appContext.userId === null,
@@ -60,18 +64,25 @@ export function WorkUser(props: Props) {
         <div className="m-auto flex items-center space-x-4">
           <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userWorksCount}`}</p>
-            <p className="text-sm opacity-50">{"投稿"}</p>
+            <p className="text-sm opacity-50">{t("投稿", "Posts")}</p>
           </div>
           <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userFollowersCount}`}</p>
-            <p className="text-sm opacity-50">{"フォロワー"}</p>
+            <p className="text-sm opacity-50">{t("フォロワー", "Followers")}</p>
           </div>
         </div>
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />
         {props.userPromptonId && props.userId !== appContext.userId && (
           <PromptonRequestTextButton promptonId={props.userPromptonId} />
         )}
-        <div>{props.userBiography}</div>
+        <div>
+          {t(
+            props.userBiography ?? "",
+            props.userEnBiography && props.userEnBiography.length > 0
+              ? props.userEnBiography.replace("\\'", "'")
+              : (props.userBiography ?? ""),
+          )}
+        </div>
       </CardContent>
     </Card>
   )

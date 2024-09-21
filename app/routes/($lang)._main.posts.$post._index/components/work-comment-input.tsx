@@ -10,6 +10,7 @@ import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   targetCommentId: string
@@ -27,6 +28,8 @@ type Props = {
  */
 export function ReplyCommentInput(props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
+
+  const t = useTranslation()
 
   const [createReplyComment, { loading: isCreatingReplyComment }] = useMutation(
     createResponseCommentMutation,
@@ -63,7 +66,7 @@ export function ReplyCommentInput(props: Props) {
       }
     } catch (e) {
       // toast(
-      //   "送信に失敗しました。同じコメントを何度も送信しようとしているか、通信エラーが発生しています。",
+      //   t("送信に失敗しました。同じコメントを何度も送信しようとしているか、通信エラーが発生しています。", "Failed to send. Please try again or check your connection.")
       // )
     }
   }
@@ -72,7 +75,7 @@ export function ReplyCommentInput(props: Props) {
     const inputComment = comment.trim()
 
     if (inputComment === "") {
-      toast("コメントを入力してください")
+      toast(t("コメントを入力してください", "Please enter a comment"))
       return
     }
 
@@ -98,7 +101,7 @@ export function ReplyCommentInput(props: Props) {
           onChange={(event) => {
             setComment(event.target.value)
           }}
-          placeholder="コメントする"
+          placeholder={t("コメントする", "Add a comment")}
           disabled={!authContext.isLoggedIn}
         />
         <div>
@@ -121,7 +124,7 @@ export function ReplyCommentInput(props: Props) {
             variant={"secondary"}
             onClick={onComment}
           >
-            {"送信"}
+            {t("送信", "Send")}
           </Button>
         )}
       </div>

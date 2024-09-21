@@ -1,5 +1,6 @@
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
 type Props = {
@@ -10,9 +11,11 @@ type Props = {
  * 新規ユーザ一覧
  */
 export function HomeNewCommentsSection(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col space-y-4">
-      <h2 className="font-semibold">新規コメント</h2>
+      <h2 className="font-semibold">{t("新規コメント", "New Comments")}</h2>
       {props.comments.map((comment) => (
         <div
           key={comment.comment?.id}

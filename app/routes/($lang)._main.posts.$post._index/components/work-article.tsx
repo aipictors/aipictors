@@ -335,6 +335,7 @@ export const workArticleFragment = graphql(
     user {
       id
       biography
+      enBiography
       login
       nanoid
       name
@@ -349,7 +350,6 @@ export const workArticleFragment = graphql(
       isFollower
       isFollowee
       headerImageUrl
-      biography
       receivedLikesCount
       createdLikesCount
       createdBookmarksCount
@@ -472,6 +472,7 @@ export const sensitiveWorkArticleFragment = graphql(
     user {
       id
       biography
+      enBiography
       login
       nanoid
       name

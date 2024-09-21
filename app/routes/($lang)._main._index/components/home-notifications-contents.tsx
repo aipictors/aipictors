@@ -14,6 +14,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-notifications-content-followed-item"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   type: IntrospectionEnum<"NotificationType">
@@ -36,6 +37,8 @@ export function HomeNotificationsContents(props: Props) {
 
   const notifications = query.data.viewer?.notifications ?? []
 
+  const t = useTranslation()
+
   if (notifications.length === 0) {
     return (
       <>
@@ -45,7 +48,9 @@ export function HomeNotificationsContents(props: Props) {
             className="m-auto w-48 md:w-64"
             src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/pictor-chan-sorry-image.png"
           />
-          <p className="text-center text-xl opacity-60">{"通知はありません"}</p>
+          <p className="text-center text-xl opacity-60">
+            {t("通知はありません", "There are no notifications")}
+          </p>
         </div>
       </>
     )

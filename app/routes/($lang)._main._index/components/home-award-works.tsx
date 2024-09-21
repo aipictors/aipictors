@@ -1,6 +1,7 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { useTranslation } from "~/hooks/use-translation"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
@@ -14,9 +15,13 @@ type Props = {
  * ランキング一覧
  */
 export function HomeAwardWorksSection(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col space-y-4">
-      <h2 className="font-semibold">前日ランキング</h2>
+      <h2 className="font-semibold">
+        {t("前日ランキング", "Yesterday's ranking")}
+      </h2>
       {props.works.map(
         (work) =>
           work && (

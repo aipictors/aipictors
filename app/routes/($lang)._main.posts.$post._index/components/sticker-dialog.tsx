@@ -13,6 +13,7 @@ import {
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { graphql } from "gql.tada"
 import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isOpen: boolean
@@ -64,6 +65,8 @@ export function StickerDialog(props: Props) {
 
   const maxCount = stickersCount?.viewer?.userStickersCount ?? 0
 
+  const t = useTranslation()
+
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
       <DialogContent className="min-h-[32vw] min-w-[80vw] pl-2">
@@ -76,7 +79,7 @@ export function StickerDialog(props: Props) {
               className="w-full"
               value="CREATED"
             >
-              保存日
+              {t("保存日", "Date saved")}
             </TabsTrigger>
             <TabsTrigger
               onClick={() => {
@@ -85,7 +88,7 @@ export function StickerDialog(props: Props) {
               className="w-full"
               value="RELATED"
             >
-              最近の使用
+              {t("最近の使用", "Recently used")}
             </TabsTrigger>
           </TabsList>
         </Tabs>

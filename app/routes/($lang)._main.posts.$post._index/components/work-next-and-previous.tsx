@@ -9,12 +9,15 @@ import type { workArticleFragment } from "~/routes/($lang)._main.posts.$post._in
 import type { FragmentOf } from "gql.tada"
 import { HelpCircleIcon } from "lucide-react"
 import { useEffect } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
 }
 
 export function WorkNextAndPrevious(props: Props) {
+  const t = useTranslation()
+
   if (props.work === null) return null
 
   useEffect(() => {
@@ -54,14 +57,19 @@ export function WorkNextAndPrevious(props: Props) {
   return (
     <>
       <div className="flex text-md">
-        <h2>{"前後の作品"}</h2>
+        <h2>{t("前後の作品", "Next and Previous Works")}</h2>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <HelpCircleIcon className="ml-1 w-4" />
             </TooltipTrigger>
             <TooltipContent>
-              <p>{"[Q][E]キーで移動することもできます"}</p>
+              <p>
+                {t(
+                  "[Q][E]キーで移動することもできます",
+                  "You can also use the [Q][E] keys to navigate",
+                )}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

@@ -13,6 +13,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { ModerationRatingReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/moderation-rating-report-dialog"
 import { ModerationStyleReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/moderation-style-report-dialog"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onDownload: () => void
@@ -21,13 +22,14 @@ type Props = {
 }
 
 /**
- * 作品への報告、画像ダウンロードのメニュー
+ * Menu for reporting a post and downloading an image
  */
 export function MenuPopover(props: Props) {
   const [deleteWork, { loading: isLoadingDeleteAlbum }] =
     useMutation(DeleteWorkMutation)
-
   const [isDeleted, setIsDeleted] = useState(false)
+
+  const t = useTranslation()
 
   const onDeleteWork = async (workId: string) => {
     await deleteWork({
@@ -37,7 +39,7 @@ export function MenuPopover(props: Props) {
         },
       },
     })
-    toast("作品を削除しました")
+    toast(t("作品を削除しました", "The post has been deleted"))
     setIsDeleted(true)
   }
 
@@ -59,7 +61,7 @@ export function MenuPopover(props: Props) {
               variant="outline"
             >
               <DownloadIcon />
-              ダウンロード
+              {t("ダウンロード", "Download")}
             </Button>
             <ReportDialog postId={props.postId} />
             {isModeratorData?.viewer?.isModerator && (
@@ -70,8 +72,11 @@ export function MenuPopover(props: Props) {
             )}
             {props.isEnabledDelete && (
               <AppConfirmDialog
-                title={"確認"}
-                description={"本当にこの作品を削除しますか？"}
+                title={t("確認", "Confirm")}
+                description={t(
+                  "本当にこの作品を削除しますか？",
+                  "Are you sure you want to delete this post?",
+                )}
                 onNext={async () => {
                   await onDeleteWork(props.postId)
                 }}
@@ -87,7 +92,7 @@ export function MenuPopover(props: Props) {
                   ) : (
                     <Trash />
                   )}
-                  {isDeleted ? "削除済み" : "削除"}
+                  {isDeleted ? t("削除済み", "Deleted") : t("削除", "Delete")}
                 </Button>
               </AppConfirmDialog>
             )}

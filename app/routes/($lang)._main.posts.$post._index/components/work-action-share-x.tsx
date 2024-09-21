@@ -2,6 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Link } from "@remix-run/react"
 import { RiTwitterXLine } from "@remixicon/react"
 import { type HTMLProps, forwardRef } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 interface XIntentProps extends HTMLProps<HTMLAnchorElement> {
   text?: string
@@ -17,6 +18,7 @@ export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
     { text, url, hashtags, via, related, in_reply_to, ...intrinsicProps },
     forwardedRef,
   ) => {
+    const t = useTranslation()
     const _url = new URL("https://x.com/intent/tweet")
 
     if (text !== undefined) _url.searchParams.set("text", text)
@@ -39,7 +41,7 @@ export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
           {...intrinsicProps}
         >
           <RiTwitterXLine />
-          Xで共有する
+          {t("Xで共有する", "Share on X")}
         </Link>
       </Button>
     )

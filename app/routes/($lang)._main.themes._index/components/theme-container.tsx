@@ -28,6 +28,7 @@ import {
   themeWorksQuery,
   type ThemeWorkFragment,
 } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   year: number
@@ -70,6 +71,8 @@ export function ThemeContainer(props: Props) {
       : "",
   )
 
+  const t = useTranslation()
+
   const { data: resp } = useQuery(themeWorksQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
@@ -111,9 +114,8 @@ export function ThemeContainer(props: Props) {
     )
   }
 
-  // 前後の日付に移動する関数
   const handlePreviousDay = (event: React.MouseEvent) => {
-    event.stopPropagation() // イベントの伝播を停止
+    event.stopPropagation()
 
     const previousDay = props.day
       ? new Date(props.year, props.month - 1, props.day - 1)
@@ -131,7 +133,7 @@ export function ThemeContainer(props: Props) {
   }
 
   const handleNextDay = (event: React.MouseEvent) => {
-    event.stopPropagation() // イベントの伝播を停止
+    event.stopPropagation()
 
     const nextDay = props.day
       ? new Date(props.year, props.month - 1, props.day + 1)
@@ -174,17 +176,22 @@ export function ThemeContainer(props: Props) {
     }
   }
 
-  const description =
-    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。"
+  const description = t(
+    "お題を毎日更新しています。AIイラストをテーマに沿って作成して投稿してみましょう！午前0時に更新されます。",
+    "Themes are updated daily. Create and submit AI illustrations according to the theme! The update happens at 0:00 AM.",
+  )
 
   return (
     <div className="flex flex-col space-y-4">
       <ConstructionAlert
         type="WARNING"
-        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
+        message={t(
+          "リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！",
+          "The renewed version is under development, so there may be bugs! Some features are being re-released. Please use the old version for now!",
+        )}
         fallbackURL="https://www.aipictors.com/idea"
       />
-      <AppPageHeader title={"お題"} description={description} />
+      <AppPageHeader title={t("お題", "Theme")} description={description} />
 
       {!props.day && props.todayTheme && (
         <div className="relative overflow-hidden rounded-md">
@@ -193,7 +200,7 @@ export function ThemeContainer(props: Props) {
             className="relative block h-24 overflow-hidden rounded-md p-4"
           >
             <h2 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 transform text-center font-bold text-white">
-              {"今日のお題は"}
+              {t("今日のお題は", "Today's theme is")}
               <br />「{props.todayTheme.title}」
             </h2>
             <img
@@ -216,7 +223,9 @@ export function ThemeContainer(props: Props) {
               <h2 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 transform text-center font-bold text-white">
                 <p>{`${props.targetThemes[0].year}月${props.targetThemes[0].month}月${props.targetThemes[0].day}日`}</p>
                 <p className="text-mx">「{props.targetThemes[0].title}」</p>
-                <p className="text-md">{`作品数: ${props.worksCount}`}</p>
+                <p className="text-md">
+                  {t("作品数", "Number of works")}: {props.worksCount}
+                </p>
               </h2>
               <img
                 className="absolute top-0 left-0 w-full"
@@ -238,14 +247,14 @@ export function ThemeContainer(props: Props) {
               className="flex items-center p-2"
             >
               <ArrowLeftIcon />
-              {"前日"}
+              {t("前日", "Previous Day")}
             </Button>
             <Button
               variant={"secondary"}
               onClick={handleNextDay}
               className="flex items-center p-2"
             >
-              {"翌日"}
+              {t("翌日", "Next Day")}
               <ArrowRightIcon />
             </Button>
           </div>
@@ -259,7 +268,7 @@ export function ThemeContainer(props: Props) {
               />
             </div>
             <Button onClick={handleTodayClick} variant="outline">
-              {"本日"}
+              {t("本日", "Today")}
             </Button>
           </div>
         </div>
@@ -273,10 +282,10 @@ export function ThemeContainer(props: Props) {
       >
         <TabsList>
           <TabsTrigger onClick={() => setTab("list")} value="list">
-            <div className="w-full">{"作品一覧"}</div>
+            <div className="w-full">{t("作品一覧", "Work List")}</div>
           </TabsTrigger>
           <TabsTrigger onClick={() => setTab("calender")} value="calender">
-            <div className="w-full">{"カレンダー"}</div>
+            <div className="w-full">{t("カレンダー", "Calendar")}</div>
           </TabsTrigger>
         </TabsList>
         <TabsContent value="list" className="m-0 flex flex-col space-y-4">

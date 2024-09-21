@@ -7,6 +7,7 @@ import {
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isSensitive?: boolean
@@ -76,10 +77,12 @@ export function HomeWorksRecommendedSection(props: Props) {
 
   const suggestedWorks = [...(suggestedWorkResp?.works || [])]
 
+  const t = useTranslation()
+
   return (
     <>
       <HomeWorkSection
-        title={"おすすめ"}
+        title={t("おすすめ", "Recommended")}
         works={suggestedWorks}
         isCropped={false}
         isShowProfile={true}

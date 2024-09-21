@@ -1,5 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { GiftIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   promptonId: string
@@ -9,6 +10,8 @@ type Props = {
  * 投稿者への支援ボタン
  */
 export function PromptonRequestTextButton({ promptonId, ...rest }: Props) {
+  const t = useTranslation()
+
   const onClick = () => {
     window.open(`https://prompton.io/aipic/${promptonId}`, "_blank")
   }
@@ -22,7 +25,7 @@ export function PromptonRequestTextButton({ promptonId, ...rest }: Props) {
       {...rest}
     >
       <div className="flex items-center space-x-2">
-        <p>{"サポート"}</p>
+        <p>{t("サポート", "Support")}</p>
         <GiftIcon className="w-4" />
       </div>
     </Button>

@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   postId: string
@@ -15,6 +16,8 @@ type Props = {
 }
 
 export function WorkTagInput(props: Props) {
+  const t = useTranslation()
+
   const [updateWorkTags, { loading: isUpdatingWorkTags }] = useMutation(
     updateWorkTagsMutation,
   )
@@ -33,13 +36,13 @@ export function WorkTagInput(props: Props) {
     if (props.setIsOpenEdit) {
       props.setIsOpenEdit(false)
     }
-    toast("タグを保存しました")
+    toast(t("タグを保存しました", "Tags saved successfully"))
   }
 
   return (
     <div className="flex flex-col items-center space-y-4">
       <TagInput
-        placeholder="追加するタグを入力"
+        placeholder={t("追加するタグを入力", "Enter tags to add")}
         tags={props.tags}
         className="sm:min-w-[450px]"
         setTags={props.setTags}
@@ -48,7 +51,7 @@ export function WorkTagInput(props: Props) {
         {isUpdatingWorkTags ? (
           <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
         ) : (
-          "保存"
+          t("保存", "Save")
         )}
       </Button>
     </div>

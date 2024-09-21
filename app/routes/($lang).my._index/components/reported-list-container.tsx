@@ -10,6 +10,7 @@ import { Button } from "~/components/ui/button"
 import { PencilIcon } from "lucide-react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { cn } from "~/lib/utils"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   page: number
@@ -18,6 +19,7 @@ type Props = {
 }
 
 export function ModerationReportsContainer(props: Props) {
+  const t = useTranslation()
   const [page, setPage] = useState(0)
   const [statusFilter, setStatusFilter] = useState<
     "ALL" | "DONE" | "NO_NEED_ACTION" | "UNHANDLED"
@@ -42,8 +44,6 @@ export function ModerationReportsContainer(props: Props) {
     },
   })
 
-  console.log(reports)
-
   const reportList = reports?.moderationReports ?? []
 
   const handlePageChange = (newPage: number) => {
@@ -56,13 +56,13 @@ export function ModerationReportsContainer(props: Props) {
   ) => {
     switch (status) {
       case "DONE":
-        return "対応完了"
+        return t("対応完了", "Resolved")
       case "NO_NEED_ACTION":
-        return "対応不要"
+        return t("対応不要", "No Action Needed")
       case "UNHANDLED":
-        return "未対応"
+        return t("未対応", "Unresolved")
       default:
-        return "未対応"
+        return t("未対応", "Unresolved")
     }
   }
 
@@ -97,7 +97,7 @@ export function ModerationReportsContainer(props: Props) {
               statusFilter === "ALL" ? "opacity-50" : "",
             )}
           >
-            すべて
+            {t("すべて", "All")}
           </Button>
           <Button
             onClick={() => setStatusFilter("DONE")}
@@ -107,7 +107,7 @@ export function ModerationReportsContainer(props: Props) {
               statusFilter === "DONE" ? "opacity-50" : "",
             )}
           >
-            対応完了
+            {t("対応完了", "Resolved")}
           </Button>
         </div>
         <div className="flex space-x-4">
@@ -119,7 +119,7 @@ export function ModerationReportsContainer(props: Props) {
               statusFilter === "NO_NEED_ACTION" ? "opacity-50" : "",
             )}
           >
-            対応不要
+            {t("対応不要", "No Action Needed")}
           </Button>
           <Button
             onClick={() => setStatusFilter("UNHANDLED")}
@@ -129,7 +129,7 @@ export function ModerationReportsContainer(props: Props) {
               statusFilter === "UNHANDLED" ? "opacity-50" : "",
             )}
           >
-            未対応
+            {t("未対応", "Unresolved")}
           </Button>
         </div>
       </div>
@@ -154,18 +154,23 @@ export function ModerationReportsContainer(props: Props) {
                   </div>
                 )}
                 <div className="flex w-full flex-col space-y-2">
-                  <span className="font-bold">「{report.work?.title}」</span>
+                  <span className="font-bold">
+                    {t("「{workTitle}」", `「${report.work?.title}」`)}
+                  </span>
                   <p className="mb-2">{report.reportMessage}</p>
                   {report.customMessage && (
                     <p className="text-sm italic">
-                      追加メッセージ: {report.customMessage}
+                      {t(
+                        "追加メッセージ: {message}",
+                        `追加メッセージ: ${report.customMessage}`,
+                      )}
                     </p>
                   )}
                   <div className="flex space-x-2">
                     <Badge
                       variant={report.isRead ? "secondary" : "destructive"}
                     >
-                      {report.isRead ? "既読" : "未読"}
+                      {report.isRead ? t("既読", "Read") : t("未読", "Unread")}
                     </Badge>
                     <Badge
                       variant={
@@ -180,7 +185,8 @@ export function ModerationReportsContainer(props: Props) {
                   </div>
                   {report.responseMessage && (
                     <p className="text-muted-foreground text-sm">
-                      {"あなたの返信"}:「{report.responseMessage}」
+                      {t("あなたの返信", "Your Response")}:
+                      {`「${report.responseMessage}」`}
                     </p>
                   )}
                 </div>
@@ -198,11 +204,11 @@ export function ModerationReportsContainer(props: Props) {
                   >
                     <Button
                       className="w-full space-x-2"
-                      aria-label={"編集"}
+                      aria-label={t("編集", "Edit")}
                       variant="secondary"
                     >
                       <PencilIcon width={16} />
-                      <p>編集</p>
+                      <p>{t("編集", "Edit")}</p>
                     </Button>
                   </Link>
                 )}

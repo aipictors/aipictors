@@ -1,6 +1,7 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { useTranslation } from "~/hooks/use-translation"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
@@ -11,9 +12,11 @@ type Props = {
  * 新規ユーザ一覧
  */
 export function HomeNewUsersSection(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col space-y-4">
-      <h2 className="font-semibold">新規クリエイター</h2>
+      <h2 className="font-semibold">{t("新規クリエイター", "New Creators")}</h2>
       {props.users.map((user) => (
         <div key={user.id} className="flex items-center space-x-2">
           <Avatar>
