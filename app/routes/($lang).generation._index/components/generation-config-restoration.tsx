@@ -152,6 +152,7 @@ export const imageGenerationResultQuery = graphql(
       scale
       vae
       prompt
+      promptsText
       negativePrompt
       seed
       sizeType

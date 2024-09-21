@@ -15,6 +15,7 @@ export function useCachedImageGenerationResult(id: string) {
         }
         nanoid
         prompt
+        promptsText
         negativePrompt
         upscaleSize
         seed

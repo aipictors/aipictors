@@ -204,6 +204,7 @@ export const InProgressGenerationImageResultFragment = graphql(
   `fragment InProgressGenerationImageResult on ImageGenerationResultNode @_unmask {
     id
     prompt
+    promptsText
     negativePrompt
     scale
     steps
@@ -227,6 +228,7 @@ export const InProgressGenerationImageResultTaskFragment = graphql(
   `fragment InProgressGenerationImageResultTask on ImageGenerationTaskNode @_unmask {
     id
     prompt
+    promptsText
     negativePrompt
     scale
     steps

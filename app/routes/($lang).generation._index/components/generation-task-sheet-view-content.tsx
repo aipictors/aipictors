@@ -128,6 +128,8 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
   const userToken = context.config.currentUserToken
 
+  console.log(props.task.promptsText)
+
   return (
     <>
       <ScrollArea className={cn({ "mx-auto w-full": props.isListFullSize })}>
@@ -369,6 +371,23 @@ export function GenerationTaskSheetViewContent(props: Props) {
           <div className="py-2">
             <Separator />
           </div>
+          {props.task.promptsText && (
+            <>
+              <div className="space-y-2">
+                <p className="font-bold">{"元の文章"}</p>
+                <AutoResizeTextarea
+                  disabled={true}
+                  className="max-h-24 w-[100%] overflow-y-auto rounded-md border p-2 text-sm disabled:opacity-100"
+                >
+                  {props.task.promptsText}
+                </AutoResizeTextarea>
+                <CopyButton text={props.task.promptsText} />
+              </div>
+              <div className="py-2">
+                <Separator />
+              </div>
+            </>
+          )}
           <div className="space-y-2">
             <p className="font-bold">{"NegativePrompt"}</p>
             <AutoResizeTextarea

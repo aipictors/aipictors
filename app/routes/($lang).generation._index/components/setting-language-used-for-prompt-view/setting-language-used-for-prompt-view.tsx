@@ -24,6 +24,7 @@ export function SettingLanguageUsedForPromptView() {
       <Tabs
         defaultValue={context.config.languageUsedForPrompt || "default"}
         onValueChange={handleTabChange}
+        value={context.config.languageUsedForPrompt || "default"}
         className="space-y-4"
       >
         <TabsList className="w-full">

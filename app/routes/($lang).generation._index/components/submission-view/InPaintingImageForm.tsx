@@ -211,6 +211,7 @@ export const InPaintingImageFormFragment = graphql(
     id
     nanoid
     prompt
+    promptsText
     negativePrompt
     upscaleSize
     seed
@@ -238,6 +239,7 @@ export const InPaintingImageFormTaskFragment = graphql(
     id
     nanoid
     prompt
+    promptsText
     negativePrompt
     upscaleSize
     seed

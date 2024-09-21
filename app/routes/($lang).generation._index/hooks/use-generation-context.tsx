@@ -79,6 +79,7 @@ export function useGenerationContext() {
       .changeControlNetWeight(controlNetWeight)
       .changeControlNetModule(controlNetModule)
       .changeControlNetModel(controlNetModel)
+      .changeLanguageUsedForPrompt(null)
       .getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }
