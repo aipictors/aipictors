@@ -3,6 +3,7 @@ import { Checkbox } from "~/components/ui/checkbox"
 import { Link } from "@remix-run/react"
 import { useEffect, useState } from "react"
 import { Card, CardContent } from "~/components/ui/card"
+import { getJstDate } from "~/utils/jst-date"
 
 type Props = {
   eventName: string | null
@@ -19,6 +20,10 @@ type Props = {
  * イベント入力
  */
 export function PostFormItemEvent(props: Props) {
+  if (props.endAt > getJstDate().getTime() / 1000) {
+    return null
+  }
+
   const [isAttending, setIsAttending] = useState(
     props.isAttending === undefined ? false : props.isAttending,
   )
