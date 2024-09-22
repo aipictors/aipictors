@@ -46,7 +46,7 @@ export function DashboardHomeContents() {
             <DashboardHomeContentContainer
               title={t("合計リアクション数", "Total Reactions")}
             >
-              <div className="rounded-md md:p-4">
+              <div className="rounded-md">
                 <div className="mb-4">
                   <div className="flex items-center">
                     <EyeIcon className="mr-2 w-3" />
@@ -100,7 +100,7 @@ export function DashboardHomeContents() {
               <DashboardHomeContentContainer
                 title={t("いいねランキングトップ3", "Top 3 Most Liked")}
               >
-                <div className="rounded-md md:p-4">
+                <div className="rounded-md">
                   {works?.map((work, index) => (
                     <Link
                       key={work.id}
