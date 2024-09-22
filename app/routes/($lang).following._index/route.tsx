@@ -1,30 +1,24 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { FollowingList } from "~/routes/($lang).following._index/components/following-list"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { Suspense, useContext } from "react"
+import { META } from "~/config"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors - フォロー一覧"
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.FOLLOWINGS, undefined, props.params.lang)
+}
 
-  const metaDescription = "フォロー中のユーザ一覧です。"
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
 
-  const metaImage =
-    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
+  if (redirectResponse) {
+    return redirectResponse
+  }
 
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "robots", content: "noindex" },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
+  return {}
 }
 
 export default function FollowingLayout() {

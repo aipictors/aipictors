@@ -34,8 +34,13 @@ import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
+import { useTranslation } from "~/hooks/use-translation"
+import type { LoaderFunctionArgs } from "react-router-dom"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export default function NewText() {
+  const t = useTranslation()
+
   const authContext = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()
@@ -210,7 +215,12 @@ export default function NewText() {
       inputState.reservationDate !== null &&
       inputState.reservationTime === null
     ) {
-      toast("予約投稿の時間を入力してください")
+      toast(
+        t(
+          "予約投稿の時間を入力してください",
+          "Please enter the scheduled post time",
+        ),
+      )
       return
     }
 
@@ -218,7 +228,12 @@ export default function NewText() {
       inputState.reservationDate === null &&
       inputState.reservationTime !== null
     ) {
-      toast("予約投稿の時間を入力してください")
+      toast(
+        t(
+          "予約投稿の時間を入力してください",
+          "Please enter the scheduled post time",
+        ),
+      )
       return
     }
 
@@ -289,7 +304,7 @@ export default function NewText() {
       const imageUrls = uploadResults.filter((url) => url !== null)
 
       if (imageUrls.length === 0) {
-        toast("画像のアップロードに失敗しました")
+        toast(t("画像のアップロードに失敗しました", "Failed to upload images"))
         return
       }
 
@@ -350,7 +365,7 @@ export default function NewText() {
       })
 
       if (work.data?.createWork === undefined) {
-        toast("作品の投稿に失敗しました")
+        toast(t("作品の投稿に失敗しました", "Failed to post the work"))
         return
       }
 
@@ -362,7 +377,7 @@ export default function NewText() {
         },
       })
 
-      toast("作品を投稿しました")
+      toast(t("作品を投稿しました", "Work has been posted"))
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -383,13 +398,15 @@ export default function NewText() {
     React.useCallback(
       (event) => {
         if (state) {
-          const confirmationMessage =
-            "ページ遷移すると変更が消えますが問題無いですか？"
+          const confirmationMessage = t(
+            "ページ遷移すると変更が消えますが問題無いですか？",
+            "Are you sure to leave this page? Changes may be lost.",
+          )
           event.returnValue = confirmationMessage
           return confirmationMessage
         }
       },
-      [state],
+      [state, t],
     ),
   )
 
@@ -397,7 +414,10 @@ export default function NewText() {
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <ConstructionAlert
         type="WARNING"
-        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
+        message={t(
+          "リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！",
+          "The renewed version is under development and may have issues! Please continue to use the old version for stability.",
+        )}
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="space-y-4">
@@ -437,7 +457,7 @@ export default function NewText() {
           type="submit"
           onClick={onPost}
         >
-          {"投稿"}
+          {t("投稿", "Post")}
         </Button>
       </div>
       <SuccessCreatedWorkDialog
@@ -462,13 +482,23 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.NEW_TEXT, undefined, props.params.lang)
 }
 
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
+  return {}
+}
+
 const viewerQuery = graphql(
   `query ViewerQuery(
     $limit: Int!,
     $offset: Int!,
     $ownerUserId: ID
-    $generationOffset: Int!
-    $generationLimit: Int!
+    $generationOffset: Int!,
+    $generationLimit: Int!,
     $generationWhere: ImageGenerationResultsWhereInput,
     $startDate: String!,
     $endDate: String!,

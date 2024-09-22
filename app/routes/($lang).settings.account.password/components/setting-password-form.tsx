@@ -5,8 +5,11 @@ import { graphql } from "gql.tada"
 import { EyeIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 export function AccountPasswordForm() {
+  const t = useTranslation()
+
   const [newPassword, setNewPassword] = useState("")
 
   const [currentPassword, setCurrentPassword] = useState("")
@@ -29,7 +32,7 @@ export function AccountPasswordForm() {
       })
       setCurrentPassword("")
       setNewPassword("")
-      toast("パスワードを変更しました")
+      toast(t("パスワードを変更しました", "Password changed successfully"))
     } catch (error) {
       if (error instanceof ApolloError) {
         toast(error.message)
@@ -40,10 +43,13 @@ export function AccountPasswordForm() {
   return (
     <div className="w-full space-y-4">
       <div className="space-y-2">
-        <p>{"現在のログインパスワード"}</p>
+        <p>{t("現在のログインパスワード", "Current Login Password")}</p>
         <div className="flex space-x-2">
           <Input
-            placeholder="現在のログインパスワード"
+            placeholder={t(
+              "現在のログインパスワード",
+              "Current Login Password",
+            )}
             value={currentPassword}
             type={showPassword ? "text" : "password"}
             onChange={(event) => {
@@ -62,10 +68,10 @@ export function AccountPasswordForm() {
         </div>
       </div>
       <div className="space-y-2">
-        <p>{"新しいログインパスワード"}</p>
+        <p>{t("新しいログインパスワード", "New Login Password")}</p>
         <div className="flex space-x-2">
           <Input
-            placeholder="新しいログインパスワード"
+            placeholder={t("新しいログインパスワード", "New Login Password")}
             type={showNewPassword ? "text" : "password"}
             value={newPassword}
             onChange={(event) => {
@@ -82,15 +88,9 @@ export function AccountPasswordForm() {
             <EyeIcon />
           </Button>
         </div>
-        {/* <Stack spacing={1}>
-            <Progress value={80} borderRadius={"full"} />
-            <Text fontSize={"xs"}>
-              {"パスワード強度スコアが3以上（バーが黄色～緑色）"}
-            </Text>
-          </Stack> */}
       </div>
       <Button onClick={handleSubmit} disabled={loading}>
-        {"変更を保存"}
+        {t("変更を保存", "Save Changes")}
       </Button>
     </div>
   )

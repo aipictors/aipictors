@@ -10,12 +10,16 @@ import { Label } from "~/components/ui/label"
 import { Separator } from "~/components/ui/separator"
 import { useNavigate } from "@remix-run/react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * プロフィール設定フォーム
  */
 export function UserSettingsForm() {
+  const t = useTranslation()
+
   const authContext = useContext(AuthContext)
+
   const navigate = useNavigate()
 
   const { data: userSettingData } = useQuery(userSettingQuery, {
@@ -28,7 +32,9 @@ export function UserSettingsForm() {
 
   // コンテンツ年齢設定用の状態変数
   const [showR15InNormalMode, setShowR15InNormalMode] = useState(false)
+
   const [showSensitiveModeToggle, setShowSensitiveModeToggle] = useState(false)
+
   const [showR18GInSensitiveMode, setShowR18GInSensitiveMode] = useState(false)
 
   // 18歳以上かどうかの確認用状態変数
@@ -36,8 +42,10 @@ export function UserSettingsForm() {
 
   // その他の設定用の状態変数
   const [isAnonymousLike, setIsAnonymousLike] = useState(false)
+
   const [isAnonymousSensitiveLike, setIsAnonymousSensitiveLike] =
     useState(false)
+
   const [isNotifyComment, setIsNotifyComment] = useState(false)
 
   useEffect(() => {
@@ -82,7 +90,12 @@ export function UserSettingsForm() {
 
   const onSave = async () => {
     if (!isAdult) {
-      toast("18歳以上かどうかを選択してください")
+      toast(
+        t(
+          "18歳以上かどうかを選択してください",
+          "Please select if you are over 18",
+        ),
+      )
       return
     }
 
@@ -114,13 +127,15 @@ export function UserSettingsForm() {
       },
     })
 
-    toast("保存しました")
+    toast(t("保存しました", "Saved"))
     navigate("/settings/completed")
   }
 
   return (
     <div className="container m-auto space-y-4">
-      <p className="font-bold">{"あなたは18歳以上ですか？"}</p>
+      <p className="font-bold">
+        {t("あなたは18歳以上ですか？", "Are you over 18?")}
+      </p>
       <div className="flex space-x-2">
         <Button
           variant={isAdult === "YES" ? "default" : "secondary"}
@@ -144,16 +159,25 @@ export function UserSettingsForm() {
         <>
           {/* コンテンツ年齢設定 */}
           <div className="space-y-4">
-            <p className="font-bold">{"表示するコンテンツの年齢設定"}</p>
+            <p className="font-bold">
+              {t(
+                "表示するコンテンツの年齢設定",
+                "Content age restriction settings",
+              )}
+            </p>
             <p className="text-sm">
-              {
-                "表示するコンテンツの年齢制限を設定できます。一部ページでは反映されないのでご注意ください。"
-              }
+              {t(
+                "表示するコンテンツの年齢制限を設定できます。一部ページでは反映されないのでご注意ください。",
+                "You can set the age restrictions for displayed content. Note that it may not be reflected on some pages.",
+              )}
             </p>
             <div className="flex flex-col space-y-4">
               <div className="flex w-full items-center justify-between">
                 <Label htmlFor="show-r15">
-                  {"(通常モード時)R15作品を表示する"}
+                  {t(
+                    "(通常モード時)R15作品を表示する",
+                    "Show R15 content in normal mode",
+                  )}
                 </Label>
                 <Switch
                   onCheckedChange={setShowR15InNormalMode}
@@ -164,7 +188,10 @@ export function UserSettingsForm() {
               </div>
               <div className="flex w-full items-center justify-between">
                 <Label htmlFor="show-sensitive-toggle">
-                  {"センシティブモード切り替えボタンをメニューに表示する"}
+                  {t(
+                    "センシティブモード切り替えボタンをメニューに表示する",
+                    "Show sensitive mode toggle button in the menu",
+                  )}
                 </Label>
                 <Switch
                   onCheckedChange={(checked) => {
@@ -184,7 +211,10 @@ export function UserSettingsForm() {
               </div>
               <div className="flex w-full items-center justify-between">
                 <Label htmlFor="show-r18g">
-                  {"(センシティブモード時)R18G作品を表示する"}
+                  {t(
+                    "(センシティブモード時)R18G作品を表示する",
+                    "Show R18G content in sensitive mode",
+                  )}
                 </Label>
                 <Switch
                   onCheckedChange={setShowR18GInSensitiveMode}
@@ -200,23 +230,28 @@ export function UserSettingsForm() {
       )}
 
       {/* 匿名いいね設定 */}
-      <p className="font-bold">{"匿名いいね"}</p>
+      <p className="font-bold">{t("匿名いいね", "Anonymous Like")}</p>
       <p className="text-sm">
-        {
-          "いいねしたときに、投稿者へ自身がいいねしたことを通知するかどうか変更できます"
-        }
+        {t(
+          "いいねしたときに、投稿者へ自身がいいねしたことを通知するかどうか変更できます",
+          "You can change whether to notify the poster that you liked their content.",
+        )}
       </p>
       <p className="text-sm">
-        {
-          "匿名いいねに関わらず、いいねした作品は投稿者以外、閲覧することはできません"
-        }
+        {t(
+          "匿名いいねに関わらず、いいねした作品は投稿者以外、閲覧することはできません",
+          "Regardless of anonymous likes, only the poster can see who liked their content.",
+        )}
       </p>
       <div className="flex justify-between">
         <label
           htmlFor="anonymous-like"
           className="font-medium text-sm leading-none"
         >
-          {"全年齢作品を匿名でいいねする"}
+          {t(
+            "全年齢作品を匿名でいいねする",
+            "Like all-age content anonymously",
+          )}
         </label>
         <Switch
           onCheckedChange={setIsAnonymousLike}
@@ -229,7 +264,10 @@ export function UserSettingsForm() {
           htmlFor="anonymous-sensitive-like"
           className="font-medium text-sm leading-none"
         >
-          {"センシティブ作品を匿名でいいねする"}
+          {t(
+            "センシティブ作品を匿名でいいねする",
+            "Like sensitive content anonymously",
+          )}
         </label>
         <Switch
           onCheckedChange={setIsAnonymousSensitiveLike}
@@ -248,7 +286,7 @@ export function UserSettingsForm() {
         {isUpdatingUserSetting ? (
           <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
         ) : (
-          "完了"
+          t("完了", "Save")
         )}
       </Button>
     </div>

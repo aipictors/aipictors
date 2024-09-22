@@ -13,11 +13,14 @@ import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
 import { Card, CardContent } from "~/components/ui/card"
 import { useNavigate } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * プロフィール設定フォーム
  */
 export function ProfileEditorForm() {
+  const t = useTranslation()
+
   const authContext = useContext(AuthContext)
 
   const { data: user } = useSuspenseQuery(userQuery, {
@@ -49,8 +52,6 @@ export function ProfileEditorForm() {
   const [mail, setMail] = useState(userInfo?.mailAddress ?? "")
 
   const [profileImage, setProfileImage] = useState("")
-
-  console.log("profileImage", profileImage)
 
   const [headerImage, setHeaderImage] = useState("")
 
@@ -105,7 +106,7 @@ export function ProfileEditorForm() {
       },
     })
 
-    toast("プロフィールを更新しました。")
+    toast(t("プロフィールを更新しました。", "Profile updated."))
 
     navigate("/new/settings")
   }
@@ -121,9 +122,19 @@ export function ProfileEditorForm() {
       <div className="container m-auto space-y-4">
         <Card>
           <CardContent className="m-0 p-4 text-xl">
-            <p>{"Aipictorsへようこそ！"}</p>
-            <p>{"Aipictorsで使用するプロフィールを設定しましょう！"}</p>
-            <p>{"設定から内容はいつでも変更できます"}</p>
+            <p>{t("Aipictorsへようこそ！", "Welcome to Aipictors!")}</p>
+            <p>
+              {t(
+                "Aipictorsで使用するプロフィールを設定しましょう！",
+                "Let's set up your profile for Aipictors!",
+              )}
+            </p>
+            <p>
+              {t(
+                "設定から内容はいつでも変更できます",
+                "You can change these settings anytime.",
+              )}
+            </p>
           </CardContent>
         </Card>
         <div className="justify-between">
@@ -193,7 +204,10 @@ export function ProfileEditorForm() {
             </CropImageField>
           </div>
           <p className="mt-8">
-            プロフィール画像やヘッダー画像にR-18画像は掲載できません。
+            {t(
+              "プロフィール画像やヘッダー画像にR-18画像は掲載できません。",
+              "You cannot upload R-18 images as profile or header images.",
+            )}
           </p>
         </div>
         <div className="flex flex-col justify-between space-y-2">
@@ -201,7 +215,7 @@ export function ProfileEditorForm() {
             htmlFor="nickname"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"ニックネーム"}
+            {t("ニックネーム", "Nickname")}
           </label>
           <input
             type="text"
@@ -219,7 +233,7 @@ export function ProfileEditorForm() {
             htmlFor="profile"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"プロフィール"}
+            {t("プロフィール", "Profile")}
           </label>
           <AutoResizeTextarea
             id="profile"
@@ -234,7 +248,7 @@ export function ProfileEditorForm() {
             htmlFor="enProfile"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"英語プロフィール"}
+            {t("英語プロフィール", "English Profile")}
           </label>
           <AutoResizeTextarea
             id="enProfile"
@@ -250,7 +264,7 @@ export function ProfileEditorForm() {
             htmlFor="website"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"Webサイト"}
+            {t("Webサイト", "Website")}
           </label>
           <input
             type="text"
@@ -262,7 +276,9 @@ export function ProfileEditorForm() {
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
-          <p className="font-semibold">{"SNSリンク（@マークは不要）"}</p>
+          <p className="font-semibold">
+            {t("SNSリンク（@マークは不要）", "SNS Links (without @)")}
+          </p>
           <label
             htmlFor="instagram"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -284,7 +300,7 @@ export function ProfileEditorForm() {
             htmlFor="twitter"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"X(旧Twitter)"}
+            {t("X(旧Twitter)", "X(formerly Twitter)")}
           </label>
           <input
             type="text"
@@ -318,7 +334,7 @@ export function ProfileEditorForm() {
             htmlFor="mail"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"メールアドレス"}
+            {t("メールアドレス", "Email Address")}
           </label>
           <input
             type="text"
@@ -339,7 +355,7 @@ export function ProfileEditorForm() {
           {isUpdating ? (
             <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
           ) : (
-            <p>{"次へ"}</p>
+            <p>{t("次へ", "Next")}</p>
           )}
         </Button>
       </div>

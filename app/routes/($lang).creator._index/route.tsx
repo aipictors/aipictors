@@ -1,4 +1,4 @@
-import { json } from "@remix-run/cloudflare"
+import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { META } from "~/config"
@@ -7,6 +7,7 @@ import {
   HomeRequestCard,
   HomeRequestCardFragment,
 } from "~/routes/($lang).creator._index/components/home-request-card"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
 
 /**
@@ -14,6 +15,10 @@ import { createMeta } from "~/utils/create-meta"
  */
 export default function Route() {
   const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <div className="container-shadcn-ui">
@@ -26,7 +31,13 @@ export default function Route() {
   )
 }
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const result = await loaderClient.query({
     query: LoaderQuery,
   })

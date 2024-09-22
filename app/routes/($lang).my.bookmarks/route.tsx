@@ -9,8 +9,8 @@ import { Suspense, useContext } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.MY_BOOKMARKS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.MY_BOOKMARKS, undefined, props.params.lang)
 }
 
 export default function MyBookmarks() {

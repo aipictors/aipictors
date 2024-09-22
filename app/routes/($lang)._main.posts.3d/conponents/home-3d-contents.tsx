@@ -19,6 +19,7 @@ import {
   HomeWorksTagSection,
   type HomeTagWorkFragment,
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { useTranslation } from "~/hooks/use-translation"
 
 type homeParticles = {
   firstTag: string
@@ -45,15 +46,21 @@ const useUpdateQueryParams = () => {
  * 3Dホームのコンテンツ一覧
  */
 export function Home3dContents(props: Props) {
+  const t = useTranslation()
+
   const [searchParams] = useSearchParams()
+
   const updateQueryParams = useUpdateQueryParams()
 
   const [isMounted, setIsMounted] = useState(false)
 
   const [newWorksPage, setNewWorksPage] = useState(0)
+
   const [workType, setWorkType] =
     useState<IntrospectionEnum<"WorkType"> | null>(null)
+
   const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
+
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
@@ -143,24 +150,17 @@ export function Home3dContents(props: Props) {
     updateQueryParams(searchParams)
   }
 
-  // ハイドレーションエラー対策
-  // if (
-  //   !isMounted &&
-  //   searchParams.get("tab") &&
-  //   searchParams.get("tab") !== "home"
-  // ) {
-  //   return null
-  // }
-
   return (
     <Tabs
-      defaultValue={searchParams.get("tab") || "new"}
+      defaultValue={searchParams.get("tab") || "home"}
       onValueChange={handleTabChange}
       className="space-y-4"
     >
       <TabsList>
-        <TabsTrigger value="home">ホーム</TabsTrigger>
-        <TabsTrigger value="new">フォト作品一覧</TabsTrigger>
+        <TabsTrigger value="home">{t("ホーム", "Home")}</TabsTrigger>
+        <TabsTrigger value="new">
+          {t("3D作品一覧", "3D Works List")}
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
         {props.homeParticles && (
@@ -193,15 +193,17 @@ export function Home3dContents(props: Props) {
             >
               <SelectTrigger>
                 <SelectValue
-                  placeholder={workType ? toWorkTypeText(workType) : "種類"}
+                  placeholder={
+                    workType ? toWorkTypeText(workType) : t("種類", "Type")
+                  }
                 />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">{"種類"}</SelectItem>
-                <SelectItem value="WORK">{"画像"}</SelectItem>
-                <SelectItem value="VIDEO">{"動画"}</SelectItem>
-                <SelectItem value="NOVEL">{"小説"}</SelectItem>
-                <SelectItem value="COLUMN">{"コラム"}</SelectItem>
+                <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
+                <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
+                <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
+                <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
+                <SelectItem value="COLUMN">{t("コラム", "Column")}</SelectItem>
               </SelectContent>
             </Select>
             <Select
@@ -218,17 +220,19 @@ export function Home3dContents(props: Props) {
                 <SelectValue
                   placeholder={
                     isPromptPublic === null
-                      ? "プロンプト有無"
+                      ? t("プロンプト有無", "Prompt")
                       : isPromptPublic
-                        ? "あり"
-                        : "なし"
+                        ? t("あり", "Yes")
+                        : t("なし", "No")
                   }
                 />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">{"プロンプト有無"}</SelectItem>
-                <SelectItem value="prompt">{"あり"}</SelectItem>
-                <SelectItem value="no-prompt">{"なし"}</SelectItem>
+                <SelectItem value="ALL">
+                  {t("プロンプト有無", "Prompt")}
+                </SelectItem>
+                <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
+                <SelectItem value="no-prompt">{t("なし", "No")}</SelectItem>
               </SelectContent>
             </Select>
             <Select
@@ -237,12 +241,20 @@ export function Home3dContents(props: Props) {
             >
               <SelectTrigger>
                 <ArrowDownWideNarrow />
-                <SelectValue placeholder={sortType ? sortType : "最新"} />
+                <SelectValue
+                  placeholder={sortType ? sortType : t("最新", "Latest")}
+                />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="DATE_CREATED">{"最新"}</SelectItem>
-                <SelectItem value="LIKES_COUNT">{"最も人気"}</SelectItem>
-                <SelectItem value="COMMENTS_COUNT">{"コメント数"}</SelectItem>
+                <SelectItem value="DATE_CREATED">
+                  {t("最新", "Latest")}
+                </SelectItem>
+                <SelectItem value="LIKES_COUNT">
+                  {t("最も人気", "Most Liked")}
+                </SelectItem>
+                <SelectItem value="COMMENTS_COUNT">
+                  {t("コメント数", "Most Commented")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

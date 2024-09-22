@@ -9,12 +9,20 @@ import type {
   MicroCmsApiRelease,
   MicroCmsApiReleaseResponse,
 } from "~/types/micro-cms-release-response"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { useTranslation } from "~/hooks/use-translation"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.RELEASES, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const limit = 16
 
   const offset = props.params.offset ? Number(props.params.offset) : 0
@@ -34,7 +42,13 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export default function Milestone() {
+  const t = useTranslation()
+
   const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
 
   const [limit] = useState(10)
 
@@ -59,7 +73,9 @@ export default function Milestone() {
 
   return (
     <div className="container flex flex-col space-y-4">
-      <h2 className="border-b p-4">最新リリース一覧</h2>
+      <h2 className="border-b p-4">
+        {t("最新リリース一覧", "Latest Releases")}
+      </h2>
       {releases.map((release) => (
         <Link
           to={`/releases/${release.id}`}
@@ -84,13 +100,13 @@ export default function Milestone() {
       ))}
       <div className="flex items-center justify-center space-x-4">
         <Button onClick={handlePrevious} disabled={offset === 0}>
-          前へ
+          {t("前へ", "Previous")}
         </Button>
         <Button
           onClick={handleNext}
           disabled={offset + limit >= data.data.totalCount}
         >
-          次へ
+          {t("次へ", "Next")}
         </Button>
       </div>
       <div className="flex items-center justify-center space-x-4">

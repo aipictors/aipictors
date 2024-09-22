@@ -1,14 +1,21 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql, readFragment } from "gql.tada"
+import { META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import {
   RequestArticleWork,
   RequestArticleWorkFragment,
 } from "~/routes/($lang).creator.requests.$request/components/request-article-work"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { createMeta } from "~/utils/create-meta"
 
 export default function Route() {
   const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <article className="container-shadcn-ui">
@@ -26,6 +33,12 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const result = await loaderClient.query({
     query: LoaderQuery,
     variables: {
@@ -41,18 +54,22 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const meta: MetaFunction<typeof loader> = (args) => {
-  if (args.data === undefined) return []
+  if (args.data === undefined || args.data === null) return []
 
   const meta = readFragment(MetaFragment, args.data.promptonRequest)
 
   if (meta === null) return []
 
-  return [
+  return createMeta(
+    META.CREATOR,
     {
       title: `${meta.recipient.name}さんへのリクエスト`,
+      enTitle: `Request for ${meta.recipient.name}`,
       description: `リクエスト「${meta.recipient.id}」は${meta.recipient.name}さんへのリクエストです。`,
+      enDescription: `Request "${meta.recipient.id}" is a request for ${meta.recipient.name}.`,
     },
-  ]
+    args.params.lang,
+  )
 }
 
 export const MetaFragment = graphql(

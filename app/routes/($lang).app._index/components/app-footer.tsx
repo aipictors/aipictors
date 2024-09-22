@@ -1,7 +1,10 @@
 import { cn } from "~/lib/utils"
 import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
 
 export function AppFooter() {
+  const t = useTranslation()
+
   return (
     <footer
       className={cn(
@@ -12,21 +15,18 @@ export function AppFooter() {
       <div className="flex flex-col md:flex-row">
         <div className="flex space-x-4">
           <Link to={"/app/terms"} className="text-sm">
-            {"利用規約"}
+            {t("利用規約", "Terms of Service")}
           </Link>
           <Link to={"/app/privacy"} className="text-sm">
-            {"プライバシーポリシー"}
+            {t("プライバシーポリシー", "Privacy Policy")}
           </Link>
         </div>
-        {/* <div className="flex space-x-4">
-      <p className="text-sm">{"運営会社"}</p>
-      <p className="text-sm">{"特定商取引法に基づく表記"}</p>
-    </div> */}
       </div>
       <p className="text-sm">
-        {
-          "Aipictorsアプリは、AIイラスト・AIフォト・AI小説を投稿できるSNSアプリです。"
-        }
+        {t(
+          "Aipictorsアプリは、AIイラスト・AIフォト・AI小説を投稿できるSNSアプリです。",
+          "The Aipictors app is a social media app where you can post AI illustrations, AI photos, and AI novels.",
+        )}
       </p>
       <div className="flex">
         <p className="font-bold text-sm">{"© 2023 Aipictors"}</p>

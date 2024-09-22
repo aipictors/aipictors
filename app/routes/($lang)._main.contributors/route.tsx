@@ -1,10 +1,21 @@
 import { ContributorsView } from "~/routes/($lang)._main.contributors/components/contributors-view"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.CONTRIBUTORS, undefined, props.params.lang)
+}
+
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
+  return {}
 }
 
 /**

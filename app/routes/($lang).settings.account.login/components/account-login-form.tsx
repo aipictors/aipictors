@@ -9,9 +9,12 @@ import {
 import { graphql } from "gql.tada"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 export function AccountLoginForm() {
   const appContext = useContext(AuthContext)
+
+  const t = useTranslation()
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {
     skip: appContext.isLoading,
@@ -31,10 +34,10 @@ export function AccountLoginForm() {
         },
       })
       setUserId("")
-      toast("ユーザIDを変更しました")
+      toast(t("ユーザIDを変更しました", "User ID updated successfully"))
     } catch (error) {
       if (error instanceof ApolloError) {
-        toast("ユーザIDの変更に失敗しました")
+        toast(t("ユーザIDの変更に失敗しました", "Failed to update User ID"))
       }
     }
   }
@@ -42,25 +45,25 @@ export function AccountLoginForm() {
   return (
     <div className="w-full space-y-4">
       <div className="space-y-2">
-        <p>現在のユーザID</p>
+        <p>{t("現在のユーザID", "Current User ID")}</p>
         <Input
           readOnly
           value={data?.viewer?.user?.login}
-          placeholder="ユーザID"
+          placeholder={t("ユーザID", "User ID")}
         />
       </div>
       <div className="space-y-2">
-        <p>新しいユーザID</p>
+        <p>{t("新しいユーザID", "New User ID")}</p>
         <Input
           value={userId}
-          placeholder="ユーザID"
+          placeholder={t("ユーザID", "User ID")}
           onChange={(event) => {
             setUserId(event.target.value)
           }}
         />
       </div>
       <Button disabled={loading} onClick={handleSubmit}>
-        {"変更を保存"}
+        {t("変更を保存", "Save Changes")}
       </Button>
     </div>
   )

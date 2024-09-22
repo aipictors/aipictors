@@ -16,6 +16,7 @@ import { createMeta } from "~/utils/create-meta"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { getJstDate } from "~/utils/jst-date"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -24,6 +25,12 @@ export function HydrateFallback() {
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
+  }
+
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
   }
 
   const workResp = await loaderClient.query({
@@ -132,8 +139,16 @@ export const meta: MetaFunction = (props) => {
   return createMeta(
     META.POSTS,
     {
-      title: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.title : work.work.title) : work.work.title}${userPart}`,
+      title: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
+      enTitle: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
       description:
+        props.params.lang === "en"
+          ? work.work.enDescription ||
+            work.work.description ||
+            "Aipictors work page"
+          : work.work.description ||
+            "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
+      enDescription:
         props.params.lang === "en"
           ? work.work.enDescription ||
             work.work.description ||

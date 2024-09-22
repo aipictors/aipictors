@@ -2,14 +2,25 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { RecommendedBanner } from "~/routes/($lang).my._index/components/recommended-banner"
 import { RecommendedListContainer } from "~/routes/($lang).my._index/components/recommended-list-container"
 import { useQuery } from "@apollo/client/index"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import { Suspense } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.MY_RECOMMENDED)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.MY_RECOMMENDED, undefined, props.params.lang)
+}
+
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
+  return {}
 }
 
 export default function MyRecommended() {

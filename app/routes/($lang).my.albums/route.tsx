@@ -5,15 +5,26 @@ import type { SortType } from "~/types/sort-type"
 import { AlbumsListContainer } from "~/routes/($lang).my._index/components/albums-list-container"
 import { AlbumsSetting } from "~/routes/($lang).my._index/components/albums-settings"
 import { useQuery } from "@apollo/client/index"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import React, { useContext } from "react"
 import { Suspense } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.MY_ALBUMS)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.MY_ALBUMS, undefined, props.params.lang)
+}
+
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
+  return {}
 }
 
 export default function MyAlbums() {

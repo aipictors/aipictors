@@ -6,28 +6,11 @@ import { graphql } from "gql.tada"
 import React from "react"
 import { Suspense, useContext } from "react"
 import { LikeListContainer } from "~/routes/($lang).my._index/components/like-list-container"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors - ダッシュボード - いいね"
-
-  const metaDescription = "ダッシュボード - いいね"
-
-  const metaImage =
-    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
-
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "robots", content: "noindex" },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.MY_LIKES, undefined, props.params.lang)
 }
 
 export default function MyLikes() {

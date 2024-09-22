@@ -21,6 +21,7 @@ import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { format } from "date-fns"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -36,10 +37,18 @@ const toEventDateTimeText = (time: number) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const event = props.params.event
 
   const urlParams = new URL(props.request.url).searchParams
+
   const pageParam = urlParams.get("page")
+
   const page = pageParam ? Number(pageParam) : 0
 
   if (event === undefined) {
@@ -91,21 +100,15 @@ export const meta: MetaFunction = ({ data }) => {
 }
 
 export default function FollowingLayout() {
+  const t = useTranslation()
+
   const data = useLoaderData<typeof loader>()
 
   const navigate = useNavigate()
 
-  // if (
-  //   !data.appEvent?.title ||
-  //   !data.appEvent?.thumbnailImageUrl ||
-  //   !data.appEvent?.tag ||
-  //   !data.appEvent?.description ||
-  //   !data.appEvent?.startAt ||
-  //   !data.appEvent?.endAt ||
-  //   !data.appEvent.worksCount
-  // ) {
-  //   return null
-  // }
+  if (data === null) {
+    return null
+  }
 
   return (
     <div className="flex flex-col space-y-4">
@@ -138,17 +141,21 @@ export default function FollowingLayout() {
               </div>
             )}
             <div className="mt-2 mr-auto text-sm">
-              応募作品数: {data.appEvent.worksCount?.toString() ?? "0"}
+              {t("応募作品数:", "Number of Submissions:")}{" "}
+              {data.appEvent.worksCount?.toString() ?? "0"}
             </div>
             <div className="mt-2 mr-auto text-sm">
-              <span>参加タグ: {data.appEvent.tag}</span>
+              <span>
+                {t("参加タグ:", "Event Tag:")} {data.appEvent.tag}
+              </span>
             </div>
             {data.appEvent.slug !== null && (
               <AppConfirmDialog
-                title={"確認"}
-                description={
-                  "センシティブ版を表示します。あなたは18歳以上ですか？"
-                }
+                title={t("確認", "Confirmation")}
+                description={t(
+                  "センシティブ版を表示します。あなたは18歳以上ですか？",
+                  "Displaying sensitive content. Are you over 18?",
+                )}
                 onNext={() => {
                   navigate(`/r/events/${data.appEvent.slug}`)
                 }}
@@ -157,7 +164,7 @@ export default function FollowingLayout() {
               >
                 <div className="mt-4 flex w-40 cursor-pointer justify-center">
                   <RefreshCcwIcon className="mr-1 w-3" />
-                  <p className="text-sm">{"対象年齢"}</p>
+                  <p className="text-sm">{t("対象年齢", "Age Restriction")}</p>
                 </div>
               </AppConfirmDialog>
             )}
@@ -171,7 +178,7 @@ export default function FollowingLayout() {
           isSensitive={false}
         />
       )}
-      <h2 className="font-bold text-md">{"作品一覧"}</h2>
+      <h2 className="font-bold text-md">{t("作品一覧", "List of Works")}</h2>
       {data.appEvent.works && (
         <EventWorkList
           works={data.appEvent.works}

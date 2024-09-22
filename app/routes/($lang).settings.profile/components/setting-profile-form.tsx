@@ -15,12 +15,14 @@ import { Suspense, useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * プロフィール設定フォーム
  */
 export function SettingProfileForm() {
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   const { data: user } = useSuspenseQuery(userQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -33,25 +35,14 @@ export function SettingProfileForm() {
   const userInfo = user?.user
 
   const [userName, setUserName] = useState(userInfo?.name ?? "")
-
   const [profile, setProfile] = useState(userInfo?.biography ?? "")
-
   const [enProfile, setEnProfile] = useState(userInfo?.enBiography ?? "")
-
   const [website, setWebsite] = useState(userInfo?.siteURL ?? "")
-
   const [instagram, setInstagram] = useState(userInfo?.instagramAccountId ?? "")
-
   const [twitter, setTwitter] = useState(userInfo?.twitterAccountId ?? "")
-
   const [github, setGithub] = useState(userInfo?.githubAccountId ?? "")
-
   const [mail, setMail] = useState(userInfo?.mailAddress ?? "")
-
   const [profileImage, setProfileImage] = useState("")
-
-  console.log("profileImage", profileImage)
-
   const [headerImage, setHeaderImage] = useState("")
 
   const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
@@ -105,7 +96,7 @@ export function SettingProfileForm() {
       },
     })
 
-    toast("プロフィールを更新しました。")
+    toast(t("プロフィールを更新しました。", "Profile updated."))
   }
 
   const profileImageSrc =
@@ -123,7 +114,7 @@ export function SettingProfileForm() {
               <img
                 className="h-auto max-h-96 w-full object-cover"
                 src={headerImageSrc}
-                alt="header"
+                alt={t("ヘッダー画像", "Header Image")}
               />
             ) : (
               <div className="h-40 w-full bg-gray-700" />
@@ -133,7 +124,7 @@ export function SettingProfileForm() {
                 <img
                   className="absolute h-32 w-32 rounded-full border-2"
                   src={profileImageSrc}
-                  alt="header"
+                  alt={t("プロフィール画像", "Profile Image")}
                 />
               ) : (
                 <div className="h-32 w-32 rounded-full border-2 bg-gray-700" />
@@ -148,7 +139,6 @@ export function SettingProfileForm() {
                 }}
                 onCropToBase64={(base64: string) => {
                   try {
-                    console.log("base64", base64)
                     setProfileImage(base64)
                   } catch (error) {
                     console.error("Error in onCropToBase64:", error)
@@ -184,7 +174,10 @@ export function SettingProfileForm() {
             </CropImageField>
           </div>
           <p className="mt-8">
-            プロフィール画像やヘッダー画像にR-18画像は掲載できません。
+            {t(
+              "プロフィール画像やヘッダー画像にR-18画像は掲載できません。",
+              "R-18 images cannot be used for profile or header images.",
+            )}
           </p>
         </div>
 
@@ -193,7 +186,7 @@ export function SettingProfileForm() {
             htmlFor="nickname"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"ニックネーム"}
+            {t("ニックネーム", "Nickname")}
           </label>
           <input
             type="text"
@@ -203,7 +196,6 @@ export function SettingProfileForm() {
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
             className="rounded-md border px-2 py-1"
-            defaultValue="Aipictors/AIイラスト投稿サイト・AI小説投稿サイト・AI絵"
           />
         </div>
         <div className="flex flex-col justify-between space-y-2">
@@ -211,7 +203,7 @@ export function SettingProfileForm() {
             htmlFor="profile"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"プロフィール"}
+            {t("プロフィール", "Profile")}
           </label>
           <AutoResizeTextarea
             id="profile"
@@ -226,7 +218,7 @@ export function SettingProfileForm() {
             htmlFor="enProfile"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"英語プロフィール"}
+            {t("英語プロフィール", "English Profile")}
           </label>
           <AutoResizeTextarea
             id="enProfile"
@@ -242,7 +234,7 @@ export function SettingProfileForm() {
             htmlFor="website"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"Webサイト"}
+            {t("Webサイト", "Website")}
           </label>
           <input
             type="text"
@@ -275,7 +267,7 @@ export function SettingProfileForm() {
             htmlFor="twitter"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"X(旧Twitter)"}
+            {t("X(旧Twitter)", "X (formerly Twitter)")}
           </label>
           <input
             type="text"
@@ -309,7 +301,7 @@ export function SettingProfileForm() {
             htmlFor="mail"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"メールアドレス"}
+            {t("メールアドレス", "Email Address")}
           </label>
           <input
             type="text"
@@ -326,7 +318,7 @@ export function SettingProfileForm() {
             htmlFor="pickup"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"ピックアップ ※最大3つ"}
+            {t("ピックアップ ※最大3つ", "Pickups (Max 3)")}
           </label>
           <Suspense fallback={<AppLoadingPage />}>
             <SelectCreatedWorksDialog
@@ -351,7 +343,10 @@ export function SettingProfileForm() {
             htmlFor="sensitive-pickup"
             className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {"センシティブピックアップ ※最大3つ"}
+            {t(
+              "センシティブピックアップ ※最大3つ",
+              "Sensitive Pickups (Max 3)",
+            )}
           </label>
           <Suspense fallback={<AppLoadingPage />}>
             <SelectCreatedWorksDialog
@@ -381,13 +376,13 @@ export function SettingProfileForm() {
           {isUpdating ? (
             <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
           ) : (
-            <p>{"更新する"}</p>
+            t("更新する", "Update")
           )}
         </Button>
         <Separator />
         <a className="m-auto block" href="settings/account/login">
           <Button className="m-auto block" variant={"secondary"}>
-            ログイン情報を変更する
+            {t("ログイン情報を変更する", "Change Login Information")}
           </Button>
         </a>
       </div>

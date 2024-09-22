@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { ApolloError, useMutation, useQuery } from "@apollo/client/index"
-import { type FragmentOf, graphql } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { type SetStateAction, useContext, useState } from "react"
 import { toast } from "sonner"
 import { Card, CardContent } from "~/components/ui/card"
@@ -11,12 +11,13 @@ import { Badge } from "~/components/ui/badge"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { Checkbox } from "~/components/ui/checkbox"
-import { uploadPublicImage } from "~/utils/upload-public-image"
 import { Loader2Icon } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Separator } from "~/components/ui/separator"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 // 日本時間 (JST) に変換するためのヘルパー関数
 const toJST = (date: Date) => {
@@ -25,6 +26,7 @@ const toJST = (date: Date) => {
 
 export function SettingAdvertisementsForm() {
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   const { data: isAdvertiser, loading: isAdvertiserLoading } = useQuery(
     viewerIsAdvertiserQuery,
@@ -107,7 +109,12 @@ export function SettingAdvertisementsForm() {
   const handleCreate = async () => {
     try {
       if (!newAdvertisement.imageUrl || !newAdvertisement.url) {
-        toast("画像URLとリンクURLは必須です")
+        toast(
+          t(
+            "画像URLとリンクURLは必須です",
+            "Image URL and Link URL are required",
+          ),
+        )
         return
       }
 
@@ -131,11 +138,10 @@ export function SettingAdvertisementsForm() {
           },
         },
       })
-      toast("広告を作成しました")
+      toast(t("広告を作成しました", "Advertisement created"))
       setViewMode("list")
       setIsEditing(false)
 
-      // データ取り直し
       refetch({
         limit: 64,
         offset: 0,
@@ -166,78 +172,24 @@ export function SettingAdvertisementsForm() {
     setViewMode("create") // 編集モードに切り替え
   }
 
-  const handleUpdate = async () => {
-    if (!editingId) {
-      return
-    }
-
-    try {
-      const selectedDate = new Date(newAdvertisement.startAt)
+  // 再フェッチで検索を実行
+  const handleSearch = () => {
+    if (date) {
+      const selectedDate = date
       const startAtJST = toJST(startOfMonth(selectedDate))
       const endAtJST = toJST(endOfMonth(selectedDate))
-
-      await updateAdvertisement({
-        variables: {
-          input: {
-            id: editingId,
-            imageUrl: newAdvertisement.imageUrl,
-            url: newAdvertisement.url,
-            displayProbability: newAdvertisement.displayProbability,
-            page: "work",
-            isSensitive: newAdvertisement.isSensitive,
-            isActive: newAdvertisement.isActive,
-            startAt: startAtJST.toISOString(),
-            endAt: endAtJST.toISOString(),
-          },
+      refetch({
+        limit: 64,
+        offset: 0,
+        where: {
+          startAtAfter: startAtJST.toISOString(),
+          endAtAfter: endAtJST.toISOString(),
+          isActive: isActive !== undefined ? isActive : undefined,
+          isSensitive:
+            isSensitiveFilter !== undefined ? isSensitiveFilter : undefined,
         },
       })
-      toast("広告を更新しました")
-      setIsEditing(false)
-      setNewAdvertisement({
-        imageUrl: "",
-        url: "",
-        displayProbability: 0,
-        isSensitive: false,
-        isActive: false,
-        startAt: "",
-        endAt: "",
-      })
-      setViewMode("list")
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        toast(error.message)
-      }
     }
-  }
-
-  const handleDelete = async (id: string) => {
-    try {
-      await deleteAdvertisement({
-        variables: {
-          input: { ids: [id] },
-        },
-      })
-      toast("広告を削除しました")
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        toast(error.message)
-      }
-    }
-  }
-
-  const handleModeSwitch = (mode: SetStateAction<string>) => {
-    setViewMode(mode)
-    setIsEditing(false)
-    setImageBase64(null)
-    setNewAdvertisement({
-      imageUrl: "",
-      url: "",
-      displayProbability: 0,
-      isSensitive: false,
-      isActive: false,
-      startAt: new Date().toISOString(),
-      endAt: new Date().toISOString(),
-    })
   }
 
   const handleImageUpload = async (
@@ -292,28 +244,78 @@ export function SettingAdvertisementsForm() {
     }
   }
 
-  // 再フェッチで検索を実行
-  const handleSearch = () => {
-    if (date) {
-      const selectedDate = date
+  const handleUpdate = async () => {
+    if (!editingId) {
+      return
+    }
+
+    try {
+      const selectedDate = new Date(newAdvertisement.startAt)
       const startAtJST = toJST(startOfMonth(selectedDate))
       const endAtJST = toJST(endOfMonth(selectedDate))
-      refetch({
-        limit: 64,
-        offset: 0,
-        where: {
-          startAtAfter: startAtJST.toISOString(),
-          endAtAfter: endAtJST.toISOString(),
-          isActive: isActive !== undefined ? isActive : undefined,
-          isSensitive:
-            isSensitiveFilter !== undefined ? isSensitiveFilter : undefined,
+
+      await updateAdvertisement({
+        variables: {
+          input: {
+            id: editingId,
+            imageUrl: newAdvertisement.imageUrl,
+            url: newAdvertisement.url,
+            displayProbability: newAdvertisement.displayProbability,
+            page: "work",
+            isSensitive: newAdvertisement.isSensitive,
+            isActive: newAdvertisement.isActive,
+            startAt: startAtJST.toISOString(),
+            endAt: endAtJST.toISOString(),
+          },
         },
       })
+      toast(t("広告を更新しました", "Advertisement updated"))
+      setIsEditing(false)
+      setNewAdvertisement({
+        imageUrl: "",
+        url: "",
+        displayProbability: 0,
+        isSensitive: false,
+        isActive: false,
+        startAt: "",
+        endAt: "",
+      })
+      setViewMode("list")
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        toast(error.message)
+      }
     }
   }
 
-  if (authContext.isLoading || isAdvertiserLoading) {
-    return <AppLoadingPage />
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteAdvertisement({
+        variables: {
+          input: { ids: [id] },
+        },
+      })
+      toast(t("広告を削除しました", "Advertisement deleted"))
+    } catch (error) {
+      if (error instanceof ApolloError) {
+        toast(error.message)
+      }
+    }
+  }
+
+  const handleModeSwitch = (mode: SetStateAction<string>) => {
+    setViewMode(mode)
+    setIsEditing(false)
+    setImageBase64(null)
+    setNewAdvertisement({
+      imageUrl: "",
+      url: "",
+      displayProbability: 0,
+      isSensitive: false,
+      isActive: false,
+      startAt: new Date().toISOString(),
+      endAt: new Date().toISOString(),
+    })
   }
 
   return (
@@ -323,19 +325,23 @@ export function SettingAdvertisementsForm() {
           disabled={viewMode === "list"}
           onClick={() => handleModeSwitch("list")}
         >
-          広告一覧
+          {t("広告一覧", "Advertisement List")}
         </Button>
         <Button onClick={() => handleModeSwitch("create")}>
-          新しい広告を作成
+          {t("新しい広告を作成", "Create New Advertisement")}
         </Button>
       </div>
       {viewMode === "list" && (
         <>
-          <h2>広告設定一覧</h2>
+          <h2>{t("広告設定一覧", "Advertisement Settings List")}</h2>
           {loading && <AppLoadingPage />}
-          {error && <p>エラーが発生しました: {error.message}</p>}
+          {error && (
+            <p>
+              {t("エラーが発生しました", "An error occurred")}: {error.message}
+            </p>
+          )}
           <div className="flex items-center space-x-2">
-            <p className="w-24">{"配信月："}</p>
+            <p className="w-24">{t("配信月", "Delivery Month")}：</p>
             <Input
               type="month"
               value={date ? format(date, "yyyy-MM") : ""}
@@ -343,13 +349,13 @@ export function SettingAdvertisementsForm() {
                 setDate(new Date(`${event.target.value}-01`))
               }}
             />
-            <Button onClick={handleSearch}>検索</Button>
+            <Button onClick={handleSearch}>{t("検索", "Search")}</Button>
           </div>
           <div className="flex flex-col space-x-2 space-y-2 md:flex-row">
             <div className="flex space-x-2">
               <div className="flex w-24 items-center space-x-2">
                 <label htmlFor="activeFilter">
-                  {"有効"}
+                  {t("有効", "Active")}
                   <Checkbox
                     id="activeFilter"
                     checked={isActive === true}
@@ -361,7 +367,7 @@ export function SettingAdvertisementsForm() {
               </div>
               <div className="flex w-40 items-center space-x-2">
                 <label htmlFor="sensitiveFilter">
-                  {"センシティブ"}
+                  {t("センシティブ", "Sensitive")}
                   <Checkbox
                     id="sensitiveFilter"
                     checked={isSensitiveFilter === true}
@@ -373,7 +379,7 @@ export function SettingAdvertisementsForm() {
               </div>
               <div className="flex w-40 items-center space-x-2">
                 <label htmlFor="ageFilter">
-                  {"全年齢"}
+                  {t("全年齢", "All Ages")}
                   <Checkbox
                     id="ageFilter"
                     checked={isSensitiveFilter === false}
@@ -392,9 +398,10 @@ export function SettingAdvertisementsForm() {
                 setIsSensitiveFilter(undefined)
               }}
             >
-              {"すべて"}
+              {t("すべて", "All")}
             </Button>
           </div>
+          {/* 広告リスト */}
           <Card className="space-y-4">
             <CardContent className="flex flex-col space-y-2 p-2">
               {filteredAdvertisements?.map(
@@ -407,7 +414,7 @@ export function SettingAdvertisementsForm() {
                       <div className="m-auto max-w-64 space-x-4 text-wrap md:flex md:max-w-full">
                         <img
                           src={advertisement.imageUrl}
-                          alt="サムネイル"
+                          alt={t("サムネイル", "Thumbnail")}
                           className="m-auto h-auto w-32"
                         />
                         <div className="flex flex-col space-y-2">
@@ -422,13 +429,16 @@ export function SettingAdvertisementsForm() {
                           >
                             {advertisement.url}
                           </Link>
-                          <p>表示優先度: {advertisement.displayProbability}</p>
                           <p>
-                            作成日:
+                            {t("表示優先度", "Display Priority")}:{" "}
+                            {advertisement.displayProbability}
+                          </p>
+                          <p>
+                            {t("作成日", "Created At")}:{" "}
                             {toDateText(advertisement.createdAt)}
                           </p>
                           <p>
-                            配信日:
+                            {t("配信日", "Start At")}:{" "}
                             {toDateText(advertisement.startAt)}
                           </p>
                           <div className="flex space-x-2">
@@ -439,7 +449,9 @@ export function SettingAdvertisementsForm() {
                               className="w-16 text-center"
                             >
                               <div className="m-auto">
-                                {advertisement.isActive ? "公開中" : "非公開"}
+                                {advertisement.isActive
+                                  ? t("公開中", "Active")
+                                  : t("非公開", "Inactive")}
                               </div>
                             </Badge>
                             <Badge
@@ -448,8 +460,8 @@ export function SettingAdvertisementsForm() {
                             >
                               <div className="m-auto">
                                 {advertisement.isSensitive
-                                  ? "センシティブ"
-                                  : "全年齢"}
+                                  ? t("センシティブ", "Sensitive")
+                                  : t("全年齢", "All Ages")}
                               </div>
                             </Badge>
                           </div>
@@ -460,16 +472,21 @@ export function SettingAdvertisementsForm() {
                           variant={"secondary"}
                           onClick={() => handleEdit(advertisement)}
                         >
-                          編集
+                          {t("編集", "Edit")}
                         </Button>
 
                         <AppConfirmDialog
-                          title={"確認"}
-                          description={"本当にこの作品を削除しますか？"}
+                          title={t("確認", "Confirm")}
+                          description={t(
+                            "本当にこの作品を削除しますか？",
+                            "Are you sure you want to delete this item?",
+                          )}
                           onNext={async () => handleDelete(advertisement.id)}
                           onCancel={() => {}}
                         >
-                          <Button variant="secondary">削除</Button>
+                          <Button variant="secondary">
+                            {t("削除", "Delete")}
+                          </Button>
                         </AppConfirmDialog>
                       </div>
                     </CardContent>
@@ -483,32 +500,40 @@ export function SettingAdvertisementsForm() {
 
       {viewMode === "create" && (
         <>
-          <h2>{isEditing ? "広告を編集" : "新しい広告を作成"}</h2>
+          <h2>
+            {isEditing
+              ? t("広告を編集", "Edit Advertisement")
+              : t("新しい広告を作成", "Create New Advertisement")}
+          </h2>
           <div className="space-y-4">
-            <p className="font-semibold text-sm">{"広告画像"}</p>
+            <p className="font-semibold text-sm">
+              {t("広告画像", "Advertisement Image")}
+            </p>
             {newAdvertisement.imageUrl && (
               <div className="bg-zinc-100 dark:bg-zinc-800">
                 <img
                   className="m-auto max-h-32"
                   src={newAdvertisement.imageUrl}
-                  alt="広告画像"
+                  alt={t("広告画像", "Advertisement Image")}
                 />
               </div>
             )}
             {imageBase64 && (
               <>
-                <p className="font-semibold text-xs">{"プレビュー"}</p>
+                <p className="font-semibold text-xs">
+                  {t("プレビュー", "Preview")}
+                </p>
                 <div className="bg-zinc-100 dark:bg-zinc-800">
                   <img
                     className="m-auto max-h-32"
                     src={imageBase64}
-                    alt="広告画像"
+                    alt={t("広告画像", "Advertisement Image")}
                   />
                 </div>
               </>
             )}
             <Input
-              placeholder="画像URL"
+              placeholder={t("画像URL", "Image URL")}
               value={newAdvertisement.imageUrl}
               onChange={(e) => {
                 setNewAdvertisement({
@@ -536,7 +561,10 @@ export function SettingAdvertisementsForm() {
               disabled={isUploading || imageBase64 !== null}
             />
             <p className="text-sm opacity-80">
-              {"※ 外部の画像URLを直接指定することも可能"}
+              {t(
+                "※ 外部の画像URLを直接指定することも可能",
+                "※ You can also specify an external image URL directly",
+              )}
             </p>
             <div className="flex items-center space-x-2">
               <input
@@ -550,7 +578,7 @@ export function SettingAdvertisementsForm() {
                 variant={"secondary"}
                 onClick={() => setImageBase64(null)}
               >
-                {"選択した画像を削除"}
+                {t("選択した画像を削除", "Remove Selected Image")}
               </Button>
             </div>
             <Button
@@ -561,12 +589,15 @@ export function SettingAdvertisementsForm() {
               {isUploading ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : (
-                <p>{"画像をアップロード"}</p>
+                <p>{t("画像をアップロード", "Upload Image")}</p>
               )}
             </Button>
             <Separator />
             <p className="font-semibold text-sm">
-              {"広告の配信期間（配信月）"}
+              {t(
+                "広告の配信期間（配信月）",
+                "Advertisement Delivery Period (Delivery Month)",
+              )}
             </p>
             <Input
               type="month"
@@ -583,10 +614,10 @@ export function SettingAdvertisementsForm() {
             />
             <Separator />
             <p className="font-semibold text-sm">
-              {"広告をクリックした際の遷移先"}
+              {t("広告をクリックした際の遷移先", "Link URL When Ad is Clicked")}
             </p>
             <Input
-              placeholder="リンクURL"
+              placeholder={t("リンクURL", "Link URL")}
               value={newAdvertisement.url}
               onChange={(e) =>
                 setNewAdvertisement({
@@ -596,7 +627,9 @@ export function SettingAdvertisementsForm() {
               }
             />
             <Separator />
-            <p className="font-semibold text-sm">{"センシティブかどうか"}</p>
+            <p className="font-semibold text-sm">
+              {t("センシティブかどうか", "Is this sensitive content?")}
+            </p>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="sensitive"
@@ -619,17 +652,18 @@ export function SettingAdvertisementsForm() {
                 htmlFor="sensitive"
                 className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                {"センシティブ"}
+                {t("センシティブ", "Sensitive")}
               </label>
             </div>
             <Separator />
             <p className="font-semibold text-sm">
-              {
-                "表示する優先度（全体の数字で均等割りして確率を算出、高いほど確率が高くなる）"
-              }
+              {t(
+                "表示する優先度（全体の数字で均等割りして確率を算出、高いほど確率が高くなる）",
+                "Display priority (higher numbers increase probability)",
+              )}
             </p>
             <Input
-              placeholder="表示優先度"
+              placeholder={t("表示優先度", "Display Priority")}
               type="number"
               max={1000}
               value={newAdvertisement.displayProbability}
@@ -642,7 +676,10 @@ export function SettingAdvertisementsForm() {
             />
             <Separator />
             <p className="font-semibold text-sm">
-              {"有効化されると表示されるようになります"}
+              {t(
+                "有効化されると表示されるようになります",
+                "Enabling this will display the ad",
+              )}
             </p>
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -666,7 +703,7 @@ export function SettingAdvertisementsForm() {
                 htmlFor="active"
                 className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
-                {"有効化"}
+                {t("有効化", "Active")}
               </label>
             </div>
             <Button
@@ -682,9 +719,9 @@ export function SettingAdvertisementsForm() {
               {isCreating || isUpdating ? (
                 <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
               ) : isEditing ? (
-                "更新"
+                t("更新", "Update")
               ) : (
-                "広告を作成"
+                t("広告を作成", "Create Advertisement")
               )}
             </Button>
           </div>

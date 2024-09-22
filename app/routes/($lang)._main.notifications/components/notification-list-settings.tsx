@@ -1,13 +1,8 @@
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "~/components/ui/select"
-import { toNotificationTypeName } from "~/routes/($lang).generation._index/utils/to-notify-type-name"
+import { useEffect } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import { Button } from "~/components/ui/button"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   notificationType: IntrospectionEnum<"NotificationType"> | null
@@ -16,51 +11,66 @@ type Props = {
   ) => void
 }
 
-/**
- * 通知履歴設定
- */
+const notificationTypes = [
+  { value: "LIKED_WORK", label: "いいね" },
+  { value: "WORK_COMMENT", label: "コメント" },
+  { value: "COMMENT_REPLY", label: "返信" },
+  { value: "FOLLOW", label: "フォロー" },
+  { value: "WORK_AWARD", label: "ランキング" },
+]
+
 export function NotificationListSetting(props: Props) {
-  const t = useTranslation()
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // URLからパラメータを取得して初期化
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const type = params.get(
+      "type",
+    ) as IntrospectionEnum<"NotificationType"> | null
+    if (type) {
+      props.setNotificationType(type)
+    }
+  }, [location.search])
+
+  // ページ切り替えハンドラー
+  const handlePageChange = (
+    type: IntrospectionEnum<"NotificationType"> | null,
+  ) => {
+    const params = new URLSearchParams(location.search)
+    if (type) {
+      params.set("type", type)
+    } else {
+      params.delete("type")
+    }
+    navigate({ search: params.toString() })
+    props.setNotificationType(type)
+  }
 
   return (
     <>
       <div className="mt-4 mb-4">
         <div className="flex space-x-4">
-          <Select
-            value={props.notificationType ? props.notificationType : ""}
-            onValueChange={(value) => {
-              if (value === "ALL") {
-                props.setNotificationType(null)
-                return
+          {notificationTypes.map((item) => (
+            <Button
+              key={item.value}
+              variant="secondary"
+              onClick={() =>
+                handlePageChange(
+                  item.value as IntrospectionEnum<"NotificationType">,
+                )
               }
-              props.setNotificationType(
-                value as IntrospectionEnum<"NotificationType">,
-              )
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue
-                placeholder={
-                  props.notificationType
-                    ? toNotificationTypeName(props.notificationType)
-                    : t("すべての通知", "All notifications")
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="LIKED_WORK">{t("いいね", "Likes")}</SelectItem>
-              <SelectItem value="WORK_COMMENT">
-                {t("コメント", "Comments")}
-              </SelectItem>
-              <SelectItem value="COMMENT_REPLY">
-                {t("返信", "Replies")}
-              </SelectItem>
-              <SelectItem value="FOLLOW">{t("フォロー", "Follows")}</SelectItem>
-              <SelectItem value="WORK_AWARD">
-                {t("ランキング", "Ranking")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+              className={cn(
+                "transition-opacity duration-300",
+                props.notificationType === item.value
+                  ? "opacity-50"
+                  : "opacity-100",
+              )}
+            >
+              {item.label}
+            </Button>
+          ))}
         </div>
       </div>
     </>

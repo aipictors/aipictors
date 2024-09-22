@@ -4,7 +4,7 @@ import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
@@ -15,9 +15,10 @@ import { createMeta } from "~/utils/create-meta"
 import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.HOME_SENSITIVE)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
 }
 
 const getUtcDateString = (date: Date) => {
@@ -28,7 +29,13 @@ const getUtcDateString = (date: Date) => {
   return `${year}/${month}/${day}`
 }
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   // 下記カテゴリからランダムに2つ選んで返す
   const categories = ["縄", "中だし"]
 
@@ -144,6 +151,10 @@ export async function loader() {
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
+
+  if (!data) {
+    return null
+  }
 
   return (
     <>

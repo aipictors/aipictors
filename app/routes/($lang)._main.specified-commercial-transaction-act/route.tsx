@@ -1,5 +1,4 @@
 import text from "~/assets/specified-commercial-transaction-act.md?raw"
-
 import { AppMarkdown } from "~/components/app/app-markdown"
 import {
   Table,
@@ -10,14 +9,28 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
+import { META } from "~/config"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return [{ title: "特定商取引法に基づく表記" }]
+export const meta: MetaFunction = (props) => {
+  return createMeta(
+    META.SPECIFIED_COMMERCIAL_TRANSACTION,
+    undefined,
+    props.params.lang,
+  )
 }
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const company = [
     {
       title: "商号",
@@ -45,18 +58,33 @@ export async function loader() {
 export default function SpecifiedCommercialTransactionActPage() {
   const data = useLoaderData<typeof loader>()
 
+  const t = useTranslation()
+
+  if (data === null) {
+    return null
+  }
+
   return (
     <>
       <article>
-        <h1 className="py-4 font-bold text-xl">{"特定商取引法に基づく表記"}</h1>
-        <h2 className="py-4 font-bold text-md">会社情報</h2>
+        <h1 className="py-4 font-bold text-xl">
+          {t(
+            "特定商取引法に基づく表記",
+            "Specified Commercial Transaction Act",
+          )}
+        </h1>
+        <h2 className="py-4 font-bold text-md">
+          {t("会社情報", "Company Information")}
+        </h2>
         <Table>
-          <TableCaption>会社情報</TableCaption>
+          <TableCaption>{t("会社情報", "Company Information")}</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[96px]">タイトル</TableHead>
-              <TableHead>Japanese</TableHead>
-              <TableHead>English</TableHead>
+              <TableHead className="w-[96px]">
+                {t("タイトル", "Title")}
+              </TableHead>
+              <TableHead>{t("Japanese", "Japanese")}</TableHead>
+              <TableHead>{t("English", "English")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -69,13 +97,24 @@ export default function SpecifiedCommercialTransactionActPage() {
             ))}
           </TableBody>
         </Table>
-        <h2 className="py-4 font-bold text-md">事業内容</h2>
-        <h3 className="py-4">コンテンツプラットフォーム</h3>
+        <h2 className="py-4 font-bold text-md">
+          {t("事業内容", "Business Description")}
+        </h2>
+        <h3 className="py-4">
+          {t("コンテンツプラットフォーム", "Content Platform")}
+        </h3>
         <p>
-          「Aipictors」 AIコンテンツに出会えるプラットフォームを提供しています。
-          新しいクリエイター、ユーザとのコミュニケーションを支えます。
+          {t(
+            "「Aipictors」 AIコンテンツに出会えるプラットフォームを提供しています。 新しいクリエイター、ユーザとのコミュニケーションを支えます。",
+            "We provide a platform where you can discover AI-generated content with Aipictors, supporting communication with new creators and users.",
+          )}
         </p>
-        <h2 className="py-4 font-bold text-md">特定商取引法に基づく表記</h2>
+        <h2 className="py-4 font-bold text-md">
+          {t(
+            "特定商取引法に基づく表記",
+            "Specified Commercial Transaction Act",
+          )}
+        </h2>
         <AppMarkdown>{data.text}</AppMarkdown>
       </article>
     </>

@@ -1,7 +1,7 @@
 import { loaderClient } from "~/lib/loader-client"
 import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
@@ -9,9 +9,10 @@ import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/ho
 import { Home2dContents } from "~/routes/($lang)._main.posts.2d/conponents/home-2d-contents"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.HOME_2D)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.HOME_2D, undefined, props.params.lang)
 }
 
 const getUtcDateString = (date: Date) => {
@@ -22,7 +23,13 @@ const getUtcDateString = (date: Date) => {
   return `${year}/${month}/${day}`
 }
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   // 下記カテゴリからランダムに2つ選んで返す
   const categories = ["おっぱい", "JK"]
 
@@ -97,6 +104,10 @@ export async function loader() {
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <>

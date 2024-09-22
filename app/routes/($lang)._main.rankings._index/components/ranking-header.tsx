@@ -13,6 +13,7 @@ import {
   CarouselPrevious,
 } from "~/components/ui/carousel"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   year: number
@@ -22,19 +23,28 @@ type Props = {
 }
 
 export function RankingHeader(props: Props) {
+  const t = useTranslation()
+
   const [year, setYear] = useState(props.year)
+
   const [month, setMonth] = useState(props.month)
+
   const [day, setDay] = useState(props.day)
+
   const [weekIndex, setWeekIndex] = useState(props.weekIndex ?? 1)
+
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
   >(props.day ? "デイリー" : props.weekIndex ? "ウィークリー" : "マンスリー")
+
   const [date, setDate] = useState("")
+
   const navigate = useNavigate()
+
   const location = useLocation()
+
   const isFirstRender = useRef(true)
 
-  // ステート変更を監視して遷移するためのuseEffectを追加
   useEffect(() => {
     if (!isFirstRender.current) {
       handleNavigate(year, month, day)
@@ -73,7 +83,7 @@ export function RankingHeader(props: Props) {
     setMonth(previousDay.getMonth() + 1)
     setDay(previousDay.getDate())
     setDate(previousDay.toISOString().split("T")[0])
-    setViewType("デイリー") // 日間に切り替え
+    setViewType("デイリー")
   }
 
   const handleViewChange = (
@@ -83,7 +93,6 @@ export function RankingHeader(props: Props) {
     if (view === "ウィークリー") {
       setWeekIndex(1)
     } else if (view === "デイリー") {
-      // 日間に切り替え時に最新の日付に移動
       const today = new Date()
       const previousDay = new Date(today)
       previousDay.setDate(today.getDate() - 1)
@@ -165,7 +174,7 @@ export function RankingHeader(props: Props) {
 
   const generateCarouselItems = () => {
     const today = new Date()
-    today.setDate(today.getDate() - 1) // ランキングは前日まで
+    today.setDate(today.getDate() - 1)
     const items: { link: string; name: string; border: boolean }[] = []
 
     if (viewType === "デイリー") {
@@ -200,10 +209,10 @@ export function RankingHeader(props: Props) {
 
     if (viewType === "ウィークリー") {
       for (let index = 0; index < 4; index++) {
-        const weekNumber = index + 1 // 1週目から4週目を順に追加
+        const weekNumber = index + 1
         items.push({
           link: `/rankings/${year}/${month}/weeks/${weekNumber}`,
-          name: `${weekNumber}週目`,
+          name: `${t(`${weekNumber}週目`, `${weekNumber}th Week`)}`,
           border: weekIndex === weekNumber,
         })
       }
@@ -219,13 +228,19 @@ export function RankingHeader(props: Props) {
   return (
     <Card className="flex flex-col items-center space-y-4 p-4">
       {viewType === "マンスリー" && (
-        <p className="text-center font-bold text-md">{"マンスリー"}</p>
+        <p className="text-center font-bold text-md">
+          {t("マンスリー", "Monthly")}
+        </p>
       )}
       {viewType === "デイリー" && (
-        <p className="text-center font-bold text-md">{"デイリー"}</p>
+        <p className="text-center font-bold text-md">
+          {t("デイリー", "Daily")}
+        </p>
       )}
       {viewType === "ウィークリー" && (
-        <p className="text-center font-bold text-md">{"ウィークリー"}</p>
+        <p className="text-center font-bold text-md">
+          {t("ウィークリー", "Weekly")}
+        </p>
       )}
 
       <p className="text-center font-bold text-md">
@@ -235,7 +250,7 @@ export function RankingHeader(props: Props) {
           : weekIndex && viewType !== "マンスリー"
             ? `${weekIndex}週目`
             : ""}
-        のランキング
+        {t("のランキング", " Rankings")}
       </p>
       <div className="flex w-full max-w-72 flex-col space-y-4 md:max-w-72">
         <div className="flex w-full justify-between space-x-1 md:space-x-4">
@@ -249,7 +264,7 @@ export function RankingHeader(props: Props) {
             }
             disabled={viewType === "マンスリー"}
           >
-            月間
+            {t("月間", "Monthly")}
           </Button>
           <Button
             variant={"secondary"}
@@ -261,7 +276,7 @@ export function RankingHeader(props: Props) {
             }
             disabled={viewType === "デイリー"}
           >
-            日間
+            {t("日間", "Daily")}
           </Button>
           <Button
             variant={"secondary"}
@@ -273,7 +288,7 @@ export function RankingHeader(props: Props) {
             }
             disabled={viewType === "ウィークリー"}
           >
-            週間
+            {t("週間", "Weekly")}
           </Button>
         </div>
       </div>
@@ -281,10 +296,10 @@ export function RankingHeader(props: Props) {
         <div className="flex items-center space-x-4">
           <Button variant={"ghost"} onClick={handlePrevious}>
             <ChevronLeftIcon />
-            前へ
+            {t("前へ", "Previous")}
           </Button>
           <Button variant={"ghost"} onClick={handleNext}>
-            次へ
+            {t("次へ", "Next")}
             <ChevronRightIcon />
           </Button>
         </div>
@@ -294,17 +309,18 @@ export function RankingHeader(props: Props) {
             value={date}
             onChange={handleDateChange}
             className="w-[200px] rounded-md border border-gray-300"
-            max={new Date().toISOString().split("T")[0]} // 今日の日付以降は選べない
+            max={new Date().toISOString().split("T")[0]}
           />
           <Button onClick={handleTodayClick} variant="outline">
-            最新
+            {t("最新", "Latest")}
           </Button>
         </div>
         <AppConfirmDialog
-          title={"確認"}
-          description={
-            "センシティブな作品を表示します、あなたは18歳以上ですか？"
-          }
+          title={t("確認", "Confirmation")}
+          description={t(
+            "センシティブな作品を表示します、あなたは18歳以上ですか？",
+            "This content contains sensitive material. Are you over 18?",
+          )}
           onNext={() => {
             navigate("/r/rankings")
           }}
@@ -313,7 +329,7 @@ export function RankingHeader(props: Props) {
         >
           <Button className="w-full" variant={"secondary"}>
             <RefreshCcwIcon className="mr-2 w-4" />
-            {"対象年齢"}
+            {t("対象年齢", "Age Restricted")}
           </Button>
         </AppConfirmDialog>
       </div>
@@ -329,7 +345,7 @@ export function RankingHeader(props: Props) {
                   key={index.toString()}
                   link={item.link}
                   name={item.name}
-                  border={item.border} // 選択したタグにボーダーを追加
+                  border={item.border}
                 />
               </CarouselItem>
             ))}
