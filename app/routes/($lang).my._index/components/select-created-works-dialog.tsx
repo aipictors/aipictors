@@ -1,21 +1,21 @@
-import { useContext, useState, useEffect } from "react"
+import { useContext, useState } from "react"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
-import { useQuery } from "@apollo/client/index"
+import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { ImageIcon, CheckIcon, PlusIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import type React from "react"
+import React from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toast } from "sonner"
-import { useTranslation } from "~/hooks/use-translation"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
 
 type Props = {
   children?: React.ReactNode
-  selectedWorkIds: string[]
-  setSelectedWorkIds: (workIds: string[]) => void
+  selectedWorks: FragmentOf<typeof DialogWorkFragment>[]
+  setSelectedWorks: (works: FragmentOf<typeof DialogWorkFragment>[]) => void
   limit?: number
   isSensitive?: boolean
 }
@@ -24,19 +24,17 @@ type Props = {
  * 作成済みの作品選択ダイアログ
  */
 export function SelectCreatedWorksDialog(props: Props) {
-  const t = useTranslation() // 翻訳フックを使用
+  const t = useTranslation()
+
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [page, setPage] = useState(0)
-  const [selectedPage, setSelectedPage] = useState(0)
+
+  const [page, setPage] = React.useState(0)
+
   const [tab, setTab] = useState<"NO_SELECTED" | "SELECTED">("NO_SELECTED")
 
-  const [selectedWorksOnMemory, setSelectedWorksOnMemory] = useState<
-    FragmentOf<typeof DialogWorkFragment>[]
-  >([])
-
-  const worksResult = useQuery(worksQuery, {
+  const worksResult = useSuspenseQuery(worksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: page * 32,
@@ -50,7 +48,7 @@ export function SelectCreatedWorksDialog(props: Props) {
     },
   })
 
-  const worksCountResp = useQuery(worksCountQuery, {
+  const worksCountResp = useSuspenseQuery(worksCountQuery, {
     skip: appContext.isLoading,
     variables: {
       where: {
@@ -60,15 +58,6 @@ export function SelectCreatedWorksDialog(props: Props) {
     },
   })
 
-  useEffect(() => {
-    if (worksResult.data?.works) {
-      const selectedWorks = worksResult.data.works.filter((work) =>
-        props.selectedWorkIds.includes(work.id),
-      )
-      setSelectedWorksOnMemory(selectedWorks)
-    }
-  }, [props.selectedWorkIds, worksResult.data])
-
   const works = worksResult.data?.works
   const worksMaxCount = worksCountResp.data?.worksCount ?? 0
 
@@ -77,17 +66,13 @@ export function SelectCreatedWorksDialog(props: Props) {
   }
 
   const handleWorkClick = (work: FragmentOf<typeof DialogWorkFragment>) => {
-    if (selectedWorksOnMemory.some((w) => w.id === work.id)) {
-      props.setSelectedWorkIds(
-        props.selectedWorkIds.filter((w) => w !== work.id),
-      )
-      setSelectedWorksOnMemory(
-        selectedWorksOnMemory.filter((w) => w.id !== work.id),
+    if (props.selectedWorks.some((w) => w.id === work.id)) {
+      props.setSelectedWorks(
+        props.selectedWorks.filter((w) => w.id !== work.id),
       )
     } else {
-      if (!props.limit || selectedWorksOnMemory.length < props.limit) {
-        props.setSelectedWorkIds([...props.selectedWorkIds, work.id])
-        setSelectedWorksOnMemory([...selectedWorksOnMemory, work])
+      if (!props.limit || props.selectedWorks.length < props.limit) {
+        props.setSelectedWorks([...props.selectedWorks, work])
       } else {
         toast(
           t(
@@ -117,7 +102,7 @@ export function SelectCreatedWorksDialog(props: Props) {
           <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
             {truncateTitle(work.title, 8)}
           </div>
-          {selectedWorksOnMemory.some((w) => w.id === work.id) && (
+          {props.selectedWorks.some((w) => w.id === work.id) && (
             <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
               <CheckIcon className="p-1 text-white dark:text-black" />
             </div>
@@ -140,21 +125,21 @@ export function SelectCreatedWorksDialog(props: Props) {
 
   return (
     <>
-      {selectedWorksOnMemory.length > 7 && (
+      {props.selectedWorks.length > 7 && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <p
           onClick={() => setIsOpen(true)}
           className="m-2 cursor-pointer text-right text-sm opacity-80"
         >
           {t(
-            `すべて見る(${props.selectedWorkIds.length})`,
-            `View All (${props.selectedWorkIds.length})`,
+            `すべて見る(${props.selectedWorks.length})`,
+            `View All (${props.selectedWorks.length})`,
           )}
         </p>
       )}
 
       <div className="flex flex-wrap items-center">
-        {selectedWorksOnMemory.slice(0, 3).map((work) => (
+        {props.selectedWorks.slice(0, 7).map((work) => (
           <div key={work.id} className="relative m-2 h-16 w-16 md:h-24 md:w-24">
             <img
               className="h-16 w-16 rounded-md object-cover md:h-24 md:w-24"
@@ -217,7 +202,7 @@ export function SelectCreatedWorksDialog(props: Props) {
               )}
               {tab === "SELECTED" && (
                 <div className="flex flex-wrap">
-                  {renderWorks(selectedWorksOnMemory)}
+                  {renderWorks(props.selectedWorks)}
                 </div>
               )}
             </ScrollArea>
@@ -227,14 +212,6 @@ export function SelectCreatedWorksDialog(props: Props) {
                 maxCount={worksMaxCount}
                 currentPage={page}
                 onPageChange={(page: number) => setPage(page)}
-              />
-            )}
-            {tab === "SELECTED" && (
-              <ResponsivePagination
-                perPage={32}
-                maxCount={props.selectedWorkIds.length}
-                currentPage={selectedPage}
-                onPageChange={(page: number) => setSelectedPage(page)}
               />
             )}
           </>
