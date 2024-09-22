@@ -1,10 +1,5 @@
 import { loaderClient } from "~/lib/loader-client"
-import {
-  json,
-  type MetaFunction,
-  useLoaderData,
-  useSearchParams,
-} from "@remix-run/react"
+import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { META } from "~/config"
@@ -15,17 +10,17 @@ import {} from "~/components/ui/tabs"
 import {} from "~/components/ui/card"
 import {} from "~/components/ui/carousel"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
-const useUpdateQueryParams = () => {
-  const updateQueryParams = (newParams: URLSearchParams) => {
-    const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
   }
-  return updateQueryParams
-}
 
-export async function loader({ request }: { request: Request }) {
-  const url = new URL(request.url)
+  const url = new URL(props.request.url)
 
   const page = url.searchParams.get("page")
     ? Number.parseInt(url.searchParams.get("page") as string) > 100
@@ -159,9 +154,9 @@ export const meta: MetaFunction = (props) => {
 export default function Themes() {
   const data = useLoaderData<typeof loader>()
 
-  const [searchParams] = useSearchParams()
-
-  const updateQueryParams = useUpdateQueryParams()
+  if (data === null) {
+    return null
+  }
 
   return (
     <>

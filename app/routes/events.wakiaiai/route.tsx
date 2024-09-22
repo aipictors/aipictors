@@ -4,13 +4,17 @@ import { cn } from "~/lib/utils"
 import { eventUsers } from "~/routes/events.wakiaiai/assets/event-users"
 import { EventWakiaiaiCreatorCard } from "~/routes/events.wakiaiai/components/event-wakiaiai-creator-card"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 import { EventWakiaiaiFooter } from "~/routes/events.wakiaiai/components/event-wakiaiai-footer"
 import { EventWakiaiaiHeader } from "~/routes/events.wakiaiai/components/event-wakiaiai-header"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { useTranslation } from "~/hooks/use-translation"
 
 export default function Route() {
+  const t = useTranslation()
+
   const length = Math.floor(eventUsers.length / 3)
 
   const aUsers = eventUsers.filter((_, index) => {
@@ -27,12 +31,12 @@ export default function Route() {
 
   return (
     <>
-      <EventWakiaiaiHeader title="和気あいAI" />
+      <EventWakiaiaiHeader title={t("和気あいAI", "Wakiaiai")} />
       <main className="container-shadcn-ui space-y-2">
         <div className="flex flex-col items-center md:flex-row">
           <div className="flex flex-grow-3">
             <EventWakiaiaiImage
-              alt={"和気あいAI"}
+              alt={t("和気あいAI", "Wakiaiai")}
               imageURL={
                 "https://files.aipictors.com/e9ce2430-d643-4f76-b726-c67cab9ef4eb"
               }
@@ -46,13 +50,14 @@ export default function Route() {
                 {"2023年9月30日"}
               </h2>
               <h1 className={"font-bold text-4xl text-blue-300"}>
-                {"和気あいAI"}
+                {t("和気あいAI", "Wakiaiai")}
               </h1>
             </div>
             <p className="leading-relaxed">
-              {
-                "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会"
-              }
+              {t(
+                "東海地方で初かもしれない、生成AIを利用したイラストの展示やグッズ等の展示即売会",
+                "Possibly the first event in the Tokai region, featuring exhibitions and sales of AI-generated illustrations and goods.",
+              )}
             </p>
             <Link
               to="/events/wakiaiai2"
@@ -60,7 +65,7 @@ export default function Route() {
               rel="noopener noreferrer"
             >
               <Button variant={"outline"} className="m-4 font-bold text-lg">
-                和気あいAI2開催決定
+                {t("和気あいAI2開催決定", "Wakiaiai 2 Confirmed")}
                 <MousePointerClickIcon className="ml-2" />
               </Button>
             </Link>
@@ -69,35 +74,49 @@ export default function Route() {
         <div className={cn("grid gap-2 md:grid-flow-col md:grid-cols-2")}>
           <Card>
             <CardHeader>
-              <CardTitle>{"9月30日（土） 10時〜16時"}</CardTitle>
+              <CardTitle>
+                {t(
+                  "9月30日（土） 10時〜16時",
+                  "September 30 (Sat) 10:00-16:00",
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p>
-                {
-                  "一般参加は無料！本イベントは、主に画像生成AIを利用したイラストの展示及び即売会となります。本イベントにおけるデモンストレーションや展示を通じて、AIを利用した創作の楽しさ、利便性、注意すべき点などをAI利用者、一般参加者ともに周知することを考え、企画致しました。"
-                }
+                {t(
+                  "一般参加は無料！本イベントは、主に画像生成AIを利用したイラストの展示及び即売会となります。本イベントにおけるデモンストレーションや展示を通じて、AIを利用した創作の楽しさ、利便性、注意すべき点などをAI利用者、一般参加者ともに周知することを考え、企画致しました。",
+                  "Admission is free! This event primarily showcases illustrations generated using AI, with sales as well. Through demonstrations and exhibitions, we aim to share the joy, convenience, and important considerations of AI-based creativity with AI users and the general public.",
+                )}
               </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>{"名古屋鉄道太田川駅から1分"}</CardTitle>
+              <CardTitle>
+                {t(
+                  "名古屋鉄道太田川駅から1分",
+                  "1 minute from Otagawa Station (Meitetsu Nagoya Line)",
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p>
-                {
-                  "お車でお越しの際は、東海市芸術劇場併設の駐車場又は近隣商業施設の駐車場をご利用ください。"
-                }
+                {t(
+                  "お車でお越しの際は、東海市芸術劇場併設の駐車場又は近隣商業施設の駐車場をご利用ください。",
+                  "If arriving by car, please use the parking at Tokai City Arts Theatre or nearby shopping facilities.",
+                )}
               </p>
               <p>
-                {
-                  "即売会：太田川駅西広場 大屋根広場（愛知県東海市大田町下浜田）"
-                }
+                {t(
+                  "即売会：太田川駅西広場 大屋根広場（愛知県東海市大田町下浜田）",
+                  "Sales event: Otagawa Station West Plaza, Large Roof Plaza (Ota Town, Tokai City, Aichi Prefecture)",
+                )}
               </p>
               <p>
-                {
-                  "展示：東海市芸術劇場 4階ギャラリー（愛知県東海市大田町下浜田137）"
-                }
+                {t(
+                  "展示：東海市芸術劇場 4階ギャラリー（愛知県東海市大田町下浜田137）",
+                  "Exhibition: 4th Floor Gallery, Tokai City Arts Theatre (137 Ota Town, Tokai City, Aichi Prefecture)",
+                )}
               </p>
             </CardContent>
           </Card>
@@ -119,7 +138,7 @@ export default function Route() {
           ))}
         </div>
         <EventWakiaiaiImage
-          alt={"和気あいAI"}
+          alt={t("和気あいAI", "Wakiaiai")}
           imageURL={
             "https://files.aipictors.com/652f3da0-5bfd-492d-b11b-07d5c62e26ee"
           }
@@ -149,19 +168,23 @@ export default function Route() {
         <Card>
           <CardHeader>
             <CardTitle>
-              {"クラウドファンディング応援スポンサーさま✨"}
+              {t(
+                "クラウドファンディング応援スポンサーさま✨",
+                "Crowdfunding Supporters✨",
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p>
-              {
-                "AI TEC AI PICTURES様、erot様、haru@t2i(@3724_haru)様、KAMO@AI様、KarmaNeko様、nawashi様、Ozmo/AIart様、roiyaruRIZ様、sk panda様、STIS様、うほうほめもたろう様、える様、がーすー様、かけうどん様、かすみ様、さとー様、せぴぃ様、のとろ様、ミカエル翔@ShoSecAI様、花笠万夜様、街のパン屋さん様、甘党坊主様、京すけ様、呉春華様、今日桔梗様、沙乱・さみだれNFT様、神音様、猫黒夏躯様、白うさ王国観光課様、緋鏡悠様、碧燕工房様"
-              }
+              {t(
+                "AI TEC AI PICTURES様、erot様、haru@t2i(@3724_haru)様、KAMO@AI様、KarmaNeko様、nawashi様、Ozmo/AIart様、roiyaruRIZ様、sk panda様、STIS様、うほうほめもたろう様、える様、がーすー様、かけうどん様、かすみ様、さとー様、せぴぃ様、のとろ様、ミカエル翔@ShoSecAI様、花笠万夜様、街のパン屋さん様、甘党坊主様、京すけ様、呉春華様、今日桔梗様、沙乱・さみだれNFT様、神音様、猫黒夏躯様、白うさ王国観光課様、緋鏡悠様、碧燕工房様",
+                "AI TEC AI PICTURES, erot, haru@t2i(@3724_haru), KAMO@AI, KarmaNeko, nawashi, Ozmo/AIart, roiyaruRIZ, sk panda, STIS, Uhuhomemotaro, El, Garsuu, Kakeudon, Kasumi, Sato, Sepii, Notoro, Michael Sho@ShoSecAI, Manya Hanagasa, Town Bakery, Sweet Monk, Kyousuke, Kure Haruka, Kyou Kikyō, Saran・SamidareNFT, Kamine, Nekokuro Natsu, Shiro Usagi Kingdom Tourism, Hikagami Yuu, Hekien Koubou.",
+              )}
             </p>
           </CardContent>
         </Card>
         <EventWakiaiaiImage
-          alt={"和気あいAI"}
+          alt={t("和気あいAI", "Wakiaiai")}
           imageURL={
             "https://files.aipictors.com/e9ce2430-d643-4f76-b726-c67cab9ef4eb"
           }
@@ -174,7 +197,19 @@ export default function Route() {
   )
 }
 
-export const meta: MetaFunction = () => {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
+  return {}
+}
+
+export const meta: MetaFunction = (props) => {
+  const lang = props.params.lang
+
   return [
     { title: "和気あいAI - 愛知県AIイラスト展示即売会" },
     {

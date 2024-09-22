@@ -4,6 +4,7 @@ import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   targetWorkId: string
@@ -35,13 +36,19 @@ export function WorkEditorButton(props: Props) {
     return "/"
   }
 
+  const t = useTranslation()
+
   return (
     <div className="flex justify-end">
       <div className="flex space-x-2">
         <Link to={editUrl(props.targetWorkId, props.type)}>
-          <Button className="space-x-2" aria-label={"編集"} variant="secondary">
+          <Button
+            className="space-x-2"
+            aria-label={t("編集", "Edit")}
+            variant="secondary"
+          >
             <PencilIcon width={16} />
-            <p>編集</p>
+            <p>{t("編集", "Edit")}</p>
           </Button>
         </Link>
       </div>

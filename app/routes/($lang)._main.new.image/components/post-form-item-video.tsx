@@ -3,6 +3,7 @@ import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-ite
 import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   videoFile: File | null
@@ -20,6 +21,8 @@ type Props = {
  * @returns
  */
 export function PostFormItemVideo(props: Props) {
+  const t = useTranslation()
+
   // ファイルの最大サイズ(バイト単位)
   const maxSize = 32 * 1024 * 1024
 
@@ -31,11 +34,9 @@ export function PostFormItemVideo(props: Props) {
    * @param webpDataURL
    */
   const updateThumbnail = (webpDataURL: string | null = null) => {
-    // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
     if (props.setThumbnailBase64) {
       props.setThumbnailBase64(webpDataURL ? webpDataURL : "")
     }
-    // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
     if (props.setOgpBase64) {
       props.setOgpBase64("")
     }
@@ -66,11 +67,14 @@ export function PostFormItemVideo(props: Props) {
     onDrop: (acceptedFiles) => {
       // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
-        // 動画が選択された場合は画像一覧をリセットして、動画をセットする
         if (file.type === "video/mp4") {
-          // サイズと再生時間のチェック
           if (file.size > 32 * 1024 * 1024) {
-            toast("動画のサイズは32MB以下にしてください")
+            toast(
+              t(
+                "動画のサイズは32MB以下にしてください",
+                "Video size should be under 32MB",
+              ),
+            )
             return
           }
           const video = document.createElement("video")
@@ -78,20 +82,22 @@ export function PostFormItemVideo(props: Props) {
           video.src = URL.createObjectURL(file)
           video.onloadedmetadata = () => {
             if (video.duration > 12) {
-              toast("動画は12秒以下にしてください")
+              toast(
+                t(
+                  "動画は12秒以下にしてください",
+                  "Video length should be under 12 seconds",
+                ),
+              )
               return
             }
 
-            // 動画をセット
             props.onVideoChange(file)
 
-            // 動画のサムネイルを生成するためのCanvasを作成
             const canvas = document.createElement("canvas")
             canvas.width = video.videoWidth
             canvas.height = video.videoHeight
             const ctx = canvas.getContext("2d")
 
-            // タイムラインで指定できるライブラリを使ってサムネイルを取得
             const time = video.duration / 2
             video.currentTime = time
             video.onseeked = () => {
@@ -103,7 +109,6 @@ export function PostFormItemVideo(props: Props) {
           }
         }
       })
-      // ここで input の id が image_inputの要素に file をセットする
       const inputElement = document.getElementById(
         "video_input",
       ) as HTMLInputElement
@@ -158,11 +163,13 @@ export function PostFormItemVideo(props: Props) {
                 }
               }}
             >
-              <p className="font-bold">動画を選択</p>
+              <p className="font-bold">{t("動画を選択", "Select Video")}</p>
             </div>
             <div className="m-4 flex flex-col text-white">
               <p className="text-center text-sm">{"MP4"}</p>
-              <p className="text-center text-sm">{"12秒まで"}</p>
+              <p className="text-center text-sm">
+                {t("12秒まで", "Up to 12 seconds")}
+              </p>
             </div>
           </>
         )}

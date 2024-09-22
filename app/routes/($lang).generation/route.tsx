@@ -1,7 +1,7 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { loaderClient } from "~/lib/loader-client"
-import { config } from "~/config"
+import { config, META } from "~/config"
 import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
 import { GenerationConfigProvider } from "~/routes/($lang).generation._index/components/generation-config-provider"
 import {
@@ -13,27 +13,10 @@ import type { MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, json, useLoaderData } from "@remix-run/react"
 import { Suspense, useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  const metaTitle = "無料AIイラスト生成 - スマホ対応"
-
-  const metaDescription =
-    "無料で画像生成することができます。1日無料10枚でたくさん生成できます。LoRA、ControlNetにも対応、多数のモデルからお気に入りのイラストを生成できます。生成した画像はすぐに投稿したり、自由に利用したりすることができます。"
-
-  const metaImage = `${config.siteURL}/opengraph-image.jpg`
-
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.GENERATION, undefined, props.params.lang)
 }
 
 export async function loader() {

@@ -4,6 +4,7 @@ import { ExpansionTransition } from "~/components/expansion-transition"
 import { Button } from "~/components/ui/button"
 import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
 import { PostFormItemTitle } from "~/routes/($lang)._main.new.image/components/post-form-item-title"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onChangeTitle: (title: string) => void
@@ -18,6 +19,7 @@ type Props = {
  * 公開モード入力
  */
 export function PostFormItemEnglish(props: Props) {
+  const t = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
   const [enTitle, setEnTitle] = useState(props.enTitle || "")
   const [enCaption, setEnCaption] = useState(props.enCaption || "")
@@ -60,8 +62,9 @@ export function PostFormItemEnglish(props: Props) {
         <ExpansionTransition
           triggerChildren={
             <Button variant={"secondary"} className="w-full">
-              {"英語バージョン"}
-              {isExpanded ? "を閉じる" : "を編集する"}
+              {isExpanded
+                ? t("英語バージョンを閉じる", "Close English Version")
+                : t("英語バージョンを編集する", "Edit English Version")}
             </Button>
           }
           onExpandChange={setIsExpanded}
@@ -73,10 +76,12 @@ export function PostFormItemEnglish(props: Props) {
               onClick={handleTranslate}
               disabled={isTranslating}
             >
-              {isTranslating ? "翻訳中..." : "日本語翻訳"}
+              {isTranslating
+                ? t("翻訳中...", "Translating...")
+                : t("日本語翻訳", "Translate to English")}
             </Button>
             <PostFormItemTitle
-              label={"タイトル"}
+              label={t("タイトル", "Title")}
               onChange={(value) => {
                 setEnTitle(value)
                 props.onChangeTitle(value)
@@ -84,7 +89,7 @@ export function PostFormItemEnglish(props: Props) {
               value={enTitle}
             />
             <PostFormItemCaption
-              label={"キャプション"}
+              label={t("キャプション", "Caption")}
               setCaption={(value) => {
                 setEnCaption(value)
                 props.onChangeCaption(value)

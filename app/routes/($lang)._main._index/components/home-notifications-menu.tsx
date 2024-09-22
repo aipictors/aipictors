@@ -31,6 +31,7 @@ import {
 } from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { WorkCommentNotificationFragment } from "~/routes/($lang)._main._index/components/home-notifications-content-commented-item"
 import { useQuery } from "@apollo/client/index"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isExistedNewNotification: boolean
@@ -166,6 +167,8 @@ export function HomeNotificationsMenu(props: Props) {
     ? isNewNotification("message", messageNotification.createdAt)
     : false
 
+  const t = useTranslation()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -262,7 +265,7 @@ export function HomeNotificationsMenu(props: Props) {
         </div>
         {/* フッター部分 */}
         <div className="border-t pt-2 pb-2 pl-4">
-          <Link to="/notifications">通知履歴</Link>
+          <Link to="/notifications">{t("通知履歴", "History")}</Link>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

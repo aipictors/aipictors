@@ -26,10 +26,12 @@ export function createMeta(
       ? replacePlaceholders(
           metaEnTitle && metaEnTitle?.length > 0
             ? `${metaEnTitle} - ${metadata.nameEN} - ${metadata.catchphraseEN}`
-            : metadata.titleEN,
+            : metaTitle && metaTitle?.length > 0
+              ? `${metaTitle} - ${metadata.nameEN} - ${metadata.catchphraseEN}`
+              : metadata.titleEN,
         )
       : replacePlaceholders(
-          metaTitle
+          metaTitle && metaTitle?.length > 0
             ? `${metaTitle} - ${metadata.nameJA} - ${metadata.catchphraseJA}`
             : metadata.titleJA,
         )

@@ -1,22 +1,19 @@
 import { json } from "@remix-run/react"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 import { SettingsCompleted } from "~/routes/($lang)._main.settings.completed._index/components/settings-completed"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 /**
  * 設定完了ページ
  */
-export async function loader() {
-  // const client = createClient()
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
 
-  // const resp = await loaderClient.query({
-  //   query: imageModelsQuery,
-  //   variables: {
-  //     limit: 64,
-  //     offset: 0,
-  //   },
-  // })
+  if (redirectResponse) {
+    return redirectResponse
+  }
 
   return json({})
 }
@@ -26,5 +23,9 @@ export const meta: MetaFunction = (props) => {
 }
 
 export default function NewSettingsPage() {
-  return <SettingsCompleted />
+  return (
+    <>
+      <SettingsCompleted />
+    </>
+  )
 }

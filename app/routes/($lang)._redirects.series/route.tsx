@@ -1,7 +1,7 @@
 import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
-import { AlbumArticleHeaderFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-header"
+import { AlbumArticleHeaderFragment } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-article-header"
 
 /**
  * https://www.aipictors.com/series/?user=${userId}&id=${id}

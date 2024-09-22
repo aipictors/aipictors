@@ -5,28 +5,31 @@ import {
   SmileIcon,
   UserIcon,
 } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 export function AccountRouteList() {
+  const t = useTranslation()
+
   return (
     <div className="space-y-1">
       <HomeNavigationButton href={"/"} icon={ArrowLeftIcon}>
-        {"もどる"}
+        {t("もどる", "Back")}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/settings/account/login"} icon={SmileIcon}>
-        {"ユーザID"}
+        {t("ユーザID", "User ID")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={"settings/account/password"}
         icon={LockKeyholeIcon}
       >
-        {"パスワード"}
+        {t("パスワード", "Password")}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={true}
         href={"/account/profile"}
         icon={UserIcon}
       >
-        {"プロフィール"}
+        {t("プロフィール", "Profile")}
       </HomeNavigationButton>
     </div>
   )

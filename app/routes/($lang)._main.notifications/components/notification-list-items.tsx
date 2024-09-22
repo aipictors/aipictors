@@ -47,7 +47,7 @@ export function NotificationListItems(props: Props) {
   const notifications = result.data?.viewer?.notifications ?? []
 
   return (
-    <div className="space-y-2 overflow-hidden p-2">
+    <div className="overflow-hidden">
       {notifications.map((notification) => {
         if (
           props.type === "WORK_COMMENT" &&

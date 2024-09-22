@@ -1,5 +1,6 @@
 import { RoundedLightButton } from "~/components/button/rounded-light-button"
 import type { WorkTabType } from "~/routes/($lang).my._index/types/work-tab-type"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   workTabType: WorkTabType | null
@@ -12,6 +13,8 @@ type Props = {
  * 作品一覧カテゴリ切替
  */
 export function WorksSettingContents(props: Props) {
+  const t = useTranslation()
+
   return (
     <>
       <div className="flex space-x-2">
@@ -21,7 +24,7 @@ export function WorksSettingContents(props: Props) {
           }}
           isActive={props.workTabType === "WORK"}
         >
-          {"作品"}
+          {t("作品", "Works")}
           <div className="m-2 min-w-8 rounded-full bg-zinc-400 pr-1 pl-1 text-white dark:bg-zinc-600">
             {props.sumWorksCount}
           </div>
@@ -32,7 +35,7 @@ export function WorksSettingContents(props: Props) {
           }}
           isActive={props.workTabType === "ALBUM"}
         >
-          {"シリーズ"}
+          {t("シリーズ", "Series")}
           <div className="m-2 min-w-8 rounded-full bg-zinc-400 pr-1 pl-1 text-white dark:bg-zinc-600">
             {props.sumAlbumsCount}
           </div>

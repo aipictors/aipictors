@@ -30,7 +30,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
   const [reply] = props.notification.myReplies ?? []
 
   return (
-    <div className="flex flex-col border-b">
+    <div className="flex flex-col space-y-2 border-b p-2">
       <Link
         to={`/posts/${props.notification.work?.id}`}
         className="flex items-center rounded-md p-2 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"

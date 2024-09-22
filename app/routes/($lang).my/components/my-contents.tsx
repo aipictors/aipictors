@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "@remix-run/react"
 import React from "react"
 import { Button } from "~/components/ui/button"
 import { cn } from "~/lib/utils"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = Readonly<{
   outlet: React.ReactNode
@@ -16,6 +17,7 @@ type Props = Readonly<{
 export function MyContents(props: Props) {
   const authContext = useContext(AuthContext)
   const location = useLocation()
+  const t = useTranslation()
 
   const type = (path: string) => {
     if (path.includes("posts")) {
@@ -84,7 +86,7 @@ export function MyContents(props: Props) {
                 className="w-full"
                 value="HOME"
               >
-                {"ホーム"}
+                {t("ホーム", "Home")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -94,7 +96,7 @@ export function MyContents(props: Props) {
                 className="w-full"
                 value="POSTS"
               >
-                {"作品"}
+                {t("作品", "Posts")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -104,7 +106,7 @@ export function MyContents(props: Props) {
                 className="w-full"
                 value="ALBUMS"
               >
-                {"シリーズ"}
+                {t("シリーズ", "Albums")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -114,7 +116,7 @@ export function MyContents(props: Props) {
                 className="w-full"
                 value="RECOMMENDED"
               >
-                {"推薦"}
+                {t("推薦", "Recommended")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -124,7 +126,7 @@ export function MyContents(props: Props) {
                 className="w-full"
                 value="BOOKMARKS"
               >
-                {"ブックマーク"}
+                {t("ブックマーク", "Bookmarks")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -134,7 +136,7 @@ export function MyContents(props: Props) {
                 className="w-full"
                 value="LIKES"
               >
-                {"いいね"}
+                {t("いいね", "Likes")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -144,7 +146,7 @@ export function MyContents(props: Props) {
                 className="w-full"
                 value="VIEWS"
               >
-                {"閲覧履歴"}
+                {t("閲覧履歴", "Views")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -154,7 +156,7 @@ export function MyContents(props: Props) {
                 className="w-full"
                 value="REPORTS"
               >
-                {"運営からのお知らせ"}
+                {t("運営からのお知らせ", "Reports")}
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -172,7 +174,7 @@ export function MyContents(props: Props) {
                 myContentType === "HOME" && "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"ホーム"}
+              {t("ホーム", "Home")}
             </Button>
             <Button
               onClick={() => {
@@ -185,7 +187,7 @@ export function MyContents(props: Props) {
                 myContentType === "POSTS" && "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"作品"}
+              {t("作品", "Posts")}
             </Button>
             <Button
               onClick={() => {
@@ -198,7 +200,7 @@ export function MyContents(props: Props) {
                 myContentType === "ALBUMS" && "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"シリーズ"}
+              {t("シリーズ", "Albums")}
             </Button>
             <Button
               onClick={() => {
@@ -212,7 +214,7 @@ export function MyContents(props: Props) {
                   "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"推薦"}
+              {t("推薦", "Recommended")}
             </Button>
             <Button
               onClick={() => {
@@ -225,7 +227,7 @@ export function MyContents(props: Props) {
                 myContentType === "BOOKMARKS" && "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"ブックマーク"}
+              {t("ブックマーク", "Bookmarks")}
             </Button>
             <Button
               onClick={() => {
@@ -238,7 +240,7 @@ export function MyContents(props: Props) {
                 myContentType === "LIKES" && "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"いいね"}
+              {t("いいね", "Likes")}
             </Button>
             <Button
               onClick={() => {
@@ -251,7 +253,7 @@ export function MyContents(props: Props) {
                 myContentType === "VIEWS" && "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"閲覧履歴"}
+              {t("閲覧履歴", "Views")}
             </Button>
             <Button
               onClick={() => {
@@ -264,7 +266,7 @@ export function MyContents(props: Props) {
                 myContentType === "REPORTS" && "bg-gray-200 dark:bg-zinc-900",
               )}
             >
-              {"運営お知らせ"}
+              {t("運営お知らせ", "Reports")}
             </Button>
           </div>
         </div>

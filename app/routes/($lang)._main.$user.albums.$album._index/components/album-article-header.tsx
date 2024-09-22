@@ -5,7 +5,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import {
   AlbumArticleEditorDialog,
   AlbumArticleEditorDialogFragment,
-} from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
+} from "~/routes/($lang)._main.$user.albums.$album._index/components/album-article-editor-dialog"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"

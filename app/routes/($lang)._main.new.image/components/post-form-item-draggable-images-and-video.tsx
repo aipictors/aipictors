@@ -11,6 +11,7 @@ import { PencilLineIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   indexList: number[]
@@ -36,6 +37,8 @@ type Props = {
  * @returns
  */
 export function PostFormItemDraggableImagesAndVideo(props: Props) {
+  const t = useTranslation()
+
   // 先頭の画像
   const [nowHeadImageBase64, setNowHeadImageBase64] = useState("")
 
@@ -132,17 +135,25 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
       }
 
       if (props.maxItemsCount && props.maxItemsCount < acceptedFiles.length) {
-        toast(`最大${props.maxItemsCount}までです`)
+        toast(
+          t(
+            `最大${props.maxItemsCount}までです`,
+            `Up to ${props.maxItemsCount} items allowed`,
+          ),
+        )
         return
       }
 
       // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
-        // 動画が選択された場合は画像一覧をリセットして、動画をセットする
         if (file.type === "video/mp4") {
-          // サイズと再生時間のチェック
           if (file.size > 32 * 1024 * 1024) {
-            toast("動画のサイズは32MB以下にしてください")
+            toast(
+              t(
+                "動画のサイズは32MB以下にしてください",
+                "Video size should be under 32MB",
+              ),
+            )
             return
           }
           const video = document.createElement("video")
@@ -150,29 +161,30 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
           video.src = URL.createObjectURL(file)
           video.onloadedmetadata = () => {
             if (video.duration > 12) {
-              toast("動画は12秒以下にしてください")
+              toast(
+                t(
+                  "動画は12秒以下にしてください",
+                  "Video length should be under 12 seconds",
+                ),
+              )
               return
             }
 
-            // 動画をセット
             props.onVideoChange(file)
 
-            // アイテムリストに動画のみをセット
             props.setItems([])
             props.onChangeItems([])
 
-            // 動画のサムネイルを生成するためのCanvasを作成
             const canvas = document.createElement("canvas")
             canvas.width = video.videoWidth
             canvas.height = video.videoHeight
             const ctx = canvas.getContext("2d")
 
-            // タイムラインで指定できるライブラリを使ってサムネイルを取得
             const time = video.duration / 2
             video.currentTime = time
             video.onseeked = () => {
               ctx?.drawImage(video, 0, 0, canvas.width, canvas.height)
-              const thumbnailUrl = canvas.toDataURL() // サムネイルをDataURL形式で取得
+              const thumbnailUrl = canvas.toDataURL()
 
               updateThumbnail(thumbnailUrl)
             }
@@ -182,7 +194,12 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
             props.maxItemsCount &&
             props.maxItemsCount < props.items.length + 1
           ) {
-            toast(`最大${props.maxItemsCount}までです`)
+            toast(
+              t(
+                `最大${props.maxItemsCount}までです`,
+                `Up to ${props.maxItemsCount} items allowed`,
+              ),
+            )
             return
           }
 
@@ -219,7 +236,7 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
           reader.readAsDataURL(file)
         }
       })
-      // ここで input の id が image_inputの要素に file をセットする
+
       const inputElement = document.getElementById(
         "images_input",
       ) as HTMLInputElement
@@ -260,6 +277,7 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
       >
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
         {props.items.length === 0 && !props.isOnlyMove && (
+          // biome-ignore lint/complexity/noUselessFragments: <explanation>
           <>
             {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <div
@@ -273,7 +291,7 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
                 }
               }}
             >
-              <p className="font-bold">画像を追加</p>
+              <p className="font-bold">{t("画像を追加", "Add Image")}</p>
             </div>
           </>
         )}
@@ -334,10 +352,16 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
         {!props.items.length && (
           <div className="m-4 flex flex-col text-white">
             <p className="text-center text-sm">
-              {"JPEG、PNG、GIF、WEBP、BMP、MP4"}
+              {t(
+                "JPEG、PNG、GIF、WEBP、BMP、MP4",
+                "JPEG, PNG, GIF, WEBP, BMP, MP4",
+              )}
             </p>
             <p className="text-center text-sm">
-              {"1枚32MB以内、最大200枚、動画は32MB、12秒まで"}
+              {t(
+                "1枚32MB以内、最大200枚、動画は32MB、12秒まで",
+                "Max 32MB per file, up to 200 files, videos under 32MB and 12 seconds",
+              )}
             </p>
           </div>
         )}

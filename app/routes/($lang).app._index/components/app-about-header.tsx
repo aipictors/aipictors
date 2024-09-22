@@ -1,7 +1,10 @@
 import { AppCanvas } from "~/routes/($lang).app._index/components/app-canvas"
 import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
 
 export function AppAboutHeader() {
+  const t = useTranslation()
+
   return (
     <div className="relative mx-auto w-full px-4 pb-32">
       <div className="absolute inset-0 top-[-8%] z-[-1] h-full w-full opacity-20">
@@ -14,12 +17,13 @@ export function AppAboutHeader() {
         <div className="flex justify-center">
           <div className="w-full max-w-md space-y-4">
             <p className="text-center font-bold text-3xl">
-              {"Aipictorsのアプリが登場"}
+              {t("Aipictorsのアプリが登場", "The Aipictors App is Here")}
             </p>
             <p className="leading-relaxed">
-              {
-                "AIイラスト投稿サイト「Aipictors」のSNS機能がアプリになりました。アプリならどこにいても通知を受け取ったりフォローしているクリエーターの作品をチェックできます。"
-              }
+              {t(
+                "AIイラスト投稿サイト「Aipictors」のSNS機能がアプリになりました。アプリならどこにいても通知を受け取ったりフォローしているクリエーターの作品をチェックできます。",
+                "The AI illustration posting site 'Aipictors' now has an app! With the app, you can receive notifications and check the works of creators you follow wherever you are.",
+              )}
             </p>
           </div>
         </div>

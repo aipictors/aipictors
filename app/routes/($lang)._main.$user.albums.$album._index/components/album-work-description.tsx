@@ -1,4 +1,3 @@
-import { FollowButton } from "~/components/button/follow-button"
 import { Avatar, AvatarFallback } from "~/components/ui/avatar"
 import { Card, CardContent } from "~/components/ui/card"
 import { AvatarImage } from "@radix-ui/react-avatar"
@@ -6,7 +5,8 @@ import { skipToken, useSuspenseQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { type FragmentOf, graphql } from "gql.tada"
-import type { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.albums.$album/components/album-article-editor-dialog"
+import type { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-article-editor-dialog"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
@@ -35,23 +35,17 @@ export function AlbumWorkDescription(props: Props) {
 
   return (
     <Card>
-      <CardContent>
+      <CardContent className="p-2">
         <div className="flex flex-col">
-          <div className="flex">
+          <div className="flex items-center space-x-2">
             <Avatar>
               <AvatarImage
-                src={props.album.thumbnailImageURL ?? ""}
-                alt={props.album.title}
+                src={ExchangeIconUrl(props.album.user.iconUrl)}
+                alt={props.album.user.name}
               />
               <AvatarFallback />
             </Avatar>
             <p>{props.album.user.name}</p>
-          </div>
-          <div className="flex">
-            <FollowButton
-              isFollow={isFollow}
-              targetUserId={props.album.user.id}
-            />
           </div>
           <p>{props.album.description}</p>
         </div>

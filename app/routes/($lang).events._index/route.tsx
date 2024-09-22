@@ -12,14 +12,23 @@ import { useContext } from "react"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const urlParams = new URLSearchParams(props.request.url.split("?")[1])
+
   const pageParam = urlParams.get("page")
+
   const page = pageParam ? Number(pageParam) : 0
 
   const eventsResp = await loaderClient.query({
@@ -45,6 +54,10 @@ export default function FollowingLayout() {
   const events = useLoaderData<typeof loader>()
 
   const t = useTranslation()
+
+  if (events === null) {
+    return null
+  }
 
   return (
     <>

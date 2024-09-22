@@ -7,15 +7,28 @@ import { useTheme } from "next-themes"
 import { useState } from "react"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import { Separator } from "~/components/ui/separator"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { useTranslation } from "~/hooks/use-translation"
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.SETTINGS_COLOR)
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.SETTINGS_COLOR, undefined, props.params.lang)
+}
+
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
+  return {}
 }
 
 export default function SettingColor() {
+  const t = useTranslation()
   const [activeTab, setActiveTab] = useState<string>("sampleTab1")
   const [activePage, setActivePage] = useState<number>(1)
   const { theme, setTheme } = useTheme()
@@ -64,7 +77,7 @@ export default function SettingColor() {
         className="flex cursor-pointer items-center peer-checked:text-blue-500"
       >
         <span className="flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 transition duration-150 peer-checked:border-blue-500 peer-checked:bg-blue-500" />
-        <span className="ml-2">{label}</span>
+        <span className="ml-2">{t(label, label)}</span>
       </label>
     </div>
   )
@@ -76,7 +89,11 @@ export default function SettingColor() {
   ) => (
     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
     <div
-      className={`flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800 ${colorSchema === value ? "bg-gray-100 bg-opacity-50 dark:bg-gray-800" : ""}`}
+      className={`flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800 ${
+        colorSchema === value
+          ? "bg-gray-100 bg-opacity-50 dark:bg-gray-800"
+          : ""
+      }`}
       onClick={() => setColorTheme(mode, value)}
     >
       <RadioGroupItem value={value} id={value} className="peer hidden" />
@@ -87,7 +104,7 @@ export default function SettingColor() {
         <span
           className={`h-4 w-4 rounded-full ${colorValue} flex items-center justify-center transition duration-150 peer-checked:ring-2 peer-checked:ring-blue-500`}
         />
-        <span className="ml-2">{label}</span>
+        <span className="ml-2">{t(label, label)}</span>
       </label>
     </div>
   )
@@ -95,7 +112,7 @@ export default function SettingColor() {
   return (
     <div className="flex flex-col space-y-2">
       <div className="block md:hidden">
-        <SettingsHeader title="カラーテーマ" />
+        <SettingsHeader title={t("カラーテーマ", "Color Theme")} />
       </div>
       <RadioGroup
         value={mode}
@@ -104,11 +121,19 @@ export default function SettingColor() {
         className="space-y-2"
       >
         <div className="space-y-2">
-          {themeRadio("system", "デバイスのモードを使用する")}
-          {themeRadio("light", "ライトモード")}
-          {themeRadio("dark", "ダークモード")}
+          {themeRadio(
+            "system",
+            t("デバイスのモードを使用する", "Use device mode"),
+          )}
+          {themeRadio("light", t("ライトモード", "Light mode"))}
+          {themeRadio("dark", t("ダークモード", "Dark mode"))}
         </div>
-        <p className="tex-tsm">ライトかダークを選択すると色も選べます。</p>
+        <p className="text-sm">
+          {t(
+            "ライトかダークを選択すると色も選べます。",
+            "You can select colors if you choose Light or Dark mode.",
+          )}
+        </p>
         <Separator />
       </RadioGroup>
       <div className={`space-y-2 ${theme === "system" ? "opacity-20" : ""}`}>
@@ -119,37 +144,51 @@ export default function SettingColor() {
           className="space-y-2"
         >
           <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
-            {themeRadioColor("none", "デフォルト", "bg-gray-100")}
-            {themeRadioColor("gray", "グレー", "bg-gray-500")}
-            {themeRadioColor("red", "レッド", "bg-red-500")}
-            {themeRadioColor("pink", "ピンク", "bg-pink-500")}
-            {themeRadioColor("orange", "オレンジ", "bg-orange-500")}
-            {themeRadioColor("green", "グリーン", "bg-green-500")}
-            {themeRadioColor("blue", "ブルー", "bg-blue-500")}
-            {themeRadioColor("yellow", "イエロー", "bg-yellow-500")}
-            {themeRadioColor("violet", "バイオレット", "bg-violet-500")}
+            {themeRadioColor("none", t("デフォルト", "Default"), "bg-gray-100")}
+            {themeRadioColor("gray", t("グレー", "Gray"), "bg-gray-500")}
+            {themeRadioColor("red", t("レッド", "Red"), "bg-red-500")}
+            {themeRadioColor("pink", t("ピンク", "Pink"), "bg-pink-500")}
+            {themeRadioColor(
+              "orange",
+              t("オレンジ", "Orange"),
+              "bg-orange-500",
+            )}
+            {themeRadioColor("green", t("グリーン", "Green"), "bg-green-500")}
+            {themeRadioColor("blue", t("ブルー", "Blue"), "bg-blue-500")}
+            {themeRadioColor(
+              "yellow",
+              t("イエロー", "Yellow"),
+              "bg-yellow-500",
+            )}
+            {themeRadioColor(
+              "violet",
+              t("バイオレット", "Violet"),
+              "bg-violet-500",
+            )}
           </div>
         </RadioGroup>
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button variant="default">ボタン</Button>
-          <Button variant="destructive">destructive</Button>
-          <Button variant="outline">outline</Button>
-          <Button variant="secondary">secondary</Button>
-          <Button variant="ghost">ghost</Button>
-          <Button variant="link">link</Button>
+          <Button variant="default">{t("ボタン", "Button")}</Button>
+          <Button variant="destructive">
+            {t("destructive", "Destructive")}
+          </Button>
+          <Button variant="outline">{t("outline", "Outline")}</Button>
+          <Button variant="secondary">{t("secondary", "Secondary")}</Button>
+          <Button variant="ghost">{t("ghost", "Ghost")}</Button>
+          <Button variant="link">{t("link", "Link")}</Button>
         </div>
         <div className="mt-4 space-y-2">
           <Input
             className="mx-2 w-80"
             id="sampleText1"
-            placeholder="プレースホルダー"
+            placeholder={t("プレースホルダー", "Placeholder")}
             onChange={(e) => {}}
           />
           <Input
             className="mx-2 w-80"
             id="sampleText2"
             placeholder=""
-            value="入力済み"
+            value={t("入力済み", "Filled")}
             onChange={(e) => {}}
           />
         </div>
@@ -161,21 +200,21 @@ export default function SettingColor() {
                 onClick={() => handleTabClick("sampleTab1")}
                 className={activeTab === "sampleTab1" ? "active-tab" : ""}
               >
-                タブ1
+                {t("タブ1", "Tab 1")}
               </TabsTrigger>
               <TabsTrigger
                 value="sampleTab2"
                 onClick={() => handleTabClick("sampleTab2")}
                 className={activeTab === "sampleTab2" ? "active-tab" : ""}
               >
-                タブ2
+                {t("タブ2", "Tab 2")}
               </TabsTrigger>
               <TabsTrigger
                 value="sampleTab3"
                 onClick={() => handleTabClick("sampleTab3")}
                 className={activeTab === "sampleTab3" ? "active-tab" : ""}
               >
-                タブ3
+                {t("タブ3", "Tab 3")}
               </TabsTrigger>
             </TabsList>
           </div>

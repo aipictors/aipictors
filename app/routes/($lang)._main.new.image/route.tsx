@@ -42,8 +42,13 @@ import {
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
+import type { LoaderFunctionArgs } from "react-router-dom"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { useTranslation } from "~/hooks/use-translation"
 
 export default function NewImage() {
+  const t = useTranslation()
+
   const authContext = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()
@@ -69,10 +74,6 @@ export default function NewImage() {
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
-
-  console.log(now.toISOString().split("T")[0])
-
-  console.log(viewer?.appEvents)
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
@@ -170,7 +171,6 @@ export default function NewImage() {
           payload: pngInfo,
         })
 
-        // 選択AIモデルを設定
         dispatchInput({
           type: "SET_AI_MODEL_ID",
           payload:
@@ -217,7 +217,7 @@ export default function NewImage() {
 
   const onPost = async () => {
     if (authContext.isNotLoggedIn) {
-      toast("ログインしてください")
+      toast(t("ログインしてください", "Please log in"))
       return
     }
 
@@ -233,7 +233,12 @@ export default function NewImage() {
       inputState.reservationDate !== null &&
       inputState.reservationTime === null
     ) {
-      toast("予約投稿の時間を入力してください")
+      toast(
+        t(
+          "予約投稿の時間を入力してください",
+          "Please enter a time for the scheduled post",
+        ),
+      )
       return
     }
 
@@ -241,7 +246,12 @@ export default function NewImage() {
       inputState.reservationDate === null &&
       inputState.reservationTime !== null
     ) {
-      toast("予約投稿の時間を入力してください")
+      toast(
+        t(
+          "予約投稿の時間を入力してください",
+          "Please enter a time for the scheduled post",
+        ),
+      )
       return
     }
 
@@ -312,7 +322,9 @@ export default function NewImage() {
       const imageUrls = uploadResults.filter((url) => url !== null)
 
       if (imageUrls.length === 0) {
-        toast("画像のアップロードに失敗しました")
+        toast(
+          t("画像のアップロードに失敗しました", "Failed to upload the images"),
+        )
         return
       }
 
@@ -373,7 +385,7 @@ export default function NewImage() {
       })
 
       if (work.data?.createWork === undefined) {
-        toast("作品の投稿に失敗しました")
+        toast(t("作品の投稿に失敗しました", "Failed to post the work"))
         return
       }
 
@@ -385,7 +397,7 @@ export default function NewImage() {
         },
       })
 
-      toast("作品を投稿しました")
+      toast(t("作品を投稿しました", "Work has been posted"))
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -403,7 +415,6 @@ export default function NewImage() {
   )
 
   const onInputFiles = async (files: FileList) => {
-    // OPEN_IMAGE_GENERATION_DIALOG
     dispatch({ type: "OPEN_LOADING_AI", payload: true })
 
     const fileArray = Array.from(files)
@@ -472,13 +483,15 @@ export default function NewImage() {
     React.useCallback(
       (event) => {
         if (state) {
-          const confirmationMessage =
-            "ページ遷移すると変更が消えますが問題無いですか？"
+          const confirmationMessage = t(
+            "ページ遷移すると変更が消えますが問題無いですか？",
+            "Are you sure you want to leave this page? Your changes will be lost.",
+          )
           event.returnValue = confirmationMessage
           return confirmationMessage
         }
       },
-      [state],
+      [state, t],
     ),
   )
 
@@ -486,13 +499,19 @@ export default function NewImage() {
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <ConstructionAlert
         type="WARNING"
-        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
+        message={t(
+          "リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！",
+          "The renewed version is under development and may have issues! Some features are being re-released! Please continue to use the old version as is!",
+        )}
         fallbackURL="https://www.aipictors.com/post"
       />
       <div className="max-w-[1200px] space-y-4">
         {authContext.isNotLoggedIn && (
           <p className="text-center font-bold text-md">
-            {"ログインすると投稿できるようになります"}
+            {t(
+              "ログインすると投稿できるようになります",
+              "Log in to post your work",
+            )}
           </p>
         )}
 
@@ -501,7 +520,12 @@ export default function NewImage() {
           {state.isOpenLoadingAi && (
             <div className="absolute top-12 right-2 z-10 flex items-center space-x-2 opacity-80">
               <Loader2Icon className="h-4 w-4 animate-spin text-white" />
-              <p className="text-white">{"AIでテイスト、年齢種別を判定中"}</p>
+              <p className="text-white">
+                {t(
+                  "AIでテイスト、年齢種別を判定中",
+                  "Analyzing the image for style and age restrictions using AI",
+                )}
+              </p>
             </div>
           )}
           <PostImageFormUploader
@@ -543,7 +567,7 @@ export default function NewImage() {
           type="submit"
           onClick={onPost}
         >
-          {"投稿"}
+          {t("投稿", "Post")}
         </Button>
       </div>
       <SuccessCreatedWorkDialog
@@ -566,6 +590,16 @@ export default function NewImage() {
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.NEW_IMAGE, undefined, props.params.lang)
+}
+
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
+  return {}
 }
 
 const ViewerQuery = graphql(

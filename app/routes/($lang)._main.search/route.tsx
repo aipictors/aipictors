@@ -10,9 +10,18 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { useTranslation } from "~/hooks/use-translation"
 
 export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const url = new URL(props.request.url)
+
   const tag = url.searchParams.get("tag")
 
   if (tag) {
@@ -41,17 +50,21 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function Search() {
   const data = useLoaderData<typeof loader>()
 
+  const t = useTranslation()
+
+  if (data === null) {
+    return null
+  }
+
   return (
     <>
-      {/* <RelatedTagList /> */}
-      {/* <RelatedModelList /> */}
-      <h1 className="font-bold">作品を検索</h1>
+      <h1 className="font-bold">{t("作品を検索", "Search Works")}</h1>
       <div className="m-auto md:max-w-96">
         <SearchHeader />
       </div>
-      <h2 className="font-bold">モデル一覧</h2>
+      <h2 className="font-bold">{t("モデル一覧", "Model List")}</h2>
       <ModelList />
-      <h2 className="font-bold">人気作品</h2>
+      <h2 className="font-bold">{t("人気作品", "Popular Works")}</h2>
       <WorkList works={data.worksResp.data.works ?? []} />
     </>
   )

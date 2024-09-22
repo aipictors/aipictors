@@ -14,15 +14,18 @@ import { UserPage } from "~/routes/($lang)._main.users.$user/components/user-pag
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  // const urlParams = new URLSearchParams(props.request.url.split("?")[1])
-  // const pageParam = urlParams.get("page")
-  // const page = pageParam ? Number(pageParam) : 0
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
 
   const userResp = await loaderClient.query({
     query: userQuery,
@@ -162,30 +165,38 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
-export const meta: MetaFunction = ({ data }) => {
+export const meta: MetaFunction = (props) => {
   // data.user が存在しないか、オブジェクトでない場合のチェック
-  if (!data) {
+  if (!props.data) {
     return [{ title: "ユーザのマイページ" }]
   }
 
-  const user = data as { user: FragmentOf<typeof UserProfileIconFragment> }
+  const user = props.data as {
+    user: FragmentOf<typeof UserProfileIconFragment>
+  }
 
   const worksCountPart =
     user.user.worksCount > 0 ? ` (${user.user.worksCount}作品)` : ""
 
-  return createMeta(META.USERS, {
-    title:
-      `${user.user.name}のマイページ${worksCountPart}` ||
-      "ユーザーのセンシティブ向けマイページ",
-    description:
-      user.user.biography ||
-      "Aipictorsのセンシティブ向けマイページです、AIイラストなどの作品一覧を閲覧することができます",
-    url: user.user.headerImageUrl?.length
-      ? user.user.headerImageUrl
-      : user.user.iconUrl
-        ? ExchangeIconUrl(user.user.iconUrl)
-        : "",
-  })
+  return createMeta(
+    META.USERS,
+    {
+      title:
+        `${user.user.name}のセンシティブ向けマイページ${worksCountPart}` ||
+        "ユーザーのセンシティブ向けマイページ",
+      enTitle: `${user.user.name}'s page${worksCountPart}`,
+      description:
+        user.user.biography ||
+        "Aipictorsのセンシティブ向けマイページです、AIイラストなどの作品一覧を閲覧することができます",
+      enDescription: `This is ${user.user.name}'s sensitive page on Aipictors, where you can view a list of AI illustrations and other works`,
+      url: user.user.headerImageUrl?.length
+        ? user.user.headerImageUrl
+        : user.user.iconUrl
+          ? ExchangeIconUrl(user.user.iconUrl)
+          : "",
+    },
+    props.params.lang,
+  )
 }
 
 export default function UserLayout() {
@@ -196,6 +207,10 @@ export default function UserLayout() {
   }
 
   const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <>

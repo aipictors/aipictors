@@ -15,6 +15,7 @@ import { toast } from "sonner"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { Button } from "~/components/ui/button"
 import { PaintCanvas } from "~/components/paint-canvas"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
@@ -22,6 +23,8 @@ type Props = {
 }
 
 export function EditImageFormUploader(props: Props) {
+  const t = useTranslation()
+
   const selectedFilesSizeText = () => {
     const totalBytes = props.state.items
       .map((item) => item.content)
@@ -41,7 +44,7 @@ export function EditImageFormUploader(props: Props) {
 
   const selectedImagesCountText = () => {
     const imageCount = props.state.items.filter((item) => item.content).length
-    return `イラスト${imageCount}枚`
+    return `${t("イラスト", "Images")}${imageCount}${t("枚", " items")}`
   }
 
   const onInputPngInfo = () => {
@@ -59,11 +62,16 @@ export function EditImageFormUploader(props: Props) {
           type: "SET_PNG_INFO",
           payload: pngInfo,
         })
-        toast("PNG情報を取得しました")
+        toast(t("PNG情報を取得しました", "PNG information has been retrieved"))
         return
       }
       props.dispatch({ type: "SET_PNG_INFO", payload: null })
-      toast("PNG情報を取得できませんでした")
+      toast(
+        t(
+          "PNG情報を取得できませんでした",
+          "Failed to retrieve PNG information",
+        ),
+      )
     }
     input.click()
   }
@@ -159,7 +167,7 @@ export function EditImageFormUploader(props: Props) {
           onClick={onInputPngInfo}
           className="block"
         >
-          {"画像から生成情報のみ反映"}
+          {t("画像から生成情報のみ反映", "Apply Information Only from Image")}
         </Button>
       </div>
 
@@ -192,7 +200,6 @@ export function EditImageFormUploader(props: Props) {
             payload: true,
           })
 
-          // TODO: 正しく生成画像からPNGInfoを取得する
           const pngInfo = await getExtractInfoFromBase64(
             lastSelectedOriginalImage,
           )

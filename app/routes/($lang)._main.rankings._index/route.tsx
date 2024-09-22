@@ -10,23 +10,32 @@ import {
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
-export async function loader(params: LoaderFunctionArgs) {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   // 昨日の日付を取得
   const yesterday = new Date()
+
   yesterday.setDate(yesterday.getDate() - 1)
 
-  const year = params.params.year
-    ? Number.parseInt(params.params.year)
+  const year = props.params.year
+    ? Number.parseInt(props.params.year)
     : yesterday.getFullYear()
 
   console.log(year)
 
-  const month = params.params.month
-    ? Number.parseInt(params.params.month)
+  const month = props.params.month
+    ? Number.parseInt(props.params.month)
     : yesterday.getMonth() + 1
-  const day = params.params.day
-    ? Number.parseInt(params.params.day)
+
+  const day = props.params.day
+    ? Number.parseInt(props.params.day)
     : yesterday.getDate()
 
   const variables = {

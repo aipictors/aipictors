@@ -10,6 +10,7 @@ import { graphql } from "gql.tada"
 import { Switch } from "~/components/ui/switch"
 import { Label } from "~/components/ui/label"
 import { Separator } from "~/components/ui/separator"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * 表示するコンテンツの年齢設定制限フォーム
@@ -22,6 +23,7 @@ export function SettingRestrictionForm() {
     React.useState(false)
 
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   const { data: userSetting, loading } = useQuery(userSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -63,7 +65,7 @@ export function SettingRestrictionForm() {
         },
       },
     })
-    toast("保存しました")
+    toast(t("保存しました", "Settings saved"))
   }
 
   useEffect(() => {
@@ -101,7 +103,12 @@ export function SettingRestrictionForm() {
     <div className="space-y-4">
       <div className="flex flex-col space-y-4">
         <div className="flex w-full items-center justify-between">
-          <Label htmlFor="show-r15">{"(通常モード時)R15作品を表示する"}</Label>
+          <Label htmlFor="show-r15">
+            {t(
+              "(通常モード時)R15作品を表示する",
+              "Display R15 content in normal mode",
+            )}
+          </Label>
           <Switch
             onCheckedChange={setShowR15InNormalMode}
             checked={showR15InNormalMode}
@@ -111,7 +118,10 @@ export function SettingRestrictionForm() {
         </div>
         <div className="flex w-full items-center justify-between">
           <Label htmlFor="show-sensitive-toggle">
-            {"センシティブモード切り替えボタンをメニューに表示する"}
+            {t(
+              "センシティブモード切り替えボタンをメニューに表示する",
+              "Display sensitive mode toggle in the menu",
+            )}
           </Label>
           <Switch
             onCheckedChange={(checked) => {
@@ -130,7 +140,10 @@ export function SettingRestrictionForm() {
         </div>
         <div className="flex w-full items-center justify-between">
           <Label htmlFor="show-r18g">
-            {"(センシティブモード時)R18G作品を表示する"}
+            {t(
+              "(センシティブモード時)R18G作品を表示する",
+              "Display R18G content in sensitive mode",
+            )}
           </Label>
           <Switch
             onCheckedChange={setShowR18GInSensitiveMode}
@@ -149,7 +162,7 @@ export function SettingRestrictionForm() {
         {isUpdatingUserSetting ? (
           <Loader2Icon className="h-4 w-4 animate-spin" />
         ) : (
-          <span>{"保存"}</span>
+          <span>{t("保存", "Save")}</span>
         )}
       </Button>
     </div>

@@ -20,12 +20,21 @@ import { Link, type MetaFunction, json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { useTranslation } from "~/hooks/use-translation"
+import type { LoaderFunctionArgs } from "react-router-dom"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MILESTONES, undefined, props.params.lang)
 }
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const resp = await loaderClient.query({
     query: milestonesQuery,
     variables: {
@@ -53,6 +62,10 @@ export async function loader() {
 export default function Milestone() {
   const data = useLoaderData<typeof loader>()
 
+  if (data == null) {
+    return null
+  }
+
   const convertDateFormat = (dateStr: string) => {
     const dateObj = new Date(dateStr)
     const year = dateObj.getFullYear()
@@ -61,13 +74,15 @@ export default function Milestone() {
     return `${year}/${month}/${day}`
   }
 
+  const t = useTranslation()
+
   return (
     <>
-      <h1 className="font-bold">{"開発予定"}</h1>
+      <h1 className="font-bold">{t("開発予定", "Development Milestones")}</h1>
       <Tabs defaultValue="web" className="w-full">
         <TabsList className="mb-4 grid w-full grid-cols-2">
-          <TabsTrigger value="web">Web版</TabsTrigger>
-          <TabsTrigger value="app">App版</TabsTrigger>
+          <TabsTrigger value="web">{t("Web版", "Web Version")}</TabsTrigger>
+          <TabsTrigger value="app">{t("App版", "App Version")}</TabsTrigger>
         </TabsList>
         <TabsContent value="web" className="w-full">
           <div className="flex flex-col gap-y-4">
@@ -75,11 +90,21 @@ export default function Milestone() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="min-w-28">{"バージョン"}</TableHead>
-                    <TableHead className="min-w-64">{"タイトル"}</TableHead>
-                    <TableHead className="min-w-80">{"開発内容"}</TableHead>
-                    <TableHead className="min-w-16">{"完了予定"}</TableHead>
-                    <TableHead className="min-w-32">{"GitHub"}</TableHead>
+                    <TableHead className="min-w-28">
+                      {t("バージョン", "Version")}
+                    </TableHead>
+                    <TableHead className="min-w-64">
+                      {t("タイトル", "Title")}
+                    </TableHead>
+                    <TableHead className="min-w-80">
+                      {t("開発内容", "Development Details")}
+                    </TableHead>
+                    <TableHead className="min-w-16">
+                      {t("完了予定", "Estimated Completion")}
+                    </TableHead>
+                    <TableHead className="min-w-32">
+                      {t("GitHub", "GitHub")}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -97,7 +122,7 @@ export default function Milestone() {
                         <TableCell>
                           {milestone.dueDate
                             ? convertDateFormat(milestone.dueDate)
-                            : "未定"}
+                            : t("未定", "TBD")}
                         </TableCell>
                         <TableCell key={`link-${milestone.id}`}>
                           <Link
@@ -105,7 +130,7 @@ export default function Milestone() {
                             to={milestone.pageURL}
                             target="_blank"
                           >
-                            {"GitHubで確認"}
+                            {t("GitHubで確認", "Check on GitHub")}
                           </Link>
                         </TableCell>
                       </TableRow>
@@ -120,7 +145,9 @@ export default function Milestone() {
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
-                  <h2 className="font-bold text-sm">{"リリース済み"}</h2>
+                  <h2 className="font-bold text-sm">
+                    {t("リリース済み", "Released")}
+                  </h2>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
                   <Card>
@@ -128,15 +155,17 @@ export default function Milestone() {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="min-w-28">
-                            {"バージョン"}
+                            {t("バージョン", "Version")}
                           </TableHead>
                           <TableHead className="min-w-64">
-                            {"タイトル"}
+                            {t("タイトル", "Title")}
                           </TableHead>
                           <TableHead className="min-w-80">
-                            {"開発内容"}
+                            {t("開発内容", "Development Details")}
                           </TableHead>
-                          <TableHead className="min-w-32">{"GitHub"}</TableHead>
+                          <TableHead className="min-w-32">
+                            {t("GitHub", "GitHub")}
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -152,7 +181,7 @@ export default function Milestone() {
                             <TableCell>{milestone.description}</TableCell>
                             <TableCell>
                               <Link to={milestone.pageURL} target="_blank">
-                                {"GitHubで確認"}
+                                {t("GitHubで確認", "Check on GitHub")}
                               </Link>
                             </TableCell>
                           </TableRow>
@@ -171,14 +200,14 @@ export default function Milestone() {
               <Link to="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636">
                 <img
                   src="/apple/download.svg"
-                  alt="download"
+                  alt={t("download", "download")}
                   className="h-12"
                 />
               </Link>
               <Link to="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja">
                 <img
                   src="/google/download.png"
-                  alt="download"
+                  alt={t("download", "download")}
                   className="h-16"
                 />
               </Link>
@@ -187,11 +216,21 @@ export default function Milestone() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="min-w-28">{"バージョン"}</TableHead>
-                    <TableHead className="min-w-64">{"タイトル"}</TableHead>
-                    <TableHead className="min-w-80">{"開発内容"}</TableHead>
-                    <TableHead className="min-w-16">{"完了予定"}</TableHead>
-                    <TableHead className="min-w-32">{"GitHub"}</TableHead>
+                    <TableHead className="min-w-28">
+                      {t("バージョン", "Version")}
+                    </TableHead>
+                    <TableHead className="min-w-64">
+                      {t("タイトル", "Title")}
+                    </TableHead>
+                    <TableHead className="min-w-80">
+                      {t("開発内容", "Development Details")}
+                    </TableHead>
+                    <TableHead className="min-w-16">
+                      {t("完了予定", "Estimated Completion")}
+                    </TableHead>
+                    <TableHead className="min-w-32">
+                      {t("GitHub", "GitHub")}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -208,11 +247,11 @@ export default function Milestone() {
                       <TableCell>
                         {milestone.dueDate
                           ? convertDateFormat(milestone.dueDate)
-                          : "未定"}
+                          : t("未定", "TBD")}
                       </TableCell>
                       <TableCell>
                         <Link to={milestone.pageURL} target="_blank">
-                          {"GitHubで確認"}
+                          {t("GitHubで確認", "Check on GitHub")}
                         </Link>
                       </TableCell>
                     </TableRow>
@@ -226,7 +265,9 @@ export default function Milestone() {
             <Accordion type="single" collapsible>
               <AccordionItem value="setting">
                 <AccordionTrigger>
-                  <h2 className="font-bold text-sm">{"リリース済み"}</h2>
+                  <h2 className="font-bold text-sm">
+                    {t("リリース済み", "Released")}
+                  </h2>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-2">
                   <Card>
@@ -234,15 +275,17 @@ export default function Milestone() {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="min-w-28">
-                            {"バージョン"}
+                            {t("バージョン", "Version")}
                           </TableHead>
                           <TableHead className="min-w-64">
-                            {"タイトル"}
+                            {t("タイトル", "Title")}
                           </TableHead>
                           <TableHead className="min-w-80">
-                            {"開発内容"}
+                            {t("開発内容", "Development Details")}
                           </TableHead>
-                          <TableHead className="min-w-32">{"GitHub"}</TableHead>
+                          <TableHead className="min-w-32">
+                            {t("GitHub", "GitHub")}
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -258,7 +301,7 @@ export default function Milestone() {
                             <TableCell>{milestone.description}</TableCell>
                             <TableCell>
                               <Link to={milestone.pageURL} target="_blank">
-                                {"GitHubで確認"}
+                                {t("GitHubで確認", "Check on GitHub")}
                               </Link>
                             </TableCell>
                           </TableRow>

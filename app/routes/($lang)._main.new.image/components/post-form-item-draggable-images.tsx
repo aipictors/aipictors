@@ -10,6 +10,7 @@ import { PencilLineIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   indexList: number[]
@@ -35,6 +36,7 @@ type Props = {
  * @returns
  */
 export function PostFormItemDraggableImages(props: Props) {
+  const t = useTranslation()
   // 先頭の画像
   const [nowHeadImageBase64, setNowHeadImageBase64] = useState("")
 
@@ -48,7 +50,6 @@ export function PostFormItemDraggableImages(props: Props) {
    * 選択中の画像一覧が変更されたときはサムネイルを更新する
    */
   useEffect(() => {
-    // 違いがあったらサムネイルを更新
     if (props.items.length) {
       if (
         props.items[0].content &&
@@ -79,7 +80,6 @@ export function PostFormItemDraggableImages(props: Props) {
    * @param webpDataURL
    */
   const updateThumbnail = (webpDataURL: string | null = null) => {
-    // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
     if (props.setThumbnailBase64) {
       if (
         !webpDataURL &&
@@ -92,7 +92,6 @@ export function PostFormItemDraggableImages(props: Props) {
         props.setThumbnailBase64(webpDataURL ? webpDataURL : "")
       }
     }
-    // 先頭の要素を並び替えした場合はサムネイルを0番目の画像が存在したらその画像に設定する
     if (props.setOgpBase64) {
       props.setOgpBase64("")
     }
@@ -130,7 +129,12 @@ export function PostFormItemDraggableImages(props: Props) {
       }
 
       if (props.maxItemsCount && props.maxItemsCount < acceptedFiles.length) {
-        toast(`最大${props.maxItemsCount}までです`)
+        toast(
+          t(
+            `最大${props.maxItemsCount}までです`,
+            `Maximum ${props.maxItemsCount} items allowed`,
+          ),
+        )
         return
       }
 
@@ -140,7 +144,12 @@ export function PostFormItemDraggableImages(props: Props) {
           props.maxItemsCount &&
           props.maxItemsCount < props.items.length + 1
         ) {
-          toast(`最大${props.maxItemsCount}までです`)
+          toast(
+            t(
+              `最大${props.maxItemsCount}までです`,
+              `Maximum ${props.maxItemsCount} items allowed`,
+            ),
+          )
           return
         }
 
@@ -174,7 +183,6 @@ export function PostFormItemDraggableImages(props: Props) {
         }
         reader.readAsDataURL(file)
       })
-      // ここで input の id が image_inputの要素に file をセットする
       const inputElement = document.getElementById(
         "images_input",
       ) as HTMLInputElement
@@ -220,6 +228,7 @@ export function PostFormItemDraggableImages(props: Props) {
       >
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
         {props.items.length === 0 && !props.isOnlyMove && (
+          // biome-ignore lint/complexity/noUselessFragments: <explanation>
           <>
             {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <div
@@ -236,7 +245,7 @@ export function PostFormItemDraggableImages(props: Props) {
               {props.submitText ? (
                 <p className="font-bold">{props.submitText}</p>
               ) : (
-                <p className="font-bold">画像を追加</p>
+                <p className="font-bold">{t("画像を追加", "Add Image")}</p>
               )}
             </div>
           </>
@@ -284,7 +293,12 @@ export function PostFormItemDraggableImages(props: Props) {
         {!props.items.length && (
           <div className="m-4 flex flex-col rounded-b text-white">
             <p className="text-center text-sm">{"JPEG、PNG、GIF、WEBP、BMP"}</p>
-            <p className="text-center text-sm">{"1枚32MB以内、最大200枚"}</p>
+            <p className="text-center text-sm">
+              {t(
+                "1枚32MB以内、最大200枚",
+                "Up to 32MB per image, max 200 images",
+              )}
+            </p>
           </div>
         )}
       </div>

@@ -4,11 +4,14 @@ import { ContributorCard } from "~/routes/($lang)._main.contributors/components/
 import type { Contributor } from "~/routes/($lang)._main.contributors/types/contributor"
 import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * コントリビュータ一覧
  */
 export function ContributorsView() {
+  const t = useTranslation()
+
   return (
     <>
       <div className="space-y-2 py-4">
@@ -16,7 +19,10 @@ export function ContributorsView() {
           <div className="flex flex-grow-3">
             <div className="relative">
               <img
-                alt={"コントリビュータ一覧ページトップ"}
+                alt={t(
+                  "コントリビュータ一覧ページトップ",
+                  "Contributors List Page Top",
+                )}
                 src={"https://assets.aipictors.com/geometric_shapes.webp"}
                 className="w-full rounded-t-md rounded-br-3xl rounded-bl-md object-cover object-top"
               />
@@ -28,26 +34,44 @@ export function ContributorsView() {
               >
                 <Button className="rounded-full">
                   <MousePointerClickIcon />
-                  <span className="ml-2">{"Aipictors"}</span>
+                  <span className="ml-2">{t("Aipictors", "Aipictors")}</span>
                 </Button>
               </Link>
             </div>
           </div>
           <div className="w-full flex-2 space-y-8 py-8 md:px-4">
             <div className="space-y-4">
-              <h1 className={"font-bold text-4xl"}>{"コントリビュータ一覧"}</h1>
-              <p className={"font-bold text-md"}>{"Contributors"}</p>
+              <h1 className={"font-bold text-4xl"}>
+                {t("コントリビュータ一覧", "Contributors List")}
+              </h1>
+              <p className={"font-bold text-md"}>
+                {t("Contributors", "Contributors")}
+              </p>
             </div>
             <div className="flex flex-col">
-              <div>{"AipictorsのContributors一覧ページです！"}</div>
-              <div>{"AipictorsはOSSプロジェクトです！"}</div>
               <div>
-                {"誰でも開発に参加して機能追加などを行うことができます"}
+                {t(
+                  "AipictorsのContributors一覧ページです！",
+                  "This is the Contributors List page for Aipictors!",
+                )}
               </div>
               <div>
-                {
-                  "新しいAIコンテンツ創作、交流SNSへのご参加をお待ちしております"
-                }
+                {t(
+                  "AipictorsはOSSプロジェクトです！",
+                  "Aipictors is an OSS project!",
+                )}
+              </div>
+              <div>
+                {t(
+                  "誰でも開発に参加して機能追加などを行うことができます",
+                  "Anyone can participate in development and add features.",
+                )}
+              </div>
+              <div>
+                {t(
+                  "新しいAIコンテンツ創作、交流SNSへのご参加をお待ちしております",
+                  "We look forward to your participation in creating new AI content and joining our social network!",
+                )}
               </div>
             </div>
             <Link
@@ -56,7 +80,7 @@ export function ContributorsView() {
               rel="noopener noreferrer"
             >
               <Button variant={"outline"} className="m-4 font-bold text-lg">
-                Aipictors（β版）
+                {t("Aipictors（β版）", "Aipictors (Beta)")}
                 <MousePointerClickIcon className="ml-2" />
               </Button>
             </Link>
@@ -86,14 +110,16 @@ export function ContributorsView() {
               rel="noopener noreferrer"
             >
               <Button variant={"outline"} className="m-4 font-bold text-lg">
-                Discordで開発に参加する
+                {t("Discordで開発に参加する", "Join Development on Discord")}
                 <MousePointerClickIcon className="ml-2" />
               </Button>
             </Link>
           </div>
         </div>
 
-        <h2 className="py-4 font-bold text-2xl">{"コントリビュータ一覧"}</h2>
+        <h2 className="py-4 font-bold text-2xl">
+          {t("コントリビュータ一覧", "Contributors List")}
+        </h2>
         <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
           {contributors.map((user: Contributor) => (
             <ContributorCard key={user.id} user={user} />

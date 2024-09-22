@@ -5,22 +5,24 @@ import {
 } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
 import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { config } from "~/config"
+import { config, META } from "~/config"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { useTranslation } from "~/hooks/use-translation"
+import { createMeta } from "~/utils/create-meta"
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "AIイラストスタンプ広場" },
-    {
-      description:
-        "作ったスタンプを公開したり、みんなの作ったスタンプをダウンロードして使ってみましょう！",
-    },
-  ]
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.STICKERS, undefined, props.params.lang)
 }
 
-export async function loader() {
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
   const stickersResp = await loaderClient.query({
     query: stickersQuery,
     variables: {
@@ -71,20 +73,26 @@ export async function loader() {
 export default function StickersPage() {
   const data = useLoaderData<typeof loader>()
 
+  const t = useTranslation()
+
+  if (data === null) {
+    return null
+  }
+
   return (
     <main className="flex flex-col space-y-4">
       <StickerListHeader />
       <StickerSearchForm />
       <section className="flex flex-col gap-y-4">
-        <h2 className="font-bold text-lg">{"新着"}</h2>
+        <h2 className="font-bold text-lg">{t("新着", "New Arrivals")}</h2>
         <StickerList stickers={data.stickers} />
       </section>
       <section className="flex flex-col gap-y-4">
-        <h2 className="font-bold text-lg">{"人気"}</h2>
+        <h2 className="font-bold text-lg">{t("人気", "Popular")}</h2>
         <StickerList stickers={data.favoritedStickers} />
       </section>
       <section className="flex flex-col gap-y-4">
-        <h2 className="font-bold text-lg">{"使用順"}</h2>
+        <h2 className="font-bold text-lg">{t("使用順", "Recently Used")}</h2>
         <StickerList stickers={data.usedStickers} />
       </section>
     </main>

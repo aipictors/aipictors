@@ -10,6 +10,7 @@ import {
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {
@@ -18,6 +19,12 @@ export async function loader(props: LoaderFunctionArgs) {
 
   if (props.params.month === undefined) {
     throw new Response(null, { status: 404 })
+  }
+
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
   }
 
   const year = Number.parseInt(props.params.year)
@@ -44,8 +51,12 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
-export const meta: MetaFunction = () => {
-  return createMeta(META.SENSITIVE_RANKINGS_MONTHLY)
+export const meta: MetaFunction = (props) => {
+  return createMeta(
+    META.SENSITIVE_RANKINGS_MONTHLY,
+    undefined,
+    props.params.lang,
+  )
 }
 
 /**
@@ -63,6 +74,10 @@ export default function SensitiveMonthAward() {
   }
 
   const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <>

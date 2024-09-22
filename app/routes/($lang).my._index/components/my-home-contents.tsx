@@ -5,8 +5,10 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 
 export function DashboardHomeContents() {
+  const t = useTranslation()
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {
@@ -41,12 +43,14 @@ export function DashboardHomeContents() {
       <div className="mb-4 space-y-4">
         <div className="block items-stretch space-x-0 space-y-2 md:flex md:space-x-2 md:space-y-0">
           <div className="h-full w-full items-stretch">
-            <DashboardHomeContentContainer title={"合計リアクション数"}>
+            <DashboardHomeContentContainer
+              title={t("合計リアクション数", "Total Reactions")}
+            >
               <div className="rounded-md md:p-4">
                 <div className="mb-4">
                   <div className="flex items-center">
                     <EyeIcon className="mr-2 w-3" />
-                    {"閲覧数"}
+                    {t("閲覧数", "Views")}
                   </div>
                   <p className="font-bold font-size-md">
                     {formatNumberWithCommas(
@@ -57,7 +61,7 @@ export function DashboardHomeContents() {
                 <div className="mb-4">
                   <div className="flex items-center">
                     <HeartIcon className="mr-2 w-3" />
-                    {"いいね数"}
+                    {t("いいね数", "Likes")}
                   </div>
                   <p className="font-bold font-size-md">
                     {formatNumberWithCommas(
@@ -68,7 +72,7 @@ export function DashboardHomeContents() {
                 <div className="mb-4">
                   <div className="flex items-center">
                     <FolderIcon className="mr-2 w-3" />
-                    {"ブックマーク数"}
+                    {t("ブックマーク数", "Bookmarks")}
                   </div>
                   <p className="font-bold font-size-md">
                     {formatNumberWithCommas(
@@ -79,7 +83,7 @@ export function DashboardHomeContents() {
                 <div className="mb-4">
                   <div className="flex items-center">
                     <MessageCircleIcon className="mr-2 w-3" />
-                    {"コメント数"}
+                    {t("コメント数", "Comments")}
                   </div>
                   <p className="font-bold font-size-md">
                     {formatNumberWithCommas(
@@ -93,7 +97,9 @@ export function DashboardHomeContents() {
 
           {works?.length === 0 ? null : (
             <div className="h-full w-full items-stretch">
-              <DashboardHomeContentContainer title={"いいねランキングトップ3"}>
+              <DashboardHomeContentContainer
+                title={t("いいねランキングトップ3", "Top 3 Most Liked")}
+              >
                 <div className="rounded-md md:p-4">
                   {works?.map((work, index) => (
                     <Link
@@ -123,7 +129,7 @@ export function DashboardHomeContents() {
                               {work.title}
                             </p>
                             <p className="text-white opacity-80">
-                              {work.likesCount} いいね
+                              {work.likesCount} {t("いいね", "Likes")}
                             </p>
                           </div>
                         </div>
@@ -155,7 +161,7 @@ export function DashboardHomeContents() {
                               {truncateTitle(work.title, 32)}
                             </p>
                             <p className="opacity-80">
-                              {work.likesCount} いいね
+                              {work.likesCount} {t("いいね", "Likes")}
                             </p>
                           </div>
                         </div>

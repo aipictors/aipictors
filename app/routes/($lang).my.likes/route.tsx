@@ -1,33 +1,27 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import React from "react"
 import { Suspense, useContext } from "react"
 import { LikeListContainer } from "~/routes/($lang).my._index/components/like-list-container"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
-export const meta: MetaFunction = () => {
-  const metaTitle = "Aipictors - ダッシュボード - いいね"
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.MY_LIKES, undefined, props.params.lang)
+}
 
-  const metaDescription = "ダッシュボード - いいね"
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
 
-  const metaImage =
-    "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/aipictors-ogp.jpg"
+  if (redirectResponse) {
+    return redirectResponse
+  }
 
-  return [
-    { title: metaTitle },
-    { name: "description", content: metaDescription },
-    { name: "robots", content: "noindex" },
-    { name: "twitter:title", content: metaTitle },
-    { name: "twitter:description", content: metaDescription },
-    { name: "twitter:image", content: metaImage },
-    { name: "twitter:card", content: "summary_large_image" },
-    { property: "og:title", content: metaTitle },
-    { property: "og:description", content: metaDescription },
-    { property: "og:image", content: metaImage },
-    { property: "og:site_name", content: metaTitle },
-  ]
+  return {}
 }
 
 export default function MyLikes() {

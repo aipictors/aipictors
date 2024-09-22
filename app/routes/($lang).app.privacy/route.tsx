@@ -1,23 +1,28 @@
 import text from "~/assets/flutter/privacy.md?raw"
+import enText from "~/assets/flutter/privacy-en.md?raw"
 
 import { AppMarkdown } from "~/components/app/app-markdown"
 import type { MetaFunction } from "@remix-run/cloudflare"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * プライバシー・ポリシー
  */
 export default function Route() {
+  const t = useTranslation()
+
   return (
     <div className="container-shadcn-ui space-y-8 px-8 py-8">
-      <h1 className="font-bold text-2xl">{"プライバシー・ポリシー"}</h1>
-      <AppMarkdown>{text}</AppMarkdown>
+      <h1 className="font-bold text-2xl">
+        {t("プライバシー・ポリシー", "Privacy Policy")}
+      </h1>
+      <AppMarkdown>{t(text, enText)}</AppMarkdown>
     </div>
   )
 }
 
-export const meta: MetaFunction = () => {
-  return [
-    { name: "robots", content: "noindex" },
-    { title: "プライバシー・ポリシー" },
-  ]
+export const meta: MetaFunction = (props) => {
+  return createMeta(META.PRIVACY, undefined, props.params.lang)
 }

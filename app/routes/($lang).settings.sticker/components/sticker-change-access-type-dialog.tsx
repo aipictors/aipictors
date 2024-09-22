@@ -11,8 +11,8 @@ import { useMutation } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import React from "react"
-import { toast } from "sonner"
 import { StickerChangeAccessTypeActionDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-action-dialog"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   sticker: FragmentOf<typeof StickerAccessTypeDialogFragment>
@@ -31,20 +31,8 @@ export function StickerChangeAccessTypeDialog(props: Props) {
     updateStickerMutation,
   )
 
-  const onChangePublic = async () => {
-    await updateSticker({
-      variables: {
-        input: {
-          stickerId: props.sticker.id,
-          accessType: "PUBLIC",
-        },
-      },
-    })
-    toast("公開しました")
-    setAccessType("PUBLIC")
-  }
-
   const [accessType, setAccessType] = React.useState(props.sticker.accessType)
+  const t = useTranslation()
 
   if (props.sticker.imageUrl === null) {
     return null
@@ -55,7 +43,10 @@ export function StickerChangeAccessTypeDialog(props: Props) {
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>タイトル：{props.sticker.title}</DialogTitle>
+          <DialogTitle>
+            {t("タイトル：", "Title:")}
+            {props.sticker.title}
+          </DialogTitle>
         </DialogHeader>
         {accessType === "PRIVATE" ? (
           <img
@@ -81,11 +72,11 @@ export function StickerChangeAccessTypeDialog(props: Props) {
               accessType={accessType}
               onAccessTypeChange={props.onAccessTypeChange}
             >
-              <Button className="w-full">{"公開する"}</Button>
+              <Button className="w-full">{t("公開する", "Make Public")}</Button>
             </StickerChangeAccessTypeActionDialog>
           ) : (
             <Button disabled={true} className="w-full">
-              {"公開済み"}
+              {t("公開済み", "Already Public")}
             </Button>
           )}
         </DialogFooter>

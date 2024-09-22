@@ -12,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "~/components/ui/carousel"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   year: number
@@ -21,16 +22,26 @@ type Props = {
 }
 
 export function RankingSensitiveHeader(props: Props) {
+  const t = useTranslation()
+
   const [year, setYear] = useState(props.year)
+
   const [month, setMonth] = useState(props.month)
+
   const [day, setDay] = useState(props.day)
+
   const [weekIndex, setWeekIndex] = useState(props.weekIndex ?? 1)
+
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
   >(props.day ? "デイリー" : props.weekIndex ? "ウィークリー" : "マンスリー")
+
   const [date, setDate] = useState("")
+
   const navigate = useNavigate()
+
   const location = useLocation()
+
   const isFirstRender = useRef(true)
 
   // ステート変更を監視して遷移するためのuseEffectを追加
@@ -200,7 +211,7 @@ export function RankingSensitiveHeader(props: Props) {
         const weekNumber = index + 1 // 1週目から4週目を順に追加
         items.push({
           link: `/r/rankings/${year}/${month}/weeks/${weekNumber}`,
-          name: `${weekNumber}週目`,
+          name: `${weekNumber}${t("週目", "th week")}`,
           border: weekIndex === weekNumber,
         })
       }
@@ -216,23 +227,32 @@ export function RankingSensitiveHeader(props: Props) {
   return (
     <Card className="flex flex-col items-center space-y-4 p-4">
       {viewType === "マンスリー" && (
-        <p className="text-center font-bold text-md">{"マンスリー"}</p>
+        <p className="text-center font-bold text-md">
+          {t("マンスリー", "Monthly")}
+        </p>
       )}
       {viewType === "デイリー" && (
-        <p className="text-center font-bold text-md">{"デイリー"}</p>
+        <p className="text-center font-bold text-md">
+          {t("デイリー", "Daily")}
+        </p>
       )}
       {viewType === "ウィークリー" && (
-        <p className="text-center font-bold text-md">{"ウィークリー"}</p>
+        <p className="text-center font-bold text-md">
+          {t("ウィークリー", "Weekly")}
+        </p>
       )}
 
       <p className="text-center font-bold text-md">
-        {year}年{month}月
+        {year}
+        {t("年", "year")}
+        {month}
+        {t("月", "month")}
         {day
-          ? `${day}日`
+          ? `${day}${t("日", "day")}`
           : weekIndex && viewType !== "マンスリー"
-            ? `${weekIndex}週目`
+            ? `${weekIndex}${t("週目", "th week")}`
             : ""}
-        のランキング
+        {t("のランキング", " Rankings")}
       </p>
       <div className="flex w-full max-w-72 flex-col space-y-4 md:max-w-72">
         <div className="flex w-full justify-between space-x-1 md:space-x-4">
@@ -246,7 +266,7 @@ export function RankingSensitiveHeader(props: Props) {
             }
             disabled={viewType === "マンスリー"}
           >
-            月間
+            {t("月間", "Monthly")}
           </Button>
           <Button
             variant={"secondary"}
@@ -258,7 +278,7 @@ export function RankingSensitiveHeader(props: Props) {
             }
             disabled={viewType === "デイリー"}
           >
-            日間
+            {t("日間", "Daily")}
           </Button>
           <Button
             variant={"secondary"}
@@ -270,7 +290,7 @@ export function RankingSensitiveHeader(props: Props) {
             }
             disabled={viewType === "ウィークリー"}
           >
-            週間
+            {t("週間", "Weekly")}
           </Button>
         </div>
       </div>
@@ -278,10 +298,10 @@ export function RankingSensitiveHeader(props: Props) {
         <div className="flex items-center space-x-4">
           <Button variant={"ghost"} onClick={handlePrevious}>
             <ChevronLeftIcon />
-            前へ
+            {t("前へ", "Previous")}
           </Button>
           <Button variant={"ghost"} onClick={handleNext}>
-            次へ
+            {t("次へ", "Next")}
             <ChevronRightIcon />
           </Button>
         </div>
@@ -294,7 +314,7 @@ export function RankingSensitiveHeader(props: Props) {
             max={new Date().toISOString().split("T")[0]} // 今日の日付以降は選べない
           />
           <Button onClick={handleTodayClick} variant="outline">
-            最新
+            {t("最新", "Latest")}
           </Button>
         </div>
         <Button
@@ -303,7 +323,7 @@ export function RankingSensitiveHeader(props: Props) {
           onClick={() => navigate("/rankings")}
         >
           <RefreshCcwIcon className="mr-2 w-4" />
-          {"全年齢"}
+          {t("全年齢", "All Ages")}
         </Button>
       </div>
       <div className="mt-4 flex max-w-72 space-x-4 md:max-w-full">

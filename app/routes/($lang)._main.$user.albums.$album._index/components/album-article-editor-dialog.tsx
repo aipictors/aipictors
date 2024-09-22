@@ -14,6 +14,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon, PlusIcon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
@@ -23,6 +24,8 @@ type Props = {
 }
 
 export function AlbumArticleEditorDialog(props: Props) {
+  const t = useTranslation()
+
   const [selectedWorks, setSelectedWorks] = useState<string[]>(
     props.album.workIds.map((work) => work.toString()),
   )
@@ -36,23 +39,21 @@ export function AlbumArticleEditorDialog(props: Props) {
 
   const onSubmit = async () => {
     if (title.length === 0) {
-      toast.error("タイトルを入力してください")
+      toast.error(t("タイトルを入力してください", "Please enter a title"))
       return
     }
 
     if (description.length === 0) {
-      toast.error("説明を入力してください")
+      toast.error(t("説明を入力してください", "Please enter a description"))
       return
     }
 
     if (props.userNanoid === null) {
-      toast("画面更新して再度お試し下さい。")
+      toast(
+        t("画面更新して再度お試し下さい。", "Please refresh and try again."),
+      )
       return null
     }
-
-    // const imageUrl = headerImageUrl.startsWith("https://")
-    //   ? null
-    //   : await uploadPublicImage(headerImageUrl, token?.viewer?.token)
 
     await updateAlbum({
       variables: {
@@ -65,7 +66,7 @@ export function AlbumArticleEditorDialog(props: Props) {
       },
     })
 
-    toast("シリーズを更新しました")
+    toast(t("シリーズを更新しました", "Album updated successfully"))
   }
 
   return (
@@ -73,44 +74,15 @@ export function AlbumArticleEditorDialog(props: Props) {
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{"シリーズ更新"}</DialogTitle>
+          <DialogTitle>{t("シリーズ更新", "Update Album")}</DialogTitle>
         </DialogHeader>
         <>
-          {/* <div className="relative">
-            <div className="m-auto h-40 w-72 overflow-hidden rounded-md">
-              <img
-                src={headerImageUrl}
-                alt={props.album.title}
-                className="h-full w-full rounded-md object-cover object-center"
-              />
-            </div>
-            <p className="font-bold text-sm">
-              ※ センシティブなカバー画像は設定しないようにお願い致します。
-            </p>
-            <CropImageField
-              isHidePreviewImage={false}
-              cropWidth={455}
-              cropHeight={237}
-              onDeleteImage={() => {
-                setHeaderImageUrl("")
-              }}
-              onCropToBase64={setHeaderImageUrl}
-              fileExtension={"webp"}
-            >
-              <Button
-                className="absolute right-1 bottom-1 h-12 w-12 rounded-full p-0"
-                variant={"secondary"}
-              >
-                <Pencil className="h-8 w-8" />
-              </Button>
-            </CropImageField>
-          </div> */}
           <div className="flex flex-col justify-between space-y-2">
             <label
               htmlFor="nickname"
               className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              {"タイトル"}
+              {t("タイトル", "Title")}
             </label>
             <input
               type="text"
@@ -128,7 +100,7 @@ export function AlbumArticleEditorDialog(props: Props) {
               htmlFor="enProfile"
               className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              {"説明"}
+              {t("説明", "Description")}
             </label>
             <AutoResizeTextarea
               id="enProfile"
@@ -139,9 +111,7 @@ export function AlbumArticleEditorDialog(props: Props) {
             />
           </div>
           <p className="font-medium text-sm ">
-            {"選択中の作品（"}
-            {selectedWorks.length}
-            {"）"}
+            {t("選択中の作品", "Selected works")}（{selectedWorks.length}）
           </p>
           <SelectCreatedWorksDialogWithIds
             selectedWorkIds={selectedWorks}
@@ -159,7 +129,7 @@ export function AlbumArticleEditorDialog(props: Props) {
             {isUpdating ? (
               <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
             ) : (
-              "更新する"
+              t("更新する", "Update")
             )}
           </Button>
         </DialogFooter>
