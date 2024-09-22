@@ -3,6 +3,8 @@ import { Card } from "~/components/ui/card"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 import { AvatarFallback } from "@radix-ui/react-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
+import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   message: FragmentOf<typeof RecipientMessageFragment>
@@ -10,6 +12,8 @@ type Props = {
 }
 
 export function RecipientMessage(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex items-start space-x-4">
       <Avatar>
@@ -24,7 +28,10 @@ export function RecipientMessage(props: Props) {
         </Card>
         <div className="flex justify-end">
           <p className="text-xs">
-            {toElapsedTimeText(props.message.createdAt)}
+            {t(
+              toElapsedTimeText(props.message.createdAt),
+              toElapsedTimeEnText(props.message.createdAt),
+            )}
           </p>
         </div>
       </div>

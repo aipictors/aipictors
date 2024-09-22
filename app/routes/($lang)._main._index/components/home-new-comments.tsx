@@ -1,6 +1,7 @@
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { useTranslation } from "~/hooks/use-translation"
+import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
 type Props = {
@@ -47,7 +48,10 @@ export function HomeNewCommentsSection(props: Props) {
                       comment.sticker?.imageUrl && (
                         <p>
                           <span className="line-clamp-2 font-semibold text-md">
-                            {`スタンプ：「${comment.sticker.title.length > 0 ? comment.sticker.title : ""}」`}
+                            {t(
+                              `スタンプ：「${comment.sticker.title.length > 0 ? comment.sticker.title : ""}」`,
+                              `Sticker: "${comment.sticker.title.length > 0 ? comment.sticker.title : ""}"`,
+                            )}
                           </span>
                         </p>
                       )}
@@ -61,7 +65,10 @@ export function HomeNewCommentsSection(props: Props) {
                   />
                 )}
                 <div className="text-sm">
-                  {toElapsedTimeText(comment.createdAt)}
+                  {t(
+                    toElapsedTimeText(comment.createdAt),
+                    toElapsedTimeEnText(comment.createdAt),
+                  )}
                 </div>
               </div>
             </div>

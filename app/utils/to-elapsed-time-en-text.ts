@@ -10,7 +10,7 @@ import {
  * 経過した時間を表す文字列を返す (Returns the elapsed time string)
  * @param createdAt
  */
-export const toElapsedTimeText = (createdAt: number) => {
+export const toElapsedTimeEnText = (createdAt: number) => {
   const dateLeft = new Date()
 
   const dateRight = new Date(createdAt * 1000)
@@ -22,26 +22,26 @@ export const toElapsedTimeText = (createdAt: number) => {
   }
 
   if (0 < months) {
-    return `${months}ヶ月前`
+    return `${months} months ago`
   }
 
   const days = differenceInDays(dateLeft, dateRight)
 
   if (30 < days) {
-    return format(dateRight, "yyyy年MM月dd日 HH時mm分")
+    return format(dateRight, "yyyy/MM/dd HH:mm")
   }
 
   if (0 < days) {
-    return `${days}日前`
+    return `${days} days ago`
   }
 
   const hours = differenceInHours(dateLeft, dateRight)
 
   if (0 < hours) {
-    return `${hours}時間前`
+    return `${hours} hours ago`
   }
 
   const minutes = differenceInMinutes(dateLeft, dateRight)
 
-  return `${minutes}分前`
+  return `${minutes} minutes ago`
 }

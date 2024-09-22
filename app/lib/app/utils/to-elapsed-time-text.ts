@@ -6,16 +6,14 @@ import {
   differenceInSeconds,
   format,
 } from "date-fns"
-import { useTranslation } from "~/hooks/use-translation"
 
 /**
- * 経過時間のテキストを返す (Returns the elapsed time text)
+ * 経過時間のテキストを返す
  * @param createdAt
  */
 export function toElapsedTimeText(createdAt: number) {
-  const t = useTranslation()
-
   const dateLeft = new Date()
+
   const dateRight = new Date(createdAt * 1000)
 
   const months = differenceInMonths(dateLeft, dateRight)
@@ -25,7 +23,7 @@ export function toElapsedTimeText(createdAt: number) {
   }
 
   if (0 < months) {
-    return t(`${months}ヶ月前`, `${months} months ago`)
+    return `${months}ヶ月前`
   }
 
   const days = differenceInDays(dateLeft, dateRight)
@@ -35,22 +33,22 @@ export function toElapsedTimeText(createdAt: number) {
   }
 
   if (0 < days) {
-    return t(`${days}日前`, `${days} days ago`)
+    return `${days}日前`
   }
 
   const hours = differenceInHours(dateLeft, dateRight)
 
   if (0 < hours) {
-    return t(`${hours}時間前`, `${hours} hours ago`)
+    return `${hours}時間前`
   }
 
   const minutes = differenceInMinutes(dateLeft, dateRight)
 
   if (0 < minutes) {
-    return t(`${minutes}分前`, `${minutes} minutes ago`)
+    return `${minutes}分前`
   }
 
   const seconds = differenceInSeconds(dateLeft, dateRight)
 
-  return t(`${seconds}秒前`, `${seconds} seconds ago`)
+  return `${seconds}秒前`
 }

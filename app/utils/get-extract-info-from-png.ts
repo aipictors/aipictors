@@ -1,4 +1,4 @@
-interface PNGChunk {
+export interface PNGChunk {
   keyword: string
   text: string
 }
@@ -151,7 +151,7 @@ const exchangeFromPNGItem = (item: PNGItem): ImageParameters => {
   return parameters
 }
 
-const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
+export const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
   const info: PNGItem = {}
 
   if (chunks.some((e) => e.keyword === "Software" && e.text === "NovelAI")) {

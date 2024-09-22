@@ -1,5 +1,7 @@
 import { type FragmentOf, graphql } from "gql.tada"
 import { Card } from "~/components/ui/card"
+import { useTranslation } from "~/hooks/use-translation"
+import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
 type Props = {
@@ -7,6 +9,8 @@ type Props = {
 }
 
 export function SenderMessage(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="flex justify-end">
       <div className="flex max-w-sm flex-col gap-y-2">
@@ -20,9 +24,14 @@ export function SenderMessage(props: Props) {
           </p>
         </Card>
         <div className="flex justify-end space-x-2">
-          <span className="text-xs">{props.message.isRead ? "既読" : ""}</span>
+          <span className="text-xs">
+            {props.message.isRead ? t("既読", "Read") : ""}
+          </span>
           <p className="text-xs">
-            {toElapsedTimeText(props.message.createdAt)}
+            {t(
+              toElapsedTimeText(props.message.createdAt),
+              toElapsedTimeEnText(props.message.createdAt),
+            )}
           </p>
         </div>
       </div>

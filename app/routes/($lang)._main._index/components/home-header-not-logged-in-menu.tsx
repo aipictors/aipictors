@@ -82,7 +82,11 @@ export const HomeHeaderNotLoggedInMenu = () => {
   const location = useLocation()
 
   const setLocale = (locale: string) => {
-    const currentLocale = location.pathname.match(/^\/(ja|en)/)?.[1] || ""
+    // URLの先頭にある /ja または /en を正しく検出
+    const currentLocale = location.pathname.match(/^\/(ja|en)(\/|$)/)?.[1] || ""
+
+    // 現在のロケール部分を削除したURLのベースパスを取得
+    const basePath = location.pathname.replace(/^\/(ja|en)(\/|$)/, "/")
 
     // クッキーにロケールを保存
     document.cookie = `locale=${locale}; path=/;`
@@ -90,13 +94,15 @@ export const HomeHeaderNotLoggedInMenu = () => {
     // 新しいURLを条件に応じて設定
     const newUrl =
       locale === "ja" && currentLocale
-        ? location.pathname.replace(`/${currentLocale}`, "")
+        ? basePath // 日本語の場合はロケールを削除してベースパスを使用
         : locale !== "ja" && currentLocale
-          ? location.pathname.replace(`/${currentLocale}`, "/en")
-          : `/en${location.pathname}`
+          ? location.pathname.replace(`/${currentLocale}`, `/${locale}`) // 英語の場合はロケールを置き換え
+          : `/${locale}${basePath}` // 新しいロケールを追加
 
     // navigateを使用してURLを変更
-    navigate(newUrl)
+    if (location.pathname !== newUrl) {
+      navigate(newUrl)
+    }
   }
 
   return (
