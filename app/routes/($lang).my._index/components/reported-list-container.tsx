@@ -155,7 +155,10 @@ export function ModerationReportsContainer(props: Props) {
                 )}
                 <div className="flex w-full flex-col space-y-2">
                   <span className="font-bold">
-                    {t("「{workTitle}」", `「${report.work?.title}」`)}
+                    {t(
+                      `「${report.work?.title}」`,
+                      `「${report.work?.title}」`,
+                    )}
                   </span>
                   <p className="mb-2">{report.reportMessage}</p>
                   {report.customMessage && (
