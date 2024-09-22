@@ -14,6 +14,7 @@ import {
 } from "~/routes/($lang).my._index/components/works-list-table-row"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { type FragmentOf, graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof WorksListTableItemFragment>[]
@@ -34,6 +35,8 @@ type Props = {
  * 作品一覧
  */
 export function WorksListTable(props: Props) {
+  const t = useTranslation()
+
   return (
     <>
       <ScrollArea className="overflow-x-auto">
@@ -42,7 +45,7 @@ export function WorksListTable(props: Props) {
             <TableRow>
               <TableHead>
                 <WorksListColumn
-                  label="タイトル"
+                  label={t("タイトル", "Title")}
                   orderBy="NAME"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
@@ -53,7 +56,7 @@ export function WorksListTable(props: Props) {
               <TableHead>{}</TableHead>
               <TableHead>
                 <WorksListColumn
-                  label="いいね！"
+                  label={t("いいね！", "Likes")}
                   orderBy="LIKES_COUNT"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
@@ -62,7 +65,7 @@ export function WorksListTable(props: Props) {
               </TableHead>
               <TableHead>
                 <WorksListColumn
-                  label="ブックマーク"
+                  label={t("ブックマーク", "Bookmarks")}
                   orderBy="BOOKMARKS_COUNT"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
@@ -71,7 +74,7 @@ export function WorksListTable(props: Props) {
               </TableHead>
               <TableHead>
                 <WorksListColumn
-                  label="コメント"
+                  label={t("コメント", "Comments")}
                   orderBy="COMMENTS_COUNT"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
@@ -80,7 +83,7 @@ export function WorksListTable(props: Props) {
               </TableHead>
               <TableHead>
                 <WorksListColumn
-                  label="閲覧"
+                  label={t("閲覧", "Views")}
                   orderBy="VIEWS_COUNT"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
@@ -89,7 +92,7 @@ export function WorksListTable(props: Props) {
               </TableHead>
               <TableHead>
                 <WorksListColumn
-                  label="種別"
+                  label={t("種別", "Type")}
                   orderBy="WORK_TYPE"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
@@ -98,7 +101,7 @@ export function WorksListTable(props: Props) {
               </TableHead>
               <TableHead>
                 <WorksListColumn
-                  label="状態"
+                  label={t("状態", "Status")}
                   orderBy="ACCESS_TYPE"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
@@ -108,7 +111,7 @@ export function WorksListTable(props: Props) {
               <TableHead>{}</TableHead>
               <TableHead>
                 <WorksListColumn
-                  label="宣伝作品"
+                  label={t("宣伝作品", "Promotion")}
                   orderBy="IS_PROMOTION"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}
@@ -117,7 +120,7 @@ export function WorksListTable(props: Props) {
               </TableHead>
               <TableHead>
                 <WorksListColumn
-                  label="日付"
+                  label={t("日付", "Date")}
                   orderBy="DATE_CREATED"
                   nowOrderBy={props.orderBy}
                   sort={props.sort}

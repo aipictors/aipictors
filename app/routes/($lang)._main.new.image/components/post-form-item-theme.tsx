@@ -1,5 +1,6 @@
 import { Checkbox } from "~/components/ui/checkbox"
 import { Card, CardContent } from "~/components/ui/card"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   titles: { date: string; title: string }[] | null
@@ -26,10 +27,12 @@ export function PostFormItemTheme(props: Props) {
     return null
   }
 
+  const t = useTranslation()
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">お題参加</p>
+        <p className="font-bold text-sm">{t("お題参加", "Join the theme")}</p>
         <div className="flex items-center space-x-2">
           <Checkbox
             onCheckedChange={(value: boolean) => {
@@ -39,7 +42,10 @@ export function PostFormItemTheme(props: Props) {
             checked={props.isChecked}
           />
           <label className="text-sm" htmlFor="theme">
-            {`お題「${matchingTitles.join(", ")}」に参加する`}
+            {t(
+              `お題「${matchingTitles.join(", ")}」に参加する`,
+              `Join the theme "${matchingTitles.join(", ")}"`,
+            )}
           </label>
         </div>
       </CardContent>

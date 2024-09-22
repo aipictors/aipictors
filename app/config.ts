@@ -353,6 +353,14 @@ export interface MetaData {
  * Meta information settings
  */
 export const META: { [key: string]: MetaData } = {
+  ALBUMS: {
+    title: "{{title}}",
+    enTitle: "{{enTitle}}",
+    description: "{{description}}",
+    enDescription: "{{enDescription}}",
+    image: "{{url}}",
+    isIndex: true,
+  },
   HOME: {
     title: "ホーム",
     enTitle: "Home",
@@ -784,6 +792,13 @@ export const META: { [key: string]: MetaData } = {
     enTitle: "Followings",
     description: "List of followings",
     enDescription: "View and manage your followings",
+    isIndex: false,
+  },
+  MY: {
+    title: "ダッシュボード",
+    enTitle: "Dashboard",
+    description: "You can manage your account information",
+    enDescription: "Manage your account information on Aipictors",
     isIndex: false,
   },
   MY_BOOKMARKS: {

@@ -4,6 +4,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import { Link } from "@remix-run/react"
 import { useEffect } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title: string | null
@@ -17,6 +18,8 @@ type Props = {
 }
 
 export function SuccessCreatedWorkDialog(props: Props) {
+  const t = useTranslation()
+
   const getRandomColor = () => {
     const colors = ["#ff0", "#ff8c00", "#e6e6fa", "#00f", "#8a2be2", "#ff69b4"]
     return colors[Math.floor(Math.random() * colors.length)]
@@ -112,8 +115,12 @@ export function SuccessCreatedWorkDialog(props: Props) {
               </Link>
             )}
           </div>
-          <p className="text-center font-bold">作品が更新されました</p>
-          <p className="text-center text-sm opacity-80">この作品をシェアする</p>
+          <p className="text-center font-bold">
+            {t("作品が更新されました", "The work has been updated")}
+          </p>
+          <p className="text-center text-sm opacity-80">
+            {t("この作品をシェアする", "Share this work")}
+          </p>
           <div className="w-full">
             <XIntent
               text={`${props.title}\n`}
@@ -133,7 +140,7 @@ export function SuccessCreatedWorkDialog(props: Props) {
             }}
             className="mt-2"
           >
-            閉じる
+            {t("閉じる", "Close")}
           </Button>
         </DialogContent>
       </Dialog>

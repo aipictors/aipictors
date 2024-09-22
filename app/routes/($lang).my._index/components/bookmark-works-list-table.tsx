@@ -11,6 +11,7 @@ import {
   RecommendedWorksListTableRow,
 } from "~/routes/($lang).my._index/components/recommended-works-list-table-row"
 import { type FragmentOf, graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof BookmarkWorksTableItemFragment>[]
@@ -20,20 +21,22 @@ type Props = {
  * ブックマーク作品一覧
  */
 export function BookmarkWorksListTable(props: Props) {
+  const t = useTranslation()
+
   return (
     <>
       <ScrollArea className="overflow-x-auto">
         <Table className="w-full">
           <TableHeader>
             <TableRow>
-              <TableHead>{"タイトル"}</TableHead>
-              <TableHead>{}</TableHead>
-              <TableHead>{"いいね"}</TableHead>
-              <TableHead>{"ブックマーク"}</TableHead>
-              <TableHead>{"コメント"}</TableHead>
-              <TableHead>{"閲覧"}</TableHead>
-              <TableHead>{"状態"}</TableHead>
-              <TableHead>{"日付"}</TableHead>
+              <TableHead>{t("タイトル", "Title")}</TableHead>
+              <TableHead>{""}</TableHead>
+              <TableHead>{t("いいね", "Likes")}</TableHead>
+              <TableHead>{t("ブックマーク", "Bookmarks")}</TableHead>
+              <TableHead>{t("コメント", "Comments")}</TableHead>
+              <TableHead>{t("閲覧", "Views")}</TableHead>
+              <TableHead>{t("状態", "Status")}</TableHead>
+              <TableHead>{t("日付", "Date")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

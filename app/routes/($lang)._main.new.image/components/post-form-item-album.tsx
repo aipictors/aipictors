@@ -8,6 +8,7 @@ import {
 } from "~/components/ui/select"
 import type { Album } from "~/routes/($lang)._main.new.image/types/album"
 import { Card, CardContent } from "~/components/ui/card"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   album: string | null
@@ -19,10 +20,12 @@ type Props = {
  * シリーズ入力
  */
 export function PostFormItemAlbum(props: Props) {
+  const t = useTranslation()
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">{"シリーズ"}</p>
+        <p className="font-bold text-sm">{t("シリーズ", "Album")}</p>
         <Select
           value={props.album ?? ""}
           onValueChange={(value) => {

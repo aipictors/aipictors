@@ -138,7 +138,9 @@ export function UserHomeMain(props: Props) {
               />
             )}
           {authContext.userId === props.user.id && (
-            <ProfileEditDialog triggerChildren={<Button>編集</Button>} />
+            <ProfileEditDialog
+              triggerChildren={<Button>{t("編集", "Edit")}</Button>}
+            />
           )}
         </div>
       </div>

@@ -1,15 +1,14 @@
-import { useNavigate } from "@remix-run/react"
-import { Image } from "lucide-react"
+import { Image, Film, FileText as TextIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
-import { Film, FileText as TextIcon } from "lucide-react" // 仮のアイコン、必要に応じて変更してください
 import { cn } from "~/lib/utils"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   type: "image" | "animation" | "text"
 }
 
 export function PostFormHeader(props: Props) {
-  const navigate = useNavigate()
+  const t = useTranslation()
 
   const handleImageNavigation = () => {
     window.location.href = "/new/image"
@@ -36,7 +35,7 @@ export function PostFormHeader(props: Props) {
         onClick={handleImageNavigation}
       >
         <Image className="hidden md:block" size={16} />
-        <div className="text-center">イラスト</div>
+        <div className="text-center">{t("イラスト", "Illustration")}</div>
       </Button>
       <Button
         variant="secondary"
@@ -49,7 +48,7 @@ export function PostFormHeader(props: Props) {
         onClick={handleAnimationNavigation}
       >
         <Film className="hidden md:block" size={16} />
-        <div className="text-center">動画</div>
+        <div className="text-center">{t("動画", "Animation")}</div>
       </Button>
       <Button
         variant="secondary"
@@ -62,7 +61,7 @@ export function PostFormHeader(props: Props) {
         onClick={handleTextNavigation}
       >
         <TextIcon className="hidden md:block" size={16} />
-        <div className="text-center">小説・コラム</div>
+        <div className="text-center">{t("小説・コラム", "Text/Column")}</div>
       </Button>
     </div>
   )

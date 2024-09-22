@@ -1,6 +1,7 @@
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
 import { Link } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   /**
@@ -21,14 +22,22 @@ type Props = {
 }
 
 export function ConstructionAlert(props: Props) {
+  const t = useTranslation()
+
   const alertTitle = () => {
     if (props.type === "BUG") {
-      return "不具合を修正中です。"
+      return t("不具合を修正中です。", "We are fixing bugs.")
     }
     if (props.type === "WARNING") {
-      return "このページは現在開発中です。"
+      return t(
+        "このページは現在開発中です。",
+        "This page is currently under development.",
+      )
     }
-    return "このページは現在開発中です。"
+    return t(
+      "このページは現在開発中です。",
+      "This page is currently under development.",
+    )
   }
 
   return (
@@ -42,12 +51,12 @@ export function ConstructionAlert(props: Props) {
             className="flex-1 md:flex-auto"
           >
             <Button size={"sm"} variant={"secondary"} className="w-full">
-              {"旧バージョンへ"}
+              {t("旧バージョンへ", "Go to the old version")}
             </Button>
           </Link>
           <Link to={"https://discord.com/invite/aipictors"}>
             <Button size={"sm"} variant={"secondary"}>
-              {"不具合報告"}
+              {t("不具合報告", "Report a bug")}
             </Button>
           </Link>
         </div>

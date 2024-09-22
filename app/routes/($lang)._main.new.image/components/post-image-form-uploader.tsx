@@ -16,6 +16,7 @@ import type { Dispatch } from "react"
 import { toast } from "sonner"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PaintCanvas } from "~/components/paint-canvas"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
@@ -25,6 +26,8 @@ type Props = {
 }
 
 export function PostImageFormUploader(props: Props) {
+  const t = useTranslation()
+
   const selectedFilesSizeText = () => {
     const totalBytes = props.state.items
       .map((item) => item.content)
@@ -44,7 +47,7 @@ export function PostImageFormUploader(props: Props) {
 
   const selectedImagesCountText = () => {
     const imageCount = props.state.items.filter((item) => item.content).length
-    return `イラスト${imageCount}枚`
+    return `${t("イラスト", "Images")}${imageCount}${t("枚", " items")}`
   }
 
   const onInputPngInfo = () => {
@@ -59,11 +62,15 @@ export function PostImageFormUploader(props: Props) {
       const pngInfo = await getExtractInfoFromPNG(file)
       if (pngInfo.src !== null) {
         props.onChangeImageInformation(pngInfo)
-        toast("PNG情報を取得しました")
+        toast(t("PNG情報を取得しました", "PNG information has been retrieved"))
         return
       }
-      // props.dispatch({ type: "SET_PNG_INFO", payload: null })
-      toast("PNG情報を取得できませんでした")
+      toast(
+        t(
+          "PNG情報を取得できませんでした",
+          "Failed to retrieve PNG information",
+        ),
+      )
     }
     input.click()
   }
@@ -159,7 +166,7 @@ export function PostImageFormUploader(props: Props) {
           onClick={onInputPngInfo}
           className="block"
         >
-          {"画像から生成情報のみ反映"}
+          {t("画像から生成情報のみ反映", "Apply Information Only from Image")}
         </Button>
         <Button
           variant={"secondary"}
@@ -171,7 +178,7 @@ export function PostImageFormUploader(props: Props) {
             })
           }}
         >
-          {"生成画像"}
+          {t("生成画像", "Generated Images")}
         </Button>
       </div>
       <ImageGenerationSelectorDialog

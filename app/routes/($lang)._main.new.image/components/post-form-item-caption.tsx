@@ -1,5 +1,6 @@
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Card, CardContent } from "~/components/ui/card"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   label?: string
@@ -13,11 +14,15 @@ type Props = {
 export function PostFormItemCaption(props: Props) {
   const isFilled = props.caption && props.caption.trim() !== ""
 
+  const t = useTranslation()
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
         <p className="font-bold text-sm">
-          {props.label ? props.label : "キャプション（任意）"}
+          {props.label
+            ? props.label
+            : t("キャプション（任意）", "Caption (Optional)")}
         </p>
         <AutoResizeTextarea
           onChange={(event) => {
@@ -25,7 +30,7 @@ export function PostFormItemCaption(props: Props) {
           }}
           value={props.caption}
           maxLength={3000}
-          placeholder={props.label ? props.label : "キャプション"}
+          placeholder={props.label ? props.label : t("キャプション", "Caption")}
           className={`${isFilled ? "w-full border-green-500" : "w-full border-gray-300"}`}
         />
       </CardContent>

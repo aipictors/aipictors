@@ -17,6 +17,8 @@ import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import React, { useContext, useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
+
 type Props = {
   title: string
   stickerId: string
@@ -31,6 +33,7 @@ type Props = {
  */
 export function StickerChangeAccessTypeActionDialog(props: Props) {
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
   const [updateSticker, { loading: isChangeStickerAccessType }] = useMutation(
     updateStickerMutation,
@@ -46,17 +49,17 @@ export function StickerChangeAccessTypeActionDialog(props: Props) {
 
   const onChangePublic = async () => {
     if (authContext.isLoading || authContext.isNotLoggedIn) {
-      toast("ログインしてください")
+      toast(t("ログインしてください", "Please log in"))
       return
     }
 
     if (title === "") {
-      toast("タイトルを入力してください")
+      toast(t("タイトルを入力してください", "Please enter a title"))
       return
     }
 
     if (tag === "") {
-      toast("タグを選択してください")
+      toast(t("タグを選択してください", "Please select a tag"))
       return
     }
 
@@ -71,7 +74,7 @@ export function StickerChangeAccessTypeActionDialog(props: Props) {
         },
       },
     })
-    toast("公開しました")
+    toast(t("公開しました", "Successfully made public"))
     setAccessType("PUBLIC")
   }
 
@@ -80,7 +83,9 @@ export function StickerChangeAccessTypeActionDialog(props: Props) {
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>スタンプを公開する</DialogTitle>
+          <DialogTitle>
+            {t("スタンプを公開する", "Make Sticker Public")}
+          </DialogTitle>
         </DialogHeader>
         <Link className="m-auto w-24" to={`/stickers/${props.stickerId}`}>
           <img
@@ -90,15 +95,15 @@ export function StickerChangeAccessTypeActionDialog(props: Props) {
           />
         </Link>
         <div className="space-y-2">
-          <p className="mt-2">タイトル</p>
+          <p className="mt-2">{t("タイトル", "Title")}</p>
           <Input
             onChange={(event) => {
               setTitle(event.target.value)
             }}
             value={title}
-            placeholder="タイトル"
+            placeholder={t("タイトル", "Title")}
           />
-          <p>ジャンル</p>
+          <p>{t("ジャンル", "Genre")}</p>
           <RadioGroup
             value={genre}
             onValueChange={(value) => {
@@ -108,36 +113,36 @@ export function StickerChangeAccessTypeActionDialog(props: Props) {
           >
             <div className="items-center space-x-2">
               <label htmlFor="person-check">
-                {"人物"}
+                {t("人物", "Character")}
                 <RadioGroupItem value="CHARACTER" id="person-check" />
               </label>
             </div>
             <div className="items-center space-x-2">
               <label htmlFor="animal-check">
-                {"動物"}
+                {t("動物", "Animal")}
                 <RadioGroupItem value="ANIMAL" id="animal-check" />
               </label>
             </div>
             <div className="items-center space-x-2">
               <label htmlFor="machine-check">
-                {"機械"}
+                {t("機械", "Machine")}
                 <RadioGroupItem value="MACHINE" id="machine-check" />
               </label>
             </div>
             <div className="items-center space-x-2">
               <label htmlFor="background-check">
-                {"背景"}
+                {t("背景", "Background")}
                 <RadioGroupItem value="BACKGROUND" id="background-check" />
               </label>
             </div>
             <div className="items-center space-x-2">
               <label htmlFor="object-check">
-                {"物"}
+                {t("物", "Object")}
                 <RadioGroupItem value="OBJECT" id="object-check" />
               </label>
             </div>
           </RadioGroup>
-          <p>タグ</p>
+          <p>{t("タグ", "Tag")}</p>
           <RadioGroup
             value={tag.toString()}
             onValueChange={(value) => {
@@ -147,31 +152,31 @@ export function StickerChangeAccessTypeActionDialog(props: Props) {
           >
             <div className="items-center space-x-2">
               <label htmlFor="happy-check">
-                {"楽しい"}
+                {t("楽しい", "Happy")}
                 <RadioGroupItem value="楽しい" id="happy-check" />
               </label>
             </div>
             <div className="items-center space-x-2">
               <label htmlFor="enjoy-check">
-                {"嬉しい"}
+                {t("嬉しい", "Glad")}
                 <RadioGroupItem value="嬉しい" id="enjoy-check" />
               </label>
             </div>
             <div className="items-center space-x-2">
               <label htmlFor="celebration-check">
-                {"お祝い"}
+                {t("お祝い", "Celebration")}
                 <RadioGroupItem value="お祝い" id="celebration-check" />
               </label>
             </div>
             <div className="items-center space-x-2">
               <label htmlFor="sad-check">
-                {"悲しい"}
+                {t("悲しい", "Sad")}
                 <RadioGroupItem value="悲しい" id="sad-check" />
               </label>
             </div>
             <div className="items-center space-x-2">
               <label htmlFor="other-check">
-                {"その他"}
+                {t("その他", "Other")}
                 <RadioGroupItem value="その他" id="other-check" />
               </label>
             </div>
@@ -182,12 +187,12 @@ export function StickerChangeAccessTypeActionDialog(props: Props) {
                 {isChangeStickerAccessType ? (
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <span>{"公開する"}</span>
+                  <span>{t("公開する", "Make Public")}</span>
                 )}
               </Button>
             ) : (
               <Button disabled={true} className="w-full">
-                {"公開済み"}
+                {t("公開済み", "Already Public")}
               </Button>
             )}
           </DialogFooter>

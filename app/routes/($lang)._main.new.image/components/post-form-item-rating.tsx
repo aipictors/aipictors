@@ -2,6 +2,7 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Link } from "@remix-run/react"
 import { Card, CardContent } from "~/components/ui/card"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   rating: IntrospectionEnum<"Rating">
@@ -12,15 +13,23 @@ type Props = {
  * 年齢制限入力
  */
 export function PostFormItemRating(props: Props) {
+  const t = useTranslation()
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">年齢制限</p>
+        <p className="font-bold text-sm">{t("年齢制限", "Age Restriction")}</p>
         <p className="font-bold text-xs opacity-70">
-          入力画像からAIで判定されます
+          {t(
+            "入力画像からAIで判定されます",
+            "Automatically judged by AI from the uploaded image",
+          )}
         </p>
         <p className="font-bold text-xs opacity-70">
-          誤っている場合は手動で補正してください
+          {t(
+            "誤っている場合は手動で補正してください",
+            "Please correct manually if it's incorrect",
+          )}
         </p>
         <RadioGroup
           value={props.rating}
@@ -33,7 +42,10 @@ export function PostFormItemRating(props: Props) {
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="G" id="person-check" />
               <label htmlFor="person-check">
-                {"全年齢（公共の場でも掲出できるもの）"}
+                {t(
+                  "全年齢（公共の場でも掲出できるもの）",
+                  "All Ages (Safe for public display)",
+                )}
               </label>
             </div>
           </div>
@@ -41,15 +53,18 @@ export function PostFormItemRating(props: Props) {
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="R15" id="animal-check" />
               <label htmlFor="animal-check">
-                {"R15（軽度な性的表現、水着など"}
+                {t(
+                  "R15（軽度な性的表現、水着など",
+                  "R15 (Mild sexual content, swimsuits, etc.",
+                )}{" "}
                 <Link
                   target="_blank"
                   to="/terms"
                   className="text-clear-bright-blue"
                 >
-                  {"詳細"}
+                  {t("詳細", "Details")}
                 </Link>
-                {"）"}
+                {t("）", ")")}
               </label>
             </div>
           </div>

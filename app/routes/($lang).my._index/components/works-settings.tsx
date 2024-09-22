@@ -12,6 +12,7 @@ import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import { toRatingText } from "~/utils/work/to-rating-text"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   sort: SortType
@@ -40,10 +41,9 @@ type Props = {
  */
 export function WorksSetting(props: Props) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-
   const [maxHeight, setMaxHeight] = useState("0px")
-
   const [opacity, setOpacity] = useState(0)
+  const t = useTranslation()
 
   const allSortType = [
     "LIKES_COUNT",
@@ -84,17 +84,19 @@ export function WorksSetting(props: Props) {
               placeholder={
                 props.accessType
                   ? toAccessTypeText(props.accessType)
-                  : "公開範囲"
+                  : t("公開範囲", "Access Range")
               }
             />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{"公開範囲"}</SelectItem>
-            <SelectItem value="PUBLIC">{"公開"}</SelectItem>
-            <SelectItem value="SILENT">{"公開(新着無)"}</SelectItem>
-            <SelectItem value="LIMITED">{"限定公開"}</SelectItem>
-            <SelectItem value="PRIVATE">{"非公開"}</SelectItem>
-            <SelectItem value="DRAFT">{"下書き"}</SelectItem>
+            <SelectItem value="ALL">{t("公開範囲", "Access Range")}</SelectItem>
+            <SelectItem value="PUBLIC">{t("公開", "Public")}</SelectItem>
+            <SelectItem value="SILENT">
+              {t("公開(新着無)", "Public (No New)")}
+            </SelectItem>
+            <SelectItem value="LIMITED">{t("限定公開", "Limited")}</SelectItem>
+            <SelectItem value="PRIVATE">{t("非公開", "Private")}</SelectItem>
+            <SelectItem value="DRAFT">{t("下書き", "Draft")}</SelectItem>
           </SelectContent>
         </Select>
         {/* 作品種別 */}
@@ -111,16 +113,18 @@ export function WorksSetting(props: Props) {
           <SelectTrigger>
             <SelectValue
               placeholder={
-                props.workType ? toWorkTypeText(props.workType) : "種類"
+                props.workType
+                  ? toWorkTypeText(props.workType)
+                  : t("種類", "Type")
               }
             />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{"種類"}</SelectItem>
-            <SelectItem value="WORK">{"画像"}</SelectItem>
-            <SelectItem value="VIDEO">{"動画"}</SelectItem>
-            <SelectItem value="NOVEL">{"小説"}</SelectItem>
-            <SelectItem value="COLUMN">{"コラム"}</SelectItem>
+            <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
+            <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
+            <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
+            <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
+            <SelectItem value="COLUMN">{t("コラム", "Column")}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -138,16 +142,18 @@ export function WorksSetting(props: Props) {
           <SelectTrigger>
             <SelectValue
               placeholder={
-                props.rating ? toRatingText(props.rating) : "年齢制限"
+                props.rating
+                  ? toRatingText(props.rating)
+                  : t("年齢制限", "Rating")
               }
             />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">{"年齢制限"}</SelectItem>
-            <SelectItem value="G">{"全年齢"}</SelectItem>
-            <SelectItem value="R15">{"R15"}</SelectItem>
-            <SelectItem value="R18">{"R18"}</SelectItem>
-            <SelectItem value="R18G">{"R18G"}</SelectItem>
+            <SelectItem value="ALL">{t("年齢制限", "Rating")}</SelectItem>
+            <SelectItem value="G">{t("全年齢", "All Ages")}</SelectItem>
+            <SelectItem value="R15">{t("R15", "R15")}</SelectItem>
+            <SelectItem value="R18">{t("R18", "R18")}</SelectItem>
+            <SelectItem value="R18G">{t("R18G", "R18G")}</SelectItem>
           </SelectContent>
         </Select>
       </div>

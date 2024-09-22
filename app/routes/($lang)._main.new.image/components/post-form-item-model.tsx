@@ -8,6 +8,7 @@ import {
 } from "~/components/ui/select"
 import type { AiModel } from "~/routes/($lang)._main.new.image/types/model"
 import { Card, CardContent } from "~/components/ui/card"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   model: string | null
@@ -30,10 +31,12 @@ export function PostFormItemModel(props: Props) {
     return 0
   })
 
+  const t = useTranslation()
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">使用AI</p>
+        <p className="font-bold text-sm">{t("使用AI", "Used AI")}</p>
         <Select
           value={props.model ?? ""}
           onValueChange={(value) => {

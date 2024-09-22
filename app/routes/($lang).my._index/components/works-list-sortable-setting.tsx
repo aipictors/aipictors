@@ -5,6 +5,7 @@ import { SortListSelector } from "~/components/sort-list-selector"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Button } from "~/components/ui/button"
 import { Dialog, DialogTrigger, DialogContent } from "~/components/ui/dialog"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   nowSort: SortType
@@ -23,33 +24,34 @@ type Props = {
 }
 
 /**
- * 並び順のラベルを取得する関数
- */
-const getLabel = (nowOrderBy: IntrospectionEnum<"WorkOrderBy">) => {
-  switch (nowOrderBy) {
-    case "LIKES_COUNT":
-      return "いいね！順"
-    case "BOOKMARKS_COUNT":
-      return "ブックマーク順"
-    case "COMMENTS_COUNT":
-      return "コメント順"
-    case "VIEWS_COUNT":
-      return "閲覧数順"
-    case "DATE_CREATED":
-      return "日付順"
-    case "NAME":
-      return "タイトル順"
-    case "IS_PROMOTION":
-      return "宣伝作品順"
-    default:
-      return "日付順"
-  }
-}
-
-/**
  * 作品一覧の並び順設定コンポーネント
  */
 export function WorksListSortableSetting(props: Props) {
+  const t = useTranslation()
+
+  /**
+   * 並び順のラベルを取得する関数
+   */
+  const getLabel = (nowOrderBy: IntrospectionEnum<"WorkOrderBy">) => {
+    switch (nowOrderBy) {
+      case "LIKES_COUNT":
+        return t("いいね！順", "Likes Count")
+      case "BOOKMARKS_COUNT":
+        return t("ブックマーク順", "Bookmarks Count")
+      case "COMMENTS_COUNT":
+        return t("コメント順", "Comments Count")
+      case "VIEWS_COUNT":
+        return t("閲覧数順", "Views Count")
+      case "DATE_CREATED":
+        return t("日付順", "Date Created")
+      case "NAME":
+        return t("タイトル順", "Title")
+      case "IS_PROMOTION":
+        return t("宣伝作品順", "Promotion")
+      default:
+        return t("日付順", "Date Created")
+    }
+  }
   const onClickLikeSortButton = () => {
     if (props.nowOrderBy === "LIKES_COUNT") {
       props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
@@ -143,55 +145,55 @@ export function WorksListSortableSetting(props: Props) {
                       {
                         sort: "ASC",
                         sortType: "LIKES_COUNT",
-                        label: "いいね！順",
+                        label: t("いいね！順", "Likes Count"),
                         callback: onClickLikeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "BOOKMARKS_COUNT",
-                        label: "ブックマーク順",
+                        label: t("ブックマーク順", "Bookmarks Count"),
                         callback: onClickBookmarkSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "COMMENTS_COUNT",
-                        label: "コメント順",
+                        label: t("コメント順", "Comments Count"),
                         callback: onClickCommentSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "VIEWS_COUNT",
-                        label: "閲覧数順",
+                        label: t("閲覧数順", "Views Count"),
                         callback: onClickViewSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "NAME",
-                        label: "タイトル順",
+                        label: t("タイトル順", "Title"),
                         callback: onClickTitleSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "WORK_TYPE",
-                        label: "種別順",
+                        label: t("種別順", "Work Type"),
                         callback: onClickWorkTypeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "IS_PROMOTION",
-                        label: "宣伝作品順",
+                        label: t("宣伝作品順", "Promotion"),
                         callback: onClickIsPromotionSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "ACCESS_TYPE",
-                        label: "状態順",
+                        label: t("状態順", "Access Type"),
                         callback: onClickAccessTypeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "DATE_CREATED",
-                        label: "日付順",
+                        label: t("日付順", "Date Created"),
                         callback: onClickDateSortButton,
                       },
                     ]
@@ -199,49 +201,49 @@ export function WorksListSortableSetting(props: Props) {
                       {
                         sort: "ASC",
                         sortType: "LIKES_COUNT",
-                        label: "いいね！順",
+                        label: t("いいね！順", "Likes Count"),
                         callback: onClickLikeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "BOOKMARKS_COUNT",
-                        label: "ブックマーク順",
+                        label: t("ブックマーク順", "Bookmarks Count"),
                         callback: onClickBookmarkSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "COMMENTS_COUNT",
-                        label: "コメント順",
+                        label: t("コメント順", "Comments Count"),
                         callback: onClickCommentSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "VIEWS_COUNT",
-                        label: "閲覧数順",
+                        label: t("閲覧数順", "Views Count"),
                         callback: onClickViewSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "NAME",
-                        label: "タイトル順",
+                        label: t("タイトル順", "Title"),
                         callback: onClickTitleSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "WORK_TYPE",
-                        label: "種別順",
+                        label: t("種別順", "Work Type"),
                         callback: onClickWorkTypeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "IS_PROMOTION",
-                        label: "宣伝作品順",
+                        label: t("宣伝作品順", "Promotion"),
                         callback: onClickIsPromotionSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "DATE_CREATED",
-                        label: "日付順",
+                        label: t("日付順", "Date Created"),
                         callback: onClickDateSortButton,
                       },
                     ]
@@ -256,7 +258,7 @@ export function WorksListSortableSetting(props: Props) {
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="secondary" className="w-full">
-              {getLabel(props.nowOrderBy)}{" "}
+              {getLabel(props.nowOrderBy)}
               {props.nowSort === "ASC" ? <ChevronUp /> : <ChevronDown />}
             </Button>
           </DialogTrigger>
@@ -268,55 +270,55 @@ export function WorksListSortableSetting(props: Props) {
                       {
                         sort: "ASC",
                         sortType: "LIKES_COUNT",
-                        label: "いいね！順",
+                        label: t("いいね！順", "Likes Count"),
                         callback: onClickLikeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "BOOKMARKS_COUNT",
-                        label: "ブックマーク順",
+                        label: t("ブックマーク順", "Bookmarks Count"),
                         callback: onClickBookmarkSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "COMMENTS_COUNT",
-                        label: "コメント順",
+                        label: t("コメント順", "Comments Count"),
                         callback: onClickCommentSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "VIEWS_COUNT",
-                        label: "閲覧数順",
+                        label: t("閲覧数順", "Views Count"),
                         callback: onClickViewSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "NAME",
-                        label: "タイトル順",
+                        label: t("タイトル順", "Title"),
                         callback: onClickTitleSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "WORK_TYPE",
-                        label: "種別順",
+                        label: t("種別順", "Work Type"),
                         callback: onClickWorkTypeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "IS_PROMOTION",
-                        label: "宣伝作品順",
+                        label: t("宣伝作品順", "Promotion"),
                         callback: onClickIsPromotionSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "ACCESS_TYPE",
-                        label: "状態順",
+                        label: t("状態順", "Access Type"),
                         callback: onClickAccessTypeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "DATE_CREATED",
-                        label: "日付順",
+                        label: t("日付順", "Date Created"),
                         callback: onClickDateSortButton,
                       },
                     ]
@@ -324,49 +326,49 @@ export function WorksListSortableSetting(props: Props) {
                       {
                         sort: "ASC",
                         sortType: "LIKES_COUNT",
-                        label: "いいね！順",
+                        label: t("いいね！順", "Likes Count"),
                         callback: onClickLikeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "BOOKMARKS_COUNT",
-                        label: "ブックマーク順",
+                        label: t("ブックマーク順", "Bookmarks Count"),
                         callback: onClickBookmarkSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "COMMENTS_COUNT",
-                        label: "コメント順",
+                        label: t("コメント順", "Comments Count"),
                         callback: onClickCommentSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "VIEWS_COUNT",
-                        label: "閲覧数順",
+                        label: t("閲覧数順", "Views Count"),
                         callback: onClickViewSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "NAME",
-                        label: "タイトル順",
+                        label: t("タイトル順", "Title"),
                         callback: onClickTitleSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "WORK_TYPE",
-                        label: "種別順",
+                        label: t("種別順", "Work Type"),
                         callback: onClickWorkTypeSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "IS_PROMOTION",
-                        label: "宣伝作品順",
+                        label: t("宣伝作品順", "Promotion"),
                         callback: onClickIsPromotionSortButton,
                       },
                       {
                         sort: "ASC",
                         sortType: "DATE_CREATED",
-                        label: "日付順",
+                        label: t("日付順", "Date Created"),
                         callback: onClickDateSortButton,
                       },
                     ]

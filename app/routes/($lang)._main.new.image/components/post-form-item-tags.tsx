@@ -2,6 +2,7 @@ import { useMemo, useCallback } from "react"
 import { type Tag, TagInput } from "~/components/tag/tag-input"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   tags: Tag[]
@@ -15,6 +16,7 @@ type Props = {
  * タグ入力
  */
 export function PostFormItemTags(props: Props) {
+  const t = useTranslation()
   const whiteListTags = props.whiteListTags
 
   const getRandomId = useCallback(() => {
@@ -63,9 +65,14 @@ export function PostFormItemTags(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">{`タグ (${props.tags.length}/10)`}</p>
+        <p className="font-bold text-sm">
+          {t(
+            `タグ (${props.tags.length}/10)`,
+            `Tags (${props.tags.length}/10)`,
+          )}
+        </p>
         <TagInput
-          placeholder="タグを追加してください"
+          placeholder={t("タグを追加してください", "Add tags")}
           tags={props.tags}
           maxTags={10}
           maxLength={160}
@@ -75,13 +82,14 @@ export function PostFormItemTags(props: Props) {
           setTags={() => {}}
           autocompleteOptions={formattedWhiteListTags}
           enableAutocomplete={true}
-          placeholderWhenFull="タグは10個までです"
+          placeholderWhenFull={t("タグは10個までです", "Up to 10 tags allowed")}
         />
         <div className="space-y-2 pt-2">
           <p className="text-sm">
-            {
-              "プロンプト付きの画像を読み込むとおすすめタグが更新されます(Dall-Eなどは非対応)"
-            }
+            {t(
+              "プロンプト付きの画像を読み込むとおすすめタグが更新されます(Dall-Eなどは非対応)",
+              "Recommended tags will be updated when an image with a prompt is loaded (not supported by Dall-E)",
+            )}
           </p>
           {props.recommendedTags.length !== 0 && (
             <div className="flex flex-wrap gap-2">
