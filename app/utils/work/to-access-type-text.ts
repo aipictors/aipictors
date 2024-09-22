@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 /**
@@ -5,16 +6,18 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
  * @param
  */
 export const toAccessTypeText = (type: IntrospectionEnum<"AccessType">) => {
+  const t = useTranslation()
+
   switch (type) {
     case "PUBLIC":
-      return "公開"
+      return t("公開", "Public")
     case "SILENT":
-      return "公開(新着無)"
+      return t("公開(新着無)", "Public (No New Listing)")
     case "PRIVATE":
-      return "非公開"
+      return t("非公開", "Private")
     case "LIMITED":
-      return "限定公開"
+      return t("限定公開", "Limited")
     case "DRAFT":
-      return "下書き"
+      return t("下書き", "Draft")
   }
 }

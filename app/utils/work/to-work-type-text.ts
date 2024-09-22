@@ -1,18 +1,23 @@
+import { useTranslation } from "~/hooks/use-translation"
+
 /**
  * 作品の種別の文言を返す
  * @param
  */
 export const toWorkTypeText = (type: string) => {
+  // TODO: Hookをなくす
+  const t = useTranslation()
+
   switch (type) {
     case "WORK":
-      return "画像"
+      return t("画像", "Image")
     case "VIDEO":
-      return "動画"
+      return t("動画", "Video")
     case "COLUMN":
-      return "コラム"
+      return t("コラム", "Column")
     case "NOVEL":
-      return "小説"
+      return t("小説", "Novel")
     default:
-      return "画像"
+      return t("画像", "Image")
   }
 }

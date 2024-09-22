@@ -2,16 +2,20 @@ import { Link } from "@remix-run/react"
 import { ArrowLeftRightIcon } from "lucide-react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateText } from "~/utils/to-date-text"
+import { toDateEnText } from "~/utils/to-date-en-text"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   notification: FragmentOf<typeof FollowNotificationFragment>
 }
 
 /**
- * ヘッダーのコメントのお知らせ内容
+ * ヘッダーのフォロー通知内容
  */
 export function HomeNotificationsContentFollowedItem(props: Props) {
+  const t = useTranslation()
+
   if (props.notification.user === null) {
     return null
   }
@@ -31,10 +35,16 @@ export function HomeNotificationsContentFollowedItem(props: Props) {
       />
       <div className="ml-2 w-full overflow-hidden">
         <p className="text-ellipsis">
-          {props.notification.user.name}さんにフォローされました！
+          {t(
+            `${props.notification.user.name}さんにフォローされました！`,
+            `${props.notification.user.name} followed you!`,
+          )}
         </p>
         <p className="text-sm opacity-80">
-          {toDateText(props.notification.createdAt)}
+          {t(
+            toDateText(props.notification.createdAt),
+            toDateEnText(props.notification.createdAt),
+          )}
         </p>
       </div>
       {props.notification.user.isFollowee && (

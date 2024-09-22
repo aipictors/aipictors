@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HomeNotificationCommentsContents } from "~/routes/($lang)._main._index/components/home-notifications-comments-contents"
 import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * ヘッダーのお知らせメニューのコメントタブ
@@ -13,7 +14,9 @@ export function HomeNotificationCommentsTabs() {
     "COMMENT_REPLY",
   ]
 
-  const tabLabel = ["コメント", "返信"]
+  const t = useTranslation()
+
+  const tabLabel = [t("コメント", "Comment"), t("返信", "Reply")]
 
   const defaultTab = tabValues[0]
 

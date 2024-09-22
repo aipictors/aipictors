@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
@@ -9,16 +10,21 @@ type Props = {
  * 作品バナー
  */
 export function PostAccessTypeBanner(props: Props) {
+  const t = useTranslation()
+
   const accessTypeText = () => {
     switch (props.postAccessType) {
       case "PUBLIC":
         return ""
       case "PRIVATE":
-        return "非公開（アーカイブ）"
+        return t("非公開（アーカイブ）", "Private (Archived)")
       case "DRAFT":
-        return "下書き"
+        return t("下書き", "Draft")
       case "LIMITED":
-        return "限定公開（URLを知っているユーザのみ公開）"
+        return t(
+          "限定公開（URLを知っているユーザのみ公開）",
+          "Limited (Only users with the URL can view)",
+        )
       default:
         return ""
     }
@@ -41,7 +47,7 @@ export function PostAccessTypeBanner(props: Props) {
 
   const getFuturePost = () => {
     if (props.createdAt * 1000 > new Date().getTime()) {
-      return "予約投稿"
+      return t("予約投稿", "Scheduled Post")
     }
     return ""
   }

@@ -2,7 +2,9 @@ import { Badge } from "~/components/ui/badge"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateText } from "~/utils/to-date-text"
+import { toDateEnText } from "~/utils/to-date-en-text"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
@@ -20,6 +22,8 @@ const stickerSizeClasses = {
  * ヘッダーのコメントのお知らせ内容
  */
 export function HomeNotificationsContentCommentedItem(props: Props) {
+  const t = useTranslation()
+
   const stickerClass = props.stickerSize
     ? stickerSizeClasses[props.stickerSize]
     : stickerSizeClasses.md
@@ -43,12 +47,15 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
           />
           <div className="ml-2 w-full overflow-hidden">
             <p className="text-ellipsis">
-              {props.notification.user?.name}さんがコメントしました
+              {t(
+                `${props.notification.user?.name}さんがコメントしました`,
+                `${props.notification.user?.name} commented`,
+              )}
               {props.notification.message && (
                 <>
-                  {"「"}
+                  {t("「", " '")}
                   {props.notification.message}
-                  {"」"}
+                  {t("」", " '")}
                 </>
               )}
             </p>
@@ -61,9 +68,14 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
             )}
             <div className="flex items-center space-x-2">
               <p className="text-sm opacity-80">
-                {toDateText(props.notification.createdAt)}
+                {t(
+                  toDateText(props.notification.createdAt),
+                  toDateEnText(props.notification.createdAt),
+                )}
               </p>
-              {isReplied && <Badge variant="secondary">返信済み</Badge>}
+              {isReplied && (
+                <Badge variant="secondary">{t("返信済み", "Replied")}</Badge>
+              )}
             </div>
           </div>
           <div className="h-12 w-12 overflow-hidden rounded-md">
@@ -83,12 +95,15 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
             className="h-8 w-8 rounded-full object-cover"
           />
           <p className="text-ellipsis">
-            {reply.user?.name}返信しました
+            {t(
+              `${reply.user?.name}返信しました`,
+              `${reply.user?.name} replied`,
+            )}
             {reply.text && (
               <>
-                {"「"}
+                {t("「", " '")}
                 {reply.text}
-                {"」"}
+                {t("」", " '")}
               </>
             )}
           </p>
