@@ -23,7 +23,7 @@ type Props = {
 /**
  * 作成済みの作品選択ダイアログ
  */
-export function SelectCreatedWorksDialogWithIds(props: Props) {
+export function SelectCreatedWorksDialog(props: Props) {
   const t = useTranslation() // 翻訳フックを使用
   const appContext = useContext(AuthContext)
 
