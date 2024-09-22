@@ -71,12 +71,12 @@ export function PostFormItemView(props: Props) {
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              {t("下書き", "Draft")}
+              <RadioGroupItem value="DRAFT" id="view-draft" />
               <label
                 htmlFor="view-draft"
                 className="flex items-center space-x-2"
               >
-                <RadioGroupItem value="DRAFT" id="view-draft" />
+                {t("下書き", "Draft")}
               </label>
             </div>
           </div>
