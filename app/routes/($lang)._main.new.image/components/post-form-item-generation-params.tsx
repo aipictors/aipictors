@@ -5,6 +5,7 @@ import { Card, CardContent } from "~/components/ui/card"
 import { useState } from "react"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation" // useTranslationをインポート
 
 type Props = {
   pngInfo: PNGInfo | null
@@ -15,6 +16,8 @@ type Props = {
  * 生成パラメータ入力
  */
 export function PostFormItemGenerationParams(props: Props) {
+  const t = useTranslation() // 翻訳フックの使用
+
   const handleChange = (field: keyof PNGInfo["params"], value: string) => {
     if (!props.pngInfo) return
 
@@ -46,43 +49,45 @@ export function PostFormItemGenerationParams(props: Props) {
         <ExpansionTransition
           triggerChildren={
             <Button variant={"secondary"} className="w-full">
-              {"生成情報"}
-              {isExpanded ? "を閉じる" : "を開く"}
+              {t("生成情報", "Generation Info")}
+              {isExpanded ? t("を閉じる", "Close") : t("を開く", "Expand")}
             </Button>
           }
           onExpandChange={setIsExpanded}
         >
           <div className="flex flex-col space-y-4">
-            <p className="text-xs">プロンプト</p>
+            <p className="text-xs">{t("プロンプト", "Prompt")}</p>
             <Textarea
               onChange={(event) => handleChange("prompt", event.target.value)}
               maxLength={10000}
               value={props.pngInfo?.params?.prompt ?? ""}
-              placeholder={"Prompts"}
+              placeholder={t("Prompts", "Prompts")}
               className="max-h-24 w-full overflow-y-auto"
             />
             {/* ネガティブプロンプト */}
-            <p className="text-xs">ネガティブプロンプト</p>
+            <p className="text-xs">
+              {t("ネガティブプロンプト", "Negative Prompt")}
+            </p>
             <Textarea
               onChange={(event) =>
                 handleChange("negativePrompt", event.target.value)
               }
               value={props.pngInfo?.params?.negativePrompt ?? ""}
               maxLength={10000}
-              placeholder={"NegativePrompts"}
+              placeholder={t("Negative Prompts", "Negative Prompts")}
               className="max-h-24 w-full overflow-y-auto"
             />
             {/* Seed, Steps, Scale */}
-            <p className="text-xs">詳細</p>
+            <p className="text-xs">{t("詳細", "Details")}</p>
             <div className="flex flex-col space-y-4">
-              <div className="flex">
+              <div className="flex space-x-2">
                 <Input
                   onChange={(event) => handleChange("seed", event.target.value)}
                   value={props.pngInfo?.params?.seed ?? ""}
                   minLength={1}
                   maxLength={100}
                   type="text"
-                  placeholder={"Seed"}
+                  placeholder={t("Seed", "Seed")}
                   className="w-full"
                 />
                 <Input
@@ -93,7 +98,7 @@ export function PostFormItemGenerationParams(props: Props) {
                   minLength={1}
                   maxLength={100}
                   type="text"
-                  placeholder={"Steps"}
+                  placeholder={t("Steps", "Steps")}
                   className="w-full"
                 />
                 <Input
@@ -104,11 +109,11 @@ export function PostFormItemGenerationParams(props: Props) {
                   minLength={6}
                   maxLength={100}
                   type="text"
-                  placeholder={"Scale"}
+                  placeholder={t("Scale", "Scale")}
                   className="w-full"
                 />
               </div>
-              <div className="flex space-x-1">
+              <div className="flex space-x-2">
                 <Input
                   onChange={(event) =>
                     handleChange("sampler", event.target.value)
@@ -117,7 +122,7 @@ export function PostFormItemGenerationParams(props: Props) {
                   minLength={1}
                   maxLength={100}
                   type="text"
-                  placeholder={"Sampler"}
+                  placeholder={t("Sampler", "Sampler")}
                   className="w-full"
                 />
                 <Input
@@ -128,7 +133,7 @@ export function PostFormItemGenerationParams(props: Props) {
                   minLength={1}
                   maxLength={100}
                   type="text"
-                  placeholder={"Strength"}
+                  placeholder={t("Strength", "Strength")}
                   className="w-full"
                 />
                 <Input
@@ -139,11 +144,11 @@ export function PostFormItemGenerationParams(props: Props) {
                   minLength={1}
                   maxLength={100}
                   type="text"
-                  placeholder={"Noise"}
+                  placeholder={t("Noise", "Noise")}
                   className="w-full"
                 />
               </div>
-              <div className="flex">
+              <div className="flex space-x-2">
                 <Input
                   onChange={(event) =>
                     handleChange("model", event.target.value)
@@ -152,7 +157,7 @@ export function PostFormItemGenerationParams(props: Props) {
                   minLength={1}
                   maxLength={100}
                   type="text"
-                  placeholder={"Model"}
+                  placeholder={t("Model", "Model")}
                   className="w-full"
                 />
                 <Input
@@ -163,7 +168,7 @@ export function PostFormItemGenerationParams(props: Props) {
                   minLength={1}
                   maxLength={100}
                   type="text"
-                  placeholder={"ModelHash"}
+                  placeholder={t("Model Hash", "Model Hash")}
                   className="w-full"
                 />
               </div>
@@ -172,7 +177,7 @@ export function PostFormItemGenerationParams(props: Props) {
               onChange={(event) => handleSrcChange(event.target.value)}
               value={props.pngInfo?.src ?? ""}
               maxLength={10000}
-              placeholder={"Other"}
+              placeholder={t("Other", "Other")}
               className="w-full"
             />
           </div>

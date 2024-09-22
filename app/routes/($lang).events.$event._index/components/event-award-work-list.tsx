@@ -8,6 +8,7 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
@@ -33,6 +34,8 @@ export function EventAwardWorkList(props: Props) {
 
   const workDisplayed = resp?.appEvent?.awardWorks ?? props.works
 
+  const t = useTranslation()
+
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">
@@ -42,7 +45,7 @@ export function EventAwardWorkList(props: Props) {
         {/* 昨日の日付 // /2024/05/01 */}
         <Link to={`/events/${props.slug}/award`}>
           <Button variant={"secondary"} size={"sm"}>
-            {"すべて見る"}
+            {t("すべて見る", "All")}
           </Button>
         </Link>
       </div>

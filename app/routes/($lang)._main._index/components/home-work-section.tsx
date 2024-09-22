@@ -15,6 +15,7 @@ import { graphql, type FragmentOf } from "gql.tada"
 import { cn } from "~/lib/utils"
 import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
 import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof HomeWorkFragment>[]
@@ -27,6 +28,8 @@ type Props = {
 }
 
 export function HomeWorkSection(props: Props) {
+  const t = useTranslation()
+
   if (props.works.length === 0) {
     return null
   }
@@ -52,7 +55,7 @@ export function HomeWorkSection(props: Props) {
         {props.link && (
           <Link to={props.link}>
             <Button variant={"secondary"} size={"sm"}>
-              {"すべて見る"}
+              {t("すべて見る", "All")}
             </Button>
           </Link>
         )}

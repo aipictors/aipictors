@@ -11,6 +11,7 @@ import { Heart } from "lucide-react"
 import { config } from "~/config"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title: string
@@ -53,6 +54,8 @@ export function HomeAwardWorkSection(props: Props) {
     yesterday.getMonth() + 1
   }/${yesterday.getDate()}`
 
+  const t = useTranslation()
+
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">
@@ -62,7 +65,7 @@ export function HomeAwardWorkSection(props: Props) {
         {/* 昨日の日付 // /2024/05/01 */}
         <Link to={`rankings/${yesterdayStr}`}>
           <Button variant={"secondary"} size={"sm"}>
-            {"すべて見る"}
+            {t("すべて見る", "All")}
           </Button>
         </Link>
       </div>

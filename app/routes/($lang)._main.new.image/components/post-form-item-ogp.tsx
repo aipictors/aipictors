@@ -1,5 +1,6 @@
 import { OgpDialog } from "~/routes/($lang)._main.new.image/components/ogp-dialog"
 import { useEffect, useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   imageBase64: string
@@ -26,6 +27,8 @@ export function PostFormItemOgp(props: Props) {
     }
   }, [props.ogpBase64])
 
+  const t = useTranslation()
+
   return (
     <>
       <OgpDialog
@@ -41,7 +44,13 @@ export function PostFormItemOgp(props: Props) {
                 className={"max-w-24 rounded-md"}
               />
             </div>
-            <p className="text-white">SNSシェア時のサムネイル調整</p>
+            <p className="text-white">
+              {" "}
+              {t(
+                "SNSシェア時のサムネイル調整",
+                "Adjust the thumbnail when sharing on SNS",
+              )}
+            </p>
           </div>
         </div>
       </OgpDialog>

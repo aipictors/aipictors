@@ -28,10 +28,17 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditImageFormUploader } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/edit-image-form-uploader"
 import React from "react"
 import { getJstDate } from "~/utils/jst-date"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
+  }
+
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
   }
 
   return json({
@@ -68,6 +75,10 @@ export default function EditImage() {
   const authContext = useContext(AuthContext)
 
   const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
 
   const { data: workWithAuth = null } = useQuery(workQuery, {
     skip: authContext.isLoading,

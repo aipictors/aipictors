@@ -10,6 +10,7 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation" // useTranslationをインポート
 
 type Props = {
   children?: React.ReactNode
@@ -23,6 +24,7 @@ type Props = {
  * 作成済みの作品選択ダイアログ
  */
 export function SelectCreatedWorksDialogWithIds(props: Props) {
+  const t = useTranslation() // 翻訳フックの使用
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -89,7 +91,12 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         props.setSelectedWorkIds([...props.selectedWorkIds, work.id])
         setSelectedWorksOnMemory([...selectedWorksOnMemory, work])
       } else {
-        toast(`選択できる作品数は${props.limit}つまでです。`)
+        toast(
+          t(
+            `選択できる作品数は${props.limit}つまでです。`,
+            `You can select up to ${props.limit} works.`,
+          ),
+        ) // 翻訳対応
       }
     }
   }
@@ -126,7 +133,9 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     return (
       <div className="p-4">
         <ImageIcon className="m-auto h-8 w-8 opacity-70" />
-        <p className="p-4 text-center text-sm">作品がありません。</p>
+        <p className="p-4 text-center text-sm">
+          {t("作品がありません。", "No works available.")}
+        </p>
       </div>
     )
   }
@@ -139,7 +148,10 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
           onClick={() => setIsOpen(true)}
           className="m-2 cursor-pointer text-right text-sm opacity-80"
         >
-          すべて見る({props.selectedWorkIds.length})
+          {t(
+            `すべて見る(${props.selectedWorkIds.length})`,
+            `View All (${props.selectedWorkIds.length})`,
+          )}
         </p>
       )}
 
@@ -177,7 +189,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         }}
       >
         <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
-          作品選択
+          {t("作品選択", "Select Works")}
           <>
             <Tabs
               className="mt-2 mb-8"
@@ -190,14 +202,14 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                   className="w-full"
                   value="NO_SELECTED"
                 >
-                  未選択
+                  {t("未選択", "Not Selected")}
                 </TabsTrigger>
                 <TabsTrigger
                   onClick={() => setTab("SELECTED")}
                   className="w-full"
                   value="SELECTED"
                 >
-                  選択中
+                  {t("選択中", "Selected")}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -229,9 +241,11 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             )}
           </>
           <div className="space-y-4">{""}</div>
-          <Button onClick={() => setIsOpen(false)}>決定</Button>
+          <Button onClick={() => setIsOpen(false)}>
+            {t("決定", "Confirm")}
+          </Button>
           <Button variant={"secondary"} onClick={() => setIsOpen(false)}>
-            キャンセル
+            {t("キャンセル", "Cancel")}
           </Button>
         </DialogContent>
       </Dialog>

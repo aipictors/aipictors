@@ -1,3 +1,4 @@
+import { useTranslation } from "~/hooks/use-translation"
 import { ThumbnailPositionAdjustDialog } from "~/routes/($lang)._main.new.image/components/thumbnail-position-adjust-dialog"
 
 type Props = {
@@ -13,6 +14,8 @@ type Props = {
  * サムネイル位置調整フォーム
  */
 export function PostFormItemThumbnailPositionAdjust(props: Props) {
+  const t = useTranslation()
+
   return (
     <>
       <ThumbnailPositionAdjustDialog
@@ -36,7 +39,9 @@ export function PostFormItemThumbnailPositionAdjust(props: Props) {
                 className={props.isThumbnailLandscape ? "h-16" : "w-16"}
               />
             </div>
-            <p className="text-white">サムネイルを調整</p>
+            <p className="text-white">
+              {t("サムネイルを調整", "Adjust thumbnail")}
+            </p>
           </div>
         </div>
       </ThumbnailPositionAdjustDialog>

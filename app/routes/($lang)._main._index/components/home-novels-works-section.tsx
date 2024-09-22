@@ -31,9 +31,6 @@ export function HomeNovelsWorksSection(props: Props) {
         <h2 className="items-center space-x-2 font-bold text-md">
           {props.title}
         </h2>
-        {/* <Button variant={"secondary"} size={"sm"}>
-          {"すべて見る"}
-        </Button> */}
       </div>
 
       <CarouselWithGradation

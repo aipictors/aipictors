@@ -1,20 +1,21 @@
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { ImageIcon, CheckIcon, PlusIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import React from "react"
+import type React from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toast } from "sonner"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   children?: React.ReactNode
-  selectedWorks: FragmentOf<typeof DialogWorkFragment>[]
-  setSelectedWorks: (works: FragmentOf<typeof DialogWorkFragment>[]) => void
+  selectedWorkIds: string[]
+  setSelectedWorkIds: (workIds: string[]) => void
   limit?: number
   isSensitive?: boolean
 }
@@ -22,16 +23,20 @@ type Props = {
 /**
  * 作成済みの作品選択ダイアログ
  */
-export function SelectCreatedWorksDialog(props: Props) {
+export function SelectCreatedWorksDialogWithIds(props: Props) {
+  const t = useTranslation() // 翻訳フックを使用
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
-
-  const [page, setPage] = React.useState(0)
-
+  const [page, setPage] = useState(0)
+  const [selectedPage, setSelectedPage] = useState(0)
   const [tab, setTab] = useState<"NO_SELECTED" | "SELECTED">("NO_SELECTED")
 
-  const worksResult = useSuspenseQuery(worksQuery, {
+  const [selectedWorksOnMemory, setSelectedWorksOnMemory] = useState<
+    FragmentOf<typeof DialogWorkFragment>[]
+  >([])
+
+  const worksResult = useQuery(worksQuery, {
     skip: appContext.isLoading,
     variables: {
       offset: page * 32,
@@ -45,7 +50,7 @@ export function SelectCreatedWorksDialog(props: Props) {
     },
   })
 
-  const worksCountResp = useSuspenseQuery(worksCountQuery, {
+  const worksCountResp = useQuery(worksCountQuery, {
     skip: appContext.isLoading,
     variables: {
       where: {
@@ -55,6 +60,15 @@ export function SelectCreatedWorksDialog(props: Props) {
     },
   })
 
+  useEffect(() => {
+    if (worksResult.data?.works) {
+      const selectedWorks = worksResult.data.works.filter((work) =>
+        props.selectedWorkIds.includes(work.id),
+      )
+      setSelectedWorksOnMemory(selectedWorks)
+    }
+  }, [props.selectedWorkIds, worksResult.data])
+
   const works = worksResult.data?.works
   const worksMaxCount = worksCountResp.data?.worksCount ?? 0
 
@@ -63,15 +77,24 @@ export function SelectCreatedWorksDialog(props: Props) {
   }
 
   const handleWorkClick = (work: FragmentOf<typeof DialogWorkFragment>) => {
-    if (props.selectedWorks.some((w) => w.id === work.id)) {
-      props.setSelectedWorks(
-        props.selectedWorks.filter((w) => w.id !== work.id),
+    if (selectedWorksOnMemory.some((w) => w.id === work.id)) {
+      props.setSelectedWorkIds(
+        props.selectedWorkIds.filter((w) => w !== work.id),
+      )
+      setSelectedWorksOnMemory(
+        selectedWorksOnMemory.filter((w) => w.id !== work.id),
       )
     } else {
-      if (!props.limit || props.selectedWorks.length < props.limit) {
-        props.setSelectedWorks([...props.selectedWorks, work])
+      if (!props.limit || selectedWorksOnMemory.length < props.limit) {
+        props.setSelectedWorkIds([...props.selectedWorkIds, work.id])
+        setSelectedWorksOnMemory([...selectedWorksOnMemory, work])
       } else {
-        toast(`選択できる作品数は${props.limit}つまでです。`)
+        toast(
+          t(
+            `選択できる作品数は${props.limit}つまでです。`,
+            `You can select up to ${props.limit} works.`,
+          ),
+        )
       }
     }
   }
@@ -94,7 +117,7 @@ export function SelectCreatedWorksDialog(props: Props) {
           <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
             {truncateTitle(work.title, 8)}
           </div>
-          {props.selectedWorks.some((w) => w.id === work.id) && (
+          {selectedWorksOnMemory.some((w) => w.id === work.id) && (
             <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
               <CheckIcon className="p-1 text-white dark:text-black" />
             </div>
@@ -108,25 +131,30 @@ export function SelectCreatedWorksDialog(props: Props) {
     return (
       <div className="p-4">
         <ImageIcon className="m-auto h-8 w-8 opacity-70" />
-        <p className="p-4 text-center text-sm">作品がありません。</p>
+        <p className="p-4 text-center text-sm">
+          {t("作品がありません。", "No works available.")}
+        </p>
       </div>
     )
   }
 
   return (
     <>
-      {props.selectedWorks.length > 7 && (
+      {selectedWorksOnMemory.length > 7 && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <p
           onClick={() => setIsOpen(true)}
           className="m-2 cursor-pointer text-right text-sm opacity-80"
         >
-          すべて見る({props.selectedWorks.length})
+          {t(
+            `すべて見る(${props.selectedWorkIds.length})`,
+            `View All (${props.selectedWorkIds.length})`,
+          )}
         </p>
       )}
 
       <div className="flex flex-wrap items-center">
-        {props.selectedWorks.slice(0, 7).map((work) => (
+        {selectedWorksOnMemory.slice(0, 3).map((work) => (
           <div key={work.id} className="relative m-2 h-16 w-16 md:h-24 md:w-24">
             <img
               className="h-16 w-16 rounded-md object-cover md:h-24 md:w-24"
@@ -159,7 +187,7 @@ export function SelectCreatedWorksDialog(props: Props) {
         }}
       >
         <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
-          作品選択
+          {t("作品選択", "Select Works")}
           <>
             <Tabs
               className="mt-2 mb-8"
@@ -172,14 +200,14 @@ export function SelectCreatedWorksDialog(props: Props) {
                   className="w-full"
                   value="NO_SELECTED"
                 >
-                  未選択
+                  {t("未選択", "Not Selected")}
                 </TabsTrigger>
                 <TabsTrigger
                   onClick={() => setTab("SELECTED")}
                   className="w-full"
                   value="SELECTED"
                 >
-                  選択中
+                  {t("選択中", "Selected")}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -189,7 +217,7 @@ export function SelectCreatedWorksDialog(props: Props) {
               )}
               {tab === "SELECTED" && (
                 <div className="flex flex-wrap">
-                  {renderWorks(props.selectedWorks)}
+                  {renderWorks(selectedWorksOnMemory)}
                 </div>
               )}
             </ScrollArea>
@@ -201,11 +229,21 @@ export function SelectCreatedWorksDialog(props: Props) {
                 onPageChange={(page: number) => setPage(page)}
               />
             )}
+            {tab === "SELECTED" && (
+              <ResponsivePagination
+                perPage={32}
+                maxCount={props.selectedWorkIds.length}
+                currentPage={selectedPage}
+                onPageChange={(page: number) => setSelectedPage(page)}
+              />
+            )}
           </>
           <div className="space-y-4">{""}</div>
-          <Button onClick={() => setIsOpen(false)}>決定</Button>
+          <Button onClick={() => setIsOpen(false)}>
+            {t("決定", "Confirm")}
+          </Button>
           <Button variant={"secondary"} onClick={() => setIsOpen(false)}>
-            キャンセル
+            {t("キャンセル", "Cancel")}
           </Button>
         </DialogContent>
       </Dialog>

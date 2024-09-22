@@ -23,6 +23,7 @@ import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/r
 import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳フックの使用
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -46,8 +47,8 @@ type Props = {
 
 const getJSTDate = () => {
   const date = new Date()
-  const utcOffset = date.getTimezoneOffset() * 60000 // 分単位のオフセットをミリ秒に変換
-  const jstOffset = 9 * 60 * 60 * 1000 // JSTはUTC+9
+  const utcOffset = date.getTimezoneOffset() * 60000
+  const jstOffset = 9 * 60 * 60 * 1000
   const jstDate = new Date(date.getTime() + utcOffset + jstOffset)
 
   const year = jstDate.getFullYear()
@@ -58,8 +59,8 @@ const getJSTDate = () => {
 }
 
 export function PostImageFormInput(props: Props) {
+  const t = useTranslation() // 翻訳対応
   const jstDate = getJSTDate()
-
   const reservationDate = props.state.reservationDate || jstDate
 
   const { data, loading } = useQuery(pageQuery, {
@@ -83,11 +84,16 @@ export function PostImageFormInput(props: Props) {
 
   const onChangeTheme = (value: boolean) => {
     if (props.themes === null) {
-      throw new Error("お題がありません。")
+      throw new Error(t("お題がありません。", "No theme available."))
     }
     const theme = props.themes.find((theme) => theme.date === reservationDate)
     if (theme === undefined) {
-      throw new Error("選択された日付にお題が見つかりませんでした。")
+      throw new Error(
+        t(
+          "選択された日付にお題が見つかりませんでした。",
+          "No theme found for the selected date.",
+        ),
+      )
     }
     if (value === false) {
       props.dispatch({
@@ -108,9 +114,6 @@ export function PostImageFormInput(props: Props) {
     })
   }
 
-  /**
-   * 選択可能なタグ
-   */
   const tagOptions = () => {
     if (data?.whiteListTags === undefined) {
       return []
@@ -118,12 +121,10 @@ export function PostImageFormInput(props: Props) {
     const tags = data.whiteListTags.filter((tag) => {
       return !props.state.tags.map((t) => t.text).includes(tag.name)
     })
-    return tags.map((tag) => {
-      return {
-        id: tag.id,
-        text: tag.name,
-      }
-    })
+    return tags.map((tag) => ({
+      id: tag.id,
+      text: tag.name,
+    }))
   }
 
   const recommendedTagOptions = () => {
@@ -134,21 +135,17 @@ export function PostImageFormInput(props: Props) {
       return !props.state.tags.map((t) => t.text).includes(tag.name)
     })
 
-    return tags.map((tag) => {
-      return {
-        id: tag.id,
-        text: tag.name,
-      }
-    })
+    return tags.map((tag) => ({
+      id: tag.id,
+      text: tag.name,
+    }))
   }
 
   const albumOptions = () => {
-    return props.albums.map((album) => {
-      return {
-        id: album.id,
-        name: album.title,
-      }
-    })
+    return props.albums.map((album) => ({
+      id: album.id,
+      name: album.title,
+    }))
   }
 
   const aiModelOptions = () => {
@@ -157,12 +154,10 @@ export function PostImageFormInput(props: Props) {
     }
     return props.aiModels
       .filter((model) => model.workModelId !== null)
-      .map((model) => {
-        return {
-          id: model.workModelId as string,
-          name: model.name,
-        }
-      })
+      .map((model) => ({
+        id: model.workModelId as string,
+        name: model.name,
+      }))
   }
 
   return (
@@ -246,7 +241,7 @@ export function PostImageFormInput(props: Props) {
             htmlFor="set-generation-check"
             className="ml-2 font-medium text-sm"
           >
-            {"生成情報を公開する"}
+            {t("生成情報を公開する", "Publish generation info")}
           </label>
         </div>
       )}
