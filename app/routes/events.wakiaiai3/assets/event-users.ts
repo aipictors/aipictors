@@ -55,7 +55,7 @@ export const eventUsers: EventUser[] = [
     message: null,
     iconImageURL:
       "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_ourt_ai.png?alt=media&token=3d4f564d-0405-449e-8e15-1b44fa27651d",
-    twitterId: "ourtAI_moto",
+    twitterId: "ourt_ai",
     aipictorsId: null,
     siteURL: null,
     siteTitle: null,
