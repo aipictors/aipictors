@@ -183,10 +183,13 @@ export function RankingSensitiveHeader(props: Props) {
         const formattedDate = `${date.getFullYear()}/${(date.getMonth() + 1)
           .toString()
           .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`
+
         items.push({
           link: `/r/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
           name: formattedDate,
-          border: formattedDate === `${year}/${month}/${day}`,
+          border:
+            formattedDate ===
+            `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
         })
       }
     }

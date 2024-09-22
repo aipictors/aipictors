@@ -23,6 +23,7 @@ import {
 } from "~/components/ui/carousel"
 import { Card, CardContent } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof ThemeWorkFragment>[]
@@ -66,6 +67,8 @@ export function ThemeArticle(props: Props) {
 
   const works = resp?.works ?? props.works
 
+  const t = useTranslation()
+
   return (
     <div className="flex flex-col space-y-6 rounded-lg bg-gradient-to-b p-4">
       <Button
@@ -91,9 +94,10 @@ export function ThemeArticle(props: Props) {
         />
         <div className="absolute top-0 left-0 bg-black bg-opacity-60 p-4 font-semibold text-lg text-white">
           <h1 className="font-bold text-2xl">{props.title}</h1>
-          {props.isSensitive && <h2 className="text-md">{"センシティブ"}</h2>}
+          {props.isSensitive && (
+            <h2 className="text-md">{t("センシティブ", "Sensitive")}</h2>
+          )}
           <h2 className="text-xl">{`作品数: ${props.worksCount}`}</h2>
-          <p className="text-sm opacity-80">作品は1日ごとに集計されます</p>
         </div>
       </div>
       <div className="flex items-center space-x-2">
@@ -104,7 +108,9 @@ export function ThemeArticle(props: Props) {
           variant={"secondary"}
         >
           {isOpenedCalender ? <Minus /> : <Plus />}
-          {isOpenedCalender ? "カレンダーを閉じる" : "カレンダーを開く"}
+          {isOpenedCalender
+            ? t("カレンダーを閉じる", "Close Calender")
+            : t("カレンダーを開く", "Open Calender")}
         </Button>
       </div>
       {isOpenedCalender && (

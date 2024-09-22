@@ -4,7 +4,6 @@ import {
   type PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
-import { useNavigate } from "@remix-run/react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
@@ -12,10 +11,10 @@ import { tagWorksQuery } from "~/routes/($lang)._main.tags.$tag._index/route"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
 import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/tag-action-other"
-import { CircleAlertIcon } from "lucide-react"
 import { WorksListSortableSetting } from "~/routes/($lang).my._index/components/works-list-sortable-setting"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -42,7 +41,6 @@ type Props = {
 }
 
 export function TagWorkSection(props: Props) {
-  const navigate = useNavigate()
   const authContext = useContext(AuthContext)
 
   const {
@@ -62,6 +60,8 @@ export function TagWorkSection(props: Props) {
       },
     },
   })
+
+  const t = useTranslation()
 
   const works = resp?.tagWorks ?? props.works
 
@@ -103,13 +103,15 @@ export function TagWorkSection(props: Props) {
               )}
             </div>
             <h1 className="mt-auto font-bold text-md">
-              <p>#{props.tag}の作品</p>
-              <p>{props.worksCount}件</p>
+              <p>
+                #{props.tag}
+                {t("の作品", "")}
+              </p>
+              <p>
+                {props.worksCount}
+                {t("件", " posts")}
+              </p>
             </h1>
-          </div>
-          <div className="mt-2 flex items-center space-x-2">
-            <CircleAlertIcon className="h-4 w-4 opacity-80" />
-            <p className="text-sm opacity-80">作品は1日ごとに集計されます</p>
           </div>
         </div>
       </div>

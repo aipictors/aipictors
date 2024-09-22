@@ -41,7 +41,7 @@ export const SearchHeader = () => {
       <div className="flex space-x-2">
         <div className="w-full flex-1">
           <Input
-            placeholder={"タグで作品を検索"}
+            placeholder={t("タグで作品を検索", "Search by tag")}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -58,7 +58,7 @@ export const SearchHeader = () => {
           onCheckedChange={handleCheckboxChange}
         />
         <label htmlFor="sensitive" className="font-medium text-sm leading-none">
-          センシティブ
+          {t("センシティブ", "Sensitive")}
         </label>
       </div>
     </div>

@@ -187,7 +187,9 @@ export function RankingHeader(props: Props) {
         items.push({
           link: `/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
           name: formattedDate,
-          border: formattedDate === `${year}/${month}/${day}`,
+          border:
+            `${props.year}/${props.month}/${props.day}` ===
+            `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
         })
       }
     }

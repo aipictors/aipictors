@@ -7,6 +7,7 @@ import {
 import { EllipsisIcon, RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useNavigate } from "@remix-run/react"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
 
 type Props = {
   isSensitive: boolean
@@ -15,6 +16,7 @@ type Props = {
 
 export function TagActionOther(props: Props) {
   const navigate = useNavigate()
+  const t = useTranslation()
 
   return (
     <Popover>
@@ -27,10 +29,11 @@ export function TagActionOther(props: Props) {
         <div className="relative grid gap-4">
           {!props.isSensitive ? (
             <AppConfirmDialog
-              title={"確認"}
-              description={
-                "センシティブな作品を表示します、あなたは18歳以上ですか？"
-              }
+              title={t("確認", "Confirmation")}
+              description={t(
+                "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                "Sensitive content will be displayed. Are you 18 or older?",
+              )}
               onNext={() => {
                 navigate(`/r/tags/${props.tag}`)
               }}
@@ -42,7 +45,7 @@ export function TagActionOther(props: Props) {
                 className="flex w-full transform cursor-pointer items-center"
               >
                 <RefreshCcwIcon className="mr-1 w-3" />
-                <p className="text-sm">{"対象年齢"}</p>
+                <p className="text-sm">{t("対象年齢", "Age Restriction")}</p>
               </Button>
             </AppConfirmDialog>
           ) : (
@@ -54,7 +57,7 @@ export function TagActionOther(props: Props) {
               className="flex w-full transform cursor-pointer items-center"
             >
               <RefreshCcwIcon className="mr-1 w-3" />
-              <p className="text-sm">{"対象年齢"}</p>
+              <p className="text-sm">{t("対象年齢", "Age Restriction")}</p>
             </Button>
           )}
         </div>

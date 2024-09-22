@@ -27,40 +27,55 @@ export function PostFormItemView(props: Props) {
         >
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <label htmlFor="view-public">
+              <RadioGroupItem value="PUBLIC" id="view-public" />
+              <label
+                htmlFor="view-public"
+                className="flex items-center space-x-2"
+              >
                 {t("公開", "Public")}
-                <RadioGroupItem value="PUBLIC" id="view-public" />
               </label>
             </div>
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <label htmlFor="view-archive">
+              <RadioGroupItem value="PRIVATE" id="view-archive" />
+              <label
+                htmlFor="view-archive"
+                className="flex items-center space-x-2"
+              >
                 {t("非公開", "Private")}
-                <RadioGroupItem value="PRIVATE" id="view-archive" />
               </label>
             </div>
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <label htmlFor="view-limited">
+              <RadioGroupItem value="LIMITED" id="view-limited" />
+              <label
+                htmlFor="view-limited"
+                className="flex items-center space-x-2"
+              >
                 {t("限定公開", "Limited")}
-                <RadioGroupItem value="LIMITED" id="view-limited" />
               </label>
             </div>
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <label htmlFor="view-silent">
+              <RadioGroupItem value="SILENT" id="view-silent" />
+              <label
+                htmlFor="view-silent"
+                className="flex items-center space-x-2"
+              >
                 {t("新着非公開", "Silent")}
-                <RadioGroupItem value="SILENT" id="view-silent" />
               </label>
             </div>
           </div>
           <div className="w-1/2 md:w-auto">
             <div className="flex items-center space-x-2">
-              <label htmlFor="view-draft">
-                {t("下書き", "Draft")}
+              {t("下書き", "Draft")}
+              <label
+                htmlFor="view-draft"
+                className="flex items-center space-x-2"
+              >
                 <RadioGroupItem value="DRAFT" id="view-draft" />
               </label>
             </div>

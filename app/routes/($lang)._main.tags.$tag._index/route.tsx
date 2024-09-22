@@ -9,10 +9,17 @@ import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-albu
 import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.tag === undefined) {
     throw new Response(null, { status: 404 })
+  }
+
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
   }
 
   const url = new URL(props.request.url)
@@ -143,6 +150,10 @@ export default function Tag() {
   }
 
   const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
+
+  if (data === null) {
+    return null
+  }
 
   // URLパラメータの監視と更新
   useEffect(() => {

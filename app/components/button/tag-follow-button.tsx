@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils"
 import { graphql } from "gql.tada"
 import { toast } from "sonner"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
 
 type Props = {
   tag: string
@@ -19,6 +20,7 @@ type Props = {
  * タグお気に入り登録
  */
 export function TagFollowButton(props: Props) {
+  const t = useTranslation() // 翻訳フック
   const authContext = useContext(AuthContext)
 
   const [isFollow, setIsFollow] = useState(props.isFollow)
@@ -43,7 +45,7 @@ export function TagFollowButton(props: Props) {
       setIsFollow(true)
     } catch (e) {
       console.error(e)
-      toast.error("お気に入り登録に失敗しました")
+      toast.error(t("お気に入り登録に失敗しました", "Failed to follow tag"))
     }
   }
 
@@ -59,7 +61,7 @@ export function TagFollowButton(props: Props) {
       setIsFollow(false)
     } catch (e) {
       console.error(e)
-      toast.error("お気に入り解除に失敗しました")
+      toast.error(t("お気に入り解除に失敗しました", "Failed to unfollow tag"))
     }
   }
 
@@ -72,7 +74,7 @@ export function TagFollowButton(props: Props) {
         props.className,
       )}
     >
-      {"お気に入り登録"}
+      {t("お気に入り登録", "Follow")}
     </button>
   )
 
@@ -85,7 +87,7 @@ export function TagFollowButton(props: Props) {
         props.className,
       )}
     >
-      {"お気に入り解除"}
+      {t("お気に入り解除", "Unfollow")}
     </button>
   )
 
@@ -93,10 +95,13 @@ export function TagFollowButton(props: Props) {
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return (
       <LoginDialogButton
-        label="お気に入り登録"
+        label={t("お気に入り登録", "Follow")}
         isLoading={authContext.isLoading || authContext.isLoggedIn}
         isWidthFull={true}
-        description={"タグをお気に入り登録して投稿を確認してみましょう！"}
+        description={t(
+          "タグをお気に入り登録して投稿を確認してみましょう！",
+          "Follow tags to see related posts!",
+        )}
         triggerChildren={triggerNode}
       />
     )
@@ -109,9 +114,10 @@ export function TagFollowButton(props: Props) {
   return (
     <div className="flex w-full items-center space-x-2">
       <CrossPlatformTooltip
-        text={
-          "タグのついた新着作品をタイムラインでチェックできるようになります"
-        }
+        text={t(
+          "タグのついた新着作品をタイムラインでチェックできるようになります",
+          "You can check new works with this tag in your timeline",
+        )}
       />
       {isFollow ? (
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
