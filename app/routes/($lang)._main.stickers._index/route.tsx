@@ -19,6 +19,7 @@ export const meta: MetaFunction = (props) => {
 
 export async function loader(props: LoaderFunctionArgs) {
   const redirectResponse = checkLocaleRedirect(props.request)
+
   if (redirectResponse) {
     return redirectResponse
   }

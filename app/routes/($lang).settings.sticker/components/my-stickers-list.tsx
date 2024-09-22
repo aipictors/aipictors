@@ -6,17 +6,18 @@ import { StickerButton } from "~/routes/($lang)._main.posts.$post._index/compone
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { useState } from "react"
-import { useContext } from "react"
+import { useState, useContext } from "react"
 import { toast } from "sonner"
 import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
 import {
   StickerAccessTypeDialogFragment,
   StickerChangeAccessTypeDialog,
 } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-dialog"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳フックをインポート
 
 export function MyStickersList() {
   const authContext = useContext(AuthContext)
+  const t = useTranslation() // 翻訳フックの使用
 
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
 
@@ -69,12 +70,17 @@ export function MyStickersList() {
           },
         },
       })
-      toast("スタンプを削除しました")
+      toast(t("スタンプを削除しました", "Sticker deleted"))
     } catch (error) {
       if (error instanceof Error) {
-        toast.error(error.message ?? "スタンプの削除に失敗しました")
+        toast.error(
+          error.message ??
+            t("スタンプの削除に失敗しました", "Failed to delete sticker"),
+        )
       } else {
-        toast.error("スタンプの削除に失敗しました")
+        toast.error(
+          t("スタンプの削除に失敗しました", "Failed to delete sticker"),
+        )
       }
     } finally {
       reactStickers()
@@ -86,7 +92,9 @@ export function MyStickersList() {
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <Link to="/stickers">
-          <Button variant={"secondary"}>スタンプ広場</Button>
+          <Button variant={"secondary"}>
+            {t("スタンプ広場", "Sticker Plaza")}
+          </Button>
         </Link>
         <AddStickerDialog
           onAddedSicker={() => {
@@ -94,7 +102,9 @@ export function MyStickersList() {
             reactStickersCount()
           }}
         >
-          <Button variant={"secondary"}>新規スタンプ</Button>
+          <Button variant={"secondary"}>
+            {t("新規スタンプ", "New Sticker")}
+          </Button>
         </AddStickerDialog>
       </div>
       <div className="flex space-x-2">
@@ -105,7 +115,7 @@ export function MyStickersList() {
           }}
           isActive={stickerStatus === "DOWNLOADED"}
         >
-          {"マイスタンプ"}
+          {t("マイスタンプ", "My Stickers")}
         </RoundedLightButton>
         <RoundedLightButton
           onClick={() => {
@@ -114,7 +124,7 @@ export function MyStickersList() {
           }}
           isActive={stickerStatus === "PRIVATE_CREATED"}
         >
-          {"作成(非公開)"}
+          {t("作成(非公開)", "Created (Private)")}
         </RoundedLightButton>
         <RoundedLightButton
           onClick={() => {
@@ -123,7 +133,7 @@ export function MyStickersList() {
           }}
           isActive={stickerStatus === "PUBLIC_CREATED"}
         >
-          {"作成(公開)"}
+          {t("作成(公開)", "Created (Public)")}
         </RoundedLightButton>
       </div>
       <div className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center">

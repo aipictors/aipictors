@@ -8,6 +8,7 @@ import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user/components/sticker-info-dialog"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   sticker: FragmentOf<typeof StickerArticleFragment>
@@ -15,6 +16,8 @@ type Props = {
 
 export function StickerArticle(props: Props) {
   const authContext = useContext(AuthContext)
+
+  const t = useTranslation()
 
   const { data: recommendedWorksResp } = useQuery(stickerQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -42,11 +45,22 @@ export function StickerArticle(props: Props) {
         </div>
         <div className="space-y-2 md:w-1/2">
           <h2 className="font-semibold text-xl">{props.sticker.title}</h2>
-          <p>DL回数: {props.sticker.downloadsCount}</p>
-          <p>使用回数: {props.sticker.usesCount}</p>
-          <p>タグ: その他</p>
-          <p>ジャンル: 人物</p>
-          <p>作成日: {toDateTimeText(props.sticker.createdAt)}</p>
+          <p>
+            {t("DL回数", "Downloads")}: {props.sticker.downloadsCount}
+          </p>
+          <p>
+            {t("使用回数", "Uses")}: {props.sticker.usesCount}
+          </p>
+          <p>
+            {t("タグ", "Tags")}: {t("その他", "Others")}
+          </p>
+          <p>
+            {t("ジャンル", "Genre")}: {t("人物", "Person")}
+          </p>
+          <p>
+            {t("作成日", "Created at")}:{" "}
+            {toDateTimeText(props.sticker.createdAt)}
+          </p>
           <Link to={`/users/${props.sticker.user.login}`}>
             <div className="mt-2 flex items-center space-x-2">
               <img
@@ -70,19 +84,24 @@ export function StickerArticle(props: Props) {
         >
           {recommendedWorksResp?.sticker?.isDownloaded ? (
             <Button className="rounded px-4 py-2" disabled={true}>
-              ダウンロード済み
+              {t("ダウンロード済み", "Downloaded")}
             </Button>
           ) : (
-            <Button className="rounded px-4 py-2">マイスタンプに追加</Button>
+            <Button className="rounded px-4 py-2">
+              {t("マイスタンプに追加", "Add to My Stickers")}
+            </Button>
           )}
         </StickerInfoDialog>
         <XIntent
-          text={`AIピクターズで自作スタンプをダウンロードしてコメントしてみよう♪ タイトル：${props.sticker.title}`}
+          text={t(
+            `AIピクターズで自作スタンプをダウンロードしてコメントしてみよう♪ タイトル：${props.sticker.title}`,
+            `Download and comment on my custom sticker at AIPictors! Title: ${props.sticker.title}`,
+          )}
           url={`https://www.aipictors.com/stamp/?id=${props.sticker.id}`}
           hashtags={["スタンプ", "Aipictors", "AIピクターズ"]}
           className="flex items-center gap-2"
         >
-          <span>{"Xで共有する"}</span>
+          <span>{t("Xで共有する", "Share on X")}</span>
         </XIntent>
       </div>
       <Button
@@ -90,7 +109,7 @@ export function StickerArticle(props: Props) {
         variant={"secondary"}
         className="m-auto"
       >
-        {"スタンプ一覧にもどる"}
+        {t("スタンプ一覧にもどる", "Back to Sticker List")}
       </Button>
     </div>
   )

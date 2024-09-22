@@ -6,9 +6,12 @@ import { MutedTag } from "~/routes/($lang).settings.muted.tags/components/muted-
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
 
 export function MutedTagList() {
   const appContext = useContext(AuthContext)
+
+  const t = useTranslation()
 
   const { data = null, refetch } = useSuspenseQuery(viewerMutedTagsQuery, {
     skip: appContext.isLoading,
@@ -68,7 +71,7 @@ export function MutedTagList() {
               type="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="タグ"
+              placeholder={t("タグ", "Tag")}
               maxLength={40}
             />
             <div className="flex justify-end">
@@ -76,13 +79,13 @@ export function MutedTagList() {
             </div>
           </div>
           <Button className="rounded-full" onClick={handleMute}>
-            {"タグを追加"}
+            {t("タグを追加", "Add Tag")}
           </Button>
         </div>
       </div>
       {data?.viewer?.mutedTags.length === 0 && (
         <div className="rounded bg-info p-4">
-          <p>{"ミュートしているタグはありません"}</p>
+          <p>{t("ミュートしているタグはありません", "No muted tags")}</p>
         </div>
       )}
       <div>

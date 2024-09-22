@@ -11,10 +11,18 @@ import {
   StickerListItemFragment,
 } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { config } from "~/config"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { useTranslation } from "~/hooks/use-translation"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.sticker === undefined) {
     throw new Response(null, { status: 404 })
+  }
+
+  const redirectResponse = checkLocaleRedirect(props.request)
+
+  if (redirectResponse) {
+    return redirectResponse
   }
 
   const stickerResp = await loaderClient.query({
@@ -63,11 +71,17 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function Sticker() {
   const data = useLoaderData<typeof loader>()
 
+  const t = useTranslation()
+
+  if (data === null) {
+    return null
+  }
+
   return (
     <>
       <StickerArticle sticker={data.sticker} />
       <section className="flex flex-col gap-y-4">
-        <h2 className="font-bold text-lg">{"人気"}</h2>
+        <h2 className="font-bold text-lg">{t("人気", "Popular")}</h2>
         <StickerList stickers={data.stickers} />
       </section>
     </>
