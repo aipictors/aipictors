@@ -2,6 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { useNavigate } from "@remix-run/react"
 import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳フックをインポート
 
 type Props = {
   text?: string
@@ -11,6 +12,7 @@ type Props = {
  * 検索フォーム
  */
 export function StickerSearchForm(props: Props) {
+  const t = useTranslation() // 翻訳フックの使用
   const [searchTerm, setSearchTerm] = useState(props.text || "")
 
   const navigate = useNavigate()
@@ -40,28 +42,28 @@ export function StickerSearchForm(props: Props) {
               handleSearch()
             }
           }}
-          placeholder="検索キーワードを入力"
+          placeholder={t("検索キーワードを入力", "Enter search keywords")}
         />
-        <Button onClick={handleSearch}>{"検索"}</Button>
+        <Button onClick={handleSearch}>{t("検索", "Search")}</Button>
       </div>
       <div className="flex gap-x-2">
         <Button
           variant={"secondary"}
           onClick={() => handleQuickSearch("ありがとう")}
         >
-          {"ありがとう"}
+          {t("ありがとう", "Thank you")}
         </Button>
         <Button
           variant={"secondary"}
           onClick={() => handleQuickSearch("嬉しい")}
         >
-          {"嬉しい"}
+          {t("嬉しい", "Happy")}
         </Button>
         <Button
           variant={"secondary"}
           onClick={() => handleQuickSearch("すごい")}
         >
-          {"すごい"}
+          {t("すごい", "Amazing")}
         </Button>
       </div>
     </section>
