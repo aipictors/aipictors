@@ -1,3 +1,5 @@
+import { json } from "@remix-run/react"
+import { config } from "~/config"
 import { AppFooter } from "~/routes/($lang).app._index/components/app-footer"
 
 export default function Route() {
@@ -12,4 +14,8 @@ export default function Route() {
       <AppFooter />
     </>
   )
+}
+
+export async function loader() {
+  return json({}, { headers: { "Cache-Control": config.cacheControl.oneDay } })
 }
