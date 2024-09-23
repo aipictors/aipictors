@@ -40,7 +40,7 @@ export function InProgressGenerationCard(props: Props) {
 
   return (
     <>
-      <Card className="p-1">
+      <Card className="h-full p-1">
         <div>
           <div className="relative flex">
             <div className="m-auto flex flex-col gap-y-2 p-4">
