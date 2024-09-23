@@ -1,13 +1,12 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql, readFragment } from "gql.tada"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import {
   RequestArticleWork,
   RequestArticleWorkFragment,
 } from "~/routes/($lang).creator.requests.$request/components/request-article-work"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
 
 export default function Route() {
@@ -33,12 +32,6 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
-
-  if (redirectResponse) {
-    return redirectResponse
-  }
-
   const result = await loaderClient.query({
     query: LoaderQuery,
     variables: {
@@ -50,7 +43,9 @@ export async function loader(props: LoaderFunctionArgs) {
     throw result.error
   }
 
-  return json(result.data)
+  return json(result.data, {
+    headers: { "Cache-Control": config.cacheControl.short },
+  })
 }
 
 export const meta: MetaFunction<typeof loader> = (args) => {

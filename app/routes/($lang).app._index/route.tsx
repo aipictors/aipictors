@@ -1,9 +1,9 @@
 import { AppAboutHeader } from "~/routes/($lang).app._index/components/app-about-header"
 import { AppFooter } from "~/routes/($lang).app._index/components/app-footer"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { json } from "@remix-run/react"
+import type { MetaFunction } from "@remix-run/cloudflare"
 
 /**
  * アプリの紹介ページ
@@ -17,12 +17,8 @@ export default function Route() {
   )
 }
 
-export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
-  if (redirectResponse) {
-    return redirectResponse
-  }
-  return {}
+export async function loader() {
+  return json({}, { headers: { "Cache-Control": config.cacheControl.oneDay } })
 }
 
 export const meta: MetaFunction = (props) => {
