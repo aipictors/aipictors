@@ -815,6 +815,13 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Manage your series on Aipictors",
     isIndex: false,
   },
+  MY_FOLDERS: {
+    title: "コレクション一覧",
+    enTitle: "Collection List",
+    description: "You can manage your collections",
+    enDescription: "Manage your collections on Aipictors",
+    isIndex: false,
+  },
   MY_LIKES: {
     title: "いいね",
     enTitle: "Likes",

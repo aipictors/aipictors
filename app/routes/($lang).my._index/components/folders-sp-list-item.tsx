@@ -9,21 +9,21 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
-  album: FragmentOf<typeof MobileAlbumListItemFragment>
+  folder: FragmentOf<typeof MobileFolderListItemFragment>
 }
 
 /**
  * スマホ向けシリーズ一覧のアイテム
  */
-export function AlbumsSpListItem(props: Props) {
-  const [deleteAlbum, { loading: isLoadingDeleteAlbum }] =
-    useMutation(deleteAlbumMutation)
+export function FoldersSpListItem(props: Props) {
+  const [deleteFolder, { loading: isLoadingDeleteFolder }] =
+    useMutation(deleteFolderMutation)
 
-  const onDeleteSeries = async (id: string) => {
-    await deleteAlbum({
+  const onDeleteFolder = async (id: string) => {
+    await deleteFolder({
       variables: {
         input: {
-          albumId: id,
+          folderId: id,
         },
       },
     })
@@ -57,34 +57,34 @@ export function AlbumsSpListItem(props: Props) {
             }}
           >
             <Link
-              to={`/${props.album.userId}/albums/${props.album.slug}`}
+              to={`/${props.folder.userId}/folders/${props.folder.id}`}
               className="mr-2"
             >
               <img
-                src={props.album.thumbnailImageURL ?? undefined}
+                src={props.folder.thumbnailImageURL ?? undefined}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
             </Link>
             <div className="w-full space-y-2">
               <div className="w-full space-y-2">
-                <Link to={`/${props.album.userId}/albums/${props.album.slug}`}>
-                  <div className="w-full font-bold">{props.album.title}</div>
+                <Link to={`/${props.folder.userId}/folders/${props.folder.id}`}>
+                  <div className="w-full font-bold">{props.folder.title}</div>
                 </Link>
                 <div className="text-sm opacity-80">
-                  {toDateTimeText(props.album.createdAt)}
+                  {toDateTimeText(props.folder.createdAt)}
                 </div>
               </div>
             </div>
             <div className="flex w-16 justify-center">
-              {isLoadingDeleteAlbum ? (
+              {isLoadingDeleteFolder ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : (
                 <AppConfirmDialog
                   title={"確認"}
-                  description={`シリーズ「${props.album.title}」を削除しますか？`}
+                  description={`コレクション「${props.folder.title}」を削除しますか？`}
                   onNext={async () => {
-                    await onDeleteSeries(props.album.id)
+                    await onDeleteFolder(props.folder.id)
                   }}
                   onCancel={() => {}}
                 >
@@ -100,20 +100,20 @@ export function AlbumsSpListItem(props: Props) {
   )
 }
 
-export const MobileAlbumListItemFragment = graphql(
-  `fragment MobileAlbumListItem on AlbumNode @_unmask {
+export const MobileFolderListItemFragment = graphql(
+  `fragment MobileFolderListItem on FolderNode @_unmask {
     id
+    nanoid
     title
     createdAt
     userId
     thumbnailImageURL
-    slug
   }`,
 )
 
-const deleteAlbumMutation = graphql(
-  `mutation DeleteAlbum($input: DeleteAlbumInput!) {
-    deleteAlbum(input: $input) {
+const deleteFolderMutation = graphql(
+  `mutation DeleteFolder($input: DeleteFolderInput!) {
+    deleteFolder(input: $input) {
       id
     }
   }`,

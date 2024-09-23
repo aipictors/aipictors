@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
 import { Link } from "@remix-run/react"
@@ -15,12 +15,22 @@ type Props = {
 export function ConstructionAlert(props: Props) {
   const t = useTranslation()
 
-  // CookieからisVisibleの状態を読み取る
-  const [isVisible, setIsVisible] = useState(() => {
-    return !document.cookie
+  const [isVisible, setIsVisible] = useState(true)
+
+  // CookieからisVisibleの状態をクライアントサイドでのみ読み取る
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    const isAlertDismissed = document.cookie
       .split("; ")
       .find((row) => row.startsWith("alertDismissed="))
-  })
+
+    if (isAlertDismissed) {
+      setIsVisible(false)
+    }
+  }, [])
 
   const handleClose = () => {
     setIsVisible(false)

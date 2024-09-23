@@ -16,7 +16,9 @@ type Props = Readonly<{
  */
 export function MyContents(props: Props) {
   const authContext = useContext(AuthContext)
+
   const location = useLocation()
+
   const t = useTranslation()
 
   const type = (path: string) => {
@@ -25,6 +27,9 @@ export function MyContents(props: Props) {
     }
     if (path.includes("albums")) {
       return "ALBUMS"
+    }
+    if (path.includes("folders")) {
+      return "FOLDERS"
     }
     if (path.includes("bookmarks")) {
       return "BOOKMARKS"
@@ -107,6 +112,16 @@ export function MyContents(props: Props) {
                 value="ALBUMS"
               >
                 {t("シリーズ", "Albums")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setMyContentType("FOLDERS")
+                  navigate("/my/folders")
+                }}
+                className="w-full"
+                value="FOLDERS"
+              >
+                {t("コレクション", "Folders")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -201,6 +216,19 @@ export function MyContents(props: Props) {
               )}
             >
               {t("シリーズ", "Albums")}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("FOLDERS")
+                navigate("/my/folders")
+              }}
+              value="FOLDERS"
+              variant={"secondary"}
+              className={cn(
+                myContentType === "FOLDERS" && "bg-gray-200 dark:bg-zinc-900",
+              )}
+            >
+              {t("コレクション", "Folders")}
             </Button>
             <Button
               onClick={() => {
