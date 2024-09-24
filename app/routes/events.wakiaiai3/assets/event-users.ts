@@ -74,6 +74,18 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "東海アニメ研究会「Zeele」",
+    types: ["SHOP", "EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_TokaiAnime.jpg?alt=media&token=88e157d2-1432-470f-81aa-9fd6705d8688",
+    twitterId: "TokaiAnime",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "晴レル屋",
     types: ["SHOP"],
     message: null,
@@ -301,18 +313,7 @@ export const eventUsers: EventUser[] = [
     siteTitle: null,
     links: [],
   },
-  {
-    name: "東海アニメ研究会「Zeele」",
-    types: ["EXHIBIT"],
-    message: null,
-    iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_TokaiAnime.jpg?alt=media&token=88e157d2-1432-470f-81aa-9fd6705d8688",
-    twitterId: "TokaiAnime",
-    aipictorsId: null,
-    siteURL: null,
-    siteTitle: null,
-    links: [],
-  },
+
   {
     name: "さつき＠うさぎ好き",
     types: ["EXHIBIT"],
