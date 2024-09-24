@@ -11,7 +11,6 @@ type Props = {
   message: string | null
   fallbackURL: string | null
   deadline?: string
-  initialIsVisible: boolean
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
