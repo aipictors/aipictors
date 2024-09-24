@@ -1,36 +1,38 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
-import { Link } from "@remix-run/react"
+import { Link, useLoaderData } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import { XIcon } from "lucide-react"
+import { json, type LoaderFunction } from "@remix-run/node"
 
 type Props = {
   type?: "BUG" | "WARNING" | "INFO" | "CONSTRUCTION"
   message: string | null
   fallbackURL: string | null
   deadline?: string
+  initialIsVisible: boolean
+}
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const cookieHeader = request.headers.get("Cookie")
+  const cookies = new Map(
+    cookieHeader?.split(";").map((cookie) => {
+      const [key, ...value] = cookie.split("=")
+      return [key.trim(), value.join("=").trim()]
+    }),
+  )
+
+  const isAlertDismissed = cookies.get("alertDismissed") === "true"
+  return json({ initialIsVisible: !isAlertDismissed })
 }
 
 export function ConstructionAlert(props: Props) {
   const t = useTranslation()
 
-  const [isVisible, setIsVisible] = useState(true)
+  const { initialIsVisible } = useLoaderData<typeof loader>()
 
-  // CookieからisVisibleの状態をクライアントサイドでのみ読み取る
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
-
-    const isAlertDismissed = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("alertDismissed="))
-
-    if (isAlertDismissed) {
-      setIsVisible(false)
-    }
-  }, [])
+  const [isVisible, setIsVisible] = useState(initialIsVisible)
 
   const handleClose = () => {
     setIsVisible(false)
@@ -50,7 +52,7 @@ export function ConstructionAlert(props: Props) {
     }
     return t(
       "このページは現在開発中です。",
-      "This page is currently under development.",
+      "This page is currently under development。",
     )
   }
 
