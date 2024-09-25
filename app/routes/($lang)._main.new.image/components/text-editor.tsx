@@ -17,7 +17,7 @@ import { Toggle } from "~/components/ui/toggle"
 import { Separator } from "~/components/ui/separator"
 import { Markdown } from "tiptap-markdown"
 import Image from "@tiptap/extension-image"
-import { useCallback, useContext } from "react"
+import { useCallback, useContext, useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
@@ -73,6 +73,12 @@ const TextEditor = ({
       onChange(editor.storage.markdown.getMarkdown())
     },
   })
+
+  useEffect(() => {
+    if (editor && editor.getText() === "") {
+      editor.commands.setContent(value)
+    }
+  }, [value, editor])
 
   return (
     <>
