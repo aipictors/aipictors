@@ -36,7 +36,6 @@ export default function MyFolders() {
     variables: {
       where: {
         userId: authContext.userId,
-        isAll: true,
       },
     },
   })
