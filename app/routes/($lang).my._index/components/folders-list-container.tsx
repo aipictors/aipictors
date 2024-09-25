@@ -35,21 +35,19 @@ export function FoldersListContainer(props: Props) {
     return null
   }
 
-  const { data: FoldersResp, refetch } = useSuspenseQuery(FoldersQuery, {
-    skip: authContext.isLoading,
+  const { data: FoldersResp, refetch } = useSuspenseQuery(viewerFoldersQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: 16 * props.page,
       limit: 16,
       where: {
-        userId: authContext.userId,
-        isAll: true,
         orderBy: props.orderBy,
         sort: props.sort,
       },
     },
   })
 
-  const Folders = FoldersResp?.folders ?? []
+  const Folders = FoldersResp?.viewer?.folders ?? []
 
   const refetchFolders = () => {
     refetch()
@@ -79,10 +77,12 @@ export function FoldersListContainer(props: Props) {
   )
 }
 
-const FoldersQuery = graphql(
-  `query Folders($offset: Int!, $limit: Int!, $where: FoldersWhereInput) {
-   folders(offset: $offset, limit: $limit, where: $where) {
-      ...FolderListItem
+const viewerFoldersQuery = graphql(
+  `query ViewerFolders($offset: Int!, $limit: Int!, $where: ViewerFoldersWhereInput) {
+    viewer {
+      folders(offset: $offset, limit: $limit, where: $where) {
+        ...FolderListItem
+      }
     }
   }`,
   [FolderListItemFragment],

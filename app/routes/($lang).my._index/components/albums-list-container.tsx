@@ -36,24 +36,19 @@ export function AlbumsListContainer(props: Props) {
   ) {
     return null
   }
-  const { data: albumsResp, refetch } = useSuspenseQuery(albumsQuery, {
-    skip: authContext.isLoading,
+  const { data: albumsResp, refetch } = useSuspenseQuery(viewerAlbumsQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: 16 * props.page,
       limit: 16,
       where: {
-        ownerUserId: authContext.userId,
-        isSensitiveAndAllRating: props.rating === null,
-        isSensitive: props.rating !== "G",
-        needInspected: false,
-        needsThumbnailImage: false,
         orderBy: props.orderBy,
         sort: props.sort,
       },
     },
   })
 
-  const albums = albumsResp?.albums ?? []
+  const albums = albumsResp?.viewer?.albums ?? []
 
   const refetchAlbums = () => {
     refetch()
@@ -86,10 +81,12 @@ export function AlbumsListContainer(props: Props) {
   )
 }
 
-const albumsQuery = graphql(
-  `query Albums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput) {
-    albums(offset: $offset, limit: $limit, where: $where) {
-      ...AlbumListItem
+const viewerAlbumsQuery = graphql(
+  `query ViewerAlbums($offset: Int!, $limit: Int!, $where: ViewerAlbumsWhereInput) {
+    viewer {
+      albums(offset: $offset, limit: $limit, where: $where) {
+        ...AlbumListItem
+      }
     }
   }`,
   [AlbumListItemFragment],

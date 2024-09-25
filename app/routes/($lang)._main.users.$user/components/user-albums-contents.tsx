@@ -31,10 +31,8 @@ export function UserAlbumsContents(props: Props) {
       limit: 16,
       where: {
         ownerUserId: props.userId,
-        isSensitiveAndAllRating: props.rating === null,
         isSensitive: props.rating === "R18",
         needInspected: false,
-        needsThumbnailImage: false,
         orderBy: props.orderBy,
         sort: props.sort,
       },
@@ -48,10 +46,8 @@ export function UserAlbumsContents(props: Props) {
     variables: {
       where: {
         ownerUserId: props.userId,
-        isSensitiveAndAllRating: props.rating === null,
         isSensitive: props.rating === "R18",
         needInspected: false,
-        needsThumbnailImage: false,
         orderBy: props.orderBy,
         sort: props.sort,
       },

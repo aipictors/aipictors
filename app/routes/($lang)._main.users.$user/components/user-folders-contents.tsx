@@ -30,7 +30,6 @@ export function UserFoldersContents(props: Props) {
       limit: 16,
       where: {
         userId: props.userId,
-        isPrivate: false,
         isSensitive: props.isSensitive,
       },
     },
@@ -43,7 +42,6 @@ export function UserFoldersContents(props: Props) {
     variables: {
       where: {
         userId: props.userId,
-        isPrivate: false,
         isSensitive: props.isSensitive,
       },
     },

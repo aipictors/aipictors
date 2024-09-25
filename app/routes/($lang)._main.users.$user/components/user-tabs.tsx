@@ -76,7 +76,6 @@ export function UserTabs(props: Props) {
     variables: {
       where: {
         ownerUserId: props.userId,
-        isSensitiveAndAllRating: !props.isSensitive,
         isSensitive: props.isSensitive,
         needInspected: false,
         needsThumbnailImage: false,

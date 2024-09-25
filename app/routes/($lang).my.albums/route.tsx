@@ -58,11 +58,13 @@ export default function MyAlbums() {
   )
 
   const albumsMaxCount = albumsCountResp?.albumsCount ?? 0
+  
   // アルバム一覧のソートボタンクリック時の処理
   const onClickAlbumTitleSortButton = () => {
     setAlbumOrderby("NAME")
     setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
+
   const onClickAlbumDateSortButton = () => {
     setAlbumOrderby("DATE_CREATED")
     setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
