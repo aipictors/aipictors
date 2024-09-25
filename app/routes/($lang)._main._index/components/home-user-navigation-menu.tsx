@@ -28,7 +28,7 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { Link, useLocation, useNavigate } from "@remix-run/react"
@@ -36,6 +36,7 @@ import { graphql } from "gql.tada"
 import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   onLogout(): void
@@ -47,13 +48,17 @@ type Props = {
 export function HomeUserNavigationMenu(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data = null } = useSuspenseQuery(viewerUserQuery, {
-    skip: authContext.isLoading,
+  const { data, refetch } = useSuspenseQuery(viewerUserQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const { data: userSetting } = useSuspenseQuery(userSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
+
+  useEffect(() => {
+    refetch()
+  }, [authContext.login])
 
   const t = useTranslation()
 
@@ -72,8 +77,7 @@ export function HomeUserNavigationMenu(props: Props) {
   const featurePromptonRequest =
     userSetting?.userSetting?.featurePromptonRequest ?? false
 
-  const { data: token, refetch: tokenRefetch } =
-    useSuspenseQuery(viewerTokenQuery)
+  const { data: token } = useSuspenseQuery(viewerTokenQuery)
 
   const viewerUserToken = token?.viewer?.token
 
@@ -152,7 +156,7 @@ export function HomeUserNavigationMenu(props: Props) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarImage src={iconUrl ?? undefined} />
+          <AvatarImage src={ExchangeIconUrl(iconUrl)} />
           <AvatarFallback />
         </Avatar>
       </DropdownMenuTrigger>
@@ -171,7 +175,7 @@ export function HomeUserNavigationMenu(props: Props) {
               className="absolute bottom-[-16px]"
             >
               <Avatar className="cursor-pointer ">
-                <AvatarImage src={iconUrl ?? undefined} />
+                <AvatarImage src={ExchangeIconUrl(iconUrl)} />
                 <AvatarFallback />
               </Avatar>
             </Link>

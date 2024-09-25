@@ -54,8 +54,6 @@ export function HomeNotificationsMenu(props: Props) {
     "MESSAGE",
   ]
 
-  console.log("checkedNotificationTimes", props.checkedNotificationTimes)
-
   const defaultTab = tabValues[0]
 
   const [activeTab, setActiveTab] = useState<
@@ -86,7 +84,6 @@ export function HomeNotificationsMenu(props: Props) {
         type: "LIKED_WORK",
       },
     },
-    fetchPolicy: "cache-first",
   })
 
   const commentNotificationData = useQuery(viewerNotificationsQuery, {
@@ -97,7 +94,6 @@ export function HomeNotificationsMenu(props: Props) {
         type: "WORK_COMMENT",
       },
     },
-    fetchPolicy: "cache-first",
   })
 
   const awardNotificationData = useQuery(viewerNotificationsQuery, {
@@ -108,7 +104,6 @@ export function HomeNotificationsMenu(props: Props) {
         type: "WORK_AWARD",
       },
     },
-    fetchPolicy: "cache-first",
   })
 
   const followNotificationData = useQuery(viewerNotificationsQuery, {
@@ -119,7 +114,6 @@ export function HomeNotificationsMenu(props: Props) {
         type: "FOLLOW",
       },
     },
-    fetchPolicy: "cache-first",
   })
 
   const messageNotificationData = useQuery(messagesQuery, {
@@ -127,7 +121,6 @@ export function HomeNotificationsMenu(props: Props) {
       offset: 0,
       limit: 1,
     },
-    fetchPolicy: "cache-first",
   })
 
   // 安全にデータにアクセスする

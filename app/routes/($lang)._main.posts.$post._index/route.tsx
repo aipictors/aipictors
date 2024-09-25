@@ -157,7 +157,7 @@ export const meta: MetaFunction = (props) => {
             "Aipictors work page"
           : work.work.description ||
             "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
-      url: config.defaultSensitiveOgpImageUrl,
+      url: work.work.smallThumbnailImageURL,
     },
     props.params.lang,
   )
