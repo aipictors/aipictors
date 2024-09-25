@@ -48,7 +48,6 @@ export default function MyAlbums() {
       variables: {
         where: {
           ownerUserId: authContext.userId,
-          isSensitiveAndAllRating: albumRating === null,
           isSensitive: albumRating !== "G",
           needInspected: false,
           needsThumbnailImage: false,
@@ -58,7 +57,7 @@ export default function MyAlbums() {
   )
 
   const albumsMaxCount = albumsCountResp?.albumsCount ?? 0
-  
+
   // アルバム一覧のソートボタンクリック時の処理
   const onClickAlbumTitleSortButton = () => {
     setAlbumOrderby("NAME")

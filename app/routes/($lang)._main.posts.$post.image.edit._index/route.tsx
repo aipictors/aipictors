@@ -680,7 +680,6 @@ const viewerQuery = graphql(
       limit: $limit,
       where: {
         ownerUserId: $ownerUserId,
-        isSensitiveAndAllRating: true,
         needInspected: false,
         needsThumbnailImage: false,
       }
