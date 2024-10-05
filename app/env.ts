@@ -13,6 +13,7 @@ const envSchema = object({
   VITE_GRAPHQL_ENDPOINT_REMIX: string(),
   VITE_SENTRY_VERSION: string(),
   VITE_WORKERS_UPLOADER: string(),
+  VITE_WORKERS_TEXT_UPLOADER: string(),
   VITE_MICRO_CMS_API_KEY: string(),
 })
 

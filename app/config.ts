@@ -289,6 +289,7 @@ export const config = {
   },
   uploader: {
     uploadImage: env.VITE_WORKERS_UPLOADER,
+    uploadText: env.VITE_WORKERS_TEXT_UPLOADER,
   },
   /**
    * ワードプレスリンク
