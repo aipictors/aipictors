@@ -86,6 +86,18 @@ export const eventUsers: EventUser[] = [
     links: [],
   },
   {
+    name: "Aipictors",
+    types: ["SHOP", "EXHIBIT"],
+    message: null,
+    iconImageURL:
+      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_aipictors.png?alt=media&token=2f56d7b3-dda9-46d7-8dcf-087b1262086f",
+    twitterId: "Aipictors",
+    aipictorsId: null,
+    siteURL: null,
+    siteTitle: null,
+    links: [],
+  },
+  {
     name: "晴レル屋",
     types: ["SHOP"],
     message: null,
@@ -175,7 +187,7 @@ export const eventUsers: EventUser[] = [
     message: null,
     iconImageURL:
       "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_kanda.png?alt=media&token=1fc88203-5e41-43fb-93e7-9d917036d92c",
-    twitterId: null,
+    twitterId: "kitsunekan",
     aipictorsId: null,
     siteURL: null,
     siteTitle: null,
@@ -321,18 +333,6 @@ export const eventUsers: EventUser[] = [
     iconImageURL:
       "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fmasukarasulove.gif?alt=media&token=d25ff6ce-b206-4bf9-a9dc-d2dd0e85a5cd",
     twitterId: "masukarasulove",
-    aipictorsId: null,
-    siteURL: null,
-    siteTitle: null,
-    links: [],
-  },
-  {
-    name: "Aipictors",
-    types: ["EXHIBIT"],
-    message: null,
-    iconImageURL:
-      "https://firebasestorage.googleapis.com/v0/b/kwkjsui8ghyt93ai5feb.appspot.com/o/events%2Fwakiaiai%2Fwakiaiai3_aipictors.png?alt=media&token=2f56d7b3-dda9-46d7-8dcf-087b1262086f",
-    twitterId: "Aipictors",
     aipictorsId: null,
     siteURL: null,
     siteTitle: null,
