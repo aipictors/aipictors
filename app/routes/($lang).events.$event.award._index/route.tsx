@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData, useNavigate } from "@remix-run/react"
+import { useLoaderData, useNavigate } from "react-router"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"

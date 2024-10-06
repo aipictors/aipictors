@@ -1,6 +1,6 @@
 import { FollowButton } from "~/components/button/follow-button"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { LikeButton } from "~/components/like-button"
 

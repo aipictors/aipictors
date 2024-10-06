@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { ExternalLinkIcon } from "lucide-react"
 
 type Props = {

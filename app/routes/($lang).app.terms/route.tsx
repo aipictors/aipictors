@@ -1,7 +1,7 @@
 import text from "~/assets/flutter/terms.md?raw"
 import enText from "~/assets/flutter/terms-en.md?raw"
 
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 import { AppMarkdown } from "~/components/app/app-markdown"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { useTranslation } from "~/hooks/use-translation"

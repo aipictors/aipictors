@@ -1,4 +1,4 @@
-import { json, Link, useLoaderData } from "@remix-run/react"
+import { json, Link, useLoaderData } from "react-router"
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Button } from "~/components/ui/button"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"

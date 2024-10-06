@@ -7,7 +7,7 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { Loader2Icon } from "lucide-react"
 import React, { useEffect, useContext } from "react"
 import { toast } from "sonner"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 

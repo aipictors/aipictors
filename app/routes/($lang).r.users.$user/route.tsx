@@ -5,7 +5,7 @@ import { UserProfileFragment } from "~/routes/($lang)._main.users.$user/componen
 import { userHomeMainFragment } from "~/routes/($lang)._main.users.$user/components/user-home-main"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData, useParams } from "@remix-run/react"
+import { json, useLoaderData, useParams } from "react-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"

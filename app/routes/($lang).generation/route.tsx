@@ -10,7 +10,7 @@ import {
 } from "~/routes/($lang).generation._index/components/generation-query-provider"
 import { ApolloError } from "@apollo/client/index"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { Outlet, json, useLoaderData } from "@remix-run/react"
+import { Outlet, json, useLoaderData } from "react-router"
 import { Suspense, useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"

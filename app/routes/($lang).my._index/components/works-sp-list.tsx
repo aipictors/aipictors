@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"

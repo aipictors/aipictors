@@ -2,7 +2,7 @@ import { AppAboutHeader } from "~/routes/($lang).app._index/components/app-about
 import { AppFooter } from "~/routes/($lang).app._index/components/app-footer"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 import type { MetaFunction } from "@remix-run/cloudflare"
 
 /**

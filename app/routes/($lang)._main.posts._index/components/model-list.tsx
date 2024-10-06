@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 
 const models = [
   { id: "stablediffusion", name: "StableDiffusion", label: "SD" },

@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { config } from "~/config"
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 
 export default function FlutterSctaPage() {
   return (

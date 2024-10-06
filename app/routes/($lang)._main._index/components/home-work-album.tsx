@@ -1,5 +1,5 @@
 import { LikeButton } from "~/components/like-button"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import type { RenderPhotoProps } from "react-photo-album"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 

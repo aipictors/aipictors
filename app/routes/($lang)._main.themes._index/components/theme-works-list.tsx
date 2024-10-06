@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "react-router"
 import type { FragmentOf } from "gql.tada"
 import type { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import type { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"

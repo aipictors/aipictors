@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage } from "~/components/ui/avatar"
 import { Card } from "~/components/ui/card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {

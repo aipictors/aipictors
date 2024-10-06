@@ -4,7 +4,7 @@ import {
 } from "~/routes/($lang)._main.stickers.$sticker/components/sticker-article"
 import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { loaderClient } from "~/lib/loader-client"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import {
   StickerList,

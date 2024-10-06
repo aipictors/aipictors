@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "react-router"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"

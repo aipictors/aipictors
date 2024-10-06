@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"

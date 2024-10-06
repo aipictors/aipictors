@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { RiTwitterXLine } from "@remixicon/react"
 import { type HTMLProps, forwardRef } from "react"
 import { useTranslation } from "~/hooks/use-translation"

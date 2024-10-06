@@ -4,7 +4,7 @@ import {
   type MetaFunction,
   useBeforeUnload,
   useSearchParams,
-} from "@remix-run/react"
+} from "react-router"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { graphql } from "gql.tada"

@@ -9,7 +9,7 @@ import { config } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { PlusNoteList } from "~/routes/($lang)._main.plus._index/components/plus-note-list"
 import {
   Breadcrumb,

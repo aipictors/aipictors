@@ -7,7 +7,7 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useEffect } from "react"
 import React from "react"
-import { useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "react-router"
 
 type Props = {
   albumId: string

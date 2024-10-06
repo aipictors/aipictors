@@ -9,7 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { RiQuestionLine } from "@remixicon/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { cn } from "~/lib/utils"

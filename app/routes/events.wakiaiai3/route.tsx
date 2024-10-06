@@ -3,10 +3,10 @@ import { cn } from "~/lib/utils"
 import { eventUsers } from "~/routes/events.wakiaiai3/assets/event-users"
 import { EventWakiaiaiCreatorCard } from "~/routes/events.wakiaiai/components/event-wakiaiai-creator-card"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
-import type { MetaFunction } from "@remix-run/react"
+import type { MetaFunction } from "react-router"
 import { EventWakiaiaiFooter } from "~/routes/events.wakiaiai/components/event-wakiaiai-footer"
 import { EventWakiaiaiHeader } from "~/routes/events.wakiaiai/components/event-wakiaiai-header"
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 import { config } from "~/config"
 
 export default function Route() {

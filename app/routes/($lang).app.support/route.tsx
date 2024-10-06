@@ -1,4 +1,4 @@
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 import { config } from "~/config"
 import { AppFooter } from "~/routes/($lang).app._index/components/app-footer"
 

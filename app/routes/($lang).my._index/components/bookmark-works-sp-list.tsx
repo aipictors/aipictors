@@ -1,7 +1,7 @@
 import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { EyeIcon, FolderIcon, HeartIcon, MessageCircle } from "lucide-react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"

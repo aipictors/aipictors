@@ -5,8 +5,8 @@ import {
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { json, useParams } from "react-router"
+import { useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"

@@ -1,4 +1,4 @@
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"

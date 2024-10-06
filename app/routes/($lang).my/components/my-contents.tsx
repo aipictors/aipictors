@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext, useEffect } from "react"
-import { useLocation, useNavigate } from "@remix-run/react"
+import { useLocation, useNavigate } from "react-router"
 import React from "react"
 import { Button } from "~/components/ui/button"
 import { cn } from "~/lib/utils"

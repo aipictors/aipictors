@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { Heart } from "lucide-react"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 

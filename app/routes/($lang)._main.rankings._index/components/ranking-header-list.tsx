@@ -1,4 +1,4 @@
-import {} from "@remix-run/react"
+import {} from "react-router"
 import { Button } from "~/components/ui/button"
 
 export function RankingHeaderList() {

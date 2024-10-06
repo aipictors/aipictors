@@ -2,7 +2,7 @@ import text from "~/assets/flutter/privacy.md?raw"
 
 import { AppMarkdown } from "~/components/app/app-markdown"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 import { config } from "~/config"
 
 export default function FlutterPrivacyPage() {

@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import React, { useEffect } from "react"

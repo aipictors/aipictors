@@ -1,4 +1,4 @@
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 import { parse } from "cookie"
 
 export function checkLocaleRedirect(request: Request) {

@@ -20,7 +20,7 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { type MetaFunction, useBeforeUnload } from "@remix-run/react"
+import { type MetaFunction, useBeforeUnload } from "react-router"
 import { graphql } from "gql.tada"
 import React from "react"
 import { useContext, useReducer } from "react"

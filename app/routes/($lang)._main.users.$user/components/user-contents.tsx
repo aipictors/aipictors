@@ -11,7 +11,7 @@ import { UserTabs } from "~/routes/($lang)._main.users.$user/components/user-tab
 import { type FragmentOf, graphql } from "gql.tada"
 import { Suspense, useState } from "react"
 import { CalendarHeartIcon } from "lucide-react"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 import type { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"

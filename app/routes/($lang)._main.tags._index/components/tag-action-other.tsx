@@ -6,7 +6,7 @@ import {
 } from "~/components/ui/popover"
 import { EllipsisIcon, RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
 
 type Props = {
