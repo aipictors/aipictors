@@ -60,3 +60,4 @@ package-lock.json
 lefthook-local.yml
 # Sentry Config File
 .sentryclirc
+_worker.bundle
