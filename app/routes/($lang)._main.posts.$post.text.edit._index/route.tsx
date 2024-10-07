@@ -10,7 +10,7 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext, useEffect, useReducer } from "react"
+import { useContext, useEffect, useReducer, useState } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -78,6 +78,20 @@ export default function EditText() {
   })
 
   const work = workWithAuth?.work ?? null
+
+  const [markdownContent, setMarkdownContent] = useState<string>("")
+
+  useEffect(() => {
+    // マークダウンファイルの URL からマークダウンを取得する
+    if (work?.mdUrl) {
+      fetch(work?.mdUrl)
+        .then((res) => res.text())
+        .then((text) => {
+          setMarkdownContent(text)
+        })
+        .catch((err) => console.error("Error fetching markdown file:", err))
+    }
+  }, [work?.mdUrl])
 
   useEffect(() => {
     if (work) {
@@ -171,7 +185,7 @@ export default function EditText() {
           useGenerationParams: work?.promptAccessType === "PUBLIC",
           usePromotionFeature: work?.isPromotion ?? false,
           useTagFeature: work?.isTagEditable ?? true,
-          md: work?.md ?? "",
+          md: markdownContent ?? "",
           type: work?.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
         },
       })
@@ -282,7 +296,7 @@ export default function EditText() {
       work?.isPromotion === undefined ? false : work?.isPromotion,
     useTagFeature:
       work?.isTagEditable === undefined ? true : work?.isTagEditable,
-    md: work?.md ?? "",
+    md: markdownContent ?? "",
     type: work?.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
     correctionMessage: "",
   })
@@ -539,7 +553,6 @@ export default function EditText() {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
-            md: inputState.md,
             correctionMessage:
               work?.moderatorReport?.status === "UNHANDLED"
                 ? inputState.correctionMessage
@@ -779,9 +792,7 @@ const workQuery = graphql(
       pngInfo
       style
       url
-      html
       relatedUrl
-      md
       mdUrl
       user {
         id

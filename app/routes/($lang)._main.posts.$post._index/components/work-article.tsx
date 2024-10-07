@@ -103,7 +103,6 @@ export function WorkArticle(props: Props) {
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
-          html={props.work.html ?? ""}
           title={props.work.title}
         />
       )}
@@ -111,7 +110,6 @@ export function WorkArticle(props: Props) {
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
           md={markdownContent}
-          html={props.work.html ?? ""}
           title={props.work.title}
         />
       )}
@@ -346,7 +344,6 @@ export const workArticleFragment = graphql(
     id
     isMyRecommended
     title
-    md
     mdUrl
     accessType
     type
@@ -469,7 +466,6 @@ export const workArticleFragment = graphql(
     pngInfo
     style
     url
-    html
     updatedAt
     dailyRanking
     weeklyRanking
@@ -484,7 +480,6 @@ export const sensitiveWorkArticleFragment = graphql(
     id
     isMyRecommended
     title
-    md
     mdUrl
     accessType
     type
@@ -608,7 +603,6 @@ export const sensitiveWorkArticleFragment = graphql(
     pngInfo
     style
     url
-    html
     updatedAt
     dailyRanking
     weeklyRanking

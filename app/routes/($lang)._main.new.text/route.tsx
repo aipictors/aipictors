@@ -385,7 +385,6 @@ export default function NewText() {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
-            md: inputState.md,
             mdUrl: textFile,
           },
         },
