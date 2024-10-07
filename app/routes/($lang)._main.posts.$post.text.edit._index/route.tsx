@@ -28,6 +28,7 @@ import {
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
 import { getJstDate } from "~/utils/jst-date"
+import { uploadTextFile } from "~/utils/upload-text-file"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -460,6 +461,15 @@ export default function EditText() {
 
       dispatch({ type: "SET_PROGRESS", payload: 70 })
 
+      if (work.mdUrl !== "") {
+        await uploadTextFile(
+          inputState.md,
+          "md",
+          viewer?.viewer?.token,
+          work.mdUrl,
+        )
+      }
+
       const uploadResults = await uploadImages()
 
       const imageUrls = uploadResults.filter((url) => url !== null)
@@ -619,6 +629,7 @@ export default function EditText() {
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
           needFix={work?.moderatorReport?.status === "UNHANDLED"}
+          mdUrl={work?.mdUrl ?? ""}
         />
         <div className="h-4" />
         <Button
@@ -771,6 +782,7 @@ const workQuery = graphql(
       html
       relatedUrl
       md
+      mdUrl
       user {
         id
         works(offset: 0, limit: 16) {

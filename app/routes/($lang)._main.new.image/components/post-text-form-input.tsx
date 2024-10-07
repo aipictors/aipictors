@@ -1,4 +1,4 @@
-import { useEffect, type Dispatch } from "react"
+import { useEffect, useState, type Dispatch } from "react"
 import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
 import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
 import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
@@ -43,6 +43,7 @@ type Props = {
   }
   aiModels: FragmentOf<typeof PostTextFormAiModelFragment>[]
   needFix: boolean
+  mdUrl?: string
 }
 
 // 日本時間の日付を計算する関数
@@ -74,11 +75,25 @@ export function PostTextFormInput(props: Props) {
     },
   })
 
+  const [markdownContent, setMarkdownContent] = useState<string>("")
+
   useEffect(() => {
     if (props.setDisabledSubmit) {
       props.setDisabledSubmit(loading)
     }
   }, [loading])
+
+  useEffect(() => {
+    // マークダウンファイルの URL からマークダウンを取得する
+    if (props.mdUrl) {
+      fetch(props.mdUrl)
+        .then((res) => res.text())
+        .then((text) => {
+          setMarkdownContent(text)
+        })
+        .catch((err) => console.error("Error fetching markdown file:", err))
+    }
+  }, [props.mdUrl])
 
   const onChangeTheme = (value: boolean) => {
     if (props.themes === null) {
@@ -201,7 +216,7 @@ export function PostTextFormInput(props: Props) {
         onChange={(value) => {
           props.dispatch({ type: "SET_MD", payload: value })
         }}
-        value={props.state.md}
+        value={markdownContent}
       />
       <PostFormItemRating
         rating={props.state.ratingRestriction}
