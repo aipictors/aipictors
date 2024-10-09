@@ -114,7 +114,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const microCmsClient = createCmsClient({
     serviceDomain: "aipictors",
-    apiKey: "P0QqFga5C1pPv3MDnSgMSYeFFLvAG1e5hNXt",
+    apiKey: config.cms.microCms.apiKey,
   })
 
   const releaseList: MicroCmsApiReleaseResponse = await microCmsClient.get({
