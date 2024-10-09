@@ -8,11 +8,10 @@ import { useLocale } from "~/hooks/use-locale" // 追加
 export function ToggleSensitive() {
   const [sensitive, setSensitive] = useState(false)
 
-  const location = useLocation() // 現在のURLを取得
+  const location = useLocation()
 
-  const locale = useLocale() // 言語を取得
+  const locale = useLocale()
 
-  // URLから"sensitive"フラグをチェック
   useEffect(() => {
     // URLに"/r"が含まれているかを確認 (正規表現を使用)
     if (/\/r($|\/)/.test(location.pathname)) {

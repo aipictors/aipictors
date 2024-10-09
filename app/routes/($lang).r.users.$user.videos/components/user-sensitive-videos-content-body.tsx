@@ -7,7 +7,7 @@ import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { UserSensitiveTabs } from "~/routes/($lang).r.users.$user._index/components/user-sensitive-tabs"
-import { UserSensitiveVideosContents } from "~/routes/($lang).r.users.$user.videos/components/user-sensitive-videos-contents"
+import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -44,7 +44,10 @@ export function UserSensitiveVideosContentBody(props: Props) {
       <UserSensitiveTabs activeTab={t("動画", "Videos")} user={props.user} />
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
-          <UserSensitiveVideosContents videos={videos} />
+          <ResponsivePhotoVideoWorksAlbum
+            isAutoPlay={true}
+            works={props.videos}
+          />
         </section>
       </div>
       <div className="h-8" />

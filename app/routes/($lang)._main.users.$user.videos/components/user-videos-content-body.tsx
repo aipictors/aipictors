@@ -7,7 +7,7 @@ import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { UserVideosContents } from "~/routes/($lang)._main.users.$user.videos/components/user-videos-contents"
+import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -44,7 +44,10 @@ export function UserVideosContentBody(props: Props) {
       <UserTabs activeTab={t("動画", "Videos")} user={props.user} />
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
-          <UserVideosContents videos={videos} />
+          <ResponsivePhotoVideoWorksAlbum
+            isAutoPlay={true}
+            works={props.videos}
+          />
         </section>
       </div>
       <div className="h-8" />

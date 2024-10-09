@@ -133,7 +133,6 @@ export function UserContentBody(props: Props) {
         <UserPickupContents
           userPickupWorks={props.user.featuredWorks ?? []}
           userId={props.user.id}
-          isSensitive={false}
         />
         <UserContentsContainer
           userId={props.user.id}

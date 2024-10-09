@@ -10,7 +10,7 @@ import type { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._ind
 import { useTranslation } from "~/hooks/use-translation"
 import { UserSensitiveTabs } from "~/routes/($lang).r.users.$user._index/components/user-sensitive-tabs"
 import { UserContentsContainer } from "~/routes/($lang)._main.users.$user._index/components/user-contents-cotainer"
-import { UserPickupContents } from "~/routes/($lang)._main.users.$user._index/components/user-pickup-contents"
+import { UserSensitivePickupContents } from "~/routes/($lang)._main.users.$user._index/components/user-sensitive-pickup-contents"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
@@ -130,10 +130,9 @@ export function UserSensitiveContentBody(props: Props) {
             )}
           </div>
         </Card>
-        <UserPickupContents
+        <UserSensitivePickupContents
           userPickupWorks={props.user.featuredSensitiveWorks ?? []}
           userId={props.user.id}
-          isSensitive={true}
         />
         <UserContentsContainer
           userId={props.user.id}
