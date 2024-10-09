@@ -3,10 +3,10 @@ import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import { UserStickersItemFragment } from "~/routes/($lang)._main.users.$user.stickers/components/user-stickers-content-body"
-import { UserStickersPage } from "~/routes/($lang)._main.users.$user.stickers/components/user-stickers-page"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
+import { graphql } from "gql.tada"
+import { UserNotesItemFragment } from "~/routes/($lang)._main.users.$user.notes/components/user-notes-content-body"
+import { UserSensitiveNotesPage } from "~/routes/($lang).r.users.$user.notes/components/user-sensitive-notes-page"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -32,27 +32,34 @@ export async function loader(props: LoaderFunctionArgs) {
       : Number.parseInt(url.searchParams.get("page") as string)
     : 0
 
-  const stickersResp = await loaderClient.query({
-    query: userStickersQuery,
+  const worksResp = await loaderClient.query({
+    query: worksAndUserProfileQuery,
     variables: {
+      offset: page * 32,
+      limit: 32,
       userId: userIdResp.data.user.id,
-      offset: 0,
-      limit: 256,
+      where: {
+        userId: userIdResp.data.user.id,
+        ratings: ["R18", "R18G"],
+        workType: "COLUMN",
+        isNowCreatedAt: true,
+      },
     },
   })
 
-  if (stickersResp.data.user === null) {
+  if (worksResp.data.user === null) {
     throw new Response(null, { status: 404 })
   }
 
   return json({
+    user: worksResp.data.user,
+    works: worksResp.data.works,
+    maxCount: worksResp.data.worksCount,
     page,
-    user: stickersResp.data.user,
-    stickers: stickersResp.data.user.stickers,
   })
 }
 
-export default function UserPosts() {
+export default function UserSensitiveNotes() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -63,11 +70,11 @@ export default function UserPosts() {
 
   return (
     <>
-      <UserStickersPage
+      <UserSensitiveNotesPage
         user={data.user}
-        stickers={data.stickers}
+        notes={data.works}
+        maxCount={data.maxCount}
         page={data.page}
-        maxCount={data.stickers.length}
       />
     </>
   )
@@ -81,17 +88,15 @@ const userIdQuery = graphql(
   }`,
 )
 
-const userStickersQuery = graphql(
-  `query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
+export const worksAndUserProfileQuery = graphql(
+  `query UserWorks($userId: ID!, $offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     user(id: $userId) {
       ...UserProfileIcon
     }
-    user(id: $userId) {
-      id
-      stickers(offset: $offset, limit: $limit) {
-        ...StickerItem
-      }
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...UserNotesItem
     }
+    worksCount(where: $where)
   }`,
-  [UserStickersItemFragment, UserProfileIconFragment],
+  [UserNotesItemFragment, UserProfileIconFragment],
 )

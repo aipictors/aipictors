@@ -7,7 +7,7 @@ import React from "react"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user/components/sticker-info-dialog"
+import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { useTranslation } from "~/hooks/use-translation"
 

@@ -1,0 +1,236 @@
+import { FollowButton } from "~/components/button/follow-button"
+import { Button } from "~/components/ui/button"
+import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
+import { type FragmentOf, graphql } from "gql.tada"
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "~/contexts/auth-context"
+import { useQuery } from "@apollo/client/index"
+import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
+import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
+import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
+import { RefreshCcwIcon } from "lucide-react"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { useLocation, useNavigate } from "@remix-run/react"
+import { toOmissionNumberText } from "~/utils/to-omission-number-text"
+import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
+import { useTranslation } from "~/hooks/use-translation"
+
+type Props = {
+  user: FragmentOf<typeof UserProfileIconFragment>
+  userId: string
+}
+
+export function UserHomeMain(props: Props) {
+  const authContext = useContext(AuthContext)
+
+  const [sensitive, setSensitive] = useState(false)
+
+  const { data: userInfo } = useQuery(userQuery, {
+    variables: {
+      userId: decodeURIComponent(props.userId),
+    },
+  })
+
+  const t = useTranslation()
+
+  const location = useLocation()
+
+  const isFollow = userInfo?.user?.isFollowee ?? false
+
+  const isMute = userInfo?.user?.isMuted ?? false
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // URLに"/r"が含まれているかを確認 (正規表現を使用)
+    if (/\/r($|\/)/.test(location.pathname)) {
+      setSensitive(true)
+    } else {
+      setSensitive(false)
+    }
+  }, [location.pathname])
+
+  return (
+    <div className="relative m-auto h-72 w-full md:h-24">
+      <div className="absolute top-2 right-0 z-10 md:hidden">
+        <div className="flex space-x-2">
+          {!sensitive ? (
+            <Button
+              onClick={() => {
+                navigate(`/users/${props.user.login}`)
+              }}
+              variant={"secondary"}
+            >
+              <div className="flex cursor-pointer items-center">
+                <RefreshCcwIcon className="mr-1 w-3" />
+                <p className="text-sm">{t("全年齢", "G")}</p>
+              </div>
+            </Button>
+          ) : (
+            <AppConfirmDialog
+              title={t("確認", "Confirm")}
+              description={t(
+                "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                "Do you want to display sensitive content? Are you over 18 years old?",
+              )}
+              onNext={() => {
+                navigate(`/r/users/${props.user.login}`)
+              }}
+              cookieKey={"check-sensitive-ranking"}
+              onCancel={() => {}}
+            >
+              <Button variant={"secondary"}>
+                <div className="flex cursor-pointer items-center">
+                  <RefreshCcwIcon className="mr-1 w-3" />
+                  <p className="text-sm">{t("対象年齢", "Target Age")}</p>
+                </div>
+              </Button>
+            </AppConfirmDialog>
+          )}
+          <UserActionShare login={props.user.login} name={props.user.name} />
+        </div>
+      </div>
+      <div className="absolute top-2 right-0 hidden md:block">
+        <div className="flex w-full items-center justify-end space-x-4">
+          {sensitive ? (
+            <Button
+              onClick={() => {
+                navigate(`/users/${props.user.login}`)
+              }}
+              variant={"secondary"}
+            >
+              <div className="flex cursor-pointer items-center">
+                <RefreshCcwIcon className="mr-1 w-3" />
+                <p className="text-sm">{t("全年齢", "G")}</p>
+              </div>
+            </Button>
+          ) : (
+            <AppConfirmDialog
+              title={"確認"}
+              description={t(
+                "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                "Do you want to display sensitive content? Are you over 18 years old?",
+              )}
+              onNext={() => {
+                navigate(`/r/users/${props.user.login}`)
+              }}
+              cookieKey={"check-sensitive-ranking"}
+              onCancel={() => {}}
+            >
+              <Button variant={"secondary"}>
+                <div className="flex cursor-pointer items-center">
+                  <RefreshCcwIcon className="mr-1 w-3" />
+                  <p className="text-sm">{t("対象年齢", "Target Age")}</p>
+                </div>
+              </Button>
+            </AppConfirmDialog>
+          )}
+          <UserActionOther id={props.user.id} isMuted={isMute} />
+          <UserActionShare login={props.user.login} name={props.user.name} />
+          <FollowButton
+            targetUserId={props.user.id}
+            isFollow={isFollow}
+            triggerChildren={
+              <Button className="font-bold">
+                {t("フォローする", "Follow")}
+              </Button>
+            }
+            unFollowTriggerChildren={
+              <Button variant={"secondary"}>
+                {t("フォロー中", "Following")}
+              </Button>
+            }
+          />
+          {props.user.promptonUser !== null &&
+            props.user.promptonUser.id !== null && (
+              <PromptonRequestColorfulButton
+                rounded="rounded-md"
+                promptonId={props.user.promptonUser.id}
+                targetUserId={props.user.id}
+              />
+            )}
+          {authContext.userId === props.user.id && (
+            <ProfileEditDialog
+              triggerChildren={<Button>{t("編集", "Edit")}</Button>}
+            />
+          )}
+        </div>
+      </div>
+      <div className="absolute top-24 left-0 flex w-[100%] flex-col space-y-1 px-8 md:hidden">
+        <div className="mb-4 flex md:mb-0 md:hidden">
+          <div className="w-32">
+            <div className="white mt-4 font-bold text-md">
+              {toOmissionNumberText(props.user.followersCount)}
+            </div>
+            <div className="white mt-1 text-sm opacity-50">
+              {t("フォロワー", "Followers")}
+            </div>
+          </div>
+          <div className="w-32">
+            <div className="white mt-4 font-bold text-md">
+              {toOmissionNumberText(props.user.receivedLikesCount)}
+            </div>
+            <div className="white mt-1 text-sm opacity-50">
+              {t("いいね", "Liked")}
+            </div>
+          </div>
+        </div>
+        {authContext.userId !== props.user.id && (
+          <FollowButton
+            className="mb-2 w-[100%] rounded-full"
+            targetUserId={"2"}
+            isFollow={isFollow}
+          />
+        )}
+        {props.user.promptonUser !== null &&
+          props.user.promptonUser.id !== null && (
+            <div className={"block w-[100%] rounded-full"}>
+              <PromptonRequestColorfulButton
+                rounded="rounded-full"
+                promptonId={props.user.promptonUser.id}
+                hideIcon={true}
+                targetUserId={props.user.id}
+              />
+            </div>
+          )}
+        {authContext.userId === props.user.id && (
+          <ProfileEditDialog
+            triggerChildren={
+              <Button className="w-full rounded-full">
+                {t("プロフィール編集", "Edit Profile")}
+              </Button>
+            }
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+
+export const userHomeMainFragment = graphql(
+  `fragment UserHomeMain on UserNode @_unmask {
+    id
+    login
+    isFollowee
+    isFollower
+    isMuted
+    name
+    followersCount
+    receivedLikesCount
+    promptonUser {
+      id
+    }
+  }`,
+  [],
+)
+
+const userQuery = graphql(
+  `query User(
+    $userId: ID!,
+  ) {
+    user(id: $userId) {
+      ...UserHomeMain
+    }
+  }`,
+  [userHomeMainFragment],
+)

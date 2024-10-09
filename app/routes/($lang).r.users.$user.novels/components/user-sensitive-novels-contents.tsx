@@ -9,7 +9,7 @@ type Props = {
   novels: FragmentOf<typeof UserNovelsItemFragment>[]
 }
 
-export function UserNovelsContents(props: Props) {
+export function UserSensitiveNovelsContents(props: Props) {
   return (
     <>
       <div className="flex flex-wrap gap-4">

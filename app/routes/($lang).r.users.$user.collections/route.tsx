@@ -5,8 +5,8 @@ import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
-import { UserCollectionsPage } from "~/routes/($lang)._main.users.$user.collections/components/user-collections-page"
 import { UserUserFoldersItemFragment } from "~/routes/($lang)._main.users.$user.collections/components/user-collections-content-body"
+import { UserSensitiveCollectionsPage } from "~/routes/($lang).r.users.$user.collections/components/user-sensitive-collections-page"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -43,7 +43,7 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
-export default function UserAlbums() {
+export default function UserSensitiveAlbums() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -54,7 +54,7 @@ export default function UserAlbums() {
 
   return (
     <>
-      <UserCollectionsPage user={data.user} folders={data.folders} />
+      <UserSensitiveCollectionsPage user={data.user} folders={data.folders} />
     </>
   )
 }
