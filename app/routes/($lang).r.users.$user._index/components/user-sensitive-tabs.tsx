@@ -37,7 +37,7 @@ export function UserSensitiveTabs(props: Props) {
       navigate(`/r/users/${props.user.login}/collections`)
     }
     if (value === t("スタンプ", "Stamps")) {
-      navigate(`/users/${props.user.login}/stickers`)
+      navigate(`/r/users/${props.user.login}/stickers`)
     }
   }
 

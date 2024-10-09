@@ -14,7 +14,6 @@ type Props = {
   posts: FragmentOf<typeof UserPostsItemFragment>[]
   page: number
   maxCount: number
-  isSensitive?: boolean
 }
 
 export function UserPostsContentBody(props: Props) {
@@ -29,7 +28,7 @@ export function UserPostsContentBody(props: Props) {
       limit: 32,
       where: {
         userId: props.user.id,
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        ratings: ["G", "R15"],
         workType: "WORK",
         isNowCreatedAt: true,
       },

@@ -5,8 +5,9 @@ import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
-import { UserAlbumListItemFragment } from "~/routes/($lang)._main.users.$user.albums/components/user-albums-content-body"
-import { UserSensitiveAlbumsPage } from "~/routes/($lang).r.users.$user.albums/components/user-sensitive-albums-page"
+import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
+import { UserAlbumListItemFragment } from "~/routes/($lang)._main.users.$user.albums/components/user-albums-content"
+import { UserSensitiveAlbumsContentBody } from "~/routes/($lang).r.users.$user.albums/components/user-sensitive-albums-content-body"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -42,9 +43,10 @@ export default function UserSensitiveAlbums() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <>
-      <UserSensitiveAlbumsPage user={data.user} albums={data.albums} />
-    </>
+    <div className="flex w-full flex-col justify-center">
+      <UserContentHeader user={data.user} />
+      <UserSensitiveAlbumsContentBody user={data.user} albums={data.albums} />
+    </div>
   )
 }
 

@@ -1,4 +1,3 @@
-import { ConstructionAlert } from "~/components/construction-alert"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { userHomeMainFragment } from "~/routes/($lang)._main.users.$user._index/components/user-home-main"
@@ -9,12 +8,13 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
-import {
-  UserPage,
-  UserWorkFragment,
-} from "~/routes/($lang)._main.users.$user._index/components/user-page"
+import { UserWorkFragment } from "~/routes/($lang)._main.users.$user._index/components/user-page"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
-import { UserProfileFragment } from "~/routes/($lang)._main.users.$user._index/components/user-content-body"
+import {
+  UserContentBody,
+  UserProfileFragment,
+} from "~/routes/($lang)._main.users.$user._index/components/user-content-body"
+import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -170,14 +170,9 @@ export default function UserLayout() {
   }
 
   return (
-    <>
-      <ConstructionAlert
-        type="WARNING"
-        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
-        fallbackURL={`https://www.aipictors.com/users/${params.user}`}
-        deadline={"2024-07-30"}
-      />
-      <UserPage
+    <div className="flex w-full flex-col justify-center">
+      <UserContentHeader user={data.user} />
+      <UserContentBody
         user={data.user}
         works={data.works}
         novelWorks={data.novelWorks}
@@ -185,7 +180,7 @@ export default function UserLayout() {
         videoWorks={data.videoWorks}
         worksCount={data.worksCount}
       />
-    </>
+    </div>
   )
 }
 

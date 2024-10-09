@@ -5,8 +5,11 @@ import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
-import { UserNotesItemFragment } from "~/routes/($lang)._main.users.$user.notes/components/user-notes-content-body"
-import { UserNotesPage } from "~/routes/($lang)._main.users.$user.notes/components/user-notes-page"
+import {
+  UserNotesContentBody,
+  UserNotesItemFragment,
+} from "~/routes/($lang)._main.users.$user.notes/components/user-notes-content-body"
+import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -69,14 +72,15 @@ export default function UserNotes() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <>
-      <UserNotesPage
+    <div className="flex w-full flex-col justify-center">
+      <UserContentHeader user={data.user} />
+      <UserNotesContentBody
         user={data.user}
         notes={data.works}
-        maxCount={data.maxCount}
         page={data.page}
+        maxCount={data.maxCount}
       />
-    </>
+    </div>
   )
 }
 

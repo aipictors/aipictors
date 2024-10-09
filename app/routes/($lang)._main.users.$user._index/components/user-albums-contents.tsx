@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react"
 import { Images } from "lucide-react"
 import type { FragmentOf } from "gql.tada"
-import type { UserAlbumListItemFragment } from "~/routes/($lang)._main.users.$user.albums/components/user-albums-content-body"
+import type { UserAlbumListItemFragment } from "~/routes/($lang)._main.users.$user.albums/components/user-albums-content"
 
 type Props = {
   userId: string

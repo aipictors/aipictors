@@ -6,7 +6,8 @@ import { useLoaderData } from "@remix-run/react"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
 import { UserNovelsItemFragment } from "~/routes/($lang)._main.users.$user.novels/components/user-novels-content-body"
-import { UserSensitiveNovelsPage } from "~/routes/($lang).r.users.$user.novels/components/user-sensitive-novels-page"
+import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
+import { UserSensitiveNovelsContentBody } from "~/routes/($lang).r.users.$user.novels/components/user-sensitive-novels-content-body"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -69,14 +70,15 @@ export default function UserSensitivePosts() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <>
-      <UserSensitiveNovelsPage
+    <div className="flex w-full flex-col justify-center">
+      <UserContentHeader user={data.user} />
+      <UserSensitiveNovelsContentBody
         user={data.user}
         novels={data.works}
-        maxCount={data.maxCount}
         page={data.page}
+        maxCount={data.maxCount}
       />
-    </>
+    </div>
   )
 }
 

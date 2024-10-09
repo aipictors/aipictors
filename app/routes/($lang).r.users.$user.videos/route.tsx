@@ -6,7 +6,8 @@ import { useLoaderData } from "@remix-run/react"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
 import { UserVideosItemFragment } from "~/routes/($lang)._main.users.$user.videos/components/user-videos-content-body"
-import { UserSensitiveVideosPage } from "~/routes/($lang).r.users.$user.videos/components/user-sensitive-videos-page"
+import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
+import { UserSensitiveVideosContentBody } from "~/routes/($lang).r.users.$user.videos/components/user-sensitive-videos-content-body"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -69,14 +70,15 @@ export default function UserSensitiveVideos() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <>
-      <UserSensitiveVideosPage
+    <div className="flex w-full flex-col justify-center">
+      <UserContentHeader user={data.user} />
+      <UserSensitiveVideosContentBody
         user={data.user}
         videos={data.works}
-        maxCount={data.maxCount}
         page={data.page}
+        maxCount={data.maxCount}
       />
-    </>
+    </div>
   )
 }
 

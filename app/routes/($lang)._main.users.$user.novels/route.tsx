@@ -5,8 +5,11 @@ import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
-import { UserNovelsItemFragment } from "~/routes/($lang)._main.users.$user.novels/components/user-novels-content-body"
-import { UserNovelsPage } from "~/routes/($lang)._main.users.$user.novels/components/user-novels-page"
+import {
+  UserNovelsContentBody,
+  UserNovelsItemFragment,
+} from "~/routes/($lang)._main.users.$user.novels/components/user-novels-content-body"
+import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -69,14 +72,15 @@ export default function UserPosts() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <>
-      <UserNovelsPage
+    <div className="flex w-full flex-col justify-center">
+      <UserContentHeader user={data.user} />
+      <UserNovelsContentBody
         user={data.user}
         novels={data.works}
-        maxCount={data.maxCount}
         page={data.page}
+        maxCount={data.maxCount}
       />
-    </>
+    </div>
   )
 }
 

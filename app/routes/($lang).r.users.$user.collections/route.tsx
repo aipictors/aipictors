@@ -6,7 +6,8 @@ import { useLoaderData } from "@remix-run/react"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
 import { UserUserFoldersItemFragment } from "~/routes/($lang)._main.users.$user.collections/components/user-collections-content-body"
-import { UserSensitiveCollectionsPage } from "~/routes/($lang).r.users.$user.collections/components/user-sensitive-collections-page"
+import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
+import { UserSensitiveCollectionsContentBody } from "~/routes/($lang).r.users.$user.collections/components/user-sensitive-collections-content-body"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -53,9 +54,13 @@ export default function UserSensitiveAlbums() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <>
-      <UserSensitiveCollectionsPage user={data.user} folders={data.folders} />
-    </>
+    <div className="flex w-full flex-col justify-center">
+      <UserContentHeader user={data.user} />
+      <UserSensitiveCollectionsContentBody
+        user={data.user}
+        folders={data.folders}
+      />
+    </div>
   )
 }
 

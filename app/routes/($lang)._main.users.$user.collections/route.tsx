@@ -5,8 +5,11 @@ import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
-import { UserCollectionsPage } from "~/routes/($lang)._main.users.$user.collections/components/user-collections-page"
-import { UserUserFoldersItemFragment } from "~/routes/($lang)._main.users.$user.collections/components/user-collections-content-body"
+import {
+  UserCollectionsContentBody,
+  UserUserFoldersItemFragment,
+} from "~/routes/($lang)._main.users.$user.collections/components/user-collections-content-body"
+import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -53,9 +56,10 @@ export default function UserAlbums() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <>
-      <UserCollectionsPage user={data.user} folders={data.folders} />
-    </>
+    <div className="flex w-full flex-col justify-center">
+      <UserContentHeader user={data.user} />
+      <UserCollectionsContentBody user={data.user} folders={data.folders} />
+    </div>
   )
 }
 

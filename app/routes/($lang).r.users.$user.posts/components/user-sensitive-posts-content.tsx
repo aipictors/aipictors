@@ -16,7 +16,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserSensitivePostsContentBody(props: Props) {
+export function UserSensitivePostsContent(props: Props) {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)

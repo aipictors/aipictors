@@ -1,7 +1,6 @@
 import type { FragmentOf } from "gql.tada"
 import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
-import {} from "~/routes/($lang)._main.users.$user.albums/components/user-albums-content-body"
 import {
   UserPostsContentBody,
   type UserPostsItemFragment,
@@ -24,7 +23,6 @@ export function UserPostsPage(props: Props) {
         posts={props.posts}
         page={props.page}
         maxCount={props.maxCount}
-        isSensitive={props.isSensitive}
       />
     </div>
   )

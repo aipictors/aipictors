@@ -9,7 +9,7 @@ type Props = {
   albums: FragmentOf<typeof UserAlbumListItemFragment>[]
 }
 
-export function UserAlbumsContentBody(props: Props) {
+export function UserAlbumsContent(props: Props) {
   const t = useTranslation()
 
   return (
