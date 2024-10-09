@@ -1,9 +1,6 @@
 import { loaderClient } from "~/lib/loader-client"
 import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import {
-  HomeBanners,
-  HomeBannerWorkFragment,
-} from "~/routes/($lang)._main._index/components/home-banners"
+import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
@@ -184,9 +181,9 @@ export default function Index() {
         message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
         fallbackURL="https://www.aipictors.com"
       />
-      {data.adWorks && data.adWorks.length > 0 && (
+      {/* {data.adWorks && data.adWorks.length > 0 && (
         <HomeBanners works={data.adWorks} />
-      )}
+      )} */}
       <HomeContents
         homeParticles={{
           dailyThemeTitle: data.dailyTheme ? (data.dailyTheme.title ?? "") : "",
