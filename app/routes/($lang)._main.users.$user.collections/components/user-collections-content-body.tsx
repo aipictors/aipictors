@@ -2,6 +2,7 @@ import { UserTabs } from "~/routes/($lang)._main.users.$user._index/components/u
 import { type FragmentOf, graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
+import { Link } from "@remix-run/react"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
