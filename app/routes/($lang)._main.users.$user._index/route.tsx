@@ -50,39 +50,6 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  console.log({
-    userId: decodeURIComponent(props.params.user),
-    offset: 0,
-    limit: 16,
-    portfolioWhere: {
-      userId: userIdResp.data.user.id,
-      ratings: ["G", "R15"],
-      orderBy: "LIKES_COUNT",
-      isNowCreatedAt: true,
-    },
-    novelWhere: {
-      userId: userIdResp.data.user.id,
-      workType: "NOVEL",
-      ratings: ["G", "R15"],
-      orderBy: "LIKES_COUNT",
-      isNowCreatedAt: true,
-    },
-    columnWhere: {
-      userId: userIdResp.data.user.id,
-      workType: "COLUMN",
-      ratings: ["G", "R15"],
-      orderBy: "LIKES_COUNT",
-      isNowCreatedAt: true,
-    },
-    videoWhere: {
-      userId: userIdResp.data.user.id,
-      workType: "VIDEO",
-      ratings: ["G", "R15"],
-      orderBy: "LIKES_COUNT",
-      isNowCreatedAt: true,
-    },
-  })
-
   const userResp = await loaderClient.query({
     query: combinedUserAndWorksQuery,
     variables: {
