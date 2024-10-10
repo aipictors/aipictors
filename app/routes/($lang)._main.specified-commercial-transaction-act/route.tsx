@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "react-router"
 import { useTranslation } from "~/hooks/use-translation"
 import { META } from "~/config"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"

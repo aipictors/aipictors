@@ -1,4 +1,4 @@
-import { useLocation, useSearchParams } from "@remix-run/react"
+import { useLocation, useSearchParams } from "react-router"
 import { getAnalytics, logEvent } from "firebase/analytics"
 import { getApps } from "firebase/app"
 import { useEffect } from "react"

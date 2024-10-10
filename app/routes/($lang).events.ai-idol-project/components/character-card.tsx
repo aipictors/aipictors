@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"
 

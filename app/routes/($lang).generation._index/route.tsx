@@ -1,5 +1,5 @@
 import text from "~/assets/terms.md?raw"
-import { json } from "@remix-run/react"
+import { json } from "react-router"
 import { graphql } from "gql.tada"
 import { GenerationAdvertisementView } from "~/routes/($lang).generation._index/components/advertisement-view/generation-advertisement-view"
 import { GenerationConfigView } from "~/routes/($lang).generation._index/components/config-view/generation-config-view"

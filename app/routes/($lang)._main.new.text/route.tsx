@@ -24,7 +24,7 @@ import {
   type MetaFunction,
   useBeforeUnload,
   useSearchParams,
-} from "@remix-run/react"
+} from "react-router"
 import { graphql } from "gql.tada"
 import React, { useEffect } from "react"
 import { useContext, useReducer } from "react"

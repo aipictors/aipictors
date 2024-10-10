@@ -4,7 +4,7 @@ import {
   imageModelCardFragment,
   ImageModelList,
 } from "~/routes/($lang)._main.models._index/components/image-model-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"

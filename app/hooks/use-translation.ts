@@ -1,4 +1,4 @@
-import { useLocation } from "@remix-run/react"
+import { useLocation } from "react-router"
 
 export function useTranslation() {
   const { pathname } = useLocation()

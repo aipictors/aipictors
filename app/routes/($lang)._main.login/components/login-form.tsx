@@ -1,7 +1,7 @@
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { useEffect } from "react"
 import { LoginDialogContent } from "~/components/login-dialog-content"
-import { useNavigate, useSearchParams } from "@remix-run/react"
+import { useNavigate, useSearchParams } from "react-router"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 

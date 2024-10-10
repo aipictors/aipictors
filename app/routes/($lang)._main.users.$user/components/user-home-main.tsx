@@ -10,7 +10,7 @@ import { UserActionShare } from "~/routes/($lang)._main.users.$user/components/u
 import { UserActionOther } from "~/routes/($lang)._main.users.$user/components/user-action-other"
 import { RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 import { useTranslation } from "~/hooks/use-translation"

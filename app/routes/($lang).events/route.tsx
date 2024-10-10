@@ -1,5 +1,5 @@
 import { AppCommonLayout } from "~/components/app/app-common-layout"
-import { Outlet } from "@remix-run/react"
+import { Outlet } from "react-router"
 
 export default function EventsLayout() {
   return (

@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from "react"
-import { useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "react-router"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"

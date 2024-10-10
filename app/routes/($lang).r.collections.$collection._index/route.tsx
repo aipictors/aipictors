@@ -3,7 +3,7 @@ import {
   WorkList,
   WorkListItemFragment,
 } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 
 export async function loader() {

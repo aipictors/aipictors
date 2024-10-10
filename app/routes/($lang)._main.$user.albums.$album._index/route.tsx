@@ -9,8 +9,8 @@ import {
   AlbumWorkListItemFragment,
 } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, type MetaFunction } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { json, type MetaFunction } from "react-router"
+import { useLoaderData } from "react-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"

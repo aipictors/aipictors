@@ -1,7 +1,7 @@
 import { AppCommonLayout } from "~/components/app/app-common-layout"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
-import { Outlet } from "@remix-run/react"
+import { Outlet } from "react-router"
 import { useContext } from "react"
 import { SettingsNavigation } from "~/routes/($lang).settings._index/components/settings-navigation"
 

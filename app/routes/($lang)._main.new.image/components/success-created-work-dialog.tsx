@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { useEffect } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 

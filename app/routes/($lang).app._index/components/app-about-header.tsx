@@ -1,5 +1,5 @@
 import { AppCanvas } from "~/routes/($lang).app._index/components/app-canvas"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { useTranslation } from "~/hooks/use-translation"
 
 export function AppAboutHeader() {

@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import React from "react"
 import { StickerChangeAccessTypeActionDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-action-dialog"

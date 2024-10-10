@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"

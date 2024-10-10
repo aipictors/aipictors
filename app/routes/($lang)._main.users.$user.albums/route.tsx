@@ -5,8 +5,8 @@ import {
   UserAlbumListItemFragment,
 } from "~/routes/($lang)._main.users.$user.albums/components/user-album-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { json, useParams } from "react-router"
+import { useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 
 export async function loader(props: LoaderFunctionArgs) {

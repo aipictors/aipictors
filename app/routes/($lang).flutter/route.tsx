@@ -1,4 +1,4 @@
-import { Outlet, useSearchParams } from "@remix-run/react"
+import { Outlet, useSearchParams } from "react-router"
 import { useTheme } from "next-themes"
 import { useEffect } from "react"
 

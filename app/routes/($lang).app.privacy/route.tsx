@@ -5,7 +5,7 @@ import { AppMarkdown } from "~/components/app/app-markdown"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
-import { json, type MetaFunction } from "@remix-run/react"
+import { json, type MetaFunction } from "react-router"
 
 /**
  * プライバシー・ポリシー

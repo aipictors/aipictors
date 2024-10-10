@@ -6,7 +6,7 @@ import {
   UserNovelListItemFragment,
 } from "~/routes/($lang)._main.users.$user.novels/components/user-novel-list"
 import { useQuery } from "@apollo/client/index"
-import { useParams } from "@remix-run/react"
+import { useParams } from "react-router"
 import { useContext } from "react"
 import { graphql } from "gql.tada"
 

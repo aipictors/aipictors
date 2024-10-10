@@ -5,8 +5,8 @@ import {
   TagWorkFragment,
 } from "~/routes/($lang).generation.tags.$tag/components/tag-referenced-work-section"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { json, useParams } from "react-router"
+import { useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 

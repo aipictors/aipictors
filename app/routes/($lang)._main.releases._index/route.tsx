@@ -1,4 +1,4 @@
-import { json, Link, useLoaderData } from "@remix-run/react"
+import { json, Link, useLoaderData } from "react-router"
 import { useState } from "react"
 import { Button } from "~/components/ui/button"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
