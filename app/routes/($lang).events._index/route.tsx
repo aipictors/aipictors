@@ -1,6 +1,4 @@
-import { AuthContext } from "~/contexts/auth-context"
 import { loaderClient } from "~/lib/loader-client"
-import { EventsList } from "~/routes/($lang).events._index/components/events-list"
 import {
   json,
   type LoaderFunctionArgs,
@@ -8,11 +6,11 @@ import {
 } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { useContext } from "react"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { EventItem } from "~/routes/($lang).events._index/components/event-item"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)
@@ -49,8 +47,6 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export default function FollowingLayout() {
-  const authContext = useContext(AuthContext)
-
   const events = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -64,7 +60,15 @@ export default function FollowingLayout() {
       <h1 className="text-center font-bold text-2xl">
         {t("AIイラスト - 開催イベント一覧", "AI Illustration - Event List")}
       </h1>
-      <EventsList appEvents={events.appEvents} />
+      <div className="flex flex-col space-y-2">
+        <div className="grid gap-2 rounded-lg md:grid-cols-2 xl:grid-cols-3">
+          {events.appEvents.map((event) => (
+            <div key={event.id}>
+              <EventItem {...event} />
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   )
 }
