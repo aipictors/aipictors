@@ -1,7 +1,4 @@
-import { UserTabs } from "~/routes/($lang)._main.users.$user._index/components/user-tabs"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useTranslation } from "~/hooks/use-translation"
-import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
@@ -10,38 +7,38 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
 
 type Props = {
-  user: FragmentOf<typeof UserProfileIconFragment>
-  posts: FragmentOf<typeof UserPostsItemFragment>[]
+  works: FragmentOf<typeof UserPostsItemFragment>[]
   page: number
   maxCount: number
 }
 
-export function UserPostsContentBody(props: Props) {
-  const t = useTranslation()
-
+export function UserSensitivePostList(props: Props) {
   const authContext = useContext(AuthContext)
 
+  const userId = props.works[0]?.user.id ?? ""
+
+  const userLogin = props.works[0]?.user.login ?? ""
+
   const { data: postsWorks } = useQuery(UserPostsQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn || userId === "",
     variables: {
       offset: props.page * 32,
       limit: 32,
       where: {
-        userId: props.user.id,
-        ratings: ["G", "R15"],
+        userId: userId,
+        ratings: ["R18", "R18G"],
         workType: "WORK",
         isNowCreatedAt: true,
       },
     },
   })
 
-  const posts = postsWorks?.works ?? props.posts
+  const posts = postsWorks?.works ?? props.works
 
   const navigate = useNavigate()
 
   return (
     <div className="flex flex-col space-y-4">
-      <UserTabs activeTab={t("画像", "Images")} user={props.user} />
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
           <ResponsivePhotoWorksAlbum works={posts} isShowProfile={false} />
@@ -54,7 +51,7 @@ export function UserPostsContentBody(props: Props) {
           maxCount={props.maxCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/users/${props.user.login}/posts?page=${page}`)
+            navigate(`/users/${userLogin}/posts?page=${page}`)
           }}
         />
       </div>
@@ -96,6 +93,7 @@ export const UserPostsItemFragment = graphql(
       name
     }
     user {
+      login
       id
       name
       iconUrl

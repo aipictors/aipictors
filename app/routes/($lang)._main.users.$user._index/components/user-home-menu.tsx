@@ -12,22 +12,20 @@ import { RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useLocation, useNavigate } from "@remix-run/react"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
-import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  user: FragmentOf<typeof UserProfileIconFragment>
-  userId: string
+  user: FragmentOf<typeof userHomeMenuFragment>
 }
 
-export function UserHomeMain(props: Props) {
+export function UserHomeMenu(props: Props) {
   const authContext = useContext(AuthContext)
 
   const [sensitive, setSensitive] = useState(false)
 
   const { data: userInfo } = useQuery(userQuery, {
     variables: {
-      userId: decodeURIComponent(props.userId),
+      userId: decodeURIComponent(props.user.id),
     },
   })
 
@@ -207,8 +205,8 @@ export function UserHomeMain(props: Props) {
   )
 }
 
-export const userHomeMainFragment = graphql(
-  `fragment UserHomeMain on UserNode @_unmask {
+export const userHomeMenuFragment = graphql(
+  `fragment UserHomeMenu on UserNode @_unmask {
     id
     login
     isFollowee
@@ -229,8 +227,8 @@ const userQuery = graphql(
     $userId: ID!,
   ) {
     user(id: $userId) {
-      ...UserHomeMain
+      ...UserHomeMenu
     }
   }`,
-  [userHomeMainFragment],
+  [userHomeMenuFragment],
 )

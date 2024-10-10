@@ -1,18 +1,32 @@
+import { useQuery } from "@apollo/client/index"
+import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useLoaderData, useParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { useContext } from "react"
+import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import { userHomeMainFragment } from "~/routes/($lang)._main.users.$user._index/components/user-home-main"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData, useParams } from "@remix-run/react"
-import { type FragmentOf, graphql } from "gql.tada"
-import { META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
-import { UserWorkFragment } from "~/routes/($lang)._main.users.$user._index/components/user-page"
+import {
+  HomeNovelsWorkListItemFragment,
+  HomeNovelsWorksSection,
+} from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import {
+  HomeVideosWorkListItemFragment,
+  HomeVideosWorksSection,
+} from "~/routes/($lang)._main._index/components/home-video-works-section"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
+import {
+  UserAboutCard,
+  UserAboutCardFragment,
+} from "~/routes/($lang)._main.users.$user._index/components/user-about-card"
+import {
+  UserSensitivePickupContents,
+  UserSensitivePickupFragment,
+} from "~/routes/($lang).r.users.$user._index/components/user-sensitive-pickup-contents"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
-import { UserProfileFragment } from "~/routes/($lang)._main.users.$user._index/components/user-content-body"
-import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
-import { UserSensitiveContentBody } from "~/routes/($lang).r.users.$user._index/components/user-sensitive-content-body"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -72,9 +86,9 @@ export async function loader(props: LoaderFunctionArgs) {
   const userResp = await loaderClient.query({
     query: combinedUserAndWorksQuery,
     variables: {
-      userId: decodeURIComponent(props.params.user),
       offset: 0,
       limit: 16,
+      userId: userIdResp.data.user.id,
       portfolioWhere: {
         userId: userIdResp.data.user.id,
         ratings: ["R18", "R18G"],
@@ -105,57 +119,20 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  console.log(userResp)
-
-  if (userResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
   return json({
-    user: userResp.data.user,
     works: userResp.data.works,
-    worksCount: userResp.data.user.worksCount,
+    user: userResp.data.user,
+    userId: userIdResp.data.user.id,
     novelWorks: userResp.data.novelWorks,
     columnWorks: userResp.data.columnWorks,
     videoWorks: userResp.data.videoWorks,
   })
 }
 
-export const meta: MetaFunction = (props) => {
-  if (!props.data) {
-    return [{ title: "ユーザのセンシティブマイページ" }]
-  }
-
-  const user = props.data as {
-    user: FragmentOf<typeof UserProfileIconFragment>
-  }
-
-  const worksCountPart =
-    user.user.worksCount > 0 ? ` (${user.user.worksCount}作品)` : ""
-
-  return createMeta(
-    META.USERS,
-    {
-      title:
-        `${user.user.name}のマイページ${worksCountPart}` ||
-        "ユーザーのマイページ",
-      enTitle: `${user.user.name}'s sensitive page${worksCountPart}`,
-      description:
-        user.user.biography ||
-        "Aipictorsのセンシティブマイページです、AIイラストなどの作品一覧を閲覧することができます",
-      enDescription: `This is ${user.user.name}'s sensitive page on Aipictors, where you can view a list of AI illustrations and other works`,
-      url: user.user.headerImageUrl?.length
-        ? user.user.headerImageUrl
-        : user.user.iconUrl
-          ? ExchangeIconUrl(user.user.iconUrl)
-          : "",
-    },
-    props.params.lang,
-  )
-}
-
-export default function UserSensitiveLayout() {
+export default function UserLayout() {
   const params = useParams<"user">()
+
+  const authContext = useContext(AuthContext)
 
   if (params.user === undefined) {
     throw ParamsError()
@@ -163,21 +140,106 @@ export default function UserSensitiveLayout() {
 
   const data = useLoaderData<typeof loader>()
 
-  if (data === null) {
+  if (data === null || data.user === null) {
     return null
   }
 
+  // 人気画像作品
+  const { data: workRes } = useQuery(worksQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: data.userId,
+        ratings: ["R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  // 人気小説作品
+  const { data: novelWorkRes } = useQuery(worksQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: data.userId,
+        workType: "NOVEL",
+        ratings: ["R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  // 人気コラム作品
+  const { data: columnWorkRes } = useQuery(worksQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: data.userId,
+        workType: "COLUMN",
+        ratings: ["R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  // 人気動画作品
+  const { data: videoWorkRes } = useQuery(worksQuery, {
+    skip: authContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: data.userId,
+        workType: "VIDEO",
+        ratings: ["R18", "R18G"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const works = workRes?.works ?? data.works
+
+  const novelWorks = novelWorkRes?.works || data.novelWorks
+
+  const columnWorks = columnWorkRes?.works || data.columnWorks
+
+  const videoWorks = videoWorkRes?.works || data.videoWorks
+
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserContentHeader user={data.user} />
-      <UserSensitiveContentBody
-        user={data.user}
-        works={data.works}
-        novelWorks={data.novelWorks}
-        columnWorks={data.columnWorks}
-        videoWorks={data.videoWorks}
-        worksCount={data.worksCount}
-      />
+      <div className="flex flex-col space-y-4">
+        <div className="flex min-h-96 flex-col gap-y-4">
+          <UserAboutCard user={data.user} />
+          <UserSensitivePickupContents
+            userPickupWorks={data.user.featuredSensitiveWorks ?? []}
+            userId={data.user.id}
+          />
+          <div className="space-y-4">
+            {works.length !== 0 && (
+              <HomeWorkSection works={works} isCropped={false} />
+            )}
+            {novelWorks.length !== 0 && (
+              <HomeNovelsWorksSection works={novelWorks} isCropped={false} />
+            )}
+            {columnWorks.length !== 0 && (
+              <HomeNovelsWorksSection works={columnWorks} isCropped={false} />
+            )}
+            {videoWorks.length !== 0 && (
+              <HomeVideosWorksSection works={videoWorks} isCropped={false} />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -201,27 +263,42 @@ const combinedUserAndWorksQuery = graphql(
     $videoWhere: WorksWhereInput!
   ) {
     user(id: $userId) {
-      ...UserHomeMain
-      ...UserProfile
-      ...UserProfileIcon
+      ...UserAboutCard
+      ...UserPickup
     }
     works(offset: $offset, limit: $limit, where: $portfolioWhere) {
-      ...UserWork
+      ...HomeWork
     }
     novelWorks: works(offset: $offset, limit: $limit, where: $novelWhere) {
-      ...UserWork
+      ...HomeNovelsWorkListItem
     }
     columnWorks: works(offset: $offset, limit: $limit, where: $columnWhere) {
-      ...UserWork
+      ...HomeWork
     }
     videoWorks: works(offset: $offset, limit: $limit, where: $videoWhere) {
-      ...UserWork
+      ...HomeVideosWorkListItem
     }
   }`,
   [
-    userHomeMainFragment,
-    UserProfileFragment,
-    UserProfileIconFragment,
-    UserWorkFragment,
+    HomeWorkFragment,
+    HomeNovelsWorkListItemFragment,
+    HomeVideosWorkListItemFragment,
+    UserAboutCardFragment,
+    UserSensitivePickupFragment,
+  ],
+)
+
+const worksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...HomeWork,
+      ...HomeNovelsWorkListItem
+      ...HomeVideosWorkListItem
+    }
+  }`,
+  [
+    HomeWorkFragment,
+    HomeNovelsWorkListItemFragment,
+    HomeVideosWorkListItemFragment,
   ],
 )

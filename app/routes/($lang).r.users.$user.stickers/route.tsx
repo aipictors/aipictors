@@ -4,10 +4,10 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { UserStickersItemFragment } from "~/routes/($lang)._main.users.$user.stickers/components/user-stickers-content-body"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
-import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
-import { UserSensitiveStickersContentBody } from "~/routes/($lang).r.users.$user.stickers/components/user-stickers-content-body"
+import {
+  UserStickerList,
+  UserStickersItemFragment,
+} from "~/routes/($lang)._main.users.$user.stickers/components/user-sticker-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -48,12 +48,11 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json({
     page,
-    user: stickersResp.data.user,
     stickers: stickersResp.data.user.stickers,
   })
 }
 
-export default function UserSensitivePosts() {
+export default function UserPosts() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -64,12 +63,7 @@ export default function UserSensitivePosts() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserContentHeader user={data.user} />
-      <UserSensitiveStickersContentBody
-        user={data.user}
-        stickers={data.stickers}
-        page={data.page}
-      />
+      <UserStickerList stickers={data.stickers} page={data.page} />
     </div>
   )
 }
@@ -85,14 +79,10 @@ const userIdQuery = graphql(
 const userStickersQuery = graphql(
   `query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
-      ...UserProfileIcon
-    }
-    user(id: $userId) {
-      id
       stickers(offset: $offset, limit: $limit) {
         ...StickerItem
       }
     }
   }`,
-  [UserStickersItemFragment, UserProfileIconFragment],
+  [UserStickersItemFragment],
 )

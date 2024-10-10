@@ -1,15 +1,12 @@
-import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import { json } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
-import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
 import {
+  UserAlbumList,
   UserAlbumListItemFragment,
-  UserAlbumsContent,
-} from "~/routes/($lang)._main.users.$user.albums/components/user-albums-content"
+} from "~/routes/($lang)._main.users.$user.albums/components/user-album-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -25,42 +22,30 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (albumsResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
   return json({
-    user: albumsResp.data.user,
-    albums: albumsResp.data.user.albums,
+    albums: albumsResp.data.albums,
   })
 }
 
 export default function UserAlbums() {
-  const params = useParams()
-
-  if (params.user === undefined) {
-    throw ParamsError()
-  }
-
   const data = useLoaderData<typeof loader>()
 
+  if (data.albums === null) {
+    return
+  }
+
   return (
-    <div className="flex w-full flex-col justify-center">
-      <UserContentHeader user={data.user} />
-      <UserAlbumsContent user={data.user} albums={data.albums} />
+    <div className="flex flex-col space-y-4">
+      <UserAlbumList albums={data.albums} />
     </div>
   )
 }
 
 export const userAlbumsQuery = graphql(
-  `query UserAlbums($userId: ID!, $offset: Int!, $limit: Int!) {
-    user(id: $userId) {
-      id
-      albums(offset: $offset, limit: $limit) {
-        ...UserAlbumListItem
-      }
-      ...UserProfileIcon
+  `query UserAlbums($offset: Int!, $limit: Int!) {
+    albums(offset: $offset, limit: $limit) {
+      ...UserAlbumListItem
     }
   }`,
-  [UserAlbumListItemFragment, UserProfileIconFragment],
+  [UserAlbumListItemFragment],
 )

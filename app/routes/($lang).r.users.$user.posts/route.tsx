@@ -3,11 +3,9 @@ import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
-import { UserPostsItemFragment } from "~/routes/($lang)._main.users.$user.posts/components/user-posts-content-body"
-import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
-import { UserSensitivePostsContent } from "~/routes/($lang).r.users.$user.posts/components/user-sensitive-posts-content"
+import { UserPostsItemFragment } from "~/routes/($lang)._main.users.$user.posts/components/user-post-list"
+import { UserSensitivePostList } from "~/routes/($lang).r.users.$user.posts/components/user-sensitive-post-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -34,11 +32,10 @@ export async function loader(props: LoaderFunctionArgs) {
     : 0
 
   const worksResp = await loaderClient.query({
-    query: worksAndUserProfileQuery,
+    query: userPostsQuery,
     variables: {
       offset: page * 32,
       limit: 32,
-      userId: userIdResp.data.user.id,
       where: {
         userId: userIdResp.data.user.id,
         ratings: ["R18", "R18G"],
@@ -48,19 +45,14 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (worksResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
   return json({
-    user: worksResp.data.user,
     works: worksResp.data.works,
     maxCount: worksResp.data.worksCount,
     page,
   })
 }
 
-export default function UserSensitivePosts() {
+export default function UserPosts() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -71,10 +63,8 @@ export default function UserSensitivePosts() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserContentHeader user={data.user} />
-      <UserSensitivePostsContent
-        user={data.user}
-        posts={data.works}
+      <UserSensitivePostList
+        works={data.works}
         page={data.page}
         maxCount={data.maxCount}
       />
@@ -90,15 +80,12 @@ const userIdQuery = graphql(
   }`,
 )
 
-export const worksAndUserProfileQuery = graphql(
-  `query UserWorks($userId: ID!, $offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    user(id: $userId) {
-      ...UserProfileIcon
-    }
+export const userPostsQuery = graphql(
+  `query UserWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...UserPostsItem
     }
     worksCount(where: $where)
   }`,
-  [UserPostsItemFragment, UserProfileIconFragment],
+  [UserPostsItemFragment],
 )

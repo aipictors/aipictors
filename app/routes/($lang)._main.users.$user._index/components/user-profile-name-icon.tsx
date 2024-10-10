@@ -72,50 +72,15 @@ export function UserProfileNameIcon(props: Props) {
 
 export const UserProfileIconFragment = graphql(
   `fragment UserProfileIcon on UserNode @_unmask {
-    id
-    login
-    nanoid
     name
-    biography
-    enBiography
+    isModerator
+    login
     receivedLikesCount
-    createdAt
-    receivedViewsCount
-    awardsCount
-    followCount
     followersCount
-    worksCount
     iconUrl
-    hasImageWorks
-    hasSensitiveImageWorks
-    hasNovelWorks
-    hasSensitiveNovelWorks
-    hasVideoWorks
-    hasSensitiveVideoWorks
-    hasColumnWorks
-    hasSensitiveColumnWorks
-    hasFolders
-    hasSensitiveFolders
-    hasAlbums
-    hasPublicStickers
-    headerImageUrl
-    promptonUser {
-      id
-    }
-    twitterAccountId
-    instagramAccountId
-    githubAccountId
-    mailAddress
-    featuredWorks {
-      ...HomeWork
-    }
-    featuredSensitiveWorks {
-      ...HomeWork
-    }
     pass {
       type
     }
-    isModerator
   }`,
   [HomeWorkFragment],
 )

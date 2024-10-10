@@ -3,13 +3,11 @@ import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
 import {
-  UserCollectionsContentBody,
+  UserCollectionList,
   UserUserFoldersItemFragment,
-} from "~/routes/($lang)._main.users.$user.collections/components/user-collections-content-body"
-import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
+} from "~/routes/($lang)._main.users.$user.collections/components/user-collection-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -28,7 +26,7 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   const foldersResp = await loaderClient.query({
-    query: userFoldersAndProfileQuery,
+    query: userFoldersQuery,
     variables: {
       offset: 0,
       limit: 32,
@@ -41,7 +39,6 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   return json({
-    user: foldersResp.data.user,
     folders: foldersResp.data.user.folders,
   })
 }
@@ -57,8 +54,7 @@ export default function UserAlbums() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserContentHeader user={data.user} />
-      <UserCollectionsContentBody user={data.user} folders={data.folders} />
+      <UserCollectionList folders={data.folders} />
     </div>
   )
 }
@@ -71,15 +67,13 @@ const userIdQuery = graphql(
   }`,
 )
 
-export const userFoldersAndProfileQuery = graphql(
+export const userFoldersQuery = graphql(
   `query Folders($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
-      id
       folders(offset: $offset, limit: $limit) {
         ...UserUserFoldersItem
       }
-      ...UserProfileIcon
     }
   }`,
-  [UserUserFoldersItemFragment, UserProfileIconFragment],
+  [UserUserFoldersItemFragment],
 )

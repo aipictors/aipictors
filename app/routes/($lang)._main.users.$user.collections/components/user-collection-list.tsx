@@ -1,23 +1,13 @@
-import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useTranslation } from "~/hooks/use-translation"
-import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
-import { UserSensitiveTabs } from "~/routes/($lang).r.users.$user._index/components/user-sensitive-tabs"
+import { Link } from "@remix-run/react"
 
 type Props = {
-  user: FragmentOf<typeof UserProfileIconFragment>
   folders: FragmentOf<typeof UserUserFoldersItemFragment>[]
 }
 
-export function UserSensitiveCollectionsContentBody(props: Props) {
-  const t = useTranslation()
-
+export function UserCollectionList(props: Props) {
   return (
     <div className="flex flex-col space-y-4">
-      <UserSensitiveTabs
-        activeTab={t("コレクション", "Collections")}
-        user={props.user}
-      />
       <div className="flex min-h-96 flex-col gap-y-4">
         <div className="flex flex-wrap gap-4">
           {props.folders.map((folder) => (
@@ -63,14 +53,4 @@ export const UserUserFoldersItemFragment = graphql(
       smallThumbnailImageURL
     }
   }`,
-)
-
-export const userFoldersQuery = graphql(
-  `query Folders($offset: Int!, $limit: Int!, $where: FoldersWhereInput) {
-    folders(offset: $offset, limit: $limit, where: $where) {
-      id
-      ...UserUserFoldersItem
-    }
-  }`,
-  [UserUserFoldersItemFragment],
 )

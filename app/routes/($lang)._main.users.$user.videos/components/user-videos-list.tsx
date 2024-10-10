@@ -1,7 +1,4 @@
-import { UserTabs } from "~/routes/($lang)._main.users.$user._index/components/user-tabs"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useTranslation } from "~/hooks/use-translation"
-import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
@@ -10,24 +7,25 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
 
 type Props = {
-  user: FragmentOf<typeof UserProfileIconFragment>
-  videos: FragmentOf<typeof UserVideosItemFragment>[]
+  works: FragmentOf<typeof UserVideosItemFragment>[]
   page: number
   maxCount: number
 }
 
-export function UserVideosContentBody(props: Props) {
-  const t = useTranslation()
-
+export function UserVideoList(props: Props) {
   const authContext = useContext(AuthContext)
 
+  const userId = props.works[0]?.user?.id ?? ""
+
+  const userLogin = props.works[0]?.user?.login ?? ""
+
   const { data: videosWorks } = useQuery(UserVideosQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn || userId === "",
     variables: {
       offset: props.page * 32,
       limit: 32,
       where: {
-        userId: props.user.id,
+        userId: userId,
         ratings: ["G", "R15"],
         workType: "VIDEO",
         isNowCreatedAt: true,
@@ -35,18 +33,17 @@ export function UserVideosContentBody(props: Props) {
     },
   })
 
-  const videos = videosWorks?.works ?? props.videos
+  const videos = videosWorks?.works ?? props.works
 
   const navigate = useNavigate()
 
   return (
     <div className="flex flex-col space-y-4">
-      <UserTabs activeTab={t("動画", "Videos")} user={props.user} />
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
           <ResponsivePhotoVideoWorksAlbum
             isAutoPlay={true}
-            works={props.videos}
+            works={props.works}
           />
         </section>
       </div>
@@ -57,7 +54,7 @@ export function UserVideosContentBody(props: Props) {
           maxCount={props.maxCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/users/${props.user.login}/videos?page=${page}`)
+            navigate(`/users/${userLogin}/videos?page=${page}`)
           }}
         />
       </div>
@@ -76,6 +73,7 @@ export const UserVideosItemFragment = graphql(
     likesCount
     isLiked
     user {
+      login
       id
       name
       iconUrl

@@ -3,13 +3,11 @@ import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
 import {
-  UserVideosContentBody,
+  UserVideoList,
   UserVideosItemFragment,
-} from "~/routes/($lang)._main.users.$user.videos/components/user-videos-content-body"
-import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
+} from "~/routes/($lang)._main.users.$user.videos/components/user-videos-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -36,11 +34,10 @@ export async function loader(props: LoaderFunctionArgs) {
     : 0
 
   const worksResp = await loaderClient.query({
-    query: worksAndUserProfileQuery,
+    query: userVideosQuery,
     variables: {
       offset: page * 32,
       limit: 32,
-      userId: userIdResp.data.user.id,
       where: {
         userId: userIdResp.data.user.id,
         ratings: ["G", "R15"],
@@ -50,12 +47,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (worksResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
   return json({
-    user: worksResp.data.user,
     works: worksResp.data.works,
     maxCount: worksResp.data.worksCount,
     page,
@@ -73,10 +65,8 @@ export default function UserVideos() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserContentHeader user={data.user} />
-      <UserVideosContentBody
-        user={data.user}
-        videos={data.works}
+      <UserVideoList
+        works={data.works}
         page={data.page}
         maxCount={data.maxCount}
       />
@@ -92,15 +82,12 @@ const userIdQuery = graphql(
   }`,
 )
 
-export const worksAndUserProfileQuery = graphql(
-  `query UserWorks($userId: ID!, $offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    user(id: $userId) {
-      ...UserProfileIcon
-    }
+export const userVideosQuery = graphql(
+  `query UserWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...UserVideosItem
     }
     worksCount(where: $where)
   }`,
-  [UserVideosItemFragment, UserProfileIconFragment],
+  [UserVideosItemFragment],
 )

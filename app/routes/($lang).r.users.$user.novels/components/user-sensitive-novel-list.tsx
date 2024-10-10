@@ -1,66 +1,61 @@
 import { type FragmentOf, graphql } from "gql.tada"
-import { useTranslation } from "~/hooks/use-translation"
-import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
-import { CarouselWithGradation } from "~/components/carousel-with-gradation"
-import { LikeButton } from "~/components/like-button"
-import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { UserSensitiveTabs } from "~/routes/($lang).r.users.$user._index/components/user-sensitive-tabs"
+import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/novel-work-preview-item"
+import { LikeButton } from "~/components/like-button"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
-  user: FragmentOf<typeof UserProfileIconFragment>
-  notes: FragmentOf<typeof UserNotesItemFragment>[]
+  works: FragmentOf<typeof UserNovelsItemFragment>[]
   page: number
   maxCount: number
 }
 
-export function UserSensitiveNotesContentBody(props: Props) {
-  const t = useTranslation()
-
+export function UserSensitiveNovelList(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data: novelWorks } = useQuery(UserNotesQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  const userId = props.works[0]?.user.id ?? ""
+
+  const userLogin = props.works[0]?.user.login ?? ""
+
+  const { data: novelsWorks } = useQuery(UserNovelsQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn || userId === "",
     variables: {
       offset: props.page * 32,
       limit: 32,
       where: {
-        userId: props.user.id,
+        userId: userId,
         ratings: ["R18", "R18G"],
-        workType: "COLUMN",
+        workType: "NOVEL",
         isNowCreatedAt: true,
       },
     },
   })
 
-  const notes = novelWorks?.works ?? props.notes
+  const novels = novelsWorks?.works ?? props.works
 
   const navigate = useNavigate()
 
   return (
     <div className="flex flex-col space-y-4">
-      <UserSensitiveTabs activeTab={t("コラム", "Columns")} user={props.user} />
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
-          <CarouselWithGradation
-            items={notes.map((work, index) => (
-              // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-              <div className="h-full rounded border-2 border-gray border-solid">
-                <div className="relative">
-                  <NovelWorkPreviewItem
-                    workId={work.id}
-                    imageUrl={work.smallThumbnailImageURL}
-                    title={work.title}
-                    text={work.description ?? ""}
-                    tags={[]}
-                  />
-                </div>
+          <div className="flex flex-wrap gap-4">
+            {novels.map((work) => (
+              <div
+                key={work.id}
+                className="relative ml-4 inline-block h-full rounded border-2 border-gray border-solid"
+              >
+                <NovelWorkPreviewItem
+                  workId={work.id}
+                  imageUrl={work.smallThumbnailImageURL}
+                  title={work.title}
+                  text={work.description ?? ""}
+                />
                 <UserNameBadge
                   userId={work.user.id}
                   userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
@@ -81,7 +76,7 @@ export function UserSensitiveNotesContentBody(props: Props) {
                 </div>
               </div>
             ))}
-          />
+          </div>
         </section>
       </div>
       <div className="h-8" />
@@ -91,7 +86,7 @@ export function UserSensitiveNotesContentBody(props: Props) {
           maxCount={props.maxCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/users/${props.user.login}/notes?page=${page}`)
+            navigate(`/users/${userLogin}/novels?page=${page}`)
           }}
         />
       </div>
@@ -99,27 +94,28 @@ export function UserSensitiveNotesContentBody(props: Props) {
   )
 }
 
-export const UserNotesItemFragment = graphql(
-  `fragment UserNotesItem on WorkNode @_unmask {
+export const UserNovelsItemFragment = graphql(
+  `fragment UserNovelsItem on WorkNode @_unmask {
     id
     smallThumbnailImageURL
-    isLiked
     title
     description
+    isLiked
     user {
       id
-      name
       iconUrl
+      name
+      login
     }
   }`,
 )
 
-export const UserNotesQuery = graphql(
-  `query UserNotes($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+export const UserNovelsQuery = graphql(
+  `query UserNovels($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...UserNotesItem
+      ...UserNovelsItem
     }
     worksCount(where: $where)
   }`,
-  [UserNotesItemFragment],
+  [UserNovelsItemFragment],
 )

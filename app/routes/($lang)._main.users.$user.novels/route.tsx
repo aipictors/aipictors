@@ -3,13 +3,9 @@ import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
 import { graphql } from "gql.tada"
-import {
-  UserNovelsContentBody,
-  UserNovelsItemFragment,
-} from "~/routes/($lang)._main.users.$user.novels/components/user-novels-content-body"
-import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
+import { UserNovelsItemFragment } from "~/routes/($lang)._main.users.$user.novels/components/user-novel-list"
+import { UserNovelList } from "~/routes/($lang)._main.users.$user.novels/components/user-novel-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -36,11 +32,10 @@ export async function loader(props: LoaderFunctionArgs) {
     : 0
 
   const worksResp = await loaderClient.query({
-    query: worksAndUserProfileQuery,
+    query: userNovelsQuery,
     variables: {
       offset: page * 32,
       limit: 32,
-      userId: userIdResp.data.user.id,
       where: {
         userId: userIdResp.data.user.id,
         ratings: ["G", "R15"],
@@ -50,12 +45,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (worksResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
   return json({
-    user: worksResp.data.user,
     works: worksResp.data.works,
     maxCount: worksResp.data.worksCount,
     page,
@@ -73,10 +63,8 @@ export default function UserPosts() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserContentHeader user={data.user} />
-      <UserNovelsContentBody
-        user={data.user}
-        novels={data.works}
+      <UserNovelList
+        works={data.works}
         page={data.page}
         maxCount={data.maxCount}
       />
@@ -92,15 +80,12 @@ const userIdQuery = graphql(
   }`,
 )
 
-export const worksAndUserProfileQuery = graphql(
-  `query UserWorks($userId: ID!, $offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    user(id: $userId) {
-      ...UserProfileIcon
-    }
+export const userNovelsQuery = graphql(
+  `query UserWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...UserNovelsItem
     }
     worksCount(where: $where)
   }`,
-  [UserNovelsItemFragment, UserProfileIconFragment],
+  [UserNovelsItemFragment],
 )

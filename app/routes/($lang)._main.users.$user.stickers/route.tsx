@@ -5,11 +5,9 @@ import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
-  UserStickersContentBody,
+  UserStickerList,
   UserStickersItemFragment,
-} from "~/routes/($lang)._main.users.$user.stickers/components/user-stickers-content-body"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
-import { UserContentHeader } from "~/routes/($lang)._main.users.$user._index/components/user-content-header"
+} from "~/routes/($lang)._main.users.$user.stickers/components/user-sticker-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -50,7 +48,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return json({
     page,
-    user: stickersResp.data.user,
     stickers: stickersResp.data.user.stickers,
   })
 }
@@ -66,12 +63,7 @@ export default function UserPosts() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserContentHeader user={data.user} />
-      <UserStickersContentBody
-        user={data.user}
-        stickers={data.stickers}
-        page={data.page}
-      />
+      <UserStickerList stickers={data.stickers} page={data.page} />
     </div>
   )
 }
@@ -87,14 +79,10 @@ const userIdQuery = graphql(
 const userStickersQuery = graphql(
   `query UserStickers($userId: ID!, $offset: Int!, $limit: Int!) {
     user(id: $userId) {
-      ...UserProfileIcon
-    }
-    user(id: $userId) {
-      id
       stickers(offset: $offset, limit: $limit) {
         ...StickerItem
       }
     }
   }`,
-  [UserStickersItemFragment, UserProfileIconFragment],
+  [UserStickersItemFragment],
 )
