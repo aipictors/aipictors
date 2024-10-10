@@ -2,7 +2,6 @@ import { OmissionNumber } from "~/components/omission-number"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user._index/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
-import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user._index/components/user-subscription-icon"
 import { UserModeratorIcon } from "~/routes/($lang)._main.users.$user._index/components/user-moderator-icon"
 import { useTranslation } from "~/hooks/use-translation"
@@ -82,5 +81,4 @@ export const UserProfileIconFragment = graphql(
       type
     }
   }`,
-  [HomeWorkFragment],
 )
