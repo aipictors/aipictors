@@ -14,7 +14,7 @@ export function UserAboutCard(props: Props) {
   return (
     <Card className="flex flex-col gap-y-4 p-4">
       <p className="flex items-center space-x-2 text-sm opacity-80">
-        {new Date(1672953307 * 1000).toLocaleDateString("ja-JP", {
+        {new Date(props.user.createdAt).toLocaleDateString("ja-JP", {
           timeZone: "Asia/Tokyo",
           year: "numeric",
           month: "2-digit",
