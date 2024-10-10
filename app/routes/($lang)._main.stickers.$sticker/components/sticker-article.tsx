@@ -6,7 +6,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
-import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user/components/sticker-info-dialog"
+import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { useTranslation } from "~/hooks/use-translation"
 

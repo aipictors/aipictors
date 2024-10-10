@@ -18,18 +18,13 @@ import { useContext } from "react"
 type Props = {
   userId: string
   userLogin: string
-  isSensitive?: boolean
   works: FragmentOf<typeof HomeWorkFragment>[]
   novelWorks: FragmentOf<typeof HomeNovelsWorkListItemFragment>[]
   columnWorks: FragmentOf<typeof HomeWorkFragment>[]
   videoWorks: FragmentOf<typeof HomeVideosWorkListItemFragment>[]
-  worksCount: number
-  novelWorksCount: number
-  columnWorksCount: number
-  videoWorksCount: number
 }
 
-export function UserContentsContainer(props: Props) {
+export function UserPortfolio(props: Props) {
   const authContext = useContext(AuthContext)
 
   // 人気画像作品
@@ -40,21 +35,8 @@ export function UserContentsContainer(props: Props) {
       limit: 16,
       where: {
         userId: props.userId,
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        ratings: ["G", "R15"],
         orderBy: "LIKES_COUNT",
-        isSensitive: props.isSensitive,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const worksCountResp = useQuery(worksCountQuery, {
-    skip: authContext.isLoading,
-    variables: {
-      where: {
-        userId: props.userId,
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
-        isSensitive: props.isSensitive,
         isNowCreatedAt: true,
       },
     },
@@ -69,22 +51,8 @@ export function UserContentsContainer(props: Props) {
       where: {
         userId: props.userId,
         workType: "NOVEL",
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        ratings: ["G", "R15"],
         orderBy: "LIKES_COUNT",
-        isSensitive: props.isSensitive,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const novelWorksCountResp = useQuery(worksCountQuery, {
-    skip: authContext.isLoading,
-    variables: {
-      where: {
-        workType: "NOVEL",
-        userId: props.userId,
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
-        isSensitive: props.isSensitive,
         isNowCreatedAt: true,
       },
     },
@@ -99,22 +67,8 @@ export function UserContentsContainer(props: Props) {
       where: {
         userId: props.userId,
         workType: "COLUMN",
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        ratings: ["G", "R15"],
         orderBy: "LIKES_COUNT",
-        isSensitive: props.isSensitive,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const columnWorksCountResp = useQuery(worksCountQuery, {
-    skip: authContext.isLoading,
-    variables: {
-      where: {
-        workType: "COLUMN",
-        userId: props.userId,
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
-        isSensitive: props.isSensitive,
         isNowCreatedAt: true,
       },
     },
@@ -129,22 +83,8 @@ export function UserContentsContainer(props: Props) {
       where: {
         userId: props.userId,
         workType: "VIDEO",
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        ratings: ["G", "R15"],
         orderBy: "LIKES_COUNT",
-        isSensitive: props.isSensitive,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const videoWorksCountResp = useQuery(worksCountQuery, {
-    skip: authContext.isLoading,
-    variables: {
-      where: {
-        workType: "VIDEO",
-        userId: props.userId,
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
-        isSensitive: props.isSensitive,
         isNowCreatedAt: true,
       },
     },
@@ -158,30 +98,19 @@ export function UserContentsContainer(props: Props) {
 
   const videoWorks = videoWorkRes?.works || props.videoWorks
 
-  const worksCount = worksCountResp.data?.worksCount ?? props.worksCount
-
-  const novelWorksCount =
-    novelWorksCountResp.data?.worksCount ?? props.novelWorksCount
-
-  const columnWorksCount =
-    columnWorksCountResp.data?.worksCount ?? props.columnWorksCount
-
-  const videoWorksCount =
-    videoWorksCountResp.data?.worksCount ?? props.videoWorksCount
-
   return (
     <div className="space-y-4">
-      {worksCount !== 0 && (
+      {works.length !== 0 && (
         <HomeWorkSection works={works} title={"人気作品"} isCropped={false} />
       )}
-      {novelWorksCount !== 0 && (
+      {novelWorks.length !== 0 && (
         <HomeNovelsWorksSection
           works={novelWorks}
           title={"人気小説"}
           isCropped={false}
         />
       )}
-      {columnWorksCount !== 0 && (
+      {columnWorks.length !== 0 && (
         <HomeNovelsWorksSection
           works={columnWorks}
           title={"人気コラム"}
@@ -189,7 +118,7 @@ export function UserContentsContainer(props: Props) {
         />
       )}
 
-      {videoWorksCount !== 0 && (
+      {videoWorks.length !== 0 && (
         <HomeVideosWorksSection
           works={videoWorks}
           title={"人気動画"}
@@ -199,12 +128,6 @@ export function UserContentsContainer(props: Props) {
     </div>
   )
 }
-
-const worksCountQuery = graphql(
-  `query WorksCount($where: WorksWhereInput) {
-    worksCount(where: $where)
-  }`,
-)
 
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {

@@ -2,35 +2,36 @@ import { FollowButton } from "~/components/button/follow-button"
 import { Button } from "~/components/ui/button"
 import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user/components/profile-edit-dialog"
-import { UserActionShare } from "~/routes/($lang)._main.users.$user/components/user-action-share"
-import { UserActionOther } from "~/routes/($lang)._main.users.$user/components/user-action-other"
+import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
+import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
+import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
 import { RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { useNavigate } from "@remix-run/react"
+import { useLocation, useNavigate } from "@remix-run/react"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
-import type { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  user: FragmentOf<typeof UserProfileIconFragment>
-  userId: string
-  isSensitive?: boolean
+  user: FragmentOf<typeof userHomeMenuFragment>
 }
 
-export function UserHomeMain(props: Props) {
+export function UserHomeMenu(props: Props) {
   const authContext = useContext(AuthContext)
+
+  const [sensitive, setSensitive] = useState(false)
 
   const { data: userInfo } = useQuery(userQuery, {
     variables: {
-      userId: decodeURIComponent(props.userId),
+      userId: decodeURIComponent(props.user.id),
     },
   })
 
   const t = useTranslation()
+
+  const location = useLocation()
 
   const isFollow = userInfo?.user?.isFollowee ?? false
 
@@ -38,11 +39,20 @@ export function UserHomeMain(props: Props) {
 
   const navigate = useNavigate()
 
+  useEffect(() => {
+    // URLに"/r"が含まれているかを確認 (正規表現を使用)
+    if (/\/r($|\/)/.test(location.pathname)) {
+      setSensitive(true)
+    } else {
+      setSensitive(false)
+    }
+  }, [location.pathname])
+
   return (
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-2 right-0 z-10 md:hidden">
         <div className="flex space-x-2">
-          {props.isSensitive ? (
+          {!sensitive ? (
             <Button
               onClick={() => {
                 navigate(`/users/${props.user.login}`)
@@ -80,7 +90,7 @@ export function UserHomeMain(props: Props) {
       </div>
       <div className="absolute top-2 right-0 hidden md:block">
         <div className="flex w-full items-center justify-end space-x-4">
-          {props.isSensitive ? (
+          {sensitive ? (
             <Button
               onClick={() => {
                 navigate(`/users/${props.user.login}`)
@@ -195,8 +205,8 @@ export function UserHomeMain(props: Props) {
   )
 }
 
-export const userHomeMainFragment = graphql(
-  `fragment UserHomeMain on UserNode @_unmask {
+export const userHomeMenuFragment = graphql(
+  `fragment UserHomeMenu on UserNode @_unmask {
     id
     login
     isFollowee
@@ -217,8 +227,8 @@ const userQuery = graphql(
     $userId: ID!,
   ) {
     user(id: $userId) {
-      ...UserHomeMain
+      ...UserHomeMenu
     }
   }`,
-  [userHomeMainFragment],
+  [userHomeMenuFragment],
 )

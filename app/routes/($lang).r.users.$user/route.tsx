@@ -1,20 +1,34 @@
-import { ConstructionAlert } from "~/components/construction-alert"
+import {
+  json,
+  type MetaFunction,
+  Outlet,
+  useLoaderData,
+  useParams,
+} from "@remix-run/react"
+import { graphql, type FragmentOf } from "gql.tada"
+import type { LoaderFunctionArgs } from "react-router-dom"
+import { META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import { UserProfileFragment } from "~/routes/($lang)._main.users.$user/components/user-contents"
-import { userHomeMainFragment } from "~/routes/($lang)._main.users.$user/components/user-home-main"
-import { UserProfileIconFragment } from "~/routes/($lang)._main.users.$user/components/user-profile-name-icon"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData, useParams } from "@remix-run/react"
-import { type FragmentOf, graphql } from "gql.tada"
-import { META } from "~/config"
+import {
+  UserHomeHeader,
+  UserHomeHeaderFragment,
+} from "~/routes/($lang)._main.users.$user._index/components/user-home-header"
+import {
+  UserHomeMenu,
+  userHomeMenuFragment,
+} from "~/routes/($lang)._main.users.$user._index/components/user-home-menu"
+import {
+  UserProfileIconFragment,
+  UserProfileNameIcon,
+} from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
+import {
+  UserSensitiveTabs,
+  UserSensitiveTabsFragment,
+} from "~/routes/($lang).r.users.$user/components/user-sensitive-tabs"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
-import { UserPage } from "~/routes/($lang)._main.users.$user/components/user-page"
-import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
-import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
-import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -25,6 +39,17 @@ export async function loader(props: LoaderFunctionArgs) {
 
   if (redirectResponse) {
     return redirectResponse
+  }
+
+  const userIdResp = await loaderClient.query({
+    query: userIdQuery,
+    variables: {
+      userId: decodeURIComponent(props.params.user),
+    },
+  })
+
+  if (userIdResp.data.user === null) {
+    throw new Response(null, { status: 404 })
   }
 
   const userResp = await loaderClient.query({
@@ -38,141 +63,19 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const workRes = await loaderClient.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: userResp.data.user.id,
-        ratings: ["R18", "R18G"],
-        orderBy: "LIKES_COUNT",
-        isSensitive: true,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const worksCount = await loaderClient.query({
-    query: worksCountQuery,
-    variables: {
-      where: {
-        userId: userResp.data.user.id,
-        ratings: ["R18", "R18G"],
-        isSensitive: true,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const novelWorkRes = await loaderClient.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: userResp.data.user.id,
-        workType: "NOVEL",
-        ratings: ["R18", "R18G"],
-        orderBy: "LIKES_COUNT",
-        isSensitive: true,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const novelWorksCount = await loaderClient.query({
-    query: worksCountQuery,
-    variables: {
-      where: {
-        workType: "NOVEL",
-        userId: userResp.data.user.id,
-        ratings: ["R18", "R18G"],
-        isSensitive: true,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const columnWorkRes = await loaderClient.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: userResp.data.user.id,
-        workType: "COLUMN",
-        ratings: ["R18", "R18G"],
-        orderBy: "LIKES_COUNT",
-        isSensitive: true,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const columnWorksCount = await loaderClient.query({
-    query: worksCountQuery,
-    variables: {
-      where: {
-        workType: "COLUMN",
-        userId: userResp.data.user.id,
-        ratings: ["R18", "R18G"],
-        isSensitive: true,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const videoWorkRes = await loaderClient.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: userResp.data.user.id,
-        workType: "VIDEO",
-        ratings: ["R18", "R18G"],
-        orderBy: "LIKES_COUNT",
-        isSensitive: true,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const videoWorksCount = await loaderClient.query({
-    query: worksCountQuery,
-    variables: {
-      where: {
-        workType: "VIDEO",
-        userId: userResp.data.user.id,
-        ratings: ["R18", "R18G"],
-        isSensitive: true,
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
   return json({
     user: userResp.data.user,
-    works: workRes.data.works,
-    worksCount: worksCount.data.worksCount,
-    novelWorks: novelWorkRes.data.works,
-    novelWorksCount: novelWorksCount.data.worksCount,
-    columnWorks: columnWorkRes.data.works,
-    columnWorksCount: columnWorksCount.data.worksCount,
-    videoWorks: videoWorkRes.data.works,
-    videoWorksCount: videoWorksCount.data.worksCount,
+    worksCount: userResp.data.user.worksCount,
   })
 }
 
 export const meta: MetaFunction = (props) => {
-  // data.user が存在しないか、オブジェクトでない場合のチェック
   if (!props.data) {
     return [{ title: "ユーザのマイページ" }]
   }
 
   const user = props.data as {
-    user: FragmentOf<typeof UserProfileIconFragment>
+    user: FragmentOf<typeof UserMetaFragment>
   }
 
   const worksCountPart =
@@ -182,12 +85,12 @@ export const meta: MetaFunction = (props) => {
     META.USERS,
     {
       title:
-        `${user.user.name}のセンシティブ向けマイページ${worksCountPart}` ||
-        "ユーザーのセンシティブ向けマイページ",
+        `${user.user.name}のセンシティブマイページ${worksCountPart}` ||
+        "ユーザーのセンシティブマイページ",
       enTitle: `${user.user.name}'s page${worksCountPart}`,
       description:
         user.user.biography ||
-        "Aipictorsのセンシティブ向けマイページです、AIイラストなどの作品一覧を閲覧することができます",
+        "Aipictorsのセンシティブマイページです、AIイラストなどの作品一覧を閲覧することができます",
       enDescription: `This is ${user.user.name}'s sensitive page on Aipictors, where you can view a list of AI illustrations and other works`,
       url: user.user.headerImageUrl?.length
         ? user.user.headerImageUrl
@@ -213,59 +116,57 @@ export default function UserLayout() {
   }
 
   return (
-    <>
-      <ConstructionAlert
-        type="WARNING"
-        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
-        fallbackURL={`https://www.aipictors.com/users/${params.user}`}
-        deadline={"2024-07-30"}
-      />
-      <UserPage
-        user={data.user}
-        works={data.works}
-        novelWorks={data.novelWorks}
-        columnWorks={data.columnWorks}
-        videoWorks={data.videoWorks}
-        worksCount={data.worksCount}
-        novelWorksCount={data.novelWorksCount}
-        columnWorksCount={data.columnWorksCount}
-        videoWorksCount={data.videoWorksCount}
-        isSensitive={true}
-      />
-    </>
+    <div className="flex w-full flex-col justify-center">
+      <div className="relative">
+        <UserHomeHeader
+          user={data.user}
+          userIconView={<UserProfileNameIcon user={data.user} />}
+        />
+        <UserHomeMenu user={data.user} />
+      </div>
+      <div className="flex flex-col space-y-4">
+        <UserSensitiveTabs user={data.user} />
+        <Outlet />
+      </div>
+    </div>
   )
 }
+
+const userIdQuery = graphql(
+  `query UserId($userId: ID!) {
+    user(id: $userId) {
+      id
+    }
+  }`,
+)
+
+const UserMetaFragment = graphql(
+  `fragment UserMeta on UserNode @_unmask {
+    worksCount
+    name
+    biography
+    headerImageUrl
+    iconUrl
+  }`,
+)
 
 const userQuery = graphql(
   `query User(
     $userId: ID!,
   ) {
     user(id: $userId) {
-      ...UserHomeMain
-      ...UserProfile
       ...UserProfileIcon
-    }
-  }`,
-  [userHomeMainFragment, UserProfileFragment, UserProfileIconFragment],
-)
-
-const worksCountQuery = graphql(
-  `query WorksCount($where: WorksWhereInput) {
-    worksCount(where: $where)
-  }`,
-)
-
-const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...HomeWork,
-      ...HomeNovelsWorkListItem
-      ...HomeVideosWorkListItem
+      ...UserHomeMenu
+      ...UserHomeHeader
+      ...UserTabs
+      ...UserMeta
     }
   }`,
   [
-    HomeWorkFragment,
-    HomeNovelsWorkListItemFragment,
-    HomeVideosWorkListItemFragment,
+    UserProfileIconFragment,
+    userHomeMenuFragment,
+    UserHomeHeaderFragment,
+    UserSensitiveTabsFragment,
+    UserMetaFragment,
   ],
 )

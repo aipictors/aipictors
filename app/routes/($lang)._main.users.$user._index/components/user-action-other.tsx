@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { EllipsisIcon } from "lucide-react"
-import { UserMuteButton } from "~/routes/($lang)._main.users.$user/components/user-mute-button"
+import { UserMuteButton } from "~/routes/($lang)._main.users.$user._index/components/user-mute-button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 
