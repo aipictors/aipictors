@@ -33,7 +33,10 @@ const getUtcDateString = (date: Date) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  const redirectResponse = checkLocaleRedirect(
+    props.request,
+    config.cacheControl.home,
+  )
 
   if (redirectResponse) {
     return redirectResponse

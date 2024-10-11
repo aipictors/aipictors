@@ -1,7 +1,7 @@
 import { json } from "@remix-run/react"
 import { parse } from "cookie"
 
-export function checkLocaleRedirect(request: Request) {
+export function checkLocaleRedirect(request: Request, cacheControl?: string) {
   const cookieHeader = request.headers.get("Cookie")
   const cookies = cookieHeader ? parse(cookieHeader) : {}
 
@@ -15,15 +15,24 @@ export function checkLocaleRedirect(request: Request) {
   const url = new URL(request.url)
   const pathname = url.pathname
 
+  const headers: Record<string, string> = {
+    Vary: "Cookie, Accept-Language",
+  }
+
+  // cacheControl が指定されている場合、Cache-Control ヘッダーを追加
+  if (cacheControl) {
+    headers["Cache-Control"] = cacheControl
+  }
+
   // locale が "en" で URL が /en で始まっていない場合にリダイレクト
   if (locale === "en" && !pathname.startsWith("/en")) {
+    headers.Location = `/en${pathname}`
     return json(null, {
       status: 302,
-      headers: {
-        Location: `/en${pathname}`,
-      },
+      headers,
     })
   }
 
-  return null // リダイレクト不要の場合は null を返す
+  // リダイレクト不要の場合は null を返す
+  return null
 }
