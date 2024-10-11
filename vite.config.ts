@@ -1,4 +1,4 @@
-// import { cloudflareDevProxyVitePlugin } from "@react-router/dev/cloudflare"
+// import { cloudflareDevProxyVitePlugin } from "@react-router/cloudflare"
 import { reactRouter } from "@react-router/dev/vite"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
@@ -12,9 +12,7 @@ export default defineConfig({
     noExternal: ["react-easy-crop", "tslib"],
   },
   plugins: [
-    reactRouter({
-      ssr: true,
-    }),
+    reactRouter(),
     // cloudflareDevProxyVitePlugin(),
     tsconfigPaths(),
     viteStaticCopy({
