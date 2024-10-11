@@ -37,6 +37,7 @@ import { getJstDate } from "~/utils/jst-date"
 import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { uploadTextFile } from "~/utils/upload-text-file"
 
 export default function NewText() {
   const t = useTranslation()
@@ -203,6 +204,18 @@ export default function NewText() {
   }
 
   const onPost = async () => {
+    const url = uploadTextFile(
+      inputState.md,
+      "md",
+      viewer?.viewer?.token,
+      "https://text-files.aipictors.com/c09d45d7-c949-4515-b477-d1c17f1dd038",
+    )
+
+    if (url === null) {
+      toast(t("本文のアップロードに失敗しました", "Failed to upload the text"))
+      return
+    }
+
     if (formResult.success === false) {
       for (const issue of formResult.issues) {
         toast(issue.message)
@@ -299,6 +312,19 @@ export default function NewText() {
 
       dispatch({ type: "SET_PROGRESS", payload: 70 })
 
+      const textFile = await uploadTextFile(
+        inputState.md,
+        "md",
+        viewer?.viewer?.token,
+      )
+
+      if (textFile === null) {
+        toast(
+          t("本文のアップロードに失敗しました", "Failed to upload the text"),
+        )
+        return
+      }
+
       const uploadResults = await uploadImages()
 
       const imageUrls = uploadResults.filter((url) => url !== null)
@@ -359,7 +385,7 @@ export default function NewText() {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
-            md: inputState.md,
+            mdUrl: textFile,
           },
         },
       })

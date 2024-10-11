@@ -105,6 +105,10 @@ export function HomeContents(props: Props) {
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
   useEffect(() => {
+    if (isMounted) {
+      return
+    }
+
     if (!searchParams.toString() || searchParams.get("tab") === "home") {
       return
     }
