@@ -5,7 +5,7 @@ import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post._i
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { Skeleton } from "~/components/ui/skeleton"
 import { useTranslation } from "~/hooks/use-translation"
 import { graphql } from "gql.tada"

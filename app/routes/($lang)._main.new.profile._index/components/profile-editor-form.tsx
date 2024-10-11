@@ -12,7 +12,7 @@ import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
 import { Card, CardContent } from "~/components/ui/card"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router"
 import { useTranslation } from "~/hooks/use-translation"
 
 /**

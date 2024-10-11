@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router"
 import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳フックをインポート
 

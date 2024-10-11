@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router"
 import { useTranslation } from "~/hooks/use-translation"
 
 /**

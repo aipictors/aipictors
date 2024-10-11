@@ -16,7 +16,7 @@ import {
   isRouteErrorResponse,
   useRouteError,
   useLocation,
-} from "@remix-run/react"
+} from "react-router"
 import { init } from "@sentry/browser"
 import { ThemeProvider } from "next-themes"
 import { Suspense, useEffect, useState } from "react"

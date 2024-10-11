@@ -1,7 +1,7 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData, useParams } from "@remix-run/react"
+import { json, useLoaderData, useParams } from "react-router"
 import { graphql } from "gql.tada"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 import {

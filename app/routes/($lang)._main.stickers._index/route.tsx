@@ -6,7 +6,7 @@ import {
 import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
 import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import { json, useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"

@@ -1,7 +1,7 @@
 import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { json, useParams } from "react-router"
+import { useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 import {

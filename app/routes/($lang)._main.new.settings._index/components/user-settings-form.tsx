@@ -8,7 +8,7 @@ import { toast } from "sonner"
 import { Switch } from "~/components/ui/switch"
 import { Label } from "~/components/ui/label"
 import { Separator } from "~/components/ui/separator"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
 

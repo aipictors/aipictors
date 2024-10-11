@@ -4,8 +4,8 @@ import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/c
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { json, useParams } from "react-router"
+import { useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 

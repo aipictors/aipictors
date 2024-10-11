@@ -1,4 +1,4 @@
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router"
 import { EllipsisIcon, RefreshCcwIcon } from "lucide-react"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"

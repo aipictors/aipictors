@@ -1,6 +1,6 @@
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
 

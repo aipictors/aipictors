@@ -2,7 +2,7 @@ import { GlowingGradientBorderButton } from "~/components/button/glowing-gradien
 import { CharacterCard } from "~/routes/($lang).events.ai-idol-project/components/character-card"
 import { ImageSliderAnimation } from "~/routes/($lang).events.ai-idol-project/components/image-slider-animation"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"

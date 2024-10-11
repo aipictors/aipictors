@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { toDateText } from "~/utils/to-date-text"

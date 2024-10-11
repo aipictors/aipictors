@@ -9,7 +9,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { MessageListItemFragment } from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { useTranslation } from "~/hooks/use-translation"
 
 /**

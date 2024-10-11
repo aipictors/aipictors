@@ -4,7 +4,7 @@ import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 

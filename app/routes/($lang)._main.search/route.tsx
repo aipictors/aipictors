@@ -4,7 +4,7 @@ import {
   WorkList,
   WorkListItemFragment,
 } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { json, redirect, useLoaderData } from "@remix-run/react"
+import { json, redirect, useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"

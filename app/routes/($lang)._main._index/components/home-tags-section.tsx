@@ -5,7 +5,7 @@ import {
 } from "~/components/ui/carousel"
 import React from "react"
 import Autoplay from "embla-carousel-autoplay"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { type FragmentOf, graphql } from "gql.tada"
 
 type Props = {

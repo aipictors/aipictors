@@ -1,5 +1,5 @@
 import { Badge } from "~/components/ui/badge"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 
 type Props = {
   workId: string

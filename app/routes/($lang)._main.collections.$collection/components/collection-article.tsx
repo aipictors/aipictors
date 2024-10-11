@@ -6,7 +6,7 @@ import {
   CollectionWorkListItemFragment,
 } from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
-import { useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "react-router"
 
 type Props = {
   collection: FragmentOf<typeof FolderArticleFragment>

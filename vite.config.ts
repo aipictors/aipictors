@@ -1,4 +1,5 @@
-import { vitePlugin, cloudflareDevProxyVitePlugin } from "@remix-run/dev"
+// import { cloudflareDevProxyVitePlugin } from "@react-router/cloudflare"
+import { reactRouter } from "@react-router/dev/vite"
 import { defineConfig } from "vite"
 import tsconfigPaths from "vite-tsconfig-paths"
 import { viteStaticCopy } from "vite-plugin-static-copy"
@@ -11,8 +12,8 @@ export default defineConfig({
     noExternal: ["react-easy-crop", "tslib"],
   },
   plugins: [
-    cloudflareDevProxyVitePlugin(),
-    vitePlugin({}),
+    reactRouter(),
+    // cloudflareDevProxyVitePlugin(),
     tsconfigPaths(),
     viteStaticCopy({
       targets: [

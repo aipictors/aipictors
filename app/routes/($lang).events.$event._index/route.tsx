@@ -4,7 +4,7 @@ import {
   type MetaFunction,
   type LoaderFunctionArgs,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useNavigate } from "@remix-run/react"
+import { useLoaderData, useNavigate } from "react-router"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import {

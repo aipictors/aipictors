@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate } from "react-router"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"

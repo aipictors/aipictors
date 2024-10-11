@@ -1,5 +1,5 @@
 import { loaderClient } from "~/lib/loader-client"
-import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
+import { json, type MetaFunction, useLoaderData } from "react-router"
 import { graphql } from "gql.tada"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { META } from "~/config"

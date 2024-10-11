@@ -1,8 +1,8 @@
-/// <reference types="@remix-run/dev" />
-/// <reference types="@remix-run/cloudflare-pages" />
+/// <reference types="@react-router/dev" />
+/// <reference types="@react-router/cloudflare" />
 /// <reference types="@cloudflare/workers-types" />
 
-import "@remix-run/cloudflare"
+import "@react-router/cloudflare"
 
 declare global {
   interface CacheStorage {
@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-declare module "@remix-run/cloudflare" {
+declare module "@react-router/cloudflare" {
   interface AppLoadContext {
     env: Env
     ctx: EventContext<Env>
