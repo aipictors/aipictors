@@ -15,7 +15,6 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title: string
-  isSensitive?: boolean
   awards: FragmentOf<typeof HomeWorkAwardFragment>[]
   awardDateText: string
 }
@@ -43,7 +42,7 @@ export function HomeAwardWorkSection(props: Props) {
         year: Number(year),
         month: Number(month),
         day: Number(day),
-        isSensitive: props.isSensitive ?? false,
+        isSensitive: false,
       },
     },
   })

@@ -9,7 +9,6 @@ type Props = {
   works: FragmentOf<typeof ThemeWorkFragment>[]
   worksCount: number
   firstWork: FragmentOf<typeof ThemeWorkFragment> | null
-  isSensitive: boolean
   title: string
   year: number
   month: number
@@ -31,7 +30,6 @@ export function ThemeArticleContainer(props: Props) {
         year={props.year}
         month={props.month}
         day={props.day}
-        isSensitive={props.isSensitive}
         page={props.page}
         themeId={props.themeId}
         dailyThemes={props.dailyThemes}

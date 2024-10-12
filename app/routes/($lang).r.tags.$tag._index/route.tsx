@@ -1,6 +1,5 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import { TagWorkSection } from "~/routes/($lang)._main.tags._index/components/tag-work-section"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams, useSearchParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -10,6 +9,7 @@ import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { SensitiveTagWorkSection } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-work-section"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.tag === undefined) {
@@ -174,13 +174,12 @@ export default function Tag() {
 
   return (
     <>
-      <TagWorkSection
+      <SensitiveTagWorkSection
         works={data.works}
         worksCount={data.worksCount}
         tag={decodeURIComponent(params.tag)}
         page={page}
         setPage={setPage}
-        isSensitive={true}
         onClickTitleSortButton={onClickTitleSortButton}
         onClickLikeSortButton={onClickLikeSortButton}
         onClickBookmarkSortButton={onClickBookmarkSortButton}

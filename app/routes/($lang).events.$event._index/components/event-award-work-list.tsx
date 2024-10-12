@@ -14,7 +14,6 @@ import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   works: FragmentOf<typeof EventAwardWorkListItemFragment>[]
-  isSensitive: boolean
   slug: string
 }
 
@@ -28,7 +27,7 @@ export function EventAwardWorkList(props: Props) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       slug: props.slug,
-      isSensitive: props.isSensitive,
+      isSensitive: false,
     },
   })
 

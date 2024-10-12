@@ -175,14 +175,12 @@ export default function FollowingLayout() {
         <EventAwardWorkList
           works={data.appEvent.awardWorks}
           slug={data.appEvent.slug ?? ""}
-          isSensitive={false}
         />
       )}
       <h2 className="font-bold text-md">{t("作品一覧", "List of Works")}</h2>
       {data.appEvent.works && (
         <EventWorkList
           works={data.appEvent.works}
-          isSensitive={false}
           maxCount={data.appEvent.worksCount as number}
           page={data.page}
           slug={data.appEvent.slug ?? ""}

@@ -15,6 +15,7 @@ import { Suspense, useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
+import { SelectCreatedSensitiveWorksDialog } from "~/routes/($lang).my._index/components/select-created-sensitive-works-dialog"
 
 /**
  * プロフィール設定フォーム
@@ -339,11 +340,10 @@ export function SettingProfileForm() {
             {"センシティブピックアップ ※最大3つ"}
           </label>
           <Suspense fallback={<AppLoadingPage />}>
-            <SelectCreatedWorksDialog
+            <SelectCreatedSensitiveWorksDialog
               selectedWorks={selectedPickupSensitiveWorks}
               setSelectedWorks={setSelectedPickupSensitiveWorks}
               limit={3}
-              isSensitive={true}
             >
               <div className="border-2 border-transparent p-1">
                 <Button
@@ -354,7 +354,7 @@ export function SettingProfileForm() {
                   <PlusIcon />
                 </Button>
               </div>
-            </SelectCreatedWorksDialog>
+            </SelectCreatedSensitiveWorksDialog>
           </Suspense>
         </div>
         <Separator />

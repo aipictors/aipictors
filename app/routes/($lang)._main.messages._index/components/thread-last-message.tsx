@@ -1,4 +1,3 @@
-import {} from "~/components/ui/avatar"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
 

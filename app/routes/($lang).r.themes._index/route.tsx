@@ -6,12 +6,9 @@ import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
-import {} from "~/components/ui/tabs"
-import {} from "~/components/ui/card"
-import {} from "~/components/ui/carousel"
-import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import type { LoaderFunctionArgs } from "react-router-dom"
+import { SensitiveThemeContainer } from "~/routes/($lang)._main.themes._index/components/sensitive-theme-container"
 
 export async function loader(props: LoaderFunctionArgs) {
   const redirectResponse = checkLocaleRedirect(props.request)
@@ -160,7 +157,7 @@ export default function Themes() {
 
   return (
     <>
-      <ThemeContainer
+      <SensitiveThemeContainer
         dailyThemes={data.dailyThemes}
         todayTheme={data.todayTheme}
         works={data.works ?? []}
@@ -170,7 +167,6 @@ export default function Themes() {
         page={data.page}
         year={data.year}
         month={data.month}
-        isSensitive={true}
         themeId={data.themeId}
       />
     </>

@@ -131,7 +131,6 @@ export default function FollowingLayout() {
       {data.appEvent.slug && (
         <EventSensitiveWorkList
           works={data.works}
-          isSensitive={false}
           maxCount={data.worksCount}
           page={data.page}
           slug={data.appEvent.slug}

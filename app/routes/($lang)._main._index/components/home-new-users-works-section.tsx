@@ -10,7 +10,6 @@ import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  isSensitive?: boolean
   works: FragmentOf<typeof HomeNewUsersWorksFragment>[]
 }
 
@@ -27,7 +26,7 @@ export function HomeNewUsersWorksSection(props: Props) {
       offset: 0,
       limit: config.query.homeWorkCount.newUser,
       where: {
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
+        ratings: ["G"],
         isNowCreatedAt: true,
       },
     },

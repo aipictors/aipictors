@@ -68,19 +68,6 @@ export default function FollowingLayout() {
 
   const navigate = useNavigate()
 
-  if (
-    !data.appEvent?.title ||
-    !data.appEvent?.thumbnailImageUrl ||
-    !data.appEvent?.tag ||
-    !data.appEvent?.description ||
-    !data.appEvent?.startAt ||
-    !data.appEvent?.endAt ||
-    !data.appEvent.worksCount ||
-    !data.appEvent.awardWorks
-  ) {
-    return null
-  }
-
   return (
     <div className="flex flex-col space-y-4">
       <img
@@ -147,7 +134,6 @@ export default function FollowingLayout() {
         <EventAwardPagingWorkList
           works={data.appEvent.awardWorks}
           slug={data.appEvent.slug}
-          isSensitive={false}
           maxCount={data.appEvent.worksCount}
           page={data.page}
         />

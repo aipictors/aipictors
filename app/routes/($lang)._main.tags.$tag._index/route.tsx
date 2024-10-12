@@ -181,7 +181,6 @@ export default function Tag() {
         tag={decodeURIComponent(params.tag)}
         page={page}
         setPage={setPage}
-        isSensitive={data.isSensitive}
         onClickTitleSortButton={onClickTitleSortButton}
         onClickLikeSortButton={onClickLikeSortButton}
         onClickBookmarkSortButton={onClickBookmarkSortButton}

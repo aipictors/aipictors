@@ -10,7 +10,6 @@ import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
   works: FragmentOf<typeof EventAwardWorkListItemFragment>[]
-  isSensitive: boolean
   maxCount: number
   page: number
   slug: string
@@ -28,7 +27,7 @@ export function EventAwardPagingWorkList(props: Props) {
     variables: {
       offset: 0,
       limit: 200,
-      isSensitive: props.isSensitive,
+      isSensitive: false,
       slug: props.slug,
     },
   })
