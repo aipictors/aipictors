@@ -155,7 +155,11 @@ export default function NewImage() {
           payload: base64Urls[0],
         })
 
-        const imageUrl = viewer.viewer.imageGenerationResults[0].imageUrl
+        const imageUrl =
+          viewer.viewer.imageGenerationResults.length !== 0
+            ? viewer.viewer.imageGenerationResults[0].imageUrl
+            : null
+
         const pngInfo = imageUrl
           ? await getExtractInfoFromBase64(imageUrl)
           : null
