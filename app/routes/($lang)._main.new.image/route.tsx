@@ -160,6 +160,10 @@ export default function NewImage() {
             ? viewer.viewer.imageGenerationResults[0].imageUrl
             : null
 
+        if (!imageUrl) {
+          return
+        }
+
         const pngInfo = imageUrl
           ? await getExtractInfoFromBase64(imageUrl)
           : null
