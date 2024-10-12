@@ -8,6 +8,7 @@ import {
 } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
 import { useEffect, useRef, useState } from "react"
+import { cn } from "~/lib/utils"
 
 type Props = {
   thumbnailBase64: string
@@ -212,11 +213,10 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
               draggable={false}
               src={`${props.thumbnailBase64}`}
               alt="Thumbnail"
-              className={`${
-                props.isThumbnailLandscape
-                  ? "absolute h-full"
-                  : "absolute w-full"
-              }`}
+              className={cn("absolute", {
+                "h-full": props.isThumbnailLandscape,
+                "w-full": !props.isThumbnailLandscape,
+              })}
               style={{
                 transform: `translate(${translate.x}%, ${translate.y}%)`,
                 maxWidth: "initial",

@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { cn } from "~/lib/utils"
 
 type UserProfileAvatarProps = {
   alt: string
@@ -27,7 +28,7 @@ export function UserProfileAvatar({
   }
 
   return (
-    <Avatar className={`${getSize(size)} border-2`}>
+    <Avatar className={cn(getSize(size), "border-2")}>
       <AvatarImage alt={alt} src={src} />
       <AvatarFallback />
     </Avatar>

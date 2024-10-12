@@ -1,5 +1,6 @@
 import { Skeleton } from "~/components/ui/skeleton"
 import { Loader2Icon } from "lucide-react"
+import { cn } from "~/lib/utils"
 
 type Props = {
   className?: string
@@ -10,11 +11,11 @@ type Props = {
  */
 export function GenerationTaskContentImagePlaceHolder(props: Props) {
   return (
-    <Skeleton className={`${props.className} relative`}>
+    <Skeleton className={cn(props.className, "relative")}>
       <Loader2Icon
-        className={
-          "dark:black absolute top-[50%] left-[48%] w-8 animate-spin text-black dark:text-white"
-        }
+        className={cn(
+          "absolute top-[50%] left-[48%] w-8 animate-spin text-black dark:text-white",
+        )}
       />
     </Skeleton>
   )

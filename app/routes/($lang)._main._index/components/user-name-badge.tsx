@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react"
 import { Heart } from "lucide-react"
+import { cn } from "~/lib/utils"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
@@ -16,73 +17,37 @@ type Props = {
  * ユーザネームとアイコンを表示するコンポーネント
  */
 export function UserNameBadge(props: Props) {
-  const width = () => {
-    if (props.width === "sm") {
-      if (props.snapshotLikedCount) {
-        return "max-w-16"
-      }
-      return "max-w-20"
-    }
-    if (props.width === "md") {
-      if (props.snapshotLikedCount) {
-        return "max-w-14"
-      }
-      return "max-w-32"
-    }
-
-    return "max-w-40"
-  }
-
-  const padding = () => {
-    if (props.padding === "sm") {
-      return "p-1"
-    }
-    if (props.padding === "md") {
-      return "p-2"
-    }
-    if (props.padding === "lg") {
-      return "p-3"
-    }
-    return "p-0"
-  }
-
-  const iconWidth = () => {
-    if (props.width === "sm") {
-      return "h-4 w-4"
-    }
-    if (props.width === "md") {
-      return "h-6 w-6"
-    }
-
-    return "h-8 w-8"
-  }
-
-  const nameSize = () => {
-    if (props.width === "sm") {
-      return "text-xs"
-    }
-    if (props.width === "md") {
-      return "text-sm"
-    }
-
-    return "text-base"
-  }
-
   return (
     <Link className="flex flex-col gap-y-2" to={`/users/${props.userId}`}>
       <div
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        className={`flex items-center overflow-hidden text-ellipsis ${padding()}`}
+        className={cn("flex items-center overflow-hidden text-ellipsis", {
+          "p-1": props.padding === "sm",
+          "p-2": props.padding === "md",
+          "p-3": props.padding === "lg",
+        })}
       >
         <div className="flex items-center space-x-2">
           <img
             alt="user icon"
-            className={`rounded-full ${iconWidth()}`}
+            className={cn("rounded-full", {
+              "h-4 w-4": props.width === "sm",
+              "h-6 w-6": props.width === "md",
+              "h-8 w-8": props.width === "lg",
+            })}
             src={ExchangeIconUrl(props.userIconImageURL)}
           />
           <p
-            // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            className={`text-ellipsis overflow-hidden text-nowrap ${nameSize()} ${width()}`}
+            className={cn("overflow-hidden text-ellipsis text-nowrap", {
+              "max-w-16 text-xs":
+                props.width === "sm" && props.snapshotLikedCount,
+              "max-w-20 text-xs":
+                props.width === "sm" && !props.snapshotLikedCount,
+              "max-w-14 text-sm":
+                props.width === "md" && props.snapshotLikedCount,
+              "max-w-32 text-sm":
+                props.width === "md" && !props.snapshotLikedCount,
+              "max-w-40 text-base": props.width === "lg",
+            })}
           >
             {props.name}
           </p>

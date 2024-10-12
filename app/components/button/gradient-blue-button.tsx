@@ -1,3 +1,5 @@
+import { cn } from "~/lib/utils"
+
 type Props = {
   /**
    * 画像など
@@ -19,13 +21,15 @@ export function GradientBlueButton(props: Props) {
       onClick={props.onClick}
       type="button"
       disabled={props.disabled}
-      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`flex h-10 font-medium hover:opacity-80 duration-200 rounded-lg bg-gradient-to-tr from-fuchsia-600 to-fuchsia-500 dark:from-fuchsia-700 dark:to-fuchsia-800 p-1 text-white ${props.className}`}
+      className={cn(
+        "flex h-10 rounded-lg bg-gradient-to-tr from-fuchsia-600 to-fuchsia-500 p-1 font-medium text-white duration-200 hover:opacity-80 dark:from-fuchsia-700 dark:to-fuchsia-800",
+        props.className,
+      )}
     >
       <div
-        className={`flex h-8 flex-1 justify-center rounded-md py-2 ${
-          props.isNoBackground ? "" : "bg-white"
-        }`}
+        className={cn("flex h-8 flex-1 justify-center rounded-md py-2", {
+          "bg-white": !props.isNoBackground,
+        })}
         style={{ WebkitTextStrokeColor: "#fff" }}
       >
         {props.children}

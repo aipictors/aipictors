@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react"
+import { cn } from "~/lib/utils"
 
 type Props = {
   name: string
@@ -50,7 +51,10 @@ export function TagButton(props: Props) {
 
   return props.isDisabled ? (
     <div
-      className={`rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white ${borderStyle} box-border`}
+      className={cn(
+        "box-border rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white",
+        borderStyle,
+      )}
       style={{
         backgroundColor: stringToColor(props.name, props.isDisabled ?? false),
       }}
@@ -67,7 +71,10 @@ export function TagButton(props: Props) {
   ) : (
     <Link to={`${props.link}`}>
       <div
-        className={`rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white ${borderStyle} box-border`}
+        className={cn(
+          "box-border rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white",
+          borderStyle,
+        )}
         style={{
           backgroundColor: stringToColor(props.name, props.isDisabled ?? false),
         }}

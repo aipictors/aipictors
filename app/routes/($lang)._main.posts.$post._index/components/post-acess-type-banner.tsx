@@ -1,5 +1,6 @@
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { cn } from "~/lib/utils"
 
 type Props = {
   postAccessType: IntrospectionEnum<"AccessType">
@@ -58,7 +59,10 @@ export function PostAccessTypeBanner(props: Props) {
 
   return (
     <div
-      className={`flex h-12 w-full items-center justify-center rounded-md bg-opacity-20 ${getBackgroundColor()} bg-opacity-50 font-bold`}
+      className={cn(
+        "flex h-12 w-full items-center justify-center rounded-md bg-opacity-20 font-bold",
+        `${getBackgroundColor()} bg-opacity-50`,
+      )}
     >
       <div className="flex items-center justify-center">
         <span className="ml-2">{accessTypeText()}</span>

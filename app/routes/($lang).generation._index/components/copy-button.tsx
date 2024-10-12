@@ -1,6 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   text: string
@@ -30,13 +31,10 @@ export function CopyButton(props: Props) {
 
   return (
     <Button
-      variant={"secondary"}
+      variant="secondary"
       disabled={props.disabled}
-      size={"sm"}
-      className={`${
-        props.className
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      } m-0 pad-16 w-full whitespace-normal`}
+      size="sm"
+      className={cn(props.className, "pad-16 m-0 w-full whitespace-normal")}
       onClick={copyToClipboard}
     >
       <p className="break-all text-left">{t("コピー", "Copy")}</p>
