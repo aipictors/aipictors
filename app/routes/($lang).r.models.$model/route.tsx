@@ -116,7 +116,6 @@ export default function ModelPage() {
         }
         works={data.data.works}
         worksCount={data.data.worksCount}
-        isSensitive={true}
         isMoreRatings={data.isR18G}
         hasPrompt={data.hasPrompt}
         page={data.page}

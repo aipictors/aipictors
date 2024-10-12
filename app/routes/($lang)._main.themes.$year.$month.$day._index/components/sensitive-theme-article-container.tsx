@@ -1,8 +1,6 @@
 import type { FragmentOf } from "gql.tada"
-import {
-  ThemeArticle,
-  type ThemeWorkFragment,
-} from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
+import { SensitiveThemeArticle } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/sensitive-theme-article"
+import type { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import type { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 
 type Props = {
@@ -19,10 +17,10 @@ type Props = {
   dailyBeforeThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
-export function ThemeArticleContainer(props: Props) {
+export function SensitiveThemeArticleContainer(props: Props) {
   return (
     <article>
-      <ThemeArticle
+      <SensitiveThemeArticle
         works={props.works}
         worksCount={props.worksCount}
         firstWork={props.firstWork}

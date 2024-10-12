@@ -1,5 +1,4 @@
 import { useQuery } from "@apollo/client/index"
-import { useNavigate } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useContext } from "react"
 import {
@@ -18,8 +17,7 @@ type Props = {
 /**
  * イベント作品一覧
  */
-export function EventAwardPagingWorkList(props: Props) {
-  const navigate = useNavigate()
+export function EventAwardPagingSensitiveWorkList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: resp } = useQuery(query, {
@@ -27,7 +25,7 @@ export function EventAwardPagingWorkList(props: Props) {
     variables: {
       offset: 0,
       limit: 200,
-      isSensitive: false,
+      isSensitive: true,
       slug: props.slug,
     },
   })

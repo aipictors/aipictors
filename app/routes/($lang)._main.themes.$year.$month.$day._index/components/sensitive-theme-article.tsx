@@ -39,7 +39,7 @@ type Props = {
   dailyBeforeThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
-export function ThemeArticle(props: Props) {
+export function SensitiveThemeArticle(props: Props) {
   const navigate = useNavigate()
 
   const [isOpenedCalender, setIsOpenedCalender] = useState(false)
@@ -53,7 +53,7 @@ export function ThemeArticle(props: Props) {
       limit: 32,
       where: {
         subjectId: Number(props.themeId),
-        ratings: ["G", "R15"],
+        ratings: ["R18", "R18G"],
         orderBy: "LIKES_COUNT",
         isNowCreatedAt: true,
       },
@@ -93,6 +93,7 @@ export function ThemeArticle(props: Props) {
         />
         <div className="absolute top-0 left-0 bg-black bg-opacity-60 p-4 font-semibold text-lg text-white">
           <h1 className="font-bold text-2xl">{props.title}</h1>
+          <h2 className="text-md">{t("センシティブ", "Sensitive")}</h2>
           <h2 className="text-xl">{`作品数: ${props.worksCount}`}</h2>
         </div>
       </div>
@@ -128,7 +129,7 @@ export function ThemeArticle(props: Props) {
                   <CardContent className="m-0 h-full p-2">
                     <Link
                       className="block h-full"
-                      to={`/themes/${theme.year}/${theme.month}/${theme.day}`}
+                      to={`/r/themes/${theme.year}/${theme.month}/${theme.day}`}
                     >
                       <div className="flex h-full flex-col items-center space-y-2 text-center">
                         <p className="font-semibold text-sm">{`${theme.year}/${theme.month}/${theme.day}`}</p>

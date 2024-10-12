@@ -174,7 +174,6 @@ export default function Index() {
           newPostedUsers: data.newPostedUsers,
           newComments: data.newComments,
         }}
-        isSensitive={true}
         isCropped={false}
       />
     </>

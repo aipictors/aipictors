@@ -20,14 +20,14 @@ type Props = {
 /**
  * イベントランキング作品一覧
  */
-export function EventAwardWorkList(props: Props) {
+export function EventAwardSensitiveWorkList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: resp } = useQuery(appAwardEventQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       slug: props.slug,
-      isSensitive: false,
+      isSensitive: true,
     },
   })
 

@@ -4,8 +4,8 @@ import { json, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
-import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 import { getJstDate } from "~/utils/jst-date"
+import { SensitiveThemeContainer } from "~/routes/($lang)._main.themes._index/components/sensitive-theme-container"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -165,7 +165,7 @@ export default function SensitiveDayThemePage() {
 
   return (
     <article>
-      <ThemeContainer
+      <SensitiveThemeContainer
         dailyThemes={data.dailyThemes}
         targetThemes={data.targetThemesResp}
         todayTheme={data.todayTheme}
@@ -179,7 +179,6 @@ export default function SensitiveDayThemePage() {
         month={data.month}
         defaultTab={data.tab !== "list" ? "calender" : "list"}
         themeId={data.themeId}
-        isSensitive={true}
       />
     </article>
   )

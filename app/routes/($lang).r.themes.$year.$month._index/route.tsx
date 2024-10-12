@@ -7,8 +7,7 @@ import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
-import {} from "~/components/ui/tabs"
-import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
+import { SensitiveThemeContainer } from "~/routes/($lang)._main.themes._index/components/sensitive-theme-container"
 
 const useUpdateQueryParams = () => {
   const updateQueryParams = (newParams: URLSearchParams) => {
@@ -175,7 +174,7 @@ export default function MonthThemes() {
 
   return (
     <>
-      <ThemeContainer
+      <SensitiveThemeContainer
         dailyThemes={data.dailyThemes}
         todayTheme={data.todayTheme}
         works={data.works ?? []}
@@ -186,7 +185,6 @@ export default function MonthThemes() {
         year={data.year}
         month={data.month}
         defaultTab={"calender"}
-        isSensitive={true}
         themeId={Number(data.todayTheme?.id)}
       />
     </>

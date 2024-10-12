@@ -1,12 +1,12 @@
 import { graphql, type FragmentOf } from "gql.tada"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
-import { AiModelHeader } from "~/routes/($lang)._main.models.$model/components/ai-model-header"
 import { useContext, useState } from "react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { useNavigate } from "@remix-run/react"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
+import { AiModelSensitiveHeader } from "~/routes/($lang)._main.models.$model/components/ai-model-sensitive-header"
 
 type Props = {
   name: string
@@ -18,7 +18,7 @@ type Props = {
   page: number
 }
 
-export function AiModelArticle(props: Props) {
+export function AiModelSensitiveArticle(props: Props) {
   if (props.works === null || props.works.length === 0) {
     return (
       <div className="text-center">
@@ -38,8 +38,8 @@ export function AiModelArticle(props: Props) {
       offset: 32 * page,
       limit: 32,
       where: {
-        ratings: props.isMoreRatings ? ["G", "R15"] : ["G"],
-        isSensitive: false,
+        ratings: props.isMoreRatings ? ["R18", "R18G"] : ["R18"],
+        isSensitive: true,
         hasPrompt: props.hasPrompt,
       },
     },
@@ -52,7 +52,7 @@ export function AiModelArticle(props: Props) {
 
   return (
     <div className="flex flex-col space-y-4">
-      <AiModelHeader
+      <AiModelSensitiveHeader
         name={props.name}
         thumbnailImageURL={
           props.thumbnailImageURL

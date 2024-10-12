@@ -10,11 +10,11 @@ import { useContext } from "react"
 import { tagWorksQuery } from "~/routes/($lang)._main.tags.$tag._index/route"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
-import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/tag-action-other"
 import { WorksListSortableSetting } from "~/routes/($lang).my._index/components/works-list-sortable-setting"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
+import { SensitiveTagActionOther } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-action-other"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -39,7 +39,7 @@ type Props = {
   onClickIsPromotionSortButton: () => void
 }
 
-export function TagWorkSection(props: Props) {
+export function SensitiveTagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
 
   const {
@@ -55,7 +55,7 @@ export function TagWorkSection(props: Props) {
         tagNames: [props.tag],
         orderBy: props.orderBy,
         sort: props.sort,
-        isSensitive: false,
+        isSensitive: true,
       },
     },
   })
@@ -116,7 +116,7 @@ export function TagWorkSection(props: Props) {
       </div>
       <div className="ml-auto flex w-full items-center space-x-4 md:w-64">
         <TagFollowButton className="w-full" tag={props.tag} isFollow={false} />
-        <TagActionOther tag={props.tag} />
+        <SensitiveTagActionOther tag={props.tag} />
       </div>
       <WorksListSortableSetting
         nowSort={props.sort}

@@ -10,7 +10,7 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
-  works: FragmentOf<typeof EventSensitiveWorkListItemFragment>[]
+  works: FragmentOf<typeof EventWorkListItemFragment>[]
   maxCount: number
   page: number
   slug: string
@@ -36,25 +36,28 @@ export function EventSensitiveWorkList(props: Props) {
     },
   })
 
-  const workDisplayed = resp?.appEvent?.works ?? props.works
+  const works = resp?.appEvent?.works ?? props.works
 
   return (
     <>
-      <ResponsivePhotoWorksAlbum works={workDisplayed} />
-      <ResponsivePagination
-        maxCount={Number(props.maxCount)}
-        perPage={64}
-        currentPage={props.page}
-        onPageChange={(page: number) => {
-          navigate(`/events/${props.slug}?page=${page}`)
-        }}
-      />
+      <ResponsivePhotoWorksAlbum works={works} isShowProfile={true} />
+      <div className="h-8" />
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <ResponsivePagination
+          maxCount={Number(props.maxCount)}
+          perPage={64}
+          currentPage={props.page}
+          onPageChange={(page: number) => {
+            navigate(`/events/${props.slug}?page=${page}`)
+          }}
+        />
+      </div>
     </>
   )
 }
 
-export const EventSensitiveWorkListItemFragment = graphql(
-  `fragment EventSensitiveWorkListItem on WorkNode @_unmask {
+export const EventWorkListItemFragment = graphql(
+  `fragment EventWorkListItem on WorkNode @_unmask {
     ...PhotoAlbumWork
   }`,
   [PhotoAlbumWorkFragment],
@@ -64,9 +67,9 @@ const query = graphql(
   `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
       appEvent(slug: $slug) {
         works(offset: $offset, limit: $limit, where: $where) {
-          ...EventSensitiveWorkListItem
+          ...EventWorkListItem
         }
       }
     }`,
-  [EventSensitiveWorkListItemFragment],
+  [EventWorkListItemFragment],
 )

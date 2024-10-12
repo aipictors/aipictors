@@ -7,7 +7,6 @@ import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
-import {} from "~/components/ui/tabs"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 
 const useUpdateQueryParams = () => {

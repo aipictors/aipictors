@@ -29,21 +29,21 @@ import { ArrowDownWideNarrow } from "lucide-react"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useTranslation } from "~/hooks/use-translation"
 import {
-  HomeSensitiveWorksTagSection,
-  type HomeTagWorkFragment,
-} from "~/routes/($lang)._main._index/components/home-sensitive-works-tag-section"
-import {
-  HomeSensitiveTagsSection,
-  type HomeTagFragment,
-} from "~/routes/($lang)._main._index/components/home-sensitive-tags-section"
-import {
+  HomeNewUsersWorksSection,
   type HomeNewUsersWorksFragment,
-  HomeSensitiveNewUsersWorksSection,
-} from "~/routes/($lang)._main._index/components/home-sensitive-new-users-works-section"
+} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import {
-  HomeSensitiveAwardWorkSection,
+  HomeAwardWorkSection,
   type HomeWorkAwardFragment,
-} from "~/routes/($lang)._main._index/components/home-sensitive-award-work-section"
+} from "~/routes/($lang)._main._index/components/home-award-work-section"
+import {
+  HomeTagsSection,
+  type HomeTagFragment,
+} from "~/routes/($lang)._main._index/components/home-tags-section"
+import {
+  HomeWorksTagSection,
+  type HomeTagWorkFragment,
+} from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { AppSideMenu } from "~/components/app/app-side-menu"
 
 type homeParticles = {
@@ -251,22 +251,22 @@ export function HomeContents(props: Props) {
                   hotTags={props.homeParticles.hotTags}
                 />
               </div>
-              <HomeSensitiveWorksTagSection
+              <HomeWorksTagSection
                 tag={props.homeParticles.firstTag}
                 works={props.homeParticles.firstTagWorks}
                 secondTag={props.homeParticles.secondTag}
                 secondWorks={props.homeParticles.secondTagWorks}
                 isCropped={props.isCropped}
               />
-              <HomeSensitiveNewUsersWorksSection
+              <HomeNewUsersWorksSection
                 works={props.homeParticles.newUserWorks}
               />
-              <HomeSensitiveAwardWorkSection
+              <HomeAwardWorkSection
                 awardDateText={props.homeParticles.awardDateText}
                 title={t("前日ランキング", "Previous Day Ranking")}
                 awards={props.homeParticles.workAwards}
               />
-              <HomeSensitiveTagsSection
+              <HomeTagsSection
                 title={t("人気タグ", "Popular Tags")}
                 tags={props.homeParticles.recommendedTags}
               />

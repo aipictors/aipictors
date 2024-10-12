@@ -10,14 +10,13 @@ import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  isSensitive?: boolean
   works: FragmentOf<typeof HomeNewUsersWorksFragment>[]
 }
 
 /**
  * 新規ユーザの作品
  */
-export function HomeNewUsersWorksSection(props: Props) {
+export function HomeSensitiveNewUsersWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   // 新規ユーザ作品
@@ -27,7 +26,7 @@ export function HomeNewUsersWorksSection(props: Props) {
       offset: 0,
       limit: config.query.homeWorkCount.newUser,
       where: {
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
+        ratings: ["R18", "R18G"],
         isNowCreatedAt: true,
       },
     },

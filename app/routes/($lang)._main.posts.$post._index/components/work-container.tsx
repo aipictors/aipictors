@@ -126,7 +126,6 @@ export function WorkContainer(props: Props) {
                 newComments: props.newComments,
                 awardWorks: props.awardWorks,
               }}
-              isSensitive={props.isSensitive ?? false}
               isShowGenerationAds={true}
               isShowCustomerAds={true}
             />
@@ -155,7 +154,6 @@ export function WorkContainer(props: Props) {
             newComments: props.newComments,
             awardWorks: props.awardWorks,
           }}
-          isSensitive={props.isSensitive ?? false}
           isShowGenerationAds={false}
           isShowCustomerAds={true}
         />
