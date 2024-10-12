@@ -10,7 +10,6 @@ import { AuthContext } from "~/contexts/auth-context"
 type Props = {
   userPickupWorks: FragmentOf<typeof HomeWorkFragment>[]
   userId: string
-  isSensitive: boolean
 }
 
 export function UserPickupContents(props: Props) {
@@ -23,9 +22,7 @@ export function UserPickupContents(props: Props) {
     },
   })
 
-  const featureWorks = props.isSensitive
-    ? workRes?.user?.featuredSensitiveWorks
-    : workRes?.user?.featuredWorks
+  const featureWorks = workRes?.user?.featuredWorks
 
   const workDisplayed = featureWorks ?? props.userPickupWorks
 
@@ -42,12 +39,9 @@ export function UserPickupContents(props: Props) {
   )
 }
 
-const UserContentsFragment = graphql(
-  `fragment UserProfile on UserNode @_unmask {
+export const UserPickupFragment = graphql(
+  `fragment UserPickup on UserNode @_unmask {
     featuredWorks {
-      ...HomeWork
-    }
-    featuredSensitiveWorks {
       ...HomeWork
     }
   }`,
@@ -59,8 +53,8 @@ const userQuery = graphql(
     $userId: ID!,
   ) {
     user(id: $userId) {
-      ...UserProfile
+      ...UserPickup
     }
   }`,
-  [UserContentsFragment],
+  [UserPickupFragment],
 )

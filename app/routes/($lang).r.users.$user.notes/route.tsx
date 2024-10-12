@@ -4,10 +4,8 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import {
-  UserNoteList,
-  UserNotesItemFragment,
-} from "~/routes/($lang)._main.users.$user.notes/components/user-note-list"
+import { UserNotesItemFragment } from "~/routes/($lang)._main.users.$user.notes/components/user-note-list"
+import { UserSensitiveNoteList } from "~/routes/($lang).r.users.$user.notes/components/user-sensitive-note-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -40,7 +38,7 @@ export async function loader(props: LoaderFunctionArgs) {
       limit: 32,
       where: {
         userId: userIdResp.data.user.id,
-        ratings: ["G", "R15"],
+        ratings: ["R18", "R18G"],
         workType: "COLUMN",
         isNowCreatedAt: true,
       },
@@ -65,7 +63,7 @@ export default function UserNotes() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserNoteList
+      <UserSensitiveNoteList
         works={data.works}
         page={data.page}
         maxCount={data.maxCount}

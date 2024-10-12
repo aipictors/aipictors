@@ -15,7 +15,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserNovelList(props: Props) {
+export function UserSensitiveNovelList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId = props.works[0]?.user.id ?? ""
@@ -29,7 +29,7 @@ export function UserNovelList(props: Props) {
       limit: 32,
       where: {
         userId: userId,
-        ratings: ["G", "R15"],
+        ratings: ["R18", "R18G"],
         workType: "NOVEL",
         isNowCreatedAt: true,
       },

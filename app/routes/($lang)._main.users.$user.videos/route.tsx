@@ -5,9 +5,9 @@ import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
-  UserCollectionList,
-  UserUserFoldersItemFragment,
-} from "~/routes/($lang)._main.users.$user.collections/components/user-collection-list"
+  UserVideoList,
+  UserVideosItemFragment,
+} from "~/routes/($lang)._main.users.$user.videos/components/user-videos-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -25,25 +25,36 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const foldersResp = await loaderClient.query({
-    query: userFoldersQuery,
+  const url = new URL(props.request.url)
+
+  const page = url.searchParams.get("page")
+    ? Number.parseInt(url.searchParams.get("page") as string) > 100
+      ? 0
+      : Number.parseInt(url.searchParams.get("page") as string)
+    : 0
+
+  const worksResp = await loaderClient.query({
+    query: userVideosQuery,
     variables: {
-      offset: 0,
+      offset: page * 32,
       limit: 32,
-      userId: userIdResp.data.user.id,
+      where: {
+        userId: userIdResp.data.user.id,
+        ratings: ["G", "R15"],
+        workType: "VIDEO",
+        isNowCreatedAt: true,
+      },
     },
   })
 
-  if (foldersResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
   return json({
-    folders: foldersResp.data.user.folders,
+    works: worksResp.data.works,
+    maxCount: worksResp.data.worksCount,
+    page,
   })
 }
 
-export default function UserAlbums() {
+export default function UserVideos() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -54,7 +65,11 @@ export default function UserAlbums() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserCollectionList folders={data.folders} />
+      <UserVideoList
+        works={data.works}
+        page={data.page}
+        maxCount={data.maxCount}
+      />
     </div>
   )
 }
@@ -67,13 +82,12 @@ const userIdQuery = graphql(
   }`,
 )
 
-export const userFoldersQuery = graphql(
-  `query Folders($userId: ID!, $offset: Int!, $limit: Int!) {
-    user(id: $userId) {
-      folders(offset: $offset, limit: $limit) {
-        ...UserUserFoldersItem
-      }
+export const userVideosQuery = graphql(
+  `query UserWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...UserVideosItem
     }
+    worksCount(where: $where)
   }`,
-  [UserUserFoldersItemFragment],
+  [UserVideosItemFragment],
 )

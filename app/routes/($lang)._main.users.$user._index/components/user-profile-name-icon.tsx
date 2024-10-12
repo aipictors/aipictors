@@ -1,10 +1,9 @@
 import { OmissionNumber } from "~/components/omission-number"
-import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user/components/user-profile-avatar"
+import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user._index/components/user-profile-avatar"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
-import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
-import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user/components/user-subscription-icon"
-import { UserModeratorIcon } from "~/routes/($lang)._main.users.$user/components/user-moderator-icon"
+import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user._index/components/user-subscription-icon"
+import { UserModeratorIcon } from "~/routes/($lang)._main.users.$user._index/components/user-moderator-icon"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -72,38 +71,14 @@ export function UserProfileNameIcon(props: Props) {
 
 export const UserProfileIconFragment = graphql(
   `fragment UserProfileIcon on UserNode @_unmask {
-    id
-    login
-    nanoid
     name
-    biography
-    enBiography
+    isModerator
+    login
     receivedLikesCount
-    createdAt
-    receivedViewsCount
-    awardsCount
-    followCount
     followersCount
-    worksCount
     iconUrl
-    headerImageUrl
-    promptonUser {
-      id
-    }
-    twitterAccountId
-    instagramAccountId
-    githubAccountId
-    mailAddress
-    featuredWorks {
-      ...HomeWork
-    }
-    featuredSensitiveWorks {
-      ...HomeWork
-    }
     pass {
       type
     }
-    isModerator
   }`,
-  [HomeWorkFragment],
 )

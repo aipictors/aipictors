@@ -4,10 +4,8 @@ import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json, useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import {
-  UserNoteList,
-  UserNotesItemFragment,
-} from "~/routes/($lang)._main.users.$user.notes/components/user-note-list"
+import { UserNovelsItemFragment } from "~/routes/($lang)._main.users.$user.novels/components/user-novel-list"
+import { UserSensitiveNovelList } from "~/routes/($lang).r.users.$user.novels/components/user-sensitive-novel-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -34,14 +32,14 @@ export async function loader(props: LoaderFunctionArgs) {
     : 0
 
   const worksResp = await loaderClient.query({
-    query: userNotesQuery,
+    query: userNovelsQuery,
     variables: {
       offset: page * 32,
       limit: 32,
       where: {
         userId: userIdResp.data.user.id,
-        ratings: ["G", "R15"],
-        workType: "COLUMN",
+        ratings: ["R18", "R18G"],
+        workType: "NOVEL",
         isNowCreatedAt: true,
       },
     },
@@ -54,7 +52,7 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 }
 
-export default function UserNotes() {
+export default function UserPosts() {
   const params = useParams()
 
   if (params.user === undefined) {
@@ -65,7 +63,7 @@ export default function UserNotes() {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserNoteList
+      <UserSensitiveNovelList
         works={data.works}
         page={data.page}
         maxCount={data.maxCount}
@@ -82,12 +80,12 @@ const userIdQuery = graphql(
   }`,
 )
 
-export const userNotesQuery = graphql(
+export const userNovelsQuery = graphql(
   `query UserWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...UserNotesItem
+      ...UserNovelsItem
     }
     worksCount(where: $where)
   }`,
-  [UserNotesItemFragment],
+  [UserNovelsItemFragment],
 )

@@ -2,27 +2,28 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
-import { useNavigate } from "react-router-dom"
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/novel-work-preview-item"
+import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { LikeButton } from "~/components/like-button"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
+import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { useNavigate } from "react-router-dom"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 
 type Props = {
-  works: FragmentOf<typeof UserNovelsItemFragment>[]
+  works: FragmentOf<typeof UserNotesItemFragment>[]
   page: number
   maxCount: number
 }
 
-export function UserNovelList(props: Props) {
+export function UserSensitiveNoteList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId = props.works[0]?.user.id ?? ""
 
   const userLogin = props.works[0]?.user.login ?? ""
 
-  const { data: novelsWorks } = useQuery(UserNovelsQuery, {
+  const { data: novelWorks } = useQuery(UserNotesQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn || userId === "",
     variables: {
       offset: props.page * 32,
@@ -30,13 +31,13 @@ export function UserNovelList(props: Props) {
       where: {
         userId: userId,
         ratings: ["G", "R15"],
-        workType: "NOVEL",
+        workType: "COLUMN",
         isNowCreatedAt: true,
       },
     },
   })
 
-  const novels = novelsWorks?.works ?? props.works
+  const works = novelWorks?.works ?? props.works
 
   const navigate = useNavigate()
 
@@ -44,18 +45,19 @@ export function UserNovelList(props: Props) {
     <div className="flex flex-col space-y-4">
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
-          <div className="flex flex-wrap gap-4">
-            {novels.map((work) => (
-              <div
-                key={work.id}
-                className="relative ml-4 inline-block h-full rounded border-2 border-gray border-solid"
-              >
-                <NovelWorkPreviewItem
-                  workId={work.id}
-                  imageUrl={work.smallThumbnailImageURL}
-                  title={work.title}
-                  text={work.description ?? ""}
-                />
+          <CarouselWithGradation
+            items={works.map((work, index) => (
+              // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+              <div className="h-full rounded border-2 border-gray border-solid">
+                <div className="relative">
+                  <NovelWorkPreviewItem
+                    workId={work.id}
+                    imageUrl={work.smallThumbnailImageURL}
+                    title={work.title}
+                    text={work.description ?? ""}
+                    tags={[]}
+                  />
+                </div>
                 <UserNameBadge
                   userId={work.user.id}
                   userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
@@ -76,7 +78,7 @@ export function UserNovelList(props: Props) {
                 </div>
               </div>
             ))}
-          </div>
+          />
         </section>
       </div>
       <div className="h-8" />
@@ -86,7 +88,7 @@ export function UserNovelList(props: Props) {
           maxCount={props.maxCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/users/${userLogin}/novels?page=${page}`)
+            navigate(`/users/${userLogin}/works?page=${page}`)
           }}
         />
       </div>
@@ -94,28 +96,28 @@ export function UserNovelList(props: Props) {
   )
 }
 
-export const UserNovelsItemFragment = graphql(
-  `fragment UserNovelsItem on WorkNode @_unmask {
+export const UserNotesItemFragment = graphql(
+  `fragment UserNotesItem on WorkNode @_unmask {
     id
     smallThumbnailImageURL
+    isLiked
     title
     description
-    isLiked
     user {
       id
-      iconUrl
       name
+      iconUrl
       login
     }
   }`,
 )
 
-export const UserNovelsQuery = graphql(
-  `query UserNovels($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+export const UserNotesQuery = graphql(
+  `query UserNotes($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...UserNovelsItem
+      ...UserNotesItem
     }
     worksCount(where: $where)
   }`,
-  [UserNovelsItemFragment],
+  [UserNotesItemFragment],
 )
