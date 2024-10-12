@@ -7,7 +7,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { MessageCircleIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
-import { Link } from "@remix-run/react"
+import { Link, useNavigate } from "@remix-run/react"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { cn } from "~/lib/utils"
@@ -26,17 +26,24 @@ type Props = {
   setPage: (page: number) => void
 }
 
-export function FollowTagsFeedContents(props: Props) {
-  const t = useTranslation()
+export function FollowSensitiveUserFeedContents(props: Props) {
   const authContext = useContext(AuthContext)
+
+  const navigate = useNavigate()
+
   const [isTimelineView, setIsTimelineView] = useState(false)
+
   const [hiddenComments, setHiddenComments] = useState<{
     [key: string]: boolean
   }>({})
+
   const [subWorksVisible, setSubWorksVisible] = useState<{
     [key: string]: boolean
   }>({})
 
+  const t = useTranslation()
+
+  // クエリを状態に応じて切り替える
   const { data } = useSuspenseQuery(
     isTimelineView ? feedQuery : feedWorkListQuery,
     {
@@ -46,10 +53,10 @@ export function FollowTagsFeedContents(props: Props) {
         limit: 96,
         feedWhere: {
           userId: authContext.userId ?? "-1",
-          type: "FOLLOW_TAG",
+          type: "FOLLOW_USER",
         },
         feedPostsWhere: {
-          ratings: ["G", "R15"],
+          ratings: ["R18", "R18G"],
         },
       },
     },
@@ -69,7 +76,7 @@ export function FollowTagsFeedContents(props: Props) {
         <p className="text-center">
           {t(
             "ログインすることでユーザやタグをフォローして、タイムラインで作品を楽しむことができます",
-            "You can follow users and tags to enjoy the timeline by logging in.",
+            "You can enjoy works on the timeline by following users and tags by logging in",
           )}
         </p>
       </div>
@@ -82,7 +89,7 @@ export function FollowTagsFeedContents(props: Props) {
         <p className="text-center">
           {t(
             "まだデータがありません、ユーザやタグをフォローして最新の作品をキャッチアップしましょう！",
-            "No data available yet, follow users or tags to catch up on the latest works!",
+            "No data yet, follow users and tags to catch up on the latest works!",
           )}
         </p>
       </div>
@@ -105,6 +112,7 @@ export function FollowTagsFeedContents(props: Props) {
     }))
   }
 
+  // works の取得方法を変更
   const works = posts
     .filter((post) => post?.work)
     .map((post) => post.work)
@@ -112,7 +120,15 @@ export function FollowTagsFeedContents(props: Props) {
 
   return (
     <div className="flex flex-col space-y-4">
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex justify-end space-x-2">
+        <Button
+          onClick={() => {
+            navigate("/following")
+          }}
+          variant={"secondary"}
+        >
+          {t("管理", "Manage")}
+        </Button>
         <Button onClick={() => setIsTimelineView(!isTimelineView)}>
           {isTimelineView
             ? t("一覧形式に切り替え", "Switch to List View")
@@ -172,8 +188,8 @@ export function FollowTagsFeedContents(props: Props) {
                                 >
                                   {!subWorksVisible[work.id]
                                     ? t(
-                                        "もっと見る",
-                                        `See More (${work.subWorks.length})`,
+                                        `もっと見る(${work.subWorks.length})`,
+                                        `Show More (${work.subWorks.length})`,
                                       )
                                     : t("閉じる", "Close")}
                                 </Button>

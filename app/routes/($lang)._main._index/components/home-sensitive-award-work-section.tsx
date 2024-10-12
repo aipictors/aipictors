@@ -22,7 +22,7 @@ type Props = {
 /**
  * ランキング作品一覧
  */
-export function HomeAwardWorkSection(props: Props) {
+export function HomeSensitiveAwardWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
 
   const year = props.awardDateText.split("/")[0]
@@ -42,7 +42,7 @@ export function HomeAwardWorkSection(props: Props) {
         year: Number(year),
         month: Number(month),
         day: Number(day),
-        isSensitive: false,
+        isSensitive: true,
       },
     },
   })

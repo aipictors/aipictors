@@ -15,16 +15,13 @@ import {
   HomeTagList,
   type HomeTagListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-tag-list"
-import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 import { Separator } from "~/components/ui/separator"
 import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
-import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
 import { Button } from "~/components/ui/button"
-import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import { ArrowDownWideNarrow } from "lucide-react"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useTranslation } from "~/hooks/use-translation"
@@ -44,7 +41,10 @@ import {
   HomeSensitiveAwardWorkSection,
   type HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-sensitive-award-work-section"
-import { AppSideMenu } from "~/components/app/app-side-menu"
+import { AppSensitiveSideMenu } from "~/components/app/app-sensitive-side-menu"
+import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
+import { HomeSensitiveHotWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-hot-works-section"
+import { FollowSensitiveUserFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-user-feed-contents"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -275,7 +275,7 @@ export function HomeContents(props: Props) {
               orientation="vertical"
               className="hidden h-[100vh] w-[1px] md:block"
             />
-            <AppSideMenu
+            <AppSensitiveSideMenu
               homeParticles={props.homeParticles}
               isShowSensitiveButton={true}
               isShowGenerationAds={true}
@@ -387,7 +387,7 @@ export function HomeContents(props: Props) {
                 </Select>
               </div>
               <Suspense fallback={<AppLoadingPage />}>
-                <HomeWorksSection
+                <HomeSensitiveWorksSection
                   page={newWorksPage}
                   setPage={setNewWorksPage}
                   workType={workType}
@@ -401,7 +401,7 @@ export function HomeContents(props: Props) {
           <div className="space-y-4">
             {/* 人気作品の表示 */}
             <Suspense fallback={<AppLoadingPage />}>
-              <HomeHotWorksSection
+              <HomeSensitiveHotWorksSection
                 page={newWorksPage}
                 setPage={setNewWorksPage}
                 workType={workType}
@@ -415,7 +415,7 @@ export function HomeContents(props: Props) {
 
       <TabsContent value="follow-user">
         <Suspense fallback={<AppLoadingPage />}>
-          <FollowUserFeedContents
+          <FollowSensitiveUserFeedContents
             page={followUserFeedPage}
             setPage={setFollowUserFeedPage}
           />

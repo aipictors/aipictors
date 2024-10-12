@@ -6,6 +6,7 @@ import {
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
   HomeNovelsWorkListItemFragment,
@@ -27,9 +28,9 @@ type Props = {
 }
 
 /**
- * トップ画面人気作品一覧
+ * トップ画面ホーム作品一覧
  */
-export function HomeHotWorksSection(props: Props) {
+export function HomeSensitiveWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const perPageCount = props.workType === "VIDEO" ? 8 : 32
@@ -40,10 +41,22 @@ export function HomeHotWorksSection(props: Props) {
       offset: props.page * perPageCount,
       limit: perPageCount,
       where: {
-        isSensitive: false,
+        ratings: ["R18", "R18G"],
+        isSensitive: true,
         ...(props.workType !== null && {
           workType: props.workType,
         }),
+        ...(props.isPromptPublic !== null && {
+          hasPrompt: props.isPromptPublic,
+          isPromptPublic: props.isPromptPublic,
+        }),
+        ...((props.sortType !== null && {
+          orderBy: props.sortType,
+        }) || { orderBy: "DATE_CREATED" }),
+        ...(props.style && {
+          style: props.style,
+        }),
+        isNowCreatedAt: true,
       },
     },
   })
@@ -53,28 +66,39 @@ export function HomeHotWorksSection(props: Props) {
       {(props.workType === "WORK" || props.workType === null) && (
         <HomeWorkSection
           title={""}
-          works={worksResp?.hotWorks || []}
+          works={worksResp?.works || []}
           isCropped={props.isCropped}
           isShowProfile={true}
         />
       )}
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
-        <HomeNovelsWorksSection title={""} works={worksResp?.hotWorks || []} />
+        <HomeNovelsWorksSection title={""} works={worksResp?.works || []} />
       )}
       {props.workType === "VIDEO" && (
         <HomeVideosWorksSection
           title={""}
-          works={worksResp?.hotWorks || []}
+          works={worksResp?.works || []}
           isAutoPlay={true}
         />
       )}
+      <div className="h-8" />
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <ResponsivePagination
+          perPage={perPageCount}
+          maxCount={1000}
+          currentPage={props.page}
+          onPageChange={(page: number) => {
+            props.setPage(page)
+          }}
+        />
+      </div>
     </div>
   )
 }
 
 const WorksQuery = graphql(
-  `query Works($where: HotWorksWhereInput) {
-    hotWorks(where: $where) {
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
       ...HomeWork
       ...HomeNovelsWorkListItem
       ...HomeVideosWorkListItem

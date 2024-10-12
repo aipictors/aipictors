@@ -29,7 +29,7 @@ type Props = {
 /**
  * トップ画面人気作品一覧
  */
-export function HomeHotWorksSection(props: Props) {
+export function HomeSensitiveHotWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const perPageCount = props.workType === "VIDEO" ? 8 : 32
@@ -40,7 +40,7 @@ export function HomeHotWorksSection(props: Props) {
       offset: props.page * perPageCount,
       limit: perPageCount,
       where: {
-        isSensitive: false,
+        isSensitive: true,
         ...(props.workType !== null && {
           workType: props.workType,
         }),

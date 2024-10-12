@@ -13,7 +13,7 @@ type Props = {
   tags: FragmentOf<typeof HomeTagFragment>[]
 }
 
-export function HomeTagsSection(props: Props) {
+export function HomeSensitiveTagsSection(props: Props) {
   const plugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true }),
   )
@@ -34,7 +34,10 @@ export function HomeTagsSection(props: Props) {
           {props.tags?.map((tag, index) => (
             <CarouselItem className="basis-auto" key={index.toString()}>
               <div className="group relative overflow-hidden rounded-md">
-                <Link to={"/tags/${tag.tagName}"} className="rounded-md">
+                <Link
+                  to={"/tags/${tag.tagName}?sensitive=1"}
+                  className="rounded-md"
+                >
                   <img
                     className="h-[240px] w-[196px] bg-white object-cover object-center transition-transform duration-200 ease-in-out group-hover:scale-105"
                     src={tag.thumbnailUrl}

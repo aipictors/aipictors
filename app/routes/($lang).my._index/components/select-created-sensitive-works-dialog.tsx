@@ -22,7 +22,7 @@ type Props = {
 /**
  * 作成済みの作品選択ダイアログ
  */
-export function SelectCreatedWorksDialog(props: Props) {
+export function SelectCreatedSensitiveWorksDialog(props: Props) {
   const t = useTranslation()
 
   const appContext = useContext(AuthContext)
@@ -42,7 +42,7 @@ export function SelectCreatedWorksDialog(props: Props) {
         userId: appContext.userId,
         orderBy: "DATE_CREATED",
         sort: "DESC",
-        isSensitive: false,
+        isSensitive: true,
       },
     },
   })
@@ -52,7 +52,7 @@ export function SelectCreatedWorksDialog(props: Props) {
     variables: {
       where: {
         userId: appContext.userId,
-        isSensitive: false,
+        isSensitive: true,
       },
     },
   })

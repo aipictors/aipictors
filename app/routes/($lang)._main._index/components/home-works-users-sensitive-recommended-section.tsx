@@ -11,7 +11,6 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  isSensitive?: boolean
   works: FragmentOf<typeof HomePromotionWorkFragment>[]
   style?: IntrospectionEnum<"ImageStyle">
 }
@@ -19,7 +18,7 @@ type Props = {
 /**
  * ユーザからの推薦作品
  */
-export function HomeWorksUsersRecommendedSection(props: Props) {
+export function HomeWorksUsersSensitiveRecommendedSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   // 推薦作品
@@ -30,7 +29,7 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
       limit: config.query.homeWorkCount.promotion,
       where: {
         isRecommended: true,
-        ratings: ["G", "R15"],
+        ratings: ["R18", "R18G"],
         ...(props.style && {
           style: props.style,
         }),

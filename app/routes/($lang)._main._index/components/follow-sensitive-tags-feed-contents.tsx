@@ -26,7 +26,7 @@ type Props = {
   setPage: (page: number) => void
 }
 
-export function FollowTagsFeedContents(props: Props) {
+export function FollowSensitiveTagsFeedContents(props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const [isTimelineView, setIsTimelineView] = useState(false)
@@ -49,7 +49,7 @@ export function FollowTagsFeedContents(props: Props) {
           type: "FOLLOW_TAG",
         },
         feedPostsWhere: {
-          ratings: ["G", "R15"],
+          ratings: ["R18", "R18G"],
         },
       },
     },

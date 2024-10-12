@@ -22,7 +22,6 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  isSensitive?: boolean
   page: number
   setPage: (page: number) => void
 }
@@ -57,7 +56,7 @@ export function FollowUserFeedContents(props: Props) {
           type: "FOLLOW_USER",
         },
         feedPostsWhere: {
-          ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+          ratings: ["G", "R15"],
         },
       },
     },

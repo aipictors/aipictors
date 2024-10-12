@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import {
   HomeNewCommentsSection,
   type HomeNewCommentsFragment,
@@ -11,7 +12,6 @@ import { graphql, type FragmentOf } from "gql.tada"
 import { Button } from "~/components/ui/button"
 import { useMutation, useQuery } from "@apollo/client/index"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { addHours } from "date-fns"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import {
   HomeAwardWorksSection,
@@ -34,21 +34,14 @@ type Props = {
   isShowCustomerAds?: boolean
 }
 
-const toJST = (date: Date) => {
-  return addHours(date, 9) // Convert UTC to JST (+9 hours)
-}
-
-/**
- * Side menu component
- */
-export function AppSideMenu(props: Props) {
+export function AppSensitiveSideMenu(props: Props) {
   const navigate = useNavigate()
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
     variables: {
       where: {
-        isSensitive: false,
+        isSensitive: true,
         page: "work",
       },
     },
@@ -83,15 +76,25 @@ export function AppSideMenu(props: Props) {
       <div className="flex w-full flex-col space-y-4">
         <div className="relative grid gap-4">
           {props.isShowSensitiveButton && (
-            <Button
-              onClick={() => {
-                navigate("/")
+            <AppConfirmDialog
+              title={t("確認", "Confirmation")}
+              description={t(
+                "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                "This content contains sensitive material. Are you over 18?",
+              )}
+              onNext={() => {
+                navigate("/r")
               }}
-              variant={"secondary"}
-              className="flex w-full transform cursor-pointer items-center"
+              cookieKey={"check-sensitive-ranking"}
+              onCancel={() => {}}
             >
-              <p className="text-sm">{t("全年齢", "All Ages")}</p>
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="flex w-full transform cursor-pointer items-center"
+              >
+                <p className="text-sm">{t("センシティブ", "Sensitive")}</p>
+              </Button>
+            </AppConfirmDialog>
           )}
           {!isSubscriptionUser &&
             props.isShowCustomerAds &&

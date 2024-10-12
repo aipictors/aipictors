@@ -22,7 +22,7 @@ type Props = {
 /**
  * タグ作品一覧
  */
-export function HomeWorksTagSection(props: Props) {
+export function HomeSensitiveWorksTagSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: firstTagWorksResp } = useQuery(WorksQuery, {
@@ -31,8 +31,8 @@ export function HomeWorksTagSection(props: Props) {
       offset: 0,
       limit: config.query.homeWorkCount.tag,
       where: {
-        ratings: ["G"],
-        isSensitive: false,
+        ratings: ["R18", "R18G"],
+        isSensitive: true,
         isNowCreatedAt: true,
         search: props.tag,
         orderBy: "LIKES_COUNT",
@@ -49,8 +49,8 @@ export function HomeWorksTagSection(props: Props) {
       offset: 0,
       limit: config.query.homeWorkCount.tag,
       where: {
-        ratings: ["G"],
-        isSensitive: false,
+        ratings: ["R18", "R18G"],
+        isSensitive: true,
         isNowCreatedAt: true,
         search: props.secondTag,
         orderBy: "LIKES_COUNT",
