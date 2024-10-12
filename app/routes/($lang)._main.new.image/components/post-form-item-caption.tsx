@@ -1,6 +1,7 @@
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   label?: string
@@ -31,7 +32,10 @@ export function PostFormItemCaption(props: Props) {
           value={props.caption}
           maxLength={3000}
           placeholder={props.label ? props.label : t("キャプション", "Caption")}
-          className={`${isFilled ? "w-full border-green-500" : "w-full border-gray-300"}`}
+          className={cn("w-full", {
+            "border-green-500": isFilled,
+            "border-gray-300": !isFilled,
+          })}
         />
       </CardContent>
     </Card>

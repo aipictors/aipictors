@@ -5,6 +5,7 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { skipToken } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
+import { cn } from "~/lib/utils"
 
 /**
  * タスク内容
@@ -50,9 +51,12 @@ export function GenerationTaskContentPreview() {
             imageGenerationTask.imageUrl &&
             imageGenerationTask.thumbnailUrl && (
               <img
-                className={`generation-image-${imageGenerationTask.id} max-h-[72vh]`}
+                className={cn(
+                  `generation-image-${imageGenerationTask.id}`,
+                  "max-h-[72vh]",
+                )}
                 src={imageGenerationTask.imageUrl}
-                alt={"-"}
+                alt="-"
               />
             )}
           {imageGenerationTask.status === "RESERVED" && <p>{"予約生成中"}</p>}

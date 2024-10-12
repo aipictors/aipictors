@@ -2,6 +2,7 @@ import type React from "react"
 import { useState } from "react"
 import { RiEye2Line, RiHeartLine } from "@remixicon/react"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type UserProfileInfoProps = {
   name: string
@@ -56,7 +57,9 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
         {biography && (
           <div>
             <p
-              className={`mt-4 text-gray${showFullBiography ? "" : "truncate"}`}
+              className={cn("mt-4 text-gray", {
+                truncate: !showFullBiography,
+              })}
             >
               {truncatedBiography}
               {!showFullBiography && biography.length > 100 && (

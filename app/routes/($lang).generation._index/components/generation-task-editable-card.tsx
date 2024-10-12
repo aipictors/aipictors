@@ -16,6 +16,7 @@ import {
   GenerationResultProtectButtonTaskFragment,
 } from "~/routes/($lang).generation._index/components/generation-task-protected-button"
 import { graphql, type FragmentOf } from "gql.tada"
+import { cn } from "~/lib/utils"
 
 type Props = {
   taskId: string
@@ -200,7 +201,7 @@ export function GenerationTaskEditableCard(props: Props) {
         props.task.thumbnailUrl !== "" &&
         props.task.thumbnailUrl !== null ? (
           <img
-            className={`generation-image-${props.taskNanoid} m-auto`}
+            className={cn(`generation-image-${props.taskNanoid}`, "m-auto")}
             src={
               context.config.taskListThumbnailType === "light"
                 ? props.task.thumbnailUrl

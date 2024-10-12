@@ -3,6 +3,7 @@ import { createCalendarCells } from "~/routes/($lang)._main.themes._index/utils/
 import { Link, useNavigate } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { cn } from "~/lib/utils"
 
 type Props = {
   year: number
@@ -128,7 +129,10 @@ export function ThemeList(props: Props) {
           {blocks.map((block) => (
             <div
               key={block.id}
-              className={`relative ${block.isSaturday ? "border-green-500" : block.isSunday ? "border-red-500" : ""}`}
+              className={cn("relative", {
+                "border-green-500": block.isSaturday,
+                "border-red-500": block.isSunday,
+              })}
             >
               <div
                 onClick={() => handleCellClick(block.date)}
@@ -137,10 +141,20 @@ export function ThemeList(props: Props) {
                     handleCellClick(block.date)
                   }
                 }}
-                className={`relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2 ${block.isToday ? "border-2 border-blue-500" : ""}`}
+                className={cn(
+                  "relative flex h-24 min-w-24 cursor-pointer flex-col gap-y-2 border p-2",
+                  {
+                    "border-2 border-blue-500": block.isToday,
+                  },
+                )}
               >
                 <div
-                  className={`absolute z-10 text-right font-bold text-xs ${block.isSunday ? "text-red-500" : block.isSaturday ? "text-blue-500" : "text-black"}${block.thumbnailUrl && !block.isFuture ? "text-white" : ""}`}
+                  className={cn("absolute z-10 text-right font-bold text-xs", {
+                    "text-red-500": block.isSunday,
+                    "text-blue-500": block.isSaturday,
+                    "text-black": !block.isSunday && !block.isSaturday,
+                    "text-white": block.thumbnailUrl && !block.isFuture,
+                  })}
                 >
                   {block.day}
                 </div>

@@ -563,7 +563,9 @@ export function PaintCanvas(props: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <div
-                className={`flex items-center${props.isPadding ? "p-2" : ""}`}
+                className={cn("flex items-center", {
+                  "p-2": props.isPadding,
+                })}
               >
                 <div className="flex flex-col">
                   <p className="w-48">{"ブラシサイズ："}</p>

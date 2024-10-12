@@ -33,7 +33,6 @@ export function LikeButton(props: Props) {
   const [createWorkLike, { loading: isCreateLoading }] = useMutation(
     createWorkLikeMutation,
   )
-
   const [deleteWorkLike, { loading: isDeleteLoading }] = useMutation(
     deleteWorkLikeMutation,
   )
@@ -42,11 +41,7 @@ export function LikeButton(props: Props) {
 
   const [likedCount, setLikedCount] = useState(props.defaultLikedCount)
 
-  /**
-   * Fキーでいいね
-   */
   const handleFavoritedKeyDown = useCallback((event: KeyboardEvent) => {
-    // 入力欄やテキストエリアにフォーカスしている場合は何もしない
     const tagName = document.activeElement?.tagName.toLowerCase()
     if (
       tagName === "input" ||
@@ -92,7 +87,6 @@ export function LikeButton(props: Props) {
           },
         }).then(() => {
           setIsLiked(true)
-          // setLikedCount((prevCount) => prevCount + 1)
         })
       } else {
         await deleteWorkLike({
@@ -103,7 +97,6 @@ export function LikeButton(props: Props) {
           },
         }).then(() => {
           setIsLiked(false)
-          // setLikedCount((prevCount) => prevCount - 1)
         })
       }
     } catch (error) {
@@ -111,16 +104,13 @@ export function LikeButton(props: Props) {
     }
   }
 
-  /* 自分自身の作品の場合はいいねボタンを表示しない */
   if (authContext.userId === props.targetWorkOwnerUserId) {
     return null
   }
 
   const width = Math.floor((props.size ?? 40) * 24)
-
   const size = props.size ?? 40
 
-  /* 未ログイン */
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return (
       <LoginDialogButton
@@ -133,14 +123,15 @@ export function LikeButton(props: Props) {
         )}
         triggerChildren={
           <button
-            className={`${
-              props.isParticle ? "like-button " : ""
-            }relative flex items-center justify-center rounded-md ${
-              props.isBackgroundNone
-                ? ""
-                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-            } ${isCreateLoading || isDeleteLoading ? "opacity-50" : ""}`}
+            className={cn(
+              props.isParticle && "like-button",
+              "relative flex items-center justify-center rounded-md",
+              {
+                "bg-secondary text-secondary-foreground hover:bg-secondary/80":
+                  !props.isBackgroundNone,
+                "opacity-50": isCreateLoading || isDeleteLoading,
+              },
+            )}
             style={{
               width: props.text
                 ? "auto"
@@ -167,8 +158,8 @@ export function LikeButton(props: Props) {
                   isLiked
                     ? "fill-rose-500 text-rose-500"
                     : props.isBackgroundNone
-                      ? "fill-white "
-                      : "fill-transparent ",
+                      ? "fill-white"
+                      : "fill-transparent",
                   isLiked ? "like-animation" : "like-animation-end",
                   "stroke-2",
                 )}
@@ -197,14 +188,15 @@ export function LikeButton(props: Props) {
 
   return (
     <button
-      className={`${
-        props.isParticle ? "like-button " : ""
-      }relative flex items-center justify-center rounded-md ${
-        props.isBackgroundNone
-          ? ""
-          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      } ${isCreateLoading || isDeleteLoading ? "opacity-50" : ""}`}
+      className={cn(
+        props.isParticle && "like-button",
+        "relative flex items-center justify-center rounded-md",
+        {
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80":
+            !props.isBackgroundNone,
+          "opacity-50": isCreateLoading || isDeleteLoading,
+        },
+      )}
       style={{
         width: props.text
           ? "auto"
@@ -232,8 +224,8 @@ export function LikeButton(props: Props) {
             isLiked
               ? "fill-rose-500 text-rose-500"
               : props.isBackgroundNone
-                ? "fill-white "
-                : "fill-transparent ",
+                ? "fill-white"
+                : "fill-transparent",
             isLiked ? "like-animation" : "like-animation-end",
             "stroke-2",
           )}

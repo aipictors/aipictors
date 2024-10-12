@@ -208,8 +208,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
                         props.task.imageUrl &&
                         props.task.thumbnailUrl && (
                           <img
-                            // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                            className={`m-auto h-72 hidden max-h-96 generation-image-${props.task.id}`}
+                            className={cn(
+                              "m-auto hidden h-72 max-h-96",
+                              `generation-image-${props.task.id}`,
+                            )}
                             alt={"-"}
                             src={props.task.imageUrl}
                             data-original={props.task.imageUrl}

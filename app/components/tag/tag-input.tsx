@@ -10,6 +10,7 @@ import { TagPopover } from "./tag-popover"
 import { TagList } from "./tag-list"
 import type { tagVariants } from "./tag"
 import { Autocomplete } from "./autocomplete"
+import { cn } from "~/lib/utils"
 
 export enum Delimiter {
   Comma = ",",
@@ -232,13 +233,12 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
 
     return (
       <div
-        className={`flex w-full gap-4 ${
-          inputFieldPosition === "bottom"
-            ? "flex-col"
-            : inputFieldPosition === "top"
-              ? "flex-col-reverse"
-              : "flex-row"
-        }`}
+        className={cn("flex w-full gap-4", {
+          "flex-col": inputFieldPosition === "bottom",
+          "flex-col-reverse": inputFieldPosition === "top",
+          "flex-row":
+            inputFieldPosition !== "bottom" && inputFieldPosition !== "top",
+        })}
       >
         {!usePopoverForTags ? (
           <TagList
