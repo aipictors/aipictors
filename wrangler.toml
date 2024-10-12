@@ -1,3 +1,8 @@
 name = "aipictors"
-compatibility_date = "2024-04-05"
-pages_build_output_dir = "./build/client"
+compatibility_date = "2024-09-25"
+compatibility_flags = ["nodejs_compat_v2"]
+main= "./build/worker/index.js"
+assets = { directory = "./build/client"}
+
+[observability]
+enabled = true
