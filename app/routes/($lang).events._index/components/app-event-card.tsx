@@ -14,17 +14,6 @@ type Props = {
 export function AppEventCard(props: Props) {
   const appEvent = readFragment(AppEventItemFragment, props.appEvent)
 
-  if (
-    !appEvent.title ||
-    !appEvent.thumbnailImageUrl ||
-    !appEvent.description ||
-    !appEvent.startAt ||
-    !appEvent.endAt ||
-    !appEvent.slug
-  ) {
-    return null
-  }
-
   const now = getJstDate(new Date())
 
   const isOngoing =
