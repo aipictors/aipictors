@@ -1,6 +1,7 @@
 import { Link } from "@remix-run/react"
 import { Images } from "lucide-react"
 import { useState } from "react"
+import { cn } from "~/lib/utils"
 
 type Props = {
   workId: string
@@ -25,23 +26,8 @@ export function CroppedWorkSquare(props: Props) {
     height: number,
   ): string => {
     let result = ""
-    if (width < height) {
-      result = "translateY("
-    } else {
-      result = "translateX("
-    }
-
-    if (src !== undefined && src !== null) {
-      result = `${result + src}%`
-    } else {
-      if (width === height) {
-        result = `${result}0%`
-      } else {
-        result = `${result}-5%`
-      }
-    }
-
-    result = `${result})`
+    result = width < height ? "translateY(" : "translateX("
+    result = `${result + (src ?? (width === height ? 0 : -5))}%)`
     return result
   }
 
@@ -51,51 +37,10 @@ export function CroppedWorkSquare(props: Props) {
     props.imageHeight,
   )
 
-  const size = () => {
-    if (props.size === "auto") {
-      return "w-full h-auto"
-    }
-    if (props.size === "sm") {
-      return props.imageWidth > props.imageHeight
-        ? "h-20 w-auto"
-        : "h-auto w-20"
-    }
-    if (props.size === "md") {
-      return props.imageWidth > props.imageHeight
-        ? "h-32 w-auto"
-        : "h-auto w-32"
-    }
-
-    return props.imageWidth > props.imageHeight ? "h-40 w-auto" : "h-auto w-40"
-  }
-
-  const wrapSize = () => {
-    if (props.size === "auto") {
-      return "w-full"
-    }
-    if (props.size === "xs") {
-      return "h-16 w-16"
-    }
-    if (props.size === "sm") {
-      return "h-20 w-20"
-    }
-    if (props.size === "md") {
-      return "h-32 w-32"
-    }
-
-    return "h-40 w-40"
-  }
-
   const backgroundColor = () => {
-    if (props.ranking === 1) {
-      return "#d6ba49"
-    }
-    if (props.ranking === 2) {
-      return "#858585"
-    }
-    if (props.ranking === 3) {
-      return "#c8a17e"
-    }
+    if (props.ranking === 1) return "#d6ba49"
+    if (props.ranking === 2) return "#858585"
+    if (props.ranking === 3) return "#c8a17e"
     return "#00000052"
   }
 
@@ -108,13 +53,34 @@ export function CroppedWorkSquare(props: Props) {
         <div
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className={`rounded ${wrapSize()} relative overflow-hidden`}
+          className={cn("relative overflow-hidden rounded", {
+            "w-full": props.size === "auto",
+            "h-16 w-16": props.size === "xs",
+            "h-20 w-20": props.size === "sm",
+            "h-32 w-32": props.size === "md",
+            "h-40 w-40": props.size === "lg",
+          })}
         >
           <img
             src={props.imageUrl}
             alt=""
             key={props.imageUrl}
-            className={`max-w-none rounded ${size()} transition-transform duration-300 ease-in-out`}
+            className={cn(
+              "max-w-none rounded transition-transform duration-300 ease-in-out",
+              {
+                "h-auto w-full": props.size === "auto",
+                "h-20 w-auto":
+                  props.size === "sm" && props.imageWidth > props.imageHeight,
+                "h-auto w-20":
+                  props.size === "sm" && props.imageWidth <= props.imageHeight,
+                "h-32 w-auto":
+                  props.size === "md" && props.imageWidth > props.imageHeight,
+                "h-auto w-32":
+                  props.size === "md" && props.imageWidth <= props.imageHeight,
+                "h-40 w-auto": props.imageWidth > props.imageHeight,
+                "h-auto w-40": props.imageWidth <= props.imageHeight,
+              },
+            )}
             style={{
               transform: `${transform} ${isHovered ? "scale(1.05)" : "scale(1)"}`,
             }}
@@ -122,9 +88,7 @@ export function CroppedWorkSquare(props: Props) {
         </div>
         {props.ranking && (
           <div
-            className={
-              "absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-white text-xs"
-            }
+            className="absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-white text-xs"
             style={{ backgroundColor: backgroundColor() }}
           >
             {props.ranking}

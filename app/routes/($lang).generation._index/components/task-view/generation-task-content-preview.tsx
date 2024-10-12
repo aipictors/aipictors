@@ -4,6 +4,7 @@ import { useCachedImageGenerationResult } from "~/routes/($lang).generation._ind
 import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useContext } from "react"
+import { cn } from "~/lib/utils"
 
 /**
  * タスクプレビュー内容
@@ -39,7 +40,10 @@ export function GenerationTaskContentPreview() {
         userToken ? (
           <div className="m-auto max-h-[100vh]">
             <img
-              className={`generation-image-${imageGenerationTask.id} max-h-[64vh]`}
+              className={cn(
+                `generation-image-${imageGenerationTask.id}`,
+                "max-h-[64vh]",
+              )}
               src={
                 context.config.taskListThumbnailType === "light"
                   ? imageGenerationTask.thumbnailUrl
@@ -62,7 +66,10 @@ export function GenerationTaskContentPreview() {
         userToken ? (
           <div className="m-auto max-h-[100vh]">
             <img
-              className={`generation-image-${imageGenerationResult.id} max-h-[64vh]`}
+              className={cn(
+                `generation-image-${imageGenerationResult.id}`,
+                "max-h-[64vh]",
+              )}
               src={
                 context.config.taskListThumbnailType === "light"
                   ? imageGenerationResult.thumbnailUrl

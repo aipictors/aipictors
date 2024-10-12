@@ -6,6 +6,7 @@ import { useContext } from "react"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 export function DashboardHomeContents() {
   const t = useTranslation()
@@ -105,9 +106,9 @@ export function DashboardHomeContents() {
                     <Link
                       key={work.id}
                       to={`/posts/${work.id}`}
-                      className={`mb-4 flex items-center ${
-                        index === 0 ? "relative" : ""
-                      }`}
+                      className={cn("mb-4 flex items-center", {
+                        relative: index === 0,
+                      })}
                     >
                       {index === 0 ? (
                         <div className="relative w-full">
@@ -137,14 +138,13 @@ export function DashboardHomeContents() {
                         <div className="flex w-full items-center">
                           <div className="mr-4">
                             <div
-                              // biome-ignore lint/nursery/useSortedClasses: <explanation>
-                              className={`rounded-full text-white w-8 text-center font-bold px-2 py-1 ${
-                                index === 1
-                                  ? "bg-gray-400"
-                                  : index === 2
-                                    ? "bg-orange-300"
-                                    : ""
-                              }`}
+                              className={cn(
+                                "w-8 rounded-full px-2 py-1 text-center font-bold text-white",
+                                {
+                                  "bg-gray-400": index === 1,
+                                  "bg-orange-300": index === 2,
+                                },
+                              )}
                             >
                               {index + 1}
                             </div>

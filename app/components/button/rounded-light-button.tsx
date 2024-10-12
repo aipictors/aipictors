@@ -1,3 +1,5 @@
+import { cn } from "~/lib/utils"
+
 type Props = {
   children: React.ReactNode
   disabled?: boolean
@@ -14,9 +16,13 @@ export function RoundedLightButton(props: Props) {
       onClick={props.onClick}
       type="button"
       disabled={props.disabled}
-      className={`flex items-center justify-center rounded-full p-1 pl-2 text-sm duration-200 hover:opacity-80${
-        props.isActive ? " bg-zinc-100 dark:bg-zinc-800" : " bg-transparent"
-      }`}
+      className={cn(
+        "flex items-center justify-center rounded-full p-1 pl-2 text-sm duration-200 hover:opacity-80",
+        {
+          "bg-zinc-100 dark:bg-zinc-800": props.isActive,
+          "bg-transparent": !props.isActive,
+        },
+      )}
     >
       {props.children}
     </button>

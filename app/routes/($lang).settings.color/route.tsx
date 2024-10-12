@@ -12,6 +12,7 @@ import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.SETTINGS_COLOR, undefined, props.params.lang)
@@ -63,13 +64,17 @@ export default function SettingColor() {
   const colorSchema = getColorSchema(theme ?? "system")
 
   const themeRadio = (value: string, label: string) => (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
     <div
-      className={`flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800 ${
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-        mode === value ? "bg-gray-100 dark:bg-gray-800 bg-opacity-50" : ""
-      }`}
+      className={cn(
+        "flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800",
+        { "bg-gray-100 bg-opacity-50 dark:bg-gray-800": mode === value },
+      )}
       onClick={() => setColorTheme(value, colorSchema)}
+      onKeyUp={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          setColorTheme(value, colorSchema)
+        }
+      }}
     >
       <RadioGroupItem value={value} id={value} className="peer hidden" />
       <label
@@ -89,11 +94,10 @@ export default function SettingColor() {
   ) => (
     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
     <div
-      className={`flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800 ${
-        colorSchema === value
-          ? "bg-gray-100 bg-opacity-50 dark:bg-gray-800"
-          : ""
-      }`}
+      className={cn(
+        "flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800",
+        { "bg-gray-100 bg-opacity-50 dark:bg-gray-800": colorSchema === value },
+      )}
       onClick={() => setColorTheme(mode, value)}
     >
       <RadioGroupItem value={value} id={value} className="peer hidden" />
@@ -102,7 +106,10 @@ export default function SettingColor() {
         className="flex cursor-pointer items-center peer-checked:text-blue-500"
       >
         <span
-          className={`h-4 w-4 rounded-full ${colorValue} flex items-center justify-center transition duration-150 peer-checked:ring-2 peer-checked:ring-blue-500`}
+          className={cn(
+            "flex h-4 w-4 items-center justify-center rounded-full transition duration-150 peer-checked:ring-2 peer-checked:ring-blue-500",
+            colorValue,
+          )}
         />
         <span className="ml-2">{t(label, label)}</span>
       </label>
@@ -136,7 +143,7 @@ export default function SettingColor() {
         </p>
         <Separator />
       </RadioGroup>
-      <div className={`space-y-2 ${theme === "system" ? "opacity-20" : ""}`}>
+      <div className={cn("space-y-2", { "opacity-20": theme === "system" })}>
         <RadioGroup
           value={colorSchema}
           name="colorSchema"

@@ -2,6 +2,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { GiftIcon } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   promptonId: string
@@ -27,10 +28,12 @@ export function PromptonRequestColorfulButton(props: Props) {
 
   return (
     <button
+      type="button"
       onClick={onClick}
-      // biome-ignore lint/a11y/useButtonType: <explanation>
-      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={`flex w-full h-8 md:h-10 items-center ${props.rounded} bg-gradient-to-r from-orange-400 via-pink-500 to-blue-500 px-2 py-1 text-white focus:outline-none`}
+      className={cn(
+        "flex h-8 w-full items-center bg-gradient-to-r from-orange-400 via-pink-500 to-blue-500 px-2 py-1 text-white focus:outline-none md:h-10",
+        props.rounded,
+      )}
     >
       <div className="m-auto flex items-center">
         {props.hideIcon !== true && (

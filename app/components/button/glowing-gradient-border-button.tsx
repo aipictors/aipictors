@@ -1,10 +1,11 @@
+import { cn } from "~/lib/utils"
+
 type Props = {
   /**
    * 画像など
    */
   children: React.ReactNode
   className?: string
-  size?: "default" | "sm" | "lg" | "icon" | null | undefined
   disabled?: boolean
   onClick(): void
 }
@@ -15,10 +16,10 @@ type Props = {
 export function GlowingGradientBorderButton(props: Props) {
   return (
     <button
-      type={"button"}
+      type="button"
+      disabled={props.disabled}
       onClick={props.onClick}
-      // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      className={` bg-gray-50 dark:bg-black m-4 relative ${props.className}`}
+      className={cn("relative m-4 bg-gray-50 dark:bg-black", props.className)}
     >
       <div className="mx-auto max-w-7xl">
         <div className="group relative cursor-pointer">

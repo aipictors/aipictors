@@ -1,6 +1,7 @@
 import { Input } from "~/components/ui/input"
 import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   label?: string
@@ -35,7 +36,10 @@ export function PostFormItemTitle(props: Props) {
           type="text"
           name="title"
           placeholder={props.label ? props.label : t("タイトル", "Title")}
-          className={`${isFilled ? "w-full border-green-500" : "w-full border-gray-300"}`}
+          className={cn("w-full", {
+            "border-green-500": isFilled,
+            "border-gray-300": !isFilled,
+          })}
         />
       </CardContent>
     </Card>

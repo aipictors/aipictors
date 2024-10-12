@@ -5,6 +5,7 @@ import { toDateText } from "~/utils/to-date-text"
 import { toDateEnText } from "~/utils/to-date-en-text"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
@@ -63,7 +64,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
               <img
                 src={props.notification.sticker.imageUrl}
                 alt="sticker"
-                className={`${stickerClass} object-cover`}
+                className={cn(stickerClass, "object-cover")}
               />
             )}
             <div className="flex items-center space-x-2">
@@ -111,7 +112,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
             <img
               src={reply.sticker?.imageUrl}
               alt="sticker"
-              className={`${stickerClass} object-cover`}
+              className={cn(stickerClass, "object-cover")}
             />
           )}
         </div>
