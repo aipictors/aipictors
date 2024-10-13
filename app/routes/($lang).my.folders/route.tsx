@@ -7,7 +7,6 @@ import React, { useContext } from "react"
 import { Suspense } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { FoldersListContainer } from "~/routes/($lang).my._index/components/folders-list-container"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
@@ -17,11 +16,11 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }

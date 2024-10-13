@@ -2,7 +2,7 @@ import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { CollectionArticle } from "~/routes/($lang)._main.collections.$collection/components/collection-article"
 import { CollectionWorkListItemFragment } from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -29,10 +29,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     folderResp: collectionResp.data.folder,
     page: page,
-  })
+  }
 }
 
 /**

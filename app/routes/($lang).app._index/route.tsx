@@ -2,7 +2,6 @@ import { AppAboutHeader } from "~/routes/($lang).app._index/components/app-about
 import { AppFooter } from "~/routes/($lang).app._index/components/app-footer"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { json } from "@remix-run/react"
 import type { MetaFunction } from "@remix-run/cloudflare"
 
 /**
@@ -18,7 +17,7 @@ export default function Route() {
 }
 
 export async function loader() {
-  return json({}, { headers: { "Cache-Control": config.cacheControl.oneDay } })
+  return { headers: { "Cache-Control": config.cacheControl.oneDay } }
 }
 
 export const meta: MetaFunction = (props) => {

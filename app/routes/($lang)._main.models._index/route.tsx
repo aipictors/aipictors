@@ -4,22 +4,21 @@ import {
   imageModelCardFragment,
   ImageModelList,
 } from "~/routes/($lang)._main.models._index/components/image-model-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 /**
  * モデルの一覧
  */
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const resp = await loaderClient.query({
     query: imageModelsQuery,
@@ -29,9 +28,9 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     imageModels: resp.data.imageModels,
-  })
+  }
 }
 
 export const meta: MetaFunction = (props) => {

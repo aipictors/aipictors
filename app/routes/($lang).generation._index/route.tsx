@@ -1,5 +1,4 @@
 import text from "~/assets/terms.md?raw"
-import { json } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { GenerationAdvertisementView } from "~/routes/($lang).generation._index/components/advertisement-view/generation-advertisement-view"
 import { GenerationConfigView } from "~/routes/($lang).generation._index/components/config-view/generation-config-view"
@@ -25,9 +24,9 @@ import { setUserToken } from "~/utils/set-user-token"
 import { jwtDecode } from "jwt-decode"
 import { GenerationLinksView } from "~/routes/($lang).generation._index/components/task-view/generation-links-view"
 import { GenerationFormFooter } from "~/routes/($lang).generation._index/components/generation-form-footer"
-import type { LoaderFunctionArgs } from "react-router-dom"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { SettingLanguageUsedForPromptView } from "~/routes/($lang).generation._index/components/setting-language-used-for-prompt-view/setting-language-used-for-prompt-view"
+import { config } from "~/config"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 
 /**
  * 画像生成
@@ -127,22 +126,9 @@ export default function GenerationPage() {
   )
 }
 
-export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
-
-  if (redirectResponse) {
-    return redirectResponse
-  }
-
-  return json(
-    { status: 200 },
-    {
-      headers: {
-        // "Cache-Control": config.cacheControl.short,
-      },
-    },
-  )
-}
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 const ViewerTokenQuery = graphql(
   `query ViewerTokenQuery {

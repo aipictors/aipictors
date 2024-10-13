@@ -2,7 +2,7 @@ import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams, useSearchParams } from "@remix-run/react"
+import { useParams, useSearchParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
@@ -137,7 +137,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     dailyThemes: dailyThemesResp.data.dailyThemes,
     todayTheme: todayThemesResp.data.dailyThemes.length
       ? todayThemesResp.data.dailyThemes[0]
@@ -150,7 +150,7 @@ export async function loader(props: LoaderFunctionArgs) {
     year: year,
     month: month,
     subjectId: Number(todayThemesResp.data.dailyThemes[0].id),
-  })
+  }
 }
 
 /**

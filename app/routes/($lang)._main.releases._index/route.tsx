@@ -1,4 +1,4 @@
-import { json, Link, useLoaderData } from "@remix-run/react"
+import { Link, useLoaderData } from "@remix-run/react"
 import { useState } from "react"
 import { Button } from "~/components/ui/button"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
@@ -9,7 +9,6 @@ import type {
   MicroCmsApiRelease,
   MicroCmsApiReleaseResponse,
 } from "~/types/micro-cms-release-response"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { useTranslation } from "~/hooks/use-translation"
 
 export const meta: MetaFunction = (props) => {
@@ -17,11 +16,11 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const limit = 16
 
@@ -36,9 +35,9 @@ export async function loader(props: LoaderFunctionArgs) {
     endpoint: `releases?orders=-createdAt&limit=${limit}&offset=${offset}`,
   })
 
-  return json({
+  return {
     data,
-  })
+  }
 }
 
 export default function Milestone() {

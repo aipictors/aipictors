@@ -5,7 +5,6 @@ import type { MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export default function EventAiIdolProject() {
   const t = useTranslation()
@@ -150,11 +149,11 @@ export default function EventAiIdolProject() {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }

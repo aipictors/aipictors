@@ -15,7 +15,7 @@ import { useContext, useEffect, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
+import { useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditAnimationFormUploader } from "~/routes/($lang)._main.posts.$post.animation.edit._index/components/edit-animation-form-uploader"
 import { postAnimationFormReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-reducer"
@@ -34,9 +34,9 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     id: props.params.post,
-  })
+  }
 }
 
 function getReservationDetails(createdAt: number) {
@@ -667,7 +667,6 @@ const workQuery = graphql(
       pngInfo
       style
       url
-      html
       relatedUrl
       user {
         id

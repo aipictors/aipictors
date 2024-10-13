@@ -1,25 +1,24 @@
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
-import { graphql, readFragment } from "gql.tada"
-import { config, META } from "~/config"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { config } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import {
   RequestArticleWork,
   RequestArticleWorkFragment,
 } from "~/routes/($lang).creator.requests.$request/components/request-article-work"
-import { createMeta } from "~/utils/create-meta"
 
 export default function Route() {
   const data = useLoaderData<typeof loader>()
 
-  if (data === null) {
+  if (!data || !("data" in data) || data.data === null) {
     return null
   }
 
   return (
     <article className="container-shadcn-ui">
       <div className="space-y-4">
-        {data.promptonRequest?.deliverables.map((work) => (
+        {data.data.promptonRequest?.deliverables.map((work) => (
           <RequestArticleWork key={work.id} work={work} />
         ))}
       </div>
@@ -28,7 +27,7 @@ export default function Route() {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  if (props.params.request === undefined) {
+  if (!props.params.request) {
     throw new Response(null, { status: 404 })
   }
 
@@ -39,33 +38,18 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (result.error !== undefined) {
+  if (result.error) {
     throw result.error
   }
 
-  return json(result.data, {
-    headers: { "Cache-Control": config.cacheControl.short },
-  })
+  return {
+    data: result.data,
+  }
 }
 
-export const meta: MetaFunction<typeof loader> = (args) => {
-  if (args.data === undefined || args.data === null) return []
-
-  const meta = readFragment(MetaFragment, args.data.promptonRequest)
-
-  if (meta === null) return []
-
-  return createMeta(
-    META.CREATOR,
-    {
-      title: `${meta.recipient.name}さんへのリクエスト`,
-      enTitle: `Request for ${meta.recipient.name}`,
-      description: `リクエスト「${meta.recipient.id}」は${meta.recipient.name}さんへのリクエストです。`,
-      enDescription: `Request "${meta.recipient.id}" is a request for ${meta.recipient.name}.`,
-    },
-    args.params.lang,
-  )
-}
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 export const MetaFragment = graphql(
   `fragment Meta on PromptonRequestNode {

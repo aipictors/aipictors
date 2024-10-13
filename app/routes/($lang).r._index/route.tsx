@@ -4,8 +4,12 @@ import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
@@ -15,7 +19,6 @@ import { createMeta } from "~/utils/create-meta"
 import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -30,11 +33,11 @@ const getUtcDateString = (date: Date) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   // 下記カテゴリからランダムに2つ選んで返す
   const categories = ["縄", "中だし"]
@@ -130,24 +133,21 @@ export async function loader(props: LoaderFunctionArgs) {
   const videoWorksBeforeText = pastVideoDate.toISOString()
   const columnWorksBeforeText = pastColumnDate.toISOString()
 
-  return json(
-    {
-      ...result.data,
-      awardDateText: awardDateText,
-      generationDateText,
-      novelWorksBeforeText,
-      videoWorksBeforeText,
-      columnWorksBeforeText,
-      firstTag: randomCategories[0],
-      secondTag: randomCategories[1],
-    },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.home,
-      },
-    },
-  )
+  return {
+    ...result.data,
+    awardDateText: awardDateText,
+    generationDateText,
+    novelWorksBeforeText,
+    videoWorksBeforeText,
+    columnWorksBeforeText,
+    firstTag: randomCategories[0],
+    secondTag: randomCategories[1],
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.home,
+})
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()

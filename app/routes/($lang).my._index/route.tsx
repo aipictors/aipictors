@@ -1,7 +1,6 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { DashboardHomeContents } from "~/routes/($lang).my._index/components/my-home-contents"
 import { Suspense } from "react"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
@@ -11,11 +10,11 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }

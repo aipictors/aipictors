@@ -7,7 +7,7 @@ import { loaderClient } from "~/lib/loader-client"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import type { MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React, { useEffect, useState } from "react"
 import { useContext } from "react"
@@ -74,13 +74,13 @@ export async function loader() {
     imageLoraModelsResp,
   ] = resp
 
-  return json({
+  return {
     promptCategories: promptCategoriesResp.data.promptCategories,
     negativePromptCategories:
       negativePromptCategoriesResp.data.negativePromptCategories,
     imageModels: imageModelsResp.data.imageModels,
     imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
-  })
+  }
 }
 
 export function HydrateFallback() {

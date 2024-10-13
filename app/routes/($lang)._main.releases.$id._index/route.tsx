@@ -1,4 +1,4 @@
-import { json, Link, useLoaderData } from "@remix-run/react"
+import { Link, useLoaderData } from "@remix-run/react"
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Button } from "~/components/ui/button"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -44,10 +44,10 @@ export async function loader(props: LoaderFunctionArgs) {
     endpoint: `releases?orders=createdAt&limit=${limit}`,
   })
 
-  return json({
+  return {
     data,
     list,
-  })
+  }
 }
 
 export default function Release() {

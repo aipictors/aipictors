@@ -16,24 +16,23 @@ import {
 } from "~/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { loaderClient } from "~/lib/loader-client"
-import { Link, type MetaFunction, json, useLoaderData } from "@remix-run/react"
+import { Link, type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MILESTONES, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const resp = await loaderClient.query({
     query: milestonesQuery,
@@ -53,10 +52,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const appMilestones = appResp.data.milestones
 
-  return json({
+  return {
     milestones,
     appMilestones,
-  })
+  }
 }
 
 export default function Milestone() {

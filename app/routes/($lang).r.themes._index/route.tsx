@@ -1,21 +1,20 @@
 import { loaderClient } from "~/lib/loader-client"
-import { json, type MetaFunction, useLoaderData } from "@remix-run/react"
+import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { SensitiveThemeContainer } from "~/routes/($lang)._main.themes._index/components/sensitive-theme-container"
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const url = new URL(props.request.url)
 
@@ -128,7 +127,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     dailyThemes: dailyThemesResp.data.dailyThemes,
     year,
     month,
@@ -141,7 +140,7 @@ export async function loader(props: LoaderFunctionArgs) {
     worksCount: worksResp ? worksResp.data.worksCount : null,
     page,
     themeId: Number(todayThemesResp.data.dailyThemes[0].id),
-  })
+  }
 }
 
 export const meta: MetaFunction = (props) => {

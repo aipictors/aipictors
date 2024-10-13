@@ -10,10 +10,9 @@ import {
   TableRow,
 } from "~/components/ui/table"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import { META } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -25,11 +24,11 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const company = [
     {
@@ -49,10 +48,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   ]
 
-  return json({
+  return {
     text,
     company,
-  })
+  }
 }
 
 export default function SpecifiedCommercialTransactionActPage() {

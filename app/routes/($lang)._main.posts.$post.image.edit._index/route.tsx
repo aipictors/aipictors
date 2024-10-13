@@ -23,27 +23,26 @@ import { useContext, useEffect, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
+import { useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditImageFormUploader } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/edit-image-form-uploader"
 import React from "react"
 import { getJstDate } from "~/utils/jst-date"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
-  return json({
+  return {
     id: props.params.post,
-  })
+  }
 }
 
 function getReservationDetails(createdAt: number) {
@@ -773,7 +772,6 @@ const workQuery = graphql(
       pngInfo
       style
       url
-      html
       relatedUrl
       user {
         id

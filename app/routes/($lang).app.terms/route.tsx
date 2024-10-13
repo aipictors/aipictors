@@ -1,7 +1,5 @@
 import text from "~/assets/flutter/terms.md?raw"
 import enText from "~/assets/flutter/terms-en.md?raw"
-
-import { json } from "@remix-run/react"
 import { AppMarkdown } from "~/components/app/app-markdown"
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { useTranslation } from "~/hooks/use-translation"
@@ -23,7 +21,7 @@ export default function Route() {
 }
 
 export async function loader() {
-  return json({}, { headers: { "Cache-Control": config.cacheControl.oneDay } })
+  return { headers: { "Cache-Control": config.cacheControl.oneDay } }
 }
 
 export const meta: MetaFunction = (props) => {

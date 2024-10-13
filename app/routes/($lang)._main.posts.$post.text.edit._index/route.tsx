@@ -14,7 +14,7 @@ import { useContext, useEffect, useReducer, useState } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
+import { useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import React from "react"
 import { EditTextFormUploader } from "~/routes/($lang)._main.posts.$post.text.edit._index/components/edit-text-form-uploader"
@@ -35,9 +35,9 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     id: props.params.post,
-  })
+  }
 }
 
 function getReservationDetails(createdAt: number) {

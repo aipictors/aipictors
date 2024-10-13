@@ -3,7 +3,7 @@ import {
   WorkList,
   WorkListItemFragment,
 } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 
 export async function loader() {
@@ -16,9 +16,9 @@ export async function loader() {
     },
   })
 
-  return json({
+  return {
     works: worksResp.data.works,
-  })
+  }
 }
 
 export default function SensitiveCollection() {

@@ -4,8 +4,12 @@ import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
@@ -18,7 +22,6 @@ import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-respo
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { ConstructionAlert } from "~/components/construction-alert"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -33,11 +36,11 @@ const getUtcDateString = (date: Date) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   // 下記カテゴリからランダムに2つ選んで返す
   const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
@@ -147,24 +150,20 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const columnWorksBeforeText = pastColumnDate.toISOString()
 
-  return json(
-    {
-      ...result.data,
-      awardDateText: awardDateText,
-      generationDateText,
-      novelWorksBeforeText,
-      videoWorksBeforeText,
-      columnWorksBeforeText,
-      firstTag: randomCategories[0],
-      secondTag: randomCategories[1],
-      releaseList,
+  return {
+    ...result.data,
+    awardDateText: awardDateText,
+    generationDateText,
+    novelWorksBeforeText,
+    videoWorksBeforeText,
+    columnWorksBeforeText,
+    firstTag: randomCategories[0],
+    secondTag: randomCategories[1],
+    releaseList,
+    headers: {
+      "Cache-Control": config.cacheControl.home,
     },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.home,
-      },
-    },
-  )
+  }
 }
 
 export default function Index() {
@@ -206,6 +205,10 @@ export default function Index() {
     </>
   )
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.home,
+})
 
 const query = graphql(
   `query HomeQuery(

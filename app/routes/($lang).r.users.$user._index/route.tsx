@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client/index"
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
+import type { LoaderFunctionArgs } from "react-router-dom"
 import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
@@ -26,18 +26,17 @@ import {
   UserSensitivePickupContents,
   UserSensitivePickupFragment,
 } from "~/routes/($lang).r.users.$user._index/components/user-sensitive-pickup-contents"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const userIdResp = await loaderClient.query({
     query: userIdQuery,
@@ -119,14 +118,14 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     works: userResp.data.works,
     user: userResp.data.user,
     userId: userIdResp.data.user.id,
     novelWorks: userResp.data.novelWorks,
     columnWorks: userResp.data.columnWorks,
     videoWorks: userResp.data.videoWorks,
-  })
+  }
 }
 
 export default function UserLayout() {

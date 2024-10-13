@@ -2,7 +2,7 @@ import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
@@ -46,12 +46,12 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     data: resp.data.aiModel,
     page: page,
     isR15: r15,
     hasPrompt: hasPrompt,
-  })
+  }
 }
 
 export const meta: MetaFunction = (props) => {

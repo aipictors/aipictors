@@ -1,5 +1,4 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
@@ -11,6 +10,7 @@ import {
 import { Button } from "~/components/ui/button"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -54,39 +54,21 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     appEvent: eventsResp.data.appEvent,
     works: eventsResp.data.appEvent.works,
     worksCount: eventsResp.data.appEvent.worksCount as number,
     awardWorks: eventsResp.data.appEvent.awardWorks,
     page,
-  })
+  }
 }
 
 export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
-  // const authContext = useContext(AuthContext)
-
   const navigate = useNavigate()
 
-  // TODO: コンポーネントが不足している
-  // if (!authContext.isLoggedIn) {
-  //   return null
-  // }
-
-  // TODO: コンポーネントが不足している
-  if (
-    !data.appEvent?.title ||
-    !data.appEvent?.thumbnailImageUrl ||
-    !data.appEvent?.tag ||
-    !data.appEvent?.description ||
-    !data.appEvent?.startAt ||
-    !data.appEvent?.endAt ||
-    !data.appEvent.worksCount ||
-    !data.appEvent.awardWorks ||
-    !data.works
-  ) {
+  if (!("works" in data) || data.works === null) {
     return null
   }
 

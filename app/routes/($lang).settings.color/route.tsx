@@ -10,7 +10,6 @@ import { Separator } from "~/components/ui/separator"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -19,11 +18,11 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }
