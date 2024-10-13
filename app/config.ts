@@ -602,6 +602,13 @@ export const META: { [key: string]: MetaData } = {
       "Discover the available plans for Aipictors' generation feature",
     isIndex: true,
   },
+  TERMS: {
+    title: "利用規約",
+    enTitle: "Terms of Use",
+    description: "Explanation of the terms of use for Aipictors",
+    enDescription: "Read the terms of use for Aipictors",
+    isIndex: true,
+  },
   GENERATION_TERMS: {
     title: "生成機能の利用規約",
     enTitle: "Generation Terms of Use",
