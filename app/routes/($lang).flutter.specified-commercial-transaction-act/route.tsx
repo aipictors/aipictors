@@ -1,6 +1,5 @@
 import type { MetaFunction } from "@remix-run/cloudflare"
 import { config } from "~/config"
-import { json } from "@remix-run/react"
 
 export default function FlutterSctaPage() {
   return (
@@ -14,7 +13,7 @@ export default function FlutterSctaPage() {
 }
 
 export async function loader() {
-  return json({}, { headers: { "Cache-Control": config.cacheControl.home } })
+  return { headers: { "Cache-Control": config.cacheControl.home } }
 }
 
 export const meta: MetaFunction = () => {

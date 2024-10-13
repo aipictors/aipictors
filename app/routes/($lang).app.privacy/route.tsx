@@ -5,7 +5,7 @@ import { AppMarkdown } from "~/components/app/app-markdown"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
-import { json, type MetaFunction } from "@remix-run/react"
+import type { MetaFunction } from "@remix-run/cloudflare"
 
 /**
  * プライバシー・ポリシー
@@ -24,7 +24,7 @@ export default function Route() {
 }
 
 export async function loader() {
-  return json({}, { headers: { "Cache-Control": config.cacheControl.oneDay } })
+  return { headers: { "Cache-Control": config.cacheControl.oneDay } }
 }
 
 export const meta: MetaFunction = (props) => {

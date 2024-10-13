@@ -1,7 +1,7 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { AiModelArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
@@ -47,12 +47,12 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     data: resp.data.aiModel,
     page: page,
     isR18G: r18g,
     hasPrompt: hasPrompt,
-  })
+  }
 }
 
 export const meta: MetaFunction = (props) => {

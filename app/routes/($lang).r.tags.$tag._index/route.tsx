@@ -1,14 +1,13 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams, useSearchParams } from "@remix-run/react"
+import { useParams, useSearchParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { SensitiveTagWorkSection } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-work-section"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -16,11 +15,11 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const url = new URL(props.request.url)
 
@@ -62,13 +61,13 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     tag: decodeURIComponent(props.params.tag),
     works: worksResp.data.tagWorks,
     worksCount: tagWorksCountResp.data.tagWorksCount,
     page: page,
     isSensitive: true,
-  })
+  }
 }
 
 export default function Tag() {

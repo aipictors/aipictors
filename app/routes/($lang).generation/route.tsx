@@ -9,8 +9,8 @@ import {
   GenerationQueryProvider,
 } from "~/routes/($lang).generation._index/components/generation-query-provider"
 import { ApolloError } from "@apollo/client/index"
-import type { MetaFunction } from "@remix-run/cloudflare"
-import { Outlet, json, useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import { Outlet, useLoaderData } from "@remix-run/react"
 import { Suspense, useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
@@ -26,11 +26,9 @@ export async function loader() {
       variables: {},
     })
 
-    return json(result.data, {
-      headers: {
-        "Cache-Control": config.cacheControl.short,
-      },
-    })
+    return {
+      data: result.data,
+    }
   } catch (error) {
     if (error instanceof ApolloError) {
       throw new Response(error.message, { status: 500 })
@@ -41,6 +39,10 @@ export async function loader() {
     throw new Response("ERROR", { status: 500 })
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -61,7 +63,7 @@ export default function GenerationLayout() {
     <>
       <HomeHeader title={t("Aipictors画像生成", "Aipictors Generator")} />
       <Suspense fallback={<AppLoadingPage />}>
-        <GenerationQueryProvider generationQueryContext={data}>
+        <GenerationQueryProvider generationQueryContext={data.data}>
           <GenerationConfigProvider>
             <div className="container max-w-none px-8">
               <Outlet />

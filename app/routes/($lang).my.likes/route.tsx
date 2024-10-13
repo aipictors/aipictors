@@ -8,18 +8,17 @@ import { Suspense, useContext } from "react"
 import { LikeListContainer } from "~/routes/($lang).my._index/components/like-list-container"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_LIKES, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }

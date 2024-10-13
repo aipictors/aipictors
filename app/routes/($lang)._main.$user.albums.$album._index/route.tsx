@@ -9,10 +9,9 @@ import {
   AlbumWorkListItemFragment,
 } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-work-list"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, type MetaFunction } from "@remix-run/react"
+import type { MetaFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 
@@ -21,11 +20,11 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const url = new URL(props.request.url)
 
@@ -51,11 +50,11 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     ...result.data,
     album: result.data.album,
     page,
-  })
+  }
 }
 
 export const meta: MetaFunction = (props) => {
@@ -63,12 +62,12 @@ export const meta: MetaFunction = (props) => {
     return [{ title: "シリーズ" }]
   }
 
-  console.log(props.data)
-
   const data = props.data as {
     album: FragmentOf<typeof AlbumWorkListItemFragment>
   }
+
   const album = data.album
+
   const worksCountPart = ""
 
   return createMeta(

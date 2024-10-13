@@ -8,18 +8,17 @@ import { WorksSetting } from "~/routes/($lang).my._index/components/works-settin
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_POSTS, undefined, props.params.lang)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }

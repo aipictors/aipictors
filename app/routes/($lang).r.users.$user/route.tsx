@@ -1,5 +1,4 @@
 import {
-  json,
   type MetaFunction,
   Outlet,
   useLoaderData,
@@ -26,7 +25,6 @@ import {
   UserSensitiveTabs,
   UserSensitiveTabsFragment,
 } from "~/routes/($lang).r.users.$user/components/user-sensitive-tabs"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
@@ -35,11 +33,11 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const userIdResp = await loaderClient.query({
     query: userIdQuery,
@@ -63,10 +61,10 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     user: userResp.data.user,
     worksCount: userResp.data.user.worksCount,
-  })
+  }
 }
 
 export const meta: MetaFunction = (props) => {

@@ -4,11 +4,12 @@ import { cn } from "~/lib/utils"
 import { eventUsers } from "~/routes/events.wakiaiai2/assets/event-users"
 import { EventWakiaiaiCreatorCard } from "~/routes/events.wakiaiai/components/event-wakiaiai-creator-card"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
-import { json, Link, type MetaFunction } from "@remix-run/react"
+import { Link, type MetaFunction } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 import { EventWakiaiaiFooter } from "~/routes/events.wakiaiai/components/event-wakiaiai-footer"
 import { EventWakiaiaiHeader } from "~/routes/events.wakiaiai/components/event-wakiaiai-header"
 import { config } from "~/config"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 
 export default function Route() {
   const length = Math.floor(eventUsers.length / 3)
@@ -129,9 +130,9 @@ export default function Route() {
   )
 }
 
-export async function loader() {
-  return json({}, { headers: { "Cache-Control": config.cacheControl.oneDay } })
-}
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export const meta: MetaFunction = () => {
   return [

@@ -1,30 +1,25 @@
 import { loaderClient } from "~/lib/loader-client"
-import {
-  json,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import {
   AppEventItemFragment,
   AppEventCard,
 } from "~/routes/($lang).events._index/components/app-event-card"
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const urlParams = new URLSearchParams(props.request.url.split("?")[1])
 
@@ -40,7 +35,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json(resp.data)
+  return resp.data
 }
 
 export default function FollowingLayout() {

@@ -1,6 +1,6 @@
 import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
@@ -138,7 +138,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     dailyTheme,
     worksResp,
     year,
@@ -155,7 +155,7 @@ export async function loader(props: LoaderFunctionArgs) {
     targetThemesResp: targetThemesResp.data.dailyThemes,
     tab,
     themeId: Number(targetThemesResp.data.dailyThemes[0].id),
-  })
+  }
 }
 
 export default function SensitiveDayThemePage() {

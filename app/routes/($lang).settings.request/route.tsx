@@ -3,7 +3,6 @@ import { META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { SettingRequestForm } from "~/routes/($lang).settings.request/components/setting-request-form"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -11,11 +10,11 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }

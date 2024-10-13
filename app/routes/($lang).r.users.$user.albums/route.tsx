@@ -1,6 +1,5 @@
 import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
@@ -22,9 +21,9 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     albums: albumsResp.data.albums,
-  })
+  }
 }
 
 export default function UserAlbums() {

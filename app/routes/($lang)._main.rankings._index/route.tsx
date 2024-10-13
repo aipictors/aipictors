@@ -1,5 +1,5 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { loaderClient } from "~/lib/loader-client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
@@ -10,14 +10,13 @@ import {
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   // 昨日の日付を取得
   const yesterday = new Date()
@@ -53,12 +52,12 @@ export async function loader(props: LoaderFunctionArgs) {
     variables: variables,
   })
 
-  return json({
+  return {
     year,
     month,
     day,
     workAwards: workAwardsResp,
-  })
+  }
 }
 
 export const meta: MetaFunction = (props) => {

@@ -7,7 +7,7 @@ import {
   HomeWorkList,
   HomeWorkListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-work-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 
 export async function loader() {
@@ -25,10 +25,10 @@ export async function loader() {
     variables: {},
   })
 
-  return json({
+  return {
     works: worksResp.data.works,
     hotTags: hotTagsResp.data.hotTags,
-  })
+  }
 }
 
 /**

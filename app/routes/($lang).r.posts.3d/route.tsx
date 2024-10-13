@@ -1,15 +1,18 @@
 import { loaderClient } from "~/lib/loader-client"
 import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { Home3dContents } from "~/routes/($lang)._main.posts.3d/conponents/home-3d-contents"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_3D, undefined, props.params.lang)
@@ -24,11 +27,11 @@ const getUtcDateString = (date: Date) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   // 下記カテゴリからランダムに2つ選んで返す
   const categories = ["おっぱい", "JK"]
@@ -86,21 +89,18 @@ export async function loader(props: LoaderFunctionArgs) {
   const awardDateText = getUtcDateString(yesterday)
   const generationDateText = pastGenerationDate.toISOString()
 
-  return json(
-    {
-      ...result.data,
-      awardDateText: awardDateText,
-      generationDateText,
-      firstTag: randomCategories[0],
-      secondTag: randomCategories[1],
-    },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.home,
-      },
-    },
-  )
+  return {
+    ...result.data,
+    awardDateText: awardDateText,
+    generationDateText,
+    firstTag: randomCategories[0],
+    secondTag: randomCategories[1],
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.home,
+})
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()

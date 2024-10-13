@@ -1,5 +1,5 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { loaderClient } from "~/lib/loader-client"
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
@@ -40,12 +40,12 @@ export async function loader(params: LoaderFunctionArgs) {
     variables: variables,
   })
 
-  return json({
+  return {
     year,
     month,
     day,
     workAwards: workAwardsResp,
-  })
+  }
 }
 
 /**
