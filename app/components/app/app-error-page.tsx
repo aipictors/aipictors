@@ -1,3 +1,4 @@
+import { useAppErrorMessage } from "~/components/app/hooks/use-app-error-message"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -12,6 +13,8 @@ type Props = Readonly<{
  */
 export function AppErrorPage(props: Props) {
   const t = useTranslation()
+
+  const message = useAppErrorMessage(props.message)
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
@@ -51,12 +54,8 @@ export function AppErrorPage(props: Props) {
           {t("再読み込み", "Reload")}
         </Button>
       </div>
-
-      <div className="mt-8 mb-8">
-        <p className="mt-2 text-center text-xs opacity-70">
-          {"500 "}
-          {props.message}
-        </p>
+      <div className="mt-8">
+        <p className="text-center">{message}</p>
       </div>
     </div>
   )
