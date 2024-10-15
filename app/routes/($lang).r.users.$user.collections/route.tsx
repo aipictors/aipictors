@@ -47,7 +47,7 @@ export default function UserAlbums() {
   const params = useParams()
 
   if (params.user === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

@@ -104,7 +104,7 @@ export default function UserLayout() {
   const params = useParams<"user">()
 
   if (params.user === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

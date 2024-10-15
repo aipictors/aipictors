@@ -42,7 +42,7 @@ export default function Collections() {
   const params = useParams()
 
   if (params.collection === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

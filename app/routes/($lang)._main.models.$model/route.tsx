@@ -105,17 +105,17 @@ export default function ModelPage() {
   const params = useParams()
 
   if (params.model === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
 
   if (data.data === null) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   if (!data.data.name) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   return (

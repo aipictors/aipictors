@@ -101,7 +101,7 @@ export default function UserLayout() {
   const authContext = useContext(AuthContext)
 
   if (params.user === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
