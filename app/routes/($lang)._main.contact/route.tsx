@@ -1,6 +1,10 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
 
@@ -17,6 +21,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMonth,
+})
 
 export default function Contact() {
   const t = useTranslation()

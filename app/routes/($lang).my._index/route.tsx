@@ -1,9 +1,13 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { DashboardHomeContents } from "~/routes/($lang).my._index/components/my-home-contents"
 import { Suspense } from "react"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MY, undefined, props.params.lang)
@@ -18,6 +22,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function MyHome() {
   return (

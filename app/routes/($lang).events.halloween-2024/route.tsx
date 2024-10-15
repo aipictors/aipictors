@@ -2,7 +2,11 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { cn } from "~/lib/utils"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 import { loaderClient } from "~/lib/loader-client"
@@ -10,6 +14,7 @@ import { graphql } from "gql.tada"
 import { EventWorkListItemFragment } from "~/routes/($lang).events.$event._index/components/event-work-list"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import { useTranslation } from "~/hooks/use-translation"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -48,6 +53,10 @@ export async function loader(props: LoaderFunctionArgs) {
     page,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMonth,
+})
 
 export default function EventWakiaiai() {
   const t = useTranslation()

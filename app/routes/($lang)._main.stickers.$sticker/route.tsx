@@ -2,7 +2,7 @@ import {
   StickerArticle,
   StickerArticleFragment,
 } from "~/routes/($lang)._main.stickers.$sticker/components/sticker-article"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { loaderClient } from "~/lib/loader-client"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -59,6 +59,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 /**
  * スタンプの詳細

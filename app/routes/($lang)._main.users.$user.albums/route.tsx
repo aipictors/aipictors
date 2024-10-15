@@ -1,11 +1,12 @@
 import { loaderClient } from "~/lib/loader-client"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
   UserAlbumList,
   UserAlbumListItemFragment,
 } from "~/routes/($lang)._main.users.$user.albums/components/user-album-list"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -25,6 +26,10 @@ export async function loader(props: LoaderFunctionArgs) {
     albums: albumsResp.data.albums,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export default function UserAlbums() {
   const data = useLoaderData<typeof loader>()

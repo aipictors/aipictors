@@ -31,12 +31,13 @@ import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { uploadTextFile } from "~/utils/upload-text-file"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 
 export default function NewText() {
   const t = useTranslation()
@@ -516,6 +517,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 const viewerQuery = graphql(
   `query ViewerQuery(

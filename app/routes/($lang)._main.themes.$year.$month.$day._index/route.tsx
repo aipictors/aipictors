@@ -1,11 +1,12 @@
 import { loaderClient } from "~/lib/loader-client"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 import { getJstDate } from "~/utils/jst-date"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -158,10 +159,12 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 }
 
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
+
 export default function SensitiveDayThemePage() {
   const data = useLoaderData<typeof loader>()
-
-  console.log(data.tab !== "list" ? "calender" : "list")
 
   return (
     <article>

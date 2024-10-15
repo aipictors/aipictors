@@ -5,7 +5,11 @@ import {
 } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
 import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
-import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type {
+  MetaFunction,
+  LoaderFunctionArgs,
+  HeadersFunction,
+} from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
@@ -65,6 +69,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function StickersPage() {
   const data = useLoaderData<typeof loader>()

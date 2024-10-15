@@ -2,14 +2,18 @@
 import { useLoaderData } from "@remix-run/react"
 import { loaderClient } from "~/lib/loader-client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import {
   RankingWorkList,
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -59,6 +63,10 @@ export async function loader(props: LoaderFunctionArgs) {
     workAwards: workAwardsResp,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.RANKINGS, undefined, props.params.lang)

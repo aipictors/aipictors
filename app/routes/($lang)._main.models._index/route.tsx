@@ -6,9 +6,13 @@ import {
 } from "~/routes/($lang)._main.models._index/components/image-model-list"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 
 /**
  * モデルの一覧
@@ -32,6 +36,10 @@ export async function loader(props: LoaderFunctionArgs) {
     imageModels: resp.data.imageModels,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MODELS, undefined, props.params.lang)

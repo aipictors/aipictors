@@ -1,6 +1,10 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { SettingAdvertisementsForm } from "~/routes/($lang).settings.advertisements/_components/setting-advertisements-form"
 
 export const meta: MetaFunction = (props) => {
@@ -16,6 +20,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function SettingAdvertisements() {
   return <SettingAdvertisementsForm />

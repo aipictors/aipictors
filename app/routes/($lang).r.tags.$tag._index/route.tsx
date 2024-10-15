@@ -1,6 +1,6 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams, useSearchParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -9,6 +9,7 @@ import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { SensitiveTagWorkSection } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-work-section"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.tag === undefined) {
@@ -69,6 +70,10 @@ export async function loader(props: LoaderFunctionArgs) {
     isSensitive: true,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function Tag() {
   const params = useParams()

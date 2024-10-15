@@ -1,14 +1,14 @@
 import { loaderClient } from "~/lib/loader-client"
 import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   AppEventItemFragment,
   AppEventCard,
 } from "~/routes/($lang).events._index/components/app-event-card"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)
@@ -37,6 +37,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return resp.data
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function FollowingLayout() {
   const events = useLoaderData<typeof loader>()

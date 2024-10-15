@@ -5,7 +5,8 @@ import { CollectionWorkListItemFragment } from "~/routes/($lang)._main.collectio
 import { useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.collection === undefined) {
@@ -34,6 +35,10 @@ export async function loader(props: LoaderFunctionArgs) {
     page: page,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneWeek,
+})
 
 /**
  * コレクションの詳細

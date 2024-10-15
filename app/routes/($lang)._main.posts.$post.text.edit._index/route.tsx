@@ -13,7 +13,7 @@ import { graphql } from "gql.tada"
 import { useContext, useEffect, useReducer, useState } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import React from "react"
@@ -29,6 +29,7 @@ import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/po
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
 import { getJstDate } from "~/utils/jst-date"
 import { uploadTextFile } from "~/utils/upload-text-file"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -39,6 +40,10 @@ export async function loader(props: LoaderFunctionArgs) {
     id: props.params.post,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 function getReservationDetails(createdAt: number) {
   // 現在時刻よりも未来の時刻なら予約更新の日付と時間をセット

@@ -14,7 +14,7 @@ import { graphql } from "gql.tada"
 import { useContext, useEffect, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditAnimationFormUploader } from "~/routes/($lang)._main.posts.$post.animation.edit._index/components/edit-animation-form-uploader"
@@ -28,6 +28,7 @@ import {
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import React from "react"
 import { getJstDate } from "~/utils/jst-date"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -547,6 +548,10 @@ export default function EditImage() {
     </div>
   )
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 const viewerQuery = graphql(
   `query ViewerQuery(
