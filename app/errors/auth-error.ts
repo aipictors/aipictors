@@ -1,9 +1,6 @@
-export function AuthError(message?: string) {
-  const error = new Error(message)
-  error.name = "AuthError"
-  Object.setPrototypeOf(error, AuthError.prototype)
-  return error
+export class AuthError extends Error {
+  constructor(message?: string) {
+    super(message)
+    this.name = "AuthError"
+  }
 }
-
-AuthError.prototype = Object.create(Error.prototype)
-AuthError.prototype.constructor = AuthError

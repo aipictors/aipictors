@@ -73,7 +73,7 @@ export default function SensitiveAwardsPage() {
     params.month === undefined ||
     params.day === undefined
   ) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const year = Number.parseInt(params.year)
