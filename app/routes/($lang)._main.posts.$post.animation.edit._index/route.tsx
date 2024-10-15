@@ -14,8 +14,8 @@ import { graphql } from "gql.tada"
 import { useContext, useEffect, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditAnimationFormUploader } from "~/routes/($lang)._main.posts.$post.animation.edit._index/components/edit-animation-form-uploader"
 import { postAnimationFormReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-reducer"
@@ -28,15 +28,16 @@ import {
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import React from "react"
 import { getJstDate } from "~/utils/jst-date"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     id: props.params.post,
-  })
+  }
 }
 
 function getReservationDetails(createdAt: number) {
@@ -548,6 +549,10 @@ export default function EditImage() {
   )
 }
 
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
+
 const viewerQuery = graphql(
   `query ViewerQuery(
     $limit: Int!,
@@ -667,7 +672,6 @@ const workQuery = graphql(
       pngInfo
       style
       url
-      html
       relatedUrl
       user {
         id

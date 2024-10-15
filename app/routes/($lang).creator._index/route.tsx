@@ -1,4 +1,4 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
@@ -22,7 +22,7 @@ export default function Route() {
   return (
     <div className="container-shadcn-ui">
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-4">
-        {data.requests.map((request) => (
+        {data.data.requests.map((request) => (
           <HomeRequestCard key={request.id} request={request} />
         ))}
       </div>
@@ -39,10 +39,14 @@ export async function loader(props: LoaderFunctionArgs) {
     throw result.error
   }
 
-  return json(result.data, {
-    headers: { "Cache-Control": config.cacheControl.home },
-  })
+  return {
+    data: result.data,
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.home,
+})
 
 export const meta: MetaFunction<typeof loader> = () => {
   return createMeta(META.CREATOR)

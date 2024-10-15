@@ -8,6 +8,7 @@ import {
 } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
 import { useEffect, useRef, useState } from "react"
+import { cn } from "~/lib/utils"
 
 type Props = {
   thumbnailBase64: string
@@ -21,39 +22,28 @@ type Props = {
 
 export function ThumbnailPositionAdjustDialog(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
-
   const [translate, setTranslate] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
   })
-
   const [isDragging, setIsDragging] = useState<boolean>(false)
-
   const [isSquare, setIsSquare] = useState<boolean>(false)
 
   const containerRef = useRef<HTMLDivElement>(null)
-
   const imageRef = useRef<HTMLImageElement>(null)
 
-  const onClose = () => {
-    setIsOpen(false)
-  }
+  const onClose = () => setIsOpen(false)
 
   useEffect(() => {
     setTranslate({ x: 0, y: 0 })
     props.setThumbnailPosX(0)
     props.setThumbnailPosY(0)
 
-    // 画像が正方形なら正方形フラグを立ててドラッグ移動できないようにする
     if (props.thumbnailBase64 !== "") {
       const img = new Image()
       img.src = props.thumbnailBase64
       img.onload = () => {
-        if (img.width === img.height) {
-          setIsSquare(true)
-        } else {
-          setIsSquare(false)
-        }
+        setIsSquare(img.width === img.height)
       }
     }
   }, [props.thumbnailBase64])
@@ -65,10 +55,8 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
   const handleMouseUp = () => {
     if (isSquare) return
 
-    // ドラッグ終了時に枠からはみ出てる場合は枠内に画像を合わせる
     const container = containerRef.current
     const image = imageRef.current
-
     if (!container || !image) return
 
     const containerRect = container.getBoundingClientRect()
@@ -76,62 +64,32 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
 
     if (props.isThumbnailLandscape) {
       if (containerRect.right > imageRect.right) {
-        setTranslate((prev) => {
-          const adjustTranslation = (initialX: number) => {
-            let result = initialX
-            while (true) {
-              result += 0.1
-              const newX = result
-              image.style.transform = `translateX(${newX}%)`
-              const newImageRect = image.getBoundingClientRect()
-              if (containerRect.right < newImageRect.right) {
-                return newX
-              }
-            }
-          }
-
-          const newX = adjustTranslation(prev.x)
-          return { ...prev, x: newX }
-        })
+        setTranslate((prev) => ({
+          ...prev,
+          x: Math.min(0, prev.x + 0.1),
+        }))
       }
     } else {
       if (containerRect.bottom > imageRect.bottom) {
-        setTranslate((prev) => {
-          const adjustTranslation = (initialY: number) => {
-            let result = initialY
-            while (true) {
-              result += 0.1
-              const newY = result
-              image.style.transform = `translateY(${newY}%)`
-              const newImageRect = image.getBoundingClientRect()
-              if (containerRect.bottom < newImageRect.bottom) {
-                return newY
-              }
-            }
-          }
-
-          const newY = adjustTranslation(prev.y)
-          return { ...prev, y: newY }
-        })
+        setTranslate((prev) => ({
+          ...prev,
+          y: Math.min(0, prev.y + 0.1),
+        }))
       }
     }
 
     setIsDragging(false)
   }
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = (e: React.MouseEvent) => {
     if (isSquare || !isDragging) return
 
     const { movementX, movementY } = e
-
     const container = containerRef.current
-
     const image = imageRef.current
-
     if (!container || !image) return
 
     const containerRect = container.getBoundingClientRect()
-
     const imageRect = image.getBoundingClientRect()
 
     if (props.isThumbnailLandscape) {
@@ -163,21 +121,6 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
     }
   }
 
-  useEffect(() => {
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove)
-      window.addEventListener("mouseup", handleMouseUp)
-    } else {
-      window.removeEventListener("mousemove", handleMouseMove)
-      window.removeEventListener("mouseup", handleMouseUp)
-    }
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove)
-      window.removeEventListener("mouseup", handleMouseUp)
-    }
-  }, [isDragging])
-
   const onSubmit = () => {
     props.setThumbnailPosX(translate.x)
     props.setThumbnailPosY(translate.y)
@@ -185,16 +128,11 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
   }
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(isOpen) => {
-        setIsOpen((prev: boolean) => (prev !== isOpen ? isOpen : prev))
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={(isOpen) => setIsOpen(isOpen)}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent className="p-8">
         <DialogHeader>
-          <DialogTitle>{"サムネイル調整"}</DialogTitle>
+          <DialogTitle>サムネイル調整</DialogTitle>
         </DialogHeader>
         <div
           ref={containerRef}
@@ -206,17 +144,18 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
             }}
             className="absolute inset-0"
             onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
           >
             <img
               ref={imageRef}
               draggable={false}
-              src={`${props.thumbnailBase64}`}
+              src={props.thumbnailBase64}
               alt="Thumbnail"
-              className={`${
-                props.isThumbnailLandscape
-                  ? "absolute h-full"
-                  : "absolute w-full"
-              }`}
+              className={cn("absolute", {
+                "h-full": props.isThumbnailLandscape,
+                "w-full": !props.isThumbnailLandscape,
+              })}
               style={{
                 transform: `translate(${translate.x}%, ${translate.y}%)`,
                 maxWidth: "initial",
@@ -227,18 +166,18 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
         </div>
         <DialogFooter>
           <Button
-            variant={"secondary"}
+            variant="secondary"
             className="m-auto w-full"
             onClick={onClose}
           >
-            {"キャンセル"}
+            キャンセル
           </Button>
           <Button
             disabled={props.thumbnailBase64 === ""}
             className="m-auto w-full"
-            onClick={onSubmit} // Replace with your upload function
+            onClick={onSubmit}
           >
-            {"決定"}
+            決定
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -18,7 +18,6 @@ import {
 } from "~/routes/($lang)._main._index/components/home-video-works-section"
 
 type Props = {
-  isSensitive?: boolean
   isCropped?: boolean
   page: number
   setPage: (page: number) => void
@@ -42,8 +41,8 @@ export function HomeWorksSection(props: Props) {
       offset: props.page * perPageCount,
       limit: perPageCount,
       where: {
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
-        isSensitive: props.isSensitive,
+        ratings: ["G"],
+        isSensitive: false,
         ...(props.workType !== null && {
           workType: props.workType,
         }),

@@ -11,7 +11,6 @@ import { type FragmentOf, graphql } from "gql.tada"
 type Props = {
   title?: string
   tags: FragmentOf<typeof HomeTagFragment>[]
-  isSensitive?: boolean
 }
 
 export function HomeTagsSection(props: Props) {
@@ -33,17 +32,9 @@ export function HomeTagsSection(props: Props) {
       >
         <CarouselContent>
           {props.tags?.map((tag, index) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-            <CarouselItem className="basis-auto" key={index}>
+            <CarouselItem className="basis-auto" key={index.toString()}>
               <div className="group relative overflow-hidden rounded-md">
-                <Link
-                  to={
-                    props.isSensitive
-                      ? `/tags/${tag.tagName}?sensitive=1`
-                      : `/tags/${tag.tagName}`
-                  }
-                  className="rounded-md"
-                >
+                <Link to={"/tags/${tag.tagName}"} className="rounded-md">
                   <img
                     className="h-[240px] w-[196px] bg-white object-cover object-center transition-transform duration-200 ease-in-out group-hover:scale-105"
                     src={tag.thumbnailUrl}

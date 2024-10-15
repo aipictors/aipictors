@@ -4,31 +4,28 @@ import {
   WorkList,
   WorkListItemFragment,
 } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { json, redirect, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { useTranslation } from "~/hooks/use-translation"
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const url = new URL(props.request.url)
 
   const tag = url.searchParams.get("tag")
-
-  if (tag) {
-    return redirect(`/tags/${tag}`, {
-      status: 302,
-    })
-  }
 
   const worksResp = await loaderClient.query({
     query: worksQuery,
@@ -38,14 +35,19 @@ export async function loader(props: LoaderFunctionArgs) {
       where: {
         ratings: ["G"],
         orderBy: "LIKES_COUNT",
+        ...(tag && { tagNames: [tag] }),
       },
     },
   })
 
-  return json({
-    worksResp,
-  })
+  return {
+    workResp: worksResp.data.works,
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function Search() {
   const data = useLoaderData<typeof loader>()
@@ -53,6 +55,10 @@ export default function Search() {
   const t = useTranslation()
 
   if (data === null) {
+    return null
+  }
+
+  if (!data || !data.workResp || data.workResp.length === 0) {
     return null
   }
 
@@ -65,7 +71,7 @@ export default function Search() {
       <h2 className="font-bold">{t("モデル一覧", "Model List")}</h2>
       <ModelList />
       <h2 className="font-bold">{t("人気作品", "Popular Works")}</h2>
-      <WorkList works={data.worksResp.data.works ?? []} />
+      <WorkList works={data.workResp ?? []} />
     </>
   )
 }

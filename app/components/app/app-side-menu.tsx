@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import {
   HomeNewCommentsSection,
   type HomeNewCommentsFragment,
@@ -29,7 +28,6 @@ type homeParticles = {
 }
 
 type Props = {
-  isSensitive?: boolean
   homeParticles: homeParticles
   isShowSensitiveButton?: boolean
   isShowGenerationAds?: boolean
@@ -50,7 +48,7 @@ export function AppSideMenu(props: Props) {
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
     variables: {
       where: {
-        isSensitive: !!props.isSensitive,
+        isSensitive: false,
         page: "work",
       },
     },
@@ -84,38 +82,17 @@ export function AppSideMenu(props: Props) {
     <>
       <div className="flex w-full flex-col space-y-4">
         <div className="relative grid gap-4">
-          {props.isShowSensitiveButton &&
-            (!props.isSensitive ? (
-              <AppConfirmDialog
-                title={t("確認", "Confirmation")}
-                description={t(
-                  "センシティブな作品を表示します、あなたは18歳以上ですか？",
-                  "This content contains sensitive material. Are you over 18?",
-                )}
-                onNext={() => {
-                  navigate("/r")
-                }}
-                cookieKey={"check-sensitive-ranking"}
-                onCancel={() => {}}
-              >
-                <Button
-                  variant={"secondary"}
-                  className="flex w-full transform cursor-pointer items-center"
-                >
-                  <p className="text-sm">{t("センシティブ", "Sensitive")}</p>
-                </Button>
-              </AppConfirmDialog>
-            ) : (
-              <Button
-                onClick={() => {
-                  navigate("/")
-                }}
-                variant={"secondary"}
-                className="flex w-full transform cursor-pointer items-center"
-              >
-                <p className="text-sm">{t("全年齢", "All Ages")}</p>
-              </Button>
-            ))}
+          {props.isShowSensitiveButton && (
+            <Button
+              onClick={() => {
+                navigate("/")
+              }}
+              variant={"secondary"}
+              className="flex w-full transform cursor-pointer items-center"
+            >
+              <p className="text-sm">{t("全年齢", "All Ages")}</p>
+            </Button>
+          )}
           {!isSubscriptionUser &&
             props.isShowCustomerAds &&
             advertisements &&

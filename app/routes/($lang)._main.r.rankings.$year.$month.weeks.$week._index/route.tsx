@@ -1,6 +1,10 @@
 import { loaderClient } from "~/lib/loader-client"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
@@ -8,16 +12,15 @@ import {
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   if (props.params.year === undefined) {
     throw new Response(null, { status: 404 })
@@ -51,17 +54,21 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     year,
     month,
     weekIndex: week,
     workAwards: workAwardsResp,
-  })
+  }
 }
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.SENSITIVE_RANKINGS_WEEK, undefined, props.params.lang)
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 /**
  * ある月のランキングの履歴

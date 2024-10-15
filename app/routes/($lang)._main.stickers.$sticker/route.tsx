@@ -2,7 +2,7 @@ import {
   StickerArticle,
   StickerArticleFragment,
 } from "~/routes/($lang)._main.stickers.$sticker/components/sticker-article"
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { loaderClient } from "~/lib/loader-client"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -10,20 +10,19 @@ import {
   StickerList,
   StickerListItemFragment,
 } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
-import { config } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { useTranslation } from "~/hooks/use-translation"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.sticker === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const stickerResp = await loaderClient.query({
     query: stickerQuery,
@@ -52,18 +51,18 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json(
-    {
-      sticker: stickerResp.data.sticker,
-      stickers: favoritedStickersResp.data.stickers,
+  return {
+    sticker: stickerResp.data.sticker,
+    stickers: favoritedStickersResp.data.stickers,
+    headers: {
+      "Cache-Control": config.cacheControl.oneDay,
     },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.oneDay,
-      },
-    },
-  )
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 /**
  * スタンプの詳細

@@ -3,11 +3,12 @@ import { loaderClient } from "~/lib/loader-client"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -35,19 +36,23 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     post: props.params.post,
     work: workResp.data.work,
     workComments: workCommentsResp?.data?.work?.comments ?? [],
     newComments: newComments.data.newComments,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 export default function Work() {
   const params = useParams()
 
   if (params.post === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

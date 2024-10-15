@@ -1,22 +1,28 @@
-import { json } from "@remix-run/react"
-import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type {
+  MetaFunction,
+  LoaderFunctionArgs,
+  HeadersFunction,
+} from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { SettingsCompleted } from "~/routes/($lang)._main.settings.completed._index/components/settings-completed"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 /**
  * 設定完了ページ
  */
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
-  return json({})
+  return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMonth,
+})
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.COMPLETED_SETTINGS, undefined, props.params.lang)

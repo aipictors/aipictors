@@ -1,16 +1,19 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData, useParams } from "@remix-run/react"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.SENSITIVE_RANKINGS_DAY, undefined, props.params.lang)
@@ -25,11 +28,11 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const year = Number.parseInt(props.params.year)
 
@@ -51,10 +54,14 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     workAwards: workAwardsResp.data.workAwards,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function SensitiveAwardsPage() {
   const data = useLoaderData<typeof loader>()
@@ -66,7 +73,7 @@ export default function SensitiveAwardsPage() {
     params.month === undefined ||
     params.day === undefined
   ) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const year = Number.parseInt(params.year)

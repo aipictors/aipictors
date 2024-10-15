@@ -5,11 +5,14 @@ import {
 } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
 import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
-import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import type {
+  MetaFunction,
+  LoaderFunctionArgs,
+  HeadersFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
 
@@ -18,11 +21,11 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const stickersResp = await loaderClient.query({
     query: stickersQuery,
@@ -57,19 +60,19 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json(
-    {
-      stickers: stickersResp.data.stickers,
-      favoritedStickers: favoritedStickersResp.data.stickers,
-      usedStickers: usedStickersResp.data.stickers,
+  return {
+    stickers: stickersResp.data.stickers,
+    favoritedStickers: favoritedStickersResp.data.stickers,
+    usedStickers: usedStickersResp.data.stickers,
+    headers: {
+      "Cache-Control": config.cacheControl.oneDay,
     },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.oneDay,
-      },
-    },
-  )
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function StickersPage() {
   const data = useLoaderData<typeof loader>()

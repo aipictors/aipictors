@@ -57,6 +57,20 @@ export function WorkArticle(props: Props) {
 
   const t = useTranslation()
 
+  const [markdownContent, setMarkdownContent] = useState<string>("")
+
+  useEffect(() => {
+    // マークダウンファイルの URL からマークダウンを取得する
+    if (props.work.mdUrl) {
+      fetch(props.work.mdUrl)
+        .then((res) => res.text())
+        .then((text) => {
+          setMarkdownContent(text)
+        })
+        .catch((err) => console.error("Error fetching markdown file:", err))
+    }
+  }, [props.work.mdUrl])
+
   return (
     <article className="flex flex-col space-y-4">
       <ConstructionAlert
@@ -88,16 +102,14 @@ export function WorkArticle(props: Props) {
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
-          md={props.work.md ?? ""}
-          html={props.work.html ?? ""}
+          md={markdownContent}
           title={props.work.title}
         />
       )}
       {props.work.type === "NOVEL" && (
         <WorkMarkdownView
           thumbnailUrl={props.work.imageURL}
-          md={props.work.md ?? ""}
-          html={props.work.html ?? ""}
+          md={markdownContent}
           title={props.work.title}
         />
       )}
@@ -332,7 +344,7 @@ export const workArticleFragment = graphql(
     id
     isMyRecommended
     title
-    md
+    mdUrl
     accessType
     type
     adminAccessType
@@ -454,7 +466,6 @@ export const workArticleFragment = graphql(
     pngInfo
     style
     url
-    html
     updatedAt
     dailyRanking
     weeklyRanking
@@ -469,7 +480,7 @@ export const sensitiveWorkArticleFragment = graphql(
     id
     isMyRecommended
     title
-    md
+    mdUrl
     accessType
     type
     adminAccessType
@@ -592,7 +603,6 @@ export const sensitiveWorkArticleFragment = graphql(
     pngInfo
     style
     url
-    html
     updatedAt
     dailyRanking
     weeklyRanking

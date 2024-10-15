@@ -1,11 +1,12 @@
 import { loaderClient } from "~/lib/loader-client"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
-import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 import { getJstDate } from "~/utils/jst-date"
+import { SensitiveThemeContainer } from "~/routes/($lang)._main.themes._index/components/sensitive-theme-container"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -138,7 +139,7 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     dailyTheme,
     worksResp,
     year,
@@ -155,8 +156,12 @@ export async function loader(props: LoaderFunctionArgs) {
     targetThemesResp: targetThemesResp.data.dailyThemes,
     tab,
     themeId: Number(targetThemesResp.data.dailyThemes[0].id),
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function SensitiveDayThemePage() {
   const data = useLoaderData<typeof loader>()
@@ -165,7 +170,7 @@ export default function SensitiveDayThemePage() {
 
   return (
     <article>
-      <ThemeContainer
+      <SensitiveThemeContainer
         dailyThemes={data.dailyThemes}
         targetThemes={data.targetThemesResp}
         todayTheme={data.todayTheme}
@@ -179,7 +184,6 @@ export default function SensitiveDayThemePage() {
         month={data.month}
         defaultTab={data.tab !== "list" ? "calender" : "list"}
         themeId={data.themeId}
-        isSensitive={true}
       />
     </article>
   )

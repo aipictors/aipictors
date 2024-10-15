@@ -6,22 +6,22 @@ import {
 } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
 import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.search === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const stickers = await loaderClient.query({
     query: stickersQuery,
@@ -36,12 +36,16 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const isEmpty = stickers.data.stickers.length === 0
 
-  return json({
+  return {
     stickers: stickers.data.stickers,
     isEmpty,
     search: props.params.search,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 /**
  * スタンプの検索画面
@@ -50,7 +54,7 @@ export default function Stickers() {
   const params = useParams()
 
   if (params.search === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

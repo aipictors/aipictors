@@ -1,13 +1,14 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { loaderClient } from "~/lib/loader-client"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
+import { config } from "~/config"
 
 export async function loader(params: LoaderFunctionArgs) {
   // 昨日の日付を取得
@@ -40,13 +41,17 @@ export async function loader(params: LoaderFunctionArgs) {
     variables: variables,
   })
 
-  return json({
+  return {
     year,
     month,
     day,
     workAwards: workAwardsResp,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 /**
  * ランキングの履歴

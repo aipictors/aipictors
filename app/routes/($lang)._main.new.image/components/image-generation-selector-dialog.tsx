@@ -6,6 +6,7 @@ import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Card } from "~/components/ui/card"
 import { graphql } from "gql.tada"
+import { cn } from "~/lib/utils"
 
 type Props = {
   onSubmit: (
@@ -72,11 +73,9 @@ export function ImageGenerationSelectorDialog(props: Props) {
                   onClick={() =>
                     handleImageClick(result.imageUrl ?? "", result.id)
                   }
-                  className={`h-24 w-24 overflow-hidden ${
-                    selectedIds.includes(result.id)
-                      ? "border-4 border-blue-500"
-                      : ""
-                  }`}
+                  className={cn("h-24 w-24 overflow-hidden", {
+                    "border-4 border-blue-500": selectedIds.includes(result.id),
+                  })}
                 >
                   <img
                     className="h-24 w-24 rounded-md object-cover"

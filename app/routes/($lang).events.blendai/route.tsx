@@ -1,11 +1,15 @@
 import { Button } from "~/components/ui/button"
 import { EventImage } from "~/routes/($lang).events.blendai/components/event-image"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 import { MousePointerClickIcon } from "lucide-react"
 import { ImageGenerationReferenceCard } from "~/routes/($lang).events.blendai/components/image-generation-reference-card"
 import { useTranslation } from "~/hooks/use-translation"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { config } from "~/config"
 
 export default function BlendAi() {
   const t = useTranslation()
@@ -95,14 +99,18 @@ export default function BlendAi() {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMonth,
+})
 
 export const meta: MetaFunction = () => {
   return [

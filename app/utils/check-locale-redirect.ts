@@ -1,4 +1,3 @@
-import { json } from "@remix-run/react"
 import { parse } from "cookie"
 
 export function checkLocaleRedirect(request: Request) {
@@ -17,12 +16,12 @@ export function checkLocaleRedirect(request: Request) {
 
   // locale が "en" で URL が /en で始まっていない場合にリダイレクト
   if (locale === "en" && !pathname.startsWith("/en")) {
-    return json(null, {
+    return {
       status: 302,
       headers: {
         Location: `/en${pathname}`,
       },
-    })
+    }
   }
 
   return null // リダイレクト不要の場合は null を返す

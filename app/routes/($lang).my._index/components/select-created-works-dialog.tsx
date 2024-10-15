@@ -17,7 +17,6 @@ type Props = {
   selectedWorks: FragmentOf<typeof DialogWorkFragment>[]
   setSelectedWorks: (works: FragmentOf<typeof DialogWorkFragment>[]) => void
   limit?: number
-  isSensitive?: boolean
 }
 
 /**
@@ -43,7 +42,7 @@ export function SelectCreatedWorksDialog(props: Props) {
         userId: appContext.userId,
         orderBy: "DATE_CREATED",
         sort: "DESC",
-        isSensitive: props.isSensitive,
+        isSensitive: false,
       },
     },
   })
@@ -53,7 +52,7 @@ export function SelectCreatedWorksDialog(props: Props) {
     variables: {
       where: {
         userId: appContext.userId,
-        isSensitive: props.isSensitive,
+        isSensitive: false,
       },
     },
   })

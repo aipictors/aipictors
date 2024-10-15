@@ -6,7 +6,7 @@ export default function Note() {
   const params = useParams()
 
   if (params.note === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   return (

@@ -1,10 +1,13 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { META } from "~/config"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { SettingsNavigation } from "~/routes/($lang).settings._index/components/settings-navigation"
 import { SettingNotificationForm } from "~/routes/($lang).settings.notification/components/setting-notification-form"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -12,14 +15,18 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 /**
  * 設定

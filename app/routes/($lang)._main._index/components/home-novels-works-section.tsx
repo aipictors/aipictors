@@ -7,7 +7,7 @@ import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
   works: FragmentOf<typeof HomeNovelsWorkListItemFragment>[]
-  title: string
+  title?: string
   tooltip?: string
   link?: string
   isCropped?: boolean
@@ -28,11 +28,12 @@ export function HomeNovelsWorksSection(props: Props) {
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="items-center space-x-2 font-bold text-md">
-          {props.title}
-        </h2>
+        {props.title && (
+          <h2 className="items-center space-x-2 font-bold text-md">
+            {props.title}
+          </h2>
+        )}
       </div>
-
       <CarouselWithGradation
         items={props.works.map((work, index) => (
           // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>

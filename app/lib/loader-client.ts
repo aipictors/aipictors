@@ -8,6 +8,9 @@ import { config } from "~/config"
 
 const httpLink = createHttpLink({
   uri: config.graphql.endpoint,
+  fetchOptions: {
+    signal: AbortSignal.timeout(2000),
+  },
 })
 
 const contextSetter: ContextSetter = async (_, context) => {

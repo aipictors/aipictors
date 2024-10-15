@@ -1,5 +1,3 @@
-import {} from "~/components/ui/carousel"
-import {} from "~/components/ui/accordion"
 import { PassPlanList } from "~/routes/($lang)._main.plus._index/components/pass-plan-list"
 import { graphql } from "gql.tada"
 import { useMutation } from "@apollo/client/index"
@@ -18,7 +16,6 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb"
-import {} from "~/components/ui/dialog"
 import { useTranslation } from "~/hooks/use-translation"
 
 /**

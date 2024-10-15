@@ -12,32 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useSearchParams } from "react-router-dom"
 import {
-  HomeAwardWorkSection,
-  type HomeWorkAwardFragment,
-} from "~/routes/($lang)._main._index/components/home-award-work-section"
-import {
   HomeTagList,
   type HomeTagListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-tag-list"
-import {
-  HomeTagsSection,
-  type HomeTagFragment,
-} from "~/routes/($lang)._main._index/components/home-tags-section"
-import {
-  HomeWorksTagSection,
-  type HomeTagWorkFragment,
-} from "~/routes/($lang)._main._index/components/home-works-tag-section"
-import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
-import {
-  HomeNewUsersWorksSection,
-  type HomeNewUsersWorksFragment,
-} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
-import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import { Separator } from "~/components/ui/separator"
-import { AppSideMenu } from "~/components/app/app-side-menu"
 import type { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
@@ -47,6 +28,23 @@ import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/ho
 import { ArrowDownWideNarrow } from "lucide-react"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  HomeNewUsersWorksSection,
+  type HomeNewUsersWorksFragment,
+} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import {
+  HomeAwardWorkSection,
+  type HomeWorkAwardFragment,
+} from "~/routes/($lang)._main._index/components/home-award-work-section"
+import {
+  HomeTagsSection,
+  type HomeTagFragment,
+} from "~/routes/($lang)._main._index/components/home-tags-section"
+import {
+  HomeWorksTagSection,
+  type HomeTagWorkFragment,
+} from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { AppSideMenu } from "~/components/app/app-side-menu"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -67,7 +65,6 @@ type homeParticles = {
 
 type Props = {
   homeParticles?: homeParticles
-  isSensitive?: boolean
   isCropped?: boolean
 }
 
@@ -105,6 +102,10 @@ export function HomeContents(props: Props) {
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
   useEffect(() => {
+    if (isMounted) {
+      return
+    }
+
     if (!searchParams.toString() || searchParams.get("tab") === "home") {
       return
     }
@@ -241,65 +242,7 @@ export function HomeContents(props: Props) {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="home" className="m-0 flex flex-col space-y-4">
-        {!props.isSensitive && props.homeParticles && (
-          <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-            <div className="flex flex-col space-y-4 md:w-[80%]">
-              <div className="hidden md:block">
-                {props.homeParticles.releaseList && (
-                  <HomeReleaseList
-                    releaseList={props.homeParticles.releaseList}
-                  />
-                )}
-              </div>
-              <div>
-                <HomeTagList
-                  themeTitle={props.homeParticles.dailyThemeTitle}
-                  hotTags={props.homeParticles.hotTags}
-                />
-              </div>
-              {!props.isSensitive && (
-                <HomeWorksUsersRecommendedSection
-                  isSensitive={props.isSensitive}
-                  works={props.homeParticles.promotionWorks}
-                />
-              )}
-              <HomeWorksTagSection
-                tag={props.homeParticles.firstTag}
-                works={props.homeParticles.firstTagWorks}
-                secondTag={props.homeParticles.secondTag}
-                secondWorks={props.homeParticles.secondTagWorks}
-                isSensitive={props.isSensitive}
-                isCropped={props.isCropped}
-              />
-              <HomeNewUsersWorksSection
-                works={props.homeParticles.newUserWorks}
-                isSensitive={props.isSensitive}
-              />
-              <HomeAwardWorkSection
-                awardDateText={props.homeParticles.awardDateText}
-                title={t("前日ランキング", "Previous Day Ranking")}
-                awards={props.homeParticles.workAwards}
-                isSensitive={props.isSensitive}
-              />
-              <HomeTagsSection
-                title={t("人気タグ", "Popular Tags")}
-                tags={props.homeParticles.recommendedTags}
-                isSensitive={props.isSensitive}
-              />
-            </div>
-            <Separator
-              orientation="vertical"
-              className="hidden h-[100vh] w-[1px] md:block"
-            />
-            <AppSideMenu
-              homeParticles={props.homeParticles}
-              isSensitive={props.isSensitive ?? false}
-              isShowSensitiveButton={true}
-              isShowGenerationAds={true}
-            />
-          </div>
-        )}
-        {props.isSensitive && props.homeParticles && (
+        {props.homeParticles && (
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex flex-col space-y-4 md:w-[80%]">
               <div>
@@ -313,23 +256,19 @@ export function HomeContents(props: Props) {
                 works={props.homeParticles.firstTagWorks}
                 secondTag={props.homeParticles.secondTag}
                 secondWorks={props.homeParticles.secondTagWorks}
-                isSensitive={props.isSensitive}
                 isCropped={props.isCropped}
               />
               <HomeNewUsersWorksSection
                 works={props.homeParticles.newUserWorks}
-                isSensitive={props.isSensitive}
               />
               <HomeAwardWorkSection
                 awardDateText={props.homeParticles.awardDateText}
                 title={t("前日ランキング", "Previous Day Ranking")}
                 awards={props.homeParticles.workAwards}
-                isSensitive={props.isSensitive}
               />
               <HomeTagsSection
                 title={t("人気タグ", "Popular Tags")}
                 tags={props.homeParticles.recommendedTags}
-                isSensitive={props.isSensitive}
               />
             </div>
             <Separator
@@ -338,7 +277,6 @@ export function HomeContents(props: Props) {
             />
             <AppSideMenu
               homeParticles={props.homeParticles}
-              isSensitive={props.isSensitive ?? false}
               isShowSensitiveButton={true}
               isShowGenerationAds={true}
             />
@@ -452,7 +390,6 @@ export function HomeContents(props: Props) {
                 <HomeWorksSection
                   page={newWorksPage}
                   setPage={setNewWorksPage}
-                  isSensitive={props.isSensitive}
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
@@ -467,7 +404,6 @@ export function HomeContents(props: Props) {
               <HomeHotWorksSection
                 page={newWorksPage}
                 setPage={setNewWorksPage}
-                isSensitive={props.isSensitive}
                 workType={workType}
                 isPromptPublic={isPromptPublic}
                 sortType={sortType}
@@ -480,7 +416,6 @@ export function HomeContents(props: Props) {
       <TabsContent value="follow-user">
         <Suspense fallback={<AppLoadingPage />}>
           <FollowUserFeedContents
-            isSensitive={props.isSensitive}
             page={followUserFeedPage}
             setPage={setFollowUserFeedPage}
           />
@@ -489,7 +424,6 @@ export function HomeContents(props: Props) {
       <TabsContent value="follow-tag">
         <Suspense fallback={<AppLoadingPage />}>
           <FollowTagsFeedContents
-            isSensitive={props.isSensitive}
             page={followTagFeedPage}
             setPage={setFollowTagFeedPage}
           />

@@ -6,8 +6,12 @@ import {
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
@@ -16,7 +20,6 @@ import { createMeta } from "~/utils/create-meta"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { getJstDate } from "~/utils/jst-date"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -27,11 +30,11 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const workResp = await loaderClient.query({
     query: workQuery,
@@ -57,12 +60,12 @@ export async function loader(props: LoaderFunctionArgs) {
     workResp.data.work.rating === "G" ||
     workResp.data.work.rating === "R15"
   ) {
-    return json(null, {
+    return {
       status: 302,
       headers: {
         Location: `/posts/${props.params.post}`,
       },
-    })
+    }
   }
 
   const workCommentsResp = await loaderClient.query({
@@ -87,7 +90,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
-  // ランキング
   const awardWorks = await loaderClient.query({
     query: homeAwardWorksQuery,
     variables: {
@@ -102,23 +104,18 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  console.log(awardWorks)
-
-  return json(
-    {
-      post: props.params.post,
-      work: workResp.data.work,
-      workComments: workCommentsResp.data.work.comments,
-      newComments: newComments.data.newComments,
-      awardWorks: awardWorks.data.workAwards,
-    },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.oneHour,
-      },
-    },
-  )
+  return {
+    post: props.params.post,
+    work: workResp.data.work,
+    workComments: workCommentsResp.data.work.comments,
+    newComments: newComments.data.newComments,
+    awardWorks: awardWorks.data.workAwards,
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export const meta: MetaFunction = (props) => {
   if (!props.data) {
@@ -165,12 +162,16 @@ export default function Work() {
   const params = useParams()
 
   if (params.post === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
 
   if (data === null) {
+    return null
+  }
+
+  if (!data || !("post" in data) || data.post === null) {
     return null
   }
 

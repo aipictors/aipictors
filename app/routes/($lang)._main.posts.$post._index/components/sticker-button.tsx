@@ -2,6 +2,7 @@ import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"
 import { XIcon } from "lucide-react"
 import { graphql } from "gql.tada"
+import { cn } from "~/lib/utils"
 
 type Props = {
   imageUrl?: string
@@ -39,7 +40,10 @@ export function StickerButton(props: Props) {
   return (
     <div className="relative">
       <button
-        className={`relative box-border rounded border-2 border-transparent transition duration-500 hover:border-2 hover:border-clear-bright-blue ${sizeClasses}`}
+        className={cn(
+          "relative box-border rounded border-2 border-transparent transition duration-500 hover:border-2 hover:border-clear-bright-blue",
+          sizeClasses,
+        )}
         type={"button"}
         onClick={props.onClick}
       >

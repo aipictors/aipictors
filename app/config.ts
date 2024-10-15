@@ -17,6 +17,12 @@ export const config = {
     get oneDay() {
       return "max-age=0, s-maxage=86400, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
+    get oneWeek() {
+      return "max-age=0, s-maxage=604800, stale-while-revalidate=2592000, stale-if-error=2592000"
+    },
+    get oneMonth() {
+      return "max-age=0, s-maxage=2592000, stale-while-revalidate=2592000, stale-if-error=2592000"
+    },
   },
   fcm: {
     get vapidKey() {
@@ -600,6 +606,13 @@ export const META: { [key: string]: MetaData } = {
     description: "Introducing the plans for the generation feature",
     enDescription:
       "Discover the available plans for Aipictors' generation feature",
+    isIndex: true,
+  },
+  TERMS: {
+    title: "利用規約",
+    enTitle: "Terms of Use",
+    description: "Explanation of the terms of use for Aipictors",
+    enDescription: "Read the terms of use for Aipictors",
     isIndex: true,
   },
   GENERATION_TERMS: {

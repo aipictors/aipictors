@@ -27,12 +27,12 @@ import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import type { LoaderFunctionArgs } from "react-router-dom"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { useTranslation } from "~/hooks/use-translation"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 
 export default function NewAnimation() {
   const t = useTranslation()
@@ -401,14 +401,18 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 const ViewerQuery = graphql(
   `query ViewerQuery(

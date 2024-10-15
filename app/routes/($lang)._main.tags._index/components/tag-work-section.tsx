@@ -22,7 +22,6 @@ type Props = {
   tag: string
   page: number
   setPage: (page: number) => void
-  isSensitive: boolean
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   setAccessType?: (accessType: IntrospectionEnum<"AccessType"> | null) => void
@@ -56,7 +55,7 @@ export function TagWorkSection(props: Props) {
         tagNames: [props.tag],
         orderBy: props.orderBy,
         sort: props.sort,
-        isSensitive: props.isSensitive,
+        isSensitive: false,
       },
     },
   })
@@ -117,7 +116,7 @@ export function TagWorkSection(props: Props) {
       </div>
       <div className="ml-auto flex w-full items-center space-x-4 md:w-64">
         <TagFollowButton className="w-full" tag={props.tag} isFollow={false} />
-        <TagActionOther isSensitive={props.isSensitive} tag={props.tag} />
+        <TagActionOther tag={props.tag} />
       </div>
       <WorksListSortableSetting
         nowSort={props.sort}

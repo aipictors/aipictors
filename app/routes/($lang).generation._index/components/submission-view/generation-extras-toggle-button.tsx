@@ -1,5 +1,6 @@
 import { Button } from "~/components/ui/button"
 import { CircleCheckIcon, CircleIcon } from "lucide-react"
+import { cn } from "~/lib/utils"
 
 type Props = {
   onClick(): void
@@ -19,13 +20,12 @@ export function GenerationExtrasToggleButton(props: Props) {
   return (
     <Button
       onClick={props.onClick}
-      className={`${
-        buttonClass
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
-      } w-full relative h-10 hover:dark:bg-primary/40 text-balance rounded-lg px-4 py-2 shadow-md transition duration-300 ease-in-out ${
-        props.className
-      }`}
-      size={"lg"}
+      className={cn(
+        buttonClass,
+        "relative h-10 w-full text-balance rounded-lg px-4 py-2 shadow-md transition duration-300 ease-in-out hover:dark:bg-primary/40",
+        props.className,
+      )}
+      size="lg"
     >
       {props.isShowCheckbox && props.isChecked && (
         <div className="absolute top-0 left-1 md:top-1">

@@ -13,7 +13,6 @@ type Props = {
   thumbnailImageURL: string | null
   works: FragmentOf<typeof WorkListItemFragment>[]
   worksCount: number
-  isSensitive: boolean
   isMoreRatings: boolean
   hasPrompt: boolean
   page: number
@@ -39,14 +38,8 @@ export function AiModelArticle(props: Props) {
       offset: 32 * page,
       limit: 32,
       where: {
-        ratings: props.isSensitive
-          ? props.isMoreRatings
-            ? ["R18", "R18G"]
-            : ["R18"]
-          : props.isMoreRatings
-            ? ["G", "R15"]
-            : ["G"],
-        isSensitive: props.isSensitive,
+        ratings: props.isMoreRatings ? ["G", "R15"] : ["G"],
+        isSensitive: false,
         hasPrompt: props.hasPrompt,
       },
     },
@@ -68,7 +61,6 @@ export function AiModelArticle(props: Props) {
               ? works[0].largeThumbnailImageURL
               : null
         }
-        isSensitive={props.isSensitive}
         isMoreRatings={props.isMoreRatings}
         hasPrompt={props.hasPrompt}
         worksCount={props.worksCount}

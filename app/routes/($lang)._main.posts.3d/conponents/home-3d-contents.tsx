@@ -170,7 +170,6 @@ export function Home3dContents(props: Props) {
               works={props.homeParticles.firstTagWorks}
               secondTag={props.homeParticles.secondTag}
               secondWorks={props.homeParticles.secondTagWorks}
-              isSensitive={props.isSensitive}
               style="REAL"
             />
             {!props.isSensitive && (
@@ -262,7 +261,6 @@ export function Home3dContents(props: Props) {
             <HomeWorksSection
               page={newWorksPage}
               setPage={setNewWorksPage}
-              isSensitive={props.isSensitive}
               workType={workType}
               isPromptPublic={isPromptPublic}
               sortType={sortType}

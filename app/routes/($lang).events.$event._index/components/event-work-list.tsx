@@ -11,7 +11,6 @@ import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
   works: FragmentOf<typeof EventWorkListItemFragment>[]
-  isSensitive: boolean
   maxCount: number
   page: number
   slug: string

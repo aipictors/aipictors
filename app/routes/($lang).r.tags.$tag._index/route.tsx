@@ -1,26 +1,26 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import { TagWorkSection } from "~/routes/($lang)._main.tags._index/components/tag-work-section"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams, useSearchParams } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useParams, useSearchParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { SensitiveTagWorkSection } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-work-section"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.tag === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const url = new URL(props.request.url)
 
@@ -62,20 +62,24 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     tag: decodeURIComponent(props.params.tag),
     works: worksResp.data.tagWorks,
     worksCount: tagWorksCountResp.data.tagWorksCount,
     page: page,
     isSensitive: true,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function Tag() {
   const params = useParams()
 
   if (params.tag === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
@@ -174,13 +178,12 @@ export default function Tag() {
 
   return (
     <>
-      <TagWorkSection
+      <SensitiveTagWorkSection
         works={data.works}
         worksCount={data.worksCount}
         tag={decodeURIComponent(params.tag)}
         page={page}
         setPage={setPage}
-        isSensitive={true}
         onClickTitleSortButton={onClickTitleSortButton}
         onClickLikeSortButton={onClickLikeSortButton}
         onClickBookmarkSortButton={onClickBookmarkSortButton}

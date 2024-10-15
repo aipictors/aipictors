@@ -1,11 +1,11 @@
 import { GlowingGradientBorderButton } from "~/components/button/glowing-gradient-border-button"
 import { CharacterCard } from "~/routes/($lang).events.ai-idol-project/components/character-card"
 import { ImageSliderAnimation } from "~/routes/($lang).events.ai-idol-project/components/image-slider-animation"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { config } from "~/config"
 
 export default function EventAiIdolProject() {
   const t = useTranslation()
@@ -150,14 +150,18 @@ export default function EventAiIdolProject() {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMonth,
+})
 
 export const meta: MetaFunction = () => {
   return [

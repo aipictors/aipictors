@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc --noEmit && remix vite:build && wrangler pages functions build --outdir build/worker",
-    "deploy": "bun run build && wrangler deploy",
+    "build": "tsc --noEmit && remix vite:build",
+    "deploy": "bun run build && wrangler pages deploy",
     "dev": "remix vite:dev",
+    "start": "wrangler pages dev ./build/client",
     "check": "tsc --noEmit --isolatedDeclarations",
     "lint": "biome lint --write app",
     "lint:unsafe": "biome lint --write --unsafe app",

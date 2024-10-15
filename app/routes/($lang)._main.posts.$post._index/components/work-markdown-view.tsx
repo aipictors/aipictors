@@ -5,6 +5,7 @@ import CodeBlock from "@tiptap/extension-code-block"
 import Blockquote from "@tiptap/extension-blockquote"
 import HorizontalRule from "@tiptap/extension-horizontal-rule"
 import Image from "@tiptap/extension-image"
+import { useEffect } from "react"
 
 type Props = {
   md?: string
@@ -51,6 +52,12 @@ export function WorkMarkdownView(props: Props) {
     ],
     content: props.md,
   })
+
+  useEffect(() => {
+    if (editor && editor.getText() === "") {
+      editor.commands.setContent(props.md || "")
+    }
+  }, [props.md, editor])
 
   return (
     <div className="relative m-0">

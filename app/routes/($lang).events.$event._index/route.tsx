@@ -1,9 +1,4 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import {
-  json,
-  type MetaFunction,
-  type LoaderFunctionArgs,
-} from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
@@ -18,10 +13,14 @@ import {
   EventAwardWorkListItemFragment,
 } from "~/routes/($lang).events.$event._index/components/event-award-work-list"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { format } from "date-fns"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -37,11 +36,11 @@ const toEventDateTimeText = (time: number) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   const event = props.params.event
 
@@ -73,11 +72,15 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     appEvent: eventsResp.data.appEvent,
     page,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneWeek,
+})
 
 export const meta: MetaFunction = ({ data }) => {
   if (!data) {
@@ -175,14 +178,12 @@ export default function FollowingLayout() {
         <EventAwardWorkList
           works={data.appEvent.awardWorks}
           slug={data.appEvent.slug ?? ""}
-          isSensitive={false}
         />
       )}
       <h2 className="font-bold text-md">{t("作品一覧", "List of Works")}</h2>
       {data.appEvent.works && (
         <EventWorkList
           works={data.appEvent.works}
-          isSensitive={false}
           maxCount={data.appEvent.worksCount as number}
           page={data.page}
           slug={data.appEvent.slug ?? ""}

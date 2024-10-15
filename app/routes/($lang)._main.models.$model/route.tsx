@@ -1,13 +1,17 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { AiModelArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
+import { AiModelSensitiveArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-sensitive-article"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.model === undefined) {
@@ -46,13 +50,17 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     data: resp.data.aiModel,
     page: page,
     isR15: r15,
     hasPrompt: hasPrompt,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export const meta: MetaFunction = (props) => {
   if (!props.data) {
@@ -105,22 +113,22 @@ export default function ModelPage() {
   const params = useParams()
 
   if (params.model === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
 
   if (data.data === null) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   if (!data.data.name) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   return (
     <>
-      <AiModelArticle
+      <AiModelSensitiveArticle
         name={data.data.name}
         thumbnailImageURL={
           data.data.thumbnailImageURL
@@ -129,7 +137,6 @@ export default function ModelPage() {
         }
         works={data.data.works}
         worksCount={data.data.worksCount}
-        isSensitive={false}
         isMoreRatings={data.isR15}
         hasPrompt={data.hasPrompt}
         page={data.page}

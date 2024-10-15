@@ -2,10 +2,11 @@ import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { CollectionArticle } from "~/routes/($lang)._main.collections.$collection/components/collection-article"
 import { CollectionWorkListItemFragment } from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.collection === undefined) {
@@ -29,11 +30,15 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  return json({
+  return {
     folderResp: collectionResp.data.folder,
     page: page,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneWeek,
+})
 
 /**
  * コレクションの詳細
@@ -42,7 +47,7 @@ export default function Collections() {
   const params = useParams()
 
   if (params.collection === undefined) {
-    throw ParamsError()
+    throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()

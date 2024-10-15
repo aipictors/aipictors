@@ -11,7 +11,6 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  isSensitive?: boolean
   works: FragmentOf<typeof HomeTagWorkFragment>[]
   tag: string
   secondWorks: FragmentOf<typeof HomeTagWorkFragment>[]
@@ -32,8 +31,8 @@ export function HomeWorksTagSection(props: Props) {
       offset: 0,
       limit: config.query.homeWorkCount.tag,
       where: {
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
-        isSensitive: props.isSensitive,
+        ratings: ["G"],
+        isSensitive: false,
         isNowCreatedAt: true,
         search: props.tag,
         orderBy: "LIKES_COUNT",
@@ -50,8 +49,8 @@ export function HomeWorksTagSection(props: Props) {
       offset: 0,
       limit: config.query.homeWorkCount.tag,
       where: {
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G"],
-        isSensitive: props.isSensitive,
+        ratings: ["G"],
+        isSensitive: false,
         isNowCreatedAt: true,
         search: props.secondTag,
         orderBy: "LIKES_COUNT",

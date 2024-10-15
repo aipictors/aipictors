@@ -10,11 +10,11 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext, useEffect, useReducer } from "react"
+import { useContext, useEffect, useReducer, useState } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useBeforeUnload, useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import React from "react"
 import { EditTextFormUploader } from "~/routes/($lang)._main.posts.$post.text.edit._index/components/edit-text-form-uploader"
@@ -28,16 +28,22 @@ import {
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
 import { getJstDate } from "~/utils/jst-date"
+import { uploadTextFile } from "~/utils/upload-text-file"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  return json({
+  return {
     id: props.params.post,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 function getReservationDetails(createdAt: number) {
   // 現在時刻よりも未来の時刻なら予約更新の日付と時間をセット
@@ -77,6 +83,20 @@ export default function EditText() {
   })
 
   const work = workWithAuth?.work ?? null
+
+  const [markdownContent, setMarkdownContent] = useState<string>("")
+
+  useEffect(() => {
+    // マークダウンファイルの URL からマークダウンを取得する
+    if (work?.mdUrl) {
+      fetch(work?.mdUrl)
+        .then((res) => res.text())
+        .then((text) => {
+          setMarkdownContent(text)
+        })
+        .catch((err) => console.error("Error fetching markdown file:", err))
+    }
+  }, [work?.mdUrl])
 
   useEffect(() => {
     if (work) {
@@ -170,7 +190,7 @@ export default function EditText() {
           useGenerationParams: work?.promptAccessType === "PUBLIC",
           usePromotionFeature: work?.isPromotion ?? false,
           useTagFeature: work?.isTagEditable ?? true,
-          md: work?.md ?? "",
+          md: markdownContent ?? "",
           type: work?.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
         },
       })
@@ -281,7 +301,7 @@ export default function EditText() {
       work?.isPromotion === undefined ? false : work?.isPromotion,
     useTagFeature:
       work?.isTagEditable === undefined ? true : work?.isTagEditable,
-    md: work?.md ?? "",
+    md: markdownContent ?? "",
     type: work?.type as "COLUMN" | "NOVEL" | "VIDEO" | "WORK",
     correctionMessage: "",
   })
@@ -460,6 +480,15 @@ export default function EditText() {
 
       dispatch({ type: "SET_PROGRESS", payload: 70 })
 
+      if (work.mdUrl !== "") {
+        await uploadTextFile(
+          inputState.md,
+          "md",
+          viewer?.viewer?.token,
+          work.mdUrl,
+        )
+      }
+
       const uploadResults = await uploadImages()
 
       const imageUrls = uploadResults.filter((url) => url !== null)
@@ -529,7 +558,6 @@ export default function EditText() {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
-            md: inputState.md,
             correctionMessage:
               work?.moderatorReport?.status === "UNHANDLED"
                 ? inputState.correctionMessage
@@ -619,6 +647,7 @@ export default function EditText() {
             slug: viewer?.appEvents[0]?.slug ?? null,
           }}
           needFix={work?.moderatorReport?.status === "UNHANDLED"}
+          mdUrl={work?.mdUrl ?? ""}
         />
         <div className="h-4" />
         <Button
@@ -768,9 +797,8 @@ const workQuery = graphql(
       pngInfo
       style
       url
-      html
       relatedUrl
-      md
+      mdUrl
       user {
         id
         works(offset: 0, limit: 16) {

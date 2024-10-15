@@ -1,13 +1,16 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import React from "react"
 import { Suspense, useContext } from "react"
 import { ViewedListContainer } from "~/routes/($lang).my._index/components/viewed-list-container"
-import { META } from "~/config"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -15,14 +18,18 @@ export const meta: MetaFunction = (props) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function MyViews() {
   const [ViewedPage, setViewedPage] = React.useState(0)

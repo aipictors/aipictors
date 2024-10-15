@@ -1,8 +1,5 @@
 import { useSuspenseQuery } from "@apollo/client/index"
-import {} from "~/routes/($lang)._main._index/components/home-notifications-content-liked-item"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import {} from "~/routes/($lang)._main._index/components/home-notifications-content-award-item"
-import {} from "~/routes/($lang)._main._index/components/home-notifications-content-followed-item"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"

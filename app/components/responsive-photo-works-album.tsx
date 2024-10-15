@@ -79,17 +79,6 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                 props.size === "large"
                   ? work.largeThumbnailImageHeight
                   : work.smallThumbnailImageHeight,
-              // workId: work.id, // 各作品のID
-              // userId: work.user.id, // 作品の所有者のID
-              // userIcon: IconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
-              // userName: work.user.name, // 作品の所有者の名前
-              // workOwnerUserId: work.user.id,
-              // isLiked: work.isLiked,
-              // title: work.title,
-              // isSensitive: work.rating === "R18" || work.rating === "R18G",
-              // subWorksCount: work.subWorksCount,
-              // to: `/posts/${work.id}`,
-              // href: `/posts/${work.id}`,
               context: work,
             }))}
             sizes={{

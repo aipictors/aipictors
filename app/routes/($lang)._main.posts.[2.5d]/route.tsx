@@ -7,8 +7,10 @@ import {
   HomeWorkList,
   HomeWorkListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-work-list"
-import { json, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import type { HeadersFunction } from "@remix-run/cloudflare"
+import { config } from "~/config"
 
 export async function loader() {
   const worksResp = await loaderClient.query({
@@ -25,11 +27,15 @@ export async function loader() {
     variables: {},
   })
 
-  return json({
+  return {
     works: worksResp.data.works,
     hotTags: hotTagsResp.data.hotTags,
-  })
+  }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 /**
  * セミリアルの作品一覧画面

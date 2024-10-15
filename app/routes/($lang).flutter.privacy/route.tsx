@@ -1,8 +1,7 @@
 import text from "~/assets/flutter/privacy.md?raw"
 
 import { AppMarkdown } from "~/components/app/app-markdown"
-import type { MetaFunction } from "@remix-run/cloudflare"
-import { json } from "@remix-run/react"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { config } from "~/config"
 
 export default function FlutterPrivacyPage() {
@@ -12,9 +11,14 @@ export default function FlutterPrivacyPage() {
     </div>
   )
 }
+
 export async function loader() {
-  return json({}, { headers: { "Cache-Control": config.cacheControl.home } })
+  return { "Cache-Control": config.cacheControl.home }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMonth,
+})
 
 export const meta: MetaFunction = () => {
   return [

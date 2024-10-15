@@ -1,14 +1,15 @@
 import { loaderClient } from "~/lib/loader-client"
 import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import {
-  HomeBanners,
-  HomeBannerWorkFragment,
-} from "~/routes/($lang)._main._index/components/home-banners"
+import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { json, useLoaderData } from "@remix-run/react"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
@@ -21,7 +22,6 @@ import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-respo
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { ConstructionAlert } from "~/components/construction-alert"
-import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -36,11 +36,11 @@ const getUtcDateString = (date: Date) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  const redirectResponse = checkLocaleRedirect(props.request)
+  // const redirectResponse = checkLocaleRedirect(props.request)
 
-  if (redirectResponse) {
-    return redirectResponse
-  }
+  // if (redirectResponse) {
+  //   return redirectResponse
+  // }
 
   // 下記カテゴリからランダムに2つ選んで返す
   const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
@@ -114,7 +114,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const microCmsClient = createCmsClient({
     serviceDomain: "aipictors",
-    apiKey: "P0QqFga5C1pPv3MDnSgMSYeFFLvAG1e5hNXt",
+    apiKey: config.cms.microCms.apiKey,
   })
 
   const releaseList: MicroCmsApiReleaseResponse = await microCmsClient.get({
@@ -150,24 +150,17 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const columnWorksBeforeText = pastColumnDate.toISOString()
 
-  return json(
-    {
-      ...result.data,
-      awardDateText: awardDateText,
-      generationDateText,
-      novelWorksBeforeText,
-      videoWorksBeforeText,
-      columnWorksBeforeText,
-      firstTag: randomCategories[0],
-      secondTag: randomCategories[1],
-      releaseList,
-    },
-    {
-      headers: {
-        "Cache-Control": config.cacheControl.home,
-      },
-    },
-  )
+  return {
+    ...result.data,
+    awardDateText: awardDateText,
+    generationDateText,
+    novelWorksBeforeText,
+    videoWorksBeforeText,
+    columnWorksBeforeText,
+    firstTag: randomCategories[0],
+    secondTag: randomCategories[1],
+    releaseList,
+  }
 }
 
 export default function Index() {
@@ -184,9 +177,9 @@ export default function Index() {
         message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
         fallbackURL="https://www.aipictors.com"
       />
-      {data.adWorks && data.adWorks.length > 0 && (
+      {/* {data.adWorks && data.adWorks.length > 0 && (
         <HomeBanners works={data.adWorks} />
-      )}
+      )} */}
       <HomeContents
         homeParticles={{
           dailyThemeTitle: data.dailyTheme ? (data.dailyTheme.title ?? "") : "",
@@ -209,6 +202,10 @@ export default function Index() {
     </>
   )
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.home,
+})
 
 const query = graphql(
   `query HomeQuery(

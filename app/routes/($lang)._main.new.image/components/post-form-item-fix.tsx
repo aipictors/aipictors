@@ -1,5 +1,6 @@
 import { Card, CardContent } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
+import { cn } from "~/lib/utils"
 
 type Props = {
   onChange: (value: string) => void
@@ -25,7 +26,10 @@ export function PostFormItemFix(props: Props) {
           }}
           value={props.value}
           placeholder="修正内容を入力"
-          className={`${isFilled ? "border-green-500" : "border-gray-300"}`}
+          className={cn({
+            "border-green-500": isFilled,
+            "border-gray-300": !isFilled,
+          })}
         />
       </CardContent>
     </Card>

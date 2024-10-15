@@ -1,13 +1,12 @@
-import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useLoaderData } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import {
   UserAlbumList,
   UserAlbumListItemFragment,
 } from "~/routes/($lang)._main.users.$user.albums/components/user-album-list"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { json, useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -18,39 +17,38 @@ export async function loader(props: LoaderFunctionArgs) {
     query: userAlbumsQuery,
     variables: {
       offset: 0,
-      limit: 16,
+      limit: 32,
       userId: props.params.user,
     },
   })
 
-  if (albumsResp.data.user === null) {
-    throw new Response(null, { status: 404 })
+  return {
+    albums: albumsResp.data.albums,
   }
-
-  return json({
-    albums: albumsResp.data.user.albums,
-  })
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export default function UserAlbums() {
-  const params = useParams()
-
-  if (params.user === undefined) {
-    throw ParamsError()
-  }
-
   const data = useLoaderData<typeof loader>()
 
-  return <UserAlbumList albums={data.albums} />
+  if (data.albums === null) {
+    return
+  }
+
+  return (
+    <div className="flex flex-col space-y-4">
+      <UserAlbumList albums={data.albums} />
+    </div>
+  )
 }
 
-const userAlbumsQuery = graphql(
-  `query UserAlbums($userId: ID!, $offset: Int!, $limit: Int!) {
-    user(id: $userId) {
-      id
-      albums(offset: $offset, limit: $limit) {
-        ...UserAlbumListItem
-      }
+export const userAlbumsQuery = graphql(
+  `query UserAlbums($offset: Int!, $limit: Int!) {
+    albums(offset: $offset, limit: $limit) {
+      ...UserAlbumListItem
     }
   }`,
   [UserAlbumListItemFragment],

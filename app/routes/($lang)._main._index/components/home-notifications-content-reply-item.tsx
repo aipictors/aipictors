@@ -1,6 +1,7 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateText } from "~/lib/app/utils/to-date-text"
+import { cn } from "~/lib/utils"
 import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
 
 type Props = {
@@ -45,7 +46,7 @@ export function HomeNotificationsContentReplyItem(props: Props) {
             <img
               src={props.notification.sticker.imageUrl}
               alt="sticker"
-              className={`${stickerClass} h-12 w-12`}
+              className={cn(stickerClass, "h-12 w-12")}
             />
           )}
           <p className="text-sm opacity-80">
