@@ -1,5 +1,9 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { META } from "~/config"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { config, META } from "~/config"
 import { GenerationAboutPage } from "~/routes/($lang)._main.generation.about/components/generation-about-page"
 import { createMeta } from "~/utils/create-meta"
 
@@ -22,6 +26,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 /**
  * 画像生成・LP

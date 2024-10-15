@@ -1,3 +1,4 @@
+import type { HeadersFunction } from "@remix-run/cloudflare"
 import {
   type MetaFunction,
   Outlet,
@@ -6,7 +7,7 @@ import {
 } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
 import type { LoaderFunctionArgs } from "react-router-dom"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import {
@@ -66,6 +67,10 @@ export async function loader(props: LoaderFunctionArgs) {
     worksCount: userResp.data.user.worksCount,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export const meta: MetaFunction = (props) => {
   if (!props.data) {

@@ -13,10 +13,14 @@ import {
   EventAwardWorkListItemFragment,
 } from "~/routes/($lang).events.$event._index/components/event-award-work-list"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { format } from "date-fns"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -73,6 +77,10 @@ export async function loader(props: LoaderFunctionArgs) {
     page,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneWeek,
+})
 
 export const meta: MetaFunction = ({ data }) => {
   if (!data) {

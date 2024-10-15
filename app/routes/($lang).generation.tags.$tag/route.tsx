@@ -4,10 +4,11 @@ import {
   TagReferencedWorkSection,
   TagWorkFragment,
 } from "~/routes/($lang).generation.tags.$tag/components/tag-referenced-work-section"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.tag === undefined) {
@@ -38,6 +39,10 @@ export async function loader(props: LoaderFunctionArgs) {
     tag: props.params.tag,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function GenerationTag() {
   const params = useParams()

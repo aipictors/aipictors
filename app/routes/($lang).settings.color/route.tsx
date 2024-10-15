@@ -7,9 +7,13 @@ import { useTheme } from "next-themes"
 import { useState } from "react"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import { Separator } from "~/components/ui/separator"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -26,6 +30,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function SettingColor() {
   const t = useTranslation()

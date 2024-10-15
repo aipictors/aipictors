@@ -39,11 +39,12 @@ import {
   getExtractInfoFromBase64,
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { useTranslation } from "~/hooks/use-translation"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 
 export default function NewImage() {
   const t = useTranslation()
@@ -608,6 +609,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 const ViewerQuery = graphql(
   `query ViewerQuery(

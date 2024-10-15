@@ -1,6 +1,10 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { AppPageCenter } from "~/components/app/app-page-center"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { SupportChatView } from "~/routes/($lang)._main.support.chat/components/dynamic-support-chat-view"
 import { createMeta } from "~/utils/create-meta"
 
@@ -17,6 +21,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 export default function SupportChat() {
   return (

@@ -2,12 +2,13 @@ import { loaderClient } from "~/lib/loader-client"
 import { type MetaFunction, useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { SensitiveThemeContainer } from "~/routes/($lang)._main.themes._index/components/sensitive-theme-container"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -142,6 +143,10 @@ export async function loader(props: LoaderFunctionArgs) {
     themeId: Number(todayThemesResp.data.dailyThemes[0].id),
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.THEMES, undefined, props.params.lang)

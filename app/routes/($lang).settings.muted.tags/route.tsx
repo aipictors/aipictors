@@ -1,5 +1,9 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { META } from "~/config"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { MutedTagList } from "~/routes/($lang).settings.muted.tags/components/muted-tag-list"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
@@ -18,6 +22,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function SettingMutedTags() {
   const t = useTranslation()

@@ -1,7 +1,11 @@
 import { loaderClient } from "~/lib/loader-client"
 import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
@@ -96,6 +100,10 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()

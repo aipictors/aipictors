@@ -1,6 +1,10 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { AppPageHeader } from "~/components/app/app-page-header"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { PlusForm } from "~/routes/($lang)._main.plus._index/components/plus-form"
 import { PlusNoteList } from "~/routes/($lang)._main.plus._index/components/plus-note-list"
@@ -19,6 +23,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 /**
  * サブスク

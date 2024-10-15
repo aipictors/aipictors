@@ -1,12 +1,16 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { AiModelSensitiveArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-sensitive-article"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -53,6 +57,10 @@ export async function loader(props: LoaderFunctionArgs) {
     hasPrompt: hasPrompt,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export const meta: MetaFunction = (props) => {
   if (!props.data) {

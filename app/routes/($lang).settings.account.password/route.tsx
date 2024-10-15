@@ -1,5 +1,9 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { META } from "~/config"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { AccountPasswordForm } from "~/routes/($lang).settings.account.password/components/setting-password-form"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
@@ -22,6 +26,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function AccountPassword() {
   const t = useTranslation()

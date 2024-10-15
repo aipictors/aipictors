@@ -6,7 +6,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { loaderClient } from "~/lib/loader-client"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React, { useEffect, useState } from "react"
@@ -82,6 +82,10 @@ export async function loader() {
     imageLoraModels: imageLoraModelsResp.data.imageLoraModels,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 export function HydrateFallback() {
   return <AppLoadingPage />

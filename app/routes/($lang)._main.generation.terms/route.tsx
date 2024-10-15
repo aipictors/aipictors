@@ -1,4 +1,8 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import termsMarkdownText from "~/assets/image-generation-terms.md?raw"
 import termsMarkdownEnText from "~/assets/image-generation-terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
@@ -9,7 +13,7 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -26,6 +30,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMonth,
+})
 
 /**
  * 画像生成機能の利用規約

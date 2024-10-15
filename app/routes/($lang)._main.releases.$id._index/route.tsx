@@ -1,7 +1,7 @@
 import { Link, useLoaderData } from "@remix-run/react"
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Button } from "~/components/ui/button"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { ReleaseItem } from "~/routes/($lang)._main.releases.$id._index/components/release-item"
 import { config } from "~/config"
 
@@ -49,6 +49,10 @@ export async function loader(props: LoaderFunctionArgs) {
     list,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export default function Release() {
   const data = useLoaderData<typeof loader>()

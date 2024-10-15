@@ -8,12 +8,12 @@ import {
   AlbumWorkList,
   AlbumWorkListItemFragment,
 } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-work-list"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import type { MetaFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (!props.params.album || !props.params.user) {
@@ -82,6 +82,10 @@ export const meta: MetaFunction = (props) => {
     props.params.lang,
   )
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneWeek,
+})
 
 /**
  * シリーズの詳細

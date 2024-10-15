@@ -1,6 +1,6 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -8,6 +8,7 @@ import {
   UserVideoList,
   UserVideosItemFragment,
 } from "~/routes/($lang)._main.users.$user.videos/components/user-videos-list"
+import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -53,6 +54,10 @@ export async function loader(props: LoaderFunctionArgs) {
     page,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function UserVideos() {
   const params = useParams()

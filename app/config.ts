@@ -17,6 +17,12 @@ export const config = {
     get oneDay() {
       return "max-age=0, s-maxage=86400, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
+    get oneWeek() {
+      return "max-age=0, s-maxage=604800, stale-while-revalidate=2592000, stale-if-error=2592000"
+    },
+    get oneMonth() {
+      return "max-age=0, s-maxage=2592000, stale-while-revalidate=2592000, stale-if-error=2592000"
+    },
   },
   fcm: {
     get vapidKey() {

@@ -160,9 +160,6 @@ export async function loader(props: LoaderFunctionArgs) {
     firstTag: randomCategories[0],
     secondTag: randomCategories[1],
     releaseList,
-    headers: {
-      "Cache-Control": config.cacheControl.home,
-    },
   }
 }
 

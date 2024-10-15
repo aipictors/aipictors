@@ -12,6 +12,8 @@ import { Button } from "~/components/ui/button"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
+import { config } from "~/config"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -62,6 +64,10 @@ export async function loader(props: LoaderFunctionArgs) {
     page,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()

@@ -9,6 +9,8 @@ import {
 } from "~/routes/($lang)._main._index/components/home-work-list"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import type { HeadersFunction } from "@remix-run/cloudflare"
+import { config } from "~/config"
 
 export async function loader() {
   const worksResp = await loaderClient.query({
@@ -30,6 +32,10 @@ export async function loader() {
     hotTags: hotTagsResp.data.hotTags,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function SensitiveWorks25d() {
   const data = useLoaderData<typeof loader>()

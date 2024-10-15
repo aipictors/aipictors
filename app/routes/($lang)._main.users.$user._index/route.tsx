@@ -1,8 +1,9 @@
 import { useQuery } from "@apollo/client/index"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
+import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
@@ -94,6 +95,10 @@ export async function loader(props: LoaderFunctionArgs) {
     videoWorks: userResp.data.videoWorks,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 export default function UserLayout() {
   const params = useParams<"user">()

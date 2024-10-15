@@ -1,6 +1,10 @@
 import { ContributorsView } from "~/routes/($lang)._main.contributors/components/contributors-view"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
-import { META } from "~/config"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -16,6 +20,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneDay,
+})
 
 /**
  * コントリビュータ一覧ページ

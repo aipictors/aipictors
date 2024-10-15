@@ -10,7 +10,8 @@ import {
 import { Button } from "~/components/ui/button"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { config } from "~/config"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -62,6 +63,10 @@ export async function loader(props: LoaderFunctionArgs) {
     page,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()

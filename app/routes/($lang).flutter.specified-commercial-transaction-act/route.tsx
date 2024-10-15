@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { config } from "~/config"
 
 export default function FlutterSctaPage() {
@@ -15,6 +15,10 @@ export default function FlutterSctaPage() {
 export async function loader() {
   return { headers: { "Cache-Control": config.cacheControl.home } }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneMonth,
+})
 
 export const meta: MetaFunction = () => {
   return [

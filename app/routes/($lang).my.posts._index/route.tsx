@@ -5,9 +5,13 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { WorksListContainer } from "~/routes/($lang).my._index/components/works-list-container"
 import { WorksSetting } from "~/routes/($lang).my._index/components/works-settings"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { META } from "~/config"
+import { config, META } from "~/config"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_POSTS, undefined, props.params.lang)
@@ -22,6 +26,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function MyPosts() {
   const [searchParams, setSearchParams] = useSearchParams()

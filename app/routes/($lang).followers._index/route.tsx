@@ -1,9 +1,13 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { FollowerList } from "~/routes/($lang).followers._index/components/follower-list"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { Suspense, useContext } from "react"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -19,6 +23,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {}
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.short,
+})
 
 export default function FollowingLayout() {
   const authContext = useContext(AuthContext)

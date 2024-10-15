@@ -6,9 +6,13 @@ import {
 } from "~/routes/($lang)._main.posts._index/components/work-list"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
-import { META } from "~/config"
+import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -40,6 +44,10 @@ export async function loader(props: LoaderFunctionArgs) {
     workResp: worksResp.data.works,
   }
 }
+
+export const headers: HeadersFunction = () => ({
+  "Cache-Control": config.cacheControl.oneHour,
+})
 
 export default function Search() {
   const data = useLoaderData<typeof loader>()
