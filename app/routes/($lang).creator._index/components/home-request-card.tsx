@@ -17,7 +17,7 @@ export function HomeRequestCard(props: Props) {
         <Link to={`/creator/requests/${props.request.id}`}>
           <img
             className="w-full"
-            src={props.request.firstDeliverable?.file.squareThumbnailImageURL}
+            src={props.request.firstDeliverable?.file?.squareThumbnailImageURL}
             alt={props.request.firstDeliverable?.id}
           />
         </Link>
