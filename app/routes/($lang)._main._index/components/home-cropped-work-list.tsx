@@ -2,7 +2,7 @@ import { LikeButton } from "~/components/like-button"
 import { graphql, type FragmentOf } from "gql.tada"
 import { Link } from "@remix-run/react"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -77,7 +77,7 @@ export function HomeCroppedWorkList(props: Props) {
               </p>
               <UserNameBadge
                 userId={work.user.id}
-                userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
+                userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                 name={work.user.name}
                 width={"lg"}
                 likesCount={work.likesCount}
@@ -128,7 +128,7 @@ export function HomeCroppedWorkList(props: Props) {
                   </p>
                   <UserNameBadge
                     userId={work.user.id}
-                    userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
+                    userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                     name={work.user.name}
                     width={"md"}
                     likesCount={work.likesCount}

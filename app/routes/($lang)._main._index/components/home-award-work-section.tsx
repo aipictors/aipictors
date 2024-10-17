@@ -10,7 +10,7 @@ import { useContext } from "react"
 import { Heart } from "lucide-react"
 import { config } from "~/config"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -123,7 +123,7 @@ export function HomeAwardWorkSection(props: Props) {
                 {work.userId && work.userName && (
                   <UserNameBadge
                     userId={work.userId}
-                    userIconImageURL={ExchangeIconUrl(work.userIcon)}
+                    userIconImageURL={withIconUrlFallback(work.userIcon)}
                     name={work.userName}
                     width={"md"}
                   />

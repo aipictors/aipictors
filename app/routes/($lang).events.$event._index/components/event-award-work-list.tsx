@@ -10,7 +10,7 @@ import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof EventAwardWorkListItemFragment>[]
@@ -97,7 +97,7 @@ export function EventAwardWorkList(props: Props) {
               <div className="flex max-w-40 items-center justify-between">
                 <UserNameBadge
                   userId={work.userId}
-                  userIconImageURL={ExchangeIconUrl(work.userIcon)}
+                  userIconImageURL={withIconUrlFallback(work.userIcon)}
                   name={work.userName}
                   width={"lg"}
                 />

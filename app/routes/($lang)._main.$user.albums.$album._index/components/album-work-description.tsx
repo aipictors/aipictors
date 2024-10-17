@@ -6,7 +6,7 @@ import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { type FragmentOf, graphql } from "gql.tada"
 import type { AlbumArticleEditorDialogFragment } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-article-editor-dialog"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
@@ -40,7 +40,7 @@ export function AlbumWorkDescription(props: Props) {
           <div className="flex items-center space-x-2">
             <Avatar>
               <AvatarImage
-                src={ExchangeIconUrl(props.album.user.iconUrl)}
+                src={withIconUrlFallback(props.album.user.iconUrl)}
                 alt={props.album.user.name}
               />
               <AvatarFallback />

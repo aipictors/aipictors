@@ -1,7 +1,7 @@
 import { FollowButton } from "~/components/button/follow-button"
 import { Button } from "~/components/ui/button"
 import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
-import { type FragmentOf, graphql } from "gql.tada"
+import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
@@ -15,27 +15,32 @@ import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  user: FragmentOf<typeof userHomeMenuFragment>
+  user: FragmentOf<typeof UserHomeMenuFragment>
 }
 
 export function UserHomeMenu(props: Props) {
+  const cachedUser = readFragment(UserHomeMenuFragment, props.user)
+
   const authContext = useContext(AuthContext)
 
+  /**
+   * TODO: 削除する
+   */
   const [sensitive, setSensitive] = useState(false)
 
-  const { data: userInfo } = useQuery(userQuery, {
-    variables: {
-      userId: decodeURIComponent(props.user.id),
-    },
+  const { data = null } = useQuery(UserQuery, {
+    variables: { userId: decodeURIComponent(cachedUser.id) },
   })
+
+  const user = readFragment(UserHomeMenuFragment, data?.user)
 
   const t = useTranslation()
 
   const location = useLocation()
 
-  const isFollow = userInfo?.user?.isFollowee ?? false
+  const isFollowee = user?.isFollowee ?? false
 
-  const isMute = userInfo?.user?.isMuted ?? false
+  const isMuted = user?.isMuted ?? false
 
   const navigate = useNavigate()
 
@@ -55,7 +60,7 @@ export function UserHomeMenu(props: Props) {
           {!sensitive ? (
             <Button
               onClick={() => {
-                navigate(`/users/${props.user.login}`)
+                navigate(`/users/${cachedUser.login}`)
               }}
               variant={"secondary"}
             >
@@ -72,7 +77,7 @@ export function UserHomeMenu(props: Props) {
                 "Do you want to display sensitive content? Are you over 18 years old?",
               )}
               onNext={() => {
-                navigate(`/r/users/${props.user.login}`)
+                navigate(`/r/users/${cachedUser.login}`)
               }}
               cookieKey={"check-sensitive-ranking"}
               onCancel={() => {}}
@@ -85,7 +90,7 @@ export function UserHomeMenu(props: Props) {
               </Button>
             </AppConfirmDialog>
           )}
-          <UserActionShare login={props.user.login} name={props.user.name} />
+          <UserActionShare login={cachedUser.login} name={cachedUser.name} />
         </div>
       </div>
       <div className="absolute top-2 right-0 hidden md:block">
@@ -93,7 +98,7 @@ export function UserHomeMenu(props: Props) {
           {sensitive ? (
             <Button
               onClick={() => {
-                navigate(`/users/${props.user.login}`)
+                navigate(`/users/${cachedUser.login}`)
               }}
               variant={"secondary"}
             >
@@ -110,7 +115,7 @@ export function UserHomeMenu(props: Props) {
                 "Do you want to display sensitive content? Are you over 18 years old?",
               )}
               onNext={() => {
-                navigate(`/r/users/${props.user.login}`)
+                navigate(`/r/users/${cachedUser.login}`)
               }}
               cookieKey={"check-sensitive-ranking"}
               onCancel={() => {}}
@@ -123,11 +128,11 @@ export function UserHomeMenu(props: Props) {
               </Button>
             </AppConfirmDialog>
           )}
-          <UserActionOther id={props.user.id} isMuted={isMute} />
-          <UserActionShare login={props.user.login} name={props.user.name} />
+          <UserActionOther id={cachedUser.id} isMuted={isMuted} />
+          <UserActionShare login={cachedUser.login} name={cachedUser.name} />
           <FollowButton
-            targetUserId={props.user.id}
-            isFollow={isFollow}
+            targetUserId={cachedUser.id}
+            isFollow={isFollowee}
             triggerChildren={
               <Button className="font-bold">
                 {t("フォローする", "Follow")}
@@ -139,15 +144,14 @@ export function UserHomeMenu(props: Props) {
               </Button>
             }
           />
-          {props.user.promptonUser !== null &&
-            props.user.promptonUser.id !== null && (
-              <PromptonRequestColorfulButton
-                rounded="rounded-md"
-                promptonId={props.user.promptonUser.id}
-                targetUserId={props.user.id}
-              />
-            )}
-          {authContext.userId === props.user.id && (
+          {typeof user?.promptonUser?.id === "string" && (
+            <PromptonRequestColorfulButton
+              rounded="rounded-md"
+              promptonId={user.promptonUser.id}
+              targetUserId={user.id}
+            />
+          )}
+          {authContext.userId === cachedUser.id && (
             <ProfileEditDialog
               triggerChildren={<Button>{t("編集", "Edit")}</Button>}
             />
@@ -158,7 +162,7 @@ export function UserHomeMenu(props: Props) {
         <div className="mb-4 flex md:mb-0 md:hidden">
           <div className="w-32">
             <div className="white mt-4 font-bold text-md">
-              {toOmissionNumberText(props.user.followersCount)}
+              {toOmissionNumberText(cachedUser.followersCount)}
             </div>
             <div className="white mt-1 text-sm opacity-50">
               {t("フォロワー", "Followers")}
@@ -166,32 +170,32 @@ export function UserHomeMenu(props: Props) {
           </div>
           <div className="w-32">
             <div className="white mt-4 font-bold text-md">
-              {toOmissionNumberText(props.user.receivedLikesCount)}
+              {toOmissionNumberText(cachedUser.receivedLikesCount)}
             </div>
             <div className="white mt-1 text-sm opacity-50">
               {t("いいね", "Liked")}
             </div>
           </div>
         </div>
-        {authContext.userId !== props.user.id && (
+        {authContext.userId !== cachedUser.id && (
           <FollowButton
             className="mb-2 w-[100%] rounded-full"
             targetUserId={"2"}
-            isFollow={isFollow}
+            isFollow={isFollowee}
           />
         )}
-        {props.user.promptonUser !== null &&
-          props.user.promptonUser.id !== null && (
+        {cachedUser.promptonUser !== null &&
+          cachedUser.promptonUser.id !== null && (
             <div className={"block w-[100%] rounded-full"}>
               <PromptonRequestColorfulButton
                 rounded="rounded-full"
-                promptonId={props.user.promptonUser.id}
+                promptonId={cachedUser.promptonUser.id}
                 hideIcon={true}
-                targetUserId={props.user.id}
+                targetUserId={cachedUser.id}
               />
             </div>
           )}
-        {authContext.userId === props.user.id && (
+        {authContext.userId === cachedUser.id && (
           <ProfileEditDialog
             triggerChildren={
               <Button className="w-full rounded-full">
@@ -205,8 +209,8 @@ export function UserHomeMenu(props: Props) {
   )
 }
 
-export const userHomeMenuFragment = graphql(
-  `fragment UserHomeMenu on UserNode @_unmask {
+export const UserHomeMenuFragment = graphql(
+  `fragment UserHomeMenuFragment on UserNode {
     id
     login
     isFollowee
@@ -222,13 +226,11 @@ export const userHomeMenuFragment = graphql(
   [],
 )
 
-const userQuery = graphql(
-  `query User(
-    $userId: ID!,
-  ) {
+const UserQuery = graphql(
+  `query User($userId: ID!) {
     user(id: $userId) {
-      ...UserHomeMenu
+      ...UserHomeMenuFragment
     }
   }`,
-  [userHomeMenuFragment],
+  [UserHomeMenuFragment],
 )

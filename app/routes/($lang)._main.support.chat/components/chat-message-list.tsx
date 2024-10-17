@@ -9,7 +9,7 @@ import {
 import { graphql, type FragmentOf } from "gql.tada"
 
 import { useEffect, useRef } from "react"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   messages: FragmentOf<typeof MessageListItemFragment>[]
@@ -42,7 +42,7 @@ export function ChatMessageList(props: Props) {
           <RecipientMessage
             key={message.id}
             message={message}
-            recipientIconImageURL={ExchangeIconUrl(props.recipient.iconUrl)}
+            recipientIconImageURL={withIconUrlFallback(props.recipient.iconUrl)}
           />
         ),
       )}
