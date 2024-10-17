@@ -7,7 +7,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -64,7 +64,7 @@ export function StickerArticle(props: Props) {
           <Link to={`/users/${props.sticker.user.login}`}>
             <div className="mt-2 flex items-center space-x-2">
               <img
-                src={ExchangeIconUrl(props.sticker.user.iconUrl)}
+                src={withIconUrlFallback(props.sticker.user.iconUrl)}
                 alt={props.sticker.user.name}
                 className="h-8 w-8 rounded-full"
               />

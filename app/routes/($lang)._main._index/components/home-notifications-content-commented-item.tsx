@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateText } from "~/utils/to-date-text"
 import { toDateEnText } from "~/utils/to-date-en-text"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -42,7 +42,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
       >
         <>
           <img
-            src={ExchangeIconUrl(props.notification.user?.iconUrl)}
+            src={withIconUrlFallback(props.notification.user?.iconUrl)}
             alt="thumbnail"
             className="h-8 w-8 rounded-full object-cover"
           />
@@ -91,7 +91,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
       {reply && (
         <div className="ml-12 flex items-center space-x-2">
           <img
-            src={ExchangeIconUrl(reply.user?.iconUrl)}
+            src={withIconUrlFallback(reply.user?.iconUrl)}
             alt="thumbnail"
             className="h-8 w-8 rounded-full object-cover"
           />

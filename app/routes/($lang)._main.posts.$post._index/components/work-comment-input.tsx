@@ -9,7 +9,7 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -94,7 +94,7 @@ export function ReplyCommentInput(props: Props) {
     <>
       <div className="flex w-full items-center space-x-4 pl-16">
         <Avatar>
-          <AvatarImage src={ExchangeIconUrl(iconUrl)} alt="" />
+          <AvatarImage src={withIconUrlFallback(iconUrl)} alt="" />
           <AvatarFallback />
         </Avatar>
         <AutoResizeTextarea

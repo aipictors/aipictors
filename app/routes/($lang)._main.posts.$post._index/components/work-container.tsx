@@ -16,7 +16,7 @@ import {
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { AppSideMenu } from "~/components/app/app-side-menu"
 import type { HomeAwardWorksFragment } from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
@@ -95,7 +95,7 @@ export function WorkContainer(props: Props) {
                 userId={work.user.id}
                 userLogin={work.user.login}
                 userName={work.user.name}
-                userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
+                userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography ?? ""}
                 userEnBiography={work.user.enBiography ?? null}
@@ -111,7 +111,7 @@ export function WorkContainer(props: Props) {
               userId={work.user.id}
               userName={work.user.name}
               userLogin={work.user.login}
-              userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
+              userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
               userFollowersCount={work.user.followersCount}
               userBiography={work.user.biography ?? ""}
               userEnBiography={work.user.enBiography ?? null}

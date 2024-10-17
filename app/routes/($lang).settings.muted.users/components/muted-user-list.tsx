@@ -3,7 +3,7 @@ import { MutedUser } from "~/routes/($lang).settings.muted.users/components/mute
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export function MutedUserList() {
   const appContext = useContext(AuthContext)
@@ -38,7 +38,7 @@ export function MutedUserList() {
           <MutedUser
             key={user.id}
             name={user.name}
-            iconImageURL={ExchangeIconUrl(user.iconUrl)}
+            iconImageURL={withIconUrlFallback(user.iconUrl)}
             onClick={() => handleUnmute(user.id)}
           />
         ))}

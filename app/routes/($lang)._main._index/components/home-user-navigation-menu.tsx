@@ -36,7 +36,7 @@ import { graphql } from "gql.tada"
 import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   onLogout(): void
@@ -156,7 +156,7 @@ export function HomeUserNavigationMenu(props: Props) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarImage src={ExchangeIconUrl(iconUrl)} />
+          <AvatarImage src={withIconUrlFallback(iconUrl)} />
           <AvatarFallback />
         </Avatar>
       </DropdownMenuTrigger>
@@ -175,7 +175,7 @@ export function HomeUserNavigationMenu(props: Props) {
               className="absolute bottom-[-16px]"
             >
               <Avatar className="cursor-pointer ">
-                <AvatarImage src={ExchangeIconUrl(iconUrl)} />
+                <AvatarImage src={withIconUrlFallback(iconUrl)} />
                 <AvatarFallback />
               </Avatar>
             </Link>

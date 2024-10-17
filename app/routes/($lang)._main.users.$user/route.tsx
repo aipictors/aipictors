@@ -5,7 +5,7 @@ import {
   useLoaderData,
   useParams,
 } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { graphql, readFragment } from "gql.tada"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { config, META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
@@ -16,7 +16,7 @@ import {
 } from "~/routes/($lang)._main.users.$user._index/components/user-home-header"
 import {
   UserHomeMenu,
-  userHomeMenuFragment,
+  UserHomeMenuFragment,
 } from "~/routes/($lang)._main.users.$user._index/components/user-home-menu"
 import {
   UserProfileIconFragment,
@@ -27,79 +27,52 @@ import {
   UserTabsFragment,
 } from "~/routes/($lang)._main.users.$user._index/components/user-tabs"
 import { createMeta } from "~/utils/create-meta"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
     throw new Response(null, { status: 404 })
   }
 
-  // const redirectResponse = checkLocaleRedirect(props.request)
-
-  // if (redirectResponse) {
-  //   return redirectResponse
-  // }
-
-  const userIdResp = await loaderClient.query({
-    query: userIdQuery,
+  const result = await loaderClient.query({
+    query: UserQuery,
     variables: {
       userId: decodeURIComponent(props.params.user),
     },
   })
 
-  if (userIdResp.data.user === null) {
+  if (result.data.user === null) {
     throw new Response(null, { status: 404 })
   }
 
-  const userResp = await loaderClient.query({
-    query: userQuery,
-    variables: {
-      userId: decodeURIComponent(props.params.user),
-    },
-  })
-
-  if (userResp.data.user === null) {
-    throw new Response(null, { status: 404 })
-  }
-
-  return {
-    user: userResp.data.user,
-    worksCount: userResp.data.user.worksCount,
-  }
+  return { user: result.data.user }
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneDay,
+  "Cache-Control": config.cacheControl.oneHour,
 })
 
-export const meta: MetaFunction = (props) => {
-  if (!props.data) {
-    return [{ title: "ユーザのマイページ" }]
+export const meta: MetaFunction<typeof loader> = (props) => {
+  if (props.data === undefined) {
+    throw new Error("Data is undefined")
   }
 
-  const user = props.data as {
-    user: FragmentOf<typeof UserMetaFragment>
-  }
+  const user = readFragment(MetaUserFragment, props.data.user)
 
-  const worksCountPart =
-    user.user.worksCount > 0 ? ` (${user.user.worksCount}作品)` : ""
+  const worksCountText = user.worksCount > 0 ? ` (${user.worksCount}作品)` : ""
+
+  const iconUrl = user.iconUrl !== null ? withIconUrlFallback(user.iconUrl) : ""
 
   return createMeta(
     META.USERS,
     {
-      title:
-        `${user.user.name}のマイページ${worksCountPart}` ||
-        "ユーザーのマイページ",
-      enTitle: `${user.user.name}'s page${worksCountPart}`,
+      title: `${user.name}のマイページ${worksCountText}`,
+      enTitle: `${user.name}'s page${worksCountText}`,
       description:
-        user.user.biography ||
+        user.biography ||
         "Aipictorsのマイページです、AIイラストなどの作品一覧を閲覧することができます",
-      enDescription: `This is ${user.user.name}'s page on Aipictors, where you can view a list of AI illustrations and other works`,
-      url: user.user.headerImageUrl?.length
-        ? user.user.headerImageUrl
-        : user.user.iconUrl
-          ? ExchangeIconUrl(user.user.iconUrl)
-          : "",
+      enDescription: `This is ${user.name}'s page on Aipictors, where you can view a list of AI illustrations and other works`,
+      url: user.headerImageUrl ?? iconUrl,
     },
     props.params.lang,
   )
@@ -114,10 +87,6 @@ export default function UserLayout() {
 
   const data = useLoaderData<typeof loader>()
 
-  if (data === null) {
-    return null
-  }
-
   return (
     <div className="flex w-full flex-col justify-center">
       <div className="relative">
@@ -127,7 +96,7 @@ export default function UserLayout() {
         />
         <UserHomeMenu user={data.user} />
       </div>
-      <div className="flex flex-col space-y-4">
+      <div className="space-y-4">
         <UserTabs user={data.user} />
         <Outlet />
       </div>
@@ -135,16 +104,8 @@ export default function UserLayout() {
   )
 }
 
-const userIdQuery = graphql(
-  `query UserId($userId: ID!) {
-    user(id: $userId) {
-      id
-    }
-  }`,
-)
-
-const UserMetaFragment = graphql(
-  `fragment UserMeta on UserNode @_unmask {
+const MetaUserFragment = graphql(
+  `fragment MetaUserFragment on UserNode {
     worksCount
     name
     biography
@@ -153,23 +114,21 @@ const UserMetaFragment = graphql(
   }`,
 )
 
-const userQuery = graphql(
-  `query User(
-    $userId: ID!,
-  ) {
+const UserQuery = graphql(
+  `query User($userId: ID!) {
     user(id: $userId) {
-      ...UserProfileIcon
-      ...UserHomeMenu
-      ...UserHomeHeader
-      ...UserTabs
-      ...UserMeta
+      ...UserHomeHeaderFragment
+      ...UserProfileIconFragment
+      ...UserHomeMenuFragment
+      ...UserTabsFragment
+      ...MetaUserFragment
     }
   }`,
   [
-    UserProfileIconFragment,
-    userHomeMenuFragment,
+    MetaUserFragment,
     UserHomeHeaderFragment,
+    UserHomeMenuFragment,
+    UserProfileIconFragment,
     UserTabsFragment,
-    UserMetaFragment,
   ],
 )

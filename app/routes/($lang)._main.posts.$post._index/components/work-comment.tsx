@@ -8,7 +8,7 @@ import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/com
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -151,7 +151,7 @@ export function WorkComment(props: Props) {
           ) => {
             props.onReplyCompleted(id, text, stickerId, stickerImageURL)
           }}
-          iconUrl={ExchangeIconUrl(props.userIconImageURL)}
+          iconUrl={withIconUrlFallback(props.userIconImageURL)}
         />
       )}
     </>

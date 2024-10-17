@@ -5,7 +5,7 @@ import {
   CollectionWorkList,
   CollectionWorkListItemFragment,
 } from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useSearchParams } from "@remix-run/react"
 
 type Props = {
@@ -36,7 +36,7 @@ export function CollectionArticle(props: Props) {
         thumbnailImageURL={props.collection.thumbnailImageURL ?? ""}
         userId={props.collection.user.id ?? ""}
         userName={props.collection.user.name ?? ""}
-        userIconURL={ExchangeIconUrl(props.collection.user.iconUrl)}
+        userIconURL={withIconUrlFallback(props.collection.user.iconUrl)}
         collectionName={props.collection.title}
         collectionDescription={props.collection.description}
         isFollow={false}

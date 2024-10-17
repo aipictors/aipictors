@@ -7,7 +7,7 @@ import { LikeButton } from "~/components/like-button"
 import { useRef, useCallback } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
@@ -131,7 +131,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <img
-                        src={ExchangeIconUrl(photo.context.user.iconUrl)}
+                        src={withIconUrlFallback(photo.context.user.iconUrl)}
                         alt={photo.context.user.name}
                         className="h-4 w-4 rounded-full"
                       />

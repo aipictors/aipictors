@@ -22,7 +22,7 @@ import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/comp
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { toRatingText } from "~/utils/work/to-rating-text"
 import { Badge } from "~/components/ui/badge"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { toStyleText } from "~/utils/work/to-style-text"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
@@ -312,7 +312,9 @@ export function WorkArticle(props: Props) {
               to={`/users/${props.work.user.login}`}
             >
               <Avatar>
-                <AvatarImage src={ExchangeIconUrl(props.work.user.iconUrl)} />
+                <AvatarImage
+                  src={withIconUrlFallback(props.work.user.iconUrl)}
+                />
                 <AvatarFallback />
               </Avatar>
               <span>{props.work.user.name}</span>

@@ -3,7 +3,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { useTranslation } from "~/hooks/use-translation"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<
@@ -44,7 +44,7 @@ export function HomeAwardWorksSection(props: Props) {
                   <Link to={`/users/${work.work?.user.id}`}>
                     <div className="flex items-center space-x-2">
                       <img
-                        src={ExchangeIconUrl(work.work?.user?.iconUrl)}
+                        src={withIconUrlFallback(work.work?.user?.iconUrl)}
                         className="h-8 w-8 rounded-full"
                         alt="icon"
                       />

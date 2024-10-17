@@ -6,7 +6,7 @@ import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { LikeButton } from "~/components/like-button"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 
@@ -60,7 +60,7 @@ export function UserSensitiveNoteList(props: Props) {
                 </div>
                 <UserNameBadge
                   userId={work.user.id}
-                  userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
+                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                   name={work.user.name}
                   width={"lg"}
                   padding={"md"}

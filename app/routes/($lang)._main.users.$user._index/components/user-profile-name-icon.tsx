@@ -1,7 +1,7 @@
 import { OmissionNumber } from "~/components/omission-number"
 import { UserProfileAvatar } from "~/routes/($lang)._main.users.$user._index/components/user-profile-avatar"
-import { type FragmentOf, graphql } from "gql.tada"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { type FragmentOf, graphql, readFragment } from "gql.tada"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { UserSubscriptionIcon } from "~/routes/($lang)._main.users.$user._index/components/user-subscription-icon"
 import { UserModeratorIcon } from "~/routes/($lang)._main.users.$user._index/components/user-moderator-icon"
 import { useTranslation } from "~/hooks/use-translation"
@@ -10,7 +10,12 @@ type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
 }
 
+/**
+ * ヘッダーのアイコンと名前の部分
+ */
 export function UserProfileNameIcon(props: Props) {
+  const user = readFragment(UserProfileIconFragment, props.user)
+
   const t = useTranslation()
 
   return (
@@ -21,25 +26,25 @@ export function UserProfileNameIcon(props: Props) {
       >
         <div className="relative mr-auto flex items-center gap-4 p-0 pb-4 md:p-8">
           <UserProfileAvatar
-            alt={props.user.name}
-            src={ExchangeIconUrl(props.user.iconUrl)}
+            alt={user.name}
+            src={withIconUrlFallback(user.iconUrl)}
             size={"auto"}
           />
           <div className="hidden md:block">
             <div className="flex items-center space-x-2">
               <h1 className="text-nowrap font-bold text-2xl text-white">
-                {props.user.name}
+                {user.name}
               </h1>
-              <UserSubscriptionIcon passType={props.user.pass?.type} />
-              <UserModeratorIcon isModerator={props.user.isModerator} />
+              <UserSubscriptionIcon passType={user.pass?.type} />
+              <UserModeratorIcon isModerator={user.isModerator} />
             </div>
             <h2 className="text-nowrap font-bold text-sm text-white opacity-50">
-              @{props.user.login}
+              @{user.login}
             </h2>
             <div className="flex">
               <div className="w-32">
                 <div className="white mt-4 font-bold text-xl">
-                  <OmissionNumber number={props.user.followersCount} />
+                  <OmissionNumber number={user.followersCount} />
                 </div>
                 <div className="white mt-4 text-md opacity-50">
                   {t("フォロワー", "Followers")}
@@ -47,7 +52,7 @@ export function UserProfileNameIcon(props: Props) {
               </div>
               <div className="w-32">
                 <div className="white mt-4 font-bold text-xl">
-                  <OmissionNumber number={props.user.receivedLikesCount} />
+                  <OmissionNumber number={user.receivedLikesCount} />
                 </div>
                 <div className="white mt-4 text-md opacity-50">
                   {t("いいね", "Likes")}
@@ -58,11 +63,11 @@ export function UserProfileNameIcon(props: Props) {
         </div>
         <div className="block md:hidden">
           <div className="flex items-center space-x-2">
-            <h1 className="text-nowrap font-bold text-md">{props.user.name}</h1>
-            <UserSubscriptionIcon passType={props.user.pass?.type} />
-            <UserModeratorIcon isModerator={props.user.isModerator} />
+            <h1 className="text-nowrap font-bold text-md">{user.name}</h1>
+            <UserSubscriptionIcon passType={user.pass?.type} />
+            <UserModeratorIcon isModerator={user.isModerator} />
           </div>
-          <h2 className="font-bold text-sm opacity-50">@{props.user.login}</h2>
+          <h2 className="font-bold text-sm opacity-50">@{user.login}</h2>
         </div>
       </div>
     </header>
@@ -70,7 +75,7 @@ export function UserProfileNameIcon(props: Props) {
 }
 
 export const UserProfileIconFragment = graphql(
-  `fragment UserProfileIcon on UserNode @_unmask {
+  `fragment UserProfileIconFragment on UserNode {
     name
     isModerator
     login
@@ -78,6 +83,7 @@ export const UserProfileIconFragment = graphql(
     followersCount
     iconUrl
     pass {
+      id
       type
     }
   }`,

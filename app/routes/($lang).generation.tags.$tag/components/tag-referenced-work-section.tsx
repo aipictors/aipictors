@@ -4,7 +4,7 @@ import { UnstableSSR as SSR } from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof TagWorkFragment>[]
@@ -24,7 +24,7 @@ export function TagReferencedWorkSection(props: Props) {
           height: work.largeThumbnailImageHeight,
           workId: work.id, // 各作品のID
           userId: work.user.id, // 作品の所有者のID
-          userIcon: ExchangeIconUrl(work.user?.iconUrl), // 作品の所有者のアイコン
+          userIcon: withIconUrlFallback(work.user?.iconUrl), // 作品の所有者のアイコン
           userName: work.user.name, // 作品の所有者の名前
           workOwnerUserId: work.user.id,
           isLiked: work.isLiked,
@@ -68,7 +68,7 @@ export function TagReferencedWorkSection(props: Props) {
                 <Link to={`/users/${photo.userId}`}>
                   <div className="flex items-center space-x-2">
                     <img
-                      src={ExchangeIconUrl(photo.userIcon)}
+                      src={withIconUrlFallback(photo.userIcon)}
                       alt={photo.userName}
                       className="h-6 w-6 rounded-full"
                     />

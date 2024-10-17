@@ -13,7 +13,7 @@ import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._ind
 import { cn } from "~/lib/utils"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
@@ -130,7 +130,7 @@ export function FollowTagsFeedContents(props: Props) {
                       <Avatar>
                         <AvatarImage
                           className="rounded-full"
-                          src={ExchangeIconUrl(work.user.iconUrl)}
+                          src={withIconUrlFallback(work.user.iconUrl)}
                           alt=""
                         />
                         <AvatarFallback />

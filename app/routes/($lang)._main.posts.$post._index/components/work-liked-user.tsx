@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage } from "~/components/ui/avatar"
 import { Card } from "~/components/ui/card"
 import { Link } from "@remix-run/react"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   name: string
@@ -19,7 +19,7 @@ export function WorkLikedUser(props: Props) {
         <div className="flex max-h-16 flex-col space-y-1">
           <Avatar className="m-auto">
             <AvatarImage
-              src={ExchangeIconUrl(props.iconUrl)}
+              src={withIconUrlFallback(props.iconUrl)}
               alt={props.name}
             />
           </Avatar>

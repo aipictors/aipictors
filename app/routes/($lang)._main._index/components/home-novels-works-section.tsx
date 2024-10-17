@@ -3,7 +3,7 @@ import { LikeButton } from "~/components/like-button"
 import { graphql, type FragmentOf } from "gql.tada"
 import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof HomeNovelsWorkListItemFragment>[]
@@ -49,7 +49,7 @@ export function HomeNovelsWorksSection(props: Props) {
             </div>
             <UserNameBadge
               userId={work.user.id}
-              userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
+              userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
               name={work.user.name}
               width={"lg"}
               padding={"md"}

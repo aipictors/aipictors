@@ -6,7 +6,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   awards: FragmentOf<typeof SensitiveWorkAwardListItemFragment>[]
@@ -79,7 +79,9 @@ export function RankingSensitiveWorkList(props: Props) {
                 </p>
                 <UserNameBadge
                   userId={workItem.work.user.id}
-                  userIconImageURL={ExchangeIconUrl(workItem.work.user.iconUrl)}
+                  userIconImageURL={withIconUrlFallback(
+                    workItem.work.user.iconUrl,
+                  )}
                   name={workItem.work.user.name}
                   width={"md"}
                 />
