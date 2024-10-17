@@ -1,14 +1,12 @@
 import { AuthContext } from "~/contexts/auth-context"
-import {
-  HomeWorkFragment,
-  HomeWorkSection,
-} from "~/routes/($lang)._main._index/components/home-work-section"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
+import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
 
 type Props = {
   isSensitive?: boolean
@@ -46,7 +44,7 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
   return (
     <>
       {workDisplayed.length > 0 && (
-        <HomeWorkSection
+        <HomeRecommendedWorkList
           title={t("ユーザからの推薦", "Recommended by users")}
           works={workDisplayed}
           isCropped={false}
