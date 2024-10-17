@@ -1,6 +1,6 @@
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { ArrowDownWideNarrow } from "lucide-react"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useContext, useEffect, useState } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import {
   Select,
@@ -13,13 +13,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useSearchParams } from "react-router-dom"
-import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import {
   HomeWorksTagSection,
   type HomeTagWorkFragment,
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { useTranslation } from "~/hooks/use-translation"
+import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
+import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { useQuery } from "@apollo/client/index"
 
 type homeParticles = {
   firstTag: string
@@ -150,6 +154,26 @@ export function Home3dContents(props: Props) {
     updateQueryParams(searchParams)
   }
 
+  const appContext = useContext(AuthContext)
+
+  // 推薦作品
+  const { data: recommendedWorksResp } = useQuery(WorksQuery, {
+    skip: appContext.isLoading,
+    variables: {
+      offset: 0,
+      limit: config.query.homeWorkCount.promotion,
+      where: {
+        isRecommended: true,
+        ratings: ["G", "R15"],
+        style: "ILLUSTRATION",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const workDisplayed =
+    recommendedWorksResp?.works ?? props.homeParticles?.promotionWorks
+
   return (
     <Tabs
       defaultValue={searchParams.get("tab") || "home"}
@@ -172,11 +196,15 @@ export function Home3dContents(props: Props) {
               secondWorks={props.homeParticles.secondTagWorks}
               style="REAL"
             />
-            {!props.isSensitive && (
-              <HomeWorksUsersRecommendedSection
-                isSensitive={props.isSensitive}
-                works={props.homeParticles.promotionWorks}
-                style="REAL"
+            {workDisplayed !== undefined && workDisplayed?.length > 0 && (
+              <HomeRecommendedWorkList
+                title={t("ユーザからの推薦", "Recommended by users")}
+                works={workDisplayed}
+                isCropped={false}
+                link={
+                  "https://www.aipictors.com/search/?query=%7B%22keyword%22%3A%22%23%23%E6%8E%A8%E8%96%A6%E4%BD%9C%E5%93%81%22%2C%22options%22%3A%7B%22age%22%3A%5B%220%22%2C%223%22%2C%221%22%2C%222%22%5D%2C%22posttype%22%3A%5B%22image%22%2C%22novel%22%2C%22column%22%2C%22video%22%5D%2C%22target%22%3A%5B%22category%22%2C%22title%22%2C%22explanation%22%2C%22prompt%22%2C%22owner%22%5D%2C%22service%22%3A%22%22%2C%22model%22%3A%22%22%2C%22prompt%22%3A%5B%220%22%2C%221%22%2C%222%22%5D%2C%22follow%22%3A%5B%220%22%2C%221%22%5D%2C%22subject%22%3A%5B%220%22%2C%221%22%5D%2C%22taste%22%3A%5B%221%22%2C%222%22%2C%223%22%5D%2C%22post-since%22%3A%22%22%2C%22post-until%22%3A%22%22%2C%22collabid%22%3A%22%22%2C%22order%22%3A%22new%22%2C%22limit%22%3A%22100%22%2C%22offset%22%3A0%7D%7D&next=1"
+                }
+                isShowProfile={true}
               />
             )}
           </>
@@ -272,3 +300,12 @@ export function Home3dContents(props: Props) {
     </Tabs>
   )
 }
+
+const WorksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...HomePromotionWork
+    }
+  }`,
+  [HomePromotionWorkFragment],
+)
