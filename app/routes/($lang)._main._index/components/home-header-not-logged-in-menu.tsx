@@ -81,6 +81,8 @@ export const HomeHeaderNotLoggedInMenu = () => {
 
   const location = useLocation()
 
+  const shouldDisplayToggleSensitive = location.pathname !== "/generation"
+
   const setLocale = (locale: string) => {
     // URLの先頭にある /ja または /en を正しく検出
     const currentLocale = location.pathname.match(/^\/(ja|en)(\/|$)/)?.[1] || ""
@@ -180,9 +182,11 @@ export const HomeHeaderNotLoggedInMenu = () => {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-        <DropdownMenuSub>
-          <ToggleSensitive />
-        </DropdownMenuSub>
+        {shouldDisplayToggleSensitive && (
+          <DropdownMenuSub>
+            <ToggleSensitive />
+          </DropdownMenuSub>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )
