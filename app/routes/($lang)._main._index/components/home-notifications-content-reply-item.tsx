@@ -2,7 +2,7 @@ import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateText } from "~/lib/app/utils/to-date-text"
 import { cn } from "~/lib/utils"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   notification: FragmentOf<typeof WorkCommentReplyNotificationFragment>
@@ -32,7 +32,7 @@ export function HomeNotificationsContentReplyItem(props: Props) {
       >
         <Link to={`/users/${props.notification.user?.id}`}>
           <img
-            src={ExchangeIconUrl(props.notification.user?.iconUrl)}
+            src={withIconUrlFallback(props.notification.user?.iconUrl)}
             alt="thumbnail"
             className="h-8 w-8 rounded-full object-cover"
           />

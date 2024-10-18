@@ -3,7 +3,7 @@ import { ArrowLeftRightIcon } from "lucide-react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateText } from "~/utils/to-date-text"
 import { toDateEnText } from "~/utils/to-date-en-text"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -26,7 +26,7 @@ export function HomeNotificationsContentFollowedItem(props: Props) {
       to={`/users/${props.notification.user.id}`}
     >
       <img
-        src={ExchangeIconUrl(
+        src={withIconUrlFallback(
           props.notification.user.iconUrl ??
             "https://assets.aipictors.com/no-profile.webp",
         )}

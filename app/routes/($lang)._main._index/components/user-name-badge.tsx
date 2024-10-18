@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react"
 import { Heart } from "lucide-react"
 import { cn } from "~/lib/utils"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   userId: string
@@ -34,7 +34,7 @@ export function UserNameBadge(props: Props) {
               "h-6 w-6": props.width === "md",
               "h-8 w-8": props.width === "lg",
             })}
-            src={ExchangeIconUrl(props.userIconImageURL)}
+            src={withIconUrlFallback(props.userIconImageURL)}
           />
           <p
             className={cn("overflow-hidden text-ellipsis text-nowrap", {

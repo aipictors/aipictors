@@ -7,7 +7,7 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/novel-work-preview-item"
 import { LikeButton } from "~/components/like-button"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof UserNovelsItemFragment>[]
@@ -58,7 +58,7 @@ export function UserNovelList(props: Props) {
                 />
                 <UserNameBadge
                   userId={work.user.id}
-                  userIconImageURL={ExchangeIconUrl(work.user.iconUrl)}
+                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                   name={work.user.name}
                   width={"lg"}
                   padding={"md"}

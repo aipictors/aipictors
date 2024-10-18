@@ -6,7 +6,7 @@ import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { Heart, Images } from "lucide-react"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 
@@ -142,7 +142,9 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                         <Link to={`/users/${photo.context.user.id}`}>
                           <div className="flex items-center space-x-2">
                             <img
-                              src={ExchangeIconUrl(photo.context.user.iconUrl)}
+                              src={withIconUrlFallback(
+                                photo.context.user.iconUrl,
+                              )}
                               alt={photo.context.user.name}
                               className="h-6 w-6 rounded-full"
                             />

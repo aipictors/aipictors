@@ -4,7 +4,7 @@ import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { MessageListItemFragment } from "~/routes/($lang)._main.support.chat/components/support-message-list"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
@@ -60,7 +60,7 @@ export function HomeMessagesContents() {
             <Avatar>
               <AvatarImage
                 className="rounded-full"
-                src={ExchangeIconUrl(message.user.iconUrl)}
+                src={withIconUrlFallback(message.user.iconUrl)}
                 alt=""
               />
               <AvatarFallback />

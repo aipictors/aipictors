@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { graphql, readFragment, type FragmentOf } from "gql.tada"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -8,13 +8,19 @@ type Props = {
 }
 
 export function UserSensitiveTabs(props: Props) {
+  const user = readFragment(UserSensitiveTabsFragment, props.user)
+
   const t = useTranslation()
 
   const navigate = useNavigate()
 
   const location = useLocation()
 
-  // 現在のURLパスに基づいてアクティブなタブを判定
+  /**
+   * 現在のURLパスに基づいてアクティブなタブを判定
+   * デフォルトは「ポートフォリオ」
+   * TODO: pathnameを引数に持つカスタムHooksとして定義して単体テストを追加
+   */
   const getActiveTab = () => {
     if (location.pathname.endsWith("/posts")) return t("画像", "Images")
     if (location.pathname.endsWith("/novels")) return t("小説", "Novels")
@@ -24,49 +30,56 @@ export function UserSensitiveTabs(props: Props) {
     if (location.pathname.endsWith("/collections"))
       return t("コレクション", "Collections")
     if (location.pathname.endsWith("/stickers")) return t("スタンプ", "Stamps")
-    return t("ポートフォリオ", "Portfolio") // デフォルトは「ポートフォリオ」
+    return t("ポートフォリオ", "Portfolio")
   }
 
+  /**
+   * TODO: パスを返す関数を定義して単体テストを追加
+   */
   const handleTabClick = (value: string) => {
     if (value === t("ポートフォリオ", "Portfolio")) {
-      navigate(`/r/users/${props.user.login}`)
+      navigate(`/r/users/${user.login}`)
     }
     if (value === t("画像", "Images")) {
-      navigate(`/r/users/${props.user.login}/posts`)
+      navigate(`/r/users/${user.login}/posts`)
     }
     if (value === t("小説", "Novels")) {
-      navigate(`/r/users/${props.user.login}/novels`)
+      navigate(`/r/users/${user.login}/novels`)
     }
     if (value === t("コラム", "Columns")) {
-      navigate(`/r/users/${props.user.login}/notes`)
+      navigate(`/r/users/${user.login}/notes`)
     }
     if (value === t("動画", "Videos")) {
-      navigate(`/r/users/${props.user.login}/videos`)
+      navigate(`/r/users/${user.login}/videos`)
     }
     if (value === t("シリーズ", "Series")) {
-      navigate(`/r/users/${props.user.login}/albums`)
+      navigate(`/r/users/${user.login}/albums`)
     }
     if (value === t("コレクション", "Collections")) {
-      navigate(`/r/users/${props.user.login}/collections`)
+      navigate(`/r/users/${user.login}/collections`)
     }
     if (value === t("スタンプ", "Stamps")) {
-      navigate(`/r/users/${props.user.login}/stickers`)
+      navigate(`/r/users/${user.login}/stickers`)
     }
   }
 
-  const tabList = () => {
-    return [
-      t("ポートフォリオ", "Portfolio"),
-      ...(props.user.hasSensitiveImageWorks ? [t("画像", "Images")] : []),
-      ...(props.user.hasSensitiveNovelWorks ? [t("小説", "Novels")] : []),
-      ...(props.user.hasSensitiveColumnWorks ? [t("コラム", "Columns")] : []),
-      ...(props.user.hasSensitiveVideoWorks ? [t("動画", "Videos")] : []),
-      ...(props.user.hasAlbums ? [t("シリーズ", "Series")] : []),
-      ...(props.user.hasFolders ? [t("コレクション", "Collections")] : []),
-      ...(props.user.hasPublicStickers ? [t("スタンプ", "Stamps")] : []),
-    ]
-  }
+  /**
+   * TODO: 配列を返す関数を定義して単体テストを追加
+   */
+  const tabLabels = [
+    t("ポートフォリオ", "Portfolio"),
+    ...(user.hasSensitiveImageWorks ? [t("画像", "Images")] : []),
+    ...(user.hasSensitiveNovelWorks ? [t("小説", "Novels")] : []),
+    ...(user.hasSensitiveColumnWorks ? [t("コラム", "Columns")] : []),
+    ...(user.hasSensitiveVideoWorks ? [t("動画", "Videos")] : []),
+    ...(user.hasAlbums ? [t("シリーズ", "Series")] : []),
+    ...(user.hasFolders ? [t("コレクション", "Collections")] : []),
+    ...(user.hasPublicStickers ? [t("スタンプ", "Stamps")] : []),
+  ]
 
+  /**
+   * TODO: 不要
+   */
   const removeParentheses = (str: string) => {
     return str.replace(/\(([^)]+)\)/, "")
   }
@@ -75,16 +88,14 @@ export function UserSensitiveTabs(props: Props) {
 
   return (
     <div className="grid grid-cols-3 gap-2">
-      {tabList().map((tabValue: string) => (
+      {tabLabels.map((label) => (
         <Button
-          key={removeParentheses(tabValue)}
-          onClick={() => handleTabClick(removeParentheses(tabValue))}
+          key={removeParentheses(label)}
+          onClick={() => handleTabClick(removeParentheses(label))}
           variant="secondary"
-          className={
-            removeParentheses(tabValue) === activeTab ? "opacity-50" : ""
-          }
+          className={removeParentheses(label) === activeTab ? "opacity-50" : ""}
         >
-          {tabValue}
+          {label}
         </Button>
       ))}
     </div>
@@ -92,14 +103,14 @@ export function UserSensitiveTabs(props: Props) {
 }
 
 export const UserSensitiveTabsFragment = graphql(
-  `fragment UserTabs on UserNode @_unmask {
+  `fragment UserSensitiveTabsFragment on UserNode {
+    id
     login
     hasSensitiveImageWorks
     hasSensitiveNovelWorks
     hasSensitiveVideoWorks
     hasSensitiveColumnWorks
     hasFolders
-    hasSensitiveFolders
     hasAlbums
     hasPublicStickers
   }`,

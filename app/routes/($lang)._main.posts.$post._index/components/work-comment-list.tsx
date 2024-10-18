@@ -18,7 +18,7 @@ import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { ExchangeIconUrl } from "~/utils/exchange-icon-url"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -150,7 +150,7 @@ export function WorkCommentList(props: Props) {
             user: {
               id: appContext.userId ?? "",
               name: appContext.displayName ?? "",
-              iconUrl: ExchangeIconUrl(iconUrl),
+              iconUrl: withIconUrlFallback(iconUrl),
             },
             sticker: {
               image: {
@@ -234,7 +234,7 @@ export function WorkCommentList(props: Props) {
 
         <div className="flex w-full items-center space-x-4">
           <Avatar>
-            <AvatarImage src={ExchangeIconUrl(userIcon)} alt="" />
+            <AvatarImage src={withIconUrlFallback(userIcon)} alt="" />
             <AvatarFallback />
           </Avatar>
           <AutoResizeTextarea
@@ -278,7 +278,7 @@ export function WorkCommentList(props: Props) {
                     createdAt={comment.createdAt}
                     stickerImageURL={comment.sticker?.image?.downloadURL}
                     text={comment.text}
-                    userIconImageURL={ExchangeIconUrl(userIcon)}
+                    userIconImageURL={withIconUrlFallback(userIcon)}
                     userName={comment.user?.name}
                     commentId={comment.id}
                     onDeleteComment={() => onDeleteComment(comment.id)}
@@ -296,7 +296,7 @@ export function WorkCommentList(props: Props) {
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
-                            iconUrl: ExchangeIconUrl(userIcon),
+                            iconUrl: withIconUrlFallback(userIcon),
                           },
                           sticker: {
                             image: {
@@ -324,7 +324,7 @@ export function WorkCommentList(props: Props) {
                 stickerAccessType={comment.sticker?.accessType}
                 isStickerDownloadable={comment.sticker?.isDownloaded}
                 text={comment.text}
-                userIconImageURL={ExchangeIconUrl(comment.user?.iconUrl)}
+                userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
                 userName={comment.user?.name}
                 commentId={comment.id}
                 onDeleteComment={() => onDeleteComment(comment.id)}
@@ -343,7 +343,7 @@ export function WorkCommentList(props: Props) {
                       user: {
                         id: appContext.userId ?? "",
                         name: appContext.displayName ?? "",
-                        iconUrl: ExchangeIconUrl(userIcon),
+                        iconUrl: withIconUrlFallback(userIcon),
                       },
                       sticker: {
                         image: {
@@ -380,7 +380,9 @@ export function WorkCommentList(props: Props) {
                     stickerAccessType={comment.sticker?.accessType}
                     isStickerDownloadable={comment.sticker?.isDownloaded}
                     text={comment.text}
-                    userIconImageURL={ExchangeIconUrl(comment.user?.iconUrl)}
+                    userIconImageURL={withIconUrlFallback(
+                      comment.user?.iconUrl,
+                    )}
                     userName={comment.user?.name}
                     commentId={comment.id}
                     onDeleteComment={() => onDeleteComment(comment.id)}
@@ -399,7 +401,7 @@ export function WorkCommentList(props: Props) {
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
-                            iconUrl: ExchangeIconUrl(userIcon),
+                            iconUrl: withIconUrlFallback(userIcon),
                           },
                           sticker: {
                             image: {
