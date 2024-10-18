@@ -87,7 +87,7 @@ export function HomeUserNavigationMenu(props: Props) {
 
   const location = useLocation()
 
-  const shouldDisplayToggleSensitive = location.pathname !== "/generation"
+  const isSensitiveToggleVisible = location.pathname !== "/generation"
 
   const setColorTheme = (newMode: string) => {
     if (newMode === "system") {
@@ -312,7 +312,7 @@ export function HomeUserNavigationMenu(props: Props) {
           {userSetting?.userSetting &&
             (userSetting?.userSetting.preferenceRating === "R18" ||
               userSetting?.userSetting.preferenceRating === "R18G") &&
-            shouldDisplayToggleSensitive && (
+            isSensitiveToggleVisible && (
               <DropdownMenuItem>
                 <ToggleSensitive />
               </DropdownMenuItem>
