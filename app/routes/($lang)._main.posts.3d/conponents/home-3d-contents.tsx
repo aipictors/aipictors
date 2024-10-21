@@ -165,7 +165,7 @@ export function Home3dContents(props: Props) {
       where: {
         isRecommended: true,
         ratings: ["G", "R15"],
-        style: "ILLUSTRATION",
+        style: "REAL",
         isNowCreatedAt: true,
       },
     },
