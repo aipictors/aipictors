@@ -76,6 +76,68 @@ export function PostFormItemDraggableImages(props: Props) {
   }, [props.items])
 
   /**
+   * クリップボードから画像貼り付けできるようにする
+   */
+  useEffect(() => {
+    const handlePaste = async (event: ClipboardEvent) => {
+      const activeElement = document.activeElement
+      if (
+        activeElement &&
+        (activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA")
+      ) {
+        return
+      }
+
+      if (props.isOnlyMove) return
+
+      const items = event.clipboardData?.items
+      if (!items) return
+
+      for (const item of items) {
+        if (item.type.startsWith("image")) {
+          const file = item.getAsFile()
+          if (file && file.size <= maxSize) {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+              const img = new Image()
+              img.onload = () => {
+                const canvas = document.createElement("canvas")
+                canvas.width = img.width
+                canvas.height = img.height
+                const ctx = canvas.getContext("2d")
+                ctx?.drawImage(img, 0, 0)
+                const webpDataURL = canvas.toDataURL("image/webp")
+                props.items.push({
+                  id: props.items.length,
+                  content: webpDataURL,
+                })
+                props.onChangeItems([...props.items])
+                updateThumbnail()
+              }
+              img.src = e.target?.result as string
+            }
+            reader.readAsDataURL(file)
+            toast("画像をクリップボードから貼り付けました")
+          } else {
+            toast(
+              t(
+                "32MB以内の画像を貼り付けてください",
+                "Please paste an image under 32MB",
+              ),
+            )
+          }
+        }
+      }
+    }
+
+    document.addEventListener("paste", handlePaste)
+    return () => {
+      document.removeEventListener("paste", handlePaste)
+    }
+  }, [])
+
+  /**
    * 作品サムネイルを更新する
    * @param webpDataURL
    */
@@ -298,6 +360,9 @@ export function PostFormItemDraggableImages(props: Props) {
                 "1枚32MB以内、最大200枚",
                 "Up to 32MB per image, max 200 images",
               )}
+            </p>
+            <p className="text-center text-sm">
+              {"クリップボードから貼り付けも可能"}
             </p>
           </div>
         )}
