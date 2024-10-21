@@ -5,12 +5,13 @@ import { ImagesPreview } from "~/components/images-preview"
 type Props = {
   workImageURL?: string
   subWorkImageURLs: string[]
+  onSelectedImage?: (imageURL: string) => void
 }
 
-export function WorkImageView({ workImageURL, subWorkImageURLs }: Props) {
-  const allImageURLs = workImageURL
-    ? [workImageURL, ...subWorkImageURLs]
-    : subWorkImageURLs
+export function WorkImageView(props: Props) {
+  const allImageURLs = props.workImageURL
+    ? [props.workImageURL, ...props.subWorkImageURLs]
+    : props.subWorkImageURLs
 
   const shouldRenderCarousel = allImageURLs.length > 1
 
@@ -19,11 +20,14 @@ export function WorkImageView({ workImageURL, subWorkImageURLs }: Props) {
   // 画像選択関数
   const handleSelectImage = (imageURL: string) => {
     setCurrentIndex(allImageURLs.indexOf(imageURL))
+    if (props.onSelectedImage) {
+      props.onSelectedImage(imageURL)
+    }
   }
 
   useEffect(() => {
     setCurrentIndex(0)
-  }, [workImageURL])
+  }, [props.workImageURL])
 
   // カルーセルのレンダリング
   if (shouldRenderCarousel) {
@@ -45,14 +49,14 @@ export function WorkImageView({ workImageURL, subWorkImageURLs }: Props) {
     )
   }
 
-  if (workImageURL) {
+  if (props.workImageURL) {
     return (
       <div className="relative m-0">
         <ImagesPreview
           currentIndex={0}
           setCurrentIndex={() => {}}
-          thumbnailUrl={workImageURL}
-          imageURLs={[workImageURL]}
+          thumbnailUrl={props.workImageURL}
+          imageURLs={[props.workImageURL]}
         />
       </div>
     )

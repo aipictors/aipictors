@@ -1,4 +1,4 @@
-import { MenuPopover } from "./work-action-menu"
+import { WorkActionMenu } from "./work-action-menu"
 import { SharePopover } from "./work-action-share"
 import { LikeButton } from "~/components/like-button"
 import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
@@ -10,10 +10,13 @@ import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { RecommendButton } from "~/routes/($lang)._main.posts.$post._index/components/recommend-button"
 import { useTranslation } from "~/hooks/use-translation"
+import { downloadZipFile } from "~/routes/($lang).generation._index/utils/download-zip-file"
 
 type Props = {
+  id: string
   title?: string
-  imageUrl?: string
+  currentImageUrl?: string
+  imageUrls?: string[]
   workType: IntrospectionEnum<"WorkType">
   bookmarkFolderId: string | null
   workLikesCount: number
@@ -27,7 +30,7 @@ type Props = {
 }
 
 /**
- * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
+ * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー、ZIPダウンロード）
  */
 export function WorkAction(props: Props) {
   const t = useTranslation()
@@ -35,11 +38,33 @@ export function WorkAction(props: Props) {
   const appContext = useContext(AuthContext)
 
   const onDownload = async () => {
-    if (props.imageUrl) {
+    if (props.currentImageUrl) {
       const image = await createImageFileFromUrl({
-        url: props.imageUrl,
+        url: props.currentImageUrl,
       })
       downloadImageFile(image)
+    }
+  }
+
+  const onZipAllDownload = async () => {
+    if (props.imageUrls && props.imageUrls.length > 0) {
+      const files = await Promise.all(
+        props.imageUrls.map(async (url) => {
+          const fileName = url.split("/").pop()
+          if (!fileName) {
+            throw new Error("ファイル名が取得できませんでした")
+          }
+          return await createImageFileFromUrl({
+            url: url,
+            name: fileName,
+          })
+        }),
+      )
+
+      await downloadZipFile({
+        files: files,
+        name: props.id,
+      })
     }
   }
 
@@ -82,10 +107,12 @@ export function WorkAction(props: Props) {
           title={props.title}
           id={props.targetWorkId}
         />
-        <MenuPopover
+        <WorkActionMenu
           onDownload={onDownload}
+          onZipDownload={onZipAllDownload}
           isEnabledDelete={props.targetWorkOwnerUserId === appContext.userId}
           postId={props.targetWorkId}
+          disabledZipDownload={(props.imageUrls?.length ?? 0) <= 1}
         />
       </div>
     </div>

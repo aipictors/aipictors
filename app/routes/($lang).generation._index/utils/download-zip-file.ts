@@ -6,18 +6,23 @@ interface FileObject {
   data: Uint8Array
 }
 
+type Props = {
+  name: string
+  files: FileObject[]
+}
+
 /**
  * 画像を圧縮してダウンロードする
  * @param files ファイルの名とデータの配列
  */
-export const downloadZipFile = async (files: FileObject[]): Promise<void> => {
+export const downloadZipFile = async (props: Props): Promise<void> => {
   try {
-    if (files.length < 0) {
+    if (props.files.length < 0) {
       throw new Error("No valid images found to download.")
     }
 
     const data = zipSync(
-      Object.fromEntries(files.map((file) => [file.name, file.data])),
+      Object.fromEntries(props.files.map((file) => [file.name, file.data])),
       {},
     )
 
@@ -31,7 +36,7 @@ export const downloadZipFile = async (files: FileObject[]): Promise<void> => {
 
     const formattedDate = format(now, "yyyyMMddHHmmss")
 
-    linkNode.download = `images_${formattedDate}.zip`
+    linkNode.download = `${props.name}_${formattedDate}.zip`
 
     document.body.appendChild(linkNode)
 

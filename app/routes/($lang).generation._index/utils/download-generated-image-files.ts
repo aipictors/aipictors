@@ -23,5 +23,8 @@ export async function downloadGeneratedImageFiles(imageIds: string[]) {
   })
 
   // 画像を圧縮してダウンロードする
-  await downloadZipFile(files)
+  await downloadZipFile({
+    files: files,
+    name: "images",
+  })
 }

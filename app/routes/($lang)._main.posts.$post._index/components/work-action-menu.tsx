@@ -17,14 +17,16 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onDownload: () => void
+  onZipDownload: () => void
+  disabledZipDownload: boolean
   isEnabledDelete: boolean
   postId: string
 }
 
 /**
- * Menu for reporting a post and downloading an image
+ * 作品のポップオーバーメニュー
  */
-export function MenuPopover(props: Props) {
+export function WorkActionMenu(props: Props) {
   const [deleteWork, { loading: isLoadingDeleteAlbum }] =
     useMutation(DeleteWorkMutation)
   const [isDeleted, setIsDeleted] = useState(false)
@@ -63,6 +65,16 @@ export function MenuPopover(props: Props) {
               <DownloadIcon />
               {t("ダウンロード", "Download")}
             </Button>
+            {!props.disabledZipDownload && (
+              <Button
+                onClick={props.onZipDownload}
+                className="flex items-center gap-2"
+                variant="outline"
+              >
+                <DownloadIcon />
+                {t("一括ダウンロード", "All Download")}
+              </Button>
+            )}
             <ReportDialog postId={props.postId} />
             {isModeratorData?.viewer?.isModerator && (
               <ModerationRatingReportDialog postId={props.postId} />

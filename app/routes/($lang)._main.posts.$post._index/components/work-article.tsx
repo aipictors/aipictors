@@ -71,6 +71,10 @@ export function WorkArticle(props: Props) {
     }
   }, [props.work.mdUrl])
 
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string>(
+    props.work.imageURL,
+  )
+
   return (
     <article className="flex flex-col space-y-4">
       <ConstructionAlert
@@ -94,6 +98,7 @@ export function WorkArticle(props: Props) {
             .map((subWork) => {
               return subWork.imageUrl ?? ""
             })}
+          onSelectedImage={setSelectedImageUrl}
         />
       )}
       {props.work.type === "VIDEO" && (
@@ -124,7 +129,11 @@ export function WorkArticle(props: Props) {
         <WorkActionContainer
           workLikesCount={props.work.likesCount}
           title={props.work.title}
-          imageUrl={props.work.imageURL}
+          currentImageUrl={selectedImageUrl}
+          imageUrls={[
+            props.work.imageURL,
+            ...props.work.subWorks.map((subWork) => subWork.imageUrl ?? ""),
+          ]}
           targetWorkId={props.work.id}
           bookmarkFolderId={bookmarkFolderId}
           targetWorkOwnerUserId={props.work.user.id}

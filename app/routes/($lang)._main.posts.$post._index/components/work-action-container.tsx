@@ -6,7 +6,8 @@ import { graphql } from "gql.tada"
 
 type Props = {
   title?: string
-  imageUrl?: string
+  currentImageUrl?: string
+  imageUrls?: string[]
   workLikesCount: number
   targetWorkId: string
   targetWorkOwnerUserId: string
@@ -33,9 +34,11 @@ export function WorkActionContainer(props: Props) {
 
   return (
     <WorkAction
+      id={props.targetWorkId}
       workLikesCount={props.workLikesCount}
       title={props.title}
-      imageUrl={props.imageUrl}
+      currentImageUrl={props.currentImageUrl}
+      imageUrls={props.imageUrls}
       defaultLiked={isLiked}
       defaultBookmarked={isBookmarked}
       bookmarkFolderId={props.bookmarkFolderId}
@@ -174,7 +177,6 @@ const workQuery = graphql(
       pngInfo
       style
       url
-      html
       updatedAt
       dailyRanking
       weeklyRanking
