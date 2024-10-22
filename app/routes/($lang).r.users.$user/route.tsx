@@ -15,9 +15,9 @@ import {
   UserHomeHeaderFragment,
 } from "~/routes/($lang)._main.users.$user._index/components/user-home-header"
 import {
-  UserHomeMenu,
-  UserHomeMenuFragment,
-} from "~/routes/($lang)._main.users.$user._index/components/user-home-menu"
+  UserHomeMenuSensitiveFragment,
+  UserHomeSensitiveMenu,
+} from "~/routes/($lang)._main.users.$user._index/components/user-home-sensitive-menu"
 import {
   UserProfileIconFragment,
   UserProfileNameIcon,
@@ -94,7 +94,7 @@ export default function UserLayout() {
           user={data.user}
           userIconView={<UserProfileNameIcon user={data.user} />}
         />
-        <UserHomeMenu user={data.user} />
+        <UserHomeSensitiveMenu user={data.user} />
       </div>
       <div className="flex flex-col space-y-4">
         <UserSensitiveTabs user={data.user} />
@@ -119,7 +119,7 @@ const UserQuery = graphql(
     user(id: $userId) {
       ...UserHomeHeaderFragment
       ...UserProfileIconFragment
-      ...UserHomeMenuFragment
+      ...UserHomeMenuSensitiveFragment
       ...UserSensitiveTabsFragment
       ...MetaUserFragment
     }
@@ -127,7 +127,7 @@ const UserQuery = graphql(
   [
     MetaUserFragment,
     UserHomeHeaderFragment,
-    UserHomeMenuFragment,
+    UserHomeMenuSensitiveFragment,
     UserProfileIconFragment,
     UserSensitiveTabsFragment,
   ],
