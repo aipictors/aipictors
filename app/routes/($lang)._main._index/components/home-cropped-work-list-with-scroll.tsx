@@ -63,45 +63,21 @@ export function HomeCroppedWorkListWithScroll(props: Props) {
   )
 }
 
-/**
- * TODO_2024_09: 不要なフィールドを削除する
- */
 export const HomeCoppedWorkFragment = graphql(
   `fragment HomeCoppedWork on WorkNode @_unmask {
     id
     title
-    accessType
-    adminAccessType
-    type
     likesCount
-    commentsCount
-    bookmarksCount
-    viewsCount
-    createdAt
-    rating
-    isTagEditable
+    isLiked
     smallThumbnailImageURL
     smallThumbnailImageHeight
     smallThumbnailImageWidth
-    largeThumbnailImageURL
-    largeThumbnailImageHeight
-    largeThumbnailImageWidth
-    type
-    prompt
-    negativePrompt
-    isLiked
     thumbnailImagePosition
-    description
-    url
     subWorksCount
-    tags {
-      name
-    }
     user {
       id
       name
       iconUrl
     }
-    uuid
   }`,
 )

@@ -8,7 +8,7 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { Heart, Images } from "lucide-react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { cn } from "~/lib/utils"
-import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
+import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -188,53 +188,31 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
         </SSR>
       </div>
       <div className="block md:hidden">
-        <HomeCroppedWorkList works={props.works} isShowProfile={true} />
+        <HomeCroppedWorks works={props.works} isShowProfile={true} />
       </div>
     </>
   )
 }
 
-/**
- * TODO_2024_09: 不要なフィールドを削除する
- */
 export const PhotoAlbumWorkFragment = graphql(
   `fragment PhotoAlbumWork on WorkNode @_unmask {
     id
     title
     enTitle
-    enDescription
-    accessType
-    adminAccessType
-    type
     likesCount
-    commentsCount
-    bookmarksCount
-    viewsCount
-    createdAt
-    rating
-    isTagEditable
+    isLiked
     smallThumbnailImageURL
     smallThumbnailImageHeight
     smallThumbnailImageWidth
     largeThumbnailImageURL
     largeThumbnailImageHeight
     largeThumbnailImageWidth
-    type
-    prompt
-    negativePrompt
-    isLiked
     thumbnailImagePosition
-    description
-    url
     subWorksCount
-    tags {
-      name
-    }
     user {
       id
       name
       iconUrl
     }
-    uuid
   }`,
 )
