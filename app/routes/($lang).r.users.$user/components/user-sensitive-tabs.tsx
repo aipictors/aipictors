@@ -1,7 +1,10 @@
 import { useNavigate, useLocation } from "@remix-run/react"
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
 import { Button } from "~/components/ui/button"
-import { useTranslation } from "~/hooks/use-translation"
+import { useLocale } from "~/lib/app/hooks/use-locale"
+import { useUserActiveTab } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-active-tab"
+import { useUserTabLabels } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-tab-label"
+import { handleUserSensitiveTabNavigation } from "~/routes/($lang)._main.users.$user._index/utils/handle-user-sensitive-tab-navigation"
 
 type Props = {
   user: FragmentOf<typeof UserSensitiveTabsFragment>
@@ -10,90 +13,47 @@ type Props = {
 export function UserSensitiveTabs(props: Props) {
   const user = readFragment(UserSensitiveTabsFragment, props.user)
 
-  const t = useTranslation()
-
-  const navigate = useNavigate()
-
   const location = useLocation()
 
-  /**
-   * 現在のURLパスに基づいてアクティブなタブを判定
-   * デフォルトは「ポートフォリオ」
-   * TODO: pathnameを引数に持つカスタムHooksとして定義して単体テストを追加
-   */
-  const getActiveTab = () => {
-    if (location.pathname.endsWith("/posts")) return t("画像", "Images")
-    if (location.pathname.endsWith("/novels")) return t("小説", "Novels")
-    if (location.pathname.endsWith("/notes")) return t("コラム", "Columns")
-    if (location.pathname.endsWith("/videos")) return t("動画", "Videos")
-    if (location.pathname.endsWith("/albums")) return t("シリーズ", "Series")
-    if (location.pathname.endsWith("/collections"))
-      return t("コレクション", "Collections")
-    if (location.pathname.endsWith("/stickers")) return t("スタンプ", "Stamps")
-    return t("ポートフォリオ", "Portfolio")
-  }
+  const locale = useLocale()
 
-  /**
-   * TODO: パスを返す関数を定義して単体テストを追加
-   */
-  const handleTabClick = (value: string) => {
-    if (value === t("ポートフォリオ", "Portfolio")) {
-      navigate(`/r/users/${user.login}`)
-    }
-    if (value === t("画像", "Images")) {
-      navigate(`/r/users/${user.login}/posts`)
-    }
-    if (value === t("小説", "Novels")) {
-      navigate(`/r/users/${user.login}/novels`)
-    }
-    if (value === t("コラム", "Columns")) {
-      navigate(`/r/users/${user.login}/notes`)
-    }
-    if (value === t("動画", "Videos")) {
-      navigate(`/r/users/${user.login}/videos`)
-    }
-    if (value === t("シリーズ", "Series")) {
-      navigate(`/r/users/${user.login}/albums`)
-    }
-    if (value === t("コレクション", "Collections")) {
-      navigate(`/r/users/${user.login}/collections`)
-    }
-    if (value === t("スタンプ", "Stamps")) {
-      navigate(`/r/users/${user.login}/stickers`)
-    }
-  }
+  const getActiveTab = useUserActiveTab({
+    url: location.pathname,
+    lang: locale,
+  })
 
-  /**
-   * TODO: 配列を返す関数を定義して単体テストを追加
-   */
-  const tabLabels = [
-    t("ポートフォリオ", "Portfolio"),
-    ...(user.hasSensitiveImageWorks ? [t("画像", "Images")] : []),
-    ...(user.hasSensitiveNovelWorks ? [t("小説", "Novels")] : []),
-    ...(user.hasSensitiveColumnWorks ? [t("コラム", "Columns")] : []),
-    ...(user.hasSensitiveVideoWorks ? [t("動画", "Videos")] : []),
-    ...(user.hasAlbums ? [t("シリーズ", "Series")] : []),
-    ...(user.hasFolders ? [t("コレクション", "Collections")] : []),
-    ...(user.hasPublicStickers ? [t("スタンプ", "Stamps")] : []),
-  ]
-
-  /**
-   * TODO: 不要
-   */
-  const removeParentheses = (str: string) => {
-    return str.replace(/\(([^)]+)\)/, "")
-  }
+  const tabLabels = useUserTabLabels({
+    hasImageWorks: user.hasSensitiveImageWorks,
+    hasNovelWorks: user.hasSensitiveNovelWorks,
+    hasVideoWorks: user.hasSensitiveVideoWorks,
+    hasColumnWorks: user.hasSensitiveColumnWorks,
+    hasFolders: user.hasFolders,
+    hasAlbums: user.hasAlbums,
+    hasPublicStickers: user.hasPublicStickers,
+    lang: locale,
+  })
 
   const activeTab = getActiveTab()
+
+  const navigate = useNavigate()
 
   return (
     <div className="grid grid-cols-3 gap-2">
       {tabLabels.map((label) => (
         <Button
-          key={removeParentheses(label)}
-          onClick={() => handleTabClick(removeParentheses(label))}
+          key={label}
+          onClick={() => {
+            handleUserSensitiveTabNavigation({
+              type: label,
+              userId: user.login,
+              lang: locale,
+              onNavigateCallback: (url: string) => {
+                navigate(url)
+              },
+            })
+          }}
           variant="secondary"
-          className={removeParentheses(label) === activeTab ? "opacity-50" : ""}
+          className={label === activeTab ? "opacity-50" : ""}
         >
           {label}
         </Button>
