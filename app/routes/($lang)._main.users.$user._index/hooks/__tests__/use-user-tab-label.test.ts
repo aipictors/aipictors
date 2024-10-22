@@ -2,7 +2,6 @@ import { describe, test, expect } from "bun:test"
 import { useUserTabLabels } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-tab-label"
 
 describe("useUserTabLabels", () => {
-
   test("日本語のラベルを正しく返す", () => {
     const props = {
       hasImageWorks: true,
@@ -12,7 +11,7 @@ describe("useUserTabLabels", () => {
       hasAlbums: false,
       hasFolders: true,
       hasPublicStickers: true,
-      lang: "ja"
+      lang: "ja",
     }
 
     const labels = useUserTabLabels(props)
@@ -23,7 +22,7 @@ describe("useUserTabLabels", () => {
       "小説",
       "動画",
       "コレクション",
-      "スタンプ"
+      "スタンプ",
     ])
   })
 
@@ -36,7 +35,7 @@ describe("useUserTabLabels", () => {
       hasAlbums: true,
       hasFolders: false,
       hasPublicStickers: false,
-      lang: "en"
+      lang: "en",
     }
 
     const labels = useUserTabLabels(props)
@@ -46,7 +45,7 @@ describe("useUserTabLabels", () => {
       "Images",
       "Columns",
       "Videos",
-      "Series"
+      "Series",
     ])
   })
 
@@ -59,14 +58,12 @@ describe("useUserTabLabels", () => {
       hasAlbums: false,
       hasFolders: false,
       hasPublicStickers: false,
-      lang: "ja"
+      lang: "ja",
     }
 
     const labels = useUserTabLabels(props)
 
-    expect(labels).toEqual([
-      "ポートフォリオ"
-    ])
+    expect(labels).toEqual(["ポートフォリオ"])
   })
 
   test("全てのプロパティがtrueの場合はすべてのラベルを返す", () => {
@@ -78,7 +75,7 @@ describe("useUserTabLabels", () => {
       hasAlbums: true,
       hasFolders: true,
       hasPublicStickers: true,
-      lang: "en"
+      lang: "en",
     }
 
     const labels = useUserTabLabels(props)
@@ -91,7 +88,7 @@ describe("useUserTabLabels", () => {
       "Videos",
       "Series",
       "Collections",
-      "Stickers"
+      "Stickers",
     ])
   })
 })

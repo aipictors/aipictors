@@ -2,7 +2,6 @@ import { describe, test, expect } from "bun:test"
 import { useUserActiveTab } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-active-tab"
 
 describe("useUserActiveTab", () => {
-
   test("日本語のポートフォリオをデフォルトで返す", () => {
     const props = {
       url: "/users/123",

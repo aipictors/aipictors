@@ -1,14 +1,13 @@
 import { handleUserTabNavigation } from "~/routes/($lang)._main.users.$user._index/utils/handle-user-tab-navigation"
 
 describe("handleUserTabNavigation", () => {
-
   test("日本語のポートフォリオにナビゲートする", () => {
     const onNavigateCallback = jest.fn()
     const props = {
       userId: "123",
       type: "ポートフォリオ",
       lang: "ja",
-      onNavigateCallback
+      onNavigateCallback,
     }
 
     handleUserTabNavigation(props)
@@ -22,7 +21,7 @@ describe("handleUserTabNavigation", () => {
       userId: "123",
       type: "Portfolio",
       lang: "en",
-      onNavigateCallback
+      onNavigateCallback,
     }
 
     handleUserTabNavigation(props)
@@ -36,7 +35,7 @@ describe("handleUserTabNavigation", () => {
       userId: "123",
       type: "画像",
       lang: "ja",
-      onNavigateCallback
+      onNavigateCallback,
     }
 
     handleUserTabNavigation(props)
@@ -50,7 +49,7 @@ describe("handleUserTabNavigation", () => {
       userId: "123",
       type: "Images",
       lang: "en",
-      onNavigateCallback
+      onNavigateCallback,
     }
 
     handleUserTabNavigation(props)
@@ -64,7 +63,7 @@ describe("handleUserTabNavigation", () => {
       userId: "123",
       type: "スタンプ",
       lang: "ja",
-      onNavigateCallback
+      onNavigateCallback,
     }
 
     handleUserTabNavigation(props)
@@ -78,7 +77,7 @@ describe("handleUserTabNavigation", () => {
       userId: "123",
       type: "Stickers",
       lang: "en",
-      onNavigateCallback
+      onNavigateCallback,
     }
 
     handleUserTabNavigation(props)

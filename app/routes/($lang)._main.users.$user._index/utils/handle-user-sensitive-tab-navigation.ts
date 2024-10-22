@@ -1,7 +1,5 @@
-
-
 type Props = {
-  userId: string,
+  userId: string
   type: string
   lang: string
   onNavigateCallback: (url: string) => void
