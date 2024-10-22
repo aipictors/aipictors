@@ -1,24 +1,61 @@
 import { loaderClient } from "~/lib/loader-client"
-import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
+import {
+  HomeAwardWorkSection,
+  HomeWorkAwardFragment,
+} from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
-import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
-import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
+import {
+  HomeTagList,
+  HomeTagListItemFragment,
+} from "~/routes/($lang)._main._index/components/home-tag-list"
+import {
+  HomeTagFragment,
+  HomeTagsSection,
+} from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
-import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
-import { HomeContents } from "~/routes/($lang)._main._index/components/home-contents"
+import {
+  HomeTagWorkFragment,
+  HomeWorksTagSection,
+} from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
-import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import {
+  HomeNewUsersWorksFragment,
+  HomeNewUsersWorksSection,
+} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
+import { ArrowDownWideNarrow } from "lucide-react"
+import { useState, useEffect, Suspense } from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AppSideMenu } from "~/components/app/app-side-menu"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { Button } from "~/components/ui/button"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "~/components/ui/select"
+import { Separator } from "~/components/ui/separator"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs"
+import { useLocale } from "~/hooks/use-locale"
+import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
+import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
+import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
+import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
+import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -128,9 +165,13 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   const awardDateText = getUtcDateString(yesterday)
+
   const generationDateText = pastGenerationDate.toISOString()
+
   const novelWorksBeforeText = pastNovelDate.toISOString()
+
   const videoWorksBeforeText = pastVideoDate.toISOString()
+
   const columnWorksBeforeText = pastColumnDate.toISOString()
 
   return {
@@ -149,8 +190,139 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.home,
 })
 
+const useUpdateQueryParams = () => {
+  const updateQueryParams = (newParams: URLSearchParams) => {
+    const newUrl = `${window.location.pathname}?${newParams.toString()}`
+    window.history.replaceState(null, "", newUrl)
+  }
+  return updateQueryParams
+}
+
 export default function Index() {
   const data = useLoaderData<typeof loader>()
+
+  const t = useTranslation()
+
+  const [searchParams] = useSearchParams()
+
+  const updateQueryParams = useUpdateQueryParams()
+
+  const [isMounted, setIsMounted] = useState(false)
+
+  const [newWorksPage, setNewWorksPage] = useState(0)
+
+  const [followUserFeedPage, setFollowUserFeedPage] = useState(0)
+
+  const [followTagFeedPage, setFollowTagFeedPage] = useState(0)
+
+  const [workType, setWorkType] =
+    useState<IntrospectionEnum<"WorkType"> | null>(null)
+
+  const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
+
+  const [sortType, setSortType] =
+    useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
+
+  const location = useLocale()
+
+  useEffect(() => {
+    if (isMounted) {
+      return
+    }
+
+    if (!searchParams.toString() || searchParams.get("tab") === "home") {
+      return
+    }
+
+    const page = searchParams.get("page")
+    if (page) {
+      const pageNumber = Number.parseInt(page)
+      if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
+      } else {
+        setNewWorksPage(pageNumber)
+      }
+    } else {
+      setNewWorksPage(0)
+    }
+
+    const type = searchParams.get("workType")
+    if (type) setWorkType(type as IntrospectionEnum<"WorkType">)
+
+    const prompt = searchParams.get("isPromptPublic")
+    if (prompt)
+      setIsPromptPublic(
+        prompt === "true" ? true : prompt === "false" ? false : null,
+      )
+
+    const sort = searchParams.get("sortType")
+    if (sort) setSortType(sort as IntrospectionEnum<"WorkOrderBy">)
+
+    setIsMounted(true)
+  }, [searchParams])
+
+  // newWorksPageが変更されたときにURLパラメータを更新
+  useEffect(() => {
+    if (!searchParams.toString() || searchParams.get("tab") === "home") {
+      return
+    }
+
+    if (newWorksPage >= 0) {
+      searchParams.set("page", newWorksPage.toString())
+      updateQueryParams(searchParams)
+    }
+  }, [newWorksPage, searchParams, updateQueryParams])
+
+  const handleTabChange = (tab: string) => {
+    searchParams.set("tab", tab)
+    updateQueryParams(searchParams)
+  }
+
+  const handleWorkTypeChange = (value: string) => {
+    if (value === "ALL") {
+      searchParams.delete("workType")
+      setWorkType(null)
+    } else {
+      searchParams.set("workType", value)
+      setWorkType(value as IntrospectionEnum<"WorkType">)
+    }
+
+    // ページ番号を0にリセット
+    setNewWorksPage(0)
+    searchParams.set("page", "0")
+    updateQueryParams(searchParams)
+  }
+
+  const handlePromptChange = (value: string) => {
+    if (value === "ALL") {
+      searchParams.delete("isPromptPublic")
+      setIsPromptPublic(null)
+    } else {
+      const isPrompt = value === "prompt"
+
+      searchParams.set("isPromptPublic", isPrompt ? "true" : "false")
+      setIsPromptPublic(isPrompt)
+    }
+    updateQueryParams(searchParams)
+  }
+
+  const handleSortTypeChange = (value: string) => {
+    if (value === "ALL") {
+      searchParams.delete("sortType")
+      setSortType(null)
+    } else {
+      searchParams.set("sortType", value)
+      setSortType(value as IntrospectionEnum<"WorkOrderBy">)
+    }
+    updateQueryParams(searchParams)
+  }
+
+  const [workView, setWorkView] = useState(searchParams.get("view") || "new")
+
+  const handleWorkViewChange = (view: string) => {
+    setWorkView(view)
+    searchParams.set("view", view)
+    updateQueryParams(searchParams)
+  }
 
   if (!data) {
     return null
@@ -158,24 +330,246 @@ export default function Index() {
 
   return (
     <>
-      <HomeContents
-        homeParticles={{
-          dailyThemeTitle: data.dailyTheme ? (data.dailyTheme.title ?? "") : "",
-          hotTags: data.hotTags,
-          firstTag: data.firstTag,
-          firstTagWorks: data.firstTagWorks,
-          secondTag: data.secondTag,
-          secondTagWorks: data.secondTagWorks,
-          awardDateText: data.awardDateText,
-          workAwards: data.workAwards,
-          recommendedTags: data.recommendedTags,
-          promotionWorks: data.promotionWorks,
-          newUserWorks: data.newUserWorks,
-          newPostedUsers: data.newPostedUsers,
-          newComments: data.newComments,
-        }}
-        isCropped={false}
-      />
+      <Tabs
+        defaultValue={searchParams.get("tab") || "home"}
+        onValueChange={handleTabChange}
+        className="space-y-4"
+      >
+        <TabsList>
+          <TabsTrigger value="home">{t("ホーム", "Home")}</TabsTrigger>
+          <TabsTrigger value="new">
+            <p className="hidden md:block">
+              {t("新着・人気", "New & Popular")}
+            </p>
+            <p className="block md:hidden">{t("新着", "New")}</p>
+          </TabsTrigger>
+          <TabsTrigger value="follow-user">
+            <div className="flex items-center space-x-2">
+              <p className="hidden md:block">
+                {t("フォロー新着", "Followed Users")}
+              </p>
+              <p className="block md:hidden">{t("フォロー", "Followed")}</p>
+              <CrossPlatformTooltip
+                text={t(
+                  "フォローしたユーザの新着作品が表示されます",
+                  "Displays works from followed users",
+                )}
+              />
+            </div>
+          </TabsTrigger>
+          <TabsTrigger value="follow-tag">
+            <div className="flex items-center space-x-2">
+              <p className="hidden md:block">
+                {t("お気に入りタグ新着", "Favorite Tags")}
+              </p>
+              <p className="block md:hidden">{t("タグ", "Tags")}</p>
+              <CrossPlatformTooltip
+                text={t(
+                  "お気に入り登録したタグの新着作品が表示されます",
+                  "Displays works from favorite tags",
+                )}
+              />
+            </div>
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="home" className="m-0 flex flex-col space-y-4">
+          {data && (
+            <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
+              <div className="flex flex-col space-y-4 md:w-[80%]">
+                <div>
+                  <HomeTagList
+                    themeTitle={data.dailyTheme?.title}
+                    hotTags={data.hotTags}
+                  />
+                </div>
+                <HomeWorksTagSection
+                  tag={data.firstTag}
+                  works={data.firstTagWorks}
+                  secondTag={data.secondTag}
+                  secondWorks={data.secondTagWorks}
+                  isCropped={true}
+                />
+                <HomeNewUsersWorksSection works={data.newUserWorks} />
+                <HomeAwardWorkSection
+                  awardDateText={data.awardDateText}
+                  title={t("前日ランキング", "Previous Day Ranking")}
+                  awards={data.workAwards}
+                />
+                <HomeTagsSection
+                  title={t("人気タグ", "Popular Tags")}
+                  tags={data.recommendedTags}
+                />
+              </div>
+              <Separator
+                orientation="vertical"
+                className="hidden h-[100vh] w-[1px] md:block"
+              />
+              <AppSideMenu
+                homeParticles={data}
+                isShowSensitiveButton={true}
+                isShowGenerationAds={true}
+              />
+            </div>
+          )}
+        </TabsContent>
+        <TabsContent value="new" className="flex flex-col space-y-4">
+          <div className="flex space-x-4">
+            <Button
+              variant={workView === "new" ? "default" : "secondary"}
+              onClick={() => handleWorkViewChange("new")}
+            >
+              {t("新着", "New")}
+            </Button>
+            <Button
+              variant={
+                searchParams.get("view") === "popular" ? "default" : "secondary"
+              }
+              onClick={() => handleWorkViewChange("popular")}
+            >
+              <div className="flex space-x-2">
+                <p>{t("人気", "Popular")}</p>
+                <CrossPlatformTooltip
+                  text={t(
+                    "最近投稿された人気作品が表示されます",
+                    "Recently popular works",
+                  )}
+                />
+              </div>
+            </Button>
+          </div>
+          {workView === "new" ? (
+            <div className="space-y-4">
+              {/* 新着作品の表示 */}
+              <div className="space-y-4">
+                <div className="flex space-x-4">
+                  <Select
+                    value={workType ? workType : ""}
+                    onValueChange={handleWorkTypeChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          workType
+                            ? toWorkTypeText({
+                                type: workType,
+                                lang: location,
+                              })
+                            : t("種類", "Type")
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
+                      <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
+                      <SelectItem value="VIDEO">
+                        {t("動画", "Video")}
+                      </SelectItem>
+                      <SelectItem value="NOVEL">
+                        {t("小説", "Novel")}
+                      </SelectItem>
+                      <SelectItem value="COLUMN">
+                        {t("コラム", "Column")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={
+                      isPromptPublic === null
+                        ? "ALL"
+                        : isPromptPublic
+                          ? "prompt"
+                          : "no-prompt"
+                    }
+                    onValueChange={handlePromptChange}
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          isPromptPublic === null
+                            ? t("プロンプト有無", "Prompt")
+                            : isPromptPublic
+                              ? t("あり", "Yes")
+                              : t("なし", "No")
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL">
+                        {t("プロンプト有無", "Prompt")}
+                      </SelectItem>
+                      <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
+                      <SelectItem value="no-prompt">
+                        {t("なし", "No")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={sortType ? sortType : ""}
+                    onValueChange={handleSortTypeChange}
+                  >
+                    <SelectTrigger>
+                      <ArrowDownWideNarrow />
+                      <SelectValue
+                        placeholder={sortType ? sortType : t("最新", "Latest")}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DATE_CREATED">
+                        {t("最新", "Latest")}
+                      </SelectItem>
+                      <SelectItem value="LIKES_COUNT">
+                        {t("最も人気", "Most Liked")}
+                      </SelectItem>
+                      <SelectItem value="COMMENTS_COUNT">
+                        {t("コメント数", "Most Comments")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Suspense fallback={<AppLoadingPage />}>
+                  <HomeWorksSection
+                    page={newWorksPage}
+                    setPage={setNewWorksPage}
+                    workType={workType}
+                    isPromptPublic={isPromptPublic}
+                    sortType={sortType}
+                  />
+                </Suspense>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* 人気作品の表示 */}
+              <Suspense fallback={<AppLoadingPage />}>
+                <HomeHotWorksSection
+                  page={newWorksPage}
+                  setPage={setNewWorksPage}
+                  workType={workType}
+                  isPromptPublic={isPromptPublic}
+                  sortType={sortType}
+                />
+              </Suspense>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="follow-user">
+          <Suspense fallback={<AppLoadingPage />}>
+            <FollowUserFeedContents
+              page={followUserFeedPage}
+              setPage={setFollowUserFeedPage}
+            />
+          </Suspense>
+        </TabsContent>
+        <TabsContent value="follow-tag">
+          <Suspense fallback={<AppLoadingPage />}>
+            <FollowTagsFeedContents
+              page={followTagFeedPage}
+              setPage={setFollowTagFeedPage}
+            />
+          </Suspense>
+        </TabsContent>
+      </Tabs>
     </>
   )
 }
