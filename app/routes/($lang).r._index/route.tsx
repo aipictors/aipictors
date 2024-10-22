@@ -53,9 +53,9 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
 import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
-import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
-import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+import { HomeSensitiveHotWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-hot-works-section"
+import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -527,7 +527,7 @@ export default function Index() {
                   </Select>
                 </div>
                 <Suspense fallback={<AppLoadingPage />}>
-                  <HomeWorksSection
+                  <HomeSensitiveWorksSection
                     page={newWorksPage}
                     setPage={setNewWorksPage}
                     workType={workType}
@@ -541,7 +541,7 @@ export default function Index() {
             <div className="space-y-4">
               {/* 人気作品の表示 */}
               <Suspense fallback={<AppLoadingPage />}>
-                <HomeHotWorksSection
+                <HomeSensitiveHotWorksSection
                   page={newWorksPage}
                   setPage={setNewWorksPage}
                   workType={workType}
