@@ -179,14 +179,11 @@ export function GenerationSubmissionView(props: Props) {
       context.currentPass?.type === "STANDARD" ||
       context.currentPass?.type === "PREMIUM"
 
-    // SMS認証が完了していない場合はエラーを表示する
-    // TODO: SMS認証が完了しているかどうかの判定を追加する
     if (
       !context.currentPass?.type &&
       !lineUserId?.viewer?.lineUserId &&
       generatedCount >= 10
     ) {
-      // 無料プランのユーザの場合はSMS認証が必要
       toast("本人確認が完了していません。本人確認を完了してください。")
       openVerificationModal()
       return

@@ -1,12 +1,13 @@
 import { LikeButton } from "~/components/like-button"
-import { graphql, type FragmentOf } from "gql.tada"
 import { Link } from "@remix-run/react"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import type { FragmentOf } from "gql.tada"
 
 type Props = {
-  works: FragmentOf<typeof HomeCoppedWorkFragment>[]
+  works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   isRanking?: boolean
   isShowProfile?: boolean
 }
@@ -14,7 +15,7 @@ type Props = {
 /**
  * クロップ済み作品一覧
  */
-export function HomeCroppedWorkList(props: Props) {
+export function HomeCroppedWorks(props: Props) {
   if (!props.works || props.works.length === 0) {
     return null
   }
@@ -141,26 +142,3 @@ export function HomeCroppedWorkList(props: Props) {
     </>
   )
 }
-
-export const HomeCoppedWorkFragment = graphql(
-  `fragment HomeCoppedWork on WorkNode @_unmask {
-    id
-    title
-    enTitle
-    likesCount
-    isLiked
-    smallThumbnailImageURL
-    smallThumbnailImageHeight
-    smallThumbnailImageWidth
-    largeThumbnailImageURL
-    largeThumbnailImageHeight
-    largeThumbnailImageWidth
-    thumbnailImagePosition
-    subWorksCount
-    user {
-      id
-      name
-      iconUrl
-    }
-  }`,
-)

@@ -153,10 +153,10 @@ export function EditTextFormUploader(props: Props) {
             payload: true,
           })
 
-          // TODO: 正しく生成画像からPNGInfoを取得する
           const pngInfo = await getExtractInfoFromBase64(
             lastSelectedOriginalImage,
           )
+
           if (pngInfo.src !== null) {
             props.dispatch({
               type: "SET_PNG_INFO",

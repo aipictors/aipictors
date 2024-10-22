@@ -200,7 +200,6 @@ export function PostTextFormUploader(props: Props) {
             payload: true,
           })
 
-          // TODO: 正しく生成画像からPNGInfoを取得する
           const pngInfo = await getExtractInfoFromBase64(
             lastSelectedOriginalImage,
           )

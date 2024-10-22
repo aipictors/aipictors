@@ -146,7 +146,6 @@ export const postTextFormInputReducer = (
       }
     }
     case "SET_RESERVATION_DATE": {
-      // TODO: お題が存在しない日の場合はお題の項目を見えないようにする
       const today = new Date()
       today.setHours(0, 0, 0, 0)
       const daysLater = new Date(today)
