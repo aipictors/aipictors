@@ -61,6 +61,7 @@ import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/ho
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { Button } from "~/components/ui/button"
+import { useLocale } from "~/hooks/use-locale"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -237,6 +238,8 @@ export default function Index() {
 
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
+
+  const location = useLocale()
 
   useEffect(() => {
     if (isMounted) {
@@ -467,7 +470,10 @@ export default function Index() {
                       <SelectValue
                         placeholder={
                           workType
-                            ? toWorkTypeText(workType)
+                            ? toWorkTypeText({
+                                type: workType,
+                                lang: location,
+                              })
                             : t("種類", "Type")
                         }
                       />

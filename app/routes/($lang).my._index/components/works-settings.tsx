@@ -13,6 +13,7 @@ import { toRatingText } from "~/utils/work/to-rating-text"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useTranslation } from "~/hooks/use-translation"
+import { useLocale } from "~/hooks/use-locale"
 
 type Props = {
   sort: SortType
@@ -65,6 +66,8 @@ export function WorksSetting(props: Props) {
     setIsFilterOpen(!isFilterOpen)
   }
 
+  const location = useLocale()
+
   return (
     <>
       <div className="flex space-x-4">
@@ -114,7 +117,10 @@ export function WorksSetting(props: Props) {
             <SelectValue
               placeholder={
                 props.workType
-                  ? toWorkTypeText(props.workType)
+                  ? toWorkTypeText({
+                      type: props.workType,
+                      lang: location,
+                    })
                   : t("種類", "Type")
               }
             />

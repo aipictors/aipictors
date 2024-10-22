@@ -45,6 +45,7 @@ import { AppSensitiveSideMenu } from "~/components/app/app-sensitive-side-menu"
 import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
 import { HomeSensitiveHotWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-hot-works-section"
 import { FollowSensitiveUserFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-user-feed-contents"
+import { useLocale } from "~/hooks/use-locale"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -200,6 +201,8 @@ export function HomeContents(props: Props) {
     updateQueryParams(searchParams)
   }
 
+  const location = useLocale()
+
   return (
     <Tabs
       defaultValue={searchParams.get("tab") || "home"}
@@ -320,7 +323,12 @@ export function HomeContents(props: Props) {
                   <SelectTrigger>
                     <SelectValue
                       placeholder={
-                        workType ? toWorkTypeText(workType) : t("種類", "Type")
+                        workType
+                          ? toWorkTypeText({
+                              type: workType,
+                              lang: location,
+                            })
+                          : t("種類", "Type")
                       }
                     />
                   </SelectTrigger>

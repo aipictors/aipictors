@@ -26,6 +26,7 @@ import {
   PopoverContent,
 } from "~/components/ui/popover"
 import { Button } from "~/components/ui/button"
+import { useLocale } from "~/hooks/use-locale"
 
 type Props = {
   works: FragmentOf<typeof MobileWorkListItemFragment>[]
@@ -92,6 +93,8 @@ export function WorksSpList(props: Props) {
     setDeletedIds([...deletedIds, workId])
   }
 
+  const location = useLocale()
+
   return (
     <>
       {props.works
@@ -122,7 +125,10 @@ export function WorksSpList(props: Props) {
                       {toAccessTypeText(work.accessType)}
                     </Badge>
                     <Badge variant={"secondary"}>
-                      {toWorkTypeText(work.type)}
+                      {toWorkTypeText({
+                        type: work.type,
+                        lang: location,
+                      })}
                     </Badge>
                   </div>
                 </div>

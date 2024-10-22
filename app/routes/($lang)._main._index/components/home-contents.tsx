@@ -45,6 +45,7 @@ import {
   type HomeTagWorkFragment,
 } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { AppSideMenu } from "~/components/app/app-side-menu"
+import { useLocale } from "~/hooks/use-locale"
 
 type homeParticles = {
   dailyThemeTitle: string
@@ -100,6 +101,8 @@ export function HomeContents(props: Props) {
 
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
+
+  const location = useLocale()
 
   useEffect(() => {
     if (isMounted) {
@@ -320,7 +323,12 @@ export function HomeContents(props: Props) {
                   <SelectTrigger>
                     <SelectValue
                       placeholder={
-                        workType ? toWorkTypeText(workType) : t("種類", "Type")
+                        workType
+                          ? toWorkTypeText({
+                              type: workType,
+                              lang: location,
+                            })
+                          : t("種類", "Type")
                       }
                     />
                   </SelectTrigger>

@@ -33,6 +33,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs"
 import { useTranslation } from "~/hooks/use-translation"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+import { useLocale } from "~/hooks/use-locale"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_2D, undefined, props.params.lang)
@@ -240,6 +241,8 @@ export default function Index() {
     updateQueryParams(searchParams)
   }
 
+  const location = useLocale()
+
   if (data === null) {
     return null
   }
@@ -286,7 +289,12 @@ export default function Index() {
                 <SelectTrigger>
                   <SelectValue
                     placeholder={
-                      workType ? toWorkTypeText(workType) : t("種類", "Type")
+                      workType
+                        ? toWorkTypeText({
+                            type: workType,
+                            lang: location,
+                          })
+                        : t("種類", "Type")
                     }
                   />
                 </SelectTrigger>
