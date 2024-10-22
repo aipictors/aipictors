@@ -1,5 +1,7 @@
 import { Link } from "@remix-run/react"
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
+import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof HomeGenerationBannerWorkFragment>[]
@@ -13,20 +15,21 @@ export function HomeGenerationBanner(props: Props) {
     return readFragment(HomeGenerationBannerWorkFragment, work)
   })
 
+  const t = useTranslation()
+
   const [workA, workB, workC] = works
 
   return (
     <div className="flex w-full items-center overflow-hidden rounded-md border p-4">
       <div className="w-64">
-        <p className="font-semibold text-md">無料で生成して投稿できる！</p>
+        <p className="font-semibold text-md">
+          {t(
+            "無料で生成して投稿できる！",
+            "You can generate and post for free!",
+          )}
+        </p>
         <Link to="/generation">
-          {/** TODO_2024_07: Buttonに変更する */}
-          <button
-            type={"button"}
-            className="mt-2 mb-2 w-32 rounded-full bg-blue-500 px-4 py-1 text-white"
-          >
-            生成
-          </button>
+          <Button variant={"secondary"}>{t("生成", "Generation")}</Button>
         </Link>
       </div>
       <div className="ml-2 flex justify-center rounded">
