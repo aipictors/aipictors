@@ -15,11 +15,11 @@ import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  user: FragmentOf<typeof UserHomeMenuFragment>
+  user: FragmentOf<typeof UserHomeMenuSensitiveFragment>
 }
 
-export function UserHomeMenu(props: Props) {
-  const cachedUser = readFragment(UserHomeMenuFragment, props.user)
+export function UserHomeSensitiveMenu(props: Props) {
+  const cachedUser = readFragment(UserHomeMenuSensitiveFragment, props.user)
 
   const authContext = useContext(AuthContext)
 
@@ -27,7 +27,7 @@ export function UserHomeMenu(props: Props) {
     variables: { userId: decodeURIComponent(cachedUser.id) },
   })
 
-  const user = readFragment(UserHomeMenuFragment, data?.user)
+  const user = readFragment(UserHomeMenuSensitiveFragment, data?.user)
 
   const t = useTranslation()
 
@@ -41,24 +41,8 @@ export function UserHomeMenu(props: Props) {
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-2 right-0 z-10 md:hidden">
         <div className="flex space-x-2">
-          <Button
-            onClick={() => {
-              navigate(`/users/${cachedUser.login}`)
-            }}
-            variant={"secondary"}
-          >
-            <div className="flex cursor-pointer items-center">
-              <RefreshCcwIcon className="mr-1 w-3" />
-              <p className="text-sm">{t("全年齢", "G")}</p>
-            </div>
-          </Button>
-          <UserActionShare login={cachedUser.login} name={cachedUser.name} />
-        </div>
-      </div>
-      <div className="absolute top-2 right-0 hidden md:block">
-        <div className="flex w-full items-center justify-end space-x-4">
           <AppConfirmDialog
-            title={"確認"}
+            title={t("確認", "Confirm")}
             description={t(
               "センシティブな作品を表示します、あなたは18歳以上ですか？",
               "Do you want to display sensitive content? Are you over 18 years old?",
@@ -76,6 +60,22 @@ export function UserHomeMenu(props: Props) {
               </div>
             </Button>
           </AppConfirmDialog>
+          <UserActionShare login={cachedUser.login} name={cachedUser.name} />
+        </div>
+      </div>
+      <div className="absolute top-2 right-0 hidden md:block">
+        <div className="flex w-full items-center justify-end space-x-4">
+          <Button
+            onClick={() => {
+              navigate(`/users/${cachedUser.login}`)
+            }}
+            variant={"secondary"}
+          >
+            <div className="flex cursor-pointer items-center">
+              <RefreshCcwIcon className="mr-1 w-3" />
+              <p className="text-sm">{t("全年齢", "G")}</p>
+            </div>
+          </Button>
           <UserActionOther id={cachedUser.id} isMuted={isMuted} />
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />
           <FollowButton
@@ -157,8 +157,8 @@ export function UserHomeMenu(props: Props) {
   )
 }
 
-export const UserHomeMenuFragment = graphql(
-  `fragment UserHomeMenuFragment on UserNode {
+export const UserHomeMenuSensitiveFragment = graphql(
+  `fragment UserHomeMenuSensitiveFragment on UserNode {
     id
     login
     isFollowee
@@ -177,8 +177,8 @@ export const UserHomeMenuFragment = graphql(
 const UserQuery = graphql(
   `query User($userId: ID!) {
     user(id: $userId) {
-      ...UserHomeMenuFragment
+      ...UserHomeMenuSensitiveFragment
     }
   }`,
-  [UserHomeMenuFragment],
+  [UserHomeMenuSensitiveFragment],
 )
