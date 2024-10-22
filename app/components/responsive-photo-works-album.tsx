@@ -199,6 +199,7 @@ export const PhotoAlbumWorkFragment = graphql(
     id
     title
     enTitle
+    description
     likesCount
     isLiked
     smallThumbnailImageURL

@@ -23,7 +23,7 @@ export function HomeAwardWorksSection(props: Props) {
         {t("前日ランキング", "Yesterday's ranking")}
       </h2>
       {props.works.map(
-        (work) =>
+        (work, index) =>
           work && (
             <div className="relative flex items-center space-x-2 opacity-80">
               <div className="flex h-full items-center space-x-2">
@@ -54,7 +54,7 @@ export function HomeAwardWorksSection(props: Props) {
                 </div>
               </div>
               <div className="absolute top-1 left-0 h-4 w-4 items-center rounded-full bg-white text-center font-semibold text-xs">
-                <p>{work.index}</p>
+                <p>{index}</p>
               </div>
             </div>
           ),
