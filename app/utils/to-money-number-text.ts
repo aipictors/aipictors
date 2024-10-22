@@ -3,6 +3,11 @@
  * @param value
  */
 export const toMoneyNumberText = (value: number) => {
-  // TODO: 小数点に対応する
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  const [integerPart, decimalPart] = value.toString().split(".")
+
+  const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+
+  return decimalPart
+    ? `${formattedIntegerPart}.${decimalPart}`
+    : formattedIntegerPart
 }
