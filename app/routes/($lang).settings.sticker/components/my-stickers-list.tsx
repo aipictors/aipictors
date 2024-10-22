@@ -9,11 +9,16 @@ import { graphql } from "gql.tada"
 import { useState, useContext } from "react"
 import { toast } from "sonner"
 import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
-import {
-  StickerAccessTypeDialogFragment,
-  StickerChangeAccessTypeDialog,
-} from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-dialog"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳フックをインポート
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "~/components/ui/dialog"
+import { StickerChangeAccessTypeActionDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-action-dialog"
 
 export function MyStickersList() {
   const authContext = useContext(AuthContext)
@@ -88,6 +93,11 @@ export function MyStickersList() {
     }
   }
 
+  const onAccessTypeChange = () => {
+    reactStickers()
+    reactStickersCount()
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
@@ -139,24 +149,61 @@ export function MyStickersList() {
       <div className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center">
         {stickers?.viewer?.userStickers?.map((sticker) =>
           stickerStatus !== "DOWNLOADED" ? (
-            <StickerChangeAccessTypeDialog
-              key={sticker.id}
-              sticker={sticker}
-              onAccessTypeChange={() => {
-                reactStickers()
-                reactStickersCount()
-              }}
-            >
-              <StickerButton
-                key={sticker.id}
-                imageUrl={sticker.imageUrl ?? ""}
-                title={sticker.title}
-                onClick={() => {}}
-                onDelete={() => {
-                  onDelete(sticker.id)
-                }}
-              />
-            </StickerChangeAccessTypeDialog>
+            <Dialog key={sticker.id}>
+              <DialogTrigger asChild>
+                <StickerButton
+                  key={sticker.id}
+                  imageUrl={sticker.imageUrl ?? ""}
+                  title={sticker.title}
+                  onClick={() => {}}
+                  onDelete={() => {
+                    onDelete(sticker.id)
+                  }}
+                />
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {t("タイトル：", "Title:")}
+                    {sticker.title}
+                  </DialogTitle>
+                </DialogHeader>
+                {sticker.accessType === "PRIVATE" ? (
+                  <img
+                    className="m-auto mb-2 w-24 duration-500"
+                    src={sticker.imageUrl ?? ""}
+                    alt={sticker.title}
+                  />
+                ) : (
+                  <Link className="m-auto w-24" to={`/stickers/${sticker.id}`}>
+                    <img
+                      className="m-auto mb-2 w-24 cursor-pointer duration-500 hover:scale-105"
+                      src={sticker.imageUrl ?? ""}
+                      alt={sticker.title}
+                    />
+                  </Link>
+                )}
+                <DialogFooter>
+                  {sticker.accessType === "PRIVATE" ? (
+                    <StickerChangeAccessTypeActionDialog
+                      title={sticker.title}
+                      stickerId={sticker.id}
+                      imageUrl={sticker.imageUrl ?? ""}
+                      accessType={sticker.accessType}
+                      onAccessTypeChange={onAccessTypeChange}
+                    >
+                      <Button className="w-full">
+                        {t("公開する", "Make Public")}
+                      </Button>
+                    </StickerChangeAccessTypeActionDialog>
+                  ) : (
+                    <Button disabled={true} className="w-full">
+                      {t("公開済み", "Already Public")}
+                    </Button>
+                  )}
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           ) : (
             <StickerButton
               key={sticker.id}
@@ -184,6 +231,31 @@ export function MyStickersList() {
   )
 }
 
+const deleteUserStickerMutation = graphql(
+  `mutation DeleteUserSticker($input: DeleteUserStickerInput!) {
+    deleteUserSticker(input: $input) {
+      id
+    }
+  }`,
+)
+
+export const StickerAccessTypeDialogFragment = graphql(
+  `fragment StickerAccessTypeDialog on StickerNode @_unmask {
+    id
+    title
+    imageUrl
+    accessType
+  }`,
+)
+
+const updateStickerMutation = graphql(
+  `mutation updateSticker($input: UpdateStickerInput!) {
+    updateSticker(input: $input) {
+      id
+    }
+  }`,
+)
+
 const viewerUserStickersCountQuery = graphql(
   `query ViewerUserStickersCount($where: UserStickersWhereInput) {
     viewer {
@@ -203,12 +275,4 @@ const viewerUserStickersQuery = graphql(
     }
   }`,
   [StickerAccessTypeDialogFragment],
-)
-
-const deleteUserStickerMutation = graphql(
-  `mutation DeleteUserSticker($input: DeleteUserStickerInput!) {
-    deleteUserSticker(input: $input) {
-      id
-    }
-  }`,
 )
