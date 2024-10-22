@@ -18,6 +18,7 @@ import {
   type HomeAwardWorksFragment,
 } from "~/routes/($lang)._main._index/components/home-award-works"
 import { useTranslation } from "~/hooks/use-translation"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 
 type homeParticles = {
   newPostedUsers?: FragmentOf<typeof HomeNewPostedUsersFragment>[]
@@ -83,15 +84,25 @@ export function AppSideMenu(props: Props) {
       <div className="flex w-full flex-col space-y-4">
         <div className="relative grid gap-4">
           {props.isShowSensitiveButton && (
-            <Button
-              onClick={() => {
-                navigate("/")
+            <AppConfirmDialog
+              title={t("確認", "Confirmation")}
+              description={t(
+                "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                "This content contains sensitive material. Are you over 18?",
+              )}
+              onNext={() => {
+                navigate("/r")
               }}
-              variant={"secondary"}
-              className="flex w-full transform cursor-pointer items-center"
+              cookieKey={"check-sensitive-ranking"}
+              onCancel={() => {}}
             >
-              <p className="text-sm">{t("全年齢", "All Ages")}</p>
-            </Button>
+              <Button
+                variant={"secondary"}
+                className="flex w-full transform cursor-pointer items-center"
+              >
+                <p className="text-sm">{t("センシティブ", "Sensitive")}</p>
+              </Button>
+            </AppConfirmDialog>
           )}
           {!isSubscriptionUser &&
             props.isShowCustomerAds &&

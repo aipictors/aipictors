@@ -44,7 +44,6 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { ArrowDownWideNarrow } from "lucide-react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { AppSideMenu } from "~/components/app/app-side-menu"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import {
   Select,
@@ -62,6 +61,7 @@ import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { Button } from "~/components/ui/button"
 import { useLocale } from "~/hooks/use-locale"
+import { AppSideMenu } from "~/components/app/app-side-menu"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)

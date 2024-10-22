@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import {
   HomeNewCommentsSection,
   type HomeNewCommentsFragment,
@@ -76,25 +75,15 @@ export function AppSensitiveSideMenu(props: Props) {
       <div className="flex w-full flex-col space-y-4">
         <div className="relative grid gap-4">
           {props.isShowSensitiveButton && (
-            <AppConfirmDialog
-              title={t("確認", "Confirmation")}
-              description={t(
-                "センシティブな作品を表示します、あなたは18歳以上ですか？",
-                "This content contains sensitive material. Are you over 18?",
-              )}
-              onNext={() => {
-                navigate("/r")
+            <Button
+              onClick={() => {
+                navigate("/")
               }}
-              cookieKey={"check-sensitive-ranking"}
-              onCancel={() => {}}
+              variant={"secondary"}
+              className="flex w-full transform cursor-pointer items-center"
             >
-              <Button
-                variant={"secondary"}
-                className="flex w-full transform cursor-pointer items-center"
-              >
-                <p className="text-sm">{t("センシティブ", "Sensitive")}</p>
-              </Button>
-            </AppConfirmDialog>
+              <p className="text-sm">{t("全年齢", "All Ages")}</p>
+            </Button>
           )}
           {!isSubscriptionUser &&
             props.isShowCustomerAds &&

@@ -1,17 +1,11 @@
 import { loaderClient } from "~/lib/loader-client"
-import {
-  HomeAwardWorkSection,
-  HomeWorkAwardFragment,
-} from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import {
   HomeTagList,
   HomeTagListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-tag-list"
-import {
-  HomeTagFragment,
-  HomeTagsSection,
-} from "~/routes/($lang)._main._index/components/home-tags-section"
+import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type {
   HeadersFunction,
@@ -21,22 +15,15 @@ import type {
 import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
-import {
-  HomeTagWorkFragment,
-  HomeWorksTagSection,
-} from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
-import {
-  HomeNewUsersWorksFragment,
-  HomeNewUsersWorksSection,
-} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { ArrowDownWideNarrow } from "lucide-react"
 import { useState, useEffect, Suspense } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { AppSideMenu } from "~/components/app/app-side-menu"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Button } from "~/components/ui/button"
 import {
@@ -56,6 +43,11 @@ import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { HomeSensitiveHotWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-hot-works-section"
 import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
+import { AppSensitiveSideMenu } from "~/components/app/app-sensitive-side-menu"
+import { HomeSensitiveWorksTagSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-tag-section"
+import { HomeSensitiveNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-users-works-section"
+import { HomeSensitiveAwardWorkSection } from "~/routes/($lang)._main._index/components/home-sensitive-award-work-section"
+import { HomeSensitiveTagsSection } from "~/routes/($lang)._main._index/components/home-sensitive-tags-section"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -382,20 +374,20 @@ export default function Index() {
                     hotTags={data.hotTags}
                   />
                 </div>
-                <HomeWorksTagSection
+                <HomeSensitiveWorksTagSection
                   tag={data.firstTag}
                   works={data.firstTagWorks}
                   secondTag={data.secondTag}
                   secondWorks={data.secondTagWorks}
                   isCropped={true}
                 />
-                <HomeNewUsersWorksSection works={data.newUserWorks} />
-                <HomeAwardWorkSection
+                <HomeSensitiveNewUsersWorksSection works={data.newUserWorks} />
+                <HomeSensitiveAwardWorkSection
                   awardDateText={data.awardDateText}
                   title={t("前日ランキング", "Previous Day Ranking")}
                   awards={data.workAwards}
                 />
-                <HomeTagsSection
+                <HomeSensitiveTagsSection
                   title={t("人気タグ", "Popular Tags")}
                   tags={data.recommendedTags}
                 />
@@ -404,7 +396,7 @@ export default function Index() {
                 orientation="vertical"
                 className="hidden h-[100vh] w-[1px] md:block"
               />
-              <AppSideMenu
+              <AppSensitiveSideMenu
                 homeParticles={data}
                 isShowSensitiveButton={true}
                 isShowGenerationAds={true}
