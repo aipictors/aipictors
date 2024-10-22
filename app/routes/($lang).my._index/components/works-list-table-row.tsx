@@ -9,6 +9,7 @@ import { Link } from "@remix-run/react"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
+import { useLocale } from "~/hooks/use-locale"
 
 type Props = {
   work: FragmentOf<typeof WorksListTableRowFragment>
@@ -74,6 +75,8 @@ export function WorksListTableRow(props: Props) {
     return `/posts/${props.work.id}`
   }
 
+  const location = useLocale()
+
   return (
     <>
       {!isHidden && (
@@ -117,7 +120,12 @@ export function WorksListTableRow(props: Props) {
           </TableCell>
           <TableCell>{props.work.commentsCount}</TableCell>
           <TableCell>{props.work.viewsCount}</TableCell>
-          <TableCell>{toWorkTypeText(props.work.type)}</TableCell>
+          <TableCell>
+            {toWorkTypeText({
+              type: props.work.type,
+              lang: location,
+            })}
+          </TableCell>
           <TableCell>{toAccessTypeText(props.work.accessType)}</TableCell>
           <TableCell>
             {isLoadingDeleteWork ? (

@@ -24,6 +24,7 @@ import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/component
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
+import { useLocale } from "~/hooks/use-locale"
 
 type homeParticles = {
   firstTag: string
@@ -174,6 +175,8 @@ export function Home3dContents(props: Props) {
   const workDisplayed =
     recommendedWorksResp?.works ?? props.homeParticles?.promotionWorks
 
+  const location = useLocale()
+
   return (
     <Tabs
       defaultValue={searchParams.get("tab") || "home"}
@@ -221,7 +224,12 @@ export function Home3dContents(props: Props) {
               <SelectTrigger>
                 <SelectValue
                   placeholder={
-                    workType ? toWorkTypeText(workType) : t("種類", "Type")
+                    workType
+                      ? toWorkTypeText({
+                          type: workType,
+                          lang: location,
+                        })
+                      : t("種類", "Type")
                   }
                 />
               </SelectTrigger>

@@ -1,23 +1,23 @@
-import { useTranslation } from "~/hooks/use-translation"
+type Props = {
+  type: string
+  lang: string
+}
 
 /**
  * 作品の種別の文言を返す
  * @param
  */
-export const toWorkTypeText = (type: string) => {
-  // TODO: Hookをなくす
-  const t = useTranslation()
-
-  switch (type) {
+export const toWorkTypeText = (props: Props) => {
+  switch (props.type) {
     case "WORK":
-      return t("画像", "Image")
+      return props.lang === "ja" ? "画像" : "Image"
     case "VIDEO":
-      return t("動画", "Video")
+      return props.lang === "ja" ? "動画" : "Video"
     case "COLUMN":
-      return t("コラム", "Column")
+      return props.lang === "ja" ? "コラム" : "Column"
     case "NOVEL":
-      return t("小説", "Novel")
+      return props.lang === "ja" ? "小説" : "Novel"
     default:
-      return t("画像", "Image")
+      return props.lang === "ja" ? "画像" : "Image"
   }
 }
