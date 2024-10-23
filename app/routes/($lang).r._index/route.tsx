@@ -12,16 +12,22 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
 import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
-import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import { ArrowDownWideNarrow } from "lucide-react"
+import {
+  HomeNewCommentsFragment,
+  HomeNewCommentsSection,
+} from "~/routes/($lang)._main._index/components/home-new-comments"
+import {
+  HomeNewPostedUsersFragment,
+  HomeNewUsersSection,
+} from "~/routes/($lang)._main._index/components/home-new-users-section"
+import { ArrowDownWideNarrow, Link } from "lucide-react"
 import { useState, useEffect, Suspense } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -43,11 +49,12 @@ import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { HomeSensitiveHotWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-hot-works-section"
 import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
-import { AppSensitiveSideMenu } from "~/components/app/app-sensitive-side-menu"
 import { HomeSensitiveWorksTagSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-tag-section"
 import { HomeSensitiveNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-users-works-section"
 import { HomeSensitiveAwardWorkSection } from "~/routes/($lang)._main._index/components/home-sensitive-award-work-section"
 import { HomeSensitiveTagsSection } from "~/routes/($lang)._main._index/components/home-sensitive-tags-section"
+import { useQuery, useMutation } from "@apollo/client/index"
+import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -316,6 +323,40 @@ export default function Index() {
     updateQueryParams(searchParams)
   }
 
+  const navigate = useNavigate()
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+
+  const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    variables: {
+      where: {
+        isSensitive: true,
+        page: "work",
+      },
+    },
+  })
+
+  const [updateClickedCountCustomerAdvertisement] = useMutation(
+    updateClickedCountCustomerAdvertisementMutation,
+  )
+
+  const onClickAdvertisement = async () => {
+    if (advertisements?.randomCustomerAdvertisement) {
+      // Update advertisement click count
+      await updateClickedCountCustomerAdvertisement({
+        variables: {
+          id: advertisements.randomCustomerAdvertisement.id,
+        },
+      })
+    }
+  }
+
+  const passData = pass?.viewer?.currentPass
+
+  const isSubscriptionUser =
+    passData?.type === "LITE" ||
+    passData?.type === "STANDARD" ||
+    passData?.type === "PREMIUM"
+
   if (!data) {
     return null
   }
@@ -396,11 +437,55 @@ export default function Index() {
                 orientation="vertical"
                 className="hidden h-[100vh] w-[1px] md:block"
               />
-              <AppSensitiveSideMenu
-                homeParticles={data}
-                isShowSensitiveButton={true}
-                isShowGenerationAds={true}
-              />
+              <div className="flex w-full flex-col space-y-4">
+                <div className="relative grid gap-4">
+                  <Button
+                    onClick={() => {
+                      navigate("/")
+                    }}
+                    variant={"secondary"}
+                    className="flex w-full transform cursor-pointer items-center"
+                  >
+                    <p className="text-sm">{t("全年齢", "All Ages")}</p>
+                  </Button>
+                  {!isSubscriptionUser &&
+                    advertisements &&
+                    advertisements.randomCustomerAdvertisement && (
+                      <div className="relative border">
+                        <Link
+                          onClick={onClickAdvertisement}
+                          target="_blank"
+                          to={advertisements.randomCustomerAdvertisement.url}
+                        >
+                          <img
+                            src={
+                              advertisements.randomCustomerAdvertisement
+                                .imageUrl
+                            }
+                            alt="Advertisement"
+                          />
+                        </Link>
+                        <div className="absolute top-0 right-0">
+                          <CrossPlatformTooltip
+                            text={t(
+                              "提携広告です、広告主様を募集中です。メールまたはDMにてご連絡ください。",
+                              "This is a partnered advertisement. We are accepting new advertisers. Please contact us via email or DM.",
+                            )}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  {data.newPostedUsers && (
+                    <HomeNewUsersSection users={data.newPostedUsers} />
+                  )}
+                  {data.newComments && data.newComments.length > 0 && (
+                    <HomeNewCommentsSection comments={data.newComments} />
+                  )}
+                  {data.workAwards && (
+                    <HomeAwardWorksSection works={data.workAwards} />
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </TabsContent>
@@ -725,4 +810,50 @@ const query = graphql(
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
   ],
+)
+
+const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      id
+      currentPass {
+        id
+        type
+      }
+    }
+  }`,
+)
+
+export const SideMenuAdvertisementsFragment = graphql(
+  `fragment SideMenuAdvertisementsFields on CustomerAdvertisementNode @_unmask {
+      id
+      imageUrl
+      url
+      displayProbability
+      clickCount
+      impressionCount
+      isSensitive
+      createdAt
+      page
+      startAt
+      endAt
+      isActive
+  }`,
+)
+
+const randomCustomerAdvertisementQuery = graphql(
+  `query RandomCustomerAdvertisement($where: RandomCustomerAdvertisementWhereInput!) {
+    randomCustomerAdvertisement(where: $where) {
+      ...SideMenuAdvertisementsFields
+    }
+  }`,
+  [SideMenuAdvertisementsFragment],
+)
+
+const updateClickedCountCustomerAdvertisementMutation = graphql(
+  `mutation UpdateClickedCountCustomerAdvertisement($id: ID!) {
+    updateClickedCountCustomerAdvertisement(id: $id) {
+      id
+    }
+  }`,
 )

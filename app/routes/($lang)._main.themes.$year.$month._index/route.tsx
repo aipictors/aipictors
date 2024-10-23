@@ -9,14 +9,7 @@ import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$d
 import { getJstDate } from "~/utils/jst-date"
 import { ThemeContainer } from "~/routes/($lang)._main.themes._index/components/theme-container"
 import { config } from "~/config"
-
-const useUpdateQueryParams = () => {
-  const updateQueryParams = (newParams: URLSearchParams) => {
-    const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
-  }
-  return updateQueryParams
-}
+import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.year === undefined) {

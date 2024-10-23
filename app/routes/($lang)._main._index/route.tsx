@@ -21,7 +21,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import {
@@ -36,13 +36,19 @@ import {
 } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
-import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import {
+  HomeNewPostedUsersFragment,
+  HomeNewUsersSection,
+} from "~/routes/($lang)._main._index/components/home-new-users-section"
+import {
+  HomeNewCommentsFragment,
+  HomeNewCommentsSection,
+} from "~/routes/($lang)._main._index/components/home-new-comments"
 import { ConstructionAlert } from "~/components/construction-alert"
 import { useState, useEffect, Suspense } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { ArrowDownWideNarrow } from "lucide-react"
+import { ArrowDownWideNarrow, Link } from "lucide-react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import {
@@ -61,7 +67,10 @@ import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { Button } from "~/components/ui/button"
 import { useLocale } from "~/hooks/use-locale"
-import { AppSideMenu } from "~/components/app/app-side-menu"
+import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
+import { useMutation, useQuery } from "@apollo/client/index"
+import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -203,14 +212,6 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 }
 
-const useUpdateQueryParams = () => {
-  const updateQueryParams = (newParams: URLSearchParams) => {
-    const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
-  }
-  return updateQueryParams
-}
-
 export default function Index() {
   const data = useLoaderData<typeof loader>()
 
@@ -340,6 +341,41 @@ export default function Index() {
     updateQueryParams(searchParams)
   }
 
+  const navigate = useNavigate()
+
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+
+  const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    variables: {
+      where: {
+        isSensitive: false,
+        page: "work",
+      },
+    },
+  })
+
+  const [updateClickedCountCustomerAdvertisement] = useMutation(
+    updateClickedCountCustomerAdvertisementMutation,
+  )
+
+  const onClickAdvertisement = async () => {
+    if (advertisements?.randomCustomerAdvertisement) {
+      // Update advertisement click count
+      await updateClickedCountCustomerAdvertisement({
+        variables: {
+          id: advertisements.randomCustomerAdvertisement.id,
+        },
+      })
+    }
+  }
+
+  const passData = pass?.viewer?.currentPass
+
+  const isSubscriptionUser =
+    passData?.type === "LITE" ||
+    passData?.type === "STANDARD" ||
+    passData?.type === "PREMIUM"
+
   return (
     <>
       <ConstructionAlert
@@ -425,11 +461,72 @@ export default function Index() {
               orientation="vertical"
               className="hidden h-[100vh] w-[1px] md:block"
             />
-            <AppSideMenu
-              homeParticles={data}
-              isShowSensitiveButton={true}
-              isShowGenerationAds={true}
-            />
+            <div className="flex w-full flex-col space-y-4">
+              <div className="relative grid gap-4">
+                <AppConfirmDialog
+                  title={t("確認", "Confirmation")}
+                  description={t(
+                    "センシティブな作品を表示します、あなたは18歳以上ですか？",
+                    "This content contains sensitive material. Are you over 18?",
+                  )}
+                  onNext={() => {
+                    navigate("/r")
+                  }}
+                  cookieKey={"check-sensitive-ranking"}
+                  onCancel={() => {}}
+                >
+                  <Button
+                    variant={"secondary"}
+                    className="flex w-full transform cursor-pointer items-center"
+                  >
+                    <p className="text-sm">{t("センシティブ", "Sensitive")}</p>
+                  </Button>
+                </AppConfirmDialog>
+                {!isSubscriptionUser &&
+                  advertisements &&
+                  advertisements.randomCustomerAdvertisement && (
+                    <div className="relative border">
+                      <Link
+                        onClick={onClickAdvertisement}
+                        target="_blank"
+                        to={advertisements.randomCustomerAdvertisement.url}
+                      >
+                        <img
+                          src={
+                            advertisements.randomCustomerAdvertisement.imageUrl
+                          }
+                          alt="Advertisement"
+                        />
+                      </Link>
+                      <div className="absolute top-0 right-0">
+                        <CrossPlatformTooltip
+                          text={t(
+                            "提携広告です、広告主様を募集中です。メールまたはDMにてご連絡ください。",
+                            "This is a partnered advertisement. We are accepting new advertisers. Please contact us via email or DM.",
+                          )}
+                        />
+                      </div>
+                    </div>
+                  )}
+                {!isSubscriptionUser && (
+                  <Link to="/generation">
+                    <img
+                      src="https://assets.aipictors.com/Aipictors_01.webp"
+                      alt="Aipictors Logo"
+                    />
+                  </Link>
+                )}
+                {data.newPostedUsers && (
+                  <HomeNewUsersSection users={data.newPostedUsers} />
+                )}
+                {data.newComments && data.newComments.length > 0 && (
+                  <HomeNewCommentsSection comments={data.newComments} />
+                )}
+                {data.workAwards && (
+                  <HomeAwardWorksSection works={data.workAwards} />
+                )}
+              </div>
+            </div>
           </div>
         </TabsContent>
         <TabsContent value="new" className="flex flex-col space-y-4">
@@ -726,4 +823,50 @@ const query = graphql(
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
   ],
+)
+
+const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      id
+      currentPass {
+        id
+        type
+      }
+    }
+  }`,
+)
+
+export const SideMenuAdvertisementsFragment = graphql(
+  `fragment SideMenuAdvertisementsFields on CustomerAdvertisementNode @_unmask {
+      id
+      imageUrl
+      url
+      displayProbability
+      clickCount
+      impressionCount
+      isSensitive
+      createdAt
+      page
+      startAt
+      endAt
+      isActive
+  }`,
+)
+
+const randomCustomerAdvertisementQuery = graphql(
+  `query RandomCustomerAdvertisement($where: RandomCustomerAdvertisementWhereInput!) {
+    randomCustomerAdvertisement(where: $where) {
+      ...SideMenuAdvertisementsFields
+    }
+  }`,
+  [SideMenuAdvertisementsFragment],
+)
+
+const updateClickedCountCustomerAdvertisementMutation = graphql(
+  `mutation UpdateClickedCountCustomerAdvertisement($id: ID!) {
+    updateClickedCountCustomerAdvertisement(id: $id) {
+      id
+    }
+  }`,
 )

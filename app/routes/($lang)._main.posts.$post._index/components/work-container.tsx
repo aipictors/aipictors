@@ -7,7 +7,7 @@ import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/w
 import { useContext } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
-import { useQuery } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
@@ -15,12 +15,19 @@ import {
   type CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
+import {
+  HomeNewCommentsSection,
+  type HomeNewCommentsFragment,
+} from "~/routes/($lang)._main._index/components/home-new-comments"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { AppSideMenu } from "~/components/app/app-side-menu"
-import type { HomeAwardWorksFragment } from "~/routes/($lang)._main._index/components/home-award-works"
+import {
+  HomeAwardWorksSection,
+  type HomeAwardWorksFragment,
+} from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { useTranslation } from "~/hooks/use-translation"
+import { useNavigate, Link } from "react-router-dom"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 
 type Props = {
   post: string
@@ -60,6 +67,41 @@ export function WorkContainer(props: Props) {
 
   const randomTag =
     tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
+
+  const navigate = useNavigate()
+
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+
+  const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    variables: {
+      where: {
+        isSensitive: false,
+        page: "work",
+      },
+    },
+  })
+
+  const [updateClickedCountCustomerAdvertisement] = useMutation(
+    updateClickedCountCustomerAdvertisementMutation,
+  )
+
+  const onClickAdvertisement = async () => {
+    if (advertisements?.randomCustomerAdvertisement) {
+      // Update advertisement click count
+      await updateClickedCountCustomerAdvertisement({
+        variables: {
+          id: advertisements.randomCustomerAdvertisement.id,
+        },
+      })
+    }
+  }
+
+  const passData = pass?.viewer?.currentPass
+
+  const isSubscriptionUser =
+    passData?.type === "LITE" ||
+    passData?.type === "STANDARD" ||
+    passData?.type === "PREMIUM"
 
   const t = useTranslation()
 
@@ -121,14 +163,50 @@ export function WorkContainer(props: Props) {
           </div>
           <div className="invisible flex w-full flex-col space-y-4 md:visible">
             <WorkNextAndPrevious work={work} />
-            <AppSideMenu
-              homeParticles={{
-                newComments: props.newComments,
-                awardWorks: props.awardWorks,
-              }}
-              isShowGenerationAds={true}
-              isShowCustomerAds={true}
-            />
+            <div className="flex w-full flex-col space-y-4">
+              <div className="relative grid gap-4">
+                {!isSubscriptionUser &&
+                  advertisements &&
+                  advertisements.randomCustomerAdvertisement && (
+                    <div className="relative border">
+                      <Link
+                        onClick={onClickAdvertisement}
+                        target="_blank"
+                        to={advertisements.randomCustomerAdvertisement.url}
+                      >
+                        <img
+                          src={
+                            advertisements.randomCustomerAdvertisement.imageUrl
+                          }
+                          alt="Advertisement"
+                        />
+                      </Link>
+                      <div className="absolute top-0 right-0">
+                        <CrossPlatformTooltip
+                          text={t(
+                            "提携広告です、広告主様を募集中です。メールまたはDMにてご連絡ください。",
+                            "This is a partnered advertisement. We are accepting new advertisers. Please contact us via email or DM.",
+                          )}
+                        />
+                      </div>
+                    </div>
+                  )}
+                {!isSubscriptionUser && (
+                  <Link to="/generation">
+                    <img
+                      src="https://assets.aipictors.com/Aipictors_01.webp"
+                      alt="Aipictors Logo"
+                    />
+                  </Link>
+                )}
+                {props.newComments && props.newComments.length > 0 && (
+                  <HomeNewCommentsSection comments={props.newComments} />
+                )}
+                {props.awardWorks && (
+                  <HomeAwardWorksSection works={props.awardWorks} />
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -148,16 +226,9 @@ export function WorkContainer(props: Props) {
           </>
         )}
       </section>
-      <div className="flex w-full flex-col space-y-4 md:hidden">
-        <AppSideMenu
-          homeParticles={{
-            newComments: props.newComments,
-            awardWorks: props.awardWorks,
-          }}
-          isShowGenerationAds={false}
-          isShowCustomerAds={true}
-        />
-      </div>
+      {/* <div className="flex w-full flex-col space-y-4 md:hidden">
+        <AppSideMenu />
+      </div> */}
     </div>
   )
 }
@@ -178,4 +249,50 @@ const sensitiveWorkQuery = graphql(
     }
   }`,
   [sensitiveWorkArticleFragment],
+)
+
+const updateClickedCountCustomerAdvertisementMutation = graphql(
+  `mutation UpdateClickedCountCustomerAdvertisement($id: ID!) {
+    updateClickedCountCustomerAdvertisement(id: $id) {
+      id
+    }
+  }`,
+)
+
+const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      id
+      currentPass {
+        id
+        type
+      }
+    }
+  }`,
+)
+
+export const SideMenuAdvertisementsFragment = graphql(
+  `fragment SideMenuAdvertisementsFields on CustomerAdvertisementNode @_unmask {
+      id
+      imageUrl
+      url
+      displayProbability
+      clickCount
+      impressionCount
+      isSensitive
+      createdAt
+      page
+      startAt
+      endAt
+      isActive
+  }`,
+)
+
+const randomCustomerAdvertisementQuery = graphql(
+  `query RandomCustomerAdvertisement($where: RandomCustomerAdvertisementWhereInput!) {
+    randomCustomerAdvertisement(where: $where) {
+      ...SideMenuAdvertisementsFields
+    }
+  }`,
+  [SideMenuAdvertisementsFragment],
 )

@@ -31,6 +31,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useLocale } from "~/hooks/use-locale"
+import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_2D, undefined, props.params.lang)
@@ -119,14 +120,6 @@ export async function loader(props: LoaderFunctionArgs) {
 export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.short,
 })
-
-const useUpdateQueryParams = () => {
-  const updateQueryParams = (newParams: URLSearchParams) => {
-    const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
-  }
-  return updateQueryParams
-}
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()

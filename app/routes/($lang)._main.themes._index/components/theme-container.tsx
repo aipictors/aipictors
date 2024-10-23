@@ -29,6 +29,7 @@ import {
   type ThemeWorkFragment,
 } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { useTranslation } from "~/hooks/use-translation"
+import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 
 type Props = {
   year: number
@@ -47,19 +48,15 @@ type Props = {
   themeId: number
 }
 
-const useUpdateQueryParams = () => {
-  const updateQueryParams = (newParams: URLSearchParams) => {
-    const newUrl = `${window.location.pathname}?${newParams.toString()}`
-    window.history.replaceState(null, "", newUrl)
-  }
-  return updateQueryParams
-}
-
 export function ThemeContainer(props: Props) {
   const navigate = useNavigate()
+
   const [searchParams] = useSearchParams()
+
   const updateQueryParams = useUpdateQueryParams()
+
   const today = new Date()
+
   const authContext = useContext(AuthContext)
 
   const [tab, setTab] = useState(
