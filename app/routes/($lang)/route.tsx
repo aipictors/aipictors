@@ -21,7 +21,7 @@ export const loader = async (props: LoaderFunctionArgs) => {
   }
 
   if (redirectMapping[pathname]) {
-    return redirect(redirectMapping[pathname], { status: 302 })
+    return redirect(redirectMapping[pathname], { status: 301 })
   }
 
   return null

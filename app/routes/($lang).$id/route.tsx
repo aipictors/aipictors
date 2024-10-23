@@ -19,5 +19,5 @@ const handlePostsRedirect = async (url: URL) => {
     throw new Response(null, { status: 404 })
   }
 
-  return redirect(`/posts/${postId}`, { status: 302 })
+  return redirect(`/posts/${postId}`, { status: 301 })
 }
