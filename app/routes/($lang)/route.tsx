@@ -4,7 +4,10 @@ import { loaderClient } from "~/lib/loader-client"
 
 export const loader = async (props: LoaderFunctionArgs) => {
   const url = new URL(props.request.url)
+
   const pathname = url.pathname
+
+  console.log("pathname", pathname)
 
   const redirectMapping: Record<string, string> = {
     "/illust": "/posts/2d",
@@ -13,14 +16,12 @@ export const loader = async (props: LoaderFunctionArgs) => {
     "/idea": "/themes",
   }
 
-  // マッピングされたパスがあればリダイレクトを行う
-  if (redirectMapping[pathname]) {
-    return redirect(redirectMapping[pathname], { status: 302 })
+  if (/^\/series\/?$/.test(pathname)) {
+    return await handleSeriesRedirect(url)
   }
 
-  // "/series" の処理だけ特別に扱う
-  if (pathname === "/series") {
-    return await handleSeriesRedirect(url)
+  if (redirectMapping[pathname]) {
+    return redirect(redirectMapping[pathname], { status: 302 })
   }
 
   return null
@@ -34,22 +35,34 @@ const handleSeriesRedirect = async (url: URL) => {
     throw new Response(null, { status: 404 })
   }
 
+  const userResp = await loaderClient.query({
+    query: userQuery__DEPRECATED__,
+    variables: {
+      userId: user,
+    },
+  })
+
+  if (!userResp.data.user) {
+    throw new Response(null, { status: 404 })
+  }
+
   const albumResp = await loaderClient.query({
     query: LoaderAlbumsQuery__DEPRECATED__,
     variables: {
       where: {
-        userId: user,
+        userId: userResp.data.user.login,
         link: id,
       },
     },
   })
 
   const album = albumResp.data.userAlbum
+
   if (!album) {
     throw new Response(null, { status: 404 })
   }
 
-  return redirect(`/${album.user.id}/albums/${album.slug}`, { status: 302 })
+  return redirect(`/${album.user.login}/albums/${album.slug}`, { status: 302 })
 }
 
 const LoaderAlbumsQuery__DEPRECATED__ = graphql(
@@ -57,8 +70,17 @@ const LoaderAlbumsQuery__DEPRECATED__ = graphql(
     userAlbum(where: $where) {
       user {
         id
+        login
       }
       slug
+    }
+  }`,
+)
+
+const userQuery__DEPRECATED__ = graphql(
+  `query User($userId: ID!) {
+    user(id: $userId) {
+      login
     }
   }`,
 )
