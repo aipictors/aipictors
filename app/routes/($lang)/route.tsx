@@ -13,12 +13,10 @@ export const loader = async (props: LoaderFunctionArgs) => {
     "/idea": "/themes",
   }
 
-  // マッピングされたパスがあればリダイレクトを行う
   if (redirectMapping[pathname]) {
     return redirect(redirectMapping[pathname], { status: 302 })
   }
 
-  // "/series" の処理だけ特別に扱う
   if (pathname === "/series") {
     return await handleSeriesRedirect(url)
   }
