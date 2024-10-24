@@ -74,9 +74,14 @@ export function ReleaseItem(props: Props) {
   return (
     <>
       <div className="font-bold text-lg">{props.title}</div>
-      <Badge variant={"secondary"} className="w-12 text-xs">
-        <p className="w-auto text-center">{props.platform}</p>
-      </Badge>
+      <div className="flex items-center space-x-2">
+        <Badge variant={"secondary"} className="w-12 text-xs">
+          <p className="w-auto text-center">{props.platform}</p>
+        </Badge>
+        <div className="block text-gray-400 text-xs">
+          {formatDate(props.createdAt)}
+        </div>
+      </div>
       <div className="mt-4 rounded-lg bg-zinc-100 bg-opacity-50 p-4 dark:bg-zinc-900">
         <EditorContent editor={editor} />
       </div>
@@ -88,9 +93,6 @@ export function ReleaseItem(props: Props) {
           setCurrentIndex={() => {}}
         />
       )}
-      <div className="mt-4 text-gray-400 text-xs">
-        {formatDate(props.createdAt)}
-      </div>
     </>
   )
 }
