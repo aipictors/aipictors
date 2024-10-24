@@ -516,8 +516,26 @@ export default function Index() {
                 />
               </div>
             </Button>
+            <Button
+              variant={
+                searchParams.get("view") === "new-user"
+                  ? "default"
+                  : "secondary"
+              }
+              onClick={() => handleWorkViewChange("new-user")}
+            >
+              <div className="flex space-x-2">
+                <p>{t("新規ユーザ", "New Users")}</p>
+                <CrossPlatformTooltip
+                  text={t(
+                    "新規登録されたユーザの作品一覧です",
+                    "List of works by newly registered users",
+                  )}
+                />
+              </div>
+            </Button>
           </div>
-          {workView === "new" ? (
+          {workView === "new" && (
             <div className="space-y-4">
               {/* 新着作品の表示 */}
               <div className="space-y-4">
@@ -617,7 +635,22 @@ export default function Index() {
                 </Suspense>
               </div>
             </div>
-          ) : (
+          )}
+          {workView === "popular" && (
+            <div className="space-y-4">
+              {/* 人気作品の表示 */}
+              <Suspense fallback={<AppLoadingPage />}>
+                <HomeSensitiveHotWorksSection
+                  page={newWorksPage}
+                  setPage={setNewWorksPage}
+                  workType={workType}
+                  isPromptPublic={isPromptPublic}
+                  sortType={sortType}
+                />
+              </Suspense>
+            </div>
+          )}
+          {workView === "new-user" && (
             <div className="space-y-4">
               {/* 人気作品の表示 */}
               <Suspense fallback={<AppLoadingPage />}>

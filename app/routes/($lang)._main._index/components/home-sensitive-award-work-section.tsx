@@ -58,7 +58,7 @@ export function HomeSensitiveAwardWorkSection(props: Props) {
   return (
     <section className="relative space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="items-center space-x-2 font-bold text-md">
+        <h2 className="items-center space-x-2 font-bold text-xl">
           {props.title}
         </h2>
         {/* 昨日の日付 // /2024/05/01 */}

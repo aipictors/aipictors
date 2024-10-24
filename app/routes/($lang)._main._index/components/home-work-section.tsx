@@ -38,7 +38,7 @@ export function HomeWorkSection(props: Props) {
     <section className={cn(props.title ? "space-y-4" : "gap-y-4")}>
       <div className="flex items-center justify-between">
         <h2 className="items-center space-x-2 font-bold text-md">
-          {props.title && props.title}
+          <h3 className="font-bold text-xl">{props.title && props.title}</h3>
           {props.tooltip && (
             <TooltipProvider>
               <Tooltip>
@@ -65,6 +65,7 @@ export function HomeWorkSection(props: Props) {
       ) : (
         <ResponsivePhotoWorksAlbum
           works={props.works}
+          size="large"
           targetRowHeight={props.targetRowHeight}
           isShowProfile={props.isShowProfile}
         />

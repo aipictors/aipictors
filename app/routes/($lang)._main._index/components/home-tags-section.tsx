@@ -20,7 +20,7 @@ export function HomeTagsSection(props: Props) {
 
   return (
     <>
-      <h2 className="items-center space-x-2 font-bold text-md">
+      <h2 className="items-center space-x-2 font-bold text-xl">
         {props.title}
       </h2>
       <Carousel
