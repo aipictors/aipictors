@@ -525,6 +525,14 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "View the AI illustration daily ranking information",
     isIndex: true,
   },
+  RELEASE: {
+    title: "{{title}}",
+    enTitle: "{{enTitle}}",
+    description: "{{description}}",
+    enDescription: "{{enDescription}}",
+    image: "{{url}}",
+    isIndex: true,
+  },
   SENSITIVE_RANKINGS_DAY: {
     title: "センシティブデイリーランキング",
     enTitle: "Sensitive Daily Rankings",

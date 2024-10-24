@@ -71,6 +71,7 @@ import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
+import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -431,6 +432,7 @@ export default function Index() {
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex flex-col space-y-4 md:w-[80%]">
+              <HomeReleaseList releaseList={data.releaseList} />
               {data.dailyTheme && (
                 <div>
                   <HomeTagList

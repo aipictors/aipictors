@@ -1,9 +1,14 @@
 import { Link, useLoaderData } from "@remix-run/react"
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Button } from "~/components/ui/button"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { ReleaseItem } from "~/routes/($lang)._main.releases.$id._index/components/release-item"
-import { config } from "~/config"
+import { config, META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 interface Release {
   id: string
@@ -54,6 +59,22 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
+export const meta: MetaFunction = (props) => {
+  const response = props.data as { data: ApiResponse }
+
+  return createMeta(
+    META.RELEASE,
+    {
+      title: `${response.data.contents[0].title}`,
+      enTitle: `${response.data.contents[0].title}`,
+      description: response.data.contents[0].description || "",
+      enDescription: response.data.contents[0].description || "",
+      url: response.data.contents[0].thumbnail_url.url,
+    },
+    props.params.lang,
+  )
+}
+
 export default function Release() {
   const data = useLoaderData<typeof loader>()
 
@@ -69,6 +90,7 @@ export default function Release() {
 
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp)
+
     return date.toLocaleDateString()
   }
 
