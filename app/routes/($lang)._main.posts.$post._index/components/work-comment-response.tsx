@@ -10,6 +10,7 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import { toast } from "sonner"
 
 type Props = {
   isMine: boolean
@@ -49,13 +50,23 @@ export function WorkCommentResponse(props: Props) {
 
   const onDeleteComment = async () => {
     props.onDeleteComment()
-    await deleteMutation({
-      variables: {
-        input: {
-          commentId: props.replyId,
+    try {
+      await deleteMutation({
+        variables: {
+          input: {
+            commentId: props.replyId,
+          },
         },
-      },
-    })
+      })
+    } catch (e) {
+      console.error(e)
+      toast.error(
+        t(
+          "既に削除済みの可能性があります、しばらくしたら反映されます",
+          "It may have already been deleted, it will be reflected after a while",
+        ),
+      )
+    }
   }
 
   return (

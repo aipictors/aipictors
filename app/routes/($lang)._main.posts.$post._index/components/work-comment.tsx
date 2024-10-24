@@ -10,6 +10,7 @@ import { graphql } from "gql.tada"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
+import { toast } from "sonner"
 
 type Props = {
   userId: string
@@ -48,13 +49,23 @@ export function WorkComment(props: Props) {
 
   const onDeleteComment = async () => {
     props.onDeleteComment()
-    await deleteMutation({
-      variables: {
-        input: {
-          commentId: props.commentId,
+    try {
+      await deleteMutation({
+        variables: {
+          input: {
+            commentId: props.commentId,
+          },
         },
-      },
-    })
+      })
+    } catch (e) {
+      console.error(e)
+      toast.error(
+        t(
+          "既に削除済みの可能性があります、しばらくしたら反映されます",
+          "It may have already been deleted, it will be reflected after a while",
+        ),
+      )
+    }
   }
 
   return (
