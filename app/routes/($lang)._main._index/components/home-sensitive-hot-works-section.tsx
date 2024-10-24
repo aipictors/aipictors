@@ -53,18 +53,21 @@ export function HomeSensitiveHotWorksSection(props: Props) {
       {(props.workType === "WORK" || props.workType === null) && (
         <HomeWorkSection
           title={""}
-          works={worksResp?.hotWorks || []}
+          works={worksResp?.popularWorks || []}
           isCropped={props.isCropped}
           isShowProfile={true}
         />
       )}
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
-        <HomeNovelsWorksSection title={""} works={worksResp?.hotWorks || []} />
+        <HomeNovelsWorksSection
+          title={""}
+          works={worksResp?.popularWorks || []}
+        />
       )}
       {props.workType === "VIDEO" && (
         <HomeVideosWorksSection
           title={""}
-          works={worksResp?.hotWorks || []}
+          works={worksResp?.popularWorks || []}
           isAutoPlay={true}
         />
       )}
@@ -73,8 +76,8 @@ export function HomeSensitiveHotWorksSection(props: Props) {
 }
 
 const WorksQuery = graphql(
-  `query Works($where: HotWorksWhereInput) {
-    hotWorks(where: $where) {
+  `query Works($where: PopularWorksWhereInput!) {
+    popularWorks(where: $where) {
       ...HomeWork
       ...HomeNovelsWorkListItem
       ...HomeVideosWorkListItem
