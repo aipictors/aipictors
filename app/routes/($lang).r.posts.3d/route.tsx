@@ -9,10 +9,7 @@ import type {
 import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
-import {
-  HomeTagWorkFragment,
-  HomeWorksTagSection,
-} from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
 import { useQuery } from "@apollo/client/index"
@@ -35,6 +32,7 @@ import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/component
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { HomeSensitiveWorksTagSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-tag-section"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_3D, undefined, props.params.lang)
@@ -272,7 +270,7 @@ export default function Index() {
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
           {data && (
             <>
-              <HomeWorksTagSection
+              <HomeSensitiveWorksTagSection
                 tag={data.firstTag}
                 works={data.firstTagWorks}
                 secondTag={data.secondTag}
@@ -423,7 +421,7 @@ const query = graphql(
       where: {
         ratings: [R18, R18G],
         search: $categoryFirst
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         style: REAL
       }
     ) {
@@ -435,7 +433,7 @@ const query = graphql(
       where: {
         ratings: [R18, R18G],
         search: $categorySecond
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         style: REAL
       }
     ) {

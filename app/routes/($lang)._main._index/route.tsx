@@ -21,7 +21,12 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import {
+  Link,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import {
@@ -48,7 +53,7 @@ import { ConstructionAlert } from "~/components/construction-alert"
 import { useState, useEffect, Suspense } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { ArrowDownWideNarrow, Link } from "lucide-react"
+import { ArrowDownWideNarrow } from "lucide-react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import {

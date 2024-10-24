@@ -12,7 +12,12 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import {
+  Link,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
@@ -27,7 +32,7 @@ import {
   HomeNewPostedUsersFragment,
   HomeNewUsersSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import { ArrowDownWideNarrow, Link } from "lucide-react"
+import { ArrowDownWideNarrow } from "lucide-react"
 import { useState, useEffect, Suspense } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -717,7 +722,7 @@ const query = graphql(
       where: {
         ratings: [R18],
         search: $categoryFirst
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         isSensitive: true
         isNowCreatedAt: true
       }
@@ -730,7 +735,7 @@ const query = graphql(
       where: {
         ratings: [R18]
         search: $categorySecond
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         isSensitive: true
         isNowCreatedAt: true
       }

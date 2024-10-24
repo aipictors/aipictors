@@ -431,7 +431,7 @@ const query = graphql(
       where: {
         ratings: [G],
         search: $categoryFirst
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         style: REAL
       }
     ) {
@@ -443,7 +443,7 @@ const query = graphql(
       where: {
         ratings: [G],
         search: $categorySecond
-        orderBy: VIEWS_COUNT
+        orderBy: LIKES_COUNT
         style: REAL
       }
     ) {

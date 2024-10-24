@@ -9,10 +9,7 @@ import type {
 import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
-import {
-  HomeTagWorkFragment,
-  HomeWorksTagSection,
-} from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
 import { ArrowDownWideNarrow } from "lucide-react"
@@ -32,6 +29,7 @@ import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { useLocale } from "~/hooks/use-locale"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
+import { HomeSensitiveWorksTagSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-tag-section"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_2D, undefined, props.params.lang)
@@ -248,7 +246,7 @@ export default function Index() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
-          <HomeWorksTagSection
+          <HomeSensitiveWorksTagSection
             tag={data.firstTag}
             works={data.firstTagWorks}
             secondTag={data.secondTag}
