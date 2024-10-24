@@ -7,7 +7,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { MessageCircleIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
-import { Link, useNavigate } from "@remix-run/react"
+import { Link, useNavigate, useSearchParams } from "@remix-run/react"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { cn } from "~/lib/utils"
@@ -18,7 +18,6 @@ import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
-import { ResponsivePagination } from "~/components/responsive-pagination"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -28,29 +27,30 @@ type Props = {
 
 export function FollowUserFeedContents(props: Props) {
   const authContext = useContext(AuthContext)
-
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [isTimelineView, setIsTimelineView] = useState(false)
-
   const [hiddenComments, setHiddenComments] = useState<{
     [key: string]: boolean
   }>({})
-
   const [subWorksVisible, setSubWorksVisible] = useState<{
     [key: string]: boolean
   }>({})
 
   const t = useTranslation()
 
-  // クエリを状態に応じて切り替える
+  const limit = 96
+
+  const offset = limit * props.page
+
   const { data } = useSuspenseQuery(
     isTimelineView ? feedQuery : feedWorkListQuery,
     {
       skip: authContext.isLoading || authContext.isNotLoggedIn,
       variables: {
-        offset: 96 * props.page,
-        limit: 96,
+        offset: offset,
+        limit: limit,
         feedWhere: {
           userId: authContext.userId ?? "-1",
           type: "FOLLOW_USER",
@@ -112,7 +112,6 @@ export function FollowUserFeedContents(props: Props) {
     }))
   }
 
-  // works の取得方法を変更
   const works = posts
     .filter((post) => post?.work)
     .map((post) => post.work)
@@ -293,14 +292,27 @@ export function FollowUserFeedContents(props: Props) {
           />
         </div>
       )}
-      <ResponsivePagination
-        perPage={96}
-        maxCount={96}
-        currentPage={props.page}
-        onPageChange={(page: number) => {
-          props.setPage(page)
-        }}
-      />
+      <div className="h-8" />
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        {posts.length > 0 && (
+          <div className="m-auto flex items-center justify-center space-x-2">
+            {props.page > 0 ? (
+              <Button onClick={() => props.setPage(props.page - 1)}>
+                {t("前へ", "Previous")}
+              </Button>
+            ) : (
+              <div />
+            )}
+            {posts.length === limit ? (
+              <Button onClick={() => props.setPage(props.page + 1)}>
+                {t("次へ", "Next")}
+              </Button>
+            ) : (
+              <div />
+            )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

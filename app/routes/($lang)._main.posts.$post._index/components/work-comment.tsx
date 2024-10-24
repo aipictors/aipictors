@@ -70,7 +70,7 @@ export function WorkComment(props: Props) {
             <AvatarFallback />
           </Avatar>
         </Link>
-        <div>
+        <div className="flex flex-col space-y-2">
           <Link to={`/users/${props.userId}`}>
             <span>{props.userName}</span>
           </Link>

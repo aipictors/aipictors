@@ -58,6 +58,7 @@ import { HomeSensitiveTagsSection } from "~/routes/($lang)._main._index/componen
 import { useQuery, useMutation } from "@apollo/client/index"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
 import { HomeSensitiveTagList } from "~/routes/($lang).r._index/components/home-sensitive-tag-list"
+import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/components/home-new-user-sensitive-work-list-section"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -387,7 +388,7 @@ export default function Index() {
               <p className="block md:hidden">{t("フォロー", "Followed")}</p>
               <CrossPlatformTooltip
                 text={t(
-                  "フォローしたユーザの新着作品が表示されます",
+                  "フォローしたユーザの新着作品が表示されます、現在はリニューアル版の投稿ページにて投稿された作品が表示されていますのでご注意ください",
                   "Displays works from followed users",
                 )}
               />
@@ -654,9 +655,7 @@ export default function Index() {
             <div className="space-y-4">
               {/* 人気作品の表示 */}
               <Suspense fallback={<AppLoadingPage />}>
-                <HomeSensitiveHotWorksSection
-                  page={newWorksPage}
-                  setPage={setNewWorksPage}
+                <HomeNewUsersSensitiveWorkListSection
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
@@ -669,8 +668,8 @@ export default function Index() {
         <TabsContent value="follow-user">
           <Suspense fallback={<AppLoadingPage />}>
             <FollowUserFeedContents
-              page={followUserFeedPage}
-              setPage={setFollowUserFeedPage}
+            // page={followUserFeedPage}
+            // setPage={setFollowUserFeedPage}
             />
           </Suspense>
         </TabsContent>
