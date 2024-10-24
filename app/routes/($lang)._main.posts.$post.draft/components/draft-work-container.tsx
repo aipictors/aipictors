@@ -1,5 +1,4 @@
 import {
-  WorkArticle,
   workArticleFragment,
   sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
@@ -28,6 +27,7 @@ import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/compon
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate, Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { DraftWorkArticle } from "~/routes/($lang)._main.posts.$post.draft/components/draft-work-article"
 
 type Props = {
   post: string
@@ -42,7 +42,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function WorkContainer(props: Props) {
+export function DraftWorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(workQuery, {
@@ -53,10 +53,6 @@ export function WorkContainer(props: Props) {
   })
 
   const work = data?.work ?? props.work
-
-  if (work === null) {
-    return null
-  }
 
   const tags = work?.tagNames ?? []
 
@@ -100,6 +96,10 @@ export function WorkContainer(props: Props) {
 
   const t = useTranslation()
 
+  if (work === null) {
+    return null
+  }
+
   return (
     <div
       className="space-y-4 overflow-hidden"
@@ -110,7 +110,7 @@ export function WorkContainer(props: Props) {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <WorkArticle work={work} />
+            <DraftWorkArticle work={work} />
             <WorkRelatedList
               works={work.user.works.map((relatedWork) => ({
                 smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,

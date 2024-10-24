@@ -5,7 +5,6 @@ import {
   type workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 import {
   redirect,
   type HeadersFunction,
@@ -21,6 +20,7 @@ import { createMeta } from "~/utils/create-meta"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { getJstDate } from "~/utils/jst-date"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
+import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -172,11 +172,10 @@ export default function Work() {
   }
 
   return (
-    <WorkContainer
+    <SensitiveWorkContainer
       post={data.post}
       work={data.work}
       comments={data.workComments}
-      isSensitive={true}
       newComments={data.newComments}
       awardWorks={data.awardWorks}
     />

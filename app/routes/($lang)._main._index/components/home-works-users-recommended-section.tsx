@@ -9,7 +9,6 @@ import { useTranslation } from "~/hooks/use-translation"
 import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
 
 type Props = {
-  isSensitive?: boolean
   works: FragmentOf<typeof HomePromotionWorkFragment>[]
   style?: IntrospectionEnum<"ImageStyle">
 }

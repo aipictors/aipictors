@@ -271,7 +271,6 @@ export default function Index() {
                 style="ILLUSTRATION"
               />
               <HomeWorksUsersRecommendedSection
-                isSensitive={false}
                 works={data.promotionWorks}
                 style="ILLUSTRATION"
               />

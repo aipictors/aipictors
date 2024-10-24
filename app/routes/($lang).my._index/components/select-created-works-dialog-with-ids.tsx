@@ -17,7 +17,6 @@ type Props = {
   selectedWorkIds: string[]
   setSelectedWorkIds: (workIds: string[]) => void
   limit?: number
-  isSensitive?: boolean
 }
 
 /**
@@ -46,7 +45,6 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         userId: appContext.userId,
         orderBy: "DATE_CREATED",
         sort: "DESC",
-        isSensitive: props.isSensitive,
       },
     },
   })
@@ -56,7 +54,6 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     variables: {
       where: {
         userId: appContext.userId,
-        isSensitive: props.isSensitive,
       },
     },
   })

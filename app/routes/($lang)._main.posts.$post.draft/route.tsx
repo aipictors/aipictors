@@ -2,13 +2,13 @@ import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { config } from "~/config"
+import { DraftWorkContainer } from "~/routes/($lang)._main.posts.$post.draft/components/draft-work-container"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -58,9 +58,8 @@ export default function Work() {
   const data = useLoaderData<typeof loader>()
 
   return (
-    <WorkContainer
+    <DraftWorkContainer
       post={data.post}
-      isDraft={true}
       work={data.work}
       comments={data.workComments}
       newComments={data.newComments}

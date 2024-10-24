@@ -44,7 +44,6 @@ type Props = {
   worksCount: number
   works: FragmentOf<typeof ThemeWorkFragment>[]
   defaultTab?: "list" | "calender"
-  isSensitive?: boolean
   themeId: number
 }
 
@@ -77,7 +76,7 @@ export function ThemeContainer(props: Props) {
       limit: 64,
       where: {
         subjectId: props.themeId,
-        ratings: props.isSensitive ? ["R18", "R18G"] : ["G", "R15"],
+        ratings: ["G", "R15"],
         orderBy: "DATE_CREATED",
         isNowCreatedAt: true,
       },
@@ -118,15 +117,9 @@ export function ThemeContainer(props: Props) {
       ? new Date(props.year, props.month - 1, props.day - 1)
       : new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1)
 
-    if (props.isSensitive) {
-      navigate(
-        `/r/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
-      )
-    } else {
-      navigate(
-        `/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
-      )
-    }
+    navigate(
+      `/themes/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+    )
   }
 
   const handleNextDay = (event: React.MouseEvent) => {
@@ -136,15 +129,9 @@ export function ThemeContainer(props: Props) {
       ? new Date(props.year, props.month - 1, props.day + 1)
       : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
 
-    if (props.isSensitive) {
-      navigate(
-        `/r/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
-      )
-    } else {
-      navigate(
-        `/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
-      )
-    }
+    navigate(
+      `/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
+    )
   }
 
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,11 +153,7 @@ export function ThemeContainer(props: Props) {
     const year = date.getFullYear()
     const month = date.getMonth() + 1
     const day = date.getDate()
-    if (props.isSensitive) {
-      navigate(`/r/themes/${year}/${month}/${day}`)
-    } else {
-      navigate(`/themes/${year}/${month}/${day}`)
-    }
+    navigate(`/themes/${year}/${month}/${day}`)
   }
 
   const description = t(
@@ -295,11 +278,7 @@ export function ThemeContainer(props: Props) {
                 props.dailyBeforeThemes.map((theme) => (
                   <CarouselItem className="basis-auto" key={theme.id}>
                     <TagButton
-                      link={
-                        props.isSensitive
-                          ? `/r/themes/${theme.year}/${theme.month}/${theme.day}`
-                          : `/themes/${theme.year}/${theme.month}/${theme.day}`
-                      }
+                      link={`/themes/${theme.year}/${theme.month}/${theme.day}`}
                       name={theme.title}
                       isDisabled={
                         new Date(theme.year, theme.month - 1, theme.day) >
@@ -326,22 +305,12 @@ export function ThemeContainer(props: Props) {
               perPage={64}
               currentPage={props.page}
               onPageChange={(page: number) => {
-                if (props.isSensitive) {
-                  if (props.day) {
-                    navigate(
-                      `/r/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
-                    )
-                  } else {
-                    navigate(`/r/themes?page=${page}`)
-                  }
+                if (props.day) {
+                  navigate(
+                    `/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
+                  )
                 } else {
-                  if (props.day) {
-                    navigate(
-                      `/themes/${props.year}/${props.month}/${props.day}?page=${page}`,
-                    )
-                  } else {
-                    navigate(`/themes?page=${page}`)
-                  }
+                  navigate(`/themes?page=${page}`)
                 }
               }}
             />

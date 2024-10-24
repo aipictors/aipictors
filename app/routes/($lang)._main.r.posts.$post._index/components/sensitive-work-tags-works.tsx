@@ -15,7 +15,7 @@ type Props = {
 /**
  * タグ関連の作品
  */
-export function WorkTagsWorks(props: Props) {
+export function SensitiveWorkTagsWorks(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: suggestedWorkResp } = useQuery(query, {
@@ -26,6 +26,7 @@ export function WorkTagsWorks(props: Props) {
       where: {
         tagNames: [props.tagName],
         ratings: [props.rating],
+        isSensitive: true,
       },
     },
   })

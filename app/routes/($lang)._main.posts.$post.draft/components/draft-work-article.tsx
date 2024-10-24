@@ -34,7 +34,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function WorkArticle(props: Props) {
+export function DraftWorkArticle(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data } = useQuery(viewerBookmarkFolderIdQuery, {

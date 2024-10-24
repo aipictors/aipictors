@@ -9,7 +9,6 @@ import { graphql, type FragmentOf } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
-import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
 import {
   type CommentListItemFragment,
@@ -28,6 +27,7 @@ import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/compon
 import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate, Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 
 type Props = {
   post: string
@@ -42,10 +42,10 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function WorkContainer(props: Props) {
+export function SensitiveWorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data, refetch } = useQuery(workQuery, {
+  const { data, refetch } = useQuery(sensitiveWorkQuery, {
     skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
     variables: {
       id: props.post,
@@ -70,7 +70,7 @@ export function WorkContainer(props: Props) {
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
     variables: {
       where: {
-        isSensitive: false,
+        isSensitive: true,
         page: "work",
       },
     },
@@ -213,7 +213,10 @@ export function WorkContainer(props: Props) {
                 {t("おすすめ", "Recommended")}
               </h2>
             </div>
-            <WorkTagsWorks tagName={randomTag} rating={work.rating ?? "G"} />
+            <SensitiveWorkTagsWorks
+              tagName={randomTag}
+              rating={work.rating ?? "R18"}
+            />
           </>
         )}
       </section>
