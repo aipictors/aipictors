@@ -238,14 +238,27 @@ export default function Index() {
     }
 
     const page = searchParams.get("page")
+
+    const view = searchParams.get("view")
+
     if (page) {
-      const pageNumber = Number.parseInt(page)
-      if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
-      } else {
-        setNewWorksPage(pageNumber)
+      if (view === "new") {
+        const pageNumber = Number.parseInt(page)
+        if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
+        } else {
+          setNewWorksPage(pageNumber)
+        }
+      }
+      if (view === "new-user") {
+        const pageNumber = Number.parseInt(page)
+        if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
+        } else {
+          setFollowUserFeedPage(pageNumber)
+        }
       }
     } else {
       setNewWorksPage(0)
+      setFollowUserFeedPage(0)
     }
 
     const type = searchParams.get("workType")
@@ -273,7 +286,12 @@ export default function Index() {
       searchParams.set("page", newWorksPage.toString())
       updateQueryParams(searchParams)
     }
-  }, [newWorksPage, searchParams, updateQueryParams])
+
+    if (followUserFeedPage >= 0) {
+      searchParams.set("page", followUserFeedPage.toString())
+      updateQueryParams(searchParams)
+    }
+  }, [newWorksPage, followUserFeedPage, searchParams, updateQueryParams])
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
@@ -668,8 +686,8 @@ export default function Index() {
         <TabsContent value="follow-user">
           <Suspense fallback={<AppLoadingPage />}>
             <FollowUserFeedContents
-            // page={followUserFeedPage}
-            // setPage={setFollowUserFeedPage}
+              page={followUserFeedPage}
+              setPage={setFollowUserFeedPage}
             />
           </Suspense>
         </TabsContent>
