@@ -136,7 +136,7 @@ export function WorkArticle(props: Props) {
           targetWorkId={props.work.id}
           bookmarkFolderId={bookmarkFolderId}
           targetWorkOwnerUserId={props.work.user.id}
-          isDisabledShare={true}
+          isDisabledShare={false}
         />
         <h1 className="font-bold text-lg">
           {t(
