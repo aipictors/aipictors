@@ -6,10 +6,11 @@ import {
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
+import {
+  redirect,
+  type HeadersFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
 } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -60,12 +61,7 @@ export async function loader(props: LoaderFunctionArgs) {
     workResp.data.work.rating === "G" ||
     workResp.data.work.rating === "R15"
   ) {
-    return {
-      status: 302,
-      headers: {
-        Location: `/posts/${props.params.post}`,
-      },
-    }
+    return redirect(`/posts/${props.params.post}`)
   }
 
   const workCommentsResp = await loaderClient.query({
