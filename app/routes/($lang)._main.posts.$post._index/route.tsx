@@ -3,10 +3,11 @@ import { loaderClient } from "~/lib/loader-client"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
+import {
+  redirect,
+  type HeadersFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
 } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
@@ -57,12 +58,7 @@ export async function loader(props: LoaderFunctionArgs) {
     workResp.data.work.rating === "R18" ||
     workResp.data.work.rating === "R18G"
   ) {
-    return {
-      status: 302,
-      headers: {
-        Location: `/r/posts/${props.params.post}`,
-      },
-    }
+    return redirect(`/r/posts/${props.params.post}`)
   }
 
   const workCommentsResp = await loaderClient.query({
@@ -120,6 +116,14 @@ export const meta: MetaFunction = (props) => {
     if (props.params.lang === "en") {
       return [{ title: "Aipictors works page" }]
     }
+    return [{ title: "Aipictorsの作品ページ" }]
+  }
+
+  if (
+    typeof props.data !== "object" ||
+    props.data === null ||
+    !("work" in props.data)
+  ) {
     return [{ title: "Aipictorsの作品ページ" }]
   }
 

@@ -93,13 +93,13 @@ export function HomeCroppedWorks(props: Props) {
               self.findIndex((w) => w.id === work.id) === index,
           )
           .map((work) => (
-            <div key={work.id}>
+            <div key={work.id} className="relative">
               <Link
                 to={`/posts/${work.id}`}
                 className="relative overflow-hidden"
               >
                 <div
-                  className="w-full overflow-hidden"
+                  className="relative w-full overflow-hidden"
                   style={{ paddingBottom: "100%" }}
                 >
                   <img
@@ -124,7 +124,7 @@ export function HomeCroppedWorks(props: Props) {
               </Link>
               {props.isShowProfile && (
                 <>
-                  <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                  <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
                     {work.title}
                   </p>
                   <UserNameBadge
