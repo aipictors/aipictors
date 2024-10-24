@@ -65,7 +65,7 @@ const WorksQuery = graphql(
   `query Works {
     newUserWorks: newUserWorks(
       offset: 0,
-      limit: 64,
+      limit: 20,
       where: {
         ratings: [G, R15],
         isNowCreatedAt: true

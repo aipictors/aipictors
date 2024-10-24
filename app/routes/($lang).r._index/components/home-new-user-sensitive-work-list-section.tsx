@@ -27,7 +27,7 @@ type Props = {
 /**
  * トップ画面人気作品一覧
  */
-export function HomeNewUsersWorkListSection(props: Props) {
+export function HomeNewUsersSensitiveWorkListSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
@@ -65,7 +65,7 @@ const WorksQuery = graphql(
   `query Works {
     newUserWorks: newUserWorks(
       offset: 0,
-      limit: 64,
+      limit: 20,
       where: {
         ratings: [R18, R18G],
         isNowCreatedAt: true

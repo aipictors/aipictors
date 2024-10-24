@@ -71,14 +71,13 @@ export function WorkCommentResponse(props: Props) {
             <AvatarFallback />
           </Avatar>
         </Link>
-        <div className="space-y-0">
+        <div className="flex flex-col space-y-2">
           <Link to={`/users/${props.userId}`}>
             <p>{props.userName}</p>
           </Link>
           <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
             {props.text}
           </p>
-
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link
               className="group block w-24 overflow-hidden rounded-md"

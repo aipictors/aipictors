@@ -259,14 +259,27 @@ export default function Index() {
     }
 
     const page = searchParams.get("page")
+
+    const view = searchParams.get("view")
+
     if (page) {
-      const pageNumber = Number.parseInt(page)
-      if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
-      } else {
-        setNewWorksPage(pageNumber)
+      if (view === "new") {
+        const pageNumber = Number.parseInt(page)
+        if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
+        } else {
+          setNewWorksPage(pageNumber)
+        }
+      }
+      if (view === "new-user") {
+        const pageNumber = Number.parseInt(page)
+        if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
+        } else {
+          setFollowUserFeedPage(pageNumber)
+        }
       }
     } else {
       setNewWorksPage(0)
+      setFollowUserFeedPage(0)
     }
 
     const type = searchParams.get("workType")
@@ -284,7 +297,7 @@ export default function Index() {
     setIsMounted(true)
   }, [searchParams])
 
-  // newWorksPageが変更されたときにURLパラメータを更新
+  // ページが変更されたときにURLパラメータを更新
   useEffect(() => {
     if (!searchParams.toString() || searchParams.get("tab") === "home") {
       return
@@ -294,7 +307,12 @@ export default function Index() {
       searchParams.set("page", newWorksPage.toString())
       updateQueryParams(searchParams)
     }
-  }, [newWorksPage, searchParams, updateQueryParams])
+
+    if (followUserFeedPage >= 0) {
+      searchParams.set("page", followUserFeedPage.toString())
+      updateQueryParams(searchParams)
+    }
+  }, [newWorksPage, followUserFeedPage, searchParams, updateQueryParams])
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
@@ -414,7 +432,7 @@ export default function Index() {
               <p className="block md:hidden">{t("フォロー", "Followed")}</p>
               <CrossPlatformTooltip
                 text={t(
-                  "フォローしたユーザの新着作品が表示されます",
+                  "フォローしたユーザの新着作品が表示されます、現在はリニューアル版の投稿ページにて投稿された作品が表示されていますのでご注意ください",
                   "Displays works from followed users",
                 )}
               />
