@@ -164,7 +164,7 @@ export const meta: MetaFunction = (props) => {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  "Cache-Control": config.cacheControl.tenMinutes,
 })
 
 export default function Work() {
