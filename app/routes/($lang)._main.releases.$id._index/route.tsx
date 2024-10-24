@@ -62,6 +62,10 @@ export const headers: HeadersFunction = () => ({
 export const meta: MetaFunction = (props) => {
   const response = props.data as { data: ApiResponse }
 
+  const url = !response.data.contents[0].thumbnail_url
+    ? ""
+    : response.data.contents[0].thumbnail_url.url
+
   return createMeta(
     META.RELEASE,
     {
@@ -69,7 +73,7 @@ export const meta: MetaFunction = (props) => {
       enTitle: `${response.data.contents[0].title}`,
       description: response.data.contents[0].description || "",
       enDescription: response.data.contents[0].description || "",
-      url: response.data.contents[0].thumbnail_url.url,
+      url: url,
     },
     props.params.lang,
   )
