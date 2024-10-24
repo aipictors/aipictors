@@ -114,25 +114,33 @@ export function TagWorkSection(props: Props) {
           </div>
         </div>
       </div>
-      <div className="ml-auto flex w-full items-center space-x-4 md:w-64">
-        <TagFollowButton className="w-full" tag={props.tag} isFollow={false} />
-        <TagActionOther tag={props.tag} />
+      <div className="relative flex items-center">
+        <div className="min-w-32">
+          <WorksListSortableSetting
+            nowSort={props.sort}
+            nowOrderBy={props.orderBy}
+            allOrderBy={allSortType}
+            setSort={props.setSort}
+            onClickTitleSortButton={props.onClickTitleSortButton}
+            onClickLikeSortButton={props.onClickLikeSortButton}
+            onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+            onClickCommentSortButton={props.onClickCommentSortButton}
+            onClickViewSortButton={props.onClickViewSortButton}
+            onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+            onClickDateSortButton={props.onClickDateSortButton}
+            onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+            onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+          />
+        </div>
+        <div className="ml-auto flex w-full items-center space-x-4 md:w-64">
+          <TagFollowButton
+            className="w-full"
+            tag={props.tag}
+            isFollow={false}
+          />
+          <TagActionOther tag={props.tag} />
+        </div>
       </div>
-      <WorksListSortableSetting
-        nowSort={props.sort}
-        nowOrderBy={props.orderBy}
-        allOrderBy={allSortType}
-        setSort={props.setSort}
-        onClickTitleSortButton={props.onClickTitleSortButton}
-        onClickLikeSortButton={props.onClickLikeSortButton}
-        onClickBookmarkSortButton={props.onClickBookmarkSortButton}
-        onClickCommentSortButton={props.onClickCommentSortButton}
-        onClickViewSortButton={props.onClickViewSortButton}
-        onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
-        onClickDateSortButton={props.onClickDateSortButton}
-        onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
-        onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
-      />
       <ResponsivePhotoWorksAlbum works={works} />
       <div className="h-8" />
       <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
