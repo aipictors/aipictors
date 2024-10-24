@@ -1,10 +1,7 @@
 import { loaderClient } from "~/lib/loader-client"
 import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
-import {
-  HomeTagList,
-  HomeTagListItemFragment,
-} from "~/routes/($lang)._main._index/components/home-tag-list"
+import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type {
@@ -60,6 +57,7 @@ import { HomeSensitiveAwardWorkSection } from "~/routes/($lang)._main._index/com
 import { HomeSensitiveTagsSection } from "~/routes/($lang)._main._index/components/home-sensitive-tags-section"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
+import { HomeSensitiveTagList } from "~/routes/($lang).r._index/components/home-sensitive-tag-list"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -415,7 +413,7 @@ export default function Index() {
             <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
               <div className="flex flex-col space-y-4 md:w-[80%]">
                 <div>
-                  <HomeTagList
+                  <HomeSensitiveTagList
                     themeTitle={data.dailyTheme?.title}
                     hotTags={data.hotTags}
                   />
