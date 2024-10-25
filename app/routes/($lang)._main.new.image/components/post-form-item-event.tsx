@@ -20,7 +20,11 @@ type Props = {
  * イベント入力
  */
 export function PostFormItemEvent(props: Props) {
-  if (props.endAt > getJstDate().getTime() / 1000) {
+  const now = getJstDate(new Date())
+
+  const isOngoing = now <= new Date(props.endAt * 1000)
+
+  if (!isOngoing) {
     return null
   }
 
