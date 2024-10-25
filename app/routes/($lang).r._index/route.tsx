@@ -46,8 +46,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
-import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { HomeSensitiveHotWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-hot-works-section"
 import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
@@ -59,6 +57,8 @@ import { useQuery, useMutation } from "@apollo/client/index"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
 import { HomeSensitiveTagList } from "~/routes/($lang).r._index/components/home-sensitive-tag-list"
 import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/components/home-new-user-sensitive-work-list-section"
+import { FollowSensitiveTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-tags-feed-contents"
+import { FollowSensitiveUserFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-user-feed-contents"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -685,7 +685,7 @@ export default function Index() {
 
         <TabsContent value="follow-user">
           <Suspense fallback={<AppLoadingPage />}>
-            <FollowUserFeedContents
+            <FollowSensitiveUserFeedContents
               page={followUserFeedPage}
               setPage={setFollowUserFeedPage}
             />
@@ -693,7 +693,7 @@ export default function Index() {
         </TabsContent>
         <TabsContent value="follow-tag">
           <Suspense fallback={<AppLoadingPage />}>
-            <FollowTagsFeedContents
+            <FollowSensitiveTagsFeedContents
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}
             />

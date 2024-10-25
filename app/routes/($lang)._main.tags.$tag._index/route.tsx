@@ -155,6 +155,10 @@ export default function Tag() {
 
   const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
 
+  const [hasPrompt, setHasPrompt] = React.useState(
+    Number(searchParams.get("prompt")) || 0,
+  )
+
   if (data === null) {
     return null
   }
@@ -168,6 +172,7 @@ export default function Tag() {
     params.set("orderBy", WorkOrderby)
     params.set("sort", worksOrderDeskAsc)
     params.set("page", page.toString())
+    params.set("prompt", hasPrompt.toString())
 
     // isSensitiveのパラメータが1なら、セット
     if (data.isSensitive) {
@@ -175,7 +180,7 @@ export default function Tag() {
     }
 
     setSearchParams(params)
-  }, [page, workType, WorkOrderby, worksOrderDeskAsc])
+  }, [page, hasPrompt, workType, WorkOrderby, worksOrderDeskAsc])
 
   return (
     <>
@@ -185,6 +190,7 @@ export default function Tag() {
         tag={decodeURIComponent(params.tag)}
         page={page}
         setPage={setPage}
+        hasPrompt={hasPrompt}
         onClickTitleSortButton={onClickTitleSortButton}
         onClickLikeSortButton={onClickLikeSortButton}
         onClickBookmarkSortButton={onClickBookmarkSortButton}
@@ -197,6 +203,7 @@ export default function Tag() {
         setWorkType={setWorkType}
         setRating={setRating}
         setSort={setWorksOrderDeskAsc}
+        setHasPrompt={setHasPrompt}
         sort={worksOrderDeskAsc}
         orderBy={WorkOrderby}
       />
