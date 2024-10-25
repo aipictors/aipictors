@@ -11,8 +11,8 @@ export const config = {
     get short() {
       return "max-age=0, s-maxage=60, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
-    get tenMinutes() {
-      return "max-age=0, s-maxage=600, stale-while-revalidate=2592000, stale-if-error=2592000"
+    get tenSeconds() {
+      return "max-age=0, s-maxage=10, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
     get oneHour() {
       return "max-age=0, s-maxage=3600, stale-while-revalidate=2592000, stale-if-error=2592000"
