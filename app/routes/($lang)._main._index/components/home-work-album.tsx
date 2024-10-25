@@ -2,6 +2,7 @@ import { LikeButton } from "~/components/like-button"
 import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = RenderPhotoProps & {
   src: string
@@ -37,11 +38,14 @@ export function HomeWorkAlbum(props: Props) {
         </Link>
         <Link to={`/users/${props.userId}`}>
           <div className="flex items-center space-x-2">
-            <img
-              src={withIconUrlFallback(props.userIcon)}
-              alt={props.userName}
-              className="h-4 w-4 rounded-full"
-            />
+            <Avatar className="h-4 w-4 rounded-full">
+              <AvatarImage
+                className="h-4 w-4 rounded-full"
+                src={withIconUrlFallback(props.userIcon)}
+                alt={props.userName}
+              />
+              <AvatarFallback />
+            </Avatar>
             <span className="text-nowrap font-bold text-sm text-white">
               {props.userName}
             </span>

@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react"
 import { Heart } from "lucide-react"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { cn } from "~/lib/utils"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -27,15 +28,24 @@ export function UserNameBadge(props: Props) {
         })}
       >
         <div className="flex items-center space-x-2">
-          <img
-            alt="user icon"
+          <Avatar
             className={cn("rounded-full", {
               "h-4 w-4": props.width === "sm",
               "h-6 w-6": props.width === "md",
               "h-8 w-8": props.width === "lg",
             })}
-            src={withIconUrlFallback(props.userIconImageURL)}
-          />
+          >
+            <AvatarImage
+              className={cn("rounded-full", {
+                "h-4 w-4": props.width === "sm",
+                "h-6 w-6": props.width === "md",
+                "h-8 w-8": props.width === "lg",
+              })}
+              src={withIconUrlFallback(props.userIconImageURL)}
+              alt="user icon"
+            />
+            <AvatarFallback />
+          </Avatar>
           <p
             className={cn("overflow-hidden text-ellipsis text-nowrap", {
               "max-w-16 text-xs":

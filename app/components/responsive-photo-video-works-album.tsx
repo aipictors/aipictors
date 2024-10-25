@@ -8,6 +8,7 @@ import { useRef, useCallback } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
@@ -130,11 +131,14 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                 <Link to={`/users/${photo.context.user.id}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <img
-                        src={withIconUrlFallback(photo.context.user.iconUrl)}
-                        alt={photo.context.user.name}
-                        className="h-4 w-4 rounded-full"
-                      />
+                      <Avatar className="h-4 w-4">
+                        <AvatarImage
+                          className="h-4 w-4 rounded-full"
+                          src={withIconUrlFallback(photo.context.user.iconUrl)}
+                          alt={photo.context.user.name}
+                        />
+                        <AvatarFallback />
+                      </Avatar>
                       <span className="block text-nowrap font-bold text-sm ">
                         {photo.context.user.name}
                       </span>

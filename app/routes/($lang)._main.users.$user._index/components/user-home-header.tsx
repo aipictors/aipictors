@@ -1,6 +1,7 @@
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
 import type React from "react"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   user: FragmentOf<typeof UserHomeHeaderFragment>
@@ -19,18 +20,18 @@ export function UserHomeHeader(props: Props) {
       <div className="relative">
         <div className="relative min-h-[168px] overflow-hidden md:min-h-[320px]">
           <div className="relative m-auto">
-            <img
-              className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
-              src={withIconUrlFallback(user.iconUrl)}
-              alt=""
-            />
+            <Avatar className="h-6 w-6">
+              <AvatarImage
+                className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
+                src={withIconUrlFallback(user.iconUrl)}
+                alt=""
+              />
+              <AvatarFallback />
+            </Avatar>
           </div>
           <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
         </div>
-        <div className="absolute top-0 left-8 z-20">
-          {props.userIconView}
-          {/* <UserProfileNameIcon user={props.user} /> */}
-        </div>
+        <div className="absolute top-0 left-8 z-20">{props.userIconView}</div>
       </div>
     )
   }

@@ -9,6 +9,7 @@ import { useQuery } from "@apollo/client/index"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   sticker: FragmentOf<typeof StickerArticleFragment>
@@ -63,11 +64,14 @@ export function StickerArticle(props: Props) {
           </p>
           <Link to={`/users/${props.sticker.user.login}`}>
             <div className="mt-2 flex items-center space-x-2">
-              <img
-                src={withIconUrlFallback(props.sticker.user.iconUrl)}
-                alt={props.sticker.user.name}
-                className="h-8 w-8 rounded-full"
-              />
+              <Avatar className="h-8 w-8">
+                <AvatarImage
+                  className="h-8 w-8 rounded-full"
+                  src={withIconUrlFallback(props.sticker.user.iconUrl)}
+                  alt=""
+                />
+                <AvatarFallback />
+              </Avatar>
               <span className="text-nowrap text-md">
                 {props.sticker.user.name}
               </span>
