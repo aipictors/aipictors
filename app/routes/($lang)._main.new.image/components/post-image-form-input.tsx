@@ -31,6 +31,7 @@ type Props = {
   state: PostImageFormInputState
   albums: FragmentOf<typeof PostImageFormAlbumFragment>[]
   currentPass: FragmentOf<typeof PostImageFormPassFragment> | null
+  recentlyUsedTags: FragmentOf<typeof PostImageFormRecentlyUsedTagsFragment>[]
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
   themes: { date: string; title: string; id: string }[] | null
@@ -136,6 +137,13 @@ export function PostImageFormInput(props: Props) {
     })
 
     return tags.map((tag) => ({
+      id: tag.id,
+      text: tag.name,
+    }))
+  }
+
+  const recentlyUsedTags = () => {
+    return props.recentlyUsedTags.map((tag) => ({
       id: tag.id,
       text: tag.name,
     }))
@@ -303,6 +311,7 @@ export function PostImageFormInput(props: Props) {
         whiteListTags={tagOptions()}
         tags={props.state.tags}
         recommendedTags={recommendedTagOptions()}
+        recentlyUsedTags={recentlyUsedTags()}
         onAddTag={(tag) => {
           props.dispatch({ type: "ADD_TAG", payload: tag })
         }}
@@ -353,6 +362,13 @@ export const PostImageFormAlbumFragment = graphql(
   `fragment PostImageFormAlbum on AlbumNode @_unmask {
     id
     title
+  }`,
+)
+
+export const PostImageFormRecentlyUsedTagsFragment = graphql(
+  `fragment PostImageFormRecentlyUsedTags on TagNode @_unmask {
+    id
+    name
   }`,
 )
 

@@ -29,6 +29,7 @@ import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animat
 import React from "react"
 import { getJstDate } from "~/utils/jst-date"
 import { config } from "~/config"
+import { PostImageFormRecentlyUsedTagsFragment } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -494,6 +495,7 @@ export default function EditImage() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
           eventInputHidden={false}
           setDisabledSubmit={setDisabledSubmit}
           themes={
@@ -573,6 +575,9 @@ const viewerQuery = graphql(
       currentPass {
         ...PostAnimationFormPass
       }
+      recentlyUsedTags {
+        ...PostImageFormRecentlyUsedTags
+      }
     }
     albums(
       offset: $offset,
@@ -619,6 +624,7 @@ const viewerQuery = graphql(
     PostAnimationFormAiModelFragment,
     PostAnimationFormAlbumFragment,
     PostAnimationFormPassFragment,
+    PostImageFormRecentlyUsedTagsFragment,
   ],
 )
 
