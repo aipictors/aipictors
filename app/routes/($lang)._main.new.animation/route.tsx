@@ -12,6 +12,7 @@ import {
   PostAnimationFormAiModelFragment,
   PostAnimationFormAlbumFragment,
   PostAnimationFormPassFragment,
+  PostAnimationFormRecentlyUsedTagsFragment,
 } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
 import { PostAnimationFormUploader } from "~/routes/($lang)._main.new.animation/components/post-animation-form-uploader"
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
@@ -349,6 +350,7 @@ export default function NewAnimation() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
           themes={
             viewer?.dailyThemes
               ? viewer.dailyThemes.map((theme) => ({
@@ -429,6 +431,9 @@ const ViewerQuery = graphql(
       currentPass {
         ...PostAnimationFormPass
       }
+      recentlyUsedTags {
+        ...PostAnimationFormRecentlyUsedTags
+      }
     }
     albums(
       offset: $offset,
@@ -475,6 +480,7 @@ const ViewerQuery = graphql(
     PostAnimationFormAiModelFragment,
     PostAnimationFormAlbumFragment,
     PostAnimationFormPassFragment,
+    PostAnimationFormRecentlyUsedTagsFragment,
   ],
 )
 

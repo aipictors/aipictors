@@ -12,6 +12,7 @@ import {
   PostTextFormAlbumFragment,
   PostTextFormInput,
   PostTextFormPassFragment,
+  PostTextFormRecentlyUsedTagsFragment,
 } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { PostTextFormUploader } from "~/routes/($lang)._main.new.image/components/post-text-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
@@ -457,6 +458,7 @@ export default function NewText() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
           themes={
             viewer?.dailyThemes
               ? viewer.dailyThemes.map((theme) => ({
@@ -539,6 +541,9 @@ const viewerQuery = graphql(
       token
       currentPass {
         ...PostTextFormPass
+      }
+      recentlyUsedTags {
+        ...PostTextFormRecentlyUsedTags
       }
       imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
         id
@@ -633,6 +638,7 @@ const viewerQuery = graphql(
     PostTextFormAiModelFragment,
     PostTextFormAlbumFragment,
     PostTextFormPassFragment,
+    PostTextFormRecentlyUsedTagsFragment,
   ],
 )
 

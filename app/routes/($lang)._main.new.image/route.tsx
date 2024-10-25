@@ -17,6 +17,7 @@ import {
   PostImageFormAlbumFragment,
   PostImageFormInput,
   PostImageFormPassFragment,
+  PostImageFormRecentlyUsedTagsFragment,
 } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
@@ -74,6 +75,8 @@ export default function NewImage() {
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
+
+  console.log(viewer)
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
@@ -549,6 +552,7 @@ export default function NewImage() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
           themes={
             viewer?.dailyThemes
               ? viewer.dailyThemes.map((theme) => ({
@@ -631,6 +635,9 @@ const ViewerQuery = graphql(
       token
       currentPass {
         ...PostImageFormPass
+      }
+      recentlyUsedTags {
+        ...PostImageFormRecentlyUsedTags
       }
       imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
         id
@@ -725,6 +732,7 @@ const ViewerQuery = graphql(
     PostImageFormAiModelFragment,
     PostImageFormAlbumFragment,
     PostImageFormPassFragment,
+    PostImageFormRecentlyUsedTagsFragment,
   ],
 )
 

@@ -12,6 +12,7 @@ import {
   PostImageFormAlbumFragment,
   PostImageFormInput,
   PostImageFormPassFragment,
+  PostImageFormRecentlyUsedTagsFragment,
 } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
@@ -608,6 +609,7 @@ export default function EditImage() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
           eventInputHidden={false}
           setDisabledSubmit={setDisabledSubmit}
           themes={
@@ -678,6 +680,9 @@ const viewerQuery = graphql(
       currentPass {
         ...PostImageFormPass
       }
+      recentlyUsedTags {
+        ...PostImageFormRecentlyUsedTags
+      }
     }
     albums(
       offset: $offset,
@@ -724,6 +729,7 @@ const viewerQuery = graphql(
     PostImageFormAiModelFragment,
     PostImageFormAlbumFragment,
     PostImageFormPassFragment,
+    PostImageFormRecentlyUsedTagsFragment,
   ],
 )
 

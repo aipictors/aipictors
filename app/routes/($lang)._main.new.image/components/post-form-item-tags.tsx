@@ -8,6 +8,7 @@ type Props = {
   tags: Tag[]
   whiteListTags: Tag[]
   recommendedTags: Tag[]
+  recentlyUsedTags: Tag[]
   onAddTag(tag: Tag): void
   onRemoveTag(tag: Tag): void
 }
@@ -62,6 +63,11 @@ export function PostFormItemTags(props: Props) {
     [props.tags, props.onRemoveTag],
   )
 
+  const displayTags =
+    props.recentlyUsedTags.length > 0
+      ? props.recentlyUsedTags
+      : props.recommendedTags
+
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
@@ -91,9 +97,9 @@ export function PostFormItemTags(props: Props) {
               "Recommended tags will be updated when an image with a prompt is loaded (not supported by Dall-E)",
             )}
           </p>
-          {props.recommendedTags.length !== 0 && (
+          {displayTags.length !== 0 && (
             <div className="flex flex-wrap gap-2">
-              {props.recommendedTags.map((tag) => (
+              {displayTags.map((tag) => (
                 <Button
                   key={tag.id}
                   size={"sm"}

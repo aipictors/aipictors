@@ -24,6 +24,7 @@ import {
   PostTextFormAlbumFragment,
   PostTextFormInput,
   PostTextFormPassFragment,
+  PostTextFormRecentlyUsedTagsFragment,
 } from "~/routes/($lang)._main.new.image/components/post-text-form-input"
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
@@ -627,6 +628,7 @@ export default function EditText() {
           dispatch={dispatchInput}
           albums={viewer?.albums ?? []}
           currentPass={viewer?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
           eventInputHidden={false}
           setDisabledSubmit={setDisabledSubmit}
           themes={
@@ -699,6 +701,9 @@ const viewerQuery = graphql(
         id
         ...PostTextFormPass
       }
+      recentlyUsedTags {
+        ...PostTextFormRecentlyUsedTags
+      }
     }
     albums(
       offset: $offset,
@@ -744,6 +749,7 @@ const viewerQuery = graphql(
     PostTextFormAiModelFragment,
     PostTextFormAlbumFragment,
     PostTextFormPassFragment,
+    PostTextFormRecentlyUsedTagsFragment,
   ],
 )
 

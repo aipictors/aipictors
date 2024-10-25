@@ -25,6 +25,9 @@ type Props = {
   state: PostAnimationFormInputState
   albums: FragmentOf<typeof PostAnimationFormAlbumFragment>[]
   currentPass: FragmentOf<typeof PostAnimationFormPassFragment> | null
+  recentlyUsedTags: FragmentOf<
+    typeof PostAnimationFormRecentlyUsedTagsFragment
+  >[]
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
   themes: { date: string; title: string; id: string }[] | null
@@ -114,6 +117,13 @@ export function PostAnimationFormInput(props: Props) {
         text: tag.name,
       }
     })
+  }
+
+  const recentlyUsedTags = () => {
+    return props.recentlyUsedTags.map((tag) => ({
+      id: tag.id,
+      text: tag.name,
+    }))
   }
 
   const albumOptions = () => {
@@ -252,6 +262,7 @@ export function PostAnimationFormInput(props: Props) {
         whiteListTags={tagOptions()}
         tags={props.state.tags}
         recommendedTags={[]}
+        recentlyUsedTags={recentlyUsedTags()}
         onAddTag={(tag) => {
           props.dispatch({ type: "ADD_TAG", payload: tag })
         }}
@@ -302,6 +313,13 @@ export const PostAnimationFormAlbumFragment = graphql(
   `fragment PostAnimationFormAlbum on AlbumNode @_unmask {
     id
     title
+  }`,
+)
+
+export const PostAnimationFormRecentlyUsedTagsFragment = graphql(
+  `fragment PostAnimationFormRecentlyUsedTags on TagNode @_unmask {
+    id
+    name
   }`,
 )
 
