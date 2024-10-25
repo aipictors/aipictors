@@ -15,19 +15,22 @@ import { WorksListSortableSetting } from "~/routes/($lang).my._index/components/
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
+import { Switch } from "~/components/ui/switch"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   worksCount: number
   tag: string
   page: number
-  setPage: (page: number) => void
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
+  hasPrompt: number
+  setPage: (page: number) => void
   setAccessType?: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
   setSort: (sort: SortType) => void
+  setHasPrompt: (hasPrompt: number) => void
   onClickTitleSortButton: () => void
   onClickLikeSortButton: () => void
   onClickBookmarkSortButton: () => void
@@ -56,6 +59,8 @@ export function TagWorkSection(props: Props) {
         orderBy: props.orderBy,
         sort: props.sort,
         isSensitive: false,
+        hasPrompt: props.hasPrompt === 1 ? true : undefined,
+        isPromptPublic: props.hasPrompt === 1 ? true : undefined,
       },
     },
   })
@@ -115,6 +120,48 @@ export function TagWorkSection(props: Props) {
         </div>
       </div>
       <div className="relative flex items-center">
+        <div className="hidden items-center space-x-2 md:flex">
+          <div className="min-w-32">
+            <WorksListSortableSetting
+              nowSort={props.sort}
+              nowOrderBy={props.orderBy}
+              allOrderBy={allSortType}
+              setSort={props.setSort}
+              onClickTitleSortButton={props.onClickTitleSortButton}
+              onClickLikeSortButton={props.onClickLikeSortButton}
+              onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+              onClickCommentSortButton={props.onClickCommentSortButton}
+              onClickViewSortButton={props.onClickViewSortButton}
+              onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+              onClickDateSortButton={props.onClickDateSortButton}
+              onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+              onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+            />
+          </div>
+          <div className="min-w-32">
+            <div className="flex items-center space-x-2">
+              <Switch
+                onClick={() => {
+                  props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)
+                }}
+                checked={props.hasPrompt === 1}
+              />
+              <span className="text-sm">
+                {t("プロンプト有", "With Prompts")}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="ml-auto flex w-full items-center space-x-4 md:w-64">
+          <TagFollowButton
+            className="w-full"
+            tag={props.tag}
+            isFollow={false}
+          />
+          <TagActionOther tag={props.tag} />
+        </div>
+      </div>
+      <div className="flex items-center space-x-2 md:hidden">
         <div className="min-w-32">
           <WorksListSortableSetting
             nowSort={props.sort}
@@ -132,13 +179,16 @@ export function TagWorkSection(props: Props) {
             onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
           />
         </div>
-        <div className="ml-auto flex w-full items-center space-x-4 md:w-64">
-          <TagFollowButton
-            className="w-full"
-            tag={props.tag}
-            isFollow={false}
-          />
-          <TagActionOther tag={props.tag} />
+        <div className="min-w-32">
+          <div className="flex items-center space-x-2">
+            <Switch
+              onClick={() => {
+                props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)
+              }}
+              checked={props.hasPrompt === 1}
+            />
+            <span className="text-sm">{t("プロンプト有", "With Prompts")}</span>
+          </div>
         </div>
       </div>
       <ResponsivePhotoWorksAlbum works={works} isShowProfile={true} />
