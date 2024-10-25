@@ -41,6 +41,9 @@ export function AiModelArticle(props: Props) {
         ratings: props.isMoreRatings ? ["G", "R15"] : ["G"],
         isSensitive: false,
         hasPrompt: props.hasPrompt,
+        ...(props.hasPrompt && {
+          isPromptPublic: true,
+        }),
       },
     },
     fetchPolicy: "cache-first",

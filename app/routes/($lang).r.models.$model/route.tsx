@@ -4,10 +4,10 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { AiModelArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
+import { AiModelSensitiveArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-sensitive-article"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.model === undefined) {
@@ -107,7 +107,7 @@ export default function ModelPage() {
 
   return (
     <>
-      <AiModelArticle
+      <AiModelSensitiveArticle
         name={data.data.name}
         thumbnailImageURL={
           data.data.thumbnailImageURL

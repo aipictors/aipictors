@@ -41,6 +41,9 @@ export function AiModelSensitiveArticle(props: Props) {
         ratings: props.isMoreRatings ? ["R18", "R18G"] : ["R18"],
         isSensitive: true,
         hasPrompt: props.hasPrompt,
+        ...(props.hasPrompt && {
+          isPromptPublic: true,
+        }),
       },
     },
     fetchPolicy: "cache-first",

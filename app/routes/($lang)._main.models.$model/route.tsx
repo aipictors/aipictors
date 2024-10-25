@@ -11,7 +11,7 @@ import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
-import { AiModelSensitiveArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-sensitive-article"
+import { AiModelArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.model === undefined) {
@@ -128,7 +128,7 @@ export default function ModelPage() {
 
   return (
     <>
-      <AiModelSensitiveArticle
+      <AiModelArticle
         name={data.data.name}
         thumbnailImageURL={
           data.data.thumbnailImageURL
