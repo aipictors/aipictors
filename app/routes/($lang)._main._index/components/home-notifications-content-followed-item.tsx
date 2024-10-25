@@ -5,6 +5,7 @@ import { toDateText } from "~/utils/to-date-text"
 import { toDateEnText } from "~/utils/to-date-en-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   notification: FragmentOf<typeof FollowNotificationFragment>
@@ -25,14 +26,14 @@ export function HomeNotificationsContentFollowedItem(props: Props) {
       className="flex items-center p-1 transition-all"
       to={`/users/${props.notification.user.id}`}
     >
-      <img
-        src={withIconUrlFallback(
-          props.notification.user.iconUrl ??
-            "https://assets.aipictors.com/no-profile.webp",
-        )}
-        alt="thumbnail"
-        className="h-8 w-8 rounded-full object-cover"
-      />
+      <Avatar className="h-8 w-8">
+        <AvatarImage
+          className="h-8 w-8 rounded-full object-cover"
+          src={withIconUrlFallback(props.notification.user.iconUrl)}
+          alt="thumbnail"
+        />
+        <AvatarFallback />
+      </Avatar>
       <div className="ml-2 w-full overflow-hidden">
         <p className="text-ellipsis">
           {t(

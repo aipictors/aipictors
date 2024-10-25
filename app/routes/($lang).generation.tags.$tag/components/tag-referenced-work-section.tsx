@@ -5,6 +5,7 @@ import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   works: FragmentOf<typeof TagWorkFragment>[]
@@ -67,11 +68,14 @@ export function TagReferencedWorkSection(props: Props) {
                 </Link>
                 <Link to={`/users/${photo.userId}`}>
                   <div className="flex items-center space-x-2">
-                    <img
-                      src={withIconUrlFallback(photo.userIcon)}
-                      alt={photo.userName}
-                      className="h-6 w-6 rounded-full"
-                    />
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage
+                        className="h-6 w-6 rounded-full"
+                        src={withIconUrlFallback(photo.userIcon)}
+                        alt=""
+                      />
+                      <AvatarFallback />
+                    </Avatar>
                     <p className="text-nowrap text-sm text-white">
                       {photo.userName}
                     </p>

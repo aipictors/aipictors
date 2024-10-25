@@ -9,6 +9,7 @@ import { Heart, Images } from "lucide-react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -141,13 +142,16 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                       <div className="flex items-center justify-between">
                         <Link to={`/users/${photo.context.user.id}`}>
                           <div className="flex items-center space-x-2">
-                            <img
-                              src={withIconUrlFallback(
-                                photo.context.user.iconUrl,
-                              )}
-                              alt={photo.context.user.name}
-                              className="h-6 w-6 rounded-full"
-                            />
+                            <Avatar className="h-6 w-6">
+                              <AvatarImage
+                                className="h-6 w-6 rounded-full"
+                                src={withIconUrlFallback(
+                                  photo.context.user.iconUrl,
+                                )}
+                                alt=""
+                              />
+                              <AvatarFallback />
+                            </Avatar>
                             <span className="truncate text-sm">
                               {photo.context.user.name}
                             </span>

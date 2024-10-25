@@ -6,6 +6,7 @@ import { toDateEnText } from "~/utils/to-date-en-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
@@ -90,11 +91,14 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
       </Link>
       {reply && (
         <div className="ml-12 flex items-center space-x-2">
-          <img
-            src={withIconUrlFallback(reply.user?.iconUrl)}
-            alt="thumbnail"
-            className="h-8 w-8 rounded-full object-cover"
-          />
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              className="h-8 w-8 rounded-full object-cover"
+              src={withIconUrlFallback(reply.user?.iconUrl)}
+              alt="thumbnail"
+            />
+            <AvatarFallback />
+          </Avatar>
           <p className="text-ellipsis">
             {t(
               `${reply.user?.name}返信しました`,

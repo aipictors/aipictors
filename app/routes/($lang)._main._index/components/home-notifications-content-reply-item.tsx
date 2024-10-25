@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { toDateText } from "~/lib/app/utils/to-date-text"
 import { cn } from "~/lib/utils"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -31,11 +32,14 @@ export function HomeNotificationsContentReplyItem(props: Props) {
         className="flex items-center border-b transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
       >
         <Link to={`/users/${props.notification.user?.id}`}>
-          <img
-            src={withIconUrlFallback(props.notification.user?.iconUrl)}
-            alt="thumbnail"
-            className="h-8 w-8 rounded-full object-cover"
-          />
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              className="h-8 w-8 rounded-full object-cover"
+              src={withIconUrlFallback(props.notification.user?.iconUrl)}
+              alt="thumbnail"
+            />
+            <AvatarFallback />
+          </Avatar>
         </Link>
         <div className="ml-2 w-full overflow-hidden">
           <p className="text-ellipsis">

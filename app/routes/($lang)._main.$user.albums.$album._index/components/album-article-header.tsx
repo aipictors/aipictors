@@ -12,6 +12,7 @@ import { graphql, type FragmentOf } from "gql.tada"
 import { Pencil } from "lucide-react"
 import { Suspense, useContext } from "react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleHeaderFragment>
@@ -34,11 +35,14 @@ export function AlbumArticleHeader(props: Props) {
       <div className="mt-4 flex flex-col items-center">
         <Link to={`/users/${props.album.user.login}`}>
           <div className="flex max-w-32 items-center overflow-hidden">
-            <img
-              src={withIconUrlFallback(props.album.user.iconUrl)}
-              alt={props.album.user.name}
-              className="mr-2 h-8 w-8 rounded-full"
-            />
+            <Avatar className="h-8 w-8">
+              <AvatarImage
+                className="mr-2 h-8 w-8 rounded-full"
+                src={withIconUrlFallback(props.album.user.iconUrl)}
+                alt={props.album.user.name}
+              />
+              <AvatarFallback />
+            </Avatar>
             <p className="font-semibold text-lg">{props.album.user.name}</p>
           </div>
         </Link>
