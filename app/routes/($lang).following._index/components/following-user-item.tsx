@@ -41,7 +41,7 @@ export function FollowingUserItem(props: Props) {
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap justify-center gap-x-2 gap-y-2">
+      <div className="flex flex-wrap justify-center gap-x-2 gap-y-2 md:justify-start">
         {props.works.map((work, index) => (
           <Link
             to={`/posts/${work.id}`}
