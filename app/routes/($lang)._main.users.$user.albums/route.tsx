@@ -13,12 +13,26 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  const userIdResp = await loaderClient.query({
+    query: userIdQuery,
+    variables: {
+      userId: decodeURIComponent(props.params.user),
+    },
+  })
+
+  if (userIdResp.data.user === null) {
+    throw new Response(null, { status: 404 })
+  }
+
   const albumsResp = await loaderClient.query({
     query: userAlbumsQuery,
     variables: {
       offset: 0,
       limit: 32,
-      userId: props.params.user,
+      where: {
+        ownerUserId: userIdResp.data.user.id,
+        needInspected: false,
+      },
     },
   })
 
@@ -46,10 +60,18 @@ export default function UserAlbums() {
 }
 
 export const userAlbumsQuery = graphql(
-  `query UserAlbums($offset: Int!, $limit: Int!) {
-    albums(offset: $offset, limit: $limit) {
+  `query UserAlbums($offset: Int!, $limit: Int!, $where: AlbumsWhereInput!) {
+    albums(offset: $offset, limit: $limit, where: $where) {
       ...UserAlbumListItem
     }
   }`,
   [UserAlbumListItemFragment],
+)
+
+const userIdQuery = graphql(
+  `query UserId($userId: ID!) {
+    user(id: $userId) {
+      id
+    }
+  }`,
 )
