@@ -1,10 +1,10 @@
 import { graphql, type FragmentOf } from "gql.tada"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate, useSearchParams } from "@remix-run/react"
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 import { AiModelSensitiveHeader } from "~/routes/($lang)._main.models.$model/components/ai-model-sensitive-header"
 
@@ -52,6 +52,17 @@ export function AiModelSensitiveArticle(props: Props) {
   const works = data?.aiModel?.works ?? props.works
 
   const navigate = useNavigate()
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // URLパラメータの監視と更新
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams)
+    params.set("page", String(page))
+    params.set("prompt", props.hasPrompt ? "1" : "0")
+    params.set("r18g", props.isMoreRatings ? "1" : "0")
+    navigate(`?${params.toString()}`, { replace: true })
+  }, [page, props.hasPrompt, props.isMoreRatings])
 
   return (
     <div className="flex flex-col space-y-4">

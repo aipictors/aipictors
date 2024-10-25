@@ -42,6 +42,9 @@ export async function loader(props: LoaderFunctionArgs) {
         ratings: ratings,
         isSensitive: false,
         hasPrompt: hasPrompt,
+        ...(hasPrompt && {
+          isPromptPublic: true,
+        }),
       },
     },
   })

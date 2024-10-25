@@ -79,7 +79,7 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneWeek,
+  "Cache-Control": config.cacheControl.oneMinute,
 })
 
 export const meta: MetaFunction = ({ data }) => {

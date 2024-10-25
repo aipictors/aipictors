@@ -54,7 +54,7 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  "Cache-Control": config.cacheControl.oneMinute,
 })
 
 export default function UserPosts() {

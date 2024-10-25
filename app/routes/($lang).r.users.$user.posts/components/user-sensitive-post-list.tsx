@@ -41,7 +41,7 @@ export function UserSensitivePostList(props: Props) {
     <div className="flex flex-col space-y-4">
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
-          <ResponsivePhotoWorksAlbum works={posts} isShowProfile={false} />
+          <ResponsivePhotoWorksAlbum works={posts} isShowProfile={true} />
         </section>
       </div>
       <div className="h-8" />

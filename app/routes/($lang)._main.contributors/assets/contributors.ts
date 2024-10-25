@@ -98,7 +98,7 @@ export const contributors: Contributor[] = [
     name: "erot",
     message: "サイト運営を手伝って頂いております。",
     iconImageURL:
-      "https://www.aipictors.com/wp-content/uploads/2023/06/G1TBu70SPK5AvedgtRs9FrhWLfQC3Z.webp",
+      "https://files.aipictors.com/4ba96b93-8508-4521-b127-5e6c98c62db1",
     xId: "erot_ai",
     aipictorsId: "erot",
     homeUrl: null,

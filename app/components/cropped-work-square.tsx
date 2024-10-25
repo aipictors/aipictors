@@ -77,8 +77,14 @@ export function CroppedWorkSquare(props: Props) {
                   props.size === "md" && props.imageWidth > props.imageHeight,
                 "h-auto w-32":
                   props.size === "md" && props.imageWidth <= props.imageHeight,
-                "h-40 w-auto": props.imageWidth > props.imageHeight,
-                "h-auto w-40": props.imageWidth <= props.imageHeight,
+                "h-40 w-auto":
+                  props.size !== "sm" &&
+                  props.size !== "md" &&
+                  props.imageWidth > props.imageHeight,
+                "h-auto w-40":
+                  props.size !== "sm" &&
+                  props.size !== "md" &&
+                  props.imageWidth <= props.imageHeight,
               },
             )}
             style={{

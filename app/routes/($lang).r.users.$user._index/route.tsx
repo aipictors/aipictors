@@ -231,7 +231,11 @@ export default function UserLayout() {
           />
           <div className="space-y-4">
             {works.length !== 0 && (
-              <HomeWorkSection works={works} isCropped={false} />
+              <HomeWorkSection
+                works={works}
+                isCropped={false}
+                isShowProfile={true}
+              />
             )}
             {novelWorks.length !== 0 && (
               <HomeNovelsWorksSection works={novelWorks} isCropped={false} />
