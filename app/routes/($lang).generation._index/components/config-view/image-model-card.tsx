@@ -1,4 +1,5 @@
 import { Badge } from "~/components/ui/badge"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   displayName: string | null
@@ -47,6 +48,8 @@ export function ImageModelCard(props: Props) {
     props.isActive ? "border-2 border-blue-500" : ""
   }`
 
+  const t = useTranslation()
+
   return (
     <div className={classes} onClick={props.onSelect} onKeyUp={() => {}}>
       <img
@@ -63,7 +66,16 @@ export function ImageModelCard(props: Props) {
         </span>
         {props.type && (
           <div className="absolute top-0 left-0">
-            <Badge>{props.type}</Badge>
+            {props.type === "FLUX" && (
+              <Badge variant={"destructive"}>{props.type}</Badge>
+            )}
+            {props.type === "FLUX" && (
+              <Badge>{t("Upscale10枚分消費", "cost of 10")}</Badge>
+            )}
+            {props.type === "FLUX" && (
+              <Badge>{t("超高速生成", "super fast generation")}</Badge>
+            )}
+            {props.type !== "FLUX" && <Badge>{props.type}</Badge>}
           </div>
         )}
         {props.description && (

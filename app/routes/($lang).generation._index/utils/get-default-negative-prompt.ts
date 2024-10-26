@@ -8,5 +8,8 @@ export const getDefaultNegativePrompt = (modelType: string) => {
   if (modelType === "SDXL") {
     return "negativeXL_D"
   }
+  if (modelType === "FLUX") {
+    return "negativeXL_D"
+  }
   return "EasyNegative"
 }
