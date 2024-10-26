@@ -1,11 +1,6 @@
 name: Deploy
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - app/**
   push:
     branches:
       - main
@@ -34,16 +29,18 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('bun.lockb') }}
       - name: install deps
         run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
-      - name: build
+      - name: 💪 build remix app
         run: bun remix vite:build
-      - name: deploy
+      - name: 💪 build functions
+        run: bun wrangler pages functions build --outdir build/worker
+      - name: 🚀 deploy
         id: cloudflare-wrangler
         uses: cloudflare/wrangler-action@v3
         with:
           packageManager: bun
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy ./build/client --project-name=aipictors --branch ${{ github.ref_name == 'main' && 'main' || 'preview' }}
+          command: deploy --name=aipictors
       - name: Get deployment url
         id: deployment_url
         run: echo "DEPLOYMENT_URL=${{ steps.cloudflare-wrangler.outputs.deployment-url }}" >> $GITHUB_ENV
