@@ -327,7 +327,7 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    if (model.name === "flux.1" && !isStandardOrPremium) {
+    if (model.name === "flux.1" && !isLiteOrStandardOrPremium) {
       toast("flux.1は、STANDARD以上のプランで生成可能です。")
       return
     }
