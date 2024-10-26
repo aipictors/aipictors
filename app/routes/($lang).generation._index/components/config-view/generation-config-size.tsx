@@ -106,6 +106,21 @@ export function GenerationConfigSize(props: Props) {
                 {t("【超横長】1536x640", "【Ultra Horizontal】1536x640")}
               </SelectItem>
             )}
+            {props.modelType === "FLUX" && (
+              <SelectItem value={"SD4_896_896"}>
+                {t("【正方形】896x896", "【Square】896x896")}
+              </SelectItem>
+            )}
+            {props.modelType === "FLUX" && (
+              <SelectItem value={"SD4_896_1152"}>
+                {t("【縦長】896x1152", "【Square】896x1152")}
+              </SelectItem>
+            )}
+            {props.modelType === "FLUX" && (
+              <SelectItem value={"SD4_1152_896"}>
+                {t("【横長】1152x896", "【Square】1152x896")}
+              </SelectItem>
+            )}
           </SelectContent>
         </SelectGroup>
       </Select>

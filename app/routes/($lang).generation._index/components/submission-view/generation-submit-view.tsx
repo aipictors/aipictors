@@ -43,6 +43,21 @@ export function GenerationSubmissionView(props: Props) {
     },
   )
 
+  const [createFluxTask, { loading: isCreatingFluxTask }] = useMutation(
+    createFluxImageGenerationTaskMutation,
+    {
+      refetchQueries: [viewerCurrentPassQuery],
+      awaitRefetchQueries: true,
+      onError(error) {
+        if (useMediaQuery("(min-width: 768px)")) {
+          toast.error(error.message)
+        } else {
+          toast.error(error.message, { position: "top-center" })
+        }
+      },
+    },
+  )
+
   const [createReservedTask, { loading: isCreatingReservedTask }] = useMutation(
     createImageGenerationTaskReservedMutation,
     {
@@ -232,7 +247,8 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (
-      context.config.modelType === "SDXL" &&
+      (context.config.modelType === "SDXL" ||
+        context.config.modelType === "FLUX") &&
       context.config.controlNetImageBase64 !== null
     ) {
       if (useMediaQuery("(min-width: 768px)")) {
@@ -245,7 +261,11 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    if (context.config.modelType === "SDXL" && context.config.i2iImageBase64) {
+    if (
+      (context.config.modelType === "SDXL" ||
+        context.config.modelType === "FLUX") &&
+      context.config.i2iImageBase64
+    ) {
       if (useMediaQuery("(min-width: 768px)")) {
         toast(
           "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
@@ -301,8 +321,14 @@ export function GenerationSubmissionView(props: Props) {
     const model = context.imageModels.find((model) => {
       return model.id === context.config.modelId
     })
+
     if (typeof model === "undefined") {
       toast("モデルが見つかりません、再度モデルを選択しなおしてください。")
+      return
+    }
+
+    if (model.name === "flux.1" && !isStandardOrPremium) {
+      toast("flux.1は、STANDARD以上のプランで生成可能です。")
       return
     }
 
@@ -419,6 +445,10 @@ export function GenerationSubmissionView(props: Props) {
         return
       }
       if (i + 1 + nowGeneratingCount > maxTasksCount) {
+        if (modelName === "flux.1") {
+          // flux.1は予約生成に対応していない
+          return
+        }
         createReservedTask({
           variables: {
             input: {
@@ -448,37 +478,56 @@ export function GenerationSubmissionView(props: Props) {
           },
         })
       } else {
-        createTask({
-          variables: {
-            input: {
-              count: 1,
-              model: modelName,
-              vae: context.config.vae ?? "",
-              prompt: promptsTexts[i],
-              isPromptGenerationEnabled:
-                context.config.languageUsedForPrompt === "jp",
-              negativePrompt: context.config.negativePromptText,
-              seed: seeds[i],
-              steps: context.config.steps,
-              scale: context.config.scale,
-              sampler: context.config.sampler,
-              clipSkip: context.config.clipSkip,
-              sizeType: context.config
-                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-              type: generationType as IntrospectionEnum<"ImageGenerationType">,
-              t2tImageUrl: i2iFileUrl,
-              t2tDenoisingStrengthSize:
-                context.config.i2iDenoisingStrengthSize.toString(),
-              controlNetImageUrl: controlNetImageUrl,
-              controlNetWeight: context.config.controlNetWeight
-                ? Number(context.config.controlNetWeight)
-                : null,
-              controlNetModel: context.config.controlNetModel,
-              controlNetModule: context.config.controlNetModule,
-              upscaleSize: context.config.upscaleSize,
+        if (modelName === "flux.1") {
+          createFluxTask({
+            variables: {
+              input: {
+                count: 1,
+                prompt: promptsTexts[i],
+                isPromptGenerationEnabled:
+                  context.config.languageUsedForPrompt === "jp",
+                negativePrompt: context.config.negativePromptText,
+                seed: seeds[i],
+                steps: context.config.steps,
+                scale: context.config.scale,
+                sizeType: context.config
+                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+              },
             },
-          },
-        })
+          })
+        } else {
+          createTask({
+            variables: {
+              input: {
+                count: 1,
+                model: modelName,
+                vae: context.config.vae ?? "",
+                prompt: promptsTexts[i],
+                isPromptGenerationEnabled:
+                  context.config.languageUsedForPrompt === "jp",
+                negativePrompt: context.config.negativePromptText,
+                seed: seeds[i],
+                steps: context.config.steps,
+                scale: context.config.scale,
+                sampler: context.config.sampler,
+                clipSkip: context.config.clipSkip,
+                sizeType: context.config
+                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+                type: generationType as IntrospectionEnum<"ImageGenerationType">,
+                t2tImageUrl: i2iFileUrl,
+                t2tDenoisingStrengthSize:
+                  context.config.i2iDenoisingStrengthSize.toString(),
+                controlNetImageUrl: controlNetImageUrl,
+                controlNetWeight: context.config.controlNetWeight
+                  ? Number(context.config.controlNetWeight)
+                  : null,
+                controlNetModel: context.config.controlNetModel,
+                controlNetModule: context.config.controlNetModule,
+                upscaleSize: context.config.upscaleSize,
+              },
+            },
+          })
+        }
       }
     })
     // タスクの作成後も呼び出す必要がある
@@ -609,6 +658,14 @@ const createImageGenerationTaskReservedMutation = graphql(
 const createImageGenerationTaskMutation = graphql(
   `mutation CreateImageGenerationTask($input: CreateImageGenerationTaskInput!) {
     createImageGenerationTask(input: $input) {
+      id
+    }
+  }`,
+)
+
+const createFluxImageGenerationTaskMutation = graphql(
+  `mutation CreateFluxImageGenerationTask($input: CreateFluxImageGenerationTaskInput!) {
+    createFluxImageGenerationTask(input: $input) {
       id
     }
   }`,

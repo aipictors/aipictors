@@ -911,6 +911,10 @@ export class GenerationConfigAction {
       return "negativeXL_D"
     }
 
+    if (isDefaultPrompt && modelType === "FLUX") {
+      return "negativeXL_D"
+    }
+
     return negativePromptText
   }
 
@@ -922,14 +926,19 @@ export class GenerationConfigAction {
    */
   getModelSizeType(sizeType: string, modelType: string) {
     if (modelType === "SD1") {
-      if (sizeType === "SD2_768_768" || sizeType === "SD3_1024_1024") {
+      if (
+        sizeType === "SD2_768_768" ||
+        sizeType === "SD3_1024_1024" ||
+        sizeType === "SD4_896_896"
+      ) {
         return "SD1_512_512"
       }
       if (
         sizeType === "SD2_768_1200" ||
         sizeType === "SD1_384_960" ||
         sizeType === "SD3_832_1216" ||
-        sizeType === "SD3_640_1536"
+        sizeType === "SD3_640_1536" ||
+        sizeType === "SD4_896_1152"
       ) {
         return "SD1_512_768"
       }
@@ -937,49 +946,88 @@ export class GenerationConfigAction {
         sizeType === "SD2_1200_768" ||
         sizeType === "SD1_960_384" ||
         sizeType === "SD3_1216_832" ||
-        sizeType === "SD3_1536_640"
+        sizeType === "SD3_1536_640" ||
+        sizeType === "SD4_1152_896"
       ) {
         return "SD1_768_512"
       }
     }
 
     if (modelType === "SD2") {
-      if (sizeType === "SD1_512_512" || sizeType === "SD3_1024_1024") {
+      if (
+        sizeType === "SD1_512_512" ||
+        sizeType === "SD3_1024_1024" ||
+        sizeType === "SD4_896_896"
+      ) {
         return "SD2_768_768"
       }
       if (
         sizeType === "SD1_512_768" ||
         sizeType === "SD3_832_1216" ||
-        sizeType === "SD3_640_1536"
+        sizeType === "SD3_640_1536" ||
+        sizeType === "SD4_896_1152"
       ) {
         return "SD2_768_1200"
       }
       if (
         sizeType === "SD1_768_512" ||
         sizeType === "SD3_1216_832" ||
-        sizeType === "SD3_1536_640"
+        sizeType === "SD3_1536_640" ||
+        sizeType === "SD4_1152_896"
       ) {
         return "SD2_1200_768"
       }
     }
 
     if (modelType === "SDXL") {
-      if (sizeType === "SD1_512_512" || sizeType === "SD2_768_768") {
+      if (
+        sizeType === "SD1_512_512" ||
+        sizeType === "SD2_768_768" ||
+        sizeType === "SD4_896_896"
+      ) {
         return "SD3_1024_1024"
       }
       if (
         sizeType === "SD1_512_768" ||
         sizeType === "SD2_768_1200" ||
-        sizeType === "SD1_384_960"
+        sizeType === "SD1_384_960" ||
+        sizeType === "SD4_896_1152"
       ) {
         return "SD3_832_1216"
       }
       if (
         sizeType === "SD1_768_512" ||
         sizeType === "SD2_1200_768" ||
-        sizeType === "SD1_960_384"
+        sizeType === "SD1_960_384" ||
+        sizeType === "SD4_1152_896"
       ) {
         return "SD3_1216_832"
+      }
+    }
+
+    if (modelType === "FLUX") {
+      if (
+        sizeType === "SD1_512_512" ||
+        sizeType === "SD2_768_768" ||
+        sizeType === "SD3_1024_1024"
+      ) {
+        return "SD4_896_896"
+      }
+      if (
+        sizeType === "SD1_512_768" ||
+        sizeType === "SD2_768_1200" ||
+        sizeType === "SD1_384_960" ||
+        sizeType === "SD3_832_1216"
+      ) {
+        return "SD4_896_1152"
+      }
+      if (
+        sizeType === "SD1_768_512" ||
+        sizeType === "SD2_1200_768" ||
+        sizeType === "SD1_960_384" ||
+        sizeType === "SD3_1216_832"
+      ) {
+        return "SD4_1152_896"
       }
     }
 
@@ -989,6 +1037,10 @@ export class GenerationConfigAction {
 
     if (modelType === "SD2") {
       return "SD2_768_768"
+    }
+
+    if (modelType === "SD3") {
+      return "SD3_1024_1024"
     }
 
     return "SD3_1024_1024"
@@ -1002,6 +1054,9 @@ export class GenerationConfigAction {
       return "kl-f8-anime2"
     }
     if (modelType === "SDXL") {
+      return "sdxl_vae"
+    }
+    if (modelType === "FLUX") {
       return "sdxl_vae"
     }
     return "clearvae_v23"
