@@ -327,7 +327,10 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    if (model.name === "flux.1 schnell" && !isStandardOrPremium) {
+    if (
+      (model.name === "flux.1 schnell" || model.name === "flux.1 pro") &&
+      !isStandardOrPremium
+    ) {
       toast("flux.1は、STANDARD以上のプランで生成可能です。")
       return
     }
@@ -445,7 +448,7 @@ export function GenerationSubmissionView(props: Props) {
         return
       }
       if (i + 1 + nowGeneratingCount > maxTasksCount) {
-        if (modelName === "flux.1 schnell") {
+        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
           // flux.1は予約生成に対応していない
           return
         }
@@ -478,7 +481,7 @@ export function GenerationSubmissionView(props: Props) {
           },
         })
       } else {
-        if (modelName === "flux.1 schnell") {
+        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
           createFluxTask({
             variables: {
               input: {
@@ -492,6 +495,7 @@ export function GenerationSubmissionView(props: Props) {
                 scale: context.config.scale,
                 sizeType: context.config
                   .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+                modelName: modelName,
               },
             },
           })

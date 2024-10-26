@@ -56,14 +56,24 @@ export function ConfigModelButton(props: Props) {
                   )}
                 </div>
                 <div className="flex space-x-2">
-                  {props.type === "FLUX" && (
+                  {props.name === "flux.1 schnell" && (
                     <Badge className="text-xs opacity-50">
                       {t("10枚分消費", "cost of 10")}
                     </Badge>
                   )}
-                  {props.type === "FLUX" && (
+                  {props.name === "flux.1 schnell" && (
                     <Badge className="text-xs opacity-50">
                       {t("超高速生成", "super fast generation")}
+                    </Badge>
+                  )}
+                  {props.name === "flux.1 pro" && (
+                    <Badge className="text-xs opacity-50">
+                      {t("30枚分消費", "cost of 30")}
+                    </Badge>
+                  )}
+                  {props.name === "flux.1 pro" && (
+                    <Badge className="text-xs opacity-50">
+                      {t("高速生成", "super fast generation")}
                     </Badge>
                   )}
                 </div>

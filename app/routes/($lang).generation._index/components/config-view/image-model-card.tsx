@@ -69,11 +69,17 @@ export function ImageModelCard(props: Props) {
             {props.type === "FLUX" && (
               <Badge variant={"destructive"}>{props.type}</Badge>
             )}
-            {props.type === "FLUX" && (
+            {props.displayName === "flux.1 schnell" && (
               <Badge>{t("10枚分消費", "cost of 10")}</Badge>
             )}
-            {props.type === "FLUX" && (
+            {props.displayName === "flux.1 schnell" && (
               <Badge>{t("超高速生成", "super fast generation")}</Badge>
+            )}
+            {props.displayName === "flux.1 pro" && (
+              <Badge>{t("30枚分消費", "cost of 30")}</Badge>
+            )}
+            {props.displayName === "flux.1 pro" && (
+              <Badge>{t("高速生成", "super fast generation")}</Badge>
             )}
             {props.type !== "FLUX" && <Badge>{props.type}</Badge>}
           </div>
