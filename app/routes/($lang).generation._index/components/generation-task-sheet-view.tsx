@@ -178,9 +178,8 @@ export function GenerationTaskSheetView(props: Props) {
       return
     }
 
-    window.location.href = `https://www.aipictors.com/post?generation=${
-      imageGenerationTask.nanoid ?? ""
-    }`
+    const url = `/new/image?generation=${imageGenerationTask.nanoid}`
+    window.open(url, "_blank")
   }
 
   const [deleteTask, { loading: isDeletedLoading }] = useMutation(
