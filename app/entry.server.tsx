@@ -1,8 +1,13 @@
-import { caches } from "@cloudflare/workers-types"
 import type { AppLoadContext, EntryContext } from "@remix-run/cloudflare"
 import { RemixServer } from "@remix-run/react"
 import { isbot } from "isbot"
 import { renderToReadableStream } from "react-dom/server"
+
+declare global {
+  interface CacheStorage {
+    default: Cache
+  }
+}
 
 export default async function handleRequest(
   request: Request,
@@ -19,7 +24,7 @@ export default async function handleRequest(
   )
 
   if (import.meta.env.PROD && loaderStatusCode === 200) {
-    const cachedResponse = await caches.default.match(cacheKey as never)
+    const cachedResponse = await caches.default.match(cacheKey)
     if (cachedResponse) {
       return cachedResponse
     }
@@ -50,7 +55,7 @@ export default async function handleRequest(
 
   if (import.meta.env.PROD && loaderStatusCode === 200) {
     loadContext.cloudflare.ctx.waitUntil(
-      caches.default.put(cacheKey as never, response.clone() as never),
+      caches.default.put(cacheKey, response.clone()),
     )
   }
 
