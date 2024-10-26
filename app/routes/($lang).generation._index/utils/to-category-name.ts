@@ -3,6 +3,10 @@ import { useTranslation } from "~/hooks/use-translation"
 export function toCategoryName(category: string | null) {
   const t = useTranslation()
 
+  if (category === "UNIVERSAL") {
+    return t("汎用", "Universal")
+  }
+
   if (category === "ILLUSTRATION_GIRL") {
     return t("美少女イラスト", "Illustration: Girl")
   }
