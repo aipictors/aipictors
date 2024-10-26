@@ -327,7 +327,7 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    if (model.name === "flux.1" && !isStandardOrPremium) {
+    if (model.name === "flux.1 schnell" && !isStandardOrPremium) {
       toast("flux.1は、STANDARD以上のプランで生成可能です。")
       return
     }
@@ -445,7 +445,7 @@ export function GenerationSubmissionView(props: Props) {
         return
       }
       if (i + 1 + nowGeneratingCount > maxTasksCount) {
-        if (modelName === "flux.1") {
+        if (modelName === "flux.1 schnell") {
           // flux.1は予約生成に対応していない
           return
         }
@@ -478,7 +478,7 @@ export function GenerationSubmissionView(props: Props) {
           },
         })
       } else {
-        if (modelName === "flux.1") {
+        if (modelName === "flux.1 schnell") {
           createFluxTask({
             variables: {
               input: {
