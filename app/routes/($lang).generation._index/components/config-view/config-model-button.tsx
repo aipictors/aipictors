@@ -1,6 +1,7 @@
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { SearchIcon } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   imageURL: string
@@ -14,6 +15,8 @@ type Props = {
 }
 
 export function ConfigModelButton(props: Props) {
+  const t = useTranslation()
+
   return (
     <div className="relative">
       <Button
@@ -41,9 +44,30 @@ export function ConfigModelButton(props: Props) {
               {props.name}
             </p>
             {props.type && (
-              <Badge className="mt-4 grid w-16 text-xs opacity-50">
-                {props.type}
-              </Badge>
+              <div className="flex flex-col space-y-2">
+                <div className="mt-4 flex items-center space-x-2">
+                  <Badge className="grid w-16 text-xs opacity-50">
+                    {props.type}
+                  </Badge>
+                  {props.type === "FLUX" && (
+                    <Badge className="text-xs opacity-50">
+                      {t("STANDARD以上", "super fast generation")}
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex space-x-2">
+                  {props.type === "FLUX" && (
+                    <Badge className="text-xs opacity-50">
+                      {t("10枚分消費", "cost of 10")}
+                    </Badge>
+                  )}
+                  {props.type === "FLUX" && (
+                    <Badge className="text-xs opacity-50">
+                      {t("超高速生成", "super fast generation")}
+                    </Badge>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>

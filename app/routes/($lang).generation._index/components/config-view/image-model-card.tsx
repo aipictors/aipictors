@@ -78,6 +78,11 @@ export function ImageModelCard(props: Props) {
             {props.type !== "FLUX" && <Badge>{props.type}</Badge>}
           </div>
         )}
+        <div className="absolute bottom-8 left-0">
+          {props.type === "FLUX" && (
+            <Badge>{t("STANDARD以上", "super fast generation")}</Badge>
+          )}
+        </div>
         {props.description && (
           <span className="whitespace-pre-wrap break-words text-sm">
             {props.description}

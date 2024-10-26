@@ -47,7 +47,30 @@ export function ImageModelsList(props: Props) {
    * カテゴリ
    * 美少女など
    */
-  const modelCategories = removeDuplicates(props.models.map((m) => m.category))
+  const modelCategories = removeDuplicates(
+    props.models.map((m) => m.category),
+  ).sort((a, b) => {
+    const categoryOrder: { [key: string]: number } = {
+      UNIVERSAL: 0,
+      ILLUSTRATION_GIRL: 1,
+      BIKINI_MODEL: 2,
+      ANIMAL: 999,
+      ANIME_GIRL: 999,
+      BACKGROUND: 999,
+      FIGURE: 999,
+      ILLUSTRATION_BOY: 999,
+    }
+    const orderA = Object.prototype.hasOwnProperty.call(categoryOrder, a)
+      ? categoryOrder[a]
+      : 999
+    const orderB = Object.prototype.hasOwnProperty.call(categoryOrder, b)
+      ? categoryOrder[b]
+      : 999
+    if (orderA !== orderB) {
+      return orderA - orderB
+    }
+    return a.localeCompare(b)
+  })
 
   /**
    * 選択されているカテゴリ
@@ -66,8 +89,15 @@ export function ImageModelsList(props: Props) {
 
   // モデルをフィルタリングする関数
   const filterModels = () => {
+    const universalModels = props.models.filter(
+      (model) => model.category === "UNIVERSAL",
+    )
+    const otherModels = props.models.filter(
+      (model) => model.category !== "UNIVERSAL",
+    )
+
     return (
-      props.models
+      [...universalModels, ...otherModels]
         .filter((model) => {
           // お気に入りフィルタリング
           return showFavoriteModels ? isFavorited(Number(model.id)) : true
@@ -82,7 +112,7 @@ export function ImageModelsList(props: Props) {
           // 種別フィルタリング
           return selectedType === "ALL" || model.type === selectedType
         })
-        // 追加: displayNameで昇順にソート
+        // displayNameで昇順にソート
         .sort((a, b) => a.displayName.localeCompare(b.displayName))
     )
   }
