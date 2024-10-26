@@ -4,8 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc --noEmit && remix vite:build",
-    "deploy": "bun run build && wrangler pages deploy",
+    "build": "remix vite:build && wrangler pages functions build --outdir build/worker",
     "dev": "remix vite:dev",
     "start": "wrangler pages dev ./build/client",
     "check": "tsc --noEmit --isolatedDeclarations",
