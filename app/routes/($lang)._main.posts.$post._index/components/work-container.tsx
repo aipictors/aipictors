@@ -26,8 +26,9 @@ import {
 } from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate, Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 
 type Props = {
   post: string
@@ -45,14 +46,23 @@ type Props = {
 export function WorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data, refetch } = useQuery(workQuery, {
+  const { data: workRet } = useQuery(workQuery, {
     skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
     variables: {
       id: props.post,
     },
   })
 
-  const work = data?.work ?? props.work
+  const work = workRet?.work ?? props.work
+
+  const { data: workCommentsRet } = useQuery(workCommentsQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      workId: props.post,
+    },
+  })
+
+  const comments = workCommentsRet?.work?.comments ?? props.comments
 
   if (work === null) {
     return null
@@ -62,8 +72,6 @@ export function WorkContainer(props: Props) {
 
   const randomTag =
     tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
-
-  const navigate = useNavigate()
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
@@ -125,7 +133,7 @@ export function WorkContainer(props: Props) {
               }))}
             />
             {work.isCommentsEditable && (
-              <WorkCommentList workId={work.id} comments={props.comments} />
+              <WorkCommentList workId={work.id} comments={comments} />
             )}
             <div className="block md:mt-0 lg:hidden">
               <WorkUser

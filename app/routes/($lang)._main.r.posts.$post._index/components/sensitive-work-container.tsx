@@ -14,10 +14,7 @@ import {
   type CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import {
-  HomeNewCommentsSection,
-  type HomeNewCommentsFragment,
-} from "~/routes/($lang)._main._index/components/home-new-comments"
+import type { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import {
   HomeAwardWorksSection,
@@ -28,6 +25,8 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate, Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
+import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
+import { HomeNewSensitiveCommentsSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-comments"
 
 type Props = {
   post: string
@@ -53,6 +52,15 @@ export function SensitiveWorkContainer(props: Props) {
   })
 
   const work = data?.work ?? props.work
+
+  const { data: workCommentsRet } = useQuery(workCommentsQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      workId: props.post,
+    },
+  })
+
+  const comments = workCommentsRet?.work?.comments ?? props.comments
 
   if (work === null) {
     return null
@@ -125,7 +133,7 @@ export function SensitiveWorkContainer(props: Props) {
               }))}
             />
             {work.isCommentsEditable && (
-              <WorkCommentList workId={work.id} comments={props.comments} />
+              <WorkCommentList workId={work.id} comments={comments} />
             )}
             <div className="block md:mt-0 lg:hidden">
               <WorkUser
@@ -195,7 +203,9 @@ export function SensitiveWorkContainer(props: Props) {
                   </Link>
                 )}
                 {props.newComments && props.newComments.length > 0 && (
-                  <HomeNewCommentsSection comments={props.newComments} />
+                  <HomeNewSensitiveCommentsSection
+                    comments={props.newComments}
+                  />
                 )}
                 {props.awardWorks && (
                   <HomeAwardWorksSection works={props.awardWorks} />

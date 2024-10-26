@@ -14,7 +14,7 @@ type Props = {
 /**
  * 新規コメント一覧
  */
-export function HomeNewCommentsSection(props: Props) {
+export function HomeNewSensitiveCommentsSection(props: Props) {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
@@ -128,8 +128,8 @@ const homeNewCommentsQuery = graphql(
       offset: 0,
       limit: 8,
       where: {
-        isSensitive: false,
-        ratings: [G]
+        isSensitive: true,
+        ratings: [R18, R18G],
       }
     ) {
       ...HomeNewComments

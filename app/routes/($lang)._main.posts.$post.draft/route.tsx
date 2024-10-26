@@ -45,7 +45,7 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.short,
+  "Cache-Control": config.cacheControl.oneDay,
 })
 
 export default function Work() {

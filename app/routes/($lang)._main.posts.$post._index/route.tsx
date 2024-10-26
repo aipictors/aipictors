@@ -164,7 +164,7 @@ export const meta: MetaFunction = (props) => {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.tenSeconds,
+  "Cache-Control": config.cacheControl.oneDay,
 })
 
 export default function Work() {
@@ -195,7 +195,7 @@ export default function Work() {
   )
 }
 
-const workCommentsQuery = graphql(
+export const workCommentsQuery = graphql(
   `query WorkComments($workId: ID!) {
     work(id: $workId) {
       id
