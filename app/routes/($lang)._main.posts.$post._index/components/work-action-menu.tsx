@@ -126,6 +126,7 @@ const DeleteWorkMutation = graphql(
 const IsModeratorQuery = graphql(
   `query ViewerIsModerator {
     viewer {
+      id
       isModerator
     }
   }`,
