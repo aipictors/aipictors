@@ -1,7 +1,6 @@
 import {
   WorkArticle,
   workArticleFragment,
-  sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import { useContext } from "react"
@@ -12,7 +11,7 @@ import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/compo
 import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
 import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
 import {
-  type CommentListItemFragment,
+  CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import {
@@ -28,14 +27,13 @@ import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/compon
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
-import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 
 type Props = {
-  post: string
+  postId: string
   work: FragmentOf<typeof workArticleFragment> | null
   comments: FragmentOf<typeof CommentListItemFragment>[]
   newComments: FragmentOf<typeof HomeNewCommentsFragment>[]
-  awardWorks: FragmentOf<
+  workAwards: FragmentOf<
     typeof HomeAwardWorksFragment | typeof HomeWorkAwardFragment
   >[]
 }
@@ -43,22 +41,22 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function WorkContainer(props: Props) {
+export function WorkPage(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: workRet } = useQuery(workQuery, {
     skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
     variables: {
-      id: props.post,
+      id: props.postId,
     },
   })
 
   const work = workRet?.work ?? props.work
 
-  const { data: workCommentsRet } = useQuery(workCommentsQuery, {
+  const { data: workCommentsRet } = useQuery(WorkCommentsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
-      workId: props.post,
+      workId: props.postId,
     },
   })
 
@@ -205,8 +203,8 @@ export function WorkContainer(props: Props) {
                 {props.newComments && props.newComments.length > 0 && (
                   <HomeNewCommentsSection comments={props.newComments} />
                 )}
-                {props.awardWorks && (
-                  <HomeAwardWorksSection works={props.awardWorks} />
+                {props.workAwards && (
+                  <HomeAwardWorksSection works={props.workAwards} />
                 )}
               </div>
             </div>
@@ -239,15 +237,6 @@ const workQuery = graphql(
     }
   }`,
   [workArticleFragment],
-)
-
-const sensitiveWorkQuery = graphql(
-  `query Work($id: ID!) {
-    work(id: $id) {
-      ...WorkArticle
-    }
-  }`,
-  [sensitiveWorkArticleFragment],
 )
 
 const updateClickedCountCustomerAdvertisementMutation = graphql(
@@ -294,4 +283,16 @@ const randomCustomerAdvertisementQuery = graphql(
     }
   }`,
   [SideMenuAdvertisementsFragment],
+)
+
+export const WorkCommentsQuery = graphql(
+  `query WorkComments($workId: ID!) {
+    work(id: $workId) {
+    id
+      comments(offset: 0, limit: 128) {
+        ...Comment
+      }
+    }
+  }`,
+  [CommentListItemFragment],
 )

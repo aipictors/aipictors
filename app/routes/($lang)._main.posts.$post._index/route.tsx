@@ -2,7 +2,7 @@ import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
+import { WorkPage } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 import {
   redirect,
   type HeadersFunction,
@@ -11,85 +11,27 @@ import {
 } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { type FragmentOf, graphql } from "gql.tada"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { graphql, readFragment } from "gql.tada"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
+import { HomeAwardWorksFragment } from "~/routes/($lang)._main._index/components/home-award-works"
 import { getJstDate } from "~/utils/jst-date"
 
-export function HydrateFallback() {
-  return <AppLoadingPage />
-}
-
 export async function loader(props: LoaderFunctionArgs) {
-  // const redirectResponse = checkLocaleRedirect(props.request)
-
-  // if (redirectResponse) {
-  //   return redirectResponse
-  // }
-
   if (props.params.post === undefined) {
     throw new Response(null, { status: 404 })
   }
-
-  const workResp = await loaderClient.query({
-    query: workQuery,
-    variables: {
-      id: props.params.post,
-    },
-  })
-
-  if (workResp.data.work === null) {
-    throw new Response(null, { status: 404 })
-  }
-
-  // 非公開の場合はエラー
-  if (
-    workResp.data.work.accessType === "PRIVATE" ||
-    workResp.data.work.accessType === "DRAFT"
-  ) {
-    throw new Response(null, { status: 404 })
-  }
-
-  // センシティブな作品の場合は/r/にリダイレクト
-  if (
-    workResp.data.work.rating === "R18" ||
-    workResp.data.work.rating === "R18G"
-  ) {
-    return redirect(`/r/posts/${props.params.post}`)
-  }
-
-  const workCommentsResp = await loaderClient.query({
-    query: workCommentsQuery,
-    variables: {
-      workId: props.params.post,
-    },
-  })
-
-  if (workCommentsResp.data.work === null) {
-    throw new Response(null, { status: 404 })
-  }
-
-  const newComments = await loaderClient.query({
-    query: newCommentsQuery,
-    variables: {
-      workId: props.params.post,
-    },
-  })
 
   const now = getJstDate(new Date())
 
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
-  // ランキング
-  const awardWorks = await loaderClient.query({
-    query: homeAwardWorksQuery,
+  const result = await loaderClient.query({
+    query: WorkQuery,
     variables: {
-      offset: 0,
-      limit: 4,
-      where: {
+      id: props.params.post,
+      workAwardsWhere: {
         isSensitive: false,
         year: yesterday.getFullYear(),
         month: yesterday.getMonth() + 1,
@@ -98,76 +40,78 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (awardWorks.data.workAwards.length === 0) {
+  if (result.data.work === null) {
     throw new Response(null, { status: 404 })
   }
 
+  // 非公開の場合はエラー
+  if (
+    result.data.work.accessType === "PRIVATE" ||
+    result.data.work.accessType === "DRAFT"
+  ) {
+    throw new Response(null, { status: 404 })
+  }
+
+  // センシティブな作品の場合は/r/にリダイレクト
+  if (result.data.work.rating === "R18" || result.data.work.rating === "R18G") {
+    throw redirect(`/r/posts/${props.params.post}`)
+  }
+
   return {
-    post: props.params.post,
-    work: workResp.data.work,
-    workComments: workCommentsResp.data.work.comments,
-    newComments: newComments.data.newComments,
-    awardWorks: awardWorks.data.workAwards,
+    work: result.data.work,
+    newComments: result.data.newComments,
+    workAwards: result.data.workAwards,
   }
 }
 
-export const meta: MetaFunction = (props) => {
-  if (!props.data) {
-    if (props.params.lang === "en") {
-      return [{ title: "Aipictors works page" }]
-    }
-    return [{ title: "Aipictorsの作品ページ" }]
+export const meta: MetaFunction<typeof loader> = (props) => {
+  if (props.data === undefined) {
+    return []
   }
 
-  if (
-    typeof props.data !== "object" ||
-    props.data === null ||
-    !("work" in props.data)
-  ) {
-    return [{ title: "Aipictorsの作品ページ" }]
+  const work = readFragment(MetaFragment, props.data.work)
+
+  if (work === null) {
+    return []
   }
 
-  const work = props.data as { work: FragmentOf<typeof workArticleFragment> }
-
-  const userPart =
+  const subTitle =
     props.params.lang === "en"
-      ? work.work.user
-        ? ` - ${work.work.user?.name}`
+      ? work.user
+        ? ` - ${work.user?.name}`
         : ""
-      : work.work.user
-        ? ` - ${work.work.user?.name}の作品`
+      : work.user
+        ? ` - ${work.user?.name}の作品`
         : ""
 
   return createMeta(
     META.POSTS,
     {
-      title: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
-      enTitle: `${props.params.lang === "en" ? (work.work.enTitle.length > 0 ? work.work.enTitle : work.work.title) : work.work.title}${userPart}`,
+      title: `${props.params.lang === "en" ? (work.enTitle.length > 0 ? work.enTitle : work.title) : work.title}${subTitle}`,
+      enTitle: `${props.params.lang === "en" ? (work.enTitle.length > 0 ? work.enTitle : work.title) : work.title}${subTitle}`,
       description:
         props.params.lang === "en"
-          ? work.work.enDescription ||
-            work.work.description ||
-            "Aipictors work page"
-          : work.work.description ||
+          ? work.enDescription || work.description || "Aipictors work page"
+          : work.description ||
             "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
       enDescription:
         props.params.lang === "en"
-          ? work.work.enDescription ||
-            work.work.description ||
-            "Aipictors work page"
-          : work.work.description ||
+          ? work.enDescription || work.description || "Aipictors work page"
+          : work.description ||
             "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
-      url: work.work.smallThumbnailImageURL,
+      url: work.smallThumbnailImageURL,
     },
     props.params.lang,
   )
 }
 
-export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneDay,
-})
+export const headers: HeadersFunction = () => {
+  return {
+    "Cache-Control": config.cacheControl.oneDay,
+  }
+}
 
-export default function Work() {
+export default function Route() {
   const params = useParams()
 
   if (params.post === undefined) {
@@ -176,49 +120,41 @@ export default function Work() {
 
   const data = useLoaderData<typeof loader>()
 
-  if (data === null) {
-    return null
-  }
-
-  if (!("work" in data) || data.work === null) {
-    return null
-  }
-
   return (
-    <WorkContainer
-      post={data.post}
+    <WorkPage
+      postId={params.post}
       work={data.work}
-      comments={data.workComments}
+      comments={data.work.comments}
       newComments={data.newComments}
-      awardWorks={data.awardWorks}
+      workAwards={data.workAwards}
     />
   )
 }
 
-export const workCommentsQuery = graphql(
-  `query WorkComments($workId: ID!) {
-    work(id: $workId) {
+const MetaFragment = graphql(
+  `fragment Meta on WorkNode {
+    id
+    title
+    enTitle
+    description
+    enDescription
+    smallThumbnailImageURL
+    user {
       id
+      name
+    }
+  }`,
+)
+
+const WorkQuery = graphql(
+  `query Query($id: ID!, $workAwardsWhere: WorkAwardsWhereInput!) {
+    work(id: $id) {
+      ...WorkArticle
       comments(offset: 0, limit: 128) {
         ...Comment
       }
     }
-  }`,
-  [CommentListItemFragment],
-)
-
-const workQuery = graphql(
-  `query Work($id: ID!) {
-    work(id: $id) {
-      ...WorkArticle
-    }
-  }`,
-  [workArticleFragment],
-)
-
-const newCommentsQuery = graphql(
-  `query NewComments {
-    newComments: newComments(
+    newComments(
       offset: 0,
       limit: 8,
       where: {
@@ -228,6 +164,14 @@ const newCommentsQuery = graphql(
     ) {
       ...HomeNewComments
     }
+    workAwards(offset: 0, limit: 4, where: $workAwardsWhere) {
+      ...HomeAwardWorks
+    }
   }`,
-  [HomeNewCommentsFragment],
+  [
+    workArticleFragment,
+    CommentListItemFragment,
+    HomeNewCommentsFragment,
+    HomeAwardWorksFragment,
+  ],
 )
