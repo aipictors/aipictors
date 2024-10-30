@@ -28,7 +28,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate, Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { DraftWorkArticle } from "~/routes/($lang)._main.posts.$post.draft/components/draft-work-article"
-import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
+import { WorkCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 
 type Props = {
   post: string
@@ -55,7 +55,7 @@ export function DraftWorkContainer(props: Props) {
 
   const work = data?.work ?? props.work
 
-  const { data: workCommentsRet } = useQuery(workCommentsQuery, {
+  const { data: workCommentsRet } = useQuery(WorkCommentsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       workId: props.post,

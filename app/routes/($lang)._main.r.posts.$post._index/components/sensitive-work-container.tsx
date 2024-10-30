@@ -25,8 +25,8 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useNavigate, Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
-import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 import { HomeNewSensitiveCommentsSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-comments"
+import { WorkCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 
 type Props = {
   post: string
@@ -53,7 +53,7 @@ export function SensitiveWorkContainer(props: Props) {
 
   const work = data?.work ?? props.work
 
-  const { data: workCommentsRet } = useQuery(workCommentsQuery, {
+  const { data: workCommentsRet } = useQuery(WorkCommentsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       workId: props.post,
