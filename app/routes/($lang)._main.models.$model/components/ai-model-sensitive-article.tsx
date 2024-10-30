@@ -72,9 +72,7 @@ export function AiModelSensitiveArticle(props: Props) {
     <div className="flex flex-col space-y-4">
       <AiModelHeader
         name={model.name}
-        thumbnailImageURL={
-          works.length ? works[0].largeThumbnailImageURL : null
-        }
+        thumbnailImageURL={works[0]?.largeThumbnailImageURL ?? null}
         isMoreRatings={props.isMoreRatings}
         hasPrompt={props.hasPrompt}
         worksCount={model.worksCount}
