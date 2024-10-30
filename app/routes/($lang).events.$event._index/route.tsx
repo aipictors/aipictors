@@ -6,8 +6,6 @@ import {
   EventWorkList,
   EventWorkListItemFragment,
 } from "~/routes/($lang).events.$event._index/components/event-work-list"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { RefreshCcwIcon } from "lucide-react"
 import {
   EventAwardWorkList,
   EventAwardWorkListItemFragment,
@@ -21,6 +19,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { SensitiveEventConfirmDialog } from "~/routes/($lang).events.$event._index/components/sensitive-event-confirm-dialog"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -153,23 +152,7 @@ export default function FollowingLayout() {
               </span>
             </div>
             {data.appEvent.slug !== null && (
-              <AppConfirmDialog
-                title={t("確認", "Confirmation")}
-                description={t(
-                  "センシティブ版を表示します。あなたは18歳以上ですか？",
-                  "Displaying sensitive content. Are you over 18?",
-                )}
-                onNext={() => {
-                  navigate(`/r/events/${data.appEvent.slug}`)
-                }}
-                cookieKey={"check-sensitive-ranking"}
-                onCancel={() => {}}
-              >
-                <div className="mt-4 flex w-40 cursor-pointer justify-center">
-                  <RefreshCcwIcon className="mr-1 w-3" />
-                  <p className="text-sm">{t("対象年齢", "Age Restriction")}</p>
-                </div>
-              </AppConfirmDialog>
+              <SensitiveEventConfirmDialog slug={data.appEvent.slug} />
             )}
           </div>
         </CardContent>

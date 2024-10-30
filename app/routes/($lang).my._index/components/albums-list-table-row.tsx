@@ -1,12 +1,12 @@
 import { TableRow, TableCell } from "~/components/ui/table"
-import { Loader2Icon, TrashIcon } from "lucide-react"
+import { Loader2Icon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { AlbumDeleteConfirmDialog } from "~/routes/($lang).my._index/components/album-delete-confirm-dialog"
 
 type Props = {
   album: FragmentOf<typeof AlbumTableRowFragment>
@@ -78,16 +78,10 @@ export function AlbumsListTableRow(props: Props) {
             {isLoadingDeleteAlbum ? (
               <Loader2Icon className="h-4 w-4 animate-spin" />
             ) : (
-              <AppConfirmDialog
-                title={"確認"}
-                description={`シリーズ「${props.album.title}」を削除しますか？`}
-                onNext={async () => {
-                  await onDeleteSeries(props.album.id)
-                }}
-                onCancel={() => {}}
-              >
-                <TrashIcon />
-              </AppConfirmDialog>
+              <AlbumDeleteConfirmDialog
+                onDelete={() => onDeleteSeries(props.album.id)}
+                seriesTitle={props.album.title}
+              />
             )}
           </TableCell>
           <TableCell>{toDateTimeText(props.album.createdAt)}</TableCell>

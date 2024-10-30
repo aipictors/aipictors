@@ -9,10 +9,10 @@ import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/com
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
 import { RefreshCcwIcon } from "lucide-react"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useNavigate } from "@remix-run/react"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { useTranslation } from "~/hooks/use-translation"
+import { SensitiveConfirmDialog } from "~/routes/($lang)._main.users.$user._index/components/sensitive-confirm-dialog"
 
 type Props = {
   user: FragmentOf<typeof UserHomeMenuSensitiveFragment>
@@ -41,25 +41,7 @@ export function UserHomeSensitiveMenu(props: Props) {
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-2 right-0 z-10 md:hidden">
         <div className="flex space-x-2">
-          <AppConfirmDialog
-            title={t("確認", "Confirm")}
-            description={t(
-              "センシティブな作品を表示します、あなたは18歳以上ですか？",
-              "Do you want to display sensitive content? Are you over 18 years old?",
-            )}
-            onNext={() => {
-              navigate(`/r/users/${cachedUser.login}`)
-            }}
-            cookieKey={"check-sensitive-ranking"}
-            onCancel={() => {}}
-          >
-            <Button variant={"secondary"}>
-              <div className="flex cursor-pointer items-center">
-                <RefreshCcwIcon className="mr-1 w-3" />
-                <p className="text-sm">{t("対象年齢", "Target Age")}</p>
-              </div>
-            </Button>
-          </AppConfirmDialog>
+          <SensitiveConfirmDialog userLogin={cachedUser.login} />
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />
         </div>
       </div>

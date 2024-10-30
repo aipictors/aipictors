@@ -1,4 +1,3 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import {
@@ -13,10 +12,11 @@ import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Loader2, Trash2Icon } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationConfigDeleteMemoConfirmDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-delete-memo-confirm-dialog"
 
 type Props = {
   onClose: () => void
@@ -291,19 +291,7 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
         {isDeletingMemo ? (
           <Loader2 className="mr-2 w-16 animate-spin" />
         ) : (
-          <AppConfirmDialog
-            title={t("設定を削除する", "Delete settings")}
-            description={t(
-              "選択したメモを削除しますか？",
-              "Do you want to delete the selected memo?",
-            )}
-            onNext={onDelete}
-            onCancel={() => {}}
-          >
-            <Button className="mr-4 h-11 w-16" variant={"ghost"} size={"icon"}>
-              <Trash2Icon className="w-4" />
-            </Button>
-          </AppConfirmDialog>
+          <GenerationConfigDeleteMemoConfirmDialog onDelete={onDelete} />
         )}
 
         <Button
