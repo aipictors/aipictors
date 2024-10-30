@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useMutation } from "@apollo/client/index"
 import { ArrowDownToLine, Loader2Icon } from "lucide-react"
 import React from "react"
@@ -11,6 +10,7 @@ import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/com
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { toast } from "sonner"
+import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
 
 type Props = {
   userId: string
@@ -114,19 +114,9 @@ export function WorkComment(props: Props) {
                 {isDeleteLoading ? (
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
-                  <AppConfirmDialog
-                    title={t("確認", "Confirm")}
-                    description={t(
-                      "コメントを削除しますか？",
-                      "Do you want to delete this comment?",
-                    )}
-                    onNext={onDeleteComment}
-                    onCancel={() => {}}
-                  >
-                    <p className="cursor-pointer text-xs">
-                      {t("削除", "Delete")}
-                    </p>
-                  </AppConfirmDialog>
+                  <DeleteCommentConfirmDialog
+                    onDeleteComment={onDeleteComment}
+                  />
                 )}
               </>
             ) : (

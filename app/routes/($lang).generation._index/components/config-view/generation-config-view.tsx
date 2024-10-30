@@ -16,7 +16,6 @@ import { GenerationConfigLoraModels } from "~/routes/($lang).generation._index/c
 import { GenerationConfigMemoButton } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-button"
 import { GenerationConfigMemoSettingDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-setting-dialog"
 import { GenerationConfigModels } from "~/routes/($lang).generation._index/components/config-view/generation-config-models"
-import { GenerationConfigResetButton } from "~/routes/($lang).generation._index/components/config-view/generation-config-reset-button"
 import { GenerationConfigSampler } from "~/routes/($lang).generation._index/components/config-view/generation-config-sampler"
 import { GenerationConfigScale } from "~/routes/($lang).generation._index/components/config-view/generation-config-scale"
 import { GenerationConfigSeed } from "~/routes/($lang).generation._index/components/config-view/generation-config-seed"
@@ -33,6 +32,7 @@ import { graphql } from "gql.tada"
 import { useEffect, useState } from "react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationConfigResetConfirmDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-reset-confirm-dialog"
 
 /**
  * エディタの設定
@@ -248,7 +248,7 @@ export function GenerationConfigView() {
             }}
             isOpen={showMemoSetting}
           />
-          <GenerationConfigResetButton onReset={context.reset} />
+          <GenerationConfigResetConfirmDialog onReset={context.reset} />
         </div>
       </div>
     </GenerationViewCard>

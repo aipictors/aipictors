@@ -1,7 +1,7 @@
 import type React from "react"
 import { useEffect, useState, useRef } from "react"
 import { useNavigate, useLocation } from "@remix-run/react"
-import { ChevronLeftIcon, ChevronRightIcon, RefreshCcwIcon } from "lucide-react"
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
 import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
@@ -12,8 +12,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "~/components/ui/carousel"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import { RankingHeaderSensitiveConfirmDialog } from "~/routes/($lang)._main.rankings._index/components/ranking-header-sensitive-confirm-dialog"
 
 type Props = {
   year: number
@@ -317,23 +317,7 @@ export function RankingHeader(props: Props) {
             {t("最新", "Latest")}
           </Button>
         </div>
-        <AppConfirmDialog
-          title={t("確認", "Confirmation")}
-          description={t(
-            "センシティブな作品を表示します、あなたは18歳以上ですか？",
-            "This content contains sensitive material. Are you over 18?",
-          )}
-          onNext={() => {
-            navigate("/r/rankings")
-          }}
-          cookieKey={"check-sensitive-ranking"}
-          onCancel={() => {}}
-        >
-          <Button className="w-full" variant={"secondary"}>
-            <RefreshCcwIcon className="mr-2 w-4" />
-            {t("対象年齢", "Age Restricted")}
-          </Button>
-        </AppConfirmDialog>
+        <RankingHeaderSensitiveConfirmDialog />
       </div>
       <div className="mt-4 flex max-w-72 space-x-4 md:max-w-full">
         <Carousel

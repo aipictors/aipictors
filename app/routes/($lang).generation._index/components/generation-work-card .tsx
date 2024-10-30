@@ -1,5 +1,3 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { SelectableCardButton } from "~/components/selectable-card-button"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { GenerationWorkLinkButton } from "~/routes/($lang).generation._index/components/generation-work-link-button"
@@ -7,6 +5,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { GenerationWorkZoomUpButton } from "~/routes/($lang).generation._index/components/generation-work-zoom-up-button"
 import { type FragmentOf, graphql } from "gql.tada"
+import { GenerationUpdateSettingConfirmDialog } from "~/routes/($lang).generation._index/components/generation-update-setting-confirm-dialog"
 
 type Props = {
   work: FragmentOf<typeof GenerationWorkCardFragment>
@@ -41,10 +40,10 @@ export function GenerationWorkCard(props: Props) {
         setIsHovered(false)
       }}
     >
-      <AppConfirmDialog
-        title={"確認"}
-        description={"選択した作品で復元しますか？"}
-        onNext={() => {
+      <GenerationUpdateSettingConfirmDialog
+        title={props.work.title}
+        largeThumbnailImageUrl={props.work.largeThumbnailImageURL}
+        onRestore={() => {
           context.updateSettings(
             context.config.modelId,
             props.work.steps ?? context.config.steps,
@@ -64,16 +63,7 @@ export function GenerationWorkCard(props: Props) {
           )
           toast("設定を復元しました")
         }}
-        onCancel={() => {}}
-      >
-        <SelectableCardButton
-          onClick={() => {}}
-          isSelected={false}
-          isDisabled={true}
-        >
-          <img src={props.work.largeThumbnailImageURL} alt={props.work.title} />
-        </SelectableCardButton>
-      </AppConfirmDialog>
+      />
       {/* 拡大ボタン */}
       {isHovered && (
         <GenerationWorkZoomUpButton

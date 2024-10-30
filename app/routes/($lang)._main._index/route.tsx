@@ -74,10 +74,10 @@ import { Button } from "~/components/ui/button"
 import { useLocale } from "~/hooks/use-locale"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
 import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
+import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-dialog"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -489,25 +489,7 @@ export default function Index() {
             />
             <div className="flex w-full flex-col space-y-4">
               <div className="relative grid gap-4">
-                <AppConfirmDialog
-                  title={t("確認", "Confirmation")}
-                  description={t(
-                    "センシティブな作品を表示します、あなたは18歳以上ですか？",
-                    "This content contains sensitive material. Are you over 18?",
-                  )}
-                  onNext={() => {
-                    navigate("/r")
-                  }}
-                  cookieKey={"check-sensitive-ranking"}
-                  onCancel={() => {}}
-                >
-                  <Button
-                    variant={"secondary"}
-                    className="flex w-full transform cursor-pointer items-center"
-                  >
-                    <p className="text-sm">{t("センシティブ", "Sensitive")}</p>
-                  </Button>
-                </AppConfirmDialog>
+                <SensitiveChangeConfirmDialog />
                 {!isSubscriptionUser &&
                   advertisements &&
                   advertisements.randomCustomerAdvertisement && (

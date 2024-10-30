@@ -1,7 +1,7 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { cn } from "~/lib/utils"
-import { Loader2Icon, XIcon } from "lucide-react"
+import { Loader2Icon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationTaskDeleteConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-delete-confirm-dialog"
 
 type Props = {
   onDelete(): void
@@ -27,17 +27,7 @@ export function GenerationTaskDeleteButton(props: Props) {
         {props.isDeletedLoading ? (
           <Loader2Icon color="black" className={"animate-spin"} />
         ) : (
-          <AppConfirmDialog
-            title={t("確認", "Confirm")}
-            description={t(
-              "本当に削除しますか？",
-              "Are you sure you want to delete this?",
-            )}
-            onNext={props.onDelete}
-            onCancel={() => {}}
-          >
-            <XIcon color="black" className={"fill-white"} />
-          </AppConfirmDialog>
+          <GenerationTaskDeleteConfirmDialog onDelete={props.onDelete} />
         )}
       </div>
     </button>

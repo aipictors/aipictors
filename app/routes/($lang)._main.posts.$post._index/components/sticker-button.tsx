@@ -1,8 +1,6 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { Button } from "~/components/ui/button"
-import { XIcon } from "lucide-react"
 import { graphql } from "gql.tada"
 import { cn } from "~/lib/utils"
+import { DeleteStickerConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-sticker-confirm-dialog"
 
 type Props = {
   imageUrl?: string
@@ -50,20 +48,7 @@ export function StickerButton(props: Props) {
         <img className="m-auto" src={props.imageUrl} alt={props.title} />
       </button>
       {props.onDelete && (
-        <AppConfirmDialog
-          description="スタンプを削除しますか？"
-          onNext={props.onDelete}
-          onCancel={() => {}}
-        >
-          <Button
-            variant={"secondary"}
-            size={"icon"}
-            className="absolute top-1 right-1 rounded-full"
-            onClick={() => {}}
-          >
-            <XIcon className="h-4 w-4" />
-          </Button>
-        </AppConfirmDialog>
+        <DeleteStickerConfirmDialog onDelete={props.onDelete} />
       )}
     </div>
   )

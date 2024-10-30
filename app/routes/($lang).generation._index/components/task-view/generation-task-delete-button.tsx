@@ -1,8 +1,8 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"
 import { Trash2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationTaskDeleteConfirmDialog } from "~/routes/($lang).generation._index/components/task-view/generation-task-delete-confirm-dialog"
 
 type Props = {
   disabled: boolean
@@ -35,23 +35,10 @@ export function GenerationTaskDeleteButton(props: Props) {
       <Trash2Icon className="w-4" />
     </Button>
   ) : (
-    <AppConfirmDialog
-      title={t("確認", "Confirm")}
-      description={t(
-        "本当に削除しますか？",
-        "Are you sure you want to delete this?",
-      )}
-      onNext={props.onDelete}
-      onCancel={() => {}}
-    >
-      <Button
-        title={props.title}
-        disabled={props.disabled}
-        variant={"ghost"}
-        size={"icon"}
-      >
-        <Trash2Icon className="w-4" />
-      </Button>
-    </AppConfirmDialog>
+    <GenerationTaskDeleteConfirmDialog
+      onDelete={props.onDelete}
+      title={props.title ?? ""}
+      disabled={props.disabled}
+    />
   )
 }

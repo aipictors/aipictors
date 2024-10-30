@@ -6,7 +6,6 @@ import { Link, useNavigate, useLocation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
-  BoxIcon,
   GemIcon,
   HomeIcon,
   Image,
@@ -20,8 +19,8 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useContext } from "react"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import { SensitiveChangeConfirmHomeNavigationButton } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-home-navigation-button"
 
 type Props = {
   onClickMenuItem?: () => void
@@ -148,24 +147,7 @@ export function HomeRouteList(props: Props) {
       >
         {t("フォト", "Photo")}
       </HomeNavigationButton>
-      <AppConfirmDialog
-        title={"確認"}
-        description={t(
-          "センシティブ版のトップページに遷移します。あなたは18歳以上ですか？",
-          "You are about to navigate to the sensitive content homepage. Are you 18 years or older?",
-        )}
-        onNext={() => {
-          navigate("/r")
-          closeHeaderMenu()
-        }}
-        cookieKey={"check-sensitive"}
-        onCancel={() => {}}
-      >
-        <HomeNavigationButton icon={BoxIcon}>
-          {t("センシティブ", "Sensitive")}
-        </HomeNavigationButton>
-      </AppConfirmDialog>
-
+      <SensitiveChangeConfirmHomeNavigationButton />
       {authContext.isNotLoading && (
         <div className={"py-2"}>
           <Separator />

@@ -8,7 +8,6 @@ import { Card, CardContent } from "~/components/ui/card"
 import { toDateText } from "~/utils/to-date-text"
 import { addHours, endOfMonth, format, startOfMonth } from "date-fns"
 import { Badge } from "~/components/ui/badge"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Loader2Icon } from "lucide-react"
@@ -18,6 +17,7 @@ import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import { uploadPublicImage } from "~/utils/upload-public-image"
+import { SettingsAdvertisementsDeleteConfirmDialog } from "~/routes/($lang).settings.advertisements/_components/settings-advertisements-delete-confirm-dialog"
 
 // 日本時間 (JST) に変換するためのヘルパー関数
 const toJST = (date: Date) => {
@@ -474,20 +474,9 @@ export function SettingAdvertisementsForm() {
                         >
                           {t("編集", "Edit")}
                         </Button>
-
-                        <AppConfirmDialog
-                          title={t("確認", "Confirm")}
-                          description={t(
-                            "本当にこの作品を削除しますか？",
-                            "Are you sure you want to delete this item?",
-                          )}
-                          onNext={async () => handleDelete(advertisement.id)}
-                          onCancel={() => {}}
-                        >
-                          <Button variant="secondary">
-                            {t("削除", "Delete")}
-                          </Button>
-                        </AppConfirmDialog>
+                        <SettingsAdvertisementsDeleteConfirmDialog
+                          onDelete={async () => handleDelete(advertisement.id)}
+                        />
                       </div>
                     </CardContent>
                   </Card>

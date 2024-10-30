@@ -1,12 +1,12 @@
 import { Separator } from "~/components/ui/separator"
-import { Loader2Icon, TrashIcon } from "lucide-react"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { Loader2Icon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { DeleteFolderConfirmDialog } from "~/routes/($lang).my._index/components/delete-folder-confirm-dialog"
 
 type Props = {
   folder: FragmentOf<typeof MobileFolderListItemFragment>
@@ -80,16 +80,12 @@ export function FoldersSpListItem(props: Props) {
               {isLoadingDeleteFolder ? (
                 <Loader2Icon className="h-4 w-4 animate-spin" />
               ) : (
-                <AppConfirmDialog
-                  title={"確認"}
-                  description={`コレクション「${props.folder.title}」を削除しますか？`}
-                  onNext={async () => {
+                <DeleteFolderConfirmDialog
+                  onDelete={async () => {
                     await onDeleteFolder(props.folder.id)
                   }}
-                  onCancel={() => {}}
-                >
-                  <TrashIcon />
-                </AppConfirmDialog>
+                  folderTitle={props.folder.title}
+                />
               )}
             </div>
           </div>

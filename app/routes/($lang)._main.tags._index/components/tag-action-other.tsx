@@ -4,10 +4,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover"
-import { EllipsisIcon, RefreshCcwIcon } from "lucide-react"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { EllipsisIcon } from "lucide-react"
 import { useNavigate } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
+import { SensitiveTagConfirmDialog } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-confirm-dialog"
 
 type Props = {
   tag: string
@@ -26,26 +26,7 @@ export function TagActionOther(props: Props) {
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <div className="relative grid gap-4">
-          <AppConfirmDialog
-            title={t("確認", "Confirmation")}
-            description={t(
-              "センシティブな作品を表示します、あなたは18歳以上ですか？",
-              "Sensitive content will be displayed. Are you 18 or older?",
-            )}
-            onNext={() => {
-              navigate(`/r/tags/${props.tag}`)
-            }}
-            cookieKey={"check-sensitive-ranking"}
-            onCancel={() => {}}
-          >
-            <Button
-              variant={"secondary"}
-              className="flex w-full transform cursor-pointer items-center"
-            >
-              <RefreshCcwIcon className="mr-1 w-3" />
-              <p className="text-sm">{t("対象年齢", "Age Restriction")}</p>
-            </Button>
-          </AppConfirmDialog>
+          <SensitiveTagConfirmDialog />
         </div>
       </PopoverContent>
     </Popover>

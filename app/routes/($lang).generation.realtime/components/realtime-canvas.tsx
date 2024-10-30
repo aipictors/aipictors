@@ -1,6 +1,5 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { Button } from "~/components/ui/button"
 import { useEffect, useRef, useState } from "react"
+import { UpdateRealtimeCanvasConfirmDialog } from "~/routes/($lang).generation.realtime/components/update-realtime-canvas-confirm-dialog"
 
 interface IProps {
   width: number // キャンバスの横幅
@@ -74,21 +73,13 @@ const RealTimeCanvas: React.FC<IProps> = ({
         width={width}
         height={height}
       />
-
-      <AppConfirmDialog
-        title={"確認"}
-        description={"現在のキャンバスを上書きしますか？"}
-        onNext={() => {
+      <UpdateRealtimeCanvasConfirmDialog
+        updatedPaintCanvasBase64={() => {
           if (updatedPaintCanvasBase64) {
             updatedPaintCanvasBase64(imageBase64)
           }
         }}
-        onCancel={() => {}}
-      >
-        <Button onClick={() => {}} className="absolute bottom-2 left-2">
-          ベース画像にする
-        </Button>
-      </AppConfirmDialog>
+      />
     </div>
   )
 }

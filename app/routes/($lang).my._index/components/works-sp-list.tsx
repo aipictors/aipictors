@@ -8,7 +8,6 @@ import {
   HeartIcon,
   MessageCircle,
   PencilIcon,
-  TrashIcon,
 } from "lucide-react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
@@ -16,7 +15,6 @@ import { Link } from "@remix-run/react"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useState } from "react"
@@ -27,6 +25,7 @@ import {
 } from "~/components/ui/popover"
 import { Button } from "~/components/ui/button"
 import { useLocale } from "~/hooks/use-locale"
+import { DeleteConfirmTrashDialog } from "~/routes/($lang).my._index/components/delete-confirm-trash-dialog"
 
 type Props = {
   works: FragmentOf<typeof MobileWorkListItemFragment>[]
@@ -168,24 +167,13 @@ export function WorksSpList(props: Props) {
                   </PopoverTrigger>
                   <PopoverContent className="w-80">
                     <div className="flex justify-center">
-                      <AppConfirmDialog
-                        title={"確認"}
-                        description={`作品「${work.title}」を削除しますか？`}
-                        onNext={async () => {
+                      <DeleteConfirmTrashDialog
+                        onDelete={async () => {
                           await onDeleteWork(work.id)
                         }}
-                        onCancel={() => {}}
-                      >
-                        <Button
-                          variant={"secondary"}
-                          className="flex w-full items-center space-x-2"
-                        >
-                          <TrashIcon
-                            className={isLoadingDeleteWork ? "opacity-80" : ""}
-                          />
-                          <p>{"削除する"}</p>
-                        </Button>
-                      </AppConfirmDialog>
+                        workTitle={work.title}
+                        isLoadingDeleteWork={isLoadingDeleteWork}
+                      />
                     </div>
                   </PopoverContent>
                 </Popover>

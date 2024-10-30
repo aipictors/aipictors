@@ -2,8 +2,6 @@ import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
-import { RefreshCcwIcon } from "lucide-react"
 import {
   EventAwardPagingWorkList,
   EventAwardWorkListItemFragment,
@@ -14,6 +12,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { config } from "~/config"
 import type { HeadersFunction } from "@remix-run/cloudflare"
+import { SensitiveEventConfirmDialog } from "~/routes/($lang).events.$event._index/components/sensitive-event-confirm-dialog"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -106,22 +105,7 @@ export default function FollowingLayout() {
               <span>参加タグ: {data.appEvent.tag}</span>
             </div>
             {data.appEvent.slug !== null && (
-              <AppConfirmDialog
-                title={"確認"}
-                description={
-                  "センシティブ版を表示します。あなたは18歳以上ですか？"
-                }
-                onNext={() => {
-                  navigate(`/r/events/${data.appEvent.slug}`)
-                }}
-                cookieKey={"check-sensitive-ranking"}
-                onCancel={() => {}}
-              >
-                <div className="mt-4 flex w-40 cursor-pointer justify-center">
-                  <RefreshCcwIcon className="mr-1 w-3" />
-                  <p className="text-sm">{"対象年齢"}</p>
-                </div>
-              </AppConfirmDialog>
+              <SensitiveEventConfirmDialog slug={data.appEvent.slug} />
             )}
           </div>
         </CardContent>

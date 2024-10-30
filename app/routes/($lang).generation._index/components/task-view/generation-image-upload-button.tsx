@@ -1,8 +1,8 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"
 import { FileUp } from "lucide-react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationImageUploadConfirmDialog } from "~/routes/($lang).generation._index/components/task-view/generation-image-upload-confirm-dialog"
 
 type Props = {
   disabled: boolean
@@ -43,29 +43,10 @@ export function GenerationImagePostButton(props: Props) {
       </div>
     </Button>
   ) : (
-    <AppConfirmDialog
-      title={t("投稿する", "Post")}
-      description={t(
-        "投稿サイトAipictorsに作品を投稿しますか？",
-        "Do you want to post this to Aipictors?",
-      )}
-      onNext={onClick}
-      onCancel={() => {}}
-      cookieKey={"generation_post"}
-    >
-      <Button
-        title={props.title}
-        disabled={props.disabled}
-        variant="ghost"
-        size="icon"
-        onClick={() => {}}
-        className={"w-12"}
-      >
-        <div className="mx-2 flex items-center">
-          <FileUp className="w-4" />
-          {t("投稿", "Post")}
-        </div>
-      </Button>
-    </AppConfirmDialog>
+    <GenerationImageUploadConfirmDialog
+      onClick={onClick}
+      title={props.title ?? ""}
+      disabled={props.disabled}
+    />
   )
 }

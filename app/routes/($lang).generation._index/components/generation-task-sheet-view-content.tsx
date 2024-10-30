@@ -1,4 +1,3 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { SwipeArea } from "~/components/swipe-area"
 import { Button } from "~/components/ui/button"
 import { ScrollArea } from "~/components/ui/scroll-area"
@@ -17,11 +16,9 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardCopy,
-  FileUp,
   LockKeyholeIcon,
   LockKeyholeOpenIcon,
   PenIcon,
-  Trash2,
 } from "lucide-react"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
@@ -38,6 +35,8 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql, type FragmentOf } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerationTaskPostConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-post-confirm-dialog"
+import { GenerationTaskDeleteMemoConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-delete-memo-confirm-dialog"
 
 type Props = {
   task:
@@ -270,23 +269,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     icon={ArrowUpRightSquare}
                   />
                 </GenerationReferenceDialog>
-                <AppConfirmDialog
-                  title={t("投稿する", "Post")}
-                  description={t(
-                    "投稿サイトAipictorsに作品を投稿しますか？",
-                    "Do you want to post this to Aipictors?",
-                  )}
-                  onNext={props.onPost}
-                  onCancel={() => {}}
-                  cookieKey={"generation_post"}
-                >
-                  <GenerationMenuButton
-                    title={t("投稿する", "Post")}
-                    onClick={() => {}}
-                    text={t("投稿", "Post")}
-                    icon={FileUp}
-                  />
-                </AppConfirmDialog>
+                <GenerationTaskPostConfirmDialog onPost={props.onPost} />
                 <GenerationMenuButton
                   title={t("生成情報をコピーする", "Copy generation info")}
                   onClick={() =>
@@ -312,25 +295,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
                   }
                   isLoading={props.isProtectedLoading}
                 />
-                <AppConfirmDialog
-                  title={t("確認", "Confirm")}
-                  description={t(
-                    "本当に削除しますか？",
-                    "Are you sure you want to delete this?",
-                  )}
-                  onNext={() => {
-                    props.onDelete()
-                  }}
-                  onCancel={() => {}}
-                >
-                  <GenerationMenuButton
-                    title={t("生成履歴を削除する", "Delete generation history")}
-                    onClick={() => () => {}}
-                    icon={Trash2}
-                    isLoading={props.isDeletedLoading}
-                    disabled={props.isDeletedLoading}
-                  />
-                </AppConfirmDialog>
+                <GenerationTaskDeleteMemoConfirmDialog
+                  onDelete={props.onDelete}
+                  isDeletedLoading={props.isDeletedLoading}
+                />
               </div>
               <div className="py-2">
                 <Separator />

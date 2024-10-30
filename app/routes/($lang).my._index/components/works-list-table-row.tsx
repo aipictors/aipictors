@@ -1,15 +1,15 @@
 import { TableRow, TableCell } from "~/components/ui/table"
-import { Loader2Icon, PencilIcon, TrashIcon } from "lucide-react"
+import { Loader2Icon, PencilIcon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
 import { Link } from "@remix-run/react"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useLocale } from "~/hooks/use-locale"
+import { DeleteWorkConfirmDialog } from "~/routes/($lang).my._index/components/delete-work-confirm-dialog"
 
 type Props = {
   work: FragmentOf<typeof WorksListTableRowFragment>
@@ -131,16 +131,12 @@ export function WorksListTableRow(props: Props) {
             {isLoadingDeleteWork ? (
               <Loader2Icon className="h-4 w-4 animate-spin" />
             ) : (
-              <AppConfirmDialog
-                title={"確認"}
-                description={`作品「${props.work.title}」を削除しますか？`}
-                onNext={async () => {
+              <DeleteWorkConfirmDialog
+                onDelete={async () => {
                   await onDeleteWork(props.work.id)
                 }}
-                onCancel={() => {}}
-              >
-                <TrashIcon />
-              </AppConfirmDialog>
+                workTitle={props.work.title}
+              />
             )}
           </TableCell>
           <TableCell>{props.work.isPromotion ? "○" : ""}</TableCell>

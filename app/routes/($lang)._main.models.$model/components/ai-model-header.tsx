@@ -1,6 +1,5 @@
 import { useNavigate } from "@remix-run/react"
-import { EllipsisIcon, RefreshCcwIcon } from "lucide-react"
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
+import { EllipsisIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import {
   Popover,
@@ -16,6 +15,7 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
+import { SensitiveChangeModelConfirmDialog } from "~/routes/($lang)._main.models.$model/components/sensitive-change-model-confirm-dialog"
 
 type Props = {
   name: string
@@ -95,28 +95,7 @@ export function AiModelHeader(props: Props) {
             </PopoverTrigger>
             <PopoverContent className="w-80">
               <div className="relative grid gap-4">
-                <AppConfirmDialog
-                  title={t("確認", "Confirmation")}
-                  description={t(
-                    "センシティブな作品を表示します、あなたは18歳以上ですか？",
-                    "Sensitive content will be displayed. Are you 18 or older?",
-                  )}
-                  onNext={() => {
-                    navigate(`/r/models/${props.name}`)
-                  }}
-                  cookieKey={"check-sensitive-ranking"}
-                  onCancel={() => {}}
-                >
-                  <Button
-                    variant={"secondary"}
-                    className="flex w-full transform cursor-pointer items-center"
-                  >
-                    <RefreshCcwIcon className="mr-1 w-3" />
-                    <p className="text-sm">
-                      {t("対象年齢", "Age Restriction")}
-                    </p>
-                  </Button>
-                </AppConfirmDialog>
+                <SensitiveChangeModelConfirmDialog />
               </div>
             </PopoverContent>
           </Popover>

@@ -1,4 +1,3 @@
-import { AppConfirmDialog } from "~/components/app/app-confirm-dialog"
 import { Button } from "~/components/ui/button"
 import {
   Popover,
@@ -8,12 +7,13 @@ import {
 import { ReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/report-dialog"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { DownloadIcon, Loader2Icon, MoreHorizontal, Trash } from "lucide-react"
+import { DownloadIcon, MoreHorizontal } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { ModerationRatingReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/moderation-rating-report-dialog"
 import { ModerationStyleReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/moderation-style-report-dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import { DeleteWorkConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-work-confirm-dialog"
 
 type Props = {
   onDownload: () => void
@@ -83,30 +83,7 @@ export function WorkActionMenu(props: Props) {
               <ModerationStyleReportDialog postId={props.postId} />
             )}
             {props.isEnabledDelete && (
-              <AppConfirmDialog
-                title={t("確認", "Confirm")}
-                description={t(
-                  "本当にこの作品を削除しますか？",
-                  "Are you sure you want to delete this post?",
-                )}
-                onNext={async () => {
-                  await onDeleteWork(props.postId)
-                }}
-                onCancel={() => {}}
-              >
-                <Button
-                  className="flex items-center gap-2"
-                  variant={"destructive"}
-                  disabled={isDeleted}
-                >
-                  {isLoadingDeleteAlbum ? (
-                    <Loader2Icon className="animate-spin" />
-                  ) : (
-                    <Trash />
-                  )}
-                  {isDeleted ? t("削除済み", "Deleted") : t("削除", "Delete")}
-                </Button>
-              </AppConfirmDialog>
+              <DeleteWorkConfirmDialog postId={props.postId} />
             )}
           </div>
         </div>
