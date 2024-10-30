@@ -1,6 +1,6 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
+import type { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -11,7 +11,10 @@ import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
-import { AiModelArticle } from "~/routes/($lang)._main.models.$model/components/ai-model-article"
+import {
+  AiModelArticle,
+  ModelItemFragment,
+} from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.model === undefined) {
@@ -125,21 +128,10 @@ export default function ModelPage() {
     throw new ParamsError()
   }
 
-  if (!data.data.name) {
-    throw new ParamsError()
-  }
-
   return (
     <>
       <AiModelArticle
-        name={data.data.name}
-        thumbnailImageURL={
-          data.data.thumbnailImageURL
-            ? data.data.works[0].smallThumbnailImageURL
-            : null
-        }
-        works={data.data.works}
-        worksCount={data.data.worksCount}
+        model={data.data}
         isMoreRatings={data.isR15}
         hasPrompt={data.hasPrompt}
         page={data.page}
@@ -148,29 +140,11 @@ export default function ModelPage() {
   )
 }
 
-const aiModelQuery = graphql(
+export const aiModelQuery = graphql(
   `query AiModel($search: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     aiModel(where:{search: $search}) {
-      id
-      name
-      type
-      worksCount
-      generationModelId
-      workModelId
-      thumbnailImageURL
-      works(offset: $offset, limit: $limit, where: $where) {
-        ...WorkListItem
-      }
+      ...ModelItem
     }
   }`,
-  [WorkListItemFragment],
-)
-
-const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...WorkListItem
-    }
-  }`,
-  [WorkListItemFragment],
+  [ModelItemFragment],
 )
