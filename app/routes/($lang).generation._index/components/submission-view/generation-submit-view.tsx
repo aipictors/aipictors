@@ -593,6 +593,10 @@ export function GenerationSubmissionView(props: Props) {
 
   const verificationResult = searchParams.get("result")
 
+  const subscription = pass?.viewer?.currentPass?.type
+
+  console.log("subscription", subscription)
+
   return (
     <>
       <AppFixedContent position="bottom">
@@ -619,11 +623,13 @@ export function GenerationSubmissionView(props: Props) {
           />
         </div>
       </AppFixedContent>
-      <VerificationDialog
-        verificationResult={verificationResult}
-        isOpen={isOpenVerificationModal}
-        onClose={closeVerificationModal}
-      />
+      {subscription === undefined && (
+        <VerificationDialog
+          verificationResult={verificationResult}
+          isOpen={isOpenVerificationModal}
+          onClose={closeVerificationModal}
+        />
+      )}
     </>
   )
 }
