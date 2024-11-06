@@ -28,6 +28,11 @@ export function GenerationSubmissionView(props: Props) {
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
+  const { data: pass, refetch: refetchPass } = useQuery(
+    viewerCurrentPassQuery,
+    {},
+  )
+
   const [createTask, { loading: isCreatingTask }] = useMutation(
     createImageGenerationTaskMutation,
     {
@@ -197,11 +202,15 @@ export function GenerationSubmissionView(props: Props) {
     if (
       !context.currentPass?.type &&
       !lineUserId?.viewer?.lineUserId &&
+      !pass?.viewer?.currentPass?.type &&
       generatedCount >= 10
     ) {
-      toast("本人確認が完了していません。本人確認を完了してください。")
-      openVerificationModal()
-      return
+      await refetchPass()
+      if (!pass?.viewer?.currentPass?.type) {
+        toast("本人確認が完了していません。本人確認を完了してください。")
+        openVerificationModal()
+        return
+      }
     }
 
     /**
@@ -625,6 +634,7 @@ const viewerCurrentPassQuery = graphql(
       id
       currentPass {
         id
+        type
       }
     }
   }`,
