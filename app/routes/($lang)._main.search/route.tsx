@@ -64,7 +64,6 @@ export default function Search() {
 
   return (
     <>
-      <h1 className="font-bold">{t("作品を検索", "Search Works")}</h1>
       <div className="m-auto md:max-w-96">
         <SearchHeader />
       </div>

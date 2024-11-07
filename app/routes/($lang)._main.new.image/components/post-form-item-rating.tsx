@@ -42,10 +42,7 @@ export function PostFormItemRating(props: Props) {
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="G" id="person-check" />
               <label htmlFor="person-check">
-                {t(
-                  "全年齢（公共の場でも掲出できるもの）",
-                  "All Ages (Safe for public display)",
-                )}
+                {t("全年齢", "All Ages (Safe for public display)")}
               </label>
             </div>
           </div>
@@ -54,9 +51,9 @@ export function PostFormItemRating(props: Props) {
               <RadioGroupItem value="R15" id="animal-check" />
               <label htmlFor="animal-check">
                 {t(
-                  "R15（軽度な性的表現、水着など",
-                  "R15 (Mild sexual content, swimsuits, etc.",
-                )}{" "}
+                  "軽度な性的、血流表現あり(",
+                  "Mild sexual and blood flow expressions",
+                )}
                 <Link
                   target="_blank"
                   to="/terms"

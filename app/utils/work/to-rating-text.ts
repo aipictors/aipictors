@@ -12,7 +12,7 @@ export const toRatingText = (type: IntrospectionEnum<"Rating">) => {
     case "G":
       return t("全年齢", "G")
     case "R15":
-      return "R15"
+      return "軽度な性的、流血描写あり"
     case "R18":
       return "R18"
     case "R18G":

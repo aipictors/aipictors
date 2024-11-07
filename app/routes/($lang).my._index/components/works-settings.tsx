@@ -157,7 +157,9 @@ export function WorksSetting(props: Props) {
           <SelectContent>
             <SelectItem value="ALL">{t("年齢制限", "Rating")}</SelectItem>
             <SelectItem value="G">{t("全年齢", "All Ages")}</SelectItem>
-            <SelectItem value="R15">{t("R15", "R15")}</SelectItem>
+            <SelectItem value="R15">
+              {t("軽度な性的、血流表現あり", "R15")}
+            </SelectItem>
             <SelectItem value="R18">{t("R18", "R18")}</SelectItem>
             <SelectItem value="R18G">{t("R18G", "R18G")}</SelectItem>
           </SelectContent>
