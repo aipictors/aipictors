@@ -7,6 +7,7 @@ import {
 } from "~/components/ui/tooltip"
 import { HelpCircleIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
+import { config } from "~/config"
 
 type Props = {
   value: number
@@ -40,9 +41,19 @@ export function GenerationConfigStep(props: Props) {
         type="number"
         value={props.value}
         min={9}
-        max={25}
+        max={config.generationFeature.imageGenerationMaxSteps}
         onChange={(event) => {
-          props.onChange(Number(event.target.value))
+          const inputValue = Number(event.target.value)
+          // 最大値を超えないように制限
+          if (inputValue > config.generationFeature.imageGenerationMaxSteps) {
+            props.onChange(config.generationFeature.imageGenerationMaxSteps)
+          } else {
+            props.onChange(inputValue)
+          }
+
+          if (inputValue < config.generationFeature.imageGenerationMinSteps) {
+            props.onChange(config.generationFeature.imageGenerationMinSteps)
+          }
         }}
       />
     </div>

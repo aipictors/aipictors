@@ -290,6 +290,20 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
+    if (context.config.steps < 9) {
+      toast("Seedは9以上で指定してください")
+      return
+    }
+
+    if (
+      context.config.steps > config.generationFeature.imageGenerationMaxSteps
+    ) {
+      toast(
+        `Seedは${config.generationFeature.imageGenerationMaxSteps}以下で指定してください`,
+      )
+      return
+    }
+
     if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
       if (useMediaQuery("(min-width: 768px)")) {
         toast(
