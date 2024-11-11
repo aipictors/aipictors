@@ -12,14 +12,18 @@ export const SearchHeader = () => {
 
   const [isSensitive, setIsSensitive] = useState(false)
 
+  const [isSearchUser, setIsSearchUser] = useState(false)
+
   const t = useTranslation()
 
   const onSearch = () => {
     const trimmedText = searchText.trim()
     if (trimmedText !== "") {
-      const baseUrl = isSensitive
-        ? `/r/tags/${trimmedText}`
-        : `/tags/${trimmedText}`
+      const baseUrl = isSearchUser
+        ? `/users?search=${trimmedText}`
+        : isSensitive
+          ? `/r/tags/${trimmedText}`
+          : `/tags/${trimmedText}`
       window.location.href = baseUrl
     } else {
       toast(t("検索ワードを入力してください", "Please enter a search word"))
@@ -28,6 +32,10 @@ export const SearchHeader = () => {
 
   const handleCheckboxChange = (checked: CheckedState) => {
     setIsSensitive(checked === true)
+  }
+
+  const handleCheckUserBoxChange = (checked: CheckedState) => {
+    setIsSearchUser(checked === true)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -54,7 +62,7 @@ export const SearchHeader = () => {
           <Search className="w-16" />
         </Button>
       </div>
-      <div className="flex items-center space-x-2 opacity-50">
+      <div className="flex items-center space-x-2">
         <Checkbox
           id="sensitive"
           checked={isSensitive}
@@ -62,6 +70,16 @@ export const SearchHeader = () => {
         />
         <label htmlFor="sensitive" className="font-medium text-sm leading-none">
           {t("センシティブ", "Sensitive")}
+        </label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="user"
+          checked={isSearchUser}
+          onCheckedChange={handleCheckUserBoxChange}
+        />
+        <label htmlFor="user" className="font-medium text-sm leading-none">
+          {t("ユーザを検索", "Search user")}
         </label>
       </div>
     </div>
