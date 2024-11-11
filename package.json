@@ -154,7 +154,7 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.5.4",
     "vite": "^5.4.2",
-    "vite-plugin-static-copy": "^1.0.6",
+    "vite-plugin-static-copy": "^2.1.0",
     "vite-tsconfig-paths": "^5.0.1",
     "wrangler": "^3.72.2"
   }
