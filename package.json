@@ -73,7 +73,7 @@
     "chromatic": "^11.7.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "cmdk": "1.0.1",
+    "cmdk": "1.0.4",
     "conform-to-valibot": "^1.10.0",
     "date-fns": "^4.1.0",
     "embla-carousel": "8.3.1",
