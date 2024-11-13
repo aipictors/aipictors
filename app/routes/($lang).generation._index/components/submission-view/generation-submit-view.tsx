@@ -609,7 +609,7 @@ export function GenerationSubmissionView(props: Props) {
 
   const subscription = pass?.viewer?.currentPass?.type
 
-  console.log("subscription", subscription)
+  const isExistedPreviousPass = pass?.viewer?.isExistedPreviousPass
 
   return (
     <>
@@ -637,7 +637,7 @@ export function GenerationSubmissionView(props: Props) {
           />
         </div>
       </AppFixedContent>
-      {subscription === undefined && (
+      {subscription === undefined && !isExistedPreviousPass && (
         <VerificationDialog
           verificationResult={verificationResult}
           isOpen={isOpenVerificationModal}
@@ -656,6 +656,7 @@ const viewerCurrentPassQuery = graphql(
         id
         type
       }
+      isExistedPreviousPass
     }
   }`,
 )
