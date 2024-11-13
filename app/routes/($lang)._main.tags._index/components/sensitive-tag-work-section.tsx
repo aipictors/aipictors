@@ -1,4 +1,4 @@
-import type { FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   type PhotoAlbumWorkFragment,
@@ -45,6 +45,11 @@ type Props = {
 export function SensitiveTagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
 
+  const { data = null, refetch } = useQuery(viewerFollowedTagsQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: { offset: 0, limit: 32 },
+  })
+
   const {
     data: resp,
     loading,
@@ -80,6 +85,12 @@ export function SensitiveTagWorkSection(props: Props) {
     "DATE_CREATED",
     "NAME",
   ] as IntrospectionEnum<"WorkOrderBy">[]
+
+  const isFollowedTag = data?.viewer?.followingTags.some(
+    (tag) => tag.name === props.tag,
+  )
+
+  console.log("data?.viewer?.followingTags", data?.viewer?.followingTags)
 
   return (
     <div className="flex flex-col space-y-6">
@@ -157,7 +168,7 @@ export function SensitiveTagWorkSection(props: Props) {
           <TagFollowButton
             className="w-full"
             tag={props.tag}
-            isFollow={false}
+            isFollow={isFollowedTag ?? false}
           />
           <SensitiveTagActionOther tag={props.tag} />
         </div>
@@ -207,3 +218,15 @@ export function SensitiveTagWorkSection(props: Props) {
     </div>
   )
 }
+
+const viewerFollowedTagsQuery = graphql(
+  `query ViewerFollowedTags($offset: Int!, $limit: Int!) {
+    viewer {
+      id
+      followingTags(offset: $offset, limit: $limit) {
+        id
+        name
+      }
+    }
+  }`,
+)

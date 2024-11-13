@@ -782,6 +782,13 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Manage your tag mute preferences",
     isIndex: false,
   },
+  SETTINGS_FOLLOWED_TAGS: {
+    title: "フォローしているタグ設定",
+    enTitle: "Followed Tags Settings",
+    description: "You can configure your followed tag settings",
+    enDescription: "Manage your followed tag preferences",
+    isIndex: false,
+  },
   SETTINGS_LOGIN: {
     title: "ログイン設定",
     enTitle: "Login Settings",

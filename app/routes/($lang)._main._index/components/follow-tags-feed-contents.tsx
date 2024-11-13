@@ -123,7 +123,15 @@ export function FollowTagsFeedContents(props: Props) {
 
   return (
     <div className="flex flex-col space-y-4">
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex justify-end space-x-2">
+        <Button
+          onClick={() => {
+            navigate("/settings/followed/tags")
+          }}
+          variant={"secondary"}
+        >
+          {t("管理", "Manage")}
+        </Button>
         <Button onClick={() => setIsTimelineView(!isTimelineView)}>
           {isTimelineView
             ? t("一覧形式に切り替え", "Switch to List View")

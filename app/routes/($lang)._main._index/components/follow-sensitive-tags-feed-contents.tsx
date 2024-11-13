@@ -7,7 +7,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { MessageCircleIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
-import { Link } from "@remix-run/react"
+import { Link, useNavigate } from "@remix-run/react"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { cn } from "~/lib/utils"
@@ -28,11 +28,17 @@ type Props = {
 
 export function FollowSensitiveTagsFeedContents(props: Props) {
   const t = useTranslation()
+
+  const navigate = useNavigate()
+
   const authContext = useContext(AuthContext)
+
   const [isTimelineView, setIsTimelineView] = useState(false)
+
   const [hiddenComments, setHiddenComments] = useState<{
     [key: string]: boolean
   }>({})
+
   const [subWorksVisible, setSubWorksVisible] = useState<{
     [key: string]: boolean
   }>({})
@@ -112,7 +118,15 @@ export function FollowSensitiveTagsFeedContents(props: Props) {
 
   return (
     <div className="flex flex-col space-y-4">
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex justify-end space-x-2">
+        <Button
+          onClick={() => {
+            navigate("/settings/followed/tags")
+          }}
+          variant={"secondary"}
+        >
+          {t("管理", "Manage")}
+        </Button>
         <Button onClick={() => setIsTimelineView(!isTimelineView)}>
           {isTimelineView
             ? t("一覧形式に切り替え", "Switch to List View")

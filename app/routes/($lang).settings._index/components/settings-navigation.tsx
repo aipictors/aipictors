@@ -67,6 +67,17 @@ export function SettingsNavigation() {
           </div>
         </div>
       </HomeNavigationButton>
+      <HomeNavigationButton
+        href={"/settings/followed/tags"}
+        icon={BookmarkXIcon}
+      >
+        <div className="flex w-full items-center justify-between">
+          {t("フォロータグ", "Followed Tags")}
+          <div className="ml-auto text-right md:hidden">
+            <ChevronRight />
+          </div>
+        </div>
+      </HomeNavigationButton>
       <HomeNavigationButton href={"/settings/muted/users"} icon={UserXIcon}>
         <div className="flex w-full items-center justify-between">
           {t("ユーザミュート", "Muted Users")}
