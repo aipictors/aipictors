@@ -56,7 +56,6 @@ export function PostFormItemEvent(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">{"イベント"}</p>
         <div className="flex items-center">
           <Checkbox
             checked={isAttending}

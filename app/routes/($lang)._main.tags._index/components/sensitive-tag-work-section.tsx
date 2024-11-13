@@ -90,8 +90,6 @@ export function SensitiveTagWorkSection(props: Props) {
     (tag) => tag.name === props.tag,
   )
 
-  console.log("data?.viewer?.followingTags", data?.viewer?.followingTags)
-
   return (
     <div className="flex flex-col space-y-6">
       <div className="relative h-32">
