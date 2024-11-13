@@ -31,13 +31,13 @@ type Props = {
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
   themes: { date: string; title: string; id: string }[] | null
-  event: {
+  events: {
     title: string | null
     description: string | null
     tag: string | null
     endAt: number
     slug: string | null
-  }
+  }[]
   aiModels: FragmentOf<typeof PostAnimationFormAiModelFragment>[]
   needFix: boolean
 }
@@ -240,24 +240,24 @@ export function PostAnimationFormInput(props: Props) {
           }
         />
       )}
-      {props.event.title && !props.eventInputHidden && (
-        <PostFormItemEvent
-          eventName={props.event.title ?? null}
-          eventDescription={props.event.description ?? null}
-          eventTag={props.event.tag ?? null}
-          endAt={props.event.endAt ?? 0}
-          slug={props.event.slug ?? null}
-          addTag={(tag) => {
-            props.dispatch({ type: "ADD_TAG", payload: tag })
-          }}
-          removeTag={(tag) => {
-            props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
-          }}
-          isAttending={props.state.tags.some(
-            (tag) => tag.text === props.event.tag,
-          )}
-        />
-      )}
+      {props.events.map((event) => (
+        <div key={event.slug}>
+          <PostFormItemEvent
+            eventName={event.title ?? null}
+            eventDescription={event.description ?? null}
+            eventTag={event.tag ?? null}
+            endAt={event.endAt ?? 0}
+            slug={event.slug ?? null}
+            addTag={(tag) => {
+              props.dispatch({ type: "ADD_TAG", payload: tag })
+            }}
+            removeTag={(tag) => {
+              props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
+            }}
+            isAttending={props.state.tags.some((tag) => tag.text === event.tag)}
+          />
+        </div>
+      ))}
       <PostFormItemTags
         whiteListTags={tagOptions()}
         tags={props.state.tags}

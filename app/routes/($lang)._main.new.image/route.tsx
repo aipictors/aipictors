@@ -563,13 +563,7 @@ export default function NewImage() {
               : null
           }
           aiModels={viewer?.aiModels ?? []}
-          event={{
-            title: viewer?.appEvents[0]?.title ?? null,
-            description: viewer?.appEvents[0]?.description ?? null,
-            tag: viewer?.appEvents[0]?.tag ?? null,
-            endAt: viewer?.appEvents[0]?.endAt ?? 0,
-            slug: viewer?.appEvents[0]?.slug ?? null,
-          }}
+          events={viewer?.appEvents ?? []}
           needFix={false}
         />
         <div className="h-4" />
@@ -714,7 +708,7 @@ const ViewerQuery = graphql(
       dateText
     }
     appEvents(
-      limit: 1,
+      limit: 8,
       offset: 0,
       where: {
         endAt: $startAt,
