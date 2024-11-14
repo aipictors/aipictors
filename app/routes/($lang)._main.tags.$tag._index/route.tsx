@@ -1,15 +1,20 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { TagWorkSection } from "~/routes/($lang)._main.tags._index/components/tag-work-section"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
 import { useParams, useSearchParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { graphql, readFragment } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
-import { config } from "~/config"
+import { config, META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.tag === undefined) {
@@ -75,6 +80,32 @@ export async function loader(props: LoaderFunctionArgs) {
 export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
+
+export const meta: MetaFunction<typeof loader> = (props) => {
+  if (!props.data) {
+    return [{ title: "タグページ" }]
+  }
+
+  const works = readFragment(PhotoAlbumWorkFragment, props.data.works)
+
+  const thumbnailUrl = works.length ? works[0].smallThumbnailImageURL : ""
+
+  const worksCount = props.data.worksCount
+
+  const tag = decodeURIComponent(props.params.tag ?? "")
+
+  return createMeta(
+    META.TAGS,
+    {
+      title: `${tag}のAIイラスト ${worksCount}件`,
+      enTitle: `A list of works where AI illustrations of ${tag} are posted.`,
+      description: `${tag}のAIイラストが投稿された作品一覧ページです。`,
+      enDescription: `This is a list of works where AI illustrations of ${tag} are posted.`,
+      url: thumbnailUrl,
+    },
+    props.params.lang,
+  )
+}
 
 export default function Tag() {
   const params = useParams()
