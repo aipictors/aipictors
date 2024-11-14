@@ -26,7 +26,7 @@ export function TagActionOther(props: Props) {
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <div className="relative grid gap-4">
-          <SensitiveTagConfirmDialog />
+          <SensitiveTagConfirmDialog tag={props.tag} />
         </div>
       </PopoverContent>
     </Popover>

@@ -15,13 +15,20 @@ import { Button } from "~/components/ui/button"
 import { useNavigate } from "react-router-dom"
 import { RefreshCcwIcon } from "lucide-react"
 
-export function SensitiveTagConfirmDialog() {
+type Props = {
+  tag: string
+}
+
+export function SensitiveTagConfirmDialog(props: Props) {
   const t = useTranslation()
+
   const navigate = useNavigate()
+
   const [isOpen, setIsOpen] = useState(false)
+
   const [shouldSkipDialog, setShouldSkipDialog] = useState(false)
+
   const cookieKey = "check-sensitive-ranking"
-  const tag = "exampleTag" // 必要なタグ情報を直接ここで指定
 
   useEffect(() => {
     const cookieExists = document.cookie
@@ -31,7 +38,7 @@ export function SensitiveTagConfirmDialog() {
   }, [cookieKey])
 
   const handleNext = () => {
-    navigate(`/r/tags/${tag}`)
+    navigate(`/r/tags/${props.tag}`)
     setIsOpen(false)
   }
 

@@ -474,6 +474,14 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Read the terms of use for Aipictors.",
     isIndex: true,
   },
+  TAGS: {
+    title: "{{title}}",
+    enTitle: "{{enTitle}}",
+    description: "{{description}}",
+    enDescription: "{{enDescription}}",
+    image: "{{url}}",
+    isIndex: true,
+  },
   USERS: {
     title: "{{title}}",
     enTitle: "{{enTitle}}",
