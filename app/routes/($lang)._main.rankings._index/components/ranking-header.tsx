@@ -195,14 +195,14 @@ export function RankingHeader(props: Props) {
     }
 
     if (viewType === "マンスリー") {
-      for (let index = 0; index < 3; index++) {
+      for (let index = 3; index >= 1; index--) {
         const date = new Date(today)
-        date.setMonth(today.getMonth() + index)
-        const formattedMonth = `${date.getFullYear()}/${(date.getMonth() - 2)
+        date.setMonth(today.getMonth() - index)
+        const formattedMonth = `${date.getFullYear()}/${(date.getMonth() + 1)
           .toString()
           .padStart(2, "0")}`
         items.push({
-          link: `/rankings/${date.getFullYear()}/${date.getMonth() - 2}`,
+          link: `/rankings/${date.getFullYear()}/${date.getMonth() + 1}`,
           name: formattedMonth,
           border: formattedMonth === `${year}/${month}`,
         })
