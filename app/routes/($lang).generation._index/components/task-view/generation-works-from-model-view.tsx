@@ -35,11 +35,15 @@ export function GenerationWorkListModelView() {
       limit: 64,
       offset: 0,
       where: {
+        tagNames: [word],
+        ratings: ["G", "R15"],
+        isSensitive: false,
         isFeatured: true,
+        hasPrompt: true,
+        isPromptPublic: true,
         ...(context.config.searchModelId && {
           generationModelId: context.config.searchModelId,
         }),
-        search: word,
         orderBy: sortType,
       },
     },
