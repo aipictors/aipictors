@@ -8,12 +8,32 @@ import {
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { EventWorksListSortableSetting } from "~/routes/($lang).events.$event._index/components/event-works-list-sortable-setting"
+import type { SortType } from "~/types/sort-type"
 
 type Props = {
   works: FragmentOf<typeof EventWorkListItemFragment>[]
   maxCount: number
   page: number
   slug: string
+  sort: SortType
+  orderBy: IntrospectionEnum<"WorkOrderBy">
+  workType: IntrospectionEnum<"WorkType"> | null
+  rating: IntrospectionEnum<"Rating"> | null
+  sumWorksCount: number
+  setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
+  setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
+  setSort: (sort: SortType) => void
+  onClickTitleSortButton: () => void
+  onClickLikeSortButton: () => void
+  onClickBookmarkSortButton: () => void
+  onClickCommentSortButton: () => void
+  onClickViewSortButton: () => void
+  onClickAccessTypeSortButton: () => void
+  onClickDateSortButton: () => void
+  onClickWorkTypeSortButton: () => void
+  onClickIsPromotionSortButton: () => void
 }
 
 /**
@@ -31,6 +51,8 @@ export function EventWorkList(props: Props) {
       limit: 64,
       where: {
         ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
+        sort: "DESC",
       },
       slug: props.slug,
     },
@@ -38,8 +60,34 @@ export function EventWorkList(props: Props) {
 
   const works = resp?.appEvent?.works ?? props.works
 
+  const allSortType = [
+    "LIKES_COUNT",
+    "BOOKMARKS_COUNT",
+    "COMMENTS_COUNT",
+    "VIEWS_COUNT",
+    "DATE_CREATED",
+    "NAME",
+  ] as IntrospectionEnum<"WorkOrderBy">[]
+
   return (
     <>
+      <div className="mr-auto w-32">
+        <EventWorksListSortableSetting
+          nowSort={props.sort}
+          nowOrderBy={props.orderBy}
+          allOrderBy={allSortType}
+          setSort={props.setSort}
+          onClickTitleSortButton={props.onClickTitleSortButton}
+          onClickLikeSortButton={props.onClickLikeSortButton}
+          onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+          onClickCommentSortButton={props.onClickCommentSortButton}
+          onClickViewSortButton={props.onClickViewSortButton}
+          onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+          onClickDateSortButton={props.onClickDateSortButton}
+          onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+          onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+        />
+      </div>
       <ResponsivePhotoWorksAlbum works={works} isShowProfile={true} />
       <div className="h-8" />
       <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">

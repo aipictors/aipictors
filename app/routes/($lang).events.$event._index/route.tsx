@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { useLoaderData, useNavigate } from "@remix-run/react"
+import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import {
@@ -20,6 +20,9 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { SensitiveEventConfirmDialog } from "~/routes/($lang).events.$event._index/components/sensitive-event-confirm-dialog"
+import React, { useEffect } from "react"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -53,6 +56,14 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
+  const orderBy = urlParams.get("WorkOrderby")
+    ? (urlParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">)
+    : "LIKES_COUNT"
+
+  const sort = urlParams.get("worksOrderDeskAsc")
+    ? (urlParams.get("worksOrderDeskAsc") as SortType)
+    : "DESC"
+
   const eventsResp = await loaderClient.query({
     query: appEventQuery,
     variables: {
@@ -62,6 +73,8 @@ export async function loader(props: LoaderFunctionArgs) {
       where: {
         ratings: ["G", "R15"],
         isNowCreatedAt: true,
+        orderBy: orderBy,
+        sort: sort,
       },
       isSensitive: false,
     },
@@ -107,6 +120,95 @@ export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
   const navigate = useNavigate()
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [workType, setWorkType] =
+    React.useState<IntrospectionEnum<"WorkType"> | null>(
+      (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
+    )
+
+  const [WorkOrderby, setWorkOrderby] = React.useState<
+    IntrospectionEnum<"WorkOrderBy">
+  >(
+    (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
+      "DATE_CREATED",
+  )
+
+  const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
+    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
+  )
+
+  const [rating, setRating] =
+    React.useState<IntrospectionEnum<"Rating"> | null>(
+      (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
+    )
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+
+    params.set("page", String(data.page))
+    if (workType) params.set("workType", workType)
+    if (rating) params.set("rating", rating)
+    params.set("WorkOrderby", WorkOrderby)
+    params.set("worksOrderDeskAsc", worksOrderDeskAsc)
+
+    setSearchParams(params)
+  }, [
+    data.page,
+    workType,
+    rating,
+    WorkOrderby,
+    worksOrderDeskAsc,
+    setSearchParams,
+  ])
+
+  const onClickTitleSortButton = () => {
+    setWorkOrderby("NAME")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickLikeSortButton = () => {
+    setWorkOrderby("LIKES_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickBookmarkSortButton = () => {
+    setWorkOrderby("BOOKMARKS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickCommentSortButton = () => {
+    setWorkOrderby("COMMENTS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickViewSortButton = () => {
+    setWorkOrderby("VIEWS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickAccessTypeSortButton = () => {
+    setWorkOrderby("ACCESS_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickDateSortButton = () => {
+    setWorkOrderby("DATE_CREATED")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickWorkTypeSortButton = () => {
+    setWorkOrderby("WORK_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickIsPromotionSortButton = () => {
+    setWorkOrderby("IS_PROMOTION")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const [worksMaxCount, setWorksMaxCount] = React.useState(0)
 
   if (data === null) {
     return null
@@ -163,13 +265,29 @@ export default function FollowingLayout() {
           slug={data.appEvent.slug ?? ""}
         />
       )}
-      <h2 className="font-bold text-md">{t("作品一覧", "List of Works")}</h2>
       {data.appEvent.works && (
         <EventWorkList
           works={data.appEvent.works}
           maxCount={data.appEvent.worksCount as number}
           page={data.page}
           slug={data.appEvent.slug ?? ""}
+          sort={worksOrderDeskAsc}
+          orderBy={WorkOrderby}
+          sumWorksCount={worksMaxCount}
+          workType={workType}
+          rating={rating}
+          onClickTitleSortButton={onClickTitleSortButton}
+          onClickLikeSortButton={onClickLikeSortButton}
+          onClickBookmarkSortButton={onClickBookmarkSortButton}
+          onClickCommentSortButton={onClickCommentSortButton}
+          onClickViewSortButton={onClickViewSortButton}
+          onClickAccessTypeSortButton={onClickAccessTypeSortButton}
+          onClickDateSortButton={onClickDateSortButton}
+          onClickWorkTypeSortButton={onClickWorkTypeSortButton}
+          onClickIsPromotionSortButton={onClickIsPromotionSortButton}
+          setWorkType={setWorkType}
+          setRating={setRating}
+          setSort={setWorksOrderDeskAsc}
         />
       )}
     </div>
