@@ -46,8 +46,6 @@ export function EventWorksListSortableSetting(props: Props) {
         return t("日付順", "Date Created")
       case "NAME":
         return t("タイトル順", "Title")
-      case "IS_PROMOTION":
-        return t("宣伝作品順", "Promotion")
       default:
         return t("日付順", "Date Created")
     }
@@ -180,18 +178,6 @@ export function EventWorksListSortableSetting(props: Props) {
                       },
                       {
                         sort: "ASC",
-                        sortType: "IS_PROMOTION",
-                        label: t("宣伝作品順", "Promotion"),
-                        callback: onClickIsPromotionSortButton,
-                      },
-                      {
-                        sort: "ASC",
-                        sortType: "ACCESS_TYPE",
-                        label: t("状態順", "Access Type"),
-                        callback: onClickAccessTypeSortButton,
-                      },
-                      {
-                        sort: "ASC",
                         sortType: "DATE_CREATED",
                         label: t("日付順", "Date Created"),
                         callback: onClickDateSortButton,
@@ -233,12 +219,6 @@ export function EventWorksListSortableSetting(props: Props) {
                         sortType: "WORK_TYPE",
                         label: t("種別順", "Work Type"),
                         callback: onClickWorkTypeSortButton,
-                      },
-                      {
-                        sort: "ASC",
-                        sortType: "IS_PROMOTION",
-                        label: t("宣伝作品順", "Promotion"),
-                        callback: onClickIsPromotionSortButton,
                       },
                       {
                         sort: "ASC",
@@ -305,18 +285,6 @@ export function EventWorksListSortableSetting(props: Props) {
                       },
                       {
                         sort: "ASC",
-                        sortType: "IS_PROMOTION",
-                        label: t("宣伝作品順", "Promotion"),
-                        callback: onClickIsPromotionSortButton,
-                      },
-                      {
-                        sort: "ASC",
-                        sortType: "ACCESS_TYPE",
-                        label: t("状態順", "Access Type"),
-                        callback: onClickAccessTypeSortButton,
-                      },
-                      {
-                        sort: "ASC",
                         sortType: "DATE_CREATED",
                         label: t("日付順", "Date Created"),
                         callback: onClickDateSortButton,
@@ -358,12 +326,6 @@ export function EventWorksListSortableSetting(props: Props) {
                         sortType: "WORK_TYPE",
                         label: t("種別順", "Work Type"),
                         callback: onClickWorkTypeSortButton,
-                      },
-                      {
-                        sort: "ASC",
-                        sortType: "IS_PROMOTION",
-                        label: t("宣伝作品順", "Promotion"),
-                        callback: onClickIsPromotionSortButton,
                       },
                       {
                         sort: "ASC",

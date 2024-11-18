@@ -8,12 +8,32 @@ import {
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { EventWorksListSortableSetting } from "~/routes/($lang).events.$event._index/components/event-works-list-sortable-setting"
+import type { SortType } from "~/types/sort-type"
 
 type Props = {
   works: FragmentOf<typeof EventSensitiveWorkListItemFragment>[]
   maxCount: number
   page: number
   slug: string
+  sort: SortType
+  orderBy: IntrospectionEnum<"WorkOrderBy">
+  workType: IntrospectionEnum<"WorkType"> | null
+  rating: IntrospectionEnum<"Rating"> | null
+  sumWorksCount: number
+  setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
+  setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
+  setSort: (sort: SortType) => void
+  onClickTitleSortButton: () => void
+  onClickLikeSortButton: () => void
+  onClickBookmarkSortButton: () => void
+  onClickCommentSortButton: () => void
+  onClickViewSortButton: () => void
+  onClickAccessTypeSortButton: () => void
+  onClickDateSortButton: () => void
+  onClickWorkTypeSortButton: () => void
+  onClickIsPromotionSortButton: () => void
 }
 
 /**
@@ -38,8 +58,34 @@ export function EventSensitiveWorkList(props: Props) {
 
   const workDisplayed = resp?.appEvent?.works ?? props.works
 
+  const allSortType = [
+    "LIKES_COUNT",
+    "BOOKMARKS_COUNT",
+    "COMMENTS_COUNT",
+    "VIEWS_COUNT",
+    "DATE_CREATED",
+    "NAME",
+  ] as IntrospectionEnum<"WorkOrderBy">[]
+
   return (
     <>
+      <div className="mr-auto w-32">
+        <EventWorksListSortableSetting
+          nowSort={props.sort}
+          nowOrderBy={props.orderBy}
+          allOrderBy={allSortType}
+          setSort={props.setSort}
+          onClickTitleSortButton={props.onClickTitleSortButton}
+          onClickLikeSortButton={props.onClickLikeSortButton}
+          onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+          onClickCommentSortButton={props.onClickCommentSortButton}
+          onClickViewSortButton={props.onClickViewSortButton}
+          onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+          onClickDateSortButton={props.onClickDateSortButton}
+          onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+          onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+        />
+      </div>
       <ResponsivePhotoWorksAlbum works={workDisplayed} />
       <ResponsivePagination
         maxCount={Number(props.maxCount)}

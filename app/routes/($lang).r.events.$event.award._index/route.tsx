@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { useLoaderData, useNavigate } from "@remix-run/react"
+import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import { RefreshCcwIcon } from "lucide-react"
@@ -12,6 +12,9 @@ import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { config } from "~/config"
+import React, { useEffect } from "react"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -77,6 +80,95 @@ export default function FollowingLayout() {
     return null
   }
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [workType, setWorkType] =
+    React.useState<IntrospectionEnum<"WorkType"> | null>(
+      (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
+    )
+
+  const [WorkOrderby, setWorkOrderby] = React.useState<
+    IntrospectionEnum<"WorkOrderBy">
+  >(
+    (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
+      "DATE_CREATED",
+  )
+
+  const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
+    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
+  )
+
+  const [rating, setRating] =
+    React.useState<IntrospectionEnum<"Rating"> | null>(
+      (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
+    )
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+
+    params.set("page", String(data.page))
+    if (workType) params.set("workType", workType)
+    if (rating) params.set("rating", rating)
+    params.set("WorkOrderby", WorkOrderby)
+    params.set("worksOrderDeskAsc", worksOrderDeskAsc)
+
+    setSearchParams(params)
+  }, [
+    data.page,
+    workType,
+    rating,
+    WorkOrderby,
+    worksOrderDeskAsc,
+    setSearchParams,
+  ])
+
+  const onClickTitleSortButton = () => {
+    setWorkOrderby("NAME")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickLikeSortButton = () => {
+    setWorkOrderby("LIKES_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickBookmarkSortButton = () => {
+    setWorkOrderby("BOOKMARKS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickCommentSortButton = () => {
+    setWorkOrderby("COMMENTS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickViewSortButton = () => {
+    setWorkOrderby("VIEWS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickAccessTypeSortButton = () => {
+    setWorkOrderby("ACCESS_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickDateSortButton = () => {
+    setWorkOrderby("DATE_CREATED")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickWorkTypeSortButton = () => {
+    setWorkOrderby("WORK_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickIsPromotionSortButton = () => {
+    setWorkOrderby("IS_PROMOTION")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const [worksMaxCount, setWorksMaxCount] = React.useState(0)
+
   return (
     <div className="flex flex-col space-y-4">
       <Card className="m-auto w-full">
@@ -121,6 +213,23 @@ export default function FollowingLayout() {
           maxCount={data.worksCount}
           page={data.page}
           slug={data.appEvent.slug}
+          sort={worksOrderDeskAsc}
+          orderBy={WorkOrderby}
+          sumWorksCount={worksMaxCount}
+          workType={workType}
+          rating={rating}
+          onClickTitleSortButton={onClickTitleSortButton}
+          onClickLikeSortButton={onClickLikeSortButton}
+          onClickBookmarkSortButton={onClickBookmarkSortButton}
+          onClickCommentSortButton={onClickCommentSortButton}
+          onClickViewSortButton={onClickViewSortButton}
+          onClickAccessTypeSortButton={onClickAccessTypeSortButton}
+          onClickDateSortButton={onClickDateSortButton}
+          onClickWorkTypeSortButton={onClickWorkTypeSortButton}
+          onClickIsPromotionSortButton={onClickIsPromotionSortButton}
+          setWorkType={setWorkType}
+          setRating={setRating}
+          setSort={setWorksOrderDeskAsc}
         />
       )}
     </div>
