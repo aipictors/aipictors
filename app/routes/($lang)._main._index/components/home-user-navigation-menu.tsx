@@ -194,7 +194,7 @@ export function HomeUserNavigationMenu(props: Props) {
             <Link to="/followers" className="w-16">
               <p>{followerCount}</p>
               <p className="text-xs opacity-80">
-                {t("フォロー中", "Followers")}
+                {t("フォロワー", "Followers")}
               </p>
             </Link>
           </div>
