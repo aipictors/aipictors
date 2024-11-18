@@ -286,20 +286,20 @@ export const config = {
    * ワードプレスエンドポイント
    */
   wordpressEndpoint: {
-    siteURL: "https://www.aipictors.com",
+    siteURL: "https://legacy.aipictors.com",
     privateImage:
-      "https://www.aipictors.com/wp-content/themes/AISite/private-image-direct.php",
+      "https://legacy.aipictors.com/wp-content/themes/AISite/private-image-direct.php",
     www4: "https://www4.aipictors.com/index.php",
     uploadPrivateImage:
-      "https://www.aipictors.com/wp-content/themes/AISite/upload-private-image.php",
+      "https://legacy.aipictors.com/wp-content/themes/AISite/upload-private-image.php",
     deleteUploadedImage:
-      "https://www.aipictors.com/wp-content/themes/AISite/delete-public-image.php",
+      "https://legacy.aipictors.com/wp-content/themes/AISite/delete-public-image.php",
     generationCheck:
-      "https://www.aipictors.com/wp-content/themes/AISite/generation-check.php",
+      "https://legacy.aipictors.com/wp-content/themes/AISite/generation-check.php",
     getRecommendedWorkIdsByWorkId:
-      "https://www.aipictors.com/wp-content/themes/AISite/cooperative-ids.php",
+      "https://legacy.aipictors.com/wp-content/themes/AISite/cooperative-ids.php",
     getRecommendedIds:
-      "https://www.aipictors.com/wp-content/themes/AISite/recommended-ids.php",
+      "https://legacy.aipictors.com/wp-content/themes/AISite/recommended-ids.php",
   },
   uploader: {
     uploadImage: env.VITE_WORKERS_UPLOADER,
@@ -309,8 +309,8 @@ export const config = {
    * ワードプレスリンク
    */
   wordpressLink: {
-    logout: "https://www.aipictors.com/logout",
-    top: "https://www.aipictors.com",
+    logout: "https://legacy.aipictors.com/logout",
+    top: "https://legacy.aipictors.com",
   },
   /**
    * 汎用APIエンドポイント
