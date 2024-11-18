@@ -51,6 +51,9 @@ export function EventSensitiveWorkList(props: Props) {
       limit: 64,
       where: {
         ratings: ["R18", "R18G"],
+        isNowCreatedAt: true,
+        orderBy: props.orderBy,
+        sort: props.sort,
       },
       slug: props.slug,
     },
@@ -86,7 +89,7 @@ export function EventSensitiveWorkList(props: Props) {
           onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
         />
       </div>
-      <ResponsivePhotoWorksAlbum works={workDisplayed} />
+      <ResponsivePhotoWorksAlbum works={workDisplayed} isShowProfile={true} />
       <ResponsivePagination
         maxCount={Number(props.maxCount)}
         perPage={64}

@@ -51,8 +51,8 @@ export function EventWorkList(props: Props) {
       limit: 64,
       where: {
         ratings: ["G", "R15"],
-        orderBy: "LIKES_COUNT",
-        sort: "DESC",
+        orderBy: props.orderBy,
+        sort: props.sort,
       },
       slug: props.slug,
     },
