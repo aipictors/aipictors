@@ -19,12 +19,12 @@ export function ConstructionAlert(props: Props) {
     }
     if (props.type === "WARNING") {
       return t(
-        "このページは現在開発中です。",
-        "This page is currently under development.",
+        "旧版のサイトはこちら",
+        "This page is currently under development。",
       )
     }
     return t(
-      "このページは現在開発中です。",
+      "旧版のサイトはこちら",
       "This page is currently under development。",
     )
   }
@@ -38,7 +38,7 @@ export function ConstructionAlert(props: Props) {
         {props.message && <AlertDescription>{props.message}</AlertDescription>}
         <div className="flex justify-end gap-2">
           <Link
-            to={props.fallbackURL ?? "https://www.aipictors.com"}
+            to={props.fallbackURL ?? "https://legacy.aipictors.com"}
             className="flex-1 md:flex-auto"
           >
             <Button size="sm" variant="secondary" className="w-full">

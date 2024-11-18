@@ -79,10 +79,10 @@ export function WorkArticle(props: Props) {
       <ConstructionAlert
         type="WARNING"
         message={t(
-          "リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！",
+          "旧版はこちら",
           "The renewal version is still under development, so there may be bugs! Some features have been re-released! Please continue using the old version for now.",
         )}
-        fallbackURL={`https://www.aipictors.com/works/${props.work.id}`}
+        fallbackURL={`https://legacy.aipictors.com/works/${props.work.id}`}
         deadline={"2024-07-30"}
       />
       <PostAccessTypeBanner
@@ -184,7 +184,7 @@ export function WorkArticle(props: Props) {
               props.work.model !== null &&
               props.work.model?.length !== 0 && (
                 <Link
-                  to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
+                  to={`https://legacy.aipictors.com/search/?ai=${props.work.model}`}
                 >
                   <Badge
                     variant="secondary"
@@ -271,7 +271,7 @@ export function WorkArticle(props: Props) {
                 {":"}
               </span>
               <Link
-                to={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
+                to={`https://legacy.aipictors.com/search?word=${props.work.dailyTheme.title}`}
               >
                 <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
               </Link>

@@ -442,10 +442,10 @@ export default function NewText() {
       <ConstructionAlert
         type="WARNING"
         message={t(
-          "リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！",
+          "旧版はこちら",
           "The renewed version is under development and may have issues! Please continue to use the old version for stability.",
         )}
-        fallbackURL="https://www.aipictors.com/post"
+        fallbackURL="https://legacy.aipictors.com/post"
       />
       <div className="space-y-4">
         <div>

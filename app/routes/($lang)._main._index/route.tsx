@@ -405,8 +405,8 @@ export default function Index() {
     <>
       <ConstructionAlert
         type="WARNING"
-        message="リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！"
-        fallbackURL="https://www.aipictors.com"
+        message="旧版はこちら"
+        fallbackURL="https://legacy.aipictors.com"
       />
       {data.adWorks && data.adWorks.length > 0 && (
         <HomeBanners works={data.adWorks} />

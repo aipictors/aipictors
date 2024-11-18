@@ -161,11 +161,8 @@ export function SensitiveThemeContainer(props: Props) {
     <div className="flex flex-col space-y-4">
       <ConstructionAlert
         type="WARNING"
-        message={t(
-          "リニューアル版はすべて開発中のため不具合が起きる可能性があります！一部機能を新しくリリースし直しています！基本的には旧版をそのままご利用ください！",
-          "The renewed version is under development, so there may be bugs! Some features are being re-released. Please use the old version for now!",
-        )}
-        fallbackURL="https://www.aipictors.com/idea"
+        message={t("旧版はこちら", "legacy version")}
+        fallbackURL="https://legacy.aipictors.com/idea"
       />
       <AppPageHeader title={t("お題", "Theme")} description={description} />
 
