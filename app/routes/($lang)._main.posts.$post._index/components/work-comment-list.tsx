@@ -87,10 +87,8 @@ export function WorkCommentList(props: Props) {
   )
 
   const [comment, setComment] = useState("")
-  const [newComments, setNewComments] = useState<[Comment] | null>(null)
-  const [newReplyComments, setNewReplyComments] = useState<
-    [ReplyComment] | null
-  >(null)
+  const [newComments, setNewComments] = useState<Comment[]>([])
+  const [newReplyComments, setNewReplyComments] = useState<ReplyComment[]>([])
   const [hideCommentIds, setHideCommentIds] = useState<string[]>([])
 
   const showComments = props.comments.filter(
@@ -118,7 +116,7 @@ export function WorkCommentList(props: Props) {
 
   useEffect(() => {
     if (newComments !== null) {
-      setNewComments(null)
+      setNewComments([])
     }
   }, [props.workId])
 
@@ -336,6 +334,7 @@ export function WorkCommentList(props: Props) {
                   stickerImageURL: string,
                 ) => {
                   setNewReplyComments([
+                    ...newReplyComments,
                     {
                       replyTargetId: comment.id,
                       id: id,
@@ -351,7 +350,6 @@ export function WorkCommentList(props: Props) {
                           downloadURL: stickerImageURL,
                         },
                       },
-                      ...newComments,
                     },
                   ])
                 }}
@@ -391,6 +389,7 @@ export function WorkCommentList(props: Props) {
                       ) => {
                         // 表示コメントを追加
                         setNewReplyComments([
+                          ...newReplyComments,
                           {
                             replyTargetId: comment.id,
                             id: id,
@@ -406,7 +405,6 @@ export function WorkCommentList(props: Props) {
                                 downloadURL: stickerImageURL,
                               },
                             },
-                            ...newReplyComments,
                           },
                         ])
                       }}
@@ -469,6 +467,7 @@ export function WorkCommentList(props: Props) {
                       stickerImageURL: string,
                     ) => {
                       setNewReplyComments([
+                        ...(newReplyComments || []),
                         {
                           replyTargetId: comment.id,
                           id: id,
@@ -484,7 +483,6 @@ export function WorkCommentList(props: Props) {
                               downloadURL: stickerImageURL,
                             },
                           },
-                          ...newComments,
                         },
                       ])
                     }}
