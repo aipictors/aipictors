@@ -82,7 +82,7 @@ export function DraftWorkArticle(props: Props) {
           "旧版はこちら",
           "The renewal version is still under development, so there may be bugs! Some features have been re-released! Please continue using the old version for now.",
         )}
-        fallbackURL={`https://legacy.aipictors.com/works/${props.work.id}`}
+        fallbackURL={`https://www.aipictors.com/works/${props.work.id}`}
         deadline={"2024-07-30"}
       />
       <PostAccessTypeBanner
@@ -184,7 +184,7 @@ export function DraftWorkArticle(props: Props) {
               props.work.model !== null &&
               props.work.model?.length !== 0 && (
                 <Link
-                  to={`https://legacy.aipictors.com/search/?ai=${props.work.model}`}
+                  to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
                 >
                   <Badge
                     variant="secondary"
@@ -271,7 +271,7 @@ export function DraftWorkArticle(props: Props) {
                 {":"}
               </span>
               <Link
-                to={`https://legacy.aipictors.com/search?word=${props.work.dailyTheme.title}`}
+                to={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
               >
                 <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
               </Link>
