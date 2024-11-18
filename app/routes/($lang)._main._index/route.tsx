@@ -227,7 +227,8 @@ export default function Index() {
   }
 
   const t = useTranslation()
-  const [searchParams] = useSearchParams()
+
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const updateQueryParams = useUpdateQueryParams()
 
@@ -249,74 +250,76 @@ export default function Index() {
 
   const location = useLocale()
 
+  const [currentTab, setCurrentTab] = useState(
+    searchParams.get("tab") || "home",
+  )
+
+  useEffect(() => {
+    const tab = searchParams.get("tab") || "home"
+    setCurrentTab(tab)
+  }, [searchParams])
+
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams()
+
+    newSearchParams.set("tab", currentTab)
+
+    if (currentTab === "new") {
+      newSearchParams.set("page", newWorksPage.toString())
+    } else if (currentTab === "follow-user") {
+      newSearchParams.set("page", followUserFeedPage.toString())
+    } else if (currentTab === "follow-tag") {
+      newSearchParams.set("page", followTagFeedPage.toString())
+    } else {
+      newSearchParams.delete("page")
+    }
+
+    setSearchParams(newSearchParams)
+  }, [
+    currentTab,
+    newWorksPage,
+    followUserFeedPage,
+    followTagFeedPage,
+    setSearchParams,
+  ])
+
+  // 初回レンダリング時にURLからページ番号を取得
   useEffect(() => {
     if (isMounted) {
       return
     }
 
-    if (!searchParams.toString() || searchParams.get("tab") === "home") {
-      return
-    }
-
     const page = searchParams.get("page")
 
-    const view = searchParams.get("view")
-
     if (page) {
-      if (view === "new") {
-        const pageNumber = Number.parseInt(page)
-        if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
-        } else {
+      const pageNumber = Number.parseInt(page)
+      if (!Number.isNaN(pageNumber) && pageNumber >= 0 && pageNumber <= 100) {
+        if (currentTab === "new") {
           setNewWorksPage(pageNumber)
-        }
-      }
-      if (view === "new-user") {
-        const pageNumber = Number.parseInt(page)
-        if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
-        } else {
+        } else if (currentTab === "follow-user") {
           setFollowUserFeedPage(pageNumber)
+        } else if (currentTab === "follow-tag") {
+          setFollowTagFeedPage(pageNumber)
         }
       }
-    } else {
-      setNewWorksPage(0)
-      setFollowUserFeedPage(0)
     }
-
-    const type = searchParams.get("workType")
-    if (type) setWorkType(type as IntrospectionEnum<"WorkType">)
-
-    const prompt = searchParams.get("isPromptPublic")
-    if (prompt)
-      setIsPromptPublic(
-        prompt === "true" ? true : prompt === "false" ? false : null,
-      )
-
-    const sort = searchParams.get("sortType")
-    if (sort) setSortType(sort as IntrospectionEnum<"WorkOrderBy">)
 
     setIsMounted(true)
-  }, [searchParams])
-
-  // ページが変更されたときにURLパラメータを更新
-  useEffect(() => {
-    if (!searchParams.toString() || searchParams.get("tab") === "home") {
-      return
-    }
-
-    if (newWorksPage >= 0) {
-      searchParams.set("page", newWorksPage.toString())
-      updateQueryParams(searchParams)
-    }
-
-    if (followUserFeedPage >= 0) {
-      searchParams.set("page", followUserFeedPage.toString())
-      updateQueryParams(searchParams)
-    }
-  }, [newWorksPage, followUserFeedPage, searchParams, updateQueryParams])
+  }, [searchParams, isMounted, currentTab])
 
   const handleTabChange = (tab: string) => {
-    searchParams.set("tab", tab)
-    updateQueryParams(searchParams)
+    // ページ番号をリセット
+    setNewWorksPage(0)
+    setFollowUserFeedPage(0)
+    setFollowTagFeedPage(0)
+
+    // 現在のタブを更新
+    setCurrentTab(tab)
+
+    // クエリパラメータを更新
+    const newSearchParams = new URLSearchParams()
+    newSearchParams.set("tab", tab)
+    setSearchParams(newSearchParams)
   }
 
   const handleWorkTypeChange = (value: string) => {
