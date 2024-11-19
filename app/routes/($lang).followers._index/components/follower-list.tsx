@@ -118,7 +118,7 @@ export function FollowerList() {
   const t = useTranslation()
 
   return (
-    <>
+    <div className="container">
       {/* フォロワー数と操作ボタン */}
       <div className="mb-4 flex flex-col items-start justify-between md:flex-row md:items-center">
         {/* フォロワー数の表示と更新ボタン */}
@@ -224,7 +224,7 @@ export function FollowerList() {
           />
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

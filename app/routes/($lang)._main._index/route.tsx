@@ -15,7 +15,10 @@ import {
   HomeTagFragment,
   HomeTagsSection,
 } from "~/routes/($lang)._main._index/components/home-tags-section"
-import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import {
+  HomePromotionWorkFragment,
+  HomeWorksUsersRecommendedSection,
+} from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -475,6 +478,7 @@ export default function Index() {
                 secondWorks={data.secondTagWorks}
                 isCropped={true}
               />
+              <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
               <HomeNewUsersWorksSection works={data.newUserWorks} />
               <HomeAwardWorkSection
                 awardDateText={data.awardDateText}

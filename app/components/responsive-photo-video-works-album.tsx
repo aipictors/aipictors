@@ -62,7 +62,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
               src={props.works[0].url ?? ""}
               // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
               ref={(el) => (videoRefs.current[Number(props.works[0].id)] = el)}
-              className="absolute top-0 left-0 hidden max-h-32 w-full overflow-hidden rounded object-contain md:block"
+              className="absolute top-0 left-0 hidden max-h-72 w-full overflow-hidden rounded object-contain md:block"
               style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
               muted
               autoPlay={isAutoPlay}
