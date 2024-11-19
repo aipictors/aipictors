@@ -445,7 +445,7 @@ export default function NewText() {
           "旧版はこちら",
           "The renewed version is under development and may have issues! Please continue to use the old version for stability.",
         )}
-        fallbackURL="https://legacy.aipictors.com/post"
+        fallbackURL="https://www.aipictors.com/post"
       />
       <div className="space-y-4">
         <div>

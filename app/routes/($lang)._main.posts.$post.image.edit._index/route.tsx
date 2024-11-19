@@ -599,7 +599,7 @@ export default function EditImage() {
       <ConstructionAlert
         type="WARNING"
         message="旧版はこちら"
-        fallbackURL={`https://legacy.aipictors.com/edit-works?id=${work.id}`}
+        fallbackURL={`https://www.aipictors.com/edit-works?id=${work.id}`}
       />
       <div className="space-y-4">
         <EditImageFormUploader state={state} dispatch={dispatch} />
