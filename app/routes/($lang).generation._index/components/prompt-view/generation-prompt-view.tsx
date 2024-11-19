@@ -108,6 +108,7 @@ export function GenerationPromptView() {
             onBlur={() => {
               context.initPromptWithLoraModel()
             }}
+            maxLength={20000}
           />
           <AutoResizeTextarea
             className="block h-full min-h-48 resize-none font-mono md:hidden md:min-h-16"

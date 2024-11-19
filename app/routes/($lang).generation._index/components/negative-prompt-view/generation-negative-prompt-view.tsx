@@ -74,6 +74,7 @@ export function GenerationNegativePromptView() {
           onChange={(event) => {
             context.updateNegativePrompt(event.target.value)
           }}
+          maxLength={20000}
         />
         <Dialog
           open={value}
