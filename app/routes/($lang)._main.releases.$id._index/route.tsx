@@ -14,7 +14,7 @@ interface Release {
   id: string
   title: string
   description: string
-  thumbnail_url: {
+  thumbnail_url?: {
     url: string
   }
   platform: string
@@ -97,6 +97,8 @@ export default function Release() {
 
     return date.toLocaleDateString()
   }
+
+  console.log(release.thumbnail_url)
 
   return (
     <div className="container flex flex-col space-y-4">

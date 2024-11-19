@@ -14,13 +14,35 @@ import { useSearchParams } from "react-router-dom"
 import { Button } from "~/components/ui/button"
 import { FollowingUserProfileItem } from "~/routes/($lang).following._index/components/following-user-profile-item"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "~/components/ui/select"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
 
 export function FollowingList() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // URLパラメータから直接取得
+  // URLパラメータから取得
   const mode = searchParams.get("mode") || "default"
   const page = Number.parseInt(searchParams.get("page") || "0", 10)
+
+  // 型に基づいてパラメータを取得
+  const orderByParam = searchParams.get(
+    "orderBy",
+  ) as IntrospectionEnum<"FolloweeOrderBy"> | null
+  const sortParam = searchParams.get("sort") as SortType | null
+
+  // パラメータが有効な値かをチェック
+  const orderBy = orderByParam
+    ? orderByParam
+    : ("DATE_FOLLOWED" as IntrospectionEnum<"FolloweeOrderBy">)
+
+  const sort = sortParam ? sortParam : ("DESC" as SortType)
 
   const authContext = useContext(AuthContext)
 
@@ -37,6 +59,10 @@ export function FollowingList() {
       followeesWorksOffset: 0,
       followeesWorksLimit: 8,
       followeesWorksWhere: {},
+      FolloweesWhere: {
+        orderBy: orderBy,
+        sort: sort,
+      },
     },
   })
 
@@ -56,6 +82,21 @@ export function FollowingList() {
     setSearchParams(newSearchParams)
   }
 
+  // ソートオプション変更ハンドラ
+  const handleOrderByChange = (
+    newOrderBy: IntrospectionEnum<"FollowerOrderBy">,
+  ) => {
+    const newSearchParams = new URLSearchParams(searchParams.toString())
+    newSearchParams.set("orderBy", newOrderBy)
+    setSearchParams(newSearchParams)
+  }
+
+  const handleSortChange = (newSort: SortType) => {
+    const newSearchParams = new URLSearchParams(searchParams.toString())
+    newSearchParams.set("sort", newSort)
+    setSearchParams(newSearchParams)
+  }
+
   // 更新ボタンのハンドラ
   const handleRefresh = async () => {
     setRefreshing(true)
@@ -70,10 +111,10 @@ export function FollowingList() {
 
   return (
     <>
-      {/* フォロー数とモード切替ボタン */}
-      <div className="mb-4 flex items-center justify-between">
+      {/* フォロー数と操作ボタン */}
+      <div className="mb-4 flex flex-col items-start justify-between md:flex-row md:items-center">
         {/* フォロー数の表示と更新ボタン */}
-        <div className="flex items-center">
+        <div className="mb-2 flex items-center md:mb-0">
           <h2 className="font-bold text-xl">
             {t("フォロー中", "Following")}: {data?.user?.followeesCount ?? 0}
             {t("人", "people")}
@@ -86,8 +127,9 @@ export function FollowingList() {
             {t("更新", "Refresh")}
           </Button>
         </div>
-        {/* モード切替ボタン */}
-        <div className="hidden md:block">
+        {/* モード切替ボタンとソートセレクタ */}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
+          {/* モード切替ボタン */}
           <Button
             variant={mode === "default" ? "default" : "secondary"}
             onClick={() => handleModeChange("default")}
@@ -101,23 +143,37 @@ export function FollowingList() {
           >
             {t("シンプル表示", "Simple display")}
           </Button>
+          {/* ソートセレクタ */}
+          <div className="flex items-center">
+            <Select value={orderBy} onValueChange={handleOrderByChange}>
+              <SelectTrigger className="mr-2 w-40">
+                <SelectValue placeholder={t("選択", "Select")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={"DATE_FOLLOWED"}>
+                  {t("フォローした日", "Date Followed")}
+                </SelectItem>
+                <SelectItem value={"DATE_UPDATED"}>
+                  {t("更新日", "Date Updated")}
+                </SelectItem>
+                <SelectItem value={"DATE_CREATED"}>
+                  {t("登録日", "Date Created")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={sort} onValueChange={handleSortChange}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder={t("選択", "Select")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={"DESC"}>
+                  {t("降順", "Descending")}
+                </SelectItem>
+                <SelectItem value={"ASC"}>{t("昇順", "Ascending")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </div>
-      {/* モード切替ボタン */}
-      <div className="block md:hidden">
-        <Button
-          variant={mode === "default" ? "default" : "secondary"}
-          onClick={() => handleModeChange("default")}
-        >
-          {t("作品表示", "Work display")}
-        </Button>
-        <Button
-          variant={mode === "simple" ? "default" : "secondary"}
-          onClick={() => handleModeChange("simple")}
-          className="ml-2"
-        >
-          {t("シンプル表示", "Simple display")}
-        </Button>
       </div>
 
       {/* 以下は既存のコード */}
@@ -158,11 +214,12 @@ const userQuery = graphql(
     $followeesWorksOffset: Int!,
     $followeesWorksLimit: Int!,
     $followeesWorksWhere: UserWorksWhereInput,
+    $FolloweesWhere: FolloweesWhereInput
   ) {
     user(id: $userId) {
       id
       followeesCount
-      followees(offset: $followeesOffset, limit: $followeesLimit) {
+      followees(offset: $followeesOffset, limit: $followeesLimit, where: $FolloweesWhere) {
         id
         ...FollowerListItem
         works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {

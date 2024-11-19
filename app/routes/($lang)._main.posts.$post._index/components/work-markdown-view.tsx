@@ -23,6 +23,8 @@ export function WorkMarkdownView(props: Props) {
           "prose dark:prose-invert max-w-full min-h-[150px] w-full border-none bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
       },
     },
+    immediatelyRender: false,
+    shouldRerenderOnTransaction: false,
     extensions: [
       StarterKit.configure({
         orderedList: {
