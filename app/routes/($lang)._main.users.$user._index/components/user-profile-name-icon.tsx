@@ -58,6 +58,22 @@ export function UserProfileNameIcon(props: Props) {
                   {t("いいね", "Likes")}
                 </div>
               </div>
+              <div className="w-32">
+                <div className="white mt-4 font-bold text-xl">
+                  <OmissionNumber number={user.receivedViewsCount} />
+                </div>
+                <div className="white mt-4 text-md opacity-50">
+                  {t("閲覧", "Views")}
+                </div>
+              </div>
+              <div className="w-32">
+                <div className="white mt-4 font-bold text-xl">
+                  <OmissionNumber number={user.awardsCount} />
+                </div>
+                <div className="white mt-4 text-md opacity-50">
+                  {t("入賞", "Awards")}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -81,6 +97,8 @@ export const UserProfileIconFragment = graphql(
     login
     receivedLikesCount
     followersCount
+    awardsCount
+    receivedViewsCount
     iconUrl
     pass {
       id

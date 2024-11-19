@@ -216,49 +216,53 @@ export default function FollowingLayout() {
 
   return (
     <div className="flex flex-col space-y-4">
-      {data.appEvent.thumbnailImageUrl && (
-        <img
-          className="h-auto max-h-96 w-full rounded-lg object-cover"
-          src={data.appEvent.thumbnailImageUrl}
-          alt=""
-        />
-      )}
-      <Card className="m-auto w-full">
-        <CardHeader>
-          <div className="mt-4 text-center font-medium text-lg">
-            {data.appEvent.title}
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="m-auto flex flex-col items-center text-left">
-            {data.appEvent.description && (
-              <div
-                className="mb-2 text-left text-sm"
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-                dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
-              />
-            )}
-            {data.appEvent.startAt && data.appEvent.endAt && (
-              <div className="mr-auto text-sm">
-                {toEventDateTimeText(data.appEvent.startAt)}～
-                {toEventDateTimeText(data.appEvent.endAt)}
+      <div className="flex flex-col gap-x-2 gap-y-2 md:flex-row">
+        {data.appEvent.thumbnailImageUrl && (
+          <img
+            className="h-auto rounded-lg object-cover md:max-w-96"
+            src={data.appEvent.thumbnailImageUrl}
+            alt=""
+          />
+        )}
+        <Card className="m-auto w-full">
+          <CardHeader>
+            <div className="mt-4 text-center font-medium text-lg">
+              {data.appEvent.title}
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="m-auto flex flex-col items-center text-left">
+              {data.appEvent.description && (
+                <div
+                  className="mb-2 text-left text-sm"
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+                  dangerouslySetInnerHTML={{
+                    __html: data.appEvent.description,
+                  }}
+                />
+              )}
+              {data.appEvent.startAt && data.appEvent.endAt && (
+                <div className="mr-auto text-sm">
+                  {toEventDateTimeText(data.appEvent.startAt)}～
+                  {toEventDateTimeText(data.appEvent.endAt)}
+                </div>
+              )}
+              <div className="mt-2 mr-auto text-sm">
+                {t("応募作品数:", "Number of Submissions:")}{" "}
+                {data.appEvent.worksCount?.toString() ?? "0"}
               </div>
-            )}
-            <div className="mt-2 mr-auto text-sm">
-              {t("応募作品数:", "Number of Submissions:")}{" "}
-              {data.appEvent.worksCount?.toString() ?? "0"}
+              <div className="mt-2 mr-auto text-sm">
+                <span>
+                  {t("参加タグ:", "Event Tag:")} {data.appEvent.tag}
+                </span>
+              </div>
+              {data.appEvent.slug !== null && (
+                <SensitiveEventConfirmDialog slug={data.appEvent.slug} />
+              )}
             </div>
-            <div className="mt-2 mr-auto text-sm">
-              <span>
-                {t("参加タグ:", "Event Tag:")} {data.appEvent.tag}
-              </span>
-            </div>
-            {data.appEvent.slug !== null && (
-              <SensitiveEventConfirmDialog slug={data.appEvent.slug} />
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
       {data.appEvent.awardWorks && (
         <EventAwardWorkList
           works={data.appEvent.awardWorks}

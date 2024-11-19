@@ -33,6 +33,15 @@ export function HomeBanners(props: Props) {
             />
           </Link>
         </CarouselItem>
+        <CarouselItem className="basis-1/1 pl-0 xl:basis-1/1">
+          <Link to="https://beta.aipictors.com/events/2024-autumn-winter">
+            <img
+              alt="home_banner_01"
+              className="h-40 w-auto md:h-64 md:max-h-auto"
+              src="https://assets.aipictors.com/2024-authum-winter-header-re.webp"
+            />
+          </Link>
+        </CarouselItem>
         <CarouselItem className="basis-1/1 xl:basis-1/1">
           <Link to="/generation">
             <img
