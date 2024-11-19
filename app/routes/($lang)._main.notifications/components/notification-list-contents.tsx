@@ -32,7 +32,8 @@ export function NotificationListContents() {
       <Suspense fallback={<AppLoadingPage />}>
         <NotificationListItems type={notifyType} page={page} />
       </Suspense>
-      <div className="mt-1 mb-1">
+      <div className="h-8" />
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <ResponsivePagination
           perPage={160}
           maxCount={notificationsCount.viewer?.notificationsCount ?? 0}

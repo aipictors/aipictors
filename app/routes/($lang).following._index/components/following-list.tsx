@@ -30,6 +30,7 @@ export function FollowingList() {
   // URLパラメータから取得
   const mode = searchParams.get("mode") || "default"
   const page = Number.parseInt(searchParams.get("page") || "0", 10)
+  const perPage = Number.parseInt(searchParams.get("perPage") || "50", 10)
 
   // 型に基づいてパラメータを取得
   const orderByParam = searchParams.get(
@@ -54,12 +55,12 @@ export function FollowingList() {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: authContext.userId,
-      followeesOffset: 40 * page,
-      followeesLimit: 40,
+      followeesOffset: perPage * page,
+      followeesLimit: perPage,
       followeesWorksOffset: 0,
       followeesWorksLimit: 8,
       followeesWorksWhere: {},
-      FolloweesWhere: {
+      followeesWhere: {
         orderBy: orderBy,
         sort: sort,
       },
@@ -84,7 +85,7 @@ export function FollowingList() {
 
   // ソートオプション変更ハンドラ
   const handleOrderByChange = (
-    newOrderBy: IntrospectionEnum<"FollowerOrderBy">,
+    newOrderBy: IntrospectionEnum<"FolloweeOrderBy">,
   ) => {
     const newSearchParams = new URLSearchParams(searchParams.toString())
     newSearchParams.set("orderBy", newOrderBy)
@@ -94,6 +95,13 @@ export function FollowingList() {
   const handleSortChange = (newSort: SortType) => {
     const newSearchParams = new URLSearchParams(searchParams.toString())
     newSearchParams.set("sort", newSort)
+    setSearchParams(newSearchParams)
+  }
+
+  // perPage変更ハンドラ
+  const handlePerPageChange = (newPerPage: string) => {
+    const newSearchParams = new URLSearchParams(searchParams.toString())
+    newSearchParams.set("perPage", newPerPage)
     setSearchParams(newSearchParams)
   }
 
@@ -144,9 +152,9 @@ export function FollowingList() {
             {t("シンプル表示", "Simple display")}
           </Button>
           {/* ソートセレクタ */}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
             <Select value={orderBy} onValueChange={handleOrderByChange}>
-              <SelectTrigger className="mr-2 w-40">
+              <SelectTrigger className="w-auto">
                 <SelectValue placeholder={t("選択", "Select")} />
               </SelectTrigger>
               <SelectContent>
@@ -162,7 +170,7 @@ export function FollowingList() {
               </SelectContent>
             </Select>
             <Select value={sort} onValueChange={handleSortChange}>
-              <SelectTrigger className="w-[120px]">
+              <SelectTrigger className="w-auto">
                 <SelectValue placeholder={t("選択", "Select")} />
               </SelectTrigger>
               <SelectContent>
@@ -170,6 +178,19 @@ export function FollowingList() {
                   {t("降順", "Descending")}
                 </SelectItem>
                 <SelectItem value={"ASC"}>{t("昇順", "Ascending")}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={perPage.toString()}
+              onValueChange={handlePerPageChange}
+            >
+              <SelectTrigger className="w-auto">
+                <SelectValue placeholder={t("選択", "Select")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={"10"}>{t("10件", "10 items")}</SelectItem>
+                <SelectItem value={"50"}>{t("50件", "50 items")}</SelectItem>
+                <SelectItem value={"100"}>{t("100件", "100 items")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -193,7 +214,7 @@ export function FollowingList() {
         <div className="h-8" />
         <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <ResponsivePagination
-            perPage={40}
+            perPage={perPage}
             maxCount={data?.user?.followeesCount ?? 0}
             currentPage={page}
             onPageChange={(page: number) => {
@@ -214,12 +235,12 @@ const userQuery = graphql(
     $followeesWorksOffset: Int!,
     $followeesWorksLimit: Int!,
     $followeesWorksWhere: UserWorksWhereInput,
-    $FolloweesWhere: FolloweesWhereInput
+    $followeesWhere: FolloweesWhereInput
   ) {
     user(id: $userId) {
       id
       followeesCount
-      followees(offset: $followeesOffset, limit: $followeesLimit, where: $FolloweesWhere) {
+      followees(offset: $followeesOffset, limit: $followeesLimit, where: $followeesWhere) {
         id
         ...FollowerListItem
         works(offset: $followeesWorksOffset, limit: $followeesWorksLimit, where: $followeesWorksWhere) {

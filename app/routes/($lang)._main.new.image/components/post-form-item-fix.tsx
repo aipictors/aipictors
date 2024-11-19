@@ -16,9 +16,11 @@ export function PostFormItemFix(props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">修正内容（必須）</p>
+        <p className="font-bold text-red-600 text-sm">修正内容（必須）</p>
         <div className="items-center text-sm opacity-65">
-          <p>{"すでに修正済みの場合は修正内容をご記入ください。"}</p>
+          <p className="text-red-600">
+            {"すでに修正済みの場合は修正内容をご記入ください。"}
+          </p>
         </div>
         <Input
           onChange={(e) => {

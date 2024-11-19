@@ -1,6 +1,5 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
-import { NotificationList } from "~/routes/($lang)._main.notifications/components/notification-list"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -9,6 +8,7 @@ import type {
 import { Suspense, useContext } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
+import { NotificationListContents } from "~/routes/($lang)._main.notifications/components/notification-list-contents"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.NOTIFICATIONS, undefined, props.params.lang)
@@ -36,7 +36,7 @@ export default function Notifications() {
 
   return (
     <Suspense fallback={<AppLoadingPage />}>
-      {authContext.isLoggedIn && <NotificationList />}
+      {authContext.isLoggedIn && <NotificationListContents />}
     </Suspense>
   )
 }
