@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client/index"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import {
   type MetaFunction,
@@ -6,8 +7,10 @@ import {
   useParams,
 } from "@remix-run/react"
 import { graphql, readFragment } from "gql.tada"
+import { useContext } from "react"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { config, META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import {
@@ -81,23 +84,37 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 export default function UserLayout() {
   const params = useParams<"user">()
 
+  const authContext = useContext(AuthContext)
+
   if (params.user === undefined) {
     throw new ParamsError()
   }
 
   const data = useLoaderData<typeof loader>()
 
+  const { data: userRet } = useQuery(UserQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      userId: decodeURIComponent(params.user),
+    },
+  })
+
+  // フォロワーなどの最新情報をログインしている場合は取得する
+  const user = userRet?.user ?? data.user
+
+  console.log(userRet?.user)
+
   return (
     <div className="flex w-full flex-col justify-center">
       <div className="relative">
         <UserHomeHeader
-          user={data.user}
-          userIconView={<UserProfileNameIcon user={data.user} />}
+          user={user}
+          userIconView={<UserProfileNameIcon user={user} />}
         />
-        <UserHomeMenu user={data.user} />
+        <UserHomeMenu user={user} />
       </div>
       <div className="space-y-4">
-        <UserTabs user={data.user} />
+        <UserTabs user={user} />
         <Outlet />
       </div>
     </div>
