@@ -514,7 +514,7 @@ export default function NewImage() {
           "旧版はこちら",
           "The renewed version is under development and may have issues! Some features are being re-released! Please continue to use the old version as is!",
         )}
-        fallbackURL="https://www.aipictors.com/post"
+        fallbackURL="https://legacy.aipictors.com/post"
       />
       <div className="max-w-[1200px] space-y-4">
         {authContext.isNotLoggedIn && (

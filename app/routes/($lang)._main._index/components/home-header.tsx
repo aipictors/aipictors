@@ -215,7 +215,10 @@ function HomeHeader(props: Props) {
             </Button>
             <Separator orientation="vertical" />
           </div>
-          <Link className="hidden md:block" to={"https://www.aipictors.com/"}>
+          <Link
+            className="hidden md:block"
+            to={"https://legacy.aipictors.com/"}
+          >
             <Button variant={"ghost"}>{t("旧版トップ", "Old")}</Button>
           </Link>
           <Link to={"/generation"}>

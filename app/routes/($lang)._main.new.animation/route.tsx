@@ -338,7 +338,7 @@ export default function NewAnimation() {
           "旧版はこちら",
           "The renewed version is under development and may have issues! Some features are being re-released! Please continue to use the old version as is!",
         )}
-        fallbackURL="https://www.aipictors.com/post"
+        fallbackURL="https://legacy.aipictors.com/post"
       />
       <div className="space-y-4">
         <div>

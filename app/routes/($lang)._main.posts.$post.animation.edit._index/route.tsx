@@ -482,7 +482,7 @@ export default function EditImage() {
       <ConstructionAlert
         type="WARNING"
         message="旧版はこちら"
-        fallbackURL="https://www.aipictors.com/post"
+        fallbackURL="https://legacy.aipictors.com/post"
       />
       <div className="space-y-4">
         <EditAnimationFormUploader

@@ -166,7 +166,7 @@ export function ThemeContainer(props: Props) {
       <ConstructionAlert
         type="WARNING"
         message={t("旧版はこちら", "legacy version")}
-        fallbackURL="https://www.aipictors.com/idea"
+        fallbackURL="https://legacy.aipictors.com/idea"
       />
       <AppPageHeader title={t("お題", "Theme")} description={description} />
 

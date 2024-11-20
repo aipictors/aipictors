@@ -38,7 +38,7 @@ export function ConstructionAlert(props: Props) {
         {props.message && <AlertDescription>{props.message}</AlertDescription>}
         <div className="flex justify-end gap-2">
           <Link
-            to={props.fallbackURL ?? "https://www.aipictors.com"}
+            to={props.fallbackURL ?? "https://legacy.aipictors.com"}
             className="flex-1 md:flex-auto"
           >
             <Button size="sm" variant="secondary" className="w-full">

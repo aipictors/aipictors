@@ -82,7 +82,7 @@ export function DraftWorkArticle(props: Props) {
           "旧版はこちら",
           "The renewal version is still under development, so there may be bugs! Some features have been re-released! Please continue using the old version for now.",
         )}
-        fallbackURL={`https://www.aipictors.com/works/${props.work.id}`}
+        fallbackURL={`https://legacy.aipictors.com/works/${props.work.id}`}
         deadline={"2024-07-30"}
       />
       <PostAccessTypeBanner
