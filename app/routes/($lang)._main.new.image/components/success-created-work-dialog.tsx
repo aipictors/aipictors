@@ -126,8 +126,8 @@ export function SuccessCreatedWorkDialog(props: Props) {
               text={`${props.title}\n`}
               url={`${
                 props.uuid
-                  ? `https://aipictors.com/works/${props.uuid}`
-                  : `https://aipictors.com/works/${props.workId}`
+                  ? `https://www.aipictors.com/works/${props.uuid}`
+                  : `https://www.aipictors.com/works/${props.workId}`
               }\n`}
               hashtags={props.shareTags}
             />
