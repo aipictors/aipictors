@@ -11,6 +11,7 @@ describe("useUserTabLabels", () => {
       hasAlbums: false,
       hasFolders: true,
       hasPublicStickers: true,
+      hasBadges: false,
       lang: "ja",
     }
 
@@ -35,6 +36,7 @@ describe("useUserTabLabels", () => {
       hasAlbums: true,
       hasFolders: false,
       hasPublicStickers: false,
+      hasBadges: false,
       lang: "en",
     }
 
@@ -58,6 +60,7 @@ describe("useUserTabLabels", () => {
       hasAlbums: false,
       hasFolders: false,
       hasPublicStickers: false,
+      hasBadges: false,
       lang: "ja",
     }
 
@@ -75,6 +78,7 @@ describe("useUserTabLabels", () => {
       hasAlbums: true,
       hasFolders: true,
       hasPublicStickers: true,
+      hasBadges: true,
       lang: "en",
     }
 

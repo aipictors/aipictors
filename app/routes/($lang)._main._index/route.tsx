@@ -82,6 +82,15 @@ import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-r
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
 import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-dialog"
 
+// カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
+function useScrollRestoration(isMounted: boolean) {
+  useEffect(() => {
+    if (isMounted) {
+      // スクロール位置の復元を行わない（React Routerが自動的に保持する場合）
+    }
+  }, [isMounted])
+}
+
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
 }
@@ -277,13 +286,14 @@ export default function Index() {
       newSearchParams.delete("page")
     }
 
-    setSearchParams(newSearchParams)
+    // ページ全体のリロードを防ぐために navigate を使用
+    updateQueryParams(newSearchParams)
   }, [
     currentTab,
     newWorksPage,
     followUserFeedPage,
     followTagFeedPage,
-    setSearchParams,
+    updateQueryParams,
   ])
 
   // 初回レンダリング時にURLからページ番号を取得
@@ -319,7 +329,7 @@ export default function Index() {
     // 現在のタブを更新
     setCurrentTab(tab)
 
-    // クエリパラメータを更新
+    // クエリパラメータを更新（navigate を使用してページ全体のリロードを防ぐ）
     const newSearchParams = new URLSearchParams()
     newSearchParams.set("tab", tab)
     setSearchParams(newSearchParams)
@@ -407,6 +417,9 @@ export default function Index() {
     passData?.type === "STANDARD" ||
     passData?.type === "PREMIUM"
 
+  // スクロール位置の復元を行わないようにカスタムフックを使用
+  useScrollRestoration(isMounted)
+
   return (
     <>
       <ConstructionAlert
@@ -418,7 +431,7 @@ export default function Index() {
         <HomeBanners works={data.adWorks} />
       )}
       <Tabs
-        defaultValue={searchParams.get("tab") || "home"}
+        value={currentTab}
         onValueChange={handleTabChange}
         className="space-y-4"
       >

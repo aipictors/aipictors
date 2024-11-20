@@ -30,6 +30,7 @@ export function UserSensitiveTabs(props: Props) {
     hasFolders: user.hasFolders,
     hasAlbums: user.hasAlbums,
     hasPublicStickers: user.hasPublicStickers,
+    hasBadges: user.hasBadges,
     lang: locale,
   })
 
@@ -72,6 +73,7 @@ export const UserSensitiveTabsFragment = graphql(
     hasSensitiveColumnWorks
     hasFolders
     hasAlbums
+    hasBadges
     hasPublicStickers
   }`,
 )

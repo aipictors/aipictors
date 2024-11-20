@@ -41,7 +41,10 @@ export function UserHomeSensitiveMenu(props: Props) {
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-2 right-0 z-10 md:hidden">
         <div className="flex space-x-2">
-          <SensitiveConfirmDialog userLogin={cachedUser.login} />
+          <SensitiveConfirmDialog
+            receivedSensitiveLikesCount={cachedUser.receivedSensitiveLikesCount}
+            userLogin={cachedUser.login}
+          />
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />
         </div>
       </div>
@@ -149,6 +152,7 @@ export const UserHomeMenuSensitiveFragment = graphql(
     name
     followersCount
     receivedLikesCount
+    receivedSensitiveLikesCount
     promptonUser {
       id
     }
