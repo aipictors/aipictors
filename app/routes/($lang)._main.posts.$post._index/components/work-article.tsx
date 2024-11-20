@@ -316,11 +316,9 @@ export function WorkArticle(props: Props) {
           />
         </div>
         <p className="overflow-hidden whitespace-pre-wrap break-words">
-          {convertTextToLinks(
-            t(
-              props.work.description ?? "",
-              props.work.enDescription ?? props.work.description ?? "",
-            ),
+          {t(
+            props.work.description ?? "",
+            props.work.enDescription ?? props.work.description ?? "",
           )}
         </p>
         {props.work.relatedUrl && (
