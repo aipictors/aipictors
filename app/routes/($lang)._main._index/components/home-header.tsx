@@ -51,12 +51,29 @@ function HomeHeader(props: Props) {
 
   const onSearch = () => {
     const trimmedText = searchText.trim()
-    if (trimmedText !== "") {
-      const baseUrl = `/tags/${trimmedText}`
-      navigate(getSensitiveLink(baseUrl))
-    } else {
+
+    // '#' を取り除いた新しい文字列
+    const sanitizedText = trimmedText.replace(/#/g, "")
+
+    // 他の禁止文字をチェック
+    const invalidChars = ["%", "/", "¥"]
+    const hasInvalidChar = invalidChars.some((char) =>
+      sanitizedText.includes(char),
+    )
+
+    if (sanitizedText === "") {
       navigate(getSensitiveLink("/search"))
+      return
     }
+
+    if (hasInvalidChar) {
+      alert("入力された検索文字列には使用できない文字が含まれています。")
+      return
+    }
+
+    const encodedText = encodeURIComponent(sanitizedText)
+    const baseUrl = `/tags/${encodedText}`
+    navigate(getSensitiveLink(baseUrl))
   }
 
   const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors β")

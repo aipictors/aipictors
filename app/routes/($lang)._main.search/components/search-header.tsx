@@ -18,6 +18,21 @@ export const SearchHeader = () => {
 
   const onSearch = () => {
     const trimmedText = searchText.trim()
+
+    // '#' を取り除いた新しい文字列
+    const sanitizedText = trimmedText.replace(/#/g, "")
+
+    // 他の禁止文字をチェック
+    const invalidChars = ["%", "/", "¥"]
+    const hasInvalidChar = invalidChars.some((char) =>
+      sanitizedText.includes(char),
+    )
+
+    if (hasInvalidChar) {
+      toast("入力された検索文字列には使用できない文字が含まれています。")
+      return
+    }
+
     if (trimmedText !== "") {
       const baseUrl = isSearchUser
         ? `/users?search=${trimmedText}`
