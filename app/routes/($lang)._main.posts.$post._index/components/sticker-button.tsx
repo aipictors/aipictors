@@ -8,7 +8,7 @@ type Props = {
   key: string
   onClick: () => void
   onDelete?: () => void
-  size?: "small" | "medium" | "large" | "x-large"
+  size?: "2x-large" | "small" | "medium" | "large" | "x-large"
 }
 
 /**
@@ -30,6 +30,8 @@ export function StickerButton(props: Props) {
         return "h-16 w-16 p-3"
       case "x-large":
         return "h-24 w-24 p-3"
+      case "2x-large":
+        return "h-32 w-32 p-3"
       default:
         return "h-24 w-24 p-2" // デフォルトは x-large サイズ
     }

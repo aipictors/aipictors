@@ -57,7 +57,7 @@ export function NotificationListItems(props: Props) {
             <HomeNotificationsContentCommentedItem
               key={notification.id}
               notification={notification}
-              stickerSize="lg"
+              stickerSize="xl"
             />
           )
         }
@@ -69,7 +69,7 @@ export function NotificationListItems(props: Props) {
             <HomeNotificationsContentReplyItem
               key={notification.id}
               notification={notification}
-              stickerSize="lg"
+              stickerSize="xl"
             />
           )
         }

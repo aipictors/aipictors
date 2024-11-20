@@ -226,6 +226,7 @@ export function WorkCommentList(props: Props) {
                     console.error("Failed to send comment:", error)
                   }
                 }}
+                size="2x-large"
               />
             ))}
           </div>

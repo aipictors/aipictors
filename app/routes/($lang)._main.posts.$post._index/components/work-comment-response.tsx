@@ -91,18 +91,18 @@ export function WorkCommentResponse(props: Props) {
           </p>
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link
-              className="group block w-24 overflow-hidden rounded-md"
+              className="group block w-32 overflow-hidden rounded-md"
               to={`/stickers/${props.stickerId}`}
             >
               <img
-                className="w-24 overflow-hidden rounded-md py-2 transition-transform duration-300 group-hover:scale-105"
+                className="w-32 overflow-hidden rounded-md py-2 transition-transform duration-300 group-hover:scale-105"
                 alt=""
                 src={props.stickerImageURL}
               />
             </Link>
           )}
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
-            <img className="w-24 py-2" alt="" src={props.stickerImageURL} />
+            <img className="w-32 py-2" alt="" src={props.stickerImageURL} />
           )}
           <div className="flex space-x-2">
             <p className="text-xs opacity-50">

@@ -10,10 +10,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
-  stickerSize?: "lg" | "md" | "sm" | "xs"
+  stickerSize?: "xl" | "lg" | "md" | "sm" | "xs"
 }
 
 const stickerSizeClasses = {
+  xl: "h-24 w-24 md:h-32 md:w-32",
   lg: "h-20 w-20 md:h-24 md:w-24",
   md: "h-12 w-12",
   sm: "h-8 w-8",
