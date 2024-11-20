@@ -412,7 +412,7 @@ export const workArticleFragment = graphql(
         id
       }
     }
-    likedUsers(offset: 0, limit: 32) {
+    likedUsers(offset: 0, limit: 120) {
       id
       name
       iconUrl
@@ -549,7 +549,7 @@ export const sensitiveWorkArticleFragment = graphql(
         id
       }
     }
-    likedUsers(offset: 0, limit: 32) {
+    likedUsers(offset: 0, limit: 120) {
       id
       name
       iconUrl

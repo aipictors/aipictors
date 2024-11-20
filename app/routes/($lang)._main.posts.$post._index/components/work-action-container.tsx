@@ -113,7 +113,7 @@ const workQuery = graphql(
           subWorksCount
         }
       }
-      likedUsers(offset: 0, limit: 32) {
+      likedUsers(offset: 0, limit: 120) {
         id
         name
         iconUrl
