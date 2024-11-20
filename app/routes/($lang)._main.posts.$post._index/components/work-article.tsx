@@ -22,6 +22,7 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { toStyleText } from "~/utils/work/to-style-text"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
+import { Card, CardContent } from "~/components/ui/card"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -69,6 +70,30 @@ export function WorkArticle(props: Props) {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string>(
     props.work.imageURL,
   )
+
+  const convertTextToLinks = (text: string) => {
+    // 正規表現でURLを検出
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    const parts = text.split(urlRegex)
+
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        // URL部分は<Link>でラップ
+        return (
+          <Link
+            key={index.toString()}
+            to={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            {part}
+          </Link>
+        )
+      }
+      return <span key={index.toString()}>{part}</span>
+    })
+  }
 
   return (
     <article className="flex flex-col space-y-4">
@@ -291,11 +316,25 @@ export function WorkArticle(props: Props) {
           />
         </div>
         <p className="overflow-hidden whitespace-pre-wrap break-words">
-          {t(
-            props.work.description ?? "",
-            props.work.enDescription ?? props.work.description ?? "",
+          {convertTextToLinks(
+            t(
+              props.work.description ?? "",
+              props.work.enDescription ?? props.work.description ?? "",
+            ),
           )}
         </p>
+        {props.work.relatedUrl && (
+          <Card>
+            <CardContent className="p-2">
+              <div className="flex flex-col">
+                <p>{t("関連リンク", "related url")}</p>
+                <Link to={`${props.work.relatedUrl}`}>
+                  {props.work.relatedUrl}
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         {props.work.promptAccessType === "PRIVATE" &&
           props.work.user.id === appContext.userId && (
             <p className="flex items-center gap-x-2 font-bold opacity-60">
@@ -379,6 +418,7 @@ export const workArticleFragment = graphql(
     smallThumbnailImageHeight
     thumbnailImagePosition
     subWorksCount
+    url
     user {
       id
       biography
