@@ -11,6 +11,7 @@ import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Button } from "~/components/ui/button"
+import { ConstructionAlert } from "~/components/construction-alert"
 import {
   PostImageFormAiModelFragment,
   PostImageFormAlbumFragment,
@@ -507,6 +508,14 @@ export default function NewImage() {
 
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
+      <ConstructionAlert
+        type="WARNING"
+        message={t(
+          "旧版はこちら",
+          "The renewed version is under development and may have issues! Some features are being re-released! Please continue to use the old version as is!",
+        )}
+        fallbackURL="https://legacy.aipictors.com/post"
+      />
       <div className="max-w-[1200px] space-y-4">
         {authContext.isNotLoggedIn && (
           <p className="text-center font-bold text-md">
