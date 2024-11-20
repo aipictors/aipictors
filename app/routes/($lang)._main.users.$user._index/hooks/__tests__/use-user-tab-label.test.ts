@@ -93,6 +93,7 @@ describe("useUserTabLabels", () => {
       "Series",
       "Collections",
       "Stickers",
+      "Badges",
     ])
   })
 })
