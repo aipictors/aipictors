@@ -116,7 +116,7 @@ export function WorkContainer(props: Props) {
       }}
     >
       <div className="flex w-full justify-center overflow-hidden">
-        <div className="flex flex-col items-center overflow-hidden">
+        <div className="flex w-full flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
             <WorkArticle work={work} />
             <WorkRelatedList
