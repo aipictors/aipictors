@@ -16,7 +16,6 @@ import { Heart, ShieldAlert } from "lucide-react"
 import { Separator } from "~/components/ui/separator"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
-import { ConstructionAlert } from "~/components/construction-alert"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
@@ -76,15 +75,6 @@ export function DraftWorkArticle(props: Props) {
 
   return (
     <article className="flex flex-col space-y-4">
-      <ConstructionAlert
-        type="WARNING"
-        message={t(
-          "旧版はこちら",
-          "The renewal version is still under development, so there may be bugs! Some features have been re-released! Please continue using the old version for now.",
-        )}
-        fallbackURL={`https://legacy.aipictors.com/works/${props.work.id}`}
-        deadline={"2024-07-30"}
-      />
       <PostAccessTypeBanner
         createdAt={props.work.createdAt}
         postAccessType={props.work.accessType}

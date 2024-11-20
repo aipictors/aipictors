@@ -1,4 +1,3 @@
-import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
@@ -615,11 +614,6 @@ export default function EditText() {
 
   return work?.user.id === authContext.userId ? (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
-      <ConstructionAlert
-        type="WARNING"
-        message="旧版はこちら"
-        fallbackURL={`https://legacy.aipictors.com/edit-works?id=${work.id}`}
-      />
       <div className="space-y-4">
         <EditTextFormUploader state={state} dispatch={dispatch} />
         <PostTextFormInput

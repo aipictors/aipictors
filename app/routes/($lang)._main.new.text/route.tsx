@@ -1,4 +1,3 @@
-import { ConstructionAlert } from "~/components/construction-alert"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
@@ -439,14 +438,6 @@ export default function NewText() {
 
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
-      <ConstructionAlert
-        type="WARNING"
-        message={t(
-          "旧版はこちら",
-          "The renewed version is under development and may have issues! Please continue to use the old version for stability.",
-        )}
-        fallbackURL="https://legacy.aipictors.com/post"
-      />
       <div className="space-y-4">
         <div>
           <PostFormHeader type="text" />
