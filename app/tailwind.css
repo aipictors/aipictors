@@ -637,6 +637,10 @@ html {
   height: 72px;
 }
 
+.h-header-with-announcement {
+  height: 104px;
+}
+
 .bg-line-theme {
   background-color: #06c755;
 }

@@ -176,9 +176,6 @@ export function PostTextFormInput(props: Props) {
   }
 
   const aiModelOptions = () => {
-    if (data === undefined) {
-      return []
-    }
     return props.aiModels
       .filter((model) => model.workModelId !== null)
       .map((model) => {

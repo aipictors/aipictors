@@ -1,5 +1,6 @@
 type Props = Readonly<{
   children: React.ReactNode
+  announcement?: React.ReactNode
 }>
 
 export function AppHeader(props: Props) {
@@ -13,8 +14,13 @@ export function AppHeader(props: Props) {
         >
           {props.children}
         </div>
+        {props.announcement && props.announcement}
       </header>
-      <div className={"h-header"} />
+      {props.announcement ? (
+        <div className={"h-header-with-announcement"} />
+      ) : (
+        <div className={"h-header"} />
+      )}
     </>
   )
 }

@@ -1,24 +1,24 @@
 import { AppHeader } from "~/components/app/app-header"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { LoginDialogButton } from "~/components/login-dialog-button"
-import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
 import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { Separator } from "~/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
-import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
-import { HomeUserNavigationMenu } from "~/routes/($lang)._main._index/components/home-user-navigation-menu"
 import { Link, useNavigation, useLocation, useNavigate } from "@remix-run/react"
 import { Loader2Icon, MenuIcon, Search } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
-import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { useTranslation } from "~/hooks/use-translation"
+import { LoginDialogButton } from "~/components/login-dialog-button"
+import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
+import { Input } from "~/components/ui/input"
+import { Separator } from "~/components/ui/separator"
+import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
+import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
+import { HomeUserNavigationMenu } from "~/routes/($lang)._main._index/components/home-user-navigation-menu"
 
 type Props = {
   title?: string
@@ -37,9 +37,9 @@ function HomeHeader(props: Props) {
   const sensitivePath = /\/r($|\/)/.test(location.pathname)
 
   const getSensitiveLink = (path: string) => {
-    // パスが /r または /r で始まる場合を判定
+    // Determine if the path starts with /r
     if (/^\/r($|\s)/.test(path)) {
-      return "" // 無効なパスの場合は空文字列を返す（または他の処理）
+      return "" // Return empty string for invalid paths
     }
 
     if (sensitivePath) {
@@ -61,7 +61,6 @@ function HomeHeader(props: Props) {
 
   const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors β")
 
-  // 新着のお知らせがあるかどうか
   const isExistedNewNotificationData = useQuery(
     viewerIsExistedNewNotificationQuery,
     {},
@@ -103,9 +102,36 @@ function HomeHeader(props: Props) {
 
   const t = useTranslation()
 
+  const isAnnouncementPath =
+    location.pathname === "/" || location.pathname === "/generation"
+
+  const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
+
   return (
     <Suspense fallback={<AppLoadingPage />}>
-      <AppHeader>
+      <AppHeader
+        announcement={
+          isAnnouncementPath &&
+          announcementData?.emergencyAnnouncements &&
+          announcementData.emergencyAnnouncements.content.length > 0 &&
+          (announcementData.emergencyAnnouncements.url.length > 0 ? (
+            <Link
+              to={announcementData.emergencyAnnouncements.url}
+              className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 md:px-2"
+            >
+              <div className="opacity-80">
+                {announcementData.emergencyAnnouncements.content}
+              </div>
+            </Link>
+          ) : (
+            <div className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 md:px-2">
+              <div className="opacity-80">
+                {announcementData.emergencyAnnouncements.content}
+              </div>
+            </div>
+          ))
+        }
+      >
         <div className="flex min-w-fit items-center gap-x-2 md:flex">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
@@ -229,5 +255,14 @@ const viewerIsExistedNewNotificationQuery = graphql(
   }`,
   [CheckedNotificationTimesFragment],
 )
+
+const emergencyAnnouncementsQuery = graphql(`
+  query emergencyAnnouncements {
+    emergencyAnnouncements {
+      url
+      content
+    }
+  }
+`)
 
 export default HomeHeader
