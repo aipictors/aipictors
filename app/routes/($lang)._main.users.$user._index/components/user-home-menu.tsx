@@ -8,11 +8,11 @@ import { useQuery } from "@apollo/client/index"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
-import { RefreshCcwIcon } from "lucide-react"
 import { useNavigate } from "@remix-run/react"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { useTranslation } from "~/hooks/use-translation"
 import { SensitiveConfirmDialog } from "~/routes/($lang)._main.users.$user._index/components/sensitive-confirm-dialog"
+import { Heart } from "lucide-react"
 
 type Props = {
   user: FragmentOf<typeof UserHomeMenuFragment>
@@ -43,13 +43,14 @@ export function UserHomeMenu(props: Props) {
         <div className="flex space-x-2">
           <Button
             onClick={() => {
-              navigate(`/users/${cachedUser.login}`)
+              navigate(`/r/users/${cachedUser.login}`)
             }}
             variant={"secondary"}
           >
             <div className="flex cursor-pointer items-center">
-              <RefreshCcwIcon className="mr-1 w-3" />
-              <p className="text-sm">{t("全年齢", "G")}</p>
+              <Heart className="mr-2 h-5 w-4" />
+              {cachedUser.receivedSensitiveLikesCount}
+              <p>{t("センシティブ", "Sensitive")}</p>
             </div>
           </Button>
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />

@@ -12,7 +12,6 @@ import { RefreshCcwIcon } from "lucide-react"
 import { useNavigate } from "@remix-run/react"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { useTranslation } from "~/hooks/use-translation"
-import { SensitiveConfirmDialog } from "~/routes/($lang)._main.users.$user._index/components/sensitive-confirm-dialog"
 
 type Props = {
   user: FragmentOf<typeof UserHomeMenuSensitiveFragment>
@@ -41,10 +40,17 @@ export function UserHomeSensitiveMenu(props: Props) {
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-2 right-0 z-10 md:hidden">
         <div className="flex space-x-2">
-          <SensitiveConfirmDialog
-            receivedSensitiveLikesCount={cachedUser.receivedSensitiveLikesCount}
-            userLogin={cachedUser.login}
-          />
+          <Button
+            onClick={() => {
+              navigate(`/users/${cachedUser.login}`)
+            }}
+            variant={"secondary"}
+          >
+            <div className="flex cursor-pointer items-center">
+              <RefreshCcwIcon className="mr-1 w-3" />
+              <p className="text-sm">{t("全年齢", "G")}</p>
+            </div>
+          </Button>
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />
         </div>
       </div>
