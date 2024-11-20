@@ -6,6 +6,7 @@ type Props = {
   hasAlbums: boolean
   hasFolders: boolean
   hasPublicStickers: boolean
+  hasBadges: boolean
   lang: string
 }
 
@@ -22,5 +23,6 @@ export const useUserTabLabels = (props: Props) => {
     ...(props.hasAlbums ? [t("シリーズ", "Series")] : []),
     ...(props.hasFolders ? [t("コレクション", "Collections")] : []),
     ...(props.hasPublicStickers ? [t("スタンプ", "Stickers")] : []),
+    ...(props.hasBadges ? [t("バッジ", "Badges")] : []),
   ]
 }

@@ -30,6 +30,7 @@ export function UserTabs(props: Props) {
     hasFolders: user.hasFolders,
     hasAlbums: user.hasAlbums,
     hasPublicStickers: user.hasPublicStickers,
+    hasBadges: user.hasBadges,
     lang: locale,
   })
 
@@ -73,5 +74,6 @@ export const UserTabsFragment = graphql(`
     hasFolders
     hasAlbums
     hasPublicStickers
+    hasBadges
   }
 `)

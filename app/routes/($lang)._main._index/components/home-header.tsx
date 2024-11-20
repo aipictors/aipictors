@@ -19,6 +19,7 @@ import { Separator } from "~/components/ui/separator"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
 import { HomeUserNavigationMenu } from "~/routes/($lang)._main._index/components/home-user-navigation-menu"
+import { toast } from "sonner"
 
 type Props = {
   title?: string
@@ -67,7 +68,7 @@ function HomeHeader(props: Props) {
     }
 
     if (hasInvalidChar) {
-      alert("入力された検索文字列には使用できない文字が含まれています。")
+      toast("入力された検索文字列には使用できない文字が含まれています。")
       return
     }
 

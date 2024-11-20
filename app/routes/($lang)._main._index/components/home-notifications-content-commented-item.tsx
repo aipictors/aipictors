@@ -1,12 +1,12 @@
 import { Badge } from "~/components/ui/badge"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { toDateText } from "~/utils/to-date-text"
 import { toDateEnText } from "~/utils/to-date-en-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
@@ -72,7 +72,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
             <div className="flex items-center space-x-2">
               <p className="text-sm opacity-80">
                 {t(
-                  toDateText(props.notification.createdAt),
+                  toDateTimeText(props.notification.createdAt),
                   toDateEnText(props.notification.createdAt),
                 )}
               </p>

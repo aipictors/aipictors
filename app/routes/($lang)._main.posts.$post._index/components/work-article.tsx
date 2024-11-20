@@ -9,11 +9,7 @@ import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/compo
 import { type FragmentOf, graphql } from "gql.tada"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { AuthContext } from "~/contexts/auth-context"
-import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
-import { CarouselWithGradation } from "~/components/carousel-with-gradation"
-import { ToggleContent } from "~/components/toggle-content"
 import { Heart, ShieldAlert } from "lucide-react"
-import { Separator } from "~/components/ui/separator"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { ConstructionAlert } from "~/components/construction-alert"
@@ -148,34 +144,44 @@ export function WorkArticle(props: Props) {
         </h1>
         <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}
-          {appContext.userId === props.work.user.id && (
-            <ToggleContent
-              trigger={
-                <div className="flex items-center space-x-2">
-                  <Heart
-                    className={"fill-white text-black dark:text-white"}
-                    size={16}
-                    strokeWidth={1}
-                  />
-                  <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
-                </div>
-              }
-            >
-              <div>
-                <Separator className="mt-2 mb-2" />
-                <CarouselWithGradation
-                  items={props.work.likedUsers.map((user) => (
-                    <WorkLikedUser
-                      key={user.id}
-                      name={user.name}
-                      iconUrl={user.iconUrl}
-                      login={user.login}
-                    />
-                  ))}
-                />
-              </div>
-            </ToggleContent>
-          )}
+          {
+            <div className="flex items-center space-x-2">
+              <Heart
+                className={"fill-white text-black dark:text-white"}
+                size={16}
+                strokeWidth={1}
+              />
+              <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
+            </div>
+            // appContext.userId === props.work.user.id && (
+            //   <ToggleContent
+            //     trigger={
+            //       <div className="flex items-center space-x-2">
+            //         <Heart
+            //           className={"fill-white text-black dark:text-white"}
+            //           size={16}
+            //           strokeWidth={1}
+            //         />
+            //         <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
+            //       </div>
+            //     }
+            //   >
+            //     <div>
+            //       <Separator className="mt-2 mb-2" />
+            //       <CarouselWithGradation
+            //         items={props.work.likedUsers.map((user) => (
+            //           <WorkLikedUser
+            //             key={user.id}
+            //             name={user.name}
+            //             iconUrl={user.iconUrl}
+            //             login={user.login}
+            //           />
+            //         ))}
+            //       />
+            //     </div>
+            //   </ToggleContent>
+            // )
+          }
           <span className="text-sm">
             {toDateTimeText(props.work.createdAt)}
           </span>

@@ -19,6 +19,8 @@ export const useUserActiveTab = (props: Props) => {
       return props.lang === "ja" ? "コレクション" : "Collections"
     if (props.url.endsWith("/stickers"))
       return props.lang === "ja" ? "スタンプ" : "Stickers"
+    if (props.url.endsWith("/badges"))
+      return props.lang === "ja" ? "バッジ" : "Badges"
     return props.lang === "ja" ? "ポートフォリオ" : "Portfolio"
   }
 }

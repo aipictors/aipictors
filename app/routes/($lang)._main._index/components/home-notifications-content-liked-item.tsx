@@ -1,8 +1,8 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
-import { toDateText } from "~/utils/to-date-text"
 import { toDateEnText } from "~/utils/to-date-en-text"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
   notification: FragmentOf<typeof LikedWorkNotificationFragment>
@@ -37,19 +37,19 @@ export function HomeNotificationsContentLikedItem(props: Props) {
         </div>
         <div className="ml-2 w-full overflow-hidden">
           <p className="text-ellipsis">
-            {props.notification.user?.name && (
+            {/* {props.notification.user?.name && (
               <span>
                 {t(
                   `${props.notification.user.name}さんから`,
                   `${props.notification.user.name}  `,
                 )}
               </span>
-            )}
+            )} */}
             {t("いいねされました！", "Liked")}
           </p>
           <p className="text-sm opacity-80">
             {t(
-              toDateText(props.notification.createdAt),
+              toDateTimeText(props.notification.createdAt),
               toDateEnText(props.notification.createdAt),
             )}
           </p>

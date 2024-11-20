@@ -13,10 +13,11 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
 import { useNavigate } from "react-router-dom"
-import { RefreshCcwIcon } from "lucide-react"
+import { Heart, RefreshCcwIcon } from "lucide-react"
 
 type Props = {
   userLogin: string
+  receivedSensitiveLikesCount: number
 }
 
 export function SensitiveConfirmDialog(props: Props) {
@@ -53,9 +54,10 @@ export function SensitiveConfirmDialog(props: Props) {
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="secondary" onClick={() => setIsOpen(true)}>
-          <div className="flex cursor-pointer items-center">
-            <RefreshCcwIcon className="mr-1 w-3" />
-            <p className="text-sm">{t("対象年齢", "Target Age")}</p>
+          <div className="flex cursor-pointer items-center space-x-2 text-sm">
+            <Heart className="mr-2 h-5 w-4" />
+            {props.receivedSensitiveLikesCount}
+            <p>{t("センシティブ", "Sensitive")}</p>
           </div>
         </Button>
       </AlertDialogTrigger>
