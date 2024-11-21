@@ -63,6 +63,7 @@ export function ReleaseItem(props: Props) {
       Blockquote,
       HorizontalRule,
     ],
+    content: props.description,
   })
 
   useEffect(() => {
