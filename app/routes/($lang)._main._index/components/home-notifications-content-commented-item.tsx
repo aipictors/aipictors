@@ -76,8 +76,10 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
                   toDateEnText(props.notification.createdAt),
                 )}
               </p>
-              {isReplied && (
+              {isReplied ? (
                 <Badge variant="secondary">{t("返信済み", "Replied")}</Badge>
+              ) : (
+                <Badge variant="default">{t("未返信", "Not replied")}</Badge>
               )}
             </div>
           </div>
