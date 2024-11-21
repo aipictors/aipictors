@@ -27,6 +27,9 @@ export const handleUserSensitiveTabNavigation = (props: Props) => {
   if (props.type === t("シリーズ", "Series")) {
     props.onNavigateCallback(`/r/users/${props.userId}/albums`)
   }
+  if (props.type === t("バッジ", "Badges")) {
+    props.onNavigateCallback(`/r/users/${props.userId}/badges`)
+  }
   if (props.type === t("コレクション", "Collections")) {
     props.onNavigateCallback(`/r/users/${props.userId}/collections`)
   }
