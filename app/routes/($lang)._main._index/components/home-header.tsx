@@ -194,7 +194,10 @@ function HomeHeader(props: Props) {
               <Link to={getSensitiveLink("/themes")}>
                 <Button variant={"ghost"}>{t("お題", "Theme")}</Button>
               </Link>
-              <Link to={getSensitiveLink("/rankings")}>
+              <Link
+                className="hidden lg:block"
+                to={getSensitiveLink("/rankings")}
+              >
                 <Button variant={"ghost"}>{t("ランキング", "Ranking")}</Button>
               </Link>
               <Link to={getSensitiveLink("/?tab=follow-user")}>

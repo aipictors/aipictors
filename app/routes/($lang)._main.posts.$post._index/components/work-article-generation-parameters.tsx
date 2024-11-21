@@ -197,9 +197,7 @@ export function WorkArticleGenerationParameters(props: Props) {
         <Accordion type="single" collapsible>
           <AccordionItem value="setting">
             <AccordionTrigger>
-              <Button variant={"secondary"} className="w-full">
-                {t("生成情報", "Generation Information")}
-              </Button>
+              {t("生成情報", "Generation Information")}
             </AccordionTrigger>
             <AccordionContent className="space-y-2">
               <div className="space-y-2">
