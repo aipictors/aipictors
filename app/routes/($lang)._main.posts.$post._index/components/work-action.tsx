@@ -15,6 +15,7 @@ import { downloadZipFile } from "~/routes/($lang).generation._index/utils/downlo
 type Props = {
   id: string
   title?: string
+  description?: string
   currentImageUrl?: string
   imageUrls?: string[]
   workType: IntrospectionEnum<"WorkType">
@@ -104,7 +105,8 @@ export function WorkAction(props: Props) {
         )}
         <SharePopover
           isDisabledShare={props.isDisabledShare}
-          title={props.title}
+          title={props.title ?? ""}
+          description={props.description ?? ""}
           id={props.targetWorkId}
         />
         <WorkActionMenu

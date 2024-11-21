@@ -149,6 +149,11 @@ export function WorkArticle(props: Props) {
         <WorkActionContainer
           workLikesCount={props.work.likesCount}
           title={props.work.title}
+          description={
+            (props.work.description?.length ?? 0) > 100
+              ? `${props.work.description?.slice(0, 100)}...`
+              : (props.work.description ?? "")
+          }
           currentImageUrl={selectedImageUrl}
           imageUrls={[
             props.work.imageURL,

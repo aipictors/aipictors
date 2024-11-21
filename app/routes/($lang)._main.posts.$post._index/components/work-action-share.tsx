@@ -10,19 +10,26 @@ import { XIntent } from "./work-action-share-x"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  title?: string
+  title: string
+  description: string
   isDisabledShare?: boolean
   id: string
 }
 
 export function SharePopover(props: Props) {
   const t = useTranslation()
+
   const currentUrl = `https://www.aipictors.com/works/${props.id}`
+
+  const shareText = t(
+    `AIイラスト投稿サイトAipictorsに投稿された作品\n「${props.title}」\n\n${props.description}`,
+    `Work posted on AI Illustration Posting Site Aipictors\n"${props.title}"\n\n${props.description}`,
+  )
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button size={"icon"} variant="secondary">
+        <Button size="icon" variant="secondary">
           <Share2 />
         </Button>
       </PopoverTrigger>
@@ -43,11 +50,14 @@ export function SharePopover(props: Props) {
           </div>
           {!props.isDisabledShare && (
             <div className="grid gap-2">
+              {/* Copy URL Button */}
               <CopyWorkUrlButton currentUrl={currentUrl} />
+
+              {/* X (旧Twitter) Share Intent */}
               <XIntent
-                text={`${props.title}\n`}
-                url={`${currentUrl}\n`}
-                hashtags={["Aipictors", "AIIllust"]}
+                text={shareText}
+                url={currentUrl}
+                hashtags={["Aipictors", t("AIイラスト", "AIIllust")]}
               />
             </div>
           )}

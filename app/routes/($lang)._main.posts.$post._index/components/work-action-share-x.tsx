@@ -22,9 +22,9 @@ export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
     const _url = new URL("https://x.com/intent/tweet")
 
     if (text !== undefined) _url.searchParams.set("text", text)
-    if (url !== undefined) _url.searchParams.set("url", url)
+    if (url !== undefined) _url.searchParams.set("url", `\n${url}\n`)
     if (hashtags !== undefined)
-      _url.searchParams.set("hashtags", hashtags.join(","))
+      _url.searchParams.set("hashtags", `${hashtags.join(",")}`)
     if (via !== undefined) _url.searchParams.set("via", via)
     if (related !== undefined)
       _url.searchParams.set("related", related.join(","))

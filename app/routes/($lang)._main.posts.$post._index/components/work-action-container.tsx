@@ -6,6 +6,7 @@ import { graphql } from "gql.tada"
 
 type Props = {
   title?: string
+  description?: string
   currentImageUrl?: string
   imageUrls?: string[]
   workLikesCount: number
@@ -37,6 +38,7 @@ export function WorkActionContainer(props: Props) {
       id={props.targetWorkId}
       workLikesCount={props.workLikesCount}
       title={props.title}
+      description={props.description}
       currentImageUrl={props.currentImageUrl}
       imageUrls={props.imageUrls}
       defaultLiked={isLiked}

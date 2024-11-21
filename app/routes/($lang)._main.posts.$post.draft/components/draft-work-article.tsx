@@ -118,6 +118,7 @@ export function DraftWorkArticle(props: Props) {
         <WorkActionContainer
           workLikesCount={props.work.likesCount}
           title={props.work.title}
+          description={props.work.description ?? ""}
           currentImageUrl={selectedImageUrl}
           imageUrls={[
             props.work.imageURL,

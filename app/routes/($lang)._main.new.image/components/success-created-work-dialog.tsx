@@ -8,6 +8,7 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title: string | null
+  description: string | null
   isOpen: boolean
   imageBase64: string | null
   workId: string | null
@@ -86,6 +87,11 @@ export function SuccessCreatedWorkDialog(props: Props) {
     return reservedDate > now
   }
 
+  const shareText = t(
+    `AIイラスト投稿サイトAipictorsに投稿された作品\n「${props.title}」\n\n${props.description}`,
+    `Work posted on AI Illustration Posting Site Aipictors\n"${props.title}"\n\n${props.description}`,
+  )
+
   return (
     <>
       <Dialog
@@ -123,7 +129,7 @@ export function SuccessCreatedWorkDialog(props: Props) {
           </p>
           <div className="w-full">
             <XIntent
-              text={`${props.title}\n`}
+              text={shareText}
               url={`${
                 props.uuid
                   ? `https://www.aipictors.com/works/${props.uuid}`

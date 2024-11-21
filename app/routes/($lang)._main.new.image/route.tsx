@@ -579,6 +579,7 @@ export default function NewImage() {
       <SuccessCreatedWorkDialog
         isOpen={state.progress === 100}
         title={inputState.title}
+        description={inputState.caption}
         imageBase64={state.thumbnailBase64}
         workId={state.uploadedWorkId}
         uuid={state.uploadedWorkUuid}
