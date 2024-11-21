@@ -9,7 +9,6 @@ import {
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
 import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
-import { config } from "~/config"
 import { getAuth, signOut } from "firebase/auth"
 import { toast } from "sonner"
 
@@ -28,9 +27,6 @@ export function LogoutDialogLegacy(props: Props) {
     props.onClose()
     resetCookieLoginToken()
     toast("ログアウトしました。")
-    const linkNode = document.createElement("a")
-    linkNode.href = config.wordpressLink.logout
-    linkNode.click()
   }
 
   return (

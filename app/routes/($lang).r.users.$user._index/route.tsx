@@ -226,6 +226,7 @@ export default function UserLayout() {
         <div className="flex min-h-96 flex-col gap-y-4">
           <UserAboutCard user={data.user} />
           <UserSensitivePickupContents
+            userNewWorks={data.user.works ?? []}
             userPickupWorks={data.user.featuredSensitiveWorks ?? []}
             userId={data.user.id}
           />

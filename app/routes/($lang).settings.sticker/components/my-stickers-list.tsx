@@ -19,6 +19,7 @@ import {
   DialogFooter,
 } from "~/components/ui/dialog"
 import { StickerChangeAccessTypeActionDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-action-dialog"
+import { PlusIcon } from "lucide-react"
 
 export function MyStickersList() {
   const authContext = useContext(AuthContext)
@@ -113,7 +114,8 @@ export function MyStickersList() {
           }}
         >
           <Button variant={"secondary"}>
-            {t("新規スタンプ", "New Sticker")}
+            {t("新規スタンプを作成する", "New Sticker")}
+            <PlusIcon className="w-8" />
           </Button>
         </AddStickerDialog>
       </div>

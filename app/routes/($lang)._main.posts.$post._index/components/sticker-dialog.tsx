@@ -152,6 +152,11 @@ export function StickerDialog(props: Props) {
         </div>
         <ScrollArea className="flex h-[80vh] w-[80vw] flex-wrap overflow-y-auto">
           <div className="flex h-[80vh] w-[80vw] flex-wrap overflow-y-auto">
+            <AddStickerButton
+              onAddedSicker={() => {
+                refetch()
+              }}
+            />
             {stickers?.viewer?.userStickers?.map((sticker) => (
               <StickerButton
                 key={sticker.id}
@@ -164,11 +169,6 @@ export function StickerDialog(props: Props) {
                 size={stickerSize}
               />
             ))}
-            <AddStickerButton
-              onAddedSicker={() => {
-                refetch()
-              }}
-            />
           </div>
         </ScrollArea>
         {type === "CREATED" && (

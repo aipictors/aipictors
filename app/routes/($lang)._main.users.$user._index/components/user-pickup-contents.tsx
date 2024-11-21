@@ -9,6 +9,7 @@ import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
   userPickupWorks: FragmentOf<typeof HomeWorkFragment>[]
+  userNewWorks: FragmentOf<typeof HomeWorkFragment>[]
   userId: string
 }
 
@@ -22,12 +23,19 @@ export function UserPickupContents(props: Props) {
     },
   })
 
-  const featureWorks = workRes?.user?.featuredWorks
+  const workDisplayed = workRes?.user?.featuredWorks ?? props.userPickupWorks
 
-  const workDisplayed = featureWorks ?? props.userPickupWorks
+  const newWorkDisplayed = workRes?.user?.works ?? props.userNewWorks
 
   return (
     <div className="items-center">
+      {newWorkDisplayed && newWorkDisplayed.length > 0 && (
+        <HomeWorkSection
+          title="最新"
+          works={newWorkDisplayed}
+          isCropped={true}
+        />
+      )}
       {workDisplayed && workDisplayed.length > 0 && (
         <HomeWorkSection
           title="ピックアップ"
@@ -42,6 +50,11 @@ export function UserPickupContents(props: Props) {
 export const UserPickupFragment = graphql(
   `fragment UserPickup on UserNode @_unmask {
     featuredWorks {
+      ...HomeWork
+    }
+    works(limit: 8, offset: 0, where: {
+      isSensitive: false
+    }) {
       ...HomeWork
     }
   }`,

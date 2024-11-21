@@ -41,27 +41,33 @@ export function UserHomeMenu(props: Props) {
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-2 right-0 z-10 md:hidden">
         <div className="flex space-x-2">
-          <Button
-            onClick={() => {
-              navigate(`/r/users/${cachedUser.login}`)
-            }}
-            variant={"secondary"}
-          >
-            <div className="flex cursor-pointer items-center">
-              <Heart className="mr-2 h-5 w-4" />
-              {cachedUser.receivedSensitiveLikesCount}
-              <p>{t("センシティブ", "Sensitive")}</p>
-            </div>
-          </Button>
+          {cachedUser.receivedSensitiveLikesCount > 0 && (
+            <Button
+              onClick={() => {
+                navigate(`/r/users/${cachedUser.login}`)
+              }}
+              variant={"secondary"}
+            >
+              <div className="flex cursor-pointer items-center">
+                <Heart className="mr-2 h-5 w-4" />
+                {cachedUser.receivedSensitiveLikesCount}
+                <p>{t("センシティブ", "Sensitive")}</p>
+              </div>
+            </Button>
+          )}
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />
         </div>
       </div>
       <div className="absolute top-2 right-0 hidden md:block">
         <div className="flex w-full items-center justify-end space-x-4">
-          <SensitiveConfirmDialog
-            receivedSensitiveLikesCount={cachedUser.receivedSensitiveLikesCount}
-            userLogin={cachedUser.login}
-          />
+          {cachedUser.receivedSensitiveLikesCount > 0 && (
+            <SensitiveConfirmDialog
+              receivedSensitiveLikesCount={
+                cachedUser.receivedSensitiveLikesCount
+              }
+              userLogin={cachedUser.login}
+            />
+          )}
           <UserActionOther id={cachedUser.id} isMuted={isMuted} />
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />
           <FollowButton

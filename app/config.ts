@@ -309,7 +309,6 @@ export const config = {
    * ワードプレスリンク
    */
   wordpressLink: {
-    logout: "https://legacy.aipictors.com/logout",
     top: "https://legacy.aipictors.com",
   },
   /**

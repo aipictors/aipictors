@@ -193,6 +193,7 @@ export default function UserLayout() {
           <UserAboutCard user={data.user} />
           <UserPickupContents
             userPickupWorks={data.user.featuredWorks ?? []}
+            userNewWorks={data.user.works ?? []}
             userId={data.user.id}
           />
           <div className="space-y-4">

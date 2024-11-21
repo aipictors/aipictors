@@ -12,7 +12,6 @@ import {
 import { getAuth, signOut } from "firebase/auth"
 import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
 import { toast } from "sonner"
-import { config } from "~/config"
 import { Button } from "~/components/ui/button"
 
 /**
@@ -23,9 +22,6 @@ export function LogoutDialogButton() {
     await signOut(getAuth())
     resetCookieLoginToken()
     toast("ログアウトしました。")
-    const linkNode = document.createElement("a")
-    linkNode.href = config.wordpressLink.logout
-    linkNode.click()
   }
 
   return (

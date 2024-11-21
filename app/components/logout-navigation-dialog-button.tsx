@@ -10,7 +10,6 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
 import { resetCookieLoginToken } from "~/utils/reset-cookie-login-token"
-import { config } from "~/config"
 import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 import { getAuth, signOut } from "firebase/auth"
 import { LogOutIcon } from "lucide-react"
@@ -31,9 +30,6 @@ export function NavigationLogoutDialogButton(props: Props) {
     await signOut(getAuth())
     resetCookieLoginToken()
     toast(t("ログアウトしました。", "Logged out"))
-    const linkNode = document.createElement("a")
-    linkNode.href = config.wordpressLink.logout
-    linkNode.click()
   }
 
   return (
