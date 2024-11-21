@@ -355,6 +355,25 @@ export function WorkCommentList(props: Props) {
                   ])
                 }}
               />
+              {/* 新しく追加した返信への返信 */}
+              {showNewReplyComments?.map((newReply) =>
+                newReply.replyTargetId !== comment.id ? null : (
+                  <WorkCommentResponse
+                    key={newReply.id}
+                    userId={newReply.user?.id ?? ""}
+                    isMine={newReply.user?.id === appContext.userId}
+                    createdAt={newReply.createdAt}
+                    stickerImageURL={newReply.sticker?.image?.downloadURL}
+                    text={newReply.text}
+                    iconUrl={withIconUrlFallback(userIcon)}
+                    userName={newReply.user?.name}
+                    replyId={newReply.id}
+                    onDeleteComment={() => {
+                      onDeleteComment(newReply.id)
+                    }}
+                  />
+                ),
+              )}
               {/* コメントへの返信 */}
               {comment.responses !== null &&
                 comment.responses?.length !== 0 &&
@@ -411,25 +430,6 @@ export function WorkCommentList(props: Props) {
                       }}
                     />
                   ))}
-              {/* 新しく追加した返信への返信 */}
-              {showNewReplyComments?.map((newReply) =>
-                newReply.replyTargetId !== comment.id ? null : (
-                  <WorkCommentResponse
-                    key={newReply.id}
-                    userId={newReply.user?.id ?? ""}
-                    isMine={newReply.user?.id === appContext.userId}
-                    createdAt={newReply.createdAt}
-                    stickerImageURL={newReply.sticker?.image?.downloadURL}
-                    text={newReply.text}
-                    iconUrl={withIconUrlFallback(userIcon)}
-                    userName={newReply.user?.name}
-                    replyId={newReply.id}
-                    onDeleteComment={() => {
-                      onDeleteComment(newReply.id)
-                    }}
-                  />
-                ),
-              )}
             </div>
           ))}
           {showCommentsAfterMore.length > 0 && (
@@ -488,6 +488,81 @@ export function WorkCommentList(props: Props) {
                       ])
                     }}
                   />
+                  {/* 新しく追加した返信への返信 */}
+                  {showNewReplyComments?.map((newReply) =>
+                    newReply.replyTargetId !== comment.id ? null : (
+                      <WorkCommentResponse
+                        key={newReply.id}
+                        userId={newReply.user?.id ?? ""}
+                        isMine={newReply.user?.id === appContext.userId}
+                        createdAt={newReply.createdAt}
+                        stickerImageURL={newReply.sticker?.image?.downloadURL}
+                        text={newReply.text}
+                        iconUrl={withIconUrlFallback(userIcon)}
+                        userName={newReply.user?.name}
+                        replyId={newReply.id}
+                        onDeleteComment={() => {
+                          onDeleteComment(newReply.id)
+                        }}
+                      />
+                    ),
+                  )}
+                  {/* コメントへの返信 */}
+                  {comment.responses !== null &&
+                    comment.responses?.length !== 0 &&
+                    comment.responses
+                      // .sort((a, b) => a.createdAt - b.createdAt)
+                      .filter((reply) => !hideCommentIds.includes(reply.id))
+                      .map((reply) => (
+                        <WorkCommentResponse
+                          key={reply.id}
+                          userId={reply.user?.id ?? ""}
+                          isMine={reply.user?.id === appContext.userId}
+                          createdAt={reply.createdAt}
+                          stickerImageURL={reply.sticker?.imageUrl ?? ""}
+                          stickerTitle={reply.sticker?.title}
+                          stickerId={reply.sticker?.id}
+                          stickerAccessType={reply.sticker?.accessType}
+                          isStickerDownloadable={reply.sticker?.isDownloaded}
+                          text={reply.text}
+                          userIconImageURL={withIconUrlFallback(
+                            reply.user?.iconUrl,
+                          )}
+                          userName={reply.user?.name}
+                          replyId={reply.id}
+                          iconUrl={withIconUrlFallback(userIcon)}
+                          onDeleteComment={() => {
+                            onDeleteComment(reply.id)
+                          }}
+                          onReplyCompleted={(
+                            id: string,
+                            text: string,
+                            stickerId: string,
+                            stickerImageURL: string,
+                          ) => {
+                            // 表示コメントを追加
+                            setNewReplyComments([
+                              ...newReplyComments,
+                              {
+                                replyTargetId: comment.id,
+                                id: id,
+                                text: text,
+                                createdAt: new Date().getTime(),
+                                user: {
+                                  id: appContext.userId ?? "",
+                                  name: appContext.displayName ?? "",
+                                  iconUrl: withIconUrlFallback(userIcon),
+                                },
+                                sticker: {
+                                  image: {
+                                    downloadURL: stickerImageURL,
+                                  },
+                                },
+                              },
+                            ])
+                          }}
+                        />
+                      ))}
                 </div>
               ))}
             </ExpansionTransition>
