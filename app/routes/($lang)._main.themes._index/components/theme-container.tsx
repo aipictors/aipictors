@@ -129,6 +129,18 @@ export function ThemeContainer(props: Props) {
       ? new Date(props.year, props.month - 1, props.day + 1)
       : new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)
 
+    // 今日の日付から7日後を計算
+    const sevenDaysFromNow = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 7,
+    )
+
+    // 7日後以降なら処理を中断
+    if (nextDay > sevenDaysFromNow) {
+      return
+    }
+
     navigate(
       `/themes/${nextDay.getFullYear()}/${nextDay.getMonth() + 1}/${nextDay.getDate()}`,
     )
@@ -180,11 +192,13 @@ export function ThemeContainer(props: Props) {
               {t("今日のお題は", "Today's theme is")}
               <br />「{props.todayTheme.title}」
             </h2>
-            <img
-              className="absolute top-0 left-0 w-full"
-              src={props.todayTheme.firstWork?.smallThumbnailImageURL}
-              alt={props.todayTheme.title}
-            />
+            {props.todayTheme.firstWork?.smallThumbnailImageURL && (
+              <img
+                className="absolute top-0 left-0 w-full"
+                src={props.todayTheme.firstWork?.smallThumbnailImageURL}
+                alt={props.todayTheme.title}
+              />
+            )}
             <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
           </Link>
         </div>
@@ -204,11 +218,13 @@ export function ThemeContainer(props: Props) {
                   {t("作品数", "Number of works")}: {props.worksCount}
                 </p>
               </h2>
-              <img
-                className="absolute top-0 left-0 w-full"
-                src={props.targetThemes[0].firstWork?.smallThumbnailImageURL}
-                alt={props.targetThemes[0].title}
-              />
+              {props.targetThemes[0].firstWork?.smallThumbnailImageURL && (
+                <img
+                  className="absolute top-0 left-0 w-full"
+                  src={props.targetThemes[0].firstWork?.smallThumbnailImageURL}
+                  alt={props.targetThemes[0].title}
+                />
+              )}
               <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
             </Link>
           </div>
@@ -229,6 +245,25 @@ export function ThemeContainer(props: Props) {
             <Button
               variant={"secondary"}
               onClick={handleNextDay}
+              disabled={
+                props.day
+                  ? new Date(props.year, props.month - 1, props.day + 1) >
+                    new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() + 7,
+                    )
+                  : new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() + 1,
+                    ) >
+                    new Date(
+                      today.getFullYear(),
+                      today.getMonth(),
+                      today.getDate() + 7,
+                    )
+              }
               className="flex items-center p-2"
             >
               {t("翌日", "Next Day")}
