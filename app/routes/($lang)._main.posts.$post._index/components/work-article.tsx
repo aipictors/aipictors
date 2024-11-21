@@ -326,18 +326,20 @@ export function WorkArticle(props: Props) {
             props.work.enDescription ?? props.work.description ?? "",
           )}
         </p>
-        {props.work.relatedUrl && (
-          <Card>
-            <CardContent className="p-2">
-              <div className="flex flex-col">
-                <p>{t("関連リンク", "related url")}</p>
-                <Link to={`${props.work.relatedUrl}`}>
-                  {props.work.relatedUrl}
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {props.work.relatedUrl !== null &&
+          props.work.relatedUrl !== "undefined" &&
+          props.work.relatedUrl?.length > 0 && (
+            <Card>
+              <CardContent className="p-2">
+                <div className="flex flex-col">
+                  <p>{t("関連リンク", "related url")}</p>
+                  <Link to={`${props.work.relatedUrl}`}>
+                    {props.work.relatedUrl}
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         {props.work.promptAccessType === "PRIVATE" &&
           props.work.user.id === appContext.userId && (
             <p className="flex items-center gap-x-2 font-bold opacity-60">
