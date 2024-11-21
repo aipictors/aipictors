@@ -9,7 +9,14 @@ export const loader = async (props: LoaderFunctionArgs) => {
     return await handlePostsRedirect(url)
   }
 
-  return null
+  // works/:id のリダイレクト対応
+  const worksMatch = pathname.match(/^\/works\/(\d+)\/?$/)
+  if (worksMatch) {
+    const id = worksMatch[1] // キャプチャしたID
+    return redirect(`/posts/${id}`, { status: 301 })
+  }
+
+  return redirect("/")
 }
 
 const handlePostsRedirect = async (url: URL) => {
