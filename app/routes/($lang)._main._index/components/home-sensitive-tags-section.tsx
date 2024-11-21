@@ -5,8 +5,8 @@ import {
 } from "~/components/ui/carousel"
 import React from "react"
 import Autoplay from "embla-carousel-autoplay"
-import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
+import { HomeSensitiveTagsSectionItem } from "~/routes/($lang)._main._index/components/home-sensitive-tags-section-item"
 
 type Props = {
   title?: string
@@ -20,7 +20,7 @@ export function HomeSensitiveTagsSection(props: Props) {
 
   return (
     <>
-      <h2 className="items-center space-x-2 font-bold text-md">
+      <h2 className="items-center space-x-2 font-bold text-xl">
         {props.title}
       </h2>
       <Carousel
@@ -33,21 +33,10 @@ export function HomeSensitiveTagsSection(props: Props) {
         <CarouselContent>
           {props.tags?.map((tag, index) => (
             <CarouselItem className="basis-auto" key={index.toString()}>
-              <div className="group relative overflow-hidden rounded-md">
-                <Link
-                  to={"/tags/${tag.tagName}?sensitive=1"}
-                  className="rounded-md"
-                >
-                  <img
-                    className="h-[240px] w-[196px] bg-white object-cover object-center transition-transform duration-200 ease-in-out group-hover:scale-105"
-                    src={tag.thumbnailUrl}
-                    alt={tag.tagName}
-                  />
-                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
-                    <p className="text-white">{`#${tag.tagName}`}</p>
-                  </div>
-                </Link>
-              </div>
+              <HomeSensitiveTagsSectionItem
+                tagName={tag.tagName}
+                tagThumbnailUrl={tag.thumbnailUrl}
+              />
             </CarouselItem>
           ))}
         </CarouselContent>
