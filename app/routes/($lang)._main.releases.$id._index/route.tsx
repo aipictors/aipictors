@@ -56,7 +56,8 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneDay,
+  // 急なお知らせ変更などの可能性があるため、キャッシュを利用しない
+  // "Cache-Control": config.cacheControl.oneDay,
 })
 
 export const meta: MetaFunction = (props) => {

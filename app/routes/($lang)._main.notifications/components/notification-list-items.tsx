@@ -3,10 +3,7 @@ import {
   HomeNotificationsContentAwardItem,
   WorkAwardNotificationFragment,
 } from "~/routes/($lang)._main._index/components/home-notifications-content-award-item"
-import {
-  HomeNotificationsContentCommentedItem,
-  WorkCommentNotificationFragment,
-} from "~/routes/($lang)._main._index/components/home-notifications-content-commented-item"
+import { WorkCommentNotificationFragment } from "~/routes/($lang)._main._index/components/home-notifications-content-commented-item"
 import {
   FollowNotificationFragment,
   HomeNotificationsContentFollowedItem,
@@ -15,16 +12,15 @@ import {
   HomeNotificationsContentLikedItem,
   LikedWorkNotificationFragment,
 } from "~/routes/($lang)._main._index/components/home-notifications-content-liked-item"
-import {
-  HomeNotificationsContentReplyItem,
-  WorkCommentReplyNotificationFragment,
-} from "~/routes/($lang)._main._index/components/home-notifications-content-reply-item"
+import { WorkCommentReplyNotificationFragment } from "~/routes/($lang)._main._index/components/home-notifications-content-reply-item"
 import {
   HomeNotificationsContentSumLikedItem,
   LikedWorksSummaryNotificationFragment,
 } from "~/routes/($lang)._main._index/components/home-notifications-content-sum-liked-item"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
+import { NotificationListItemDetail } from "~/routes/($lang)._main.notifications/components/notification-list-item-detail"
+import { NotificationListReplyItemDetail } from "~/routes/($lang)._main.notifications/components/notification-list-reply-item-detail"
 
 type Props = {
   type: IntrospectionEnum<"NotificationType"> | null
@@ -54,7 +50,7 @@ export function NotificationListItems(props: Props) {
           notification.__typename === "WorkCommentNotificationNode"
         ) {
           return (
-            <HomeNotificationsContentCommentedItem
+            <NotificationListItemDetail
               key={notification.id}
               notification={notification}
               stickerSize="xl"
@@ -66,7 +62,7 @@ export function NotificationListItems(props: Props) {
           notification.__typename === "WorkCommentReplyNotificationNode"
         ) {
           return (
-            <HomeNotificationsContentReplyItem
+            <NotificationListReplyItemDetail
               key={notification.id}
               notification={notification}
               stickerSize="xl"

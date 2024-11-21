@@ -6,8 +6,10 @@ import Image from "@tiptap/extension-image"
 import CodeBlock from "@tiptap/extension-code-block"
 import Blockquote from "@tiptap/extension-blockquote"
 import HorizontalRule from "@tiptap/extension-horizontal-rule"
-import { useEffect } from "react"
 import { ImagesPreview } from "~/components/images-preview"
+import { useContext, useEffect } from "react"
+import { AuthContext } from "~/contexts/auth-context"
+import { Loader2Icon } from "lucide-react"
 
 type Props = {
   title: string
@@ -21,6 +23,8 @@ type Props = {
  * リリース情報アイテム
  */
 export function ReleaseItem(props: Props) {
+  const authContext = useContext(AuthContext)
+
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp)
     return date.toLocaleDateString()
@@ -86,7 +90,16 @@ export function ReleaseItem(props: Props) {
         </div>
       </div>
       <div className="mt-4 rounded-lg bg-zinc-100 bg-opacity-50 p-4 dark:bg-zinc-900">
-        <EditorContent editor={editor} />
+        {authContext.isLoading ? (
+          <div className="flex flex-col space-y-2">
+            <div className="flex space-x-2">
+              <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+            </div>
+            {props.description}
+          </div>
+        ) : (
+          <EditorContent editor={editor} />
+        )}
       </div>
       {props.thumbnailUrl && (
         <ImagesPreview

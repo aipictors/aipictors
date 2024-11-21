@@ -22,9 +22,9 @@ const stickerSizeClasses = {
 }
 
 /**
- * ヘッダーのコメントのお知らせ内容
+ * コメントのお知らせ内容
  */
-export function HomeNotificationsContentCommentedItem(props: Props) {
+export function NotificationListItemDetail(props: Props) {
   const t = useTranslation()
 
   const stickerClass = props.stickerSize
@@ -38,9 +38,16 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
 
   return (
     <div className="flex flex-col space-y-2 border-b p-2">
+      <div className="block h-16 w-16 overflow-hidden rounded-md md:hidden">
+        <img
+          src={props.notification.work?.smallThumbnailImageURL}
+          alt="thumbnail"
+          className="h-16 w-16 object-cover"
+        />
+      </div>
       <Link
         to={`/posts/${props.notification.work?.id}`}
-        className="flex items-center rounded-md p-2 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
+        className="flex items-center space-x-2 rounded-md p-2 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
       >
         <>
           <img
@@ -83,11 +90,11 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
               )}
             </div>
           </div>
-          <div className="h-12 w-12 overflow-hidden rounded-md">
+          <div className="hidden h-32 w-32 overflow-hidden rounded-md md:block">
             <img
               src={props.notification.work?.smallThumbnailImageURL}
               alt="thumbnail"
-              className="h-16 w-16 object-cover"
+              className="h-32 w-32 object-cover"
             />
           </div>
         </>

@@ -1,6 +1,5 @@
-import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
-import { Link } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
 
 type Props = {
   works: FragmentOf<typeof WorkListItemFragment>[]
@@ -13,13 +12,16 @@ export function WorkList(props: Props) {
   return (
     <ul className="grid w-full grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-8">
       {props.works.map((work) => (
-        <Link key={work.id} to={`/posts/${work.id}`}>
-          <WorkCard
-            imageURL={work.largeThumbnailImageURL}
-            imageWidth={work.largeThumbnailImageWidth}
-            imageHeight={work.largeThumbnailImageHeight}
+        <div key={work.id}>
+          <CroppedWorkSquare
+            workId={work.id}
+            imageUrl={work.smallThumbnailImageURL}
+            thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+            size="lg"
+            imageWidth={work.smallThumbnailImageWidth}
+            imageHeight={work.smallThumbnailImageHeight}
           />
-        </Link>
+        </div>
       ))}
     </ul>
   )

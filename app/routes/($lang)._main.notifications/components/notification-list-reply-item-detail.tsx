@@ -1,0 +1,99 @@
+import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { toDateText } from "~/lib/app/utils/to-date-text"
+import { cn } from "~/lib/utils"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+
+type Props = {
+  notification: FragmentOf<typeof WorkCommentReplyNotificationFragment>
+  stickerSize?: "xl" | "lg" | "md" | "sm" | "xs"
+}
+
+const stickerSizeClasses = {
+  xl: "h-24 w-24 md:h-32 md:w-32",
+  lg: "h-20 w-20 md:h-24 md:w-24",
+  md: "h-12 w-12",
+  sm: "h-8 w-8",
+  xs: "h-6 w-6",
+}
+
+/**
+ * ヘッダーの返信のお知らせ内容
+ */
+export function NotificationListReplyItemDetail(props: Props) {
+  const stickerClass = props.stickerSize
+    ? stickerSizeClasses[props.stickerSize]
+    : stickerSizeClasses.md
+
+  return (
+    <div className="flex flex-col space-y-2 p-2">
+      <div className="block h-16 w-16 overflow-hidden rounded-md md:hidden">
+        <img
+          src={props.notification.work?.smallThumbnailImageURL}
+          alt="thumbnail"
+          className="h-16 w-16 object-cover"
+        />
+      </div>
+      <Link
+        to={`/posts/${props.notification.work?.id}`}
+        className="flex items-center border-b transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
+      >
+        <Link to={`/users/${props.notification.user?.id}`}>
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              className="h-8 w-8 rounded-full object-cover"
+              src={withIconUrlFallback(props.notification.user?.iconUrl)}
+              alt="thumbnail"
+            />
+            <AvatarFallback />
+          </Avatar>
+        </Link>
+        <div className="ml-2 w-full overflow-hidden">
+          <p className="text-ellipsis">
+            {props.notification.user?.name}さんが返信しました
+            {props.notification.message && `「${props.notification.message}」`}
+          </p>
+          {props.notification.sticker?.imageUrl && (
+            <img
+              src={props.notification.sticker.imageUrl}
+              alt="sticker"
+              className={cn(stickerClass, "h-12 w-12")}
+            />
+          )}
+          <p className="text-sm opacity-80">
+            {toDateText(props.notification.createdAt)}
+          </p>
+        </div>
+        <div className="hidden h-32 w-32 overflow-hidden rounded-md md:block">
+          <img
+            src={props.notification.work?.smallThumbnailImageURL}
+            alt="thumbnail"
+            className="h-32 w-32 object-cover"
+          />
+        </div>
+      </Link>
+    </div>
+  )
+}
+
+export const WorkCommentReplyNotificationFragment = graphql(
+  `fragment WorkCommentReplyNotification on WorkCommentReplyNotificationNode @_unmask {
+    id
+    createdAt
+    message
+    work {
+      id
+      smallThumbnailImageURL
+    }
+    user {
+      id
+      name
+      iconUrl
+    }
+    sticker {
+      id
+      imageUrl
+    }
+  }`,
+)

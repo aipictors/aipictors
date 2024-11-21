@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
 import { Link, useNavigation, useLocation, useNavigate } from "@remix-run/react"
-import { Loader2Icon, MenuIcon, Search } from "lucide-react"
+import { Loader2Icon, MenuIcon, MoveLeft, Search } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
@@ -165,7 +165,7 @@ function HomeHeader(props: Props) {
           </Sheet>
           <div className="flex items-center">
             <Link
-              className="items-center space-x-2 md:flex"
+              className="hidden items-center space-x-2 md:flex"
               to={getSensitiveLink("/")}
             >
               {navigation.state === "loading" && (
@@ -187,6 +187,16 @@ function HomeHeader(props: Props) {
               </div>
             </Link>
           </div>
+          {!isSearchFormOpen && (
+            <Button
+              className="block md:hidden"
+              onClick={onToggleSearchForm}
+              variant={"ghost"}
+              size={"icon"}
+            >
+              <Search className="m-auto w-auto" />
+            </Button>
+          )}
         </div>
         <div className="flex w-full justify-end gap-x-2">
           <div className="hidden w-full items-center space-x-2 md:flex">
@@ -205,6 +215,7 @@ function HomeHeader(props: Props) {
                   {t("フォロー新着", "Followed new posts")}
                 </Button>
               </Link>
+
               <div className="w-full flex-1">
                 <Input
                   onChange={onChangeSearchText}
@@ -218,20 +229,44 @@ function HomeHeader(props: Props) {
             </Button>
             <Separator orientation="vertical" />
           </div>
-          {/* <Link
-            className="hidden md:block"
-            to={"https://legacy.aipictors.com/"}
-          >
-            <Button variant={"ghost"}>{t("旧版トップ", "Old")}</Button>
-          </Link> */}
-          <Link to={"/generation"}>
-            <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
-          </Link>
-          <Link to={"/new/image"}>
-            <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
-          </Link>
+          {isSearchFormOpen ? (
+            <div className="flex w-full space-x-2 md:hidden">
+              <Button
+                className="block md:hidden"
+                onClick={onToggleSearchForm}
+                variant={"ghost"}
+                size={"icon"}
+              >
+                <MoveLeft className="w-8" />
+              </Button>
+              <Input
+                onChange={onChangeSearchText}
+                onKeyDown={handleKeyDown}
+                placeholder={t("作品を検索", "Search for posts")}
+              />
+            </div>
+          ) : (
+            <>
+              <Link to={"/generation"}>
+                <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
+              </Link>
+              <Link to={"/new/image"}>
+                <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
+              </Link>
+            </>
+          )}
+          {isSearchFormOpen && (
+            <div className="hidden space-x-2 md:flex">
+              <Link to={"/generation"}>
+                <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
+              </Link>
+              <Link to={"/new/image"}>
+                <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
+              </Link>
+            </div>
+          )}
           {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
-          {authContext.isLoggedIn && (
+          {!isSearchFormOpen && authContext.isLoggedIn && (
             <HomeNotificationsMenu
               isExistedNewNotification={isExistedNewNotificationState}
               setIsExistedNewNotificationState={
@@ -242,6 +277,30 @@ function HomeHeader(props: Props) {
                   ?.checkedNotificationTimes ?? []
               }
             />
+          )}
+          {isSearchFormOpen && authContext.isLoggedIn && (
+            <div className="hidden md:block">
+              <HomeNotificationsMenu
+                isExistedNewNotification={isExistedNewNotificationState}
+                setIsExistedNewNotificationState={
+                  setIsExistedNewNotificationState
+                }
+                checkedNotificationTimes={
+                  isExistedNewNotificationData.data?.viewer
+                    ?.checkedNotificationTimes ?? []
+                }
+              />
+            </div>
+          )}
+          {isSearchFormOpen && (
+            <Button
+              className="md:hidden"
+              onClick={onSearch}
+              variant={"ghost"}
+              size={"icon"}
+            >
+              <Search className="w-16" />
+            </Button>
           )}
           <Suspense>
             {authContext.isLoggedIn && (
