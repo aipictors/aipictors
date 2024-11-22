@@ -269,6 +269,18 @@ export function ThemeContainer(props: Props) {
               {t("翌日", "Next Day")}
               <ArrowRightIcon />
             </Button>
+            <Button
+              variant="secondary"
+              onClick={() =>
+                navigate(
+                  `/r/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`,
+                )
+              }
+            >
+              <div className="flex cursor-pointer items-center space-x-2 text-sm">
+                <p>{t("センシティブ", "Sensitive")}</p>
+              </div>
+            </Button>
           </div>
           <div className="flex gap-x-2">
             <div className="flex items-center space-x-2">
