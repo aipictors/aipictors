@@ -66,6 +66,10 @@ export function WorkUser(props: Props) {
             <p className="font-bold text-sm">{`${props.userFollowersCount}`}</p>
             <p className="text-sm opacity-50">{t("フォロワー", "Followers")}</p>
           </div>
+          <div className="flex items-center">
+            <p className="font-bold text-sm">{`${props.userWorksCount}`}</p>
+            <p className="text-sm opacity-50">{t("投稿", "Posts")}</p>
+          </div>
         </div>
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />
         {props.userPromptonId && props.userId !== appContext.userId && (

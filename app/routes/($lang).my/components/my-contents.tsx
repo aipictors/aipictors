@@ -77,11 +77,7 @@ export function MyContents(props: Props) {
         }}
       >
         <div className="hidden md:block">
-          <Tabs
-            className="mt-2 mb-8"
-            value={myContentType}
-            defaultValue={"HOME"}
-          >
+          <Tabs className="mt-2" value={myContentType} defaultValue={"HOME"}>
             <TabsList>
               <TabsTrigger
                 onClick={() => {

@@ -1,4 +1,10 @@
-import { EyeIcon, FolderIcon, HeartIcon, MessageCircleIcon } from "lucide-react"
+import {
+  EyeIcon,
+  FolderIcon,
+  HeartIcon,
+  MessageCircleIcon,
+  PenIcon,
+} from "lucide-react"
 import { DashboardHomeContentContainer } from "~/routes/($lang).my._index/components/my-home-content-container"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
@@ -43,7 +49,7 @@ export function DashboardHomeContents() {
     <>
       <div className="mb-4 space-y-4">
         <div className="block items-stretch space-x-0 space-y-2 md:flex md:space-x-2 md:space-y-0">
-          <div className="h-full w-full items-stretch">
+          <div className="h-auto w-full items-stretch">
             <DashboardHomeContentContainer
               title={t("合計リアクション数", "Total Reactions")}
             >
@@ -89,6 +95,30 @@ export function DashboardHomeContents() {
                   <p className="font-bold font-size-md">
                     {formatNumberWithCommas(
                       data?.viewer?.user.createdCommentsCount,
+                    )}
+                  </p>
+                </div>
+              </div>
+            </DashboardHomeContentContainer>
+            <DashboardHomeContentContainer title={t("実績", "Total Posts")}>
+              <div className="rounded-md">
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <PenIcon className="mr-2 w-3" />
+                    {t("投稿数", "Posts")}
+                  </div>
+                  <p className="font-bold font-size-md">
+                    {formatNumberWithCommas(data?.viewer?.user.worksCount)}
+                  </p>
+                </div>
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <HeartIcon className="mr-2 w-3" />
+                    {t("獲得いいね数", "Received Favorited")}
+                  </div>
+                  <p className="font-bold font-size-md">
+                    {formatNumberWithCommas(
+                      data?.viewer?.user.receivedLikesCount,
                     )}
                   </p>
                 </div>
@@ -194,6 +224,7 @@ const viewerUserQuery = graphql(
         createdViewsCount
         createdCommentsCount
         createdBookmarksCount
+        worksCount
       }
     }
   }`,
