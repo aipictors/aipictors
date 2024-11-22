@@ -5,7 +5,6 @@ import { useQuery } from "@apollo/client/index"
 import type { FragmentOf } from "gql.tada"
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
 import { AppPageHeader } from "~/components/app/app-page-header"
-import { ConstructionAlert } from "~/components/construction-alert"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
@@ -171,13 +170,7 @@ export function SensitiveThemeContainer(props: Props) {
 
   return (
     <div className="flex flex-col space-y-4">
-      <ConstructionAlert
-        type="WARNING"
-        message={t("旧版はこちら", "legacy version")}
-        fallbackURL="https://legacy.aipictors.com/idea"
-      />
       <AppPageHeader title={t("お題", "Theme")} description={description} />
-
       {!props.day && props.todayTheme && (
         <div className="relative overflow-hidden rounded-md">
           <Link

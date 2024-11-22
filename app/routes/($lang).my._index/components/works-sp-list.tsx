@@ -14,7 +14,6 @@ import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { Link } from "@remix-run/react"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
-import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useState } from "react"
@@ -26,6 +25,7 @@ import {
 import { Button } from "~/components/ui/button"
 import { useLocale } from "~/hooks/use-locale"
 import { DeleteConfirmTrashDialog } from "~/routes/($lang).my._index/components/delete-confirm-trash-dialog"
+import { CroppedMyWorkSquare } from "~/routes/($lang).my._index/components/cropped-my-work-square"
 
 type Props = {
   works: FragmentOf<typeof MobileWorkListItemFragment>[]
@@ -103,7 +103,7 @@ export function WorksSpList(props: Props) {
           <div key={index} className="flex flex-col">
             <div className="flex space-x-4 border-b pt-2 pb-2">
               <Link to={postUrl(work)}>
-                <CroppedWorkSquare
+                <CroppedMyWorkSquare
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
                   size="sm"
