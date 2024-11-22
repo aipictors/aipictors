@@ -77,7 +77,7 @@ function HomeHeader(props: Props) {
     navigate(getSensitiveLink(baseUrl))
   }
 
-  const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors β")
+  const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors")
 
   const isExistedNewNotificationData = useQuery(
     viewerIsExistedNewNotificationQuery,
