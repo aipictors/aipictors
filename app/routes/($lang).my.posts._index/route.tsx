@@ -150,6 +150,7 @@ export default function MyPosts() {
 
   const onClickPerPageChange = (perPage: number) => {
     setPerPage(perPage)
+    setPage(0)
   }
 
   const [worksMaxCount, setWorksMaxCount] = React.useState(0)
