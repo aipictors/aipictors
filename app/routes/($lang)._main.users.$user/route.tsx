@@ -102,8 +102,6 @@ export default function UserLayout() {
   // フォロワーなどの最新情報をログインしている場合は取得する
   const user = userRet?.user ?? data.user
 
-  console.log(userRet?.user)
-
   return (
     <div className="flex w-full flex-col justify-center">
       <div className="relative">
