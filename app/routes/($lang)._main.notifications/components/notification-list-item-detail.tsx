@@ -79,7 +79,7 @@ export function NotificationListItemDetail(props: Props) {
                     {props.notification.user?.name}さんがコメントしました
                   </span>
                 </div>
-                <p className="mt-2 text-gray-700 text-sm">
+                <p className="mt-2 text-sm">
                   {props.notification.message && (
                     <>「{props.notification.message}」</>
                   )}
@@ -125,7 +125,7 @@ export function NotificationListItemDetail(props: Props) {
                   </Avatar>
                   <div className="flex-1 border-gray-400 border-l-2 pl-2">
                     <div className="flex items-center space-x-2">
-                      <ReplyIcon className="h-5 w-5 text-gray-500" />
+                      <ReplyIcon className="h-5 w-5 " />
                       <p className="font-medium text-sm">
                         {reply.user?.name} が返信しました
                       </p>

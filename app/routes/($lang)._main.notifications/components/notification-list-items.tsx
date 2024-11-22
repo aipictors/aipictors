@@ -21,6 +21,10 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { NotificationListItemDetail } from "~/routes/($lang)._main.notifications/components/notification-list-item-detail"
 import { NotificationListReplyItemDetail } from "~/routes/($lang)._main.notifications/components/notification-list-reply-item-detail"
+import { Button } from "~/components/ui/button"
+import { useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   type: IntrospectionEnum<"NotificationType"> | null
@@ -40,11 +44,58 @@ export function NotificationListItems(props: Props) {
     fetchPolicy: "cache-first",
   })
 
+  const [filter, setFilter] = useState<"all" | "replied" | "notReplied">("all")
+
   const notifications = result.data?.viewer?.notifications ?? []
 
+  const t = useTranslation()
+
+  const filteredNotifications =
+    props.type === "WORK_COMMENT"
+      ? notifications.filter((notification) => {
+          return (
+            notification.__typename === "WorkCommentNotificationNode" &&
+            (filter === "all" ||
+              (filter === "replied" &&
+                notification.myReplies &&
+                notification.myReplies.length > 0) ||
+              (filter === "notReplied" &&
+                notification.myReplies &&
+                notification.myReplies.length === 0))
+          )
+        })
+      : notifications
+
+  console.log(filteredNotifications)
+
   return (
-    <div className="overflow-hidden">
-      {notifications.map((notification) => {
+    <div className="flex flex-col space-y-4 overflow-hidden">
+      {props.type === "WORK_COMMENT" && (
+        <div className="flex space-x-2">
+          <Button
+            variant={"secondary"}
+            onClick={() => setFilter("all")}
+            className={cn(filter === "all" && "opacity-80")}
+          >
+            {t("全て", "All")}
+          </Button>
+          <Button
+            variant={"secondary"}
+            onClick={() => setFilter("replied")}
+            className={cn(filter === "replied" && "opacity-80")}
+          >
+            {t("返信済み", "Replied")}
+          </Button>
+          <Button
+            variant={"secondary"}
+            onClick={() => setFilter("notReplied")}
+            className={cn(filter === "notReplied" && "opacity-80")}
+          >
+            {t("未返信", "Not replied")}
+          </Button>
+        </div>
+      )}
+      {filteredNotifications.map((notification) => {
         if (
           props.type === "WORK_COMMENT" &&
           notification.__typename === "WorkCommentNotificationNode"

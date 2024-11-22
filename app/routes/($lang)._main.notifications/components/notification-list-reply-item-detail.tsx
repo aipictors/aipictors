@@ -58,78 +58,44 @@ export function NotificationListReplyItemDetail(props: Props) {
             </TableCell>
 
             {/* 中央列: 返信情報 */}
-            <TableCell className="w-2/4 p-4 md:w-3/5">
-              <Link
-                to={`/posts/${props.notification.work?.id}`}
-                className="block rounded-md p-2 transition-colors"
-              >
-                <div className="flex items-center space-x-2">
-                  <Link to={`/users/${props.notification.user?.id}`}>
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={withIconUrlFallback(
-                          props.notification.user?.iconUrl,
-                        )}
-                        alt="user icon"
-                        className="h-8 w-8 rounded-full object-cover"
-                      />
-                      <AvatarFallback />
-                    </Avatar>
-                  </Link>
-                  <span className="font-medium">
-                    {props.notification.user?.name}さんが返信しました
-                  </span>
-                </div>
-                <p className="mt-2 text-gray-700 text-sm">
-                  {props.notification.message && (
-                    <>「{props.notification.message}」</>
-                  )}
-                </p>
-                {props.notification.sticker?.imageUrl && (
-                  <img
-                    src={props.notification.sticker.imageUrl}
-                    alt="sticker"
-                    className={cn(stickerClass, "mt-2")}
-                  />
-                )}
-              </Link>
-
-              {/* 返信元のコメント */}
-              {originalComment && (
-                <div className="mt-4 border-gray-400 border-l-4 pl-4">
-                  <Link to={`/posts/${originalComment.work?.id}`}>
-                    <div className="flex items-center space-x-2">
-                      <Avatar className="h-6 w-6">
+            {originalComment && (
+              <TableCell className="w-2/4 p-4 md:w-3/5">
+                <Link
+                  to={`/posts/${originalComment.work?.id}`}
+                  className="block rounded-md p-2 transition-colors"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Link to={`/users/${originalComment.user?.id}`}>
+                      <Avatar className="h-8 w-8">
                         <AvatarImage
                           src={withIconUrlFallback(
                             originalComment.user?.iconUrl,
                           )}
-                          alt="original user icon"
-                          className="h-6 w-6 rounded-full object-cover"
+                          alt="user icon"
+                          className="h-8 w-8 rounded-full object-cover"
                         />
                         <AvatarFallback />
                       </Avatar>
-                      <span className="font-medium text-sm">
-                        {originalComment.user?.name}さんのコメント
-                      </span>
-                    </div>
-                    <p className="mt-1 text-gray-600 text-sm">
-                      {originalComment.text && (
-                        <p>「{originalComment.text}」</p>
-                      )}
-                    </p>
-                    {originalComment.sticker?.imageUrl && (
-                      <img
-                        src={originalComment.sticker.imageUrl}
-                        alt="original sticker"
-                        className={cn(stickerClass, "mt-2")}
-                      />
+                    </Link>
+                    <span className="font-medium">
+                      {originalComment.user?.name}のコメント
+                    </span>
+                  </div>
+                  <p className="mt-2 text-sm">
+                    {originalComment.text.length > 0 && (
+                      <>「{originalComment.text}」</>
                     )}
-                  </Link>
-                </div>
-              )}
-            </TableCell>
-
+                  </p>
+                  {originalComment?.sticker?.imageUrl && (
+                    <img
+                      src={originalComment.sticker?.imageUrl}
+                      alt="sticker"
+                      className={cn(stickerClass, "mt-2")}
+                    />
+                  )}
+                </Link>
+              </TableCell>
+            )}
             {/* 右列: 詳細情報 */}
             <TableCell className="w-1/4 p-4 text-right md:w-1/5">
               <div className="hidden flex-col items-end space-y-2 md:flex">
@@ -157,12 +123,12 @@ export function NotificationListReplyItemDetail(props: Props) {
                   </Avatar>
                   <div className="flex-1 border-gray-400 border-l-2 pl-2">
                     <div className="flex items-center space-x-2">
-                      <ReplyIcon className="h-5 w-5 text-gray-500" />
+                      <ReplyIcon className="h-5 w-5 " />
                       <p className="font-medium text-sm">
                         {reply.user?.name} が返信しました
                       </p>
                     </div>
-                    <p className="mt-1 text-gray-700 text-sm">
+                    <p className="mt-1 text-sm">
                       {reply.message && `「${reply.message}」`}
                     </p>
                     {reply.sticker?.imageUrl && (
