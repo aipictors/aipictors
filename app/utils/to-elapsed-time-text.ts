@@ -23,7 +23,7 @@ const roundToNearestMinutes = (date: Date, roundToMinutes: number) => {
  * @param createdAt - UNIXタイムスタンプ (秒単位)
  */
 export const toElapsedTimeText = (createdAt: number) => {
-  const roundToMinutesUnit = 5
+  const roundToMinutesUnit = 3
   const now = roundToNearestMinutes(new Date(), roundToMinutesUnit)
   const targetDate = roundToNearestMinutes(
     new Date(createdAt * 1000),
