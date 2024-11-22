@@ -490,7 +490,7 @@ export default function EditImage() {
             rating: inputState.ratingRestriction,
             prompt: state.pngInfo?.params.prompt ?? null,
             negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
-            seed: state.pngInfo?.params.seed ?? null,
+            seed: state.pngInfo?.params.seed?.toString() ?? null,
             sampler: state.pngInfo?.params.sampler ?? null,
             strength: state.pngInfo?.params.strength ?? null,
             noise: state.pngInfo?.params.noise ?? null,

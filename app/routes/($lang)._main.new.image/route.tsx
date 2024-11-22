@@ -349,7 +349,7 @@ export default function NewImage() {
             prompt: inputState.imageInformation?.params.prompt ?? null,
             negativePrompt:
               inputState.imageInformation?.params.negativePrompt ?? null,
-            seed: inputState.imageInformation?.params.seed ?? null,
+            seed: inputState.imageInformation?.params.seed?.toString() ?? null,
             sampler: inputState.imageInformation?.params.sampler ?? null,
             strength: inputState.imageInformation?.params.strength ?? null,
             noise: inputState.imageInformation?.params.noise ?? null,
