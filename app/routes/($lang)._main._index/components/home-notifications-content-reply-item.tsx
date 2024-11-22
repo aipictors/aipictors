@@ -88,5 +88,23 @@ export const WorkCommentReplyNotificationFragment = graphql(
       id
       imageUrl
     }
+    comment {
+      id
+      createdAt
+      text
+      work {
+        id
+        smallThumbnailImageURL
+      }
+      user {
+        id
+        name
+        iconUrl
+      }
+      sticker {
+        id
+        imageUrl
+      }
+    }
   }`,
 )
