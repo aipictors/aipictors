@@ -195,6 +195,7 @@ export const MobileWorkListItemFragment = graphql(
     viewsCount
     smallThumbnailImageURL
     likesCount
+    rating
     bookmarksCount
     createdAt
     accessType

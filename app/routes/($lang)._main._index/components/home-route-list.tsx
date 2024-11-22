@@ -65,7 +65,7 @@ export function HomeRouteList(props: Props) {
   return (
     <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
       <HomeNavigationButton
-        href={"/r"}
+        href={isSensitive ? "/r" : "/"}
         onClick={closeHeaderMenu}
         icon={HomeIcon}
       >

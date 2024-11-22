@@ -22,6 +22,7 @@ type Props = {
   workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
   sumWorksCount: number
+  perPage: number
   setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
@@ -35,6 +36,7 @@ type Props = {
   onClickDateSortButton: () => void
   onClickWorkTypeSortButton: () => void
   onClickIsPromotionSortButton: () => void
+  onClickPerPageChange: (perPage: number) => void
 }
 
 /**
@@ -70,100 +72,123 @@ export function WorksSetting(props: Props) {
 
   return (
     <>
-      <div className="flex space-x-4">
-        {/* 公開範囲 */}
-        <Select
-          value={props.accessType ? props.accessType : ""}
-          onValueChange={(value) => {
-            if (value === "ALL") {
-              props.setAccessType(null)
-              return
-            }
-            props.setAccessType(value as IntrospectionEnum<"AccessType">)
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue
-              placeholder={
-                props.accessType
-                  ? toAccessTypeText(props.accessType)
-                  : t("公開範囲", "Access Range")
+      <div className="flex gap-x-2">
+        <div className="flex w-full flex-col gap-x-2 gap-y-2 md:flex-row">
+          {/* 公開範囲 */}
+          <Select
+            value={props.accessType ? props.accessType : ""}
+            onValueChange={(value) => {
+              if (value === "ALL") {
+                props.setAccessType(null)
+                return
               }
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("公開範囲", "Access Range")}</SelectItem>
-            <SelectItem value="PUBLIC">{t("公開", "Public")}</SelectItem>
-            <SelectItem value="SILENT">
-              {t("公開(新着無)", "Public (No New)")}
-            </SelectItem>
-            <SelectItem value="LIMITED">{t("限定公開", "Limited")}</SelectItem>
-            <SelectItem value="PRIVATE">{t("非公開", "Private")}</SelectItem>
-            <SelectItem value="DRAFT">{t("下書き", "Draft")}</SelectItem>
-          </SelectContent>
-        </Select>
-        {/* 作品種別 */}
-        <Select
-          value={props.workType ? props.workType : ""}
-          onValueChange={(value) => {
-            if (value === "ALL") {
-              props.setWorkType(null)
-              return
-            }
-            props.setWorkType(value as IntrospectionEnum<"WorkType">)
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue
-              placeholder={
-                props.workType
-                  ? toWorkTypeText({
-                      type: props.workType,
-                      lang: location,
-                    })
-                  : t("種類", "Type")
+              props.setAccessType(value as IntrospectionEnum<"AccessType">)
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue
+                placeholder={
+                  props.accessType
+                    ? toAccessTypeText(props.accessType)
+                    : t("公開範囲", "Access Range")
+                }
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">
+                {t("公開範囲", "Access Range")}
+              </SelectItem>
+              <SelectItem value="PUBLIC">{t("公開", "Public")}</SelectItem>
+              <SelectItem value="SILENT">
+                {t("公開(新着無)", "Public (No New)")}
+              </SelectItem>
+              <SelectItem value="LIMITED">
+                {t("限定公開", "Limited")}
+              </SelectItem>
+              <SelectItem value="PRIVATE">{t("非公開", "Private")}</SelectItem>
+              <SelectItem value="DRAFT">{t("下書き", "Draft")}</SelectItem>
+            </SelectContent>
+          </Select>
+          {/* 作品種別 */}
+          <Select
+            value={props.workType ? props.workType : ""}
+            onValueChange={(value) => {
+              if (value === "ALL") {
+                props.setWorkType(null)
+                return
               }
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
-            <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
-            <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
-            <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
-            <SelectItem value="COLUMN">{t("コラム", "Column")}</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* 年齢制限 */}
-        <Select
-          value={props.rating ? props.rating : ""}
-          onValueChange={(value) => {
-            if (value === "ALL") {
-              props.setRating(null)
-              return
-            }
-            props.setRating(value as IntrospectionEnum<"Rating">)
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue
-              placeholder={
-                props.rating
-                  ? toRatingText(props.rating)
-                  : t("年齢制限", "Rating")
+              props.setWorkType(value as IntrospectionEnum<"WorkType">)
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue
+                placeholder={
+                  props.workType
+                    ? toWorkTypeText({
+                        type: props.workType,
+                        lang: location,
+                      })
+                    : t("種類", "Type")
+                }
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
+              <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
+              <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
+              <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
+              <SelectItem value="COLUMN">{t("コラム", "Column")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex w-full flex-col gap-x-2 gap-y-2 md:flex-row">
+          {/* 年齢制限 */}
+          <Select
+            value={props.rating ? props.rating : ""}
+            onValueChange={(value) => {
+              if (value === "ALL") {
+                props.setRating(null)
+                return
               }
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">{t("年齢制限", "Rating")}</SelectItem>
-            <SelectItem value="G">{t("全年齢", "All Ages")}</SelectItem>
-            <SelectItem value="R15">
-              {t("軽度な性的、血流表現あり", "R15")}
-            </SelectItem>
-            <SelectItem value="R18">{t("R18", "R18")}</SelectItem>
-            <SelectItem value="R18G">{t("R18G", "R18G")}</SelectItem>
-          </SelectContent>
-        </Select>
+              props.setRating(value as IntrospectionEnum<"Rating">)
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue
+                placeholder={
+                  props.rating
+                    ? toRatingText(props.rating)
+                    : t("年齢制限", "Rating")
+                }
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">{t("年齢制限", "Rating")}</SelectItem>
+              <SelectItem value="G">{t("全年齢", "All Ages")}</SelectItem>
+              <SelectItem value="R15">
+                {t("軽度な性的、血流表現あり", "R15")}
+              </SelectItem>
+              <SelectItem value="R18">{t("R18", "R18")}</SelectItem>
+              <SelectItem value="R18G">{t("R18G", "R18G")}</SelectItem>
+            </SelectContent>
+          </Select>
+          {/* 1ページあたりの作品数 */}
+          <Select
+            value={props.perPage.toString()}
+            onValueChange={(value) => {
+              props.onClickPerPageChange(Number(value))
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t("選択", "Select")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={"10"}>{t("10件", "10 items")}</SelectItem>
+              <SelectItem value={"50"}>{t("50件", "50 items")}</SelectItem>
+              <SelectItem value={"100"}>{t("100件", "100 items")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="block md:hidden">
         <WorksListSortableSetting

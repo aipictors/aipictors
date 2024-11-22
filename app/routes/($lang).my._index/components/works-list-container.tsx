@@ -16,6 +16,7 @@ type Props = {
   workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
   isFixedPagination?: boolean
+  perPage?: number
   setWorksMaxCount: (worksMaxCount: number) => void
   setAccessType: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
@@ -30,6 +31,7 @@ type Props = {
   onClickDateSortButton: () => void
   onClickWorkTypeSortButton: () => void
   onClickIsPromotionSortButton: () => void
+  onClickAgeTypeSortButton: () => void
 }
 
 /**
@@ -52,8 +54,8 @@ export function WorksListContainer(props: Props) {
     {
       skip: authContext.isLoading || authContext.isNotLoggedIn,
       variables: {
-        offset: 16 * props.page,
-        limit: 16,
+        offset: (props.perPage ?? 50) * props.page,
+        limit: props.perPage ?? 50,
         where: {
           userId: authContext.userId,
           orderBy: props.orderBy,
@@ -65,9 +67,13 @@ export function WorksListContainer(props: Props) {
           ...(props.workType !== null && {
             workTypes: [props.workType],
           }),
-          ...(props.rating !== null && {
-            ratings: [props.rating],
-          }),
+          ...(props.rating !== null
+            ? {
+                ratings: [props.rating],
+              }
+            : {
+                ratings: ["G", "R15", "R18", "R18G"],
+              }),
           createdAtAfter: new Date("1999/01/01").toISOString(),
           beforeCreatedAt: new Date("2099/01/01").toISOString(),
         },
@@ -117,6 +123,7 @@ export function WorksListContainer(props: Props) {
         setAccessType={props.setAccessType}
         setRating={props.setRating}
         setSort={props.setSort}
+        onClickAgeTypeSortButton={props.onClickAgeTypeSortButton}
         onClickTitleSortButton={props.onClickTitleSortButton}
         onClickLikeSortButton={props.onClickLikeSortButton}
         onClickBookmarkSortButton={props.onClickBookmarkSortButton}
@@ -128,21 +135,24 @@ export function WorksListContainer(props: Props) {
         onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
       />
       {props.isFixedPagination && (
-        <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-          <ResponsivePagination
-            perPage={16}
-            maxCount={worksMaxCount}
-            currentPage={props.page}
-            onPageChange={(page: number) => {
-              props.setPage(page)
-            }}
-          />
-        </div>
+        <>
+          <div className="h-8" />
+          <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            <ResponsivePagination
+              perPage={props.perPage ?? 50}
+              maxCount={worksMaxCount}
+              currentPage={props.page}
+              onPageChange={(page: number) => {
+                props.setPage(page)
+              }}
+            />
+          </div>
+        </>
       )}
       {!props.isFixedPagination && (
         <div className="mt-4 mb-8">
           <ResponsivePagination
-            perPage={16}
+            perPage={props.perPage ?? 50}
             maxCount={worksMaxCount}
             currentPage={props.page}
             onPageChange={(page: number) => {

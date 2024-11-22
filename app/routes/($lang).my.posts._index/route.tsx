@@ -67,11 +67,16 @@ export default function MyPosts() {
       (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
     )
 
+  const [perPage, setPerPage] = React.useState(
+    Number(searchParams.get("perPage")) || 50,
+  )
+
   // URLパラメータの監視と更新
   useEffect(() => {
     const params = new URLSearchParams()
 
     params.set("page", String(page))
+    params.set("perPage", String(perPage))
     params.set("albumOrderDeskAsc", albumOrderDeskAsc)
     if (accessType) params.set("accessType", accessType)
     if (workType) params.set("workType", workType)
@@ -82,6 +87,7 @@ export default function MyPosts() {
     setSearchParams(params)
   }, [
     page,
+    perPage,
     albumOrderDeskAsc,
     accessType,
     workType,
@@ -117,6 +123,11 @@ export default function MyPosts() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
+  const onClickAgeTypeSortButton = () => {
+    setWorkOrderby("AGE_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
   const onClickAccessTypeSortButton = () => {
     setWorkOrderby("ACCESS_TYPE")
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
@@ -137,6 +148,10 @@ export default function MyPosts() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
+  const onClickPerPageChange = (perPage: number) => {
+    setPerPage(perPage)
+  }
+
   const [worksMaxCount, setWorksMaxCount] = React.useState(0)
 
   return (
@@ -150,6 +165,7 @@ export default function MyPosts() {
             accessType={accessType}
             workType={workType}
             rating={rating}
+            perPage={perPage}
             onClickTitleSortButton={onClickTitleSortButton}
             onClickLikeSortButton={onClickLikeSortButton}
             onClickBookmarkSortButton={onClickBookmarkSortButton}
@@ -163,6 +179,7 @@ export default function MyPosts() {
             setWorkType={setWorkType}
             setRating={setRating}
             setSort={setWorksOrderDeskAsc}
+            onClickPerPageChange={onClickPerPageChange}
           />
           <Suspense fallback={<AppLoadingPage />}>
             <WorksListContainer
@@ -172,6 +189,8 @@ export default function MyPosts() {
               rating={rating}
               sort={worksOrderDeskAsc}
               orderBy={WorkOrderby}
+              isFixedPagination={true}
+              perPage={perPage}
               setWorksMaxCount={setWorksMaxCount}
               setAccessType={setAccessType}
               setRating={setRating}
@@ -182,6 +201,7 @@ export default function MyPosts() {
               onClickBookmarkSortButton={onClickBookmarkSortButton}
               onClickCommentSortButton={onClickCommentSortButton}
               onClickViewSortButton={onClickViewSortButton}
+              onClickAgeTypeSortButton={onClickAgeTypeSortButton}
               onClickAccessTypeSortButton={onClickAccessTypeSortButton}
               onClickDateSortButton={onClickDateSortButton}
               onClickWorkTypeSortButton={onClickWorkTypeSortButton}

@@ -20,6 +20,7 @@ type Props = {
   onClickLikeSortButton: () => void
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
+  onClickAgeTypeSortButton: () => void
   onClickViewSortButton: () => void
   onClickAccessTypeSortButton: () => void
   onClickDateSortButton: () => void
@@ -43,6 +44,7 @@ export function WorksList(props: Props) {
           onClickBookmarkSortButton={props.onClickBookmarkSortButton}
           onClickCommentSortButton={props.onClickCommentSortButton}
           onClickViewSortButton={props.onClickViewSortButton}
+          onClickAgeTypeSortButton={props.onClickAgeTypeSortButton}
           onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
           onClickDateSortButton={props.onClickDateSortButton}
           onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}

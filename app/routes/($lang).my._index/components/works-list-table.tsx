@@ -24,6 +24,7 @@ type Props = {
   onClickLikeSortButton: () => void
   onClickBookmarkSortButton: () => void
   onClickCommentSortButton: () => void
+  onClickAgeTypeSortButton: () => void
   onClickViewSortButton: () => void
   onClickWorkTypeSortButton: () => void
   onClickAccessTypeSortButton: () => void
@@ -109,6 +110,15 @@ export function WorksListTable(props: Props) {
                 />
               </TableHead>
               <TableHead>{}</TableHead>
+              <TableHead>
+                <WorksListColumn
+                  label={t("年齢種別", "Age")}
+                  orderBy="AGE_TYPE"
+                  nowOrderBy={props.orderBy}
+                  sort={props.sort}
+                  onClick={props.onClickAgeTypeSortButton}
+                />
+              </TableHead>
               <TableHead>
                 <WorksListColumn
                   label={t("宣伝作品", "Promotion")}

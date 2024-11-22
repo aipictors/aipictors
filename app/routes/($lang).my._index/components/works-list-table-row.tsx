@@ -10,6 +10,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useLocale } from "~/hooks/use-locale"
 import { DeleteWorkConfirmDialog } from "~/routes/($lang).my._index/components/delete-work-confirm-dialog"
+import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
   work: FragmentOf<typeof WorksListTableRowFragment>
@@ -139,6 +140,7 @@ export function WorksListTableRow(props: Props) {
               />
             )}
           </TableCell>
+          <TableCell>{toRatingText(props.work.rating ?? "G")}</TableCell>
           <TableCell>{props.work.isPromotion ? "○" : ""}</TableCell>
           <TableCell>{toDateTimeText(props.work.createdAt)}</TableCell>
         </TableRow>
@@ -160,6 +162,7 @@ export const WorksListTableRowFragment = graphql(
     bookmarksCount
     commentsCount
     viewsCount
+    rating
     isPromotion
     smallThumbnailImageHeight
     smallThumbnailImageWidth
