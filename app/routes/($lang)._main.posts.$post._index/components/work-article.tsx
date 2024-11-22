@@ -23,6 +23,10 @@ import { toStyleText } from "~/utils/work/to-style-text"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
 import { Card, CardContent } from "~/components/ui/card"
+import { ToggleContent } from "~/components/toggle-content"
+import { CarouselWithGradation } from "~/components/carousel-with-gradation"
+import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
+import { Separator } from "~/components/ui/separator"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -174,7 +178,34 @@ export function WorkArticle(props: Props) {
         </h1>
         <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}
-          {
+          {appContext.userId === props.work.user.id ? (
+            <ToggleContent
+              trigger={
+                <div className="flex items-center space-x-2">
+                  <Heart
+                    className={"fill-white text-black dark:text-white"}
+                    size={16}
+                    strokeWidth={1}
+                  />
+                  <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
+                </div>
+              }
+            >
+              <div>
+                <Separator className="mt-2 mb-2" />
+                <CarouselWithGradation
+                  items={props.work.likedUsers.map((user) => (
+                    <WorkLikedUser
+                      key={user.id}
+                      name={user.name}
+                      iconUrl={user.iconUrl}
+                      login={user.login}
+                    />
+                  ))}
+                />
+              </div>
+            </ToggleContent>
+          ) : (
             <div className="flex items-center space-x-2">
               <Heart
                 className={"fill-white text-black dark:text-white"}
@@ -183,35 +214,7 @@ export function WorkArticle(props: Props) {
               />
               <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
             </div>
-            // appContext.userId === props.work.user.id && (
-            //   <ToggleContent
-            //     trigger={
-            //       <div className="flex items-center space-x-2">
-            //         <Heart
-            //           className={"fill-white text-black dark:text-white"}
-            //           size={16}
-            //           strokeWidth={1}
-            //         />
-            //         <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
-            //       </div>
-            //     }
-            //   >
-            //     <div>
-            //       <Separator className="mt-2 mb-2" />
-            //       <CarouselWithGradation
-            //         items={props.work.likedUsers.map((user) => (
-            //           <WorkLikedUser
-            //             key={user.id}
-            //             name={user.name}
-            //             iconUrl={user.iconUrl}
-            //             login={user.login}
-            //           />
-            //         ))}
-            //       />
-            //     </div>
-            //   </ToggleContent>
-            // )
-          }
+          )}
           <span className="text-sm">
             {toDateTimeText(props.work.createdAt)}
           </span>
