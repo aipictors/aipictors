@@ -191,14 +191,22 @@ export function HomeRouteList(props: Props) {
       <footer>
         <div className="flex flex-col space-y-2 p-2">
           <div className="flex items-center justify-start space-x-2">
-            <Link to="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636">
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              to="https://apps.apple.com/jp/app/aipictors-ai%E3%83%94%E3%82%AF%E3%82%BF%E3%83%BC%E3%82%BA/id6466581636"
+            >
               <img
                 src="/apple/download.svg"
                 alt={t("download", "download")}
                 className="h-8"
               />
             </Link>
-            <Link to="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja">
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              to="https://play.google.com/store/apps/details?id=com.aipictors.app&hl=ja"
+            >
               <img
                 src="/google/download.png"
                 alt={t("download", "download")}
