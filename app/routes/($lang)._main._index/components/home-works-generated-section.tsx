@@ -41,7 +41,7 @@ export function HomeWorksGeneratedSection(props: Props) {
       <HomeWorkSection
         title={"作品を選んで無料生成"}
         works={workDisplayed}
-        link="https://www.aipictors.com/search/?promptstatus=2&order=favorite"
+        link="/generation"
         isCropped={false}
         isShowProfile={true}
       />

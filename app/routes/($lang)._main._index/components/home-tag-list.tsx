@@ -5,6 +5,7 @@ import {
 } from "~/components/ui/carousel"
 import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
 import { graphql, type FragmentOf } from "gql.tada"
+import { getJstDate } from "~/utils/jst-date"
 
 type Props = {
   hotTags: FragmentOf<typeof HomeTagListItemFragment>[]
@@ -15,13 +16,17 @@ type Props = {
  * ホーム上部に表示するタグ一覧
  */
 export function HomeTagList(props: Props) {
+  const today = getJstDate()
+
+  console.log(today)
+
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
       <CarouselContent>
         <CarouselItem className="basis-auto">
           {props.themeTitle && (
             <TagButton
-              link={`/tags/${props.themeTitle}`}
+              link={`/themes/${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`}
               name={`今日のお題「${props.themeTitle}」`}
               isTagName={true}
             />

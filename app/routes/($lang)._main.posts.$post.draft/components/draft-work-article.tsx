@@ -174,9 +174,7 @@ export function DraftWorkArticle(props: Props) {
             {props.work.model !== undefined &&
               props.work.model !== null &&
               props.work.model?.length !== 0 && (
-                <Link
-                  to={`https://www.aipictors.com/search/?ai=${props.work.model}`}
-                >
+                <Link to={`/models/${props.work.model}`}>
                   <Badge
                     variant="secondary"
                     className="flex items-center space-x-2"
@@ -262,7 +260,7 @@ export function DraftWorkArticle(props: Props) {
                 {":"}
               </span>
               <Link
-                to={`https://www.aipictors.com/search?word=${props.work.dailyTheme.title}`}
+                to={`/themes/${props.work.dailyTheme.dateText.replace(/-/g, "/")}`}
               >
                 <Button variant={"link"}>{props.work.dailyTheme.title}</Button>
               </Link>
@@ -417,6 +415,7 @@ export const workArticleFragment = graphql(
     dailyTheme {
       id
       title
+      dateText
     }
     tagNames
     createdAt
@@ -554,6 +553,7 @@ export const sensitiveWorkArticleFragment = graphql(
     dailyTheme {
       id
       title
+      dateText
     }
     tagNames
     createdAt

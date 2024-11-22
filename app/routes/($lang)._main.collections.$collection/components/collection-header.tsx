@@ -50,11 +50,7 @@ export function CollectionHeader(props: Props) {
         </div>
         <div className="flex gap-x-2 gap-y-2">
           {props.tags.map((tag) => (
-            <Link
-              className="m-0"
-              key={tag}
-              to={`https://www.aipictors.com/search?word=${tag}`}
-            >
+            <Link className="m-0" key={tag} to={`/tags/${tag}`}>
               <Button className="m-0 p-0" variant={"link"}>
                 {tag}
               </Button>
