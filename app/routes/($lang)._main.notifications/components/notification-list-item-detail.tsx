@@ -1,3 +1,5 @@
+// src/components/NotificationListItemDetail.tsx
+
 import { Badge } from "~/components/ui/badge"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -7,6 +9,15 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { toDateText } from "~/utils/to-date-text"
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableCell,
+} from "~/components/ui/table" // shadcn/ui のテーブルコンポーネントをインポート
+import { ReplyIcon } from "lucide-react"
 
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
@@ -22,7 +33,7 @@ const stickerSizeClasses = {
 }
 
 /**
- * コメントのお知らせ内容
+ * コメントのお知らせ内容をテーブル行として表示
  */
 export function NotificationListItemDetail(props: Props) {
   const t = useTranslation()
@@ -37,102 +48,113 @@ export function NotificationListItemDetail(props: Props) {
   const [reply] = props.notification.myReplies ?? []
 
   return (
-    <div className="flex flex-col space-y-2 border-b p-2">
-      <div className="block h-16 w-16 overflow-hidden rounded-md md:hidden">
-        <img
-          src={props.notification.work?.smallThumbnailImageURL}
-          alt="thumbnail"
-          className="h-16 w-16 object-cover"
-        />
-      </div>
-      <Link
-        to={`/posts/${props.notification.work?.id}`}
-        className="flex items-center space-x-2 rounded-md p-2 transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
-      >
-        <>
-          <img
-            src={withIconUrlFallback(props.notification.user?.iconUrl)}
-            alt="thumbnail"
-            className="h-8 w-8 rounded-full object-cover"
-          />
-          <div className="ml-2 flex w-full flex-col space-y-2 overflow-hidden">
-            <p className="text-ellipsis">
-              {t(
-                `${props.notification.user?.name}さんがコメントしました`,
-                `${props.notification.user?.name} commented`,
-              )}
-              {props.notification.message && (
-                <>
-                  {t("「", " '")}
-                  {props.notification.message}
-                  {t("」", " '")}
-                </>
-              )}
-            </p>
-            {props.notification.sticker?.imageUrl && (
-              <img
-                src={props.notification.sticker.imageUrl}
-                alt="sticker"
-                className={cn(stickerClass, "object-cover")}
-              />
-            )}
-            <div className="flex items-center space-x-2">
-              <p className="text-sm opacity-80">
-                {t(
-                  toDateTimeText(props.notification.createdAt),
-                  toDateEnText(props.notification.createdAt),
+    <div className="mb-4 overflow-hidden rounded-md border-2 border-gray-300 dark:border-gray-600">
+      <Table className="w-full">
+        <TableHeader>
+          <TableRow className="bg-white dark:bg-zinc-800">
+            {/* 左列: サムネイル */}
+            <TableCell className="w-1/4 p-4 md:w-1/5">
+              <Link to={`/posts/${props.notification.work?.id}`}>
+                <img
+                  src={props.notification.work?.smallThumbnailImageURL}
+                  alt="thumbnail"
+                  className="h-24 w-24 rounded-md object-cover"
+                />
+              </Link>
+            </TableCell>
+
+            {/* 中央列: コメント情報 */}
+            <TableCell className="w-2/4 p-4 md:w-3/5">
+              <Link
+                to={`/posts/${props.notification.work?.id}`}
+                className="block rounded-md p-2 transition-colors "
+              >
+                <div className="flex items-center space-x-2">
+                  <img
+                    src={withIconUrlFallback(props.notification.user?.iconUrl)}
+                    alt="user icon"
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                  <span className="font-medium">
+                    {props.notification.user?.name}さんがコメントしました
+                  </span>
+                </div>
+                <p className="mt-2 text-gray-700 text-sm">
+                  {props.notification.message && (
+                    <>「{props.notification.message}」</>
+                  )}
+                </p>
+                {props.notification.sticker?.imageUrl && (
+                  <img
+                    src={props.notification.sticker.imageUrl}
+                    alt="sticker"
+                    className={cn(stickerClass, "mt-2")}
+                  />
                 )}
-              </p>
-              {isReplied ? (
-                <Badge variant="secondary">{t("返信済み", "Replied")}</Badge>
-              ) : (
-                <Badge variant="default">{t("未返信", "Not replied")}</Badge>
-              )}
-            </div>
-          </div>
-          <div className="hidden h-32 w-32 overflow-hidden rounded-md md:block">
-            <img
-              src={props.notification.work?.smallThumbnailImageURL}
-              alt="thumbnail"
-              className="h-32 w-32 object-cover"
-            />
-          </div>
-        </>
-      </Link>
-      {reply && (
-        <div className="ml-12 flex items-center space-x-2">
-          <Avatar className="h-8 w-8">
-            <AvatarImage
-              className="h-8 w-8 rounded-full object-cover"
-              src={withIconUrlFallback(reply.user?.iconUrl)}
-              alt="thumbnail"
-            />
-            <AvatarFallback />
-          </Avatar>
-          <div className="flex flex-col space-y-2">
-            <p className="text-ellipsis">
-              {t(
-                `${reply.user?.name}返信しました`,
-                `${reply.user?.name} replied`,
-              )}
-              {reply.text && (
-                <>
-                  {t("「", " '")}
-                  {reply.text}
-                  {t("」", " '")}
-                </>
-              )}
-            </p>
-            {reply.sticker?.imageUrl && (
-              <img
-                src={reply.sticker?.imageUrl}
-                alt="sticker"
-                className={cn(stickerClass, "object-cover")}
-              />
-            )}
-          </div>
-        </div>
-      )}
+              </Link>
+            </TableCell>
+
+            {/* 右列: 詳細情報 */}
+            <TableCell className="w-1/4 p-4 text-right md:w-1/5">
+              <div className="hidden flex-col items-end space-y-2 md:flex">
+                <p className="text-sm opacity-80">
+                  {t(
+                    toDateTimeText(props.notification.createdAt),
+                    toDateEnText(props.notification.createdAt),
+                  )}
+                </p>
+                <Badge variant={isReplied ? "secondary" : "default"}>
+                  {isReplied ? "返信済み" : "未返信"}
+                </Badge>
+              </div>
+            </TableCell>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {/* 返信がある場合 */}
+          {reply && (
+            <TableRow className="border-gray-200 border-t bg-zinc-50 dark:border-gray-700 dark:bg-zinc-700">
+              <TableCell colSpan={3} className="p-4">
+                <div className="flex items-start space-x-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={withIconUrlFallback(reply.user?.iconUrl)}
+                      alt="reply user icon"
+                    />
+                    <AvatarFallback />
+                  </Avatar>
+                  <div className="flex-1 border-gray-400 border-l-2 pl-2">
+                    <div className="flex items-center space-x-2">
+                      <ReplyIcon className="h-5 w-5 text-gray-500" />
+                      <p className="font-medium text-sm">
+                        {reply.user?.name} が返信しました
+                      </p>
+                    </div>
+                    <p className="mt-1 text-gray-700 text-sm">
+                      {reply.text && `「${reply.text}」`}
+                    </p>
+                    {reply.sticker?.imageUrl && (
+                      <img
+                        src={reply.sticker.imageUrl}
+                        alt="reply sticker"
+                        className={cn(stickerClass, "mt-2")}
+                      />
+                    )}
+                  </div>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <div className="flex space-x-2 p-2 md:hidden">
+        <p className="text-sm opacity-80">
+          {toDateText(props.notification.createdAt)}
+        </p>
+        <Badge variant={isReplied ? "secondary" : "default"}>
+          {isReplied ? "返信済み" : "未返信"}
+        </Badge>
+      </div>
     </div>
   )
 }
