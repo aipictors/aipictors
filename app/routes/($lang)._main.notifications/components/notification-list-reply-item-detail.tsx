@@ -37,9 +37,11 @@ export function NotificationListReplyItemDetail(props: Props) {
 
   const originalComment = props.notification.comment
 
-  console.log(props.notification)
-
   const reply = props.notification
+
+  if (props.notification.work == null) {
+    return null
+  }
 
   return (
     <div className="mb-4 overflow-hidden rounded-md border-2 border-gray-300 dark:border-gray-600">
@@ -107,7 +109,6 @@ export function NotificationListReplyItemDetail(props: Props) {
             </TableCell>
           </TableRow>
         </TableHeader>
-
         <TableBody>
           {/* 返信がある場合 */}
           {reply && (
