@@ -26,7 +26,10 @@ export function HomeAwardWorksSection(props: Props) {
       {props.works.map(
         (work, index) =>
           work && (
-            <div className="relative flex items-center space-x-2 opacity-80">
+            <div
+              key={index.toString()}
+              className="relative flex items-center space-x-2 opacity-80"
+            >
               <div className="flex h-full items-center space-x-2">
                 <CroppedWorkSquare
                   workId={work.work?.id ?? ""}

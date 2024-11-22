@@ -9,7 +9,6 @@ import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
 type Props = {
   comments: FragmentOf<typeof HomeNewCommentsFragment>[]
-  nowDate: Date
 }
 
 /**
@@ -82,7 +81,7 @@ export function HomeNewCommentsSection(props: Props) {
                 )}
                 <div className="text-sm">
                   {t(
-                    toElapsedTimeText(comment.createdAt, props.nowDate),
+                    toElapsedTimeText(comment.createdAt),
                     toElapsedTimeEnText(comment.createdAt),
                   )}
                 </div>
