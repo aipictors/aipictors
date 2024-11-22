@@ -39,7 +39,7 @@ import {
   getExtractInfoFromBase64,
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
-import { config, META } from "~/config"
+import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import type { LoaderFunctionArgs } from "react-router-dom"
@@ -609,7 +609,8 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  // 投稿画面なのでキャッシュは不要
+  // "Cache-Control": config.cacheControl.oneHour,
 })
 
 const ViewerQuery = graphql(

@@ -31,7 +31,7 @@ import { useContext, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { config, META } from "~/config"
+import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import { useTranslation } from "~/hooks/use-translation"
@@ -507,7 +507,8 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  // 投稿画面なのでキャッシュは不要
+  // "Cache-Control": config.cacheControl.oneHour,
 })
 
 const viewerQuery = graphql(

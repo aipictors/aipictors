@@ -7,7 +7,6 @@ import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { config } from "~/config"
 import { DraftWorkContainer } from "~/routes/($lang)._main.posts.$post.draft/components/draft-work-container"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -45,7 +44,8 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneDay,
+  // 下書き画面なのでキャッシュは不要
+  // "Cache-Control": config.cacheControl.oneHour,
 })
 
 export default function Work() {

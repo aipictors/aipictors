@@ -29,7 +29,6 @@ import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/po
 import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post-text-form"
 import { getJstDate } from "~/utils/jst-date"
 import { uploadTextFile } from "~/utils/upload-text-file"
-import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -42,7 +41,8 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.short,
+  // 編集画面なのでキャッシュは不要
+  // "Cache-Control": config.cacheControl.oneHour,
 })
 
 function getReservationDetails(createdAt: number) {

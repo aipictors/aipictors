@@ -27,7 +27,6 @@ import {
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import React from "react"
 import { getJstDate } from "~/utils/jst-date"
-import { config } from "~/config"
 import { PostImageFormRecentlyUsedTagsFragment } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -541,7 +540,8 @@ export default function EditImage() {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  // 編集画面なのでキャッシュは不要
+  // "Cache-Control": config.cacheControl.oneHour,
 })
 
 const viewerQuery = graphql(

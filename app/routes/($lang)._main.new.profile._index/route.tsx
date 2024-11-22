@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { config, META } from "~/config"
+import { META } from "~/config"
 import { ProfileEditorForm } from "~/routes/($lang)._main.new.profile._index/components/profile-editor-form"
 
 /**
@@ -21,7 +21,8 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  // 設定画面なのでキャッシュは不要
+  // "Cache-Control": config.cacheControl.oneHour,
 })
 
 export const meta: MetaFunction = (props) => {
