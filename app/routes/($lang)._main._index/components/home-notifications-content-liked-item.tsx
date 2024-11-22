@@ -37,14 +37,14 @@ export function HomeNotificationsContentLikedItem(props: Props) {
         </div>
         <div className="ml-2 w-full overflow-hidden">
           <p className="text-ellipsis">
-            {/* {props.notification.user?.name && (
+            {props.notification.user?.name && (
               <span>
                 {t(
                   `${props.notification.user.name}さんから`,
                   `${props.notification.user.name}  `,
                 )}
               </span>
-            )} */}
+            )}
             {t("いいねされました！", "Liked")}
           </p>
           <p className="text-sm opacity-80">

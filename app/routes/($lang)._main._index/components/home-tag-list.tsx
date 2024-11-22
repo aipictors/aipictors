@@ -18,8 +18,6 @@ type Props = {
 export function HomeTagList(props: Props) {
   const today = getJstDate()
 
-  console.log(today)
-
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
       <CarouselContent>

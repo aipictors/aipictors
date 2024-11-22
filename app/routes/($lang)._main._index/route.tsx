@@ -218,6 +218,8 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const columnWorksBeforeText = pastColumnDate.toISOString()
 
+  const date = new Date()
+
   return {
     ...result.data,
     awardDateText: awardDateText,
@@ -228,6 +230,7 @@ export async function loader(props: LoaderFunctionArgs) {
     firstTag: randomCategories[0],
     secondTag: randomCategories[1],
     releaseList,
+    date: date,
   }
 }
 
@@ -548,7 +551,10 @@ export default function Index() {
                   <HomeNewUsersSection users={data.newPostedUsers} />
                 )}
                 {data.newComments && data.newComments.length > 0 && (
-                  <HomeNewCommentsSection comments={data.newComments} />
+                  <HomeNewCommentsSection
+                    nowDate={data.date as unknown as Date}
+                    comments={data.newComments}
+                  />
                 )}
                 {data.workAwards && (
                   <HomeAwardWorksSection works={data.workAwards} />
