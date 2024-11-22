@@ -144,26 +144,28 @@ export default function NewText() {
           payload: base64Urls[0],
         })
 
-        dispatch({
-          type: "SET_PNG_INFO",
-          payload: {
-            src: null,
-            params: {
-              prompt: viewer.viewer.imageGenerationResults[0].prompt,
-              negativePrompt:
-                viewer.viewer.imageGenerationResults[0].negativePrompt,
-              seed: viewer.viewer.imageGenerationResults[0].seed.toString(),
-              sampler: viewer.viewer.imageGenerationResults[0].sampler,
-              strength: "",
-              noise: "",
-              model: viewer.viewer.imageGenerationResults[0].model?.name,
-              modelHash: viewer.viewer.imageGenerationResults[0].model?.id,
-              steps: viewer.viewer.imageGenerationResults[0].steps.toString(),
-              scale: viewer.viewer.imageGenerationResults[0].scale.toString(),
-              vae: "",
+        if (viewer.viewer.imageGenerationResults.length > 0) {
+          dispatch({
+            type: "SET_PNG_INFO",
+            payload: {
+              src: null,
+              params: {
+                prompt: viewer.viewer.imageGenerationResults[0].prompt,
+                negativePrompt:
+                  viewer.viewer.imageGenerationResults[0].negativePrompt,
+                seed: viewer.viewer.imageGenerationResults[0].seed.toString(),
+                sampler: viewer.viewer.imageGenerationResults[0].sampler,
+                strength: "",
+                noise: "",
+                model: viewer.viewer.imageGenerationResults[0].model?.name,
+                modelHash: viewer.viewer.imageGenerationResults[0].model?.id,
+                steps: viewer.viewer.imageGenerationResults[0].steps.toString(),
+                scale: viewer.viewer.imageGenerationResults[0].scale.toString(),
+                vae: "",
+              },
             },
-          },
-        })
+          })
+        }
 
         dispatch({
           type: "IS_SELECTED_GENERATION_IMAGE",
