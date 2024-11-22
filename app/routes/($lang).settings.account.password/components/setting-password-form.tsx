@@ -14,18 +14,19 @@ export function AccountPasswordForm() {
 
   const [currentPassword, setCurrentPassword] = useState("")
 
-  const [showPassword, setShowPassword] = useState(false)
+  // const [showPassword, setShowPassword] = useState(false)
 
   const [showNewPassword, setShowNewPassword] = useState(false)
 
-  const [mutation, { loading }] = useMutation(updateAccountPasswordMutation)
+  const [mutation, { loading }] = useMutation(
+    updateAccountInitialPasswordMutation,
+  )
 
   const handleSubmit = async () => {
     try {
       await mutation({
         variables: {
           input: {
-            currentPassword: currentPassword,
             newPassword: newPassword,
           },
         },
@@ -42,7 +43,7 @@ export function AccountPasswordForm() {
 
   return (
     <div className="w-full space-y-4">
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <p>{t("現在のログインパスワード", "Current Login Password")}</p>
         <div className="flex space-x-2">
           <Input
@@ -66,7 +67,7 @@ export function AccountPasswordForm() {
             <EyeIcon />
           </Button>
         </div>
-      </div>
+      </div> */}
       <div className="space-y-2">
         <p>{t("新しいログインパスワード", "New Login Password")}</p>
         <div className="flex space-x-2">
@@ -96,9 +97,9 @@ export function AccountPasswordForm() {
   )
 }
 
-const updateAccountPasswordMutation = graphql(
-  `mutation UpdateAccountPassword($input: UpdateAccountPasswordInput!) {
-    updateAccountPassword(input: $input) {
+const updateAccountInitialPasswordMutation = graphql(
+  `mutation UpdateAccountInitialPassword($input: UpdateAccountInitialPasswordInput!) {
+    updateAccountInitialPassword(input: $input) {
       id
     }
   }`,
