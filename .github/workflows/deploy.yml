@@ -40,7 +40,7 @@ jobs:
           packageManager: bun
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: deploy --name=aipictors
+          command: deploy --name=aipictors --env ${{ github.ref_name == 'main' && 'prod' || 'staging' }}
       - name: Get deployment url
         id: deployment_url
         run: echo "DEPLOYMENT_URL=${{ steps.cloudflare-wrangler.outputs.deployment-url }}" >> $GITHUB_ENV
