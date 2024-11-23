@@ -11,7 +11,7 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { createMeta } from "~/utils/create-meta"
-import { config, META } from "~/config"
+import { META } from "~/config"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_POSTS, undefined, props.params.lang)
@@ -28,7 +28,8 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  // キャッシュ不要
+  // "Cache-Control": config.cacheControl.oneHour,
 })
 
 export default function MyPosts() {

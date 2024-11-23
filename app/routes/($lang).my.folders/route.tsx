@@ -10,7 +10,7 @@ import { graphql } from "gql.tada"
 import React, { useContext } from "react"
 import { Suspense } from "react"
 import { createMeta } from "~/utils/create-meta"
-import { config, META } from "~/config"
+import { META } from "~/config"
 import { FoldersListContainer } from "~/routes/($lang).my._index/components/folders-list-container"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
@@ -30,7 +30,8 @@ export async function loader(props: LoaderFunctionArgs) {
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneHour,
+  // キャッシュ不要
+  // "Cache-Control": config.cacheControl.oneHour,
 })
 
 export default function MyFolders() {
