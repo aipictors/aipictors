@@ -17,23 +17,18 @@ type Props = {
 }
 
 export function AlbumWorkList(props: Props) {
-  if (props.albumWorks === null || props.albumWorks.length === 0) {
-    return (
-      <div className="text-center">
-        <p>作品がありません</p>
-      </div>
-    )
-  }
-
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
+  // URLクエリパラメータから初期ページ番号を取得
+  const initialPage = Number(searchParams.get("page")) || 0
+  const [page, setPage] = React.useState(initialPage)
 
+  // ページ変更時にクエリパラメータを更新
   useEffect(() => {
-    const params = new URLSearchParams()
-
+    const params = new URLSearchParams(searchParams)
+    params.set("page", page.toString())
     setSearchParams(params)
-  }, [page])
+  }, [page, searchParams, setSearchParams])
 
   const { data } = useSuspenseQuery(query, {
     variables: {
@@ -59,8 +54,8 @@ export function AlbumWorkList(props: Props) {
           perPage={32}
           maxCount={props.maxCount}
           currentPage={page}
-          onPageChange={(page: number) => {
-            setPage(page)
+          onPageChange={(newPage: number) => {
+            setPage(newPage)
           }}
         />
       </div>
@@ -79,6 +74,7 @@ const query = graphql(
   `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
     album(id: $albumId) {
       id
+      worksCount
       works(offset: $offset, limit: $limit) {
         ...AlbumWorkListItem
       }

@@ -104,7 +104,7 @@ export default function albums() {
           <AlbumArticleHeader album={data.album} />
           <AlbumWorkList
             albumWorks={data.album.works}
-            maxCount={0}
+            maxCount={data.album.worksCount}
             albumId={data.album.id}
             page={data.page}
           />
