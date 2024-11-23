@@ -1,9 +1,9 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useParams } from "react-router";
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import { ThemeWorkFragment } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { getJstDate } from "~/utils/jst-date"

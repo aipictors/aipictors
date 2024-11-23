@@ -1,4 +1,4 @@
-import { useLocation } from "@remix-run/react"
+import { useLocation } from "react-router"
 
 /**
  * 現在の言語を取得する

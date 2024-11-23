@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql } from "gql.tada"
 import { startTransition } from "react"
 import { useInterval } from "usehooks-ts"

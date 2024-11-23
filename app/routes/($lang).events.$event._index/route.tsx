@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useNavigate, useSearchParams } from "react-router";
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import {
@@ -14,11 +14,7 @@ import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { format } from "date-fns"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { SensitiveEventConfirmDialog } from "~/routes/($lang).events.$event._index/components/sensitive-event-confirm-dialog"
 import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -104,7 +100,7 @@ export const meta: MetaFunction = ({ data }) => {
   }
 
   const stripHtmlTags = (str: string) => {
-    return str.replace(/<[^>]*>?/gm, "")
+    return str.replace(/<[^>]*>?/gm, "");
   }
 
   return createMeta(META.EVENTS_INDEX, {

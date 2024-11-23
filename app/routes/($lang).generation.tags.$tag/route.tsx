@@ -4,9 +4,9 @@ import {
   TagReferencedWorkSection,
   TagWorkFragment,
 } from "~/routes/($lang).generation.tags.$tag/components/tag-referenced-work-section"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useParams } from "react-router";
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import { config } from "~/config"
 

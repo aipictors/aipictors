@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { type FragmentOf, graphql } from "gql.tada"
 import { Button } from "~/components/ui/button"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"

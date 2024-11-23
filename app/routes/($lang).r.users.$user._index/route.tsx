@@ -1,9 +1,9 @@
 import { useQuery } from "@apollo/client/index"
-import type { HeadersFunction } from "@remix-run/cloudflare"
-import { useLoaderData, useParams } from "@remix-run/react"
+import type { HeadersFunction } from "react-router";
+import { useLoaderData, useParams } from "react-router";
 import { graphql } from "gql.tada"
 import { useContext } from "react"
-import type { LoaderFunctionArgs } from "react-router-dom"
+import type { LoaderFunctionArgs } from "react-router";
 import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { ParamsError } from "~/errors/params-error"

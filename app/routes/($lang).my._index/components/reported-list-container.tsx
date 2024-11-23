@@ -5,7 +5,7 @@ import { graphql } from "gql.tada"
 import { Card, CardContent } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { Button } from "~/components/ui/button"
 import { PencilIcon } from "lucide-react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"

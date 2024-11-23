@@ -1,10 +1,6 @@
 import React, { useEffect, useReducer, useContext } from "react"
 import { useQuery, useMutation } from "@apollo/client/index"
-import {
-  type MetaFunction,
-  useBeforeUnload,
-  useSearchParams,
-} from "@remix-run/react"
+import { type MetaFunction, useBeforeUnload, useSearchParams } from "react-router";
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import { graphql } from "gql.tada"
@@ -42,9 +38,9 @@ import {
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
-import type { LoaderFunctionArgs } from "react-router-dom"
+import type { LoaderFunctionArgs } from "react-router";
 import { useTranslation } from "~/hooks/use-translation"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction } from "react-router";
 
 export default function NewImage() {
   const t = useTranslation()

@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql, type FragmentOf } from "gql.tada"
 import { Heart } from "lucide-react"
 import { useContext } from "react"

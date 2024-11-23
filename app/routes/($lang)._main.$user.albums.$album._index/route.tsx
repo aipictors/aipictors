@@ -8,9 +8,9 @@ import {
   AlbumWorkList,
   AlbumWorkListItemFragment,
 } from "~/routes/($lang)._main.$user.albums.$album._index/components/album-work-list"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import type { MetaFunction } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import type { MetaFunction } from "react-router";
+import { useLoaderData } from "react-router";
 import { type FragmentOf, graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"

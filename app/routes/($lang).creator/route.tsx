@@ -1,4 +1,4 @@
-import { Outlet } from "@remix-run/react"
+import { Outlet } from "react-router";
 import { CreatorFooter } from "~/routes/($lang).creator/components/creator-footer"
 import { CreatorHeader } from "~/routes/($lang).creator/components/creator-header"
 

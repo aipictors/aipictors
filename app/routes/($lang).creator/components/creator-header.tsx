@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { useContext } from "react"
 import { HomeIcon } from "~/components/home-icon"
 import { LoginDialogButton } from "~/components/login-dialog-button"

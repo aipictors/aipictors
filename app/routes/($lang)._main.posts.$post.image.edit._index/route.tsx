@@ -22,8 +22,8 @@ import { graphql } from "gql.tada"
 import { useContext, useEffect, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useBeforeUnload, useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useBeforeUnload, useLoaderData } from "react-router";
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditImageFormUploader } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/edit-image-form-uploader"
 import React from "react"

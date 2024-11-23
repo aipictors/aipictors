@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useMutation } from "@apollo/client/index"
@@ -94,95 +94,93 @@ export function WorksSpList(props: Props) {
 
   const location = useLocale()
 
-  return (
-    <>
-      {props.works
-        .filter((work) => !deletedIds.includes(work.id))
-        .map((work, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-          <div key={index} className="flex flex-col">
-            <div className="flex space-x-4 border-b pt-2 pb-2">
-              <Link to={postUrl(work)}>
-                <CroppedMyWorkSquare
-                  workId={work.id}
-                  imageUrl={work.smallThumbnailImageURL}
-                  size="sm"
-                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                  imageWidth={work.smallThumbnailImageWidth}
-                  imageHeight={work.smallThumbnailImageHeight}
-                />
-              </Link>
-              <div className="flex w-full flex-col space-y-2">
-                <div className="w-full max-w-64 space-y-2 overflow-hidden text-ellipsis">
-                  <Link to={postUrl(work)}>
-                    <div className="w-full font-bold">
-                      {truncateTitle(work.title, 32)}
-                    </div>
-                  </Link>
-                  <div className="space-x-2">
-                    <Badge variant={"secondary"}>
-                      {toAccessTypeText(work.accessType)}
-                    </Badge>
-                    <Badge variant={"secondary"}>
-                      {toWorkTypeText({
-                        type: work.type,
-                        lang: location,
-                      })}
-                    </Badge>
+  return (<>
+    {props.works
+      .filter((work) => !deletedIds.includes(work.id))
+      .map((work, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+        (<div key={index} className="flex flex-col">
+          <div className="flex space-x-4 border-b pt-2 pb-2">
+            <Link to={postUrl(work)}>
+              <CroppedMyWorkSquare
+                workId={work.id}
+                imageUrl={work.smallThumbnailImageURL}
+                size="sm"
+                thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                imageWidth={work.smallThumbnailImageWidth}
+                imageHeight={work.smallThumbnailImageHeight}
+              />
+            </Link>
+            <div className="flex w-full flex-col space-y-2">
+              <div className="w-full max-w-64 space-y-2 overflow-hidden text-ellipsis">
+                <Link to={postUrl(work)}>
+                  <div className="w-full font-bold">
+                    {truncateTitle(work.title, 32)}
                   </div>
+                </Link>
+                <div className="space-x-2">
+                  <Badge variant={"secondary"}>
+                    {toAccessTypeText(work.accessType)}
+                  </Badge>
+                  <Badge variant={"secondary"}>
+                    {toWorkTypeText({
+                      type: work.type,
+                      lang: location,
+                    })}
+                  </Badge>
                 </div>
-                <div className="flex w-full items-center justify-between">
-                  <div className="flex items-center">
-                    <FolderIcon className="mr-1 h-4 w-4" />
-                    {work.bookmarksCount}
-                  </div>
-                  <div className="flex items-center">
-                    <HeartIcon className="mr-1 h-4 w-4" />
-                    {work.likesCount}
-                  </div>
-                  <div className="flex items-center">
-                    <EyeIcon className="mr-1 h-4 w-4" />
-                    {work.viewsCount}
-                  </div>
+              </div>
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center">
+                  <FolderIcon className="mr-1 h-4 w-4" />
+                  {work.bookmarksCount}
                 </div>
                 <div className="flex items-center">
-                  <MessageCircle className="mr-1 h-4 w-4" />
-                  {work.commentsCount}
+                  <HeartIcon className="mr-1 h-4 w-4" />
+                  {work.likesCount}
                 </div>
-                <div className="text-sm opacity-80">
-                  {toDateTimeText(work.createdAt)}
+                <div className="flex items-center">
+                  <EyeIcon className="mr-1 h-4 w-4" />
+                  {work.viewsCount}
                 </div>
               </div>
-              <div className="flex h-8 items-center">
-                <div className="flex w-16 justify-center">
-                  <Link to={editUrl(work.id, work.type)}>
-                    <PencilIcon />
-                  </Link>
-                </div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button size={"icon"} variant="secondary">
-                      <EllipsisIcon className="w-16" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80">
-                    <div className="flex justify-center">
-                      <DeleteConfirmTrashDialog
-                        onDelete={async () => {
-                          await onDeleteWork(work.id)
-                        }}
-                        workTitle={work.title}
-                        isLoadingDeleteWork={isLoadingDeleteWork}
-                      />
-                    </div>
-                  </PopoverContent>
-                </Popover>
+              <div className="flex items-center">
+                <MessageCircle className="mr-1 h-4 w-4" />
+                {work.commentsCount}
+              </div>
+              <div className="text-sm opacity-80">
+                {toDateTimeText(work.createdAt)}
               </div>
             </div>
+            <div className="flex h-8 items-center">
+              <div className="flex w-16 justify-center">
+                <Link to={editUrl(work.id, work.type)}>
+                  <PencilIcon />
+                </Link>
+              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button size={"icon"} variant="secondary">
+                    <EllipsisIcon className="w-16" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="flex justify-center">
+                    <DeleteConfirmTrashDialog
+                      onDelete={async () => {
+                        await onDeleteWork(work.id)
+                      }}
+                      workTitle={work.title}
+                      isLoadingDeleteWork={isLoadingDeleteWork}
+                    />
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-        ))}
-    </>
-  )
+        </div>)
+      ))}
+  </>);
 }
 
 export const MobileWorkListItemFragment = graphql(

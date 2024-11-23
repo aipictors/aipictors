@@ -3,7 +3,7 @@ import { Loader2Icon } from "lucide-react"
 import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { DeleteFolderConfirmDialog } from "~/routes/($lang).my._index/components/delete-folder-confirm-dialog"

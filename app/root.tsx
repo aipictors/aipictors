@@ -6,7 +6,7 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import { ContextProviders } from "~/components/context-providers"
 import { cn } from "~/lib/utils"
-import type { LinksFunction } from "@remix-run/cloudflare"
+import type { LinksFunction } from "react-router"
 import {
   Links,
   Meta,
@@ -16,7 +16,7 @@ import {
   isRouteErrorResponse,
   useRouteError,
   useLocation,
-} from "@remix-run/react"
+} from "react-router"
 import { init } from "@sentry/browser"
 import { ThemeProvider } from "next-themes"
 import { Suspense, useEffect, useState } from "react"

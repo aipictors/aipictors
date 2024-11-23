@@ -1,6 +1,6 @@
 import { config } from "~/config"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { useLocation } from "@remix-run/react"
+import { useLocation } from "react-router";
 import { graphql } from "gql.tada"
 import type React from "react"
 import { useEffect } from "react"

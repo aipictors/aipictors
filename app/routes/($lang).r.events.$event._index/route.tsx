@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useLoaderData, useNavigate, useSearchParams } from "react-router";
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import { RefreshCcwIcon } from "lucide-react"

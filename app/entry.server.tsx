@@ -1,5 +1,5 @@
-import type { AppLoadContext, EntryContext } from "@remix-run/cloudflare"
-import { RemixServer } from "@remix-run/react"
+import type { AppLoadContext, EntryContext } from "react-router"
+import { ServerRouter } from "react-router"
 import { isbot } from "isbot"
 import { renderToReadableStream } from "react-dom/server"
 
@@ -13,7 +13,7 @@ export default async function handleRequest(
   request: Request,
   loaderStatusCode: number,
   headers: Headers,
-  remixContext: EntryContext,
+  reactRouterContext: EntryContext,
   loadContext: AppLoadContext,
 ) {
   const url = new URL(request.url)
@@ -33,7 +33,7 @@ export default async function handleRequest(
   let remixStatusCode = loaderStatusCode
 
   const body = await renderToReadableStream(
-    <RemixServer context={remixContext} url={request.url} />,
+    <ServerRouter context={reactRouterContext} url={request.url} />,
     {
       onError(error: unknown) {
         console.error(error)
@@ -54,6 +54,7 @@ export default async function handleRequest(
   })
 
   if (import.meta.env.PROD && loaderStatusCode === 200) {
+    // @ts-ignore
     loadContext.cloudflare.ctx.waitUntil(
       caches.default.put(cacheKey, response.clone()),
     )

@@ -4,13 +4,9 @@ import {
   WorkList,
   WorkListItemFragment,
 } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"

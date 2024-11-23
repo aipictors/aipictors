@@ -4,7 +4,7 @@ import { useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
 import { useEffect, useState } from "react"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { type FragmentOf, graphql } from "gql.tada"

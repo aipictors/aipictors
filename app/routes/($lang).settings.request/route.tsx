@@ -1,8 +1,4 @@
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { SettingRequestForm } from "~/routes/($lang).settings.request/components/setting-request-form"

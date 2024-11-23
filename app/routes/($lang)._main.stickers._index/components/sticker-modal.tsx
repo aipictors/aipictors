@@ -5,7 +5,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from "~/components/ui/dialog"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router";
 
 export function StickerModal() {
   const navigate = useNavigate()

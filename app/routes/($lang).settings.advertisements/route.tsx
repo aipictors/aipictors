@@ -1,8 +1,4 @@
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 import { SettingAdvertisementsForm } from "~/routes/($lang).settings.advertisements/_components/setting-advertisements-form"

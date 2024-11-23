@@ -7,11 +7,7 @@ import { useTheme } from "next-themes"
 import { useState } from "react"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import { Separator } from "~/components/ui/separator"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
@@ -64,7 +60,7 @@ export default function SettingColor() {
 
   const getColorSchema = (theme: string): string => {
     if (["system", "light", "dark"].includes(theme)) return "none"
-    return theme.replace(/(light|dark)-/, "") ?? "none"
+    return theme.replace(/(light|dark)-/, "") ?? "none";
   }
 
   const mode = getMode(theme ?? "system")
@@ -100,7 +96,7 @@ export default function SettingColor() {
     colorValue: string,
   ) => (
     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-    <div
+    (<div
       className={cn(
         "flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800",
         { "bg-gray-100 bg-opacity-50 dark:bg-gray-800": colorSchema === value },
@@ -120,7 +116,7 @@ export default function SettingColor() {
         />
         <span className="ml-2">{t(label, label)}</span>
       </label>
-    </div>
+    </div>)
   )
 
   return (

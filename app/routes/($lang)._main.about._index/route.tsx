@@ -1,9 +1,5 @@
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Link } from "react-router";
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"

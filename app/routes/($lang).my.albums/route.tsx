@@ -5,11 +5,7 @@ import type { SortType } from "~/types/sort-type"
 import { AlbumsListContainer } from "~/routes/($lang).my._index/components/albums-list-container"
 import { AlbumsSetting } from "~/routes/($lang).my._index/components/albums-settings"
 import { useQuery } from "@apollo/client/index"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { graphql } from "gql.tada"
 import React, { useContext } from "react"
 import { Suspense } from "react"

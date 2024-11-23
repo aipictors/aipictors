@@ -12,7 +12,7 @@ import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 
 type Props = {
   user: FragmentOf<typeof UserCardFragment>

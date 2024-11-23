@@ -7,7 +7,7 @@ import {
 } from "~/components/ui/carousel"
 import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 
 type Props = {
   works: FragmentOf<typeof HomeBannerWorkFragment>[]

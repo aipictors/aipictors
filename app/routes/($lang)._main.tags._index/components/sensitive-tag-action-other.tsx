@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { EllipsisIcon, RefreshCcwIcon } from "lucide-react"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router";
 import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
 
 type Props = {

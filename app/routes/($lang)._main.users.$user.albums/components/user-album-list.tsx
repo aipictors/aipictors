@@ -1,5 +1,5 @@
 import { type FragmentOf, graphql } from "gql.tada"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { Images } from "lucide-react"
 
 type Props = {

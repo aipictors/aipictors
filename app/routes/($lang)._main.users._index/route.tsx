@@ -1,5 +1,5 @@
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useLoaderData } from "react-router";
 import { graphql, readFragment } from "gql.tada"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
@@ -47,29 +47,27 @@ export default function UsersPage() {
 
   const users = readFragment(UserCardFragment, data.users)
 
-  return (
-    <>
-      <p>{"ユーザ一覧"}</p>
-      <form method="get" className="flex space-x-2">
-        <Input
-          type="text"
-          name="search"
-          placeholder="ユーザ名で検索"
-          defaultValue={data.search}
-          className="rounded border px-2 py-1"
-        />
-        <Button type="submit">検索</Button>
-      </form>
-      <div className="flex flex-wrap justify-center gap-x-2 gap-y-2 md:justify-start">
-        {data.users.map((user) => (
-          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-          <div className="w-full">
-            <UserCard user={user} />
-          </div>
-        ))}
-      </div>
-    </>
-  )
+  return (<>
+    <p>{"ユーザ一覧"}</p>
+    <form method="get" className="flex space-x-2">
+      <Input
+        type="text"
+        name="search"
+        placeholder="ユーザ名で検索"
+        defaultValue={data.search}
+        className="rounded border px-2 py-1"
+      />
+      <Button type="submit">検索</Button>
+    </form>
+    <div className="flex flex-wrap justify-center gap-x-2 gap-y-2 md:justify-start">
+      {data.users.map((user) => (
+        // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+        (<div className="w-full">
+          <UserCard user={user} />
+        </div>)
+      ))}
+    </div>
+  </>);
 }
 
 export const usersQuery = graphql(

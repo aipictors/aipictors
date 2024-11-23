@@ -1,6 +1,6 @@
 import text from "~/assets/flutter/terms.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "react-router";
 import { config } from "~/config"
 
 export default function FlutterTermsPage() {

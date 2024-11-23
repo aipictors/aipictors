@@ -1,7 +1,7 @@
 name = "aipictors"
 compatibility_date = "2024-11-11"
-main = "./build/worker/index.js"
-assets = { directory = "./build/client" }
+main = "./build/server/index.js"
+assets = { directory = "./build/client/" }
 
 [observability]
 enabled = true

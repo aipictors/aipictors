@@ -1,7 +1,7 @@
 import text from "~/assets/flutter/terms.md?raw"
 import enText from "~/assets/flutter/terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "react-router";
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"

@@ -1,11 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { EventImage } from "~/routes/($lang).events.blendai/components/event-image"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Link } from "react-router";
 import { MousePointerClickIcon } from "lucide-react"
 import { ImageGenerationReferenceCard } from "~/routes/($lang).events.blendai/components/image-generation-reference-card"
 import { useTranslation } from "~/hooks/use-translation"

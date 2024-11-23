@@ -2,11 +2,7 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { BookmarkListContainer } from "~/routes/($lang).my._index/components/bookmark-list-container"
 import { useQuery } from "@apollo/client/index"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { graphql } from "gql.tada"
 import React from "react"
 import { Suspense, useContext } from "react"

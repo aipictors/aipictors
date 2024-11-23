@@ -11,7 +11,7 @@ import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/compone
 import { AuthContext } from "~/contexts/auth-context"
 import { Heart, ShieldAlert } from "lucide-react"
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { ConstructionAlert } from "~/components/construction-alert"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
@@ -100,7 +100,7 @@ export function WorkArticle(props: Props) {
   }
 
   return (
-    <article className="flex flex-col space-y-4">
+    (<article className="flex flex-col space-y-4">
       <ConstructionAlert
         type="WARNING"
         message={t(
@@ -387,8 +387,8 @@ export function WorkArticle(props: Props) {
           </div>
         </div>
       </section>
-    </article>
-  )
+    </article>)
+  );
 }
 
 const viewerBookmarkFolderIdQuery = graphql(

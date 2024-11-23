@@ -1,12 +1,8 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "react-router";
 import { loaderClient } from "~/lib/loader-client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { graphql } from "gql.tada"
 import {
   RankingWorkList,

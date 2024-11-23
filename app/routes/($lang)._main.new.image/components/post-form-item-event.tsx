@@ -1,6 +1,6 @@
 import type { Tag } from "~/components/tag/tag-input"
 import { Checkbox } from "~/components/ui/checkbox"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { useEffect, useState } from "react"
 import { Card, CardContent } from "~/components/ui/card"
 import { getJstDate } from "~/utils/jst-date"

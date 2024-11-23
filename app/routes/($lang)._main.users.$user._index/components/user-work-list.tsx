@@ -1,6 +1,6 @@
 import { Switch } from "~/components/ui/switch"
 import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {

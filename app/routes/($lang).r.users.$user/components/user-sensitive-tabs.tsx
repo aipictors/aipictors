@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "@remix-run/react"
+import { useNavigate, useLocation } from "react-router";
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
 import { Button } from "~/components/ui/button"
 import { useLocale } from "~/lib/app/hooks/use-locale"

@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage } from "~/components/ui/avatar"
 import { Card } from "~/components/ui/card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {

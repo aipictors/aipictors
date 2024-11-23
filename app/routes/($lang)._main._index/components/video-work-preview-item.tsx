@@ -1,5 +1,5 @@
 import { Badge } from "~/components/ui/badge"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 
 type Props = {
   workId: string
@@ -14,7 +14,7 @@ type Props = {
  */
 export function NovelWorkPreviewItem(props: Props) {
   return (
-    <Link
+    (<Link
       to={`/posts/${props.workId}`}
       className="relative transition-all duration-300 ease-in-out hover:opacity-80"
     >
@@ -35,12 +35,12 @@ export function NovelWorkPreviewItem(props: Props) {
         <div className="mt-1 flex flex-wrap space-x-1">
           {props.tags.map((tag, index: number) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-            <Badge variant={"secondary"} key={index} className="text-xs">
+            (<Badge variant={"secondary"} key={index} className="text-xs">
               {tag}
-            </Badge>
+            </Badge>)
           ))}
         </div>
       </div>
-    </Link>
-  )
+    </Link>)
+  );
 }

@@ -1,8 +1,4 @@
-import type {
-  MetaFunction,
-  LoaderFunctionArgs,
-  HeadersFunction,
-} from "@remix-run/cloudflare"
+import type { MetaFunction, LoaderFunctionArgs, HeadersFunction } from "react-router";
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 import { SettingsCompleted } from "~/routes/($lang)._main.settings.completed._index/components/settings-completed"

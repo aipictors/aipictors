@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"

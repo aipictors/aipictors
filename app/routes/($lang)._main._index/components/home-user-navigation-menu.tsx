@@ -31,7 +31,7 @@ import { useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
-import { Link, useLocation, useNavigate } from "@remix-run/react"
+import { Link, useLocation, useNavigate } from "react-router";
 import { graphql } from "gql.tada"
 import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
 import { useTranslation } from "~/hooks/use-translation"

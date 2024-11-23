@@ -15,7 +15,7 @@ import {
 import { Checkbox } from "~/components/ui/checkbox"
 import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router";
 
 export function SensitiveChangeConfirmDialog() {
   const t = useTranslation()

@@ -1,6 +1,6 @@
 import { ParamsError } from "~/errors/params-error"
 import { ChatMessageView } from "~/routes/($lang)._main.messages.$recipient/components/chat-message-view"
-import { useParams } from "@remix-run/react"
+import { useParams } from "react-router";
 
 /**
  * 受信者とのメッセージ

@@ -2,9 +2,9 @@ import {
   StickerArticle,
   StickerArticleFragment,
 } from "~/routes/($lang)._main.stickers.$sticker/components/sticker-article"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { loaderClient } from "~/lib/loader-client"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import {
   StickerList,

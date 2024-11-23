@@ -2,7 +2,7 @@ import { graphql, type FragmentOf } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import { UnstableSSR as SSR } from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { LikeButton } from "~/components/like-button"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
@@ -17,7 +17,7 @@ type Props = {
  */
 export function TagReferencedWorkSection(props: Props) {
   return (
-    <SSR breakpoints={[300, 600, 900, 1200]}>
+    (<SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum
         photos={props.works.map((work) => ({
           src: work.largeThumbnailImageURL,
@@ -47,7 +47,7 @@ export function TagReferencedWorkSection(props: Props) {
         render={{
           extras: (_, { photo, index }) => (
             // typeof window === "undefined" ? null : (
-            <div key={index}>
+            (<div key={index}>
               <div className="absolute right-1 bottom-16 z-10">
                 <LikeButton
                   size={56}
@@ -82,13 +82,13 @@ export function TagReferencedWorkSection(props: Props) {
                   </div>
                 </Link>
               </div>
-            </div>
+            </div>)
           ),
           // ),
         }}
       />
-    </SSR>
-  )
+    </SSR>)
+  );
 }
 
 export const TagWorkFragment = graphql(

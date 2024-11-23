@@ -5,7 +5,7 @@ import { AiModelHeader } from "~/routes/($lang)._main.models.$model/components/a
 import { useContext, useEffect, useState } from "react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
-import { useSearchParams } from "@remix-run/react"
+import { useSearchParams } from "react-router";
 import { WorkListItemFragment } from "~/routes/($lang)._main.posts._index/components/work-list"
 import { aiModelQuery } from "~/routes/($lang)._main.models.$model/route"
 

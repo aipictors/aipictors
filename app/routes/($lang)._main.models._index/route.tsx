@@ -4,13 +4,9 @@ import {
   imageModelCardFragment,
   ImageModelList,
 } from "~/routes/($lang)._main.models._index/components/image-model-list"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 

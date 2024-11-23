@@ -1,5 +1,5 @@
 import { loaderClient } from "~/lib/loader-client"
-import { type MetaFunction, useLoaderData } from "@remix-run/react"
+import { type MetaFunction, useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
@@ -8,7 +8,7 @@ import {
   AppEventItemFragment,
   AppEventCard,
 } from "~/routes/($lang).events._index/components/app-event-card"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
 
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)

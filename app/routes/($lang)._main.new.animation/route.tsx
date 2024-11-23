@@ -20,7 +20,7 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { type MetaFunction, useBeforeUnload } from "@remix-run/react"
+import { type MetaFunction, useBeforeUnload } from "react-router";
 import { graphql } from "gql.tada"
 import React from "react"
 import { useContext, useReducer } from "react"
@@ -30,9 +30,9 @@ import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
-import type { LoaderFunctionArgs } from "react-router-dom"
+import type { LoaderFunctionArgs } from "react-router";
 import { useTranslation } from "~/hooks/use-translation"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction } from "react-router";
 
 export default function NewAnimation() {
   const t = useTranslation()

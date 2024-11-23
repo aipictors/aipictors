@@ -1,8 +1,4 @@
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { AppPageHeader } from "~/components/app/app-page-header"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"

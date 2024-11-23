@@ -1,9 +1,5 @@
 import { ContributorsView } from "~/routes/($lang)._main.contributors/components/contributors-view"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 

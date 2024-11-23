@@ -1,5 +1,5 @@
 import { LikeButton } from "~/components/like-button"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"

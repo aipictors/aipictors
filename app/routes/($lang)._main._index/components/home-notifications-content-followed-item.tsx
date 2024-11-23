@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { ArrowLeftRightIcon } from "lucide-react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateEnText } from "~/utils/to-date-en-text"

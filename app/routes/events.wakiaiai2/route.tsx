@@ -4,12 +4,12 @@ import { cn } from "~/lib/utils"
 import { eventUsers } from "~/routes/events.wakiaiai2/assets/event-users"
 import { EventWakiaiaiCreatorCard } from "~/routes/events.wakiaiai/components/event-wakiaiai-creator-card"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
-import { Link, type MetaFunction } from "@remix-run/react"
+import { Link, type MetaFunction } from "react-router"
 import { MousePointerClickIcon } from "lucide-react"
 import { EventWakiaiaiFooter } from "~/routes/events.wakiaiai/components/event-wakiaiai-footer"
 import { EventWakiaiaiHeader } from "~/routes/events.wakiaiai/components/event-wakiaiai-header"
 import { config } from "~/config"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction } from "react-router"
 
 export default function Route() {
   const length = Math.floor(eventUsers.length / 3)

@@ -1,5 +1,5 @@
 import { WorkCard } from "~/routes/($lang)._main.posts._index/components/work-card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {
@@ -8,10 +8,10 @@ type Props = {
 
 export function HomeWorkList(props: Props) {
   return (
-    <ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
+    (<ul className="grid w-full grid-cols-1 gap-2 pr-4 pb-4 md:grid-cols-2">
       {props.works?.map((work, index) => (
         // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-        <li key={index}>
+        (<li key={index}>
           <Link to={`/posts/${work.id}`}>
             <WorkCard
               imageURL={work.largeThumbnailImageURL}
@@ -19,10 +19,10 @@ export function HomeWorkList(props: Props) {
               imageHeight={work.largeThumbnailImageHeight}
             />
           </Link>
-        </li>
+        </li>)
       ))}
-    </ul>
-  )
+    </ul>)
+  );
 }
 
 export const HomeWorkListItemFragment = graphql(

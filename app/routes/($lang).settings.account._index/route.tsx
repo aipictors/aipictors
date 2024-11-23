@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { MetaFunction } from "react-router";
 import { META } from "~/config"
 import { AccountNavigation } from "~/routes/($lang).settings.account._index/components/account-navigation"
 import { createMeta } from "~/utils/create-meta"

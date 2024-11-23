@@ -9,12 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { useLoaderData } from "react-router";
 import { useTranslation } from "~/hooks/use-translation"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"

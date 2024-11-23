@@ -10,7 +10,7 @@ import {
   FollowerListItemFragment,
   FollowerListItemWorkFragment,
 } from "~/routes/($lang).followers._index/components/follower-user-item"
-import { useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router";
 import { Button } from "~/components/ui/button"
 import { FollowingUserProfileItem } from "~/routes/($lang).following._index/components/following-user-profile-item"
 import { useTranslation } from "~/hooks/use-translation"

@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/alert-dialog"
 import { Checkbox } from "~/components/ui/checkbox"
 import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router";
 import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 import { BoxIcon } from "lucide-react"
 

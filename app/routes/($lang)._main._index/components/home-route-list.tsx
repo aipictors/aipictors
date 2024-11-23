@@ -2,7 +2,7 @@ import { NavigationLogoutDialogButton } from "~/components/logout-navigation-dia
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
-import { Link, useNavigate, useLocation } from "@remix-run/react"
+import { Link, useNavigate, useLocation } from "react-router";
 import {
   AwardIcon,
   BookImageIcon,

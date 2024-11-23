@@ -1,5 +1,5 @@
 import { LikeButton } from "~/components/like-button"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import type { RenderPhotoProps } from "react-photo-album"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"

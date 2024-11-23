@@ -1,8 +1,4 @@
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { FollowedTagList } from "~/routes/($lang).settings.followed.tags/components/followed-tag-list"

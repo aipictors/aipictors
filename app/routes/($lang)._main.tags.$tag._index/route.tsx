@@ -1,13 +1,9 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { TagWorkSection } from "~/routes/($lang)._main.tags._index/components/tag-work-section"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { useParams, useSearchParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { useParams, useSearchParams } from "react-router";
+import { useLoaderData } from "react-router";
 import { graphql, readFragment } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import React, { useEffect } from "react"

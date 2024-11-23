@@ -2,7 +2,7 @@ import {
   StickerCard,
   StickerCardFragment,
 } from "~/routes/($lang)._main.stickers._index/components/sticker-card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {

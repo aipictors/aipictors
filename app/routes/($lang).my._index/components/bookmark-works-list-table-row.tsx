@@ -1,7 +1,7 @@
 import { TableRow, TableCell } from "~/components/ui/table"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 
 type Props = {
   work: {

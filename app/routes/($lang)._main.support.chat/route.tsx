@@ -1,8 +1,4 @@
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { AppPageCenter } from "~/components/app/app-page-center"
 import { config, META } from "~/config"
 import { SupportChatView } from "~/routes/($lang)._main.support.chat/components/dynamic-support-chat-view"

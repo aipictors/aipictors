@@ -1,11 +1,7 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { FollowerList } from "~/routes/($lang).followers._index/components/follower-list"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { Suspense, useContext } from "react"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"

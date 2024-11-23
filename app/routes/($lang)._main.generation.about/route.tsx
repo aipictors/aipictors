@@ -1,8 +1,4 @@
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { config, META } from "~/config"
 import { GenerationAboutPage } from "~/routes/($lang)._main.generation.about/components/generation-about-page"
 import { createMeta } from "~/utils/create-meta"

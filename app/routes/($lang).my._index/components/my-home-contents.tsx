@@ -9,7 +9,7 @@ import { DashboardHomeContentContainer } from "~/routes/($lang).my._index/compon
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"

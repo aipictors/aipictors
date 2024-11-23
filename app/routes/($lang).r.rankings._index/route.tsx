@@ -1,7 +1,7 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "react-router";
 import { loaderClient } from "~/lib/loader-client"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { graphql } from "gql.tada"
 import {
   RankingSensitiveWorkList,

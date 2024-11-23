@@ -1,5 +1,5 @@
 import { cn } from "~/lib/utils"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { useTranslation } from "~/hooks/use-translation"
 
 export function AppFooter() {
