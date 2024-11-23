@@ -1,7 +1,7 @@
 import { type FragmentOf, graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { StickerCard } from "~/routes/($lang)._main.stickers._index/components/sticker-card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 
 type Props = {
   stickers: FragmentOf<typeof UserStickersItemFragment>[]

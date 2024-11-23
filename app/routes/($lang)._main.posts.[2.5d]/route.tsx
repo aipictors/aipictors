@@ -7,9 +7,9 @@ import {
   HomeWorkList,
   HomeWorkListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-work-list"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction } from "react-router";
 import { config } from "~/config"
 
 export async function loader() {

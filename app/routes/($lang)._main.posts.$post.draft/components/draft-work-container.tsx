@@ -25,7 +25,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, Link } from "react-router";
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { DraftWorkArticle } from "~/routes/($lang)._main.posts.$post.draft/components/draft-work-article"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"

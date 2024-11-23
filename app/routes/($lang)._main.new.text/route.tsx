@@ -20,11 +20,7 @@ import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reduce
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import { useQuery, useMutation } from "@apollo/client/index"
-import {
-  type MetaFunction,
-  useBeforeUnload,
-  useSearchParams,
-} from "@remix-run/react"
+import { type MetaFunction, useBeforeUnload, useSearchParams } from "react-router";
 import { graphql } from "gql.tada"
 import React, { useEffect } from "react"
 import { useContext, useReducer } from "react"
@@ -35,9 +31,9 @@ import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import { useTranslation } from "~/hooks/use-translation"
-import type { LoaderFunctionArgs } from "react-router-dom"
+import type { LoaderFunctionArgs } from "react-router";
 import { uploadTextFile } from "~/utils/upload-text-file"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction } from "react-router";
 
 export default function NewText() {
   const t = useTranslation()

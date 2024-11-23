@@ -16,12 +16,12 @@ import {
 } from "~/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { loaderClient } from "~/lib/loader-client"
-import { Link, type MetaFunction, useLoaderData } from "@remix-run/react"
+import { Link, type MetaFunction, useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
-import type { LoaderFunctionArgs } from "react-router-dom"
+import type { LoaderFunctionArgs } from "react-router";
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MILESTONES, undefined, props.params.lang)

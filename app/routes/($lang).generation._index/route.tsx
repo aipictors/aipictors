@@ -26,7 +26,7 @@ import { GenerationLinksView } from "~/routes/($lang).generation._index/componen
 import { GenerationFormFooter } from "~/routes/($lang).generation._index/components/generation-form-footer"
 import { SettingLanguageUsedForPromptView } from "~/routes/($lang).generation._index/components/setting-language-used-for-prompt-view/setting-language-used-for-prompt-view"
 import { config } from "~/config"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction } from "react-router";
 
 /**
  * 画像生成

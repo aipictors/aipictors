@@ -2,7 +2,7 @@ import { AppCommonLayout } from "~/components/app/app-common-layout"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
 import { MyContents } from "~/routes/($lang).my/components/my-contents"
-import { Outlet } from "@remix-run/react"
+import { Outlet } from "react-router";
 import { Suspense, useContext } from "react"
 
 export default function MyLayout() {

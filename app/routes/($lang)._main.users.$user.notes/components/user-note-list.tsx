@@ -7,7 +7,7 @@ import { LikeButton } from "~/components/like-button"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router";
 import { ResponsivePagination } from "~/components/responsive-pagination"
 
 type Props = {
@@ -42,13 +42,13 @@ export function UserNoteList(props: Props) {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col space-y-4">
+    (<div className="flex flex-col space-y-4">
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
           <CarouselWithGradation
             items={works.map((work, index) => (
               // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
-              <div className="h-full rounded border-2 border-gray border-solid">
+              (<div className="h-full rounded border-2 border-gray border-solid">
                 <div className="relative">
                   <NovelWorkPreviewItem
                     workId={work.id}
@@ -76,7 +76,7 @@ export function UserNoteList(props: Props) {
                     strokeWidth={2}
                   />
                 </div>
-              </div>
+              </div>)
             ))}
           />
         </section>
@@ -92,8 +92,8 @@ export function UserNoteList(props: Props) {
           }}
         />
       </div>
-    </div>
-  )
+    </div>)
+  );
 }
 
 export const UserNotesItemFragment = graphql(

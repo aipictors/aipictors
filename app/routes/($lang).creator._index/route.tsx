@@ -1,5 +1,5 @@
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { type MetaFunction, useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { type MetaFunction, useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"

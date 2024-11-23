@@ -1,5 +1,5 @@
 import { Card } from "~/components/ui/card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 
 type Props = {
   prompts: string

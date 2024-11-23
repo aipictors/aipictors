@@ -5,7 +5,7 @@ import type { ReactElement } from "react"
 import { toast } from "sonner"
 import { graphql } from "gql.tada"
 import { useMutation } from "@apollo/client/index"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router"
 
 type Props = {
   disabled: boolean

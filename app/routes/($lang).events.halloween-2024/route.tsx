@@ -2,12 +2,8 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { cn } from "~/lib/utils"
 import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { Link } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Link } from "react-router";
 import { MousePointerClickIcon } from "lucide-react"
 import { loaderClient } from "~/lib/loader-client"
 import { graphql } from "gql.tada"

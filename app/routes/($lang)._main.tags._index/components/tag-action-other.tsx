@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { EllipsisIcon } from "lucide-react"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router";
 import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
 import { SensitiveTagConfirmDialog } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-confirm-dialog"
 

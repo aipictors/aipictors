@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare"
+import { type LoaderFunctionArgs, redirect } from "react-router";
 
 export const loader = async (props: LoaderFunctionArgs) => {
   const url = new URL(props.request.url)

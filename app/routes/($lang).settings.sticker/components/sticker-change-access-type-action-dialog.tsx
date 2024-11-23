@@ -12,7 +12,7 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import React, { useContext, useState } from "react"

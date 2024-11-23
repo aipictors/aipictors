@@ -15,7 +15,7 @@ import { ToggleContent } from "~/components/toggle-content"
 import { Heart, ShieldAlert } from "lucide-react"
 import { Separator } from "~/components/ui/separator"
 import { useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
@@ -74,7 +74,7 @@ export function DraftWorkArticle(props: Props) {
   )
 
   return (
-    <article className="flex flex-col space-y-4">
+    (<article className="flex flex-col space-y-4">
       <PostAccessTypeBanner
         createdAt={props.work.createdAt}
         postAccessType={props.work.accessType}
@@ -325,8 +325,8 @@ export function DraftWorkArticle(props: Props) {
           </div>
         </div>
       </section>
-    </article>
-  )
+    </article>)
+  );
 }
 
 const viewerBookmarkFolderIdQuery = graphql(

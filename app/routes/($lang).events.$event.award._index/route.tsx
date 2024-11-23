@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { useLoaderData, useNavigate } from "@remix-run/react"
+import { useLoaderData, useNavigate } from "react-router";
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import {
@@ -9,9 +9,9 @@ import {
 import { Button } from "~/components/ui/button"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
-import type { LoaderFunctionArgs } from "react-router-dom"
+import type { LoaderFunctionArgs } from "react-router";
 import { config } from "~/config"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction } from "react-router";
 import { SensitiveEventConfirmDialog } from "~/routes/($lang).events.$event._index/components/sensitive-event-confirm-dialog"
 
 const toEventDateTimeText = (time: number) => {

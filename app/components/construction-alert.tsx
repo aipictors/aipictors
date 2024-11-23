@@ -1,6 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {

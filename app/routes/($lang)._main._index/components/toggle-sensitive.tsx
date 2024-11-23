@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Label } from "~/components/ui/label"
 import { Switch } from "~/components/ui/switch"
-import { useLocation } from "react-router-dom" // React Routerを使用
+import { useLocation } from "react-router"; // React Routerを使用
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale" // 追加
 

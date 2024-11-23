@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { cn } from "~/lib/utils"
 import { stringToColor } from "~/utils/string-to-color"
 

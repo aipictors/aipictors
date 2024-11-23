@@ -14,7 +14,7 @@ import {
 } from "~/components/ui/alert-dialog"
 import { Checkbox } from "~/components/ui/checkbox"
 import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router";
 import { Button } from "~/components/ui/button"
 import { RefreshCcwIcon } from "lucide-react"
 

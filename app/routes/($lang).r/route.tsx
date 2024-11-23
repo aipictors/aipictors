@@ -1,6 +1,6 @@
 import { AppCommonLayout } from "~/components/app/app-common-layout"
-import type { MetaFunction } from "@remix-run/cloudflare"
-import { Outlet } from "@remix-run/react"
+import type { MetaFunction } from "react-router";
+import { Outlet } from "react-router";
 
 export const meta: MetaFunction = () => {
   const metaTitle = "Aipictors | AIイラスト投稿・生成サイト | センシティブ"

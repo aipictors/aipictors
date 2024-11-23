@@ -12,8 +12,8 @@ import { graphql } from "gql.tada"
 import { useContext, useEffect, useReducer, useState } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useBeforeUnload, useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useBeforeUnload, useLoaderData } from "react-router";
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import React from "react"
 import { EditTextFormUploader } from "~/routes/($lang)._main.posts.$post.text.edit._index/components/edit-text-form-uploader"

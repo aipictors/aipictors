@@ -4,7 +4,7 @@ import {
   CarouselItem,
 } from "~/components/ui/carousel"
 import { Separator } from "~/components/ui/separator"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { Button } from "~/components/ui/button"
 import {
   Accordion,

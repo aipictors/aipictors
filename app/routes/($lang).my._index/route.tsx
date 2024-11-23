@@ -1,11 +1,7 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { DashboardHomeContents } from "~/routes/($lang).my._index/components/my-home-contents"
 import { Suspense } from "react"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
 

@@ -3,9 +3,9 @@ import {
   WorkList,
   WorkListItemFragment,
 } from "~/routes/($lang)._main.posts._index/components/work-list"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction } from "react-router";
 import { config } from "~/config"
 
 export async function loader() {

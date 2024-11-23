@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { StickerButton } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql } from "gql.tada"
 import { useState, useContext } from "react"
 import { toast } from "sonner"

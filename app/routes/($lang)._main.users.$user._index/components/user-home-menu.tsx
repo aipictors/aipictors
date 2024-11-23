@@ -8,7 +8,7 @@ import { useQuery } from "@apollo/client/index"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router";
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { useTranslation } from "~/hooks/use-translation"
 import { SensitiveConfirmDialog } from "~/routes/($lang)._main.users.$user._index/components/sensitive-confirm-dialog"

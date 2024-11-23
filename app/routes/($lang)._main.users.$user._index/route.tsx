@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData, useParams } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useLoaderData, useParams } from "react-router";
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { config } from "~/config"

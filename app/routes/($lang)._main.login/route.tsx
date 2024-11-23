@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/cloudflare"
+import type { MetaFunction } from "react-router";
 import { Card, CardContent } from "~/components/ui/card"
 import { META } from "~/config"
 import { LoginForm } from "~/routes/($lang)._main.login/components/login-form"

@@ -12,7 +12,7 @@ import {
 } from "~/components/ui/alert-dialog"
 import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router";
 import { RefreshCcwIcon } from "lucide-react"
 
 type Props = {

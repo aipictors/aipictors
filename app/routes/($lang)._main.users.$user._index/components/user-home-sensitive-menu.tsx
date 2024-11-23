@@ -9,7 +9,7 @@ import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/com
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
 import { RefreshCcwIcon } from "lucide-react"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate } from "react-router";
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { useTranslation } from "~/hooks/use-translation"
 

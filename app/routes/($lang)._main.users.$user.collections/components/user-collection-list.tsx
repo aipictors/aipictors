@@ -1,5 +1,5 @@
 import { type FragmentOf, graphql } from "gql.tada"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 
 type Props = {
   folders: FragmentOf<typeof UserUserFoldersItemFragment>[]

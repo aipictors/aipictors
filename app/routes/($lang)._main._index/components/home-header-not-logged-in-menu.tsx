@@ -24,7 +24,7 @@ import { useTheme } from "next-themes"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router";
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 

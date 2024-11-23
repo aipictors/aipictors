@@ -14,7 +14,7 @@ import { Loader2Icon } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Separator } from "~/components/ui/separator"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { useTranslation } from "~/hooks/use-translation"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { SettingsAdvertisementsDeleteConfirmDialog } from "~/routes/($lang).settings.advertisements/_components/settings-advertisements-delete-confirm-dialog"

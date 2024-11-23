@@ -5,12 +5,8 @@ import {
 } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
 import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
-import type {
-  MetaFunction,
-  LoaderFunctionArgs,
-  HeadersFunction,
-} from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import type { MetaFunction, LoaderFunctionArgs, HeadersFunction } from "react-router";
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"

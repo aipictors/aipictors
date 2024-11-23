@@ -1,6 +1,6 @@
 import type React from "react"
 import { useContext, useEffect, useState } from "react"
-import { Link, useNavigate, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useQuery } from "@apollo/client/index"
 import type { FragmentOf } from "gql.tada"
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"

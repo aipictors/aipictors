@@ -5,14 +5,9 @@ import {
   type workArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import {
-  redirect,
-  type HeadersFunction,
-  type LoaderFunctionArgs,
-  type MetaFunction,
-} from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { redirect, type HeadersFunction, type LoaderFunctionArgs, type MetaFunction } from "react-router";
+import { useParams } from "react-router";
+import { useLoaderData } from "react-router";
 import { type FragmentOf, graphql } from "gql.tada"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { config, META } from "~/config"

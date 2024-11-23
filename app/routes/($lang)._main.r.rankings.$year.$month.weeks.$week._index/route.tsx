@@ -1,11 +1,7 @@
 import { loaderClient } from "~/lib/loader-client"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { useParams } from "react-router";
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import {
   RankingSensitiveWorkList,

@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button"
 import { PencilIcon } from "lucide-react"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
 

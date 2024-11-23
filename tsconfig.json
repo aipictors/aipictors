@@ -12,11 +12,12 @@
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "types": [
-      "@remix-run/cloudflare",
+      "@react-router/cloudflare",
       "vite/client",
-      "@cloudflare/workers-types/2023-07-01",
+      "@cloudflare/workers-types",
       "web",
-      "bun-types"
+      "bun-types",
+      "react-router"
     ],
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -29,7 +30,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
-    "paths": { "~/*": ["./app/*"] },
+    "paths": {
+      "~/*": ["./app/*"]
+    },
     "noEmit": true,
     "declaration": true,
     "declarationMap": true,

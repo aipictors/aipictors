@@ -1,6 +1,6 @@
 import { TableRow, TableCell } from "~/components/ui/table"
 import { toAccessTypeText } from "~/utils/work/to-access-type-text"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { type FragmentOf, graphql } from "gql.tada"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 

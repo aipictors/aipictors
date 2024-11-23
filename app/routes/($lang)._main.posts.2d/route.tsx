@@ -4,12 +4,8 @@ import {
   HomePromotionWorkFragment,
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { useLoaderData, useSearchParams } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { useLoaderData, useSearchParams } from "react-router";
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import {

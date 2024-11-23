@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useNavigate, useSearchParams } from "react-router";
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import { RefreshCcwIcon } from "lucide-react"
@@ -10,7 +10,7 @@ import {
 import { Button } from "~/components/ui/button"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { config } from "~/config"
 import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"

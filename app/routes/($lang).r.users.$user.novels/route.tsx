@@ -1,8 +1,8 @@
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
+import { useParams } from "react-router";
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import { UserNovelsItemFragment } from "~/routes/($lang)._main.users.$user.novels/components/user-novel-list"
 import { UserSensitiveNovelList } from "~/routes/($lang).r.users.$user.novels/components/user-sensitive-novel-list"

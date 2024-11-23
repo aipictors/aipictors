@@ -2,7 +2,7 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router";
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/novel-work-preview-item"
 import { LikeButton } from "~/components/like-button"

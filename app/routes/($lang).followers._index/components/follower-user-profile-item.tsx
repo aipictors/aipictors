@@ -1,6 +1,6 @@
 import { FollowButton } from "~/components/button/follow-button"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql, type FragmentOf } from "gql.tada"
 
 type Props = {

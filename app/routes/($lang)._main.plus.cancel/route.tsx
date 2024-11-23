@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { FrownIcon } from "lucide-react"
 
 /**

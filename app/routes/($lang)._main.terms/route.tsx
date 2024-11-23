@@ -1,8 +1,4 @@
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import text from "~/assets/terms.md?raw"
 import enText from "~/assets/terms-en.md?raw"
 import { AppMarkdown } from "~/components/app/app-markdown"

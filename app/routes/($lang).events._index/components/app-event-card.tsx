@@ -1,5 +1,5 @@
 import { Card, CardHeader } from "~/components/ui/card"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { getJstDate } from "~/utils/jst-date"
 import { useEventDateTimeText } from "~/routes/($lang).events._index/hooks/use-event-date-time-text"

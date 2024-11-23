@@ -6,8 +6,8 @@ import { AuthContext } from "~/contexts/auth-context"
 import { loaderClient } from "~/lib/loader-client"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import type { HeadersFunction, MetaFunction } from "react-router";
+import { useLoaderData } from "react-router";
 import { graphql } from "gql.tada"
 import React, { useEffect, useState } from "react"
 import { useContext } from "react"

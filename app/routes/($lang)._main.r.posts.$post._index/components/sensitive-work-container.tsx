@@ -22,7 +22,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate, Link } from "react-router";
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"

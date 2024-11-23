@@ -1,4 +1,4 @@
-import { useNavigation } from "@remix-run/react"
+import { useNavigation } from "react-router"
 import { Loader2Icon } from "lucide-react"
 import { Avatar, AvatarImage } from "~/components/ui/avatar"
 

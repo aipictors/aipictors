@@ -1,11 +1,7 @@
-import { Link, useLoaderData } from "@remix-run/react"
+import { Link, useLoaderData } from "react-router";
 import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Button } from "~/components/ui/button"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs, MetaFunction } from "react-router";
 import { ReleaseItem } from "~/routes/($lang)._main.releases.$id._index/components/release-item"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"

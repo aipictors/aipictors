@@ -1,7 +1,7 @@
 import { Card } from "~/components/ui/card"
 import { GenerationTaskCancelButton } from "~/routes/($lang).generation._index/components/generation-cancel-button"
 import { useMutation } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
+import { Link } from "react-router";
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { toast } from "sonner"

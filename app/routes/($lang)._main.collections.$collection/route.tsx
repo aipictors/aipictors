@@ -2,10 +2,10 @@ import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
 import { CollectionArticle } from "~/routes/($lang)._main.collections.$collection/components/collection-article"
 import { CollectionWorkListItemFragment } from "~/routes/($lang)._main.collections.$collection/components/collection-works-list"
-import { useLoaderData } from "@remix-run/react"
-import { useParams } from "@remix-run/react"
+import { useLoaderData } from "react-router";
+import { useParams } from "react-router";
 import { graphql } from "gql.tada"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
 import { config } from "~/config"
 
 export async function loader(props: LoaderFunctionArgs) {

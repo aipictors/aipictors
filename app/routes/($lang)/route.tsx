@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, redirect } from "@remix-run/cloudflare"
+import { type LoaderFunctionArgs, redirect } from "react-router";
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 
