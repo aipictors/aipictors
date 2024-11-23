@@ -50,56 +50,6 @@ export function DashboardHomeContents() {
       <div className="mb-4 space-y-4">
         <div className="block items-stretch space-x-0 space-y-2 md:flex md:space-x-2 md:space-y-0">
           <div className="h-auto w-full items-stretch">
-            <DashboardHomeContentContainer
-              title={t("合計リアクション数", "Total Reactions")}
-            >
-              <div className="rounded-md">
-                <div className="mb-4">
-                  <div className="flex items-center">
-                    <EyeIcon className="mr-2 w-3" />
-                    {t("閲覧数", "Views")}
-                  </div>
-                  <p className="font-bold font-size-md">
-                    {formatNumberWithCommas(
-                      data?.viewer?.user.createdViewsCount,
-                    )}
-                  </p>
-                </div>
-                <div className="mb-4">
-                  <div className="flex items-center">
-                    <HeartIcon className="mr-2 w-3" />
-                    {t("いいね数", "Likes")}
-                  </div>
-                  <p className="font-bold font-size-md">
-                    {formatNumberWithCommas(
-                      data?.viewer?.user.createdLikesCount,
-                    )}
-                  </p>
-                </div>
-                <div className="mb-4">
-                  <div className="flex items-center">
-                    <FolderIcon className="mr-2 w-3" />
-                    {t("ブックマーク数", "Bookmarks")}
-                  </div>
-                  <p className="font-bold font-size-md">
-                    {formatNumberWithCommas(
-                      data?.viewer?.user.createdBookmarksCount,
-                    )}
-                  </p>
-                </div>
-                <div className="mb-4">
-                  <div className="flex items-center">
-                    <MessageCircleIcon className="mr-2 w-3" />
-                    {t("コメント数", "Comments")}
-                  </div>
-                  <p className="font-bold font-size-md">
-                    {formatNumberWithCommas(
-                      data?.viewer?.user.createdCommentsCount,
-                    )}
-                  </p>
-                </div>
-              </div>
-            </DashboardHomeContentContainer>
             <DashboardHomeContentContainer title={t("実績", "Total Posts")}>
               <div className="rounded-md">
                 <div className="mb-4">
@@ -119,6 +69,56 @@ export function DashboardHomeContents() {
                   <p className="font-bold font-size-md">
                     {formatNumberWithCommas(
                       data?.viewer?.user.receivedLikesCount,
+                    )}
+                  </p>
+                </div>
+              </div>
+            </DashboardHomeContentContainer>
+            <DashboardHomeContentContainer
+              title={t("合計リアクション数", "Total Reactions")}
+            >
+              <div className="rounded-md">
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <EyeIcon className="mr-2 w-3" />
+                    {t("自分が閲覧した数", "Views")}
+                  </div>
+                  <p className="font-bold font-size-md">
+                    {formatNumberWithCommas(
+                      data?.viewer?.user.createdViewsCount,
+                    )}
+                  </p>
+                </div>
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <HeartIcon className="mr-2 w-3" />
+                    {t("自分がいいねした数", "Likes")}
+                  </div>
+                  <p className="font-bold font-size-md">
+                    {formatNumberWithCommas(
+                      data?.viewer?.user.createdLikesCount,
+                    )}
+                  </p>
+                </div>
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <FolderIcon className="mr-2 w-3" />
+                    {t("自分がブックマーク数", "Bookmarks")}
+                  </div>
+                  <p className="font-bold font-size-md">
+                    {formatNumberWithCommas(
+                      data?.viewer?.user.createdBookmarksCount,
+                    )}
+                  </p>
+                </div>
+                <div className="mb-4">
+                  <div className="flex items-center">
+                    <MessageCircleIcon className="mr-2 w-3" />
+                    {t("自分がコメント数", "Comments")}
+                  </div>
+                  <p className="font-bold font-size-md">
+                    {formatNumberWithCommas(
+                      data?.viewer?.user.createdCommentsCount,
                     )}
                   </p>
                 </div>
