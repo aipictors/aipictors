@@ -74,7 +74,13 @@ export const resizeImage = (
             ? Math.round(width / aspectRatio)
             : imageBitmap.height
 
-        const canvas = new OffscreenCanvas(targetWidth, targetHeight)
+        const canvas: OffscreenCanvas | HTMLCanvasElement = (() => {
+          const fallbackCanvas = document.createElement("canvas")
+          fallbackCanvas.width = targetWidth
+          fallbackCanvas.height = targetHeight
+          return fallbackCanvas
+        })()
+
         const ctx = canvas.getContext("2d")
 
         if (!ctx) {
@@ -83,26 +89,36 @@ export const resizeImage = (
 
         ctx.drawImage(imageBitmap, 0, 0, targetWidth, targetHeight)
 
-        const quality = format === "jpeg" ? 0.92 : undefined
-        return canvas
-          .convertToBlob({ type: `image/${format}`, quality })
-          .then((resizedBlob) => {
-            return new Promise<ResizeInfo>((resolve, reject) => {
-              const reader = new FileReader()
-              reader.onloadend = () => {
-                const resizedBase64 = reader.result as string
-                resolve({
-                  base64: resizedBase64,
-                  width: targetWidth,
-                  height: targetHeight,
-                })
-              }
-              reader.onerror = () => {
-                reject(new Error("Failed to convert resized image to base64"))
-              }
-              reader.readAsDataURL(resizedBlob)
+        if (canvas instanceof OffscreenCanvas) {
+          const quality = format === "jpeg" ? 0.92 : undefined
+          return canvas
+            .convertToBlob({ type: `image/${format}`, quality })
+            .then((resizedBlob) => {
+              return new Promise<ResizeInfo>((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onloadend = () => {
+                  const resizedBase64 = reader.result as string
+                  resolve({
+                    base64: resizedBase64,
+                    width: targetWidth,
+                    height: targetHeight,
+                  })
+                }
+                reader.onerror = () => {
+                  reject(new Error("Failed to convert resized image to base64"))
+                }
+                reader.readAsDataURL(resizedBlob)
+              })
             })
+        }
+        return new Promise<ResizeInfo>((resolve, reject) => {
+          const resizedBase64 = canvas.toDataURL(`image/${format}`)
+          resolve({
+            base64: resizedBase64,
+            width: targetWidth,
+            height: targetHeight,
           })
+        })
       })
     })
   })
