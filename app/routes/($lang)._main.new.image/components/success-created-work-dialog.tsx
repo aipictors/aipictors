@@ -51,6 +51,25 @@ export function SuccessCreatedWorkDialog(props: Props) {
   }
 
   useEffect(() => {
+    // 一度だけ投稿作品URLをfetchする処理を追加
+    const fetchWorkUrl = async () => {
+      try {
+        const url = props.uuid
+          ? `https://www.aipictors.com/posts/${props.uuid}`
+          : `https://www.aipictors.com/works/${props.workId}`
+        const response = await fetch(url)
+        if (!response.ok) {
+          console.error("Fetch failed:", response.status)
+        }
+      } catch (error) {
+        console.error("Fetch error:", error)
+      }
+    }
+
+    if (props.workId || props.uuid) {
+      fetchWorkUrl()
+    }
+
     setTimeout(() => {
       const confettiContainer = document.getElementById(
         "confetti-container",
@@ -64,7 +83,7 @@ export function SuccessCreatedWorkDialog(props: Props) {
         return () => clearInterval(interval)
       }
     }, 1000)
-  }, [props.isOpen, props.workId])
+  }, [props.isOpen, props.workId, props.uuid])
 
   const link = () => {
     if (
