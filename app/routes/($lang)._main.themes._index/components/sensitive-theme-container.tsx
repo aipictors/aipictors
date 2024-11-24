@@ -175,48 +175,28 @@ export function SensitiveThemeContainer(props: Props) {
         <div className="relative overflow-hidden rounded-md">
           <Link
             to={`/themes/${props.todayTheme.year}/${props.todayTheme.month}/${props.todayTheme.day}`}
-            className="relative block h-24 overflow-hidden rounded-md p-4"
+            className="relative text-left"
           >
-            <h2 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 transform text-center font-bold text-white">
-              {t("今日のお題は", "Today's theme is")}
-              <br />「{props.todayTheme.title}」
+            <h2 className="text-sm">
+              {t("今日のお題は", "Today's theme is")}「{props.todayTheme.title}
+              」
             </h2>
-            {props.todayTheme.firstWork?.smallThumbnailImageURL && (
-              <img
-                className="absolute top-0 left-0 w-full"
-                src={props.todayTheme.firstWork?.smallThumbnailImageURL}
-                alt={props.todayTheme.title}
-              />
-            )}
-            <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
           </Link>
         </div>
       )}
 
       {props.day && props.targetThemes && props.targetThemes.length > 0 && (
-        <div className="relative h-24 overflow-hidden rounded-md">
-          <div className="relative overflow-hidden rounded-md">
-            <Link
-              to={`/themes/${props.targetThemes[0].year}/${props.targetThemes[0].month}/${props.targetThemes[0].day}`}
-              className="relative block h-24 overflow-hidden rounded-md p-4"
-            >
-              <h2 className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 transform text-center font-bold text-white">
-                <p>{`${props.targetThemes[0].year}月${props.targetThemes[0].month}月${props.targetThemes[0].day}日`}</p>
-                <p className="text-mx">「{props.targetThemes[0].title}」</p>
-                <p className="text-md">
-                  {t("作品数", "Number of works")}: {props.worksCount}
-                </p>
-              </h2>
-              {props.targetThemes[0].firstWork?.smallThumbnailImageURL && (
-                <img
-                  className="absolute top-0 left-0 w-full"
-                  src={props.targetThemes[0].firstWork?.smallThumbnailImageURL}
-                  alt={props.targetThemes[0].title}
-                />
-              )}
-              <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
-            </Link>
-          </div>
+        <div className="relative overflow-hidden rounded-md">
+          <Link
+            to={`/themes/${props.targetThemes[0].year}/${props.targetThemes[0].month}/${props.targetThemes[0].day}`}
+            className="relative"
+          >
+            <h2 className="text-sm">
+              {`${props.targetThemes[0].year}月${props.targetThemes[0].month}月${props.targetThemes[0].day}日`}
+              「{props.targetThemes[0].title}」{t("作品数", "Number of works")}:{" "}
+              {props.worksCount}
+            </h2>
+          </Link>
         </div>
       )}
 

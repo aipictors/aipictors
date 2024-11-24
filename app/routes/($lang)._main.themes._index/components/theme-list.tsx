@@ -165,9 +165,6 @@ export function ThemeList(props: Props) {
                     className="absolute top-0 left-0 m-0 h-full w-full object-cover"
                   />
                 )}
-                {block.thumbnailUrl && !block.isFuture && (
-                  <div className="absolute top-0 left-0 h-full w-full bg-black opacity-40" />
-                )}
                 {block.title && block.thumbnailUrl && !block.isFuture && (
                   <>
                     <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 w-24 transform rounded-md p-2 text-center font-bold text-white">
