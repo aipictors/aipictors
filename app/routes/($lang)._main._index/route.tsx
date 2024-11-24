@@ -75,6 +75,7 @@ import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/
 import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
 import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-dialog"
+import { ConstructionAlert } from "~/components/construction-alert"
 
 // カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
 function useScrollRestoration(isMounted: boolean) {
@@ -414,11 +415,11 @@ export default function Index() {
 
   return (
     <>
-      {/* <ConstructionAlert
+      <ConstructionAlert
         type="WARNING"
         message="旧版はこちら"
         fallbackURL="https://legacy.aipictors.com"
-      /> */}
+      />
       <Tabs
         value={currentTab}
         onValueChange={handleTabChange}
