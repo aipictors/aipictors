@@ -24,12 +24,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import {
-  Link,
-  useLoaderData,
-  useNavigate,
-  useSearchParams,
-} from "@remix-run/react"
+import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import {
@@ -52,7 +47,6 @@ import {
   HomeNewCommentsFragment,
   HomeNewCommentsSection,
 } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { ConstructionAlert } from "~/components/construction-alert"
 import { useState, useEffect, Suspense } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -382,8 +376,6 @@ export default function Index() {
     updateQueryParams(searchParams)
   }
 
-  const navigate = useNavigate()
-
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
@@ -422,14 +414,11 @@ export default function Index() {
 
   return (
     <>
-      <ConstructionAlert
+      {/* <ConstructionAlert
         type="WARNING"
         message="旧版はこちら"
         fallbackURL="https://legacy.aipictors.com"
-      />
-      {data.adWorks && data.adWorks.length > 0 && (
-        <HomeBanners works={data.adWorks} />
-      )}
+      /> */}
       <Tabs
         value={currentTab}
         onValueChange={handleTabChange}
@@ -473,6 +462,9 @@ export default function Index() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
+          {data.adWorks && data.adWorks.length > 0 && (
+            <HomeBanners works={data.adWorks} />
+          )}
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex flex-col space-y-4 md:w-[80%]">
               <HomeReleaseList releaseList={data.releaseList} />

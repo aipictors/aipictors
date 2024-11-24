@@ -28,7 +28,7 @@ export function HomeBanners(props: Props) {
           <Link to="/contributors">
             <img
               alt="home_banner_01"
-              className="h-40 w-auto md:h-64 md:max-h-auto"
+              className="h-40 w-auto md:h-48 md:max-h-auto"
               src="https://assets.aipictors.com/home_banner_01.webp"
             />
           </Link>
@@ -37,7 +37,7 @@ export function HomeBanners(props: Props) {
           <Link to="https://beta.aipictors.com/events/2024-autumn-winter">
             <img
               alt="home_banner_01"
-              className="h-40 w-auto md:h-64 md:max-h-auto"
+              className="h-40 w-auto md:h-48 md:max-h-auto"
               src="https://assets.aipictors.com/2024-authum-winter-header-re.webp"
             />
           </Link>
@@ -46,7 +46,7 @@ export function HomeBanners(props: Props) {
           <Link to="/generation">
             <img
               alt="home_banner_01"
-              className="h-40 w-auto md:h-64 md:max-h-auto"
+              className="h-40 w-auto md:h-48 md:max-h-auto"
               src="https://assets.aipictors.com/home_banner_02.webp"
             />
           </Link>
@@ -58,7 +58,7 @@ export function HomeBanners(props: Props) {
           >
             <img
               alt="home_banner_01"
-              className="h-40 w-auto md:h-64 md:max-h-auto"
+              className="h-40 w-auto md:h-48 md:max-h-auto"
               src="https://assets.aipictors.com/home_banner_03.webp"
             />
           </Link>

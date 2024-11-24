@@ -4,6 +4,7 @@ import { Link } from "@remix-run/react"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
+import { Images, MessageCircle } from "lucide-react"
 
 type Props = {
   works: FragmentOf<typeof HomeCoppedWorkFragment>[]
@@ -67,6 +68,22 @@ export function HomeCroppedWorkList(props: Props) {
                       isParticle={true}
                     />
                   </div>
+                  {work.subWorksCount > 0 && (
+                    <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                      <Images className="h-3 w-3 text-white" />
+                      <div className="font-bold text-white text-xs">
+                        {work.subWorksCount + 1}
+                      </div>
+                    </div>
+                  )}
+                  {work.commentsCount > 0 && (
+                    <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                      <MessageCircle className="h-3 w-3 text-white" />
+                      <div className="font-bold text-white text-xs">
+                        {work.commentsCount}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Link>
               <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
@@ -157,6 +174,7 @@ export const HomeCoppedWorkFragment = graphql(
     largeThumbnailImageWidth
     thumbnailImagePosition
     subWorksCount
+    commentsCount
     user {
       id
       name
