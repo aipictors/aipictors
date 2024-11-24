@@ -37,6 +37,7 @@ import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { ScrollArea } from "~/components/ui/scroll-area"
 
 type Props = {
   onLogout(): void
@@ -183,7 +184,7 @@ export function HomeUserNavigationMenu(props: Props) {
             </Link>
           </div>
         </div>
-        <div className="p-1">
+        <ScrollArea className="max-h-[408px] overflow-y-auto p-1 md:max-h-none">
           <div className="flex items-center gap-x-2 p-2">
             <Link to="/following" className="w-16">
               <p>{followCount}</p>
@@ -321,7 +322,7 @@ export function HomeUserNavigationMenu(props: Props) {
             <LogOutIcon className="mr-2 inline-block w-4" />
             <p>{t("ログアウト", "Logout")}</p>
           </DropdownMenuItem>
-        </div>
+        </ScrollArea>
       </DropdownMenuContent>
     </DropdownMenu>
   )
