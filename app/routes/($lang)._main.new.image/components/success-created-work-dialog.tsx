@@ -131,9 +131,9 @@ export function SuccessCreatedWorkDialog(props: Props) {
             <XIntent
               text={shareText}
               url={`${
-                props.uuid
-                  ? `https://www.aipictors.com/works/${props.uuid}`
-                  : `https://www.aipictors.com/works/${props.workId}`
+                props.accessType === "LIMITED"
+                  ? `https://www.aipictors.com/posts/${props.uuid}`
+                  : `https://www.aipictors.com/posts/${props.workId}`
               }\n`}
               hashtags={props.shareTags}
             />

@@ -64,7 +64,7 @@ export function WorkContainer(props: Props) {
 
   const comments = workCommentsRet?.work?.comments ?? props.comments
 
-  if (work === null) {
+  if (work === null || work.isDeleted === true) {
     return null
   }
 

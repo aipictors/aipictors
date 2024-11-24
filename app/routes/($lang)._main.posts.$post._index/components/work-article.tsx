@@ -425,6 +425,7 @@ export const workArticleFragment = graphql(
     thumbnailImagePosition
     subWorksCount
     url
+    isDeleted
     user {
       id
       biography
@@ -562,6 +563,7 @@ export const sensitiveWorkArticleFragment = graphql(
     smallThumbnailImageHeight
     thumbnailImagePosition
     subWorksCount
+    isDeleted
     user {
       id
       biography
