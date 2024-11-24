@@ -64,6 +64,7 @@ export function TagWorkSection(props: Props) {
         orderBy: props.orderBy,
         sort: props.sort,
         isSensitive: false,
+        ratings: ["G", "R15"],
         hasPrompt: props.hasPrompt === 1 ? true : undefined,
         isPromptPublic: props.hasPrompt === 1 ? true : undefined,
       },
