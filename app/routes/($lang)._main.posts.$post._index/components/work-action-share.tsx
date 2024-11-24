@@ -19,7 +19,7 @@ type Props = {
 export function SharePopover(props: Props) {
   const t = useTranslation()
 
-  const currentUrl = `https://www.aipictors.com/works/${props.id}`
+  const currentUrl = `https://www.aipictors.com/posts/${props.id}`
 
   const shareText = t(
     `AIイラスト投稿サイトAipictorsに投稿された作品\n「${props.title}」\n\n${props.description}`,
@@ -39,28 +39,18 @@ export function SharePopover(props: Props) {
             <h4 className="font-medium leading-none">
               {t("作品を共有する", "Share work")}
             </h4>
-            {props.isDisabledShare && (
-              <p>
-                {t(
-                  "下書きもしくは予約作品のため、共有できません",
-                  "Cannot share draft or scheduled works",
-                )}
-              </p>
-            )}
           </div>
-          {!props.isDisabledShare && (
-            <div className="grid gap-2">
-              {/* Copy URL Button */}
-              <CopyWorkUrlButton currentUrl={currentUrl} />
+          <div className="grid gap-2">
+            {/* Copy URL Button */}
+            <CopyWorkUrlButton currentUrl={currentUrl} />
 
-              {/* X (旧Twitter) Share Intent */}
-              <XIntent
-                text={shareText}
-                url={currentUrl}
-                hashtags={["Aipictors", t("AIイラスト", "AIIllust")]}
-              />
-            </div>
-          )}
+            {/* X (旧Twitter) Share Intent */}
+            <XIntent
+              text={shareText}
+              url={currentUrl}
+              hashtags={["Aipictors", t("AIイラスト", "AIIllust")]}
+            />
+          </div>
         </div>
       </PopoverContent>
     </Popover>
