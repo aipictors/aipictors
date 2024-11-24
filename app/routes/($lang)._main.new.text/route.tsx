@@ -23,6 +23,7 @@ import { useQuery, useMutation } from "@apollo/client/index"
 import {
   type MetaFunction,
   useBeforeUnload,
+  useLoaderData,
   useSearchParams,
 } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -38,8 +39,15 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { uploadTextFile } from "~/utils/upload-text-file"
 import type { HeadersFunction } from "@remix-run/cloudflare"
+import { loaderClient } from "~/lib/loader-client"
 
 export default function NewText() {
+  const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
+
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
@@ -52,7 +60,7 @@ export default function NewText() {
 
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
-  const { data: viewer } = useQuery(viewerQuery, {
+  const { data: viewerData } = useQuery(viewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -68,6 +76,8 @@ export default function NewText() {
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
+
+  const viewer = viewerData ?? data
 
   const [state, dispatch] = useReducer(postTextFormReducer, {
     editTargetImageBase64: null,
@@ -505,7 +515,30 @@ export async function loader(props: LoaderFunctionArgs) {
   //   return redirectResponse
   // }
 
-  return {}
+  const now = getJstDate(new Date())
+
+  const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+  const result = await loaderClient.query({
+    query: viewerQuery,
+    variables: {
+      offset: 0,
+      limit: 128,
+      ownerUserId: "-1",
+      generationLimit: 64,
+      generationOffset: 0,
+      generationWhere: {
+        nanoids: [],
+      },
+      startAt: now.toISOString().split("T")[0],
+      startDate: now.toISOString().split("T")[0],
+      endDate: afterDate.toISOString().split("T")[0],
+    },
+  })
+
+  return {
+    ...result.data,
+  }
 }
 
 export const headers: HeadersFunction = () => ({

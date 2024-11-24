@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@apollo/client/index"
 import {
   type MetaFunction,
   useBeforeUnload,
+  useLoaderData,
   useSearchParams,
 } from "@remix-run/react"
 import { toast } from "sonner"
@@ -45,8 +46,15 @@ import { getJstDate } from "~/utils/jst-date"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { useTranslation } from "~/hooks/use-translation"
 import type { HeadersFunction } from "@remix-run/cloudflare"
+import { loaderClient } from "~/lib/loader-client"
 
 export default function NewImage() {
+  const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
+
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
@@ -58,7 +66,7 @@ export default function NewImage() {
 
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
-  const { data: viewer } = useQuery(ViewerQuery, {
+  const { data: viewerData } = useQuery(ViewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -74,6 +82,8 @@ export default function NewImage() {
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
+
+  const viewer = viewerData ?? data
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
@@ -595,7 +605,30 @@ export async function loader(props: LoaderFunctionArgs) {
   //   return redirectResponse
   // }
 
-  return {}
+  const now = getJstDate(new Date())
+
+  const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+  const result = await loaderClient.query({
+    query: ViewerQuery,
+    variables: {
+      offset: 0,
+      limit: 128,
+      ownerUserId: "-1",
+      generationLimit: 64,
+      generationOffset: 0,
+      generationWhere: {
+        nanoids: [],
+      },
+      startAt: now.toISOString().split("T")[0],
+      startDate: now.toISOString().split("T")[0],
+      endDate: afterDate.toISOString().split("T")[0],
+    },
+  })
+
+  return {
+    ...result.data,
+  }
 }
 
 export const headers: HeadersFunction = () => ({

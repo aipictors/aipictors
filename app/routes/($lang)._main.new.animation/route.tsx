@@ -20,7 +20,11 @@ import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { type MetaFunction, useBeforeUnload } from "@remix-run/react"
+import {
+  type MetaFunction,
+  useBeforeUnload,
+  useLoaderData,
+} from "@remix-run/react"
 import { graphql } from "gql.tada"
 import React from "react"
 import { useContext, useReducer } from "react"
@@ -30,11 +34,17 @@ import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
-import type { LoaderFunctionArgs } from "react-router-dom"
 import { useTranslation } from "~/hooks/use-translation"
-import type { HeadersFunction } from "@remix-run/cloudflare"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { loaderClient } from "~/lib/loader-client"
 
 export default function NewAnimation() {
+  const data = useLoaderData<typeof loader>()
+
+  if (data === null) {
+    return null
+  }
+
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
@@ -395,7 +405,25 @@ export async function loader(props: LoaderFunctionArgs) {
   //   return redirectResponse
   // }
 
-  return {}
+  const now = getJstDate(new Date())
+
+  const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+  const result = await loaderClient.query({
+    query: ViewerQuery,
+    variables: {
+      offset: 0,
+      limit: 128,
+      ownerUserId: "-1",
+      startAt: now.toISOString().split("T")[0],
+      startDate: now.toISOString().split("T")[0],
+      endDate: afterDate.toISOString().split("T")[0],
+    },
+  })
+
+  return {
+    ...result.data,
+  }
 }
 
 export const headers: HeadersFunction = () => ({
