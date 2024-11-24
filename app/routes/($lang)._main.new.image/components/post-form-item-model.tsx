@@ -1,4 +1,4 @@
-import { type SetStateAction, useState } from "react"
+import { type SetStateAction, useState, useEffect } from "react"
 import { Search } from "lucide-react"
 import type { AiModel } from "~/routes/($lang)._main.new.image/types/model"
 import { useTranslation } from "~/hooks/use-translation"
@@ -23,6 +23,23 @@ export function PostFormItemModel({ model, models, setModel }: Props) {
   const [searchTerm, setSearchTerm] = useState("")
 
   const t = useTranslation()
+
+  // 初期レンダリング時にlocalStorageから値を取得
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedModel = localStorage.getItem("selectedModel")
+      if (savedModel) {
+        setModel(savedModel)
+      }
+    }
+  }, [models.length])
+
+  // モデルが変更されたときにlocalStorageに保存
+  useEffect(() => {
+    if (typeof window !== "undefined" && model && model !== "1") {
+      localStorage.setItem("selectedModel", model)
+    }
+  }, [model])
 
   // モデル名でソートし、検索語でフィルタリング
   const filteredModels = models

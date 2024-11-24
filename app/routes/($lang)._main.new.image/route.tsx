@@ -75,8 +75,6 @@ export default function NewImage() {
     },
   })
 
-  console.log(viewer)
-
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
     indexList: [],

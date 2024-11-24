@@ -199,12 +199,14 @@ export const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
   } else if (chunks.some((e) => e.keyword === "parameters")) {
     // prompts
     const text = chunks[0].text
-    const promptMatch = text.match(/^(.+?)\s*Negative prompt:/)
+    const promptMatch = text.match(/^(.*?)\s*Negative prompt:/s)
     const prompt = promptMatch ? promptMatch[1].trim() : ""
     info.prompt = prompt
 
     // negativePrompts
-    const negativePromptMatch = text.match(/Negative prompt:\s*(.+?),\s*Steps:/)
+    const negativePromptMatch = text.match(
+      /Negative prompt:\s*([\s\S]*?)\s*Steps:/s,
+    )
     const negativePrompt = negativePromptMatch
       ? negativePromptMatch[1].trim()
       : ""

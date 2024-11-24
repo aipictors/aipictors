@@ -165,6 +165,18 @@ export function PostImageFormInput(props: Props) {
       }))
   }
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedState = localStorage.getItem("useGenerationParams")
+      if (savedState !== null) {
+        props.dispatch({
+          type: "ENABLE_GENERATION_PARAMS_FEATURE",
+          payload: JSON.parse(savedState),
+        })
+      }
+    }
+  }, [])
+
   return (
     <div className="space-y-4">
       {props.needFix && (
@@ -240,6 +252,14 @@ export function PostImageFormInput(props: Props) {
                 type: "ENABLE_GENERATION_PARAMS_FEATURE",
                 payload: !props.state.useGenerationParams,
               })
+
+              // localStorageに保存
+              if (typeof window !== "undefined") {
+                localStorage.setItem(
+                  "useGenerationParams",
+                  JSON.stringify(checked),
+                )
+              }
             }}
           />
           <label
@@ -250,6 +270,7 @@ export function PostImageFormInput(props: Props) {
           </label>
         </div>
       )}
+
       {props.imageInformation && (
         <PostFormItemGenerationParams
           pngInfo={props.imageInformation}

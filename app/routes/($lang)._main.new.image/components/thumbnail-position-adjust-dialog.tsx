@@ -28,6 +28,7 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
   })
   const [isDragging, setIsDragging] = useState<boolean>(false)
   const [isSquare, setIsSquare] = useState<boolean>(false)
+  const lastPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
 
   const containerRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLImageElement>(null)
@@ -48,43 +49,21 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
     }
   }, [props.thumbnailBase64])
 
-  const handleMouseDown = () => {
-    setIsDragging(true)
-  }
-
-  const handleMouseUp = () => {
+  const handlePointerDown = (e: React.PointerEvent) => {
     if (isSquare) return
-
-    const container = containerRef.current
-    const image = imageRef.current
-    if (!container || !image) return
-
-    const containerRect = container.getBoundingClientRect()
-    const imageRect = image.getBoundingClientRect()
-
-    if (props.isThumbnailLandscape) {
-      if (containerRect.right > imageRect.right) {
-        setTranslate((prev) => ({
-          ...prev,
-          x: Math.min(0, prev.x + 0.1),
-        }))
-      }
-    } else {
-      if (containerRect.bottom > imageRect.bottom) {
-        setTranslate((prev) => ({
-          ...prev,
-          y: Math.min(0, prev.y + 0.1),
-        }))
-      }
-    }
-
-    setIsDragging(false)
+    setIsDragging(true)
+    lastPositionRef.current = { x: e.clientX, y: e.clientY }
+    ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handlePointerMove = (e: React.PointerEvent) => {
     if (isSquare || !isDragging) return
 
-    const { movementX, movementY } = e
+    const deltaX = e.clientX - lastPositionRef.current.x
+    const deltaY = e.clientY - lastPositionRef.current.y
+
+    lastPositionRef.current = { x: e.clientX, y: e.clientY }
+
     const container = containerRef.current
     const image = imageRef.current
     if (!container || !image) return
@@ -93,32 +72,65 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
     const imageRect = image.getBoundingClientRect()
 
     if (props.isThumbnailLandscape) {
-      if (containerRect.right < imageRect.right && movementX <= 0) {
-        setTranslate((prev) => ({
-          ...prev,
-          x: Math.max(Math.min(0, prev.x + (movementX / 160) * 100)),
-        }))
-      }
-      if (containerRect.left > imageRect.left && movementX >= 0) {
-        setTranslate((prev) => ({
-          ...prev,
-          x: Math.max(Math.min(0, prev.x + (movementX / 160) * 100)),
-        }))
-      }
+      setTranslate((prev) => ({
+        ...prev,
+        x: calculateNewTranslate(
+          prev.x,
+          (deltaX / containerRect.width) * 100,
+          containerRect,
+          imageRect,
+          "x",
+        ),
+      }))
     } else {
-      if (containerRect.bottom < imageRect.bottom && movementY <= 0) {
-        setTranslate((prev) => ({
-          ...prev,
-          y: Math.max(Math.min(0, prev.y + (movementY / 160) * 100)),
-        }))
-      }
-      if (containerRect.top > imageRect.top && movementY >= 0) {
-        setTranslate((prev) => ({
-          ...prev,
-          y: Math.max(Math.min(0, prev.y + (movementY / 160) * 100)),
-        }))
-      }
+      setTranslate((prev) => ({
+        ...prev,
+        y: calculateNewTranslate(
+          prev.y,
+          (deltaY / containerRect.height) * 100,
+          containerRect,
+          imageRect,
+          "y",
+        ),
+      }))
     }
+  }
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (isSquare) return
+    setIsDragging(false)
+    ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
+  }
+
+  const calculateNewTranslate = (
+    prevTranslate: number,
+    delta: number,
+    containerRect: DOMRect,
+    imageRect: DOMRect,
+    axis: "x" | "y",
+  ) => {
+    let newTranslate = prevTranslate + delta
+
+    if (axis === "x") {
+      const maxTranslate = 0
+      const minTranslate =
+        -((imageRect.width - containerRect.width) / containerRect.width) * 100
+      newTranslate = Math.max(
+        Math.min(newTranslate, maxTranslate),
+        minTranslate,
+      )
+    } else {
+      const maxTranslate = 0
+      const minTranslate =
+        -((imageRect.height - containerRect.height) / containerRect.height) *
+        100
+      newTranslate = Math.max(
+        Math.min(newTranslate, maxTranslate),
+        minTranslate,
+      )
+    }
+
+    return newTranslate
   }
 
   const onSubmit = () => {
@@ -141,11 +153,13 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
           <div
             style={{
               cursor: props.isThumbnailLandscape ? "ew-resize" : "ns-resize",
+              touchAction: "none", // タッチアクションを無効化
             }}
             className="absolute inset-0"
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
           >
             <img
               ref={imageRef}
