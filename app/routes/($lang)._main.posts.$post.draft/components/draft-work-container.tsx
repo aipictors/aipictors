@@ -64,10 +64,6 @@ export function DraftWorkContainer(props: Props) {
 
   const comments = workCommentsRet?.work?.comments ?? props.comments
 
-  if (work === null || work.isDeleted === true) {
-    return null
-  }
-
   const tags = work?.tagNames ?? []
 
   const randomTag =
