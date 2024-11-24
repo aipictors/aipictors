@@ -57,7 +57,7 @@ export function AlbumsSpListItem(props: Props) {
             }}
           >
             <Link
-              to={`/${props.album.userId}/albums/${props.album.slug}`}
+              to={`/${props.album.user.login}/albums/${props.album.slug}`}
               className="mr-2"
             >
               <img
@@ -68,7 +68,9 @@ export function AlbumsSpListItem(props: Props) {
             </Link>
             <div className="w-full space-y-2">
               <div className="w-full space-y-2">
-                <Link to={`/${props.album.userId}/albums/${props.album.slug}`}>
+                <Link
+                  to={`/${props.album.user.login}/albums/${props.album.slug}`}
+                >
                   <div className="w-full font-bold">{props.album.title}</div>
                 </Link>
                 <div className="text-sm opacity-80">
@@ -100,6 +102,9 @@ export const MobileAlbumListItemFragment = graphql(
     title
     createdAt
     userId
+    user {
+      login
+    }
     thumbnailImageURL
     slug
   }`,

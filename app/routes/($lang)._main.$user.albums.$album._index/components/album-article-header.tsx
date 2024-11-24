@@ -50,7 +50,7 @@ export function AlbumArticleHeader(props: Props) {
         <div className="mt-4 flex items-center">
           <XIntent
             text={`${props.album.title}\n`}
-            url={`${`https://beta.aipictors.com/${props.album.user.id}/albums/${props.album.slug}`}\n`}
+            url={`${`https://www.aipictors.com/${props.album.user.login}/albums/${props.album.slug}`}\n`}
           />
         </div>
       </div>
