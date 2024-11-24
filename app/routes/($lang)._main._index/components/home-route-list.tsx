@@ -1,4 +1,3 @@
-import { NavigationLogoutDialogButton } from "~/components/logout-navigation-dialog-button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
@@ -6,17 +5,13 @@ import { Link, useNavigate, useLocation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
-  GemIcon,
   HomeIcon,
   Image,
   ImageIcon,
   LightbulbIcon,
-  MessageCircleIcon,
   RocketIcon,
-  SettingsIcon,
   StampIcon,
   StarIcon,
-  UserIcon,
 } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
@@ -81,13 +76,13 @@ export function HomeRouteList(props: Props) {
           {t("ホーム - 全年齢", "Home - G")}
         </HomeNavigationButton>
       )}
-      <HomeNavigationButton
+      {/* <HomeNavigationButton
         href={createLink("/generation")}
         icon={AwardIcon}
         onClick={closeHeaderMenu}
       >
         {t("画像生成", "Generate image")}
-      </HomeNavigationButton>
+      </HomeNavigationButton> */}
       <HomeNavigationButton
         href={createLink("/themes")}
         icon={LightbulbIcon}
@@ -96,11 +91,11 @@ export function HomeRouteList(props: Props) {
         {t("お題", "Themes")}
       </HomeNavigationButton>
       <HomeNavigationButton
-        href={createLink("/stickers")}
-        icon={StampIcon}
+        href={createLink("/rankings")}
+        icon={AwardIcon}
         onClick={closeHeaderMenu}
       >
-        {t("スタンプ広場", "Stickers")}
+        {t("ランキング", "Ranking")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/?tab=follow-user")}
@@ -110,11 +105,11 @@ export function HomeRouteList(props: Props) {
         {t("フォロー新着", "Followed new posts")}
       </HomeNavigationButton>
       <HomeNavigationButton
-        href={createLink("/rankings")}
-        icon={AwardIcon}
+        href={createLink("/stickers")}
+        icon={StampIcon}
         onClick={closeHeaderMenu}
       >
-        {t("ランキング", "Ranking")}
+        {t("スタンプ広場", "Stickers")}
       </HomeNavigationButton>
       <HomeNavigationButton
         href={createLink("/events")}
@@ -153,7 +148,7 @@ export function HomeRouteList(props: Props) {
           <Separator />
         </div>
       )}
-      {authContext.isLoggedIn && (
+      {/* {authContext.isLoggedIn && (
         <HomeNavigationButton
           href={createLink("/settings/account/login")}
           icon={UserIcon}
@@ -161,8 +156,8 @@ export function HomeRouteList(props: Props) {
         >
           {t("アカウント", "Account")}
         </HomeNavigationButton>
-      )}
-      {authContext.isLoggedIn && (
+      )} */}
+      {/* {authContext.isLoggedIn && (
         <HomeNavigationButton
           href={createLink("/support/chat")}
           icon={MessageCircleIcon}
@@ -170,15 +165,15 @@ export function HomeRouteList(props: Props) {
         >
           {t("お問い合わせ", "Contact")}
         </HomeNavigationButton>
-      )}
-      <HomeNavigationButton
+      )} */}
+      {/* <HomeNavigationButton
         href={createLink("/plus")}
         icon={GemIcon}
         onClick={closeHeaderMenu}
       >
         {"Aipictors+"}
-      </HomeNavigationButton>
-      {authContext.isLoggedIn && (
+      </HomeNavigationButton> */}
+      {/* {authContext.isLoggedIn && (
         <HomeNavigationButton
           href={createLink("/settings")}
           icon={SettingsIcon}
@@ -186,8 +181,8 @@ export function HomeRouteList(props: Props) {
         >
           {t("設定", "Settings")}
         </HomeNavigationButton>
-      )}
-      {authContext.isLoggedIn && <NavigationLogoutDialogButton />}
+      )} */}
+      {/* {authContext.isLoggedIn && <NavigationLogoutDialogButton />} */}
       <footer>
         <div className="flex flex-col space-y-2 p-2">
           <div className="flex items-center justify-start space-x-2">

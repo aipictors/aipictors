@@ -87,7 +87,7 @@ export function WorksSpList(props: Props) {
         },
       },
     })
-    toast("作品を削除しました")
+    toast("作品を削除しました、しばらくしたらアクセスできなくなります")
 
     setDeletedIds([...deletedIds, workId])
   }

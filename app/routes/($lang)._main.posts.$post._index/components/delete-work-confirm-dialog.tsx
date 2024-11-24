@@ -43,7 +43,12 @@ export function DeleteWorkConfirmDialog(props: Props) {
         },
       },
     })
-    toast(t("作品を削除しました", "The post has been deleted"))
+    toast(
+      t(
+        "作品を削除しました、しばらくしたらアクセスできなくなります",
+        "The post has been deleted",
+      ),
+    )
     setIsDeleted(true)
   }
 

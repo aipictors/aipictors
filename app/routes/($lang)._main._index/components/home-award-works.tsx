@@ -60,8 +60,8 @@ export function HomeAwardWorksSection(props: Props) {
                   </Link>
                 </div>
               </div>
-              <div className="absolute top-1 left-0 h-4 w-4 items-center rounded-full bg-white text-center font-semibold text-xs">
-                <p>{index}</p>
+              <div className="absolute top-1 left-0 h-4 w-4 items-center rounded-full bg-white text-center font-semibold text-xs dark:text-black">
+                <p>{index + 1}</p>
               </div>
             </div>
           ),

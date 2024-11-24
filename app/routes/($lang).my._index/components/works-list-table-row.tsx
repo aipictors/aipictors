@@ -31,7 +31,7 @@ export function WorksListTableRow(props: Props) {
         },
       },
     })
-    toast("作品を削除しました")
+    toast("作品を削除しました、しばらくしたらアクセスできなくなります")
     setIsDeleted(true)
   }
 
