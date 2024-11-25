@@ -8,13 +8,31 @@ type Props = Readonly<{
 }>
 
 /**
- * v0 by Vercel.
- * @see https://v0.dev/t/YFhY3hdw0jD
+ * エラー時に .data URL を検知してリダイレクトする
  */
 export function AppErrorPage(props: Props) {
   const t = useTranslation()
 
   const message = useAppErrorMessage(props.message)
+
+  // .data の URL を含むエラーの場合にリダイレクト処理を実行
+  if (
+    props.message.includes(
+      "Unable to decode turbo-stream response from URL:",
+    ) &&
+    props.message.includes(".data")
+  ) {
+    // 正規表現でエラー内の URL を抽出
+    const match = props.message.match(
+      /https:\/\/www\.aipictors\.com\/[^\s]+\.data/,
+    )
+    if (match) {
+      const originalUrl = match[0]
+      const redirectUrl = originalUrl.replace(/\.data$/, "") // .data を取り除く
+      window.location.replace(redirectUrl)
+      return null // リダイレクト中は何も表示しない
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
