@@ -116,7 +116,7 @@
     "uvcanvas": "^0.2.1",
     "valibot": "^0.42.0",
     "vaul": "^1.1.1",
-    "vite-bundle-analyzer": "^0.13.0",
+    "vite-bundle-analyzer": "^0.14.1",
     "xstate": "^5.17.4",
     "zenn-content-css": "^0.1.155"
   },
