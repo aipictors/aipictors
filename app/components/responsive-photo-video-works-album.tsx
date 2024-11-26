@@ -111,7 +111,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                 <LikeButton
                   size={56}
                   targetWorkId={photo.context.id}
-                  targetWorkOwnerUserId={photo.context.user.id}
+                  targetWorkOwnerUserId={photo.context.user?.id ?? ""}
                   defaultLiked={photo.context.isLiked}
                   defaultLikedCount={0}
                   isBackgroundNone={true}
@@ -128,19 +128,19 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                     {photo.context.title}
                   </p>
                 </Link>
-                <Link to={`/users/${photo.context.user.id}`}>
+                <Link to={`/users/${photo.context.user?.id}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Avatar className="h-4 w-4">
                         <AvatarImage
                           className="h-4 w-4 rounded-full"
-                          src={withIconUrlFallback(photo.context.user.iconUrl)}
-                          alt={photo.context.user.name}
+                          src={withIconUrlFallback(photo.context.user?.iconUrl)}
+                          alt={photo.context.user?.name}
                         />
                         <AvatarFallback />
                       </Avatar>
                       <span className="block text-nowrap font-bold text-sm ">
-                        {photo.context.user.name}
+                        {photo.context.user?.name}
                       </span>
                     </div>
                     <div className="flex items-center">

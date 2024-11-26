@@ -47,24 +47,28 @@ export function HomeNovelsWorksSection(props: Props) {
                 tags={[]}
               />
             </div>
-            <UserNameBadge
-              userId={work.user.id}
-              userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-              name={work.user.name}
-              width={"lg"}
-              padding={"md"}
-            />
-            <div className="absolute right-0 bottom-0">
-              <LikeButton
-                size={56}
-                targetWorkId={work.id}
-                targetWorkOwnerUserId={work.user.id}
-                defaultLiked={work.isLiked}
-                defaultLikedCount={0}
-                isBackgroundNone={true}
-                strokeWidth={2}
-              />
-            </div>
+            {work.user && (
+              <>
+                <UserNameBadge
+                  userId={work.user.id}
+                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                  name={work.user.name}
+                  width={"lg"}
+                  padding={"md"}
+                />
+                <div className="absolute right-0 bottom-0">
+                  <LikeButton
+                    size={56}
+                    targetWorkId={work.id}
+                    targetWorkOwnerUserId={work.user.id}
+                    defaultLiked={work.isLiked}
+                    defaultLikedCount={0}
+                    isBackgroundNone={true}
+                    strokeWidth={2}
+                  />
+                </div>
+              </>
+            )}
           </div>
         ))}
       />

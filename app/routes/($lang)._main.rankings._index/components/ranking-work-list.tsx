@@ -66,7 +66,7 @@ export function RankingWorkList(props: Props) {
                       <LikeButton
                         size={56}
                         targetWorkId={workItem.work.id}
-                        targetWorkOwnerUserId={workItem.work.user.id}
+                        targetWorkOwnerUserId={workItem.work.user?.id ?? ""}
                         defaultLiked={workItem.work.isLiked}
                         defaultLikedCount={0}
                         isBackgroundNone={true}
@@ -77,16 +77,18 @@ export function RankingWorkList(props: Props) {
                   <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
                     {workItem.work.title}
                   </p>
-                  <UserNameBadge
-                    userId={workItem.work.user.id}
-                    userIconImageURL={withIconUrlFallback(
-                      workItem.work.user.iconUrl,
-                    )}
-                    name={workItem.work.user.name}
-                    width={"md"}
-                    likesCount={workItem.work.likesCount}
-                    snapshotLikedCount={workItem.snapshotLikedCount}
-                  />
+                  {workItem.work.user && (
+                    <UserNameBadge
+                      userId={workItem.work.user.id}
+                      userIconImageURL={withIconUrlFallback(
+                        workItem.work.user.iconUrl,
+                      )}
+                      name={workItem.work.user.name}
+                      width={"md"}
+                      likesCount={workItem.work.likesCount}
+                      snapshotLikedCount={workItem.snapshotLikedCount}
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -120,7 +122,7 @@ export function RankingWorkList(props: Props) {
                       <LikeButton
                         size={56}
                         targetWorkId={workItem.work.id}
-                        targetWorkOwnerUserId={workItem.work.user.id}
+                        targetWorkOwnerUserId={workItem.work.user?.id ?? ""}
                         defaultLiked={workItem.work.isLiked}
                         defaultLikedCount={0}
                         isBackgroundNone={true}
@@ -131,15 +133,17 @@ export function RankingWorkList(props: Props) {
                   <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
                     {workItem.work.title}
                   </p>
-                  <UserNameBadge
-                    userId={workItem.work.user.id}
-                    userIconImageURL={withIconUrlFallback(
-                      workItem.work.user.iconUrl,
-                    )}
-                    name={workItem.work.user.name}
-                    width={"sm"}
-                    likesCount={workItem.work.likesCount}
-                  />
+                  {workItem.work.user && (
+                    <UserNameBadge
+                      userId={workItem.work.user.id}
+                      userIconImageURL={withIconUrlFallback(
+                        workItem.work.user.iconUrl,
+                      )}
+                      name={workItem.work.user.name}
+                      width={"sm"}
+                      likesCount={workItem.work.likesCount}
+                    />
+                  )}
                 </>
               )}
             </div>

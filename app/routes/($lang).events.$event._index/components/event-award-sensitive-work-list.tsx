@@ -57,9 +57,9 @@ export function EventAwardSensitiveWorkList(props: Props) {
             height: work.smallThumbnailImageHeight,
             workId: work.id,
             thumbnailImagePosition: work.thumbnailImagePosition,
-            userId: work.user.id,
-            userIcon: work.user.iconUrl,
-            userName: work.user.name,
+            userId: work.user?.id,
+            userIcon: work.user?.iconUrl,
+            userName: work.user?.name,
             title: work.title,
             isLiked: work.isLiked,
             subWorksCount: work.subWorksCount,
@@ -82,7 +82,7 @@ export function EventAwardSensitiveWorkList(props: Props) {
                   <LikeButton
                     size={56}
                     targetWorkId={work.id}
-                    targetWorkOwnerUserId={work.userId}
+                    targetWorkOwnerUserId={work.userId ?? ""}
                     defaultLiked={work.isLiked}
                     defaultLikedCount={0}
                     isBackgroundNone={true}
@@ -96,9 +96,9 @@ export function EventAwardSensitiveWorkList(props: Props) {
               </p>
               <div className="flex max-w-40 items-center justify-between">
                 <UserNameBadge
-                  userId={work.userId}
+                  userId={work.userId ?? ""}
                   userIconImageURL={withIconUrlFallback(work.userIcon)}
-                  name={work.userName}
+                  name={work.userName ?? ""}
                   width={"lg"}
                 />
                 <div className="flex items-center space-x-1">

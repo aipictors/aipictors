@@ -38,7 +38,7 @@ export function HomeCroppedWorkListWithScroll(props: Props) {
                 <LikeButton
                   size={56}
                   targetWorkId={work.id}
-                  targetWorkOwnerUserId={work.user.id}
+                  targetWorkOwnerUserId={work.user?.id ?? ""}
                   defaultLiked={work.isLiked}
                   defaultLikedCount={0}
                   isBackgroundNone={true}
@@ -51,9 +51,9 @@ export function HomeCroppedWorkListWithScroll(props: Props) {
               {work.title}
             </p>
             <UserNameBadge
-              userId={work.user.id}
-              userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-              name={work.user.name}
+              userId={work.user?.id ?? ""}
+              userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
+              name={work.user?.name ?? ""}
               width={"lg"}
             />
           </div>

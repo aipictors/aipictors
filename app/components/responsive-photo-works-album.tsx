@@ -62,7 +62,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   <LikeButton
                     size={56}
                     targetWorkId={workItem.id}
-                    targetWorkOwnerUserId={workItem.user.id}
+                    targetWorkOwnerUserId={workItem.user?.id ?? ""}
                     defaultLiked={workItem.isLiked}
                     defaultLikedCount={0}
                     isBackgroundNone={true}
@@ -129,7 +129,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                     <LikeButton
                       size={56}
                       targetWorkId={photo.context.id}
-                      targetWorkOwnerUserId={photo.context.user.id}
+                      targetWorkOwnerUserId={photo.context.user?.id ?? ""}
                       defaultLiked={photo.context.isLiked}
                       defaultLikedCount={0}
                       isBackgroundNone={true}
@@ -164,20 +164,20 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                         </p>
                       </Link>
                       <div className="flex items-center justify-between">
-                        <Link to={`/users/${photo.context.user.id}`}>
+                        <Link to={`/users/${photo.context.user?.id}`}>
                           <div className="flex items-center space-x-2">
                             <Avatar className="h-6 w-6">
                               <AvatarImage
                                 className="h-6 w-6 rounded-full"
                                 src={withIconUrlFallback(
-                                  photo.context.user.iconUrl,
+                                  photo.context.user?.iconUrl,
                                 )}
                                 alt=""
                               />
                               <AvatarFallback />
                             </Avatar>
                             <span className="truncate text-sm">
-                              {photo.context.user.name}
+                              {photo.context.user?.name}
                             </span>
                           </div>
                         </Link>

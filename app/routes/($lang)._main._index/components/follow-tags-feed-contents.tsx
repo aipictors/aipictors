@@ -145,25 +145,27 @@ export function FollowTagsFeedContents(props: Props) {
               work && (
                 <Card key={work.id} className="rounded-lg border">
                   <CardHeader className="m-auto flex max-w-[1200px] justify-start">
-                    <div className="flex items-center space-x-2">
-                      <Avatar>
-                        <AvatarImage
-                          className="rounded-full"
-                          src={withIconUrlFallback(work.user.iconUrl)}
-                          alt=""
-                        />
-                        <AvatarFallback />
-                      </Avatar>
-                      <Link
-                        to={`/users/${work.user.login}`}
-                        className="flex items-center space-x-2"
-                      >
-                        <div className="font-semibold text-md">
-                          {work.user.name}
-                        </div>
-                        <div className="text-sm">@{work.user.login}</div>
-                      </Link>
-                    </div>
+                    {work.user && (
+                      <div className="flex items-center space-x-2">
+                        <Avatar>
+                          <AvatarImage
+                            className="rounded-full"
+                            src={withIconUrlFallback(work.user.iconUrl)}
+                            alt=""
+                          />
+                          <AvatarFallback />
+                        </Avatar>
+                        <Link
+                          to={`/users/${work.user.login}`}
+                          className="flex items-center space-x-2"
+                        >
+                          <div className="font-semibold text-md">
+                            {work.user.name}
+                          </div>
+                          <div className="text-sm">@{work.user.login}</div>
+                        </Link>
+                      </div>
+                    )}
                   </CardHeader>
                   <CardContent className="m-auto max-w-[1200px]">
                     <Suspense fallback={<AppLoadingPage />}>
@@ -225,7 +227,7 @@ export function FollowTagsFeedContents(props: Props) {
                                 size={40}
                                 text={t("いいね", "Like")}
                                 targetWorkId={work.id}
-                                targetWorkOwnerUserId={work.user.id}
+                                targetWorkOwnerUserId={work.user?.id ?? ""}
                                 defaultLiked={work.isLiked}
                                 defaultLikedCount={work.likesCount}
                                 isBackgroundNone={false}

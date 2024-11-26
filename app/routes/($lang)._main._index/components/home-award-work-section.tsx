@@ -70,7 +70,7 @@ export function HomeAwardWorkSection(props: Props) {
       </div>
       <CarouselWithGradation
         items={workDisplayed
-          .filter((work) => work.work !== null)
+          .filter((work) => work.work !== null && work.work.user !== null)
           .map((work) => ({
             id: work.work?.id,
             src: work.work?.smallThumbnailImageURL,
@@ -78,9 +78,9 @@ export function HomeAwardWorkSection(props: Props) {
             height: work.work?.smallThumbnailImageHeight,
             workId: work.work?.id,
             thumbnailImagePosition: work.work?.thumbnailImagePosition,
-            userId: work.work?.user.id,
-            userIcon: work.work?.user.iconUrl,
-            userName: work.work?.user.name,
+            userId: work.work?.user?.id,
+            userIcon: work.work?.user?.iconUrl,
+            userName: work.work?.user?.name,
             title: work.work?.title,
             isLiked: work.work?.isLiked,
             subWorksCount: work.work?.subWorksCount,

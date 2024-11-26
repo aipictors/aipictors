@@ -60,7 +60,7 @@ export function FollowerUserItem(props: Props) {
               <LikeButton
                 size={56}
                 targetWorkId={work.id}
-                targetWorkOwnerUserId={work.user.id}
+                targetWorkOwnerUserId={work.user?.id ?? ""}
                 defaultLiked={work.isLiked}
                 defaultLikedCount={0}
                 isBackgroundNone={true}

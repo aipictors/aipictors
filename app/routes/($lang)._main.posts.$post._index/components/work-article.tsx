@@ -155,7 +155,7 @@ export function WorkArticle(props: Props) {
           ]}
           targetWorkId={props.work.id}
           bookmarkFolderId={bookmarkFolderId}
-          targetWorkOwnerUserId={props.work.user.id}
+          targetWorkOwnerUserId={props.work.user?.id ?? ""}
           isDisabledShare={false}
         />
         <h1 className="font-bold text-lg">
@@ -168,7 +168,7 @@ export function WorkArticle(props: Props) {
         </h1>
         <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}
-          {appContext.userId === props.work.user.id ? (
+          {props.work.user && appContext.userId === props.work.user.id ? (
             <ToggleContent
               trigger={
                 <div className="flex items-center space-x-2">
@@ -332,6 +332,7 @@ export function WorkArticle(props: Props) {
             </Card>
           )}
         {props.work.promptAccessType === "PRIVATE" &&
+          props.work.user &&
           props.work.user.id === appContext.userId && (
             <p className="flex items-center gap-x-2 font-bold opacity-60">
               <ShieldAlert className="block h-6 w-6" />
@@ -354,28 +355,30 @@ export function WorkArticle(props: Props) {
           otherGenerationParams={props.work.otherGenerationParams}
         />
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              className="flex items-center space-x-2"
-              to={`/users/${props.work.user.login}`}
-            >
-              <Avatar>
-                <AvatarImage
-                  src={withIconUrlFallback(props.work.user.iconUrl)}
-                />
-                <AvatarFallback />
-              </Avatar>
-              <span>{props.work.user.name}</span>
-            </Link>
-            {props.work.user.promptonUser?.id !== undefined &&
-              props.work.user.id !== appContext?.userId && (
-                <PromptonRequestButton
-                  promptonId={props.work.user.promptonUser.id}
-                />
-              )}
+        {props.work.user && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link
+                className="flex items-center space-x-2"
+                to={`/users/${props.work.user.login}`}
+              >
+                <Avatar>
+                  <AvatarImage
+                    src={withIconUrlFallback(props.work.user.iconUrl)}
+                  />
+                  <AvatarFallback />
+                </Avatar>
+                <span>{props.work.user.name}</span>
+              </Link>
+              {props.work.user.promptonUser?.id !== undefined &&
+                props.work.user.id !== appContext?.userId && (
+                  <PromptonRequestButton
+                    promptonId={props.work.user.promptonUser.id}
+                  />
+                )}
+            </div>
           </div>
-        </div>
+        )}
       </section>
     </article>
   )

@@ -145,19 +145,19 @@ export function FollowUserFeedContents(props: Props) {
                       <Avatar>
                         <AvatarImage
                           className="rounded-full"
-                          src={withIconUrlFallback(work.user.iconUrl)}
+                          src={withIconUrlFallback(work.user?.iconUrl)}
                           alt=""
                         />
                         <AvatarFallback />
                       </Avatar>
                       <Link
-                        to={`/users/${work.user.login}`}
+                        to={`/users/${work.user?.login}`}
                         className="flex items-center space-x-2"
                       >
                         <div className="font-semibold text-md">
-                          {work.user.name}
+                          {work.user?.name}
                         </div>
-                        <div className="text-sm">@{work.user.login}</div>
+                        <div className="text-sm">@{work.user?.login}</div>
                       </Link>
                     </div>
                   </CardHeader>
@@ -221,7 +221,7 @@ export function FollowUserFeedContents(props: Props) {
                                 size={40}
                                 text={t("いいね", "Like")}
                                 targetWorkId={work.id}
-                                targetWorkOwnerUserId={work.user.id}
+                                targetWorkOwnerUserId={work.user?.id ?? ""}
                                 defaultLiked={work.isLiked}
                                 defaultLikedCount={work.likesCount}
                                 isBackgroundNone={false}

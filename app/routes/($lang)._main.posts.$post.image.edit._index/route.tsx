@@ -593,7 +593,7 @@ export default function EditImage() {
     ),
   )
 
-  return work?.user.id === authContext.userId ? (
+  return work?.user !== null && work?.user.id === authContext.userId ? (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="space-y-4">
         <EditImageFormUploader state={state} dispatch={dispatch} />
