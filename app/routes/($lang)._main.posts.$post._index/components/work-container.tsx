@@ -67,10 +67,6 @@ export function WorkContainer(props: Props) {
 
   const comments = workCommentsRet?.work?.comments ?? props.comments
 
-  if (work === null || work.isDeleted === true) {
-    return null
-  }
-
   const tags = work?.tagNames ?? []
 
   const randomTag =
@@ -110,6 +106,10 @@ export function WorkContainer(props: Props) {
     passData?.type === "PREMIUM"
 
   const t = useTranslation()
+
+  if (work === null || work.isDeleted === true) {
+    return null
+  }
 
   return (
     <div

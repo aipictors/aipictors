@@ -14,14 +14,17 @@ import {
 } from "~/components/ui/alert-dialog"
 import { Checkbox } from "~/components/ui/checkbox"
 import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Button } from "~/components/ui/button"
 import { RefreshCcwIcon } from "lucide-react"
 
-export function SensitiveChangeModelConfirmDialog() {
+type Props = {
+  name: string
+}
+
+export function SensitiveChangeModelConfirmDialog(props: Props) {
   const t = useTranslation()
   const navigate = useNavigate()
-  const { name } = useParams() // URLパラメータからnameを取得
   const [isCheck, setIsCheck] = useState(false)
   const [shouldSkipDialog, setShouldSkipDialog] = useState(false)
   const cookieKey = "check-sensitive-ranking"
@@ -39,7 +42,7 @@ export function SensitiveChangeModelConfirmDialog() {
       expiryDate.setDate(expiryDate.getDate() + 7)
       document.cookie = `${cookieKey}=true; expires=${expiryDate.toUTCString()}; path=/`
     }
-    navigate(`/r/models/${name}`)
+    navigate(`/r/models/${props.name}`)
   }
 
   if (shouldSkipDialog) {

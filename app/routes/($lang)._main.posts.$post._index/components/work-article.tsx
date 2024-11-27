@@ -98,6 +98,27 @@ export function WorkArticle(props: Props) {
     })
   }
 
+  const parseTextWithLinks = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    const parts = text.split(urlRegex)
+
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            key={index.toString()}
+            to={part}
+          >
+            {part}
+          </Link>
+        )
+      }
+      return part
+    })
+  }
+
   return (
     <article className="flex flex-col space-y-4">
       <PostAccessTypeBanner
@@ -312,9 +333,11 @@ export function WorkArticle(props: Props) {
           />
         </div>
         <p className="overflow-hidden whitespace-pre-wrap break-words">
-          {t(
-            props.work.description ?? "",
-            props.work.enDescription ?? props.work.description ?? "",
+          {parseTextWithLinks(
+            t(
+              props.work.description ?? "",
+              props.work.enDescription ?? props.work.description ?? "",
+            ),
           )}
         </p>
         {props.work.relatedUrl !== null &&

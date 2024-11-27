@@ -18,6 +18,8 @@ type Props = {
 export function WorkEditorButton(props: Props) {
   const authContext = useContext(AuthContext)
 
+  const t = useTranslation()
+
   if (authContext.userId !== props.targetWorkOwnerUserId) {
     return null
   }
@@ -35,8 +37,6 @@ export function WorkEditorButton(props: Props) {
 
     return "/"
   }
-
-  const t = useTranslation()
 
   return (
     <div className="flex justify-end">

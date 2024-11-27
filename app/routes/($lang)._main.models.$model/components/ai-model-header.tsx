@@ -95,7 +95,7 @@ export function AiModelHeader(props: Props) {
             </PopoverTrigger>
             <PopoverContent className="w-80">
               <div className="relative grid gap-4">
-                <SensitiveChangeModelConfirmDialog />
+                <SensitiveChangeModelConfirmDialog name={props.name} />
               </div>
             </PopoverContent>
           </Popover>

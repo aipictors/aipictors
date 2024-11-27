@@ -59,10 +59,6 @@ export function RecommendButton(props: Props) {
   }
 
   const onCreateRecommend = async () => {
-    if (props.ownerUserId === authContext.userId) {
-      toast("自分の作品には推薦できません")
-      return
-    }
     if (authContext.isNotLoggedIn) {
       toast("ログインしてください")
       return
