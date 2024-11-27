@@ -423,6 +423,7 @@ export const workArticleFragment = graphql(
         thumbnailImagePosition
         subWorksCount
         isLiked
+        commentsCount
       }
       promptonUser {
         id

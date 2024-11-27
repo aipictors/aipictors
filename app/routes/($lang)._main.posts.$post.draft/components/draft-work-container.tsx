@@ -138,6 +138,7 @@ export function DraftWorkContainer(props: Props) {
                   userId: relatedWork.userId,
                   isLiked: relatedWork.isLiked,
                   subWorksCount: relatedWork.subWorksCount,
+                  commentsCount: relatedWork.commentsCount,
                 }))}
               />
             )}

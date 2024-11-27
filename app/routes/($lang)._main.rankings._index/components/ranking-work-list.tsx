@@ -61,6 +61,7 @@ export function RankingWorkList(props: Props) {
                       imageWidth={workItem.work.smallThumbnailImageWidth}
                       imageHeight={workItem.work.smallThumbnailImageHeight}
                       ranking={index + 1}
+                      commentsCount={workItem.work.commentsCount}
                     />
                     <div className="absolute right-0 bottom-0">
                       <LikeButton
@@ -117,6 +118,7 @@ export function RankingWorkList(props: Props) {
                       imageWidth={workItem.work.smallThumbnailImageWidth}
                       imageHeight={workItem.work.smallThumbnailImageHeight}
                       ranking={index + 1}
+                      commentsCount={workItem.work.commentsCount}
                     />
                     <div className="absolute right-0 bottom-0">
                       <LikeButton

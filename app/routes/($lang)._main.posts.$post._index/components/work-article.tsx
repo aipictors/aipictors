@@ -74,30 +74,6 @@ export function WorkArticle(props: Props) {
     props.work.imageURL,
   )
 
-  const convertTextToLinks = (text: string) => {
-    // 正規表現でURLを検出
-    const urlRegex = /(https?:\/\/[^\s]+)/g
-    const parts = text.split(urlRegex)
-
-    return parts.map((part, index) => {
-      if (urlRegex.test(part)) {
-        // URL部分は<Link>でラップ
-        return (
-          <Link
-            key={index.toString()}
-            to={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-          >
-            {part}
-          </Link>
-        )
-      }
-      return <span key={index.toString()}>{part}</span>
-    })
-  }
-
   const parseTextWithLinks = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
     const parts = text.split(urlRegex)
@@ -475,6 +451,7 @@ export const workArticleFragment = graphql(
         smallThumbnailImageHeight
         thumbnailImagePosition
         subWorksCount
+        commentsCount
         isLiked
       }
       promptonUser {
@@ -614,6 +591,7 @@ export const sensitiveWorkArticleFragment = graphql(
         smallThumbnailImageHeight
         thumbnailImagePosition
         subWorksCount
+        commentsCount
         isLiked
       }
       promptonUser {
