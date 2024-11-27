@@ -1,11 +1,11 @@
 import { Button } from "~/components/ui/button"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
-import { getBase64FromAipictorsUrl } from "~/utils/get-base64-from-aipicors-url"
 import { getCroppedImage } from "~/utils/get-cropped-image"
 import getResizedImg from "~/utils/get-resized-image"
 import { useState } from "react"
 import type { Area } from "react-easy-crop"
 import Cropper from "react-easy-crop"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 
 type Props = {
   src: string
@@ -49,11 +49,10 @@ export function ImageCropperModal(props: Props) {
    */
   const onSubmit = async () => {
     if (props.src.startsWith("https://")) {
-      const base64 = await getBase64FromAipictorsUrl(props.src)
-      const dataUrl = `data:image/webp;base64,${base64}`
+      const base64 = await getBase64FromImageUrl(props.src)
 
       const croppedImage = await getCroppedImage(
-        dataUrl,
+        base64,
         croppedAreaPixels,
         props.fileExtension,
       )
