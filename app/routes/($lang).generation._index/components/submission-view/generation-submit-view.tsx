@@ -203,7 +203,8 @@ export function GenerationSubmissionView(props: Props) {
       !context.currentPass?.type &&
       !lineUserId?.viewer?.lineUserId &&
       !pass?.viewer?.currentPass?.type &&
-      generatedCount >= 10
+      generatedCount >= 10 &&
+      !isExistedPreviousPass
     ) {
       await refetchPass()
       if (!pass?.viewer?.currentPass?.type) {
