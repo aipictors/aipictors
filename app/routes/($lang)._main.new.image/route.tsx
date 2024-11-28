@@ -68,7 +68,7 @@ export default function NewImage() {
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
   const { data: viewerData, loading } = useQuery(ViewerQuery, {
-    skip: authContext.isNotLoggedIn || ref === null,
+    skip: authContext.isNotLoggedIn,
     variables: {
       offset: 0,
       limit: 128,
@@ -84,7 +84,7 @@ export default function NewImage() {
     },
   })
 
-  const viewer = viewerData ?? data
+  const viewer = data
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
@@ -228,7 +228,7 @@ export default function NewImage() {
       if (image === null) {
         return null
       }
-      return uploadPublicImage(image, viewer?.viewer?.token)
+      return uploadPublicImage(image, viewerData?.viewer?.token)
     })
     const imageUrls = await Promise.all(uploads)
     return imageUrls
@@ -293,7 +293,7 @@ export default function NewImage() {
 
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
-        viewer?.viewer?.token,
+        viewerData?.viewer?.token,
       )
 
       dispatch({ type: "SET_PROGRESS", payload: 40 })
@@ -302,7 +302,7 @@ export default function NewImage() {
 
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
-        viewer?.viewer?.token,
+        viewerData?.viewer?.token,
       )
 
       dispatch({ type: "SET_PROGRESS", payload: 50 })
@@ -310,7 +310,7 @@ export default function NewImage() {
       uploadedImageUrls.push(largeThumbnailUrl)
 
       const ogpBase64Url = state.ogpBase64
-        ? await uploadPublicImage(state.ogpBase64, viewer?.viewer?.token)
+        ? await uploadPublicImage(state.ogpBase64, viewerData?.viewer?.token)
         : null
 
       dispatch({ type: "SET_PROGRESS", payload: 60 })
