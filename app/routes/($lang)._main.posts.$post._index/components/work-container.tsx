@@ -1,7 +1,7 @@
 import {
   WorkArticle,
   workArticleFragment,
-  sensitiveWorkArticleFragment,
+  userSettingFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import { useContext } from "react"
@@ -54,6 +54,10 @@ export function WorkContainer(props: Props) {
     variables: {
       id: props.post,
     },
+  })
+
+  const { data: userSetting } = useQuery(userSettingQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const work = workRet?.work ?? props.work
@@ -121,7 +125,10 @@ export function WorkContainer(props: Props) {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex w-full flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <WorkArticle work={work} />
+            <WorkArticle
+              work={work}
+              userSetting={userSetting?.userSetting ?? undefined}
+            />
             {work.user && (
               <WorkRelatedList
                 works={work.user.works.map((relatedWork) => ({
@@ -253,13 +260,13 @@ const workQuery = graphql(
   [workArticleFragment],
 )
 
-const sensitiveWorkQuery = graphql(
-  `query Work($id: ID!) {
-    work(id: $id) {
-      ...WorkArticle
+const userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      ...UserSetting
     }
   }`,
-  [sensitiveWorkArticleFragment],
+  [userSettingFragment],
 )
 
 const updateClickedCountCustomerAdvertisementMutation = graphql(

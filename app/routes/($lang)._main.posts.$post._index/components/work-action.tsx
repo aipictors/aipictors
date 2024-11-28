@@ -28,6 +28,7 @@ type Props = {
   isHideEditButton: boolean
   isRecommended: boolean
   isDisabledShare?: boolean
+  isAnonymous?: boolean
 }
 
 /**
@@ -74,7 +75,7 @@ export function WorkAction(props: Props) {
       <div className="flex space-x-2">
         <LikeButton
           size={40}
-          text={t("いいね", " ")}
+          text={t(props.isAnonymous ? "匿名いいね" : "いいね", " ")}
           defaultLiked={props.defaultLiked}
           defaultLikedCount={props.workLikesCount}
           targetWorkId={props.targetWorkId}

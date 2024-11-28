@@ -1,5 +1,4 @@
 import {
-  WorkArticle,
   workArticleFragment,
   sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
@@ -27,6 +26,7 @@ import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 import { HomeNewSensitiveCommentsSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-comments"
+import { SensitiveWorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/sensitive-work-article"
 
 type Props = {
   post: string
@@ -61,6 +61,10 @@ export function SensitiveWorkContainer(props: Props) {
   })
 
   const comments = workCommentsRet?.work?.comments ?? props.comments
+
+  const { data: userSetting } = useQuery(userSensitiveSettingQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  })
 
   if (work === null || work.isDeleted === true) {
     return null
@@ -118,7 +122,10 @@ export function SensitiveWorkContainer(props: Props) {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex w-full flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <WorkArticle work={work} />
+            <SensitiveWorkArticle
+              work={work}
+              userSetting={userSetting?.userSetting ?? undefined}
+            />
             {work.user !== null && work.user.works.length > 0 && (
               <WorkRelatedList
                 works={work.user.works.map((relatedWork) => ({
@@ -308,4 +315,19 @@ const randomCustomerAdvertisementQuery = graphql(
     }
   }`,
   [SideMenuAdvertisementsFragment],
+)
+
+export const userSensitiveSettingFragment = graphql(
+  `fragment UserSensitiveSetting on UserSettingNode @_unmask {
+      isAnonymousSensitiveLike
+  }`,
+)
+
+const userSensitiveSettingQuery = graphql(
+  `query UserSensitiveSetting {
+    userSetting {
+      ...UserSensitiveSetting
+    }
+  }`,
+  [userSensitiveSettingFragment],
 )

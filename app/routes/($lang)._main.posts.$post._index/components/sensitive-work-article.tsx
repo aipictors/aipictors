@@ -26,16 +26,17 @@ import { ToggleContent } from "~/components/toggle-content"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
 import { Separator } from "~/components/ui/separator"
+import type { userSensitiveSettingFragment } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
-  userSetting?: FragmentOf<typeof userSettingFragment>
+  userSetting?: FragmentOf<typeof userSensitiveSettingFragment>
 }
 
 /**
  * 作品詳細情報
  */
-export function WorkArticle(props: Props) {
+export function SensitiveWorkArticle(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data } = useQuery(viewerBookmarkFolderIdQuery, {
@@ -155,7 +156,7 @@ export function WorkArticle(props: Props) {
           bookmarkFolderId={bookmarkFolderId}
           targetWorkOwnerUserId={props.work.user?.id ?? ""}
           isDisabledShare={false}
-          isAnonymous={props.userSetting?.isAnonymousLike ?? false}
+          isAnonymous={props.userSetting?.isAnonymousSensitiveLike ?? false}
         />
         <h1 className="font-bold text-lg">
           {t(
