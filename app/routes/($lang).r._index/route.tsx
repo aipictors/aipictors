@@ -802,6 +802,9 @@ const query = graphql(
     newPostedUsers: newPostedUsers(
       offset: 0,
       limit: 8,
+      where: {
+        isSensitive: true,
+      }
     ) {
       ...HomeNewPostedUsers
     }

@@ -67,6 +67,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
               muted
               autoPlay={isAutoPlay}
               loop
+              playsInline
             >
               <track
                 kind="captions"

@@ -12,6 +12,7 @@ export function WorkVideoView({ videoUrl }: Props) {
         autoPlay={true}
         loop={true}
         muted={true}
+        playsInline
       >
         <track kind="captions" srcLang="en" label="English" />
       </video>
