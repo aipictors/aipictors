@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
 import { Link, useNavigation, useLocation, useNavigate } from "@remix-run/react"
-import { Loader2Icon, MenuIcon, MoveLeft, Search } from "lucide-react"
+import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
@@ -20,6 +20,12 @@ import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/compone
 import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
 import { HomeUserNavigationMenu } from "~/routes/($lang)._main._index/components/home-user-navigation-menu"
 import { toast } from "sonner"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu"
 
 type Props = {
   title?: string
@@ -247,12 +253,31 @@ function HomeHeader(props: Props) {
             </div>
           ) : (
             <>
-              <Link to={"/generation"}>
-                <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
-              </Link>
-              <Link to={"/new/image"}>
-                <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
-              </Link>
+              <div className="hidden space-x-2 md:flex">
+                <Link to={"/generation"}>
+                  <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
+                </Link>
+                <Link to={"/new/image"}>
+                  <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
+                </Link>
+              </div>
+              <div className="flex space-x-2 md:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant={"ghost"} size={"icon"}>
+                      <Plus />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem asChild>
+                      <Link to={"/generation"}>{t("生成", "Generate")}</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={"/new/image"}>{t("投稿", "Post")}</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </>
           )}
           {isSearchFormOpen && (

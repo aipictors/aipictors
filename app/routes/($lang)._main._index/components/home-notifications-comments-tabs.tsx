@@ -30,7 +30,7 @@ export function HomeNotificationCommentsTabs() {
 
   return (
     <>
-      <ScrollArea className="relative h-96 overflow-y-auto">
+      <ScrollArea className="relative h-64 overflow-y-auto md:h-96">
         <Tabs className="sticky top-0 z-10 bg-card" defaultValue={defaultTab}>
           <div className="border-b">
             <TabsList className="mx-0 w-full">

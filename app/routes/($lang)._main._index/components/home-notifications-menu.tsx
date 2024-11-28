@@ -240,7 +240,7 @@ export function HomeNotificationsMenu(props: Props) {
               </TabsList>
             </div>
           </Tabs>
-          <div className="relative m-0 h-96">
+          <div className="relative m-0 h-64 md:h-96">
             <Suspense
               fallback={
                 <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">

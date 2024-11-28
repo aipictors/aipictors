@@ -184,7 +184,7 @@ export function HomeUserNavigationMenu(props: Props) {
             </Link>
           </div>
         </div>
-        <ScrollArea className="max-h-[408px] overflow-y-auto p-1 md:max-h-none">
+        <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
           <div className="flex items-center gap-x-2 p-2">
             <Link to="/following" className="w-16 hover:underline">
               <p>{followCount}</p>
