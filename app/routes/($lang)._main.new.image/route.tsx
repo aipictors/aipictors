@@ -60,14 +60,15 @@ export default function NewImage() {
   const authContext = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()
+
   const ref = searchParams.get("generation")
 
   const now = getJstDate(new Date())
 
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
-  const { data: viewerData } = useQuery(ViewerQuery, {
-    skip: authContext.isNotLoggedIn,
+  const { data: viewerData, loading } = useQuery(ViewerQuery, {
+    skip: authContext.isNotLoggedIn || ref === null,
     variables: {
       offset: 0,
       limit: 128,
@@ -520,6 +521,15 @@ export default function NewImage() {
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="max-w-[1200px] space-y-4">
+        {loading && (
+          <p className="text-center font-bold text-md">
+            {t(
+              "読み込み中です、完了まで操作しないようにご注意ください",
+              "Loading, please be patient",
+            )}
+          </p>
+        )}
+
         {authContext.isNotLoggedIn && (
           <p className="text-center font-bold text-md">
             {t(
@@ -528,7 +538,6 @@ export default function NewImage() {
             )}
           </p>
         )}
-
         <div className="relative">
           <PostFormHeader type="image" />
           {state.isOpenLoadingAi && (
