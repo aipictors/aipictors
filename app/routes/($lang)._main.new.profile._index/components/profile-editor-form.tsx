@@ -131,6 +131,12 @@ export function ProfileEditorForm() {
             </p>
             <p>
               {t(
+                "プロフィールを設定することで様々な機能をご利用いただけます！",
+                "By setting up your profile, you can use various features!",
+              )}
+            </p>
+            <p>
+              {t(
                 "設定から内容はいつでも変更できます",
                 "You can change these settings anytime.",
               )}
