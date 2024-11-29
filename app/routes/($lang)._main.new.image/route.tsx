@@ -142,9 +142,9 @@ export default function NewImage() {
 
   useEffect(() => {
     const processImages = async () => {
-      if (viewer?.viewer?.imageGenerationResults) {
+      if (viewerData?.viewer?.imageGenerationResults && ref) {
         const base64Urls = await Promise.all(
-          viewer.viewer.imageGenerationResults
+          viewerData.viewer.imageGenerationResults
             .map((result) =>
               result.imageUrl ? createBase64FromImageURL(result.imageUrl) : "",
             )
@@ -153,7 +153,7 @@ export default function NewImage() {
 
         dispatch({
           type: "SET_ITEMS",
-          payload: viewer.viewer.imageGenerationResults.map(
+          payload: viewerData.viewer.imageGenerationResults.map(
             (result, index) => ({
               id: index + 1,
               content: base64Urls[index],
@@ -167,8 +167,8 @@ export default function NewImage() {
         })
 
         const imageUrl =
-          viewer.viewer.imageGenerationResults.length !== 0
-            ? viewer.viewer.imageGenerationResults[0].imageUrl
+          viewerData.viewer.imageGenerationResults.length !== 0
+            ? viewerData.viewer.imageGenerationResults[0].imageUrl
             : null
 
         if (!imageUrl) {
@@ -180,9 +180,10 @@ export default function NewImage() {
           : null
 
         if (pngInfo) {
-          pngInfo.params.prompt = viewer.viewer.imageGenerationResults[0].prompt
+          pngInfo.params.prompt =
+            viewerData.viewer.imageGenerationResults[0].prompt
           pngInfo.params.negativePrompt =
-            viewer.viewer.imageGenerationResults[0].negativePrompt
+            viewerData.viewer.imageGenerationResults[0].negativePrompt
         }
 
         dispatchInput({
@@ -193,7 +194,7 @@ export default function NewImage() {
         dispatchInput({
           type: "SET_AI_MODEL_ID",
           payload:
-            viewer.viewer.imageGenerationResults[0].postModelId?.toString() ??
+            viewerData.viewer.imageGenerationResults[0].postModelId?.toString() ??
             "",
         })
 
@@ -205,7 +206,7 @@ export default function NewImage() {
     }
 
     processImages()
-  }, [viewer?.viewer?.imageGenerationResults, dispatch])
+  }, [viewerData?.viewer?.imageGenerationResults, dispatch])
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(CreateWorkMutation)
