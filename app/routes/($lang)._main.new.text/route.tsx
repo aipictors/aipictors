@@ -77,7 +77,7 @@ export default function NewText() {
     },
   })
 
-  const viewer = viewerData ?? data
+  const viewer = data
 
   const [state, dispatch] = useReducer(postTextFormReducer, {
     editTargetImageBase64: null,
@@ -459,9 +459,9 @@ export default function NewText() {
           imageInformation={state.pngInfo}
           state={inputState}
           dispatch={dispatchInput}
-          albums={viewer?.albums ?? []}
-          currentPass={viewer?.viewer?.currentPass ?? null}
-          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
+          albums={viewerData?.albums ?? []}
+          currentPass={viewerData?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewerData?.viewer?.recentlyUsedTags ?? []}
           themes={
             viewer?.dailyThemes
               ? viewer.dailyThemes.map((theme) => ({
@@ -471,7 +471,7 @@ export default function NewText() {
                 }))
               : null
           }
-          aiModels={viewer?.aiModels ?? []}
+          aiModels={viewerData?.aiModels ?? []}
           events={viewer?.appEvents ?? []}
           needFix={false}
         />
