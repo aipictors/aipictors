@@ -57,7 +57,7 @@ export function HomeNotificationsContents(props: Props) {
   }
 
   return (
-    <ScrollArea className="h-96 overflow-y-auto">
+    <ScrollArea className="h-64 overflow-y-auto md:h-96">
       <div className="max-w-96 overflow-hidden">
         {notifications.map((notification) => {
           if (

@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react"
-import { Images } from "lucide-react"
+import { Images, MessageCircleIcon } from "lucide-react"
 import { useState } from "react"
 import { cn } from "~/lib/utils"
 
@@ -12,6 +12,7 @@ type Props = {
   imageHeight: number
   ranking?: number
   subWorksCount?: number
+  commentsCount?: number
 }
 
 /**
@@ -105,6 +106,14 @@ export function CroppedWorkSquare(props: Props) {
             <Images className="h-3 w-3 text-white" />
             <div className="font-bold text-white text-xs">
               {props.subWorksCount + 1}
+            </div>
+          </div>
+        )}
+        {props.commentsCount !== undefined && props.commentsCount !== 0 && (
+          <div className="absolute top-1 left-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+            <MessageCircleIcon className="h-3 w-3 text-white" />
+            <div className="font-bold text-white text-xs">
+              {props.commentsCount + 1}
             </div>
           </div>
         )}

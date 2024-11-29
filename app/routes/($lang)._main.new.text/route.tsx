@@ -77,7 +77,7 @@ export default function NewText() {
     },
   })
 
-  const viewer = viewerData ?? data
+  const viewer = data
 
   const [state, dispatch] = useReducer(postTextFormReducer, {
     editTargetImageBase64: null,
@@ -356,12 +356,12 @@ export default function NewText() {
             rating: inputState.ratingRestriction,
             prompt: state.pngInfo?.params.prompt ?? null,
             negativePrompt: state.pngInfo?.params.negativePrompt ?? null,
-            seed: state.pngInfo?.params.seed ?? null,
-            sampler: state.pngInfo?.params.sampler ?? null,
-            strength: state.pngInfo?.params.strength ?? null,
-            noise: state.pngInfo?.params.noise ?? null,
+            seed: state.pngInfo?.params.seed?.toString() ?? null,
+            sampler: state.pngInfo?.params.sampler?.toString() ?? null,
+            strength: state.pngInfo?.params.strength?.toString() ?? null,
+            noise: state.pngInfo?.params.noise?.toString() ?? null,
             modelName: state.pngInfo?.params.model ?? null,
-            modelHash: state.pngInfo?.params.modelHash ?? null,
+            modelHash: state.pngInfo?.params.modelHash?.toString() ?? null,
             otherGenerationParams: state.pngInfo?.src ?? null,
             pngInfo: state.pngInfo?.src ?? null,
             imageStyle: inputState.imageStyle,
@@ -459,9 +459,9 @@ export default function NewText() {
           imageInformation={state.pngInfo}
           state={inputState}
           dispatch={dispatchInput}
-          albums={viewer?.albums ?? []}
-          currentPass={viewer?.viewer?.currentPass ?? null}
-          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
+          albums={viewerData?.albums ?? []}
+          currentPass={viewerData?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewerData?.viewer?.recentlyUsedTags ?? []}
           themes={
             viewer?.dailyThemes
               ? viewer.dailyThemes.map((theme) => ({
@@ -471,7 +471,7 @@ export default function NewText() {
                 }))
               : null
           }
-          aiModels={viewer?.aiModels ?? []}
+          aiModels={viewerData?.aiModels ?? []}
           events={viewer?.appEvents ?? []}
           needFix={false}
         />

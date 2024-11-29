@@ -19,9 +19,15 @@ type Props = {
 export function UserNoteList(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const userId = props.works[0]?.user.id ?? ""
+  const userId =
+    props.works.length > 0 && props.works[0]?.user
+      ? (props.works[0].user.id ?? "")
+      : ""
 
-  const userLogin = props.works[0]?.user.login ?? ""
+  const userLogin =
+    props.works.length > 0 && props.works[0]?.user
+      ? (props.works[0].user.login ?? "")
+      : ""
 
   const { data: novelWorks } = useQuery(UserNotesQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn || userId === "",
@@ -58,24 +64,28 @@ export function UserNoteList(props: Props) {
                     tags={[]}
                   />
                 </div>
-                <UserNameBadge
-                  userId={work.user.id}
-                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                  name={work.user.name}
-                  width={"lg"}
-                  padding={"md"}
-                />
-                <div className="absolute right-0 bottom-0">
-                  <LikeButton
-                    size={56}
-                    targetWorkId={work.id}
-                    targetWorkOwnerUserId={work.user.id}
-                    defaultLiked={work.isLiked}
-                    defaultLikedCount={0}
-                    isBackgroundNone={true}
-                    strokeWidth={2}
-                  />
-                </div>
+                {work.user && (
+                  <>
+                    <UserNameBadge
+                      userId={work.user.id}
+                      userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                      name={work.user.name}
+                      width={"lg"}
+                      padding={"md"}
+                    />
+                    <div className="absolute right-0 bottom-0">
+                      <LikeButton
+                        size={56}
+                        targetWorkId={work.id}
+                        targetWorkOwnerUserId={work.user.id}
+                        defaultLiked={work.isLiked}
+                        defaultLikedCount={0}
+                        isBackgroundNone={true}
+                        strokeWidth={2}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           />

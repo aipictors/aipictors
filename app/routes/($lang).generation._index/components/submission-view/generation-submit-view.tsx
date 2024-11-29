@@ -11,7 +11,7 @@ import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean, useMediaQuery } from "usehooks-ts"
 import { VerificationDialog } from "~/components/verification-dialog"
-import { useSearchParams } from "@remix-run/react"
+import { useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -25,6 +25,8 @@ export function GenerationSubmissionView(props: Props) {
   const context = useGenerationContext()
 
   const queryData = useGenerationQuery()
+
+  const navigate = useNavigate()
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
@@ -153,6 +155,7 @@ export function GenerationSubmissionView(props: Props) {
 
     const userNanoid = context.user?.nanoid ?? null
     if (userNanoid === null) {
+      navigate("/new/profile")
       return null
     }
 
@@ -203,7 +206,8 @@ export function GenerationSubmissionView(props: Props) {
       !context.currentPass?.type &&
       !lineUserId?.viewer?.lineUserId &&
       !pass?.viewer?.currentPass?.type &&
-      generatedCount >= 10
+      generatedCount >= 10 &&
+      !isExistedPreviousPass
     ) {
       await refetchPass()
       if (!pass?.viewer?.currentPass?.type) {
@@ -324,6 +328,7 @@ export function GenerationSubmissionView(props: Props) {
 
     const userNanoid = context.user?.nanoid ?? null
     if (userNanoid === null) {
+      navigate("/new/profile")
       return null
     }
 

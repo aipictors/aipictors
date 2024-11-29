@@ -15,9 +15,11 @@ type Props = {
 export function UserSensitivePostList(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const userId = props.works[0]?.user.id ?? ""
+  const userId = props.works.length ? (props.works[0]?.user?.id ?? "") : ""
 
-  const userLogin = props.works[0]?.user.login ?? ""
+  const userLogin = props.works.length
+    ? (props.works[0]?.user?.login ?? "")
+    : ""
 
   const { data: postsWorks } = useQuery(UserPostsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn || userId === "",

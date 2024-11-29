@@ -47,7 +47,10 @@ export function DraftWorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(workQuery, {
-    skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
+    skip:
+      props.work?.user !== null &&
+      authContext.userId !== props.work?.user.id &&
+      authContext.isLoading,
     variables: {
       id: props.post,
     },
@@ -121,27 +124,51 @@ export function DraftWorkContainer(props: Props) {
         <div className="flex w-full flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
             <DraftWorkArticle work={work} />
-            <WorkRelatedList
-              works={work.user.works.map((relatedWork) => ({
-                smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
-                thumbnailImagePosition: relatedWork.thumbnailImagePosition ?? 0,
-                smallThumbnailImageWidth: relatedWork.smallThumbnailImageWidth,
-                smallThumbnailImageHeight:
-                  relatedWork.smallThumbnailImageHeight,
-                id: relatedWork.id,
-                userId: relatedWork.userId,
-                isLiked: relatedWork.isLiked,
-                subWorksCount: relatedWork.subWorksCount,
-              }))}
-            />
+            {work.user && (
+              <WorkRelatedList
+                works={work.user.works.map((relatedWork) => ({
+                  smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
+                  thumbnailImagePosition:
+                    relatedWork.thumbnailImagePosition ?? 0,
+                  smallThumbnailImageWidth:
+                    relatedWork.smallThumbnailImageWidth,
+                  smallThumbnailImageHeight:
+                    relatedWork.smallThumbnailImageHeight,
+                  id: relatedWork.id,
+                  userId: relatedWork.userId,
+                  isLiked: relatedWork.isLiked,
+                  subWorksCount: relatedWork.subWorksCount,
+                  commentsCount: relatedWork.commentsCount,
+                }))}
+              />
+            )}
             {work.isCommentsEditable && (
               <WorkCommentList workId={work.id} comments={comments} />
             )}
-            <div className="block md:mt-0 lg:hidden">
+            {work.user && (
+              <div className="block md:mt-0 lg:hidden">
+                <WorkUser
+                  userId={work.user.id}
+                  userLogin={work.user.login}
+                  userName={work.user.name}
+                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                  userFollowersCount={work.user.followersCount}
+                  userBiography={work.user.biography ?? ""}
+                  userEnBiography={work.user.enBiography ?? null}
+                  userPromptonId={work.user.promptonUser?.id}
+                  userWorksCount={work.user.worksCount}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 md:flex md:max-w-80">
+          {work.user && (
+            <div className="w-full">
               <WorkUser
                 userId={work.user.id}
-                userLogin={work.user.login}
                 userName={work.user.name}
+                userLogin={work.user.login}
                 userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography ?? ""}
@@ -150,22 +177,7 @@ export function DraftWorkContainer(props: Props) {
                 userWorksCount={work.user.worksCount}
               />
             </div>
-          </div>
-        </div>
-        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 md:flex md:max-w-80">
-          <div className="w-full">
-            <WorkUser
-              userId={work.user.id}
-              userName={work.user.name}
-              userLogin={work.user.login}
-              userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-              userFollowersCount={work.user.followersCount}
-              userBiography={work.user.biography ?? ""}
-              userEnBiography={work.user.enBiography ?? null}
-              userPromptonId={work.user.promptonUser?.id}
-              userWorksCount={work.user.worksCount}
-            />
-          </div>
+          )}
           <div className="invisible flex w-full flex-col space-y-4 md:visible">
             <WorkNextAndPrevious work={work} />
             <div className="flex w-full flex-col space-y-4">

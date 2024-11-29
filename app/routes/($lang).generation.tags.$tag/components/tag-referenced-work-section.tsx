@@ -24,10 +24,10 @@ export function TagReferencedWorkSection(props: Props) {
           width: work.largeThumbnailImageWidth,
           height: work.largeThumbnailImageHeight,
           workId: work.id, // 各作品のID
-          userId: work.user.id, // 作品の所有者のID
+          userId: work.user?.id, // 作品の所有者のID
           userIcon: withIconUrlFallback(work.user?.iconUrl), // 作品の所有者のアイコン
-          userName: work.user.name, // 作品の所有者の名前
-          workOwnerUserId: work.user.id,
+          userName: work.user?.name, // 作品の所有者の名前
+          workOwnerUserId: work.user?.id,
           isLiked: work.isLiked,
           title: work.title,
           isSensitive: work.rating === "R18" || work.rating === "R18G",
@@ -53,7 +53,7 @@ export function TagReferencedWorkSection(props: Props) {
                   size={56}
                   key={index}
                   targetWorkId={photo.workId}
-                  targetWorkOwnerUserId={photo.userId}
+                  targetWorkOwnerUserId={photo.userId ?? ""}
                   defaultLiked={photo.isLiked}
                   defaultLikedCount={0}
                   isBackgroundNone={true}

@@ -1,5 +1,4 @@
 import {
-  WorkArticle,
   workArticleFragment,
   sensitiveWorkArticleFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
@@ -27,6 +26,7 @@ import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { SensitiveWorkTagsWorks } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-tags-works"
 import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
 import { HomeNewSensitiveCommentsSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-comments"
+import { SensitiveWorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/sensitive-work-article"
 
 type Props = {
   post: string
@@ -45,7 +45,7 @@ export function SensitiveWorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(sensitiveWorkQuery, {
-    skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
+    skip: authContext.userId !== props.work?.user?.id && authContext.isLoading,
     variables: {
       id: props.post,
     },
@@ -61,6 +61,10 @@ export function SensitiveWorkContainer(props: Props) {
   })
 
   const comments = workCommentsRet?.work?.comments ?? props.comments
+
+  const { data: userSetting } = useQuery(userSensitiveSettingQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  })
 
   if (work === null || work.isDeleted === true) {
     return null
@@ -118,28 +122,55 @@ export function SensitiveWorkContainer(props: Props) {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex w-full flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <WorkArticle work={work} />
-            <WorkRelatedList
-              works={work.user.works.map((relatedWork) => ({
-                smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
-                thumbnailImagePosition: relatedWork.thumbnailImagePosition ?? 0,
-                smallThumbnailImageWidth: relatedWork.smallThumbnailImageWidth,
-                smallThumbnailImageHeight:
-                  relatedWork.smallThumbnailImageHeight,
-                id: relatedWork.id,
-                userId: relatedWork.userId,
-                isLiked: relatedWork.isLiked,
-                subWorksCount: relatedWork.subWorksCount,
-              }))}
+            <SensitiveWorkArticle
+              work={work}
+              userSetting={userSetting?.userSetting ?? undefined}
             />
+            {work.user !== null && work.user.works.length > 0 && (
+              <WorkRelatedList
+                works={work.user.works.map((relatedWork) => ({
+                  smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
+                  thumbnailImagePosition:
+                    relatedWork.thumbnailImagePosition ?? 0,
+                  smallThumbnailImageWidth:
+                    relatedWork.smallThumbnailImageWidth,
+                  smallThumbnailImageHeight:
+                    relatedWork.smallThumbnailImageHeight,
+                  id: relatedWork.id,
+                  userId: relatedWork.userId,
+                  isLiked: relatedWork.isLiked,
+                  subWorksCount: relatedWork.subWorksCount,
+                  commentsCount: relatedWork.commentsCount,
+                }))}
+              />
+            )}
             {work.isCommentsEditable && (
               <WorkCommentList workId={work.id} comments={comments} />
             )}
-            <div className="block md:mt-0 lg:hidden">
+            {work.user !== null && (
+              <div className="block md:mt-0 lg:hidden">
+                <WorkUser
+                  userId={work.user.id}
+                  userLogin={work.user.login}
+                  userName={work.user.name}
+                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                  userFollowersCount={work.user.followersCount}
+                  userBiography={work.user.biography ?? ""}
+                  userEnBiography={work.user.enBiography ?? null}
+                  userPromptonId={work.user.promptonUser?.id}
+                  userWorksCount={work.user.worksCount}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 md:flex md:max-w-80">
+          {work.user !== null && (
+            <div className="w-full">
               <WorkUser
                 userId={work.user.id}
-                userLogin={work.user.login}
                 userName={work.user.name}
+                userLogin={work.user.login}
                 userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography ?? ""}
@@ -148,22 +179,7 @@ export function SensitiveWorkContainer(props: Props) {
                 userWorksCount={work.user.worksCount}
               />
             </div>
-          </div>
-        </div>
-        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 md:flex md:max-w-80">
-          <div className="w-full">
-            <WorkUser
-              userId={work.user.id}
-              userName={work.user.name}
-              userLogin={work.user.login}
-              userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-              userFollowersCount={work.user.followersCount}
-              userBiography={work.user.biography ?? ""}
-              userEnBiography={work.user.enBiography ?? null}
-              userPromptonId={work.user.promptonUser?.id}
-              userWorksCount={work.user.worksCount}
-            />
-          </div>
+          )}
           <div className="invisible flex w-full flex-col space-y-4 md:visible">
             <WorkNextAndPrevious work={work} />
             <div className="flex w-full flex-col space-y-4">
@@ -299,4 +315,19 @@ const randomCustomerAdvertisementQuery = graphql(
     }
   }`,
   [SideMenuAdvertisementsFragment],
+)
+
+export const userSensitiveSettingFragment = graphql(
+  `fragment UserSensitiveSetting on UserSettingNode @_unmask {
+      isAnonymousSensitiveLike
+  }`,
+)
+
+const userSensitiveSettingQuery = graphql(
+  `query UserSensitiveSetting {
+    userSetting {
+      ...UserSensitiveSetting
+    }
+  }`,
+  [userSensitiveSettingFragment],
 )

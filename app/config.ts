@@ -6,28 +6,28 @@ import { env } from "~/env"
 export const config = {
   cacheControl: {
     get home() {
-      return "max-age=0, s-maxage=240, stale-while-revalidate=2592000, stale-if-error=2592000"
+      return "max-age=0, s-maxage=0, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
     get short() {
-      return "max-age=0, s-maxage=60, stale-while-revalidate=2592000, stale-if-error=2592000"
+      return "max-age=0, s-maxage=0, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
     get tenSeconds() {
       return "max-age=0, s-maxage=10, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
     get oneMinute() {
-      return "max-age=0, s-maxage=60, stale-while-revalidate=2592000, stale-if-error=2592000"
+      return "max-age=0, s-maxage=0, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
     get oneHour() {
-      return "max-age=0, s-maxage=3600, stale-while-revalidate=2592000, stale-if-error=2592000"
+      return "max-age=0, s-maxage=0, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
     get oneDay() {
-      return "max-age=0, s-maxage=86400, stale-while-revalidate=2592000, stale-if-error=2592000"
+      return "max-age=0, s-maxage=0, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
     get oneWeek() {
-      return "max-age=0, s-maxage=604800, stale-while-revalidate=2592000, stale-if-error=2592000"
+      return "max-age=0, s-maxage=0, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
     get oneMonth() {
-      return "max-age=0, s-maxage=2592000, stale-while-revalidate=2592000, stale-if-error=2592000"
+      return "max-age=0, s-maxage=0, stale-while-revalidate=2592000, stale-if-error=2592000"
     },
   },
   fcm: {

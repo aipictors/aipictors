@@ -73,6 +73,27 @@ export function DraftWorkArticle(props: Props) {
     props.work.imageURL,
   )
 
+  const parseTextWithLinks = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    const parts = text.split(urlRegex)
+
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            key={index.toString()}
+            to={part}
+          >
+            {part}
+          </Link>
+        )
+      }
+      return part
+    })
+  }
+
   return (
     <article className="flex flex-col space-y-4">
       <PostAccessTypeBanner
@@ -126,7 +147,7 @@ export function DraftWorkArticle(props: Props) {
           ]}
           targetWorkId={props.work.id}
           bookmarkFolderId={bookmarkFolderId}
-          targetWorkOwnerUserId={props.work.user.id}
+          targetWorkOwnerUserId={props.work.user?.id ?? ""}
           isDisabledShare={true}
         />
         <h1 className="font-bold text-lg">
@@ -139,34 +160,35 @@ export function DraftWorkArticle(props: Props) {
         </h1>
         <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}
-          {appContext.userId === props.work.user.id && (
-            <ToggleContent
-              trigger={
-                <div className="flex items-center space-x-2">
-                  <Heart
-                    className={"fill-white text-black dark:text-white"}
-                    size={16}
-                    strokeWidth={1}
-                  />
-                  <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
-                </div>
-              }
-            >
-              <div>
-                <Separator className="mt-2 mb-2" />
-                <CarouselWithGradation
-                  items={props.work.likedUsers.map((user) => (
-                    <WorkLikedUser
-                      key={user.id}
-                      name={user.name}
-                      iconUrl={user.iconUrl}
-                      login={user.login}
+          {props.work.user !== null &&
+            appContext.userId === props.work.user.id && (
+              <ToggleContent
+                trigger={
+                  <div className="flex items-center space-x-2">
+                    <Heart
+                      className={"fill-white text-black dark:text-white"}
+                      size={16}
+                      strokeWidth={1}
                     />
-                  ))}
-                />
-              </div>
-            </ToggleContent>
-          )}
+                    <p className="font-bold text-sm">{`${props.work.likesCount}`}</p>
+                  </div>
+                }
+              >
+                <div>
+                  <Separator className="mt-2 mb-2" />
+                  <CarouselWithGradation
+                    items={props.work.likedUsers.map((user) => (
+                      <WorkLikedUser
+                        key={user.id}
+                        name={user.name}
+                        iconUrl={user.iconUrl}
+                        login={user.login}
+                      />
+                    ))}
+                  />
+                </div>
+              </ToggleContent>
+            )}
           <span className="text-sm">
             {toDateTimeText(props.work.createdAt)}
           </span>
@@ -255,7 +277,7 @@ export function DraftWorkArticle(props: Props) {
           </div>
           {props.work.dailyTheme && (
             <div className="flex items-center">
-              <span className="text-md">
+              <span className="text-sm">
                 {t("参加お題", "participation theme")}
                 {":"}
               </span>
@@ -274,12 +296,15 @@ export function DraftWorkArticle(props: Props) {
           />
         </div>
         <p className="overflow-hidden whitespace-pre-wrap break-words">
-          {t(
-            props.work.description ?? "",
-            props.work.enDescription ?? props.work.description ?? "",
+          {parseTextWithLinks(
+            t(
+              props.work.description ?? "",
+              props.work.enDescription ?? props.work.description ?? "",
+            ),
           )}
         </p>
         {props.work.promptAccessType === "PRIVATE" &&
+          props.work.user !== null &&
           props.work.user.id === appContext.userId && (
             <p className="flex items-center gap-x-2 font-bold opacity-60">
               <ShieldAlert className="block h-6 w-6" />
@@ -302,28 +327,30 @@ export function DraftWorkArticle(props: Props) {
           otherGenerationParams={props.work.otherGenerationParams}
         />
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link
-              className="flex items-center space-x-2"
-              to={`/users/${props.work.user.login}`}
-            >
-              <Avatar>
-                <AvatarImage
-                  src={withIconUrlFallback(props.work.user.iconUrl)}
-                />
-                <AvatarFallback />
-              </Avatar>
-              <span>{props.work.user.name}</span>
-            </Link>
-            {props.work.user.promptonUser?.id !== undefined &&
-              props.work.user.id !== appContext?.userId && (
-                <PromptonRequestButton
-                  promptonId={props.work.user.promptonUser.id}
-                />
-              )}
+        {props.work.user !== null && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link
+                className="flex items-center space-x-2"
+                to={`/users/${props.work.user.login}`}
+              >
+                <Avatar>
+                  <AvatarImage
+                    src={withIconUrlFallback(props.work.user.iconUrl)}
+                  />
+                  <AvatarFallback />
+                </Avatar>
+                <span>{props.work.user.name}</span>
+              </Link>
+              {props.work.user.promptonUser?.id !== undefined &&
+                props.work.user.id !== appContext?.userId && (
+                  <PromptonRequestButton
+                    promptonId={props.work.user.promptonUser.id}
+                  />
+                )}
+            </div>
           </div>
-        </div>
+        )}
       </section>
     </article>
   )
@@ -396,6 +423,7 @@ export const workArticleFragment = graphql(
         thumbnailImagePosition
         subWorksCount
         isLiked
+        commentsCount
       }
       promptonUser {
         id

@@ -1,7 +1,7 @@
 import {
   WorkArticle,
   workArticleFragment,
-  sensitiveWorkArticleFragment,
+  userSettingFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import { useContext } from "react"
@@ -47,10 +47,17 @@ export function WorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: workRet } = useQuery(workQuery, {
-    skip: authContext.userId !== props.work?.user.id && authContext.isLoading,
+    skip:
+      props.work?.user !== null &&
+      authContext.userId !== props.work?.user.id &&
+      authContext.isLoading,
     variables: {
       id: props.post,
     },
+  })
+
+  const { data: userSetting } = useQuery(userSettingQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const work = workRet?.work ?? props.work
@@ -63,10 +70,6 @@ export function WorkContainer(props: Props) {
   })
 
   const comments = workCommentsRet?.work?.comments ?? props.comments
-
-  if (work === null || work.isDeleted === true) {
-    return null
-  }
 
   const tags = work?.tagNames ?? []
 
@@ -108,6 +111,10 @@ export function WorkContainer(props: Props) {
 
   const t = useTranslation()
 
+  if (work === null || work.isDeleted === true) {
+    return null
+  }
+
   return (
     <div
       className="space-y-4 overflow-hidden"
@@ -118,28 +125,55 @@ export function WorkContainer(props: Props) {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex w-full flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <WorkArticle work={work} />
-            <WorkRelatedList
-              works={work.user.works.map((relatedWork) => ({
-                smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
-                thumbnailImagePosition: relatedWork.thumbnailImagePosition ?? 0,
-                smallThumbnailImageWidth: relatedWork.smallThumbnailImageWidth,
-                smallThumbnailImageHeight:
-                  relatedWork.smallThumbnailImageHeight,
-                id: relatedWork.id,
-                userId: relatedWork.userId,
-                isLiked: relatedWork.isLiked,
-                subWorksCount: relatedWork.subWorksCount,
-              }))}
+            <WorkArticle
+              work={work}
+              userSetting={userSetting?.userSetting ?? undefined}
             />
+            {work.user && (
+              <WorkRelatedList
+                works={work.user.works.map((relatedWork) => ({
+                  smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
+                  thumbnailImagePosition:
+                    relatedWork.thumbnailImagePosition ?? 0,
+                  smallThumbnailImageWidth:
+                    relatedWork.smallThumbnailImageWidth,
+                  smallThumbnailImageHeight:
+                    relatedWork.smallThumbnailImageHeight,
+                  id: relatedWork.id,
+                  userId: relatedWork.userId,
+                  isLiked: relatedWork.isLiked,
+                  subWorksCount: relatedWork.subWorksCount,
+                  commentsCount: relatedWork.commentsCount,
+                }))}
+              />
+            )}
             {work.isCommentsEditable && (
               <WorkCommentList workId={work.id} comments={comments} />
             )}
-            <div className="block md:mt-0 lg:hidden">
+            {work.user && (
+              <div className="block md:mt-0 lg:hidden">
+                <WorkUser
+                  userId={work.user.id}
+                  userLogin={work.user.login}
+                  userName={work.user.name}
+                  userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
+                  userFollowersCount={work.user.followersCount}
+                  userBiography={work.user.biography ?? ""}
+                  userEnBiography={work.user.enBiography ?? null}
+                  userPromptonId={work.user.promptonUser?.id}
+                  userWorksCount={work.user.worksCount}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 md:flex md:max-w-80">
+          {work.user && (
+            <div className="w-full">
               <WorkUser
                 userId={work.user.id}
-                userLogin={work.user.login}
                 userName={work.user.name}
+                userLogin={work.user.login}
                 userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography ?? ""}
@@ -148,22 +182,7 @@ export function WorkContainer(props: Props) {
                 userWorksCount={work.user.worksCount}
               />
             </div>
-          </div>
-        </div>
-        <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 md:flex md:max-w-80">
-          <div className="w-full">
-            <WorkUser
-              userId={work.user.id}
-              userName={work.user.name}
-              userLogin={work.user.login}
-              userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-              userFollowersCount={work.user.followersCount}
-              userBiography={work.user.biography ?? ""}
-              userEnBiography={work.user.enBiography ?? null}
-              userPromptonId={work.user.promptonUser?.id}
-              userWorksCount={work.user.worksCount}
-            />
-          </div>
+          )}
           <div className="invisible flex w-full flex-col space-y-4 md:visible">
             <WorkNextAndPrevious work={work} />
             <div className="flex w-full flex-col space-y-4">
@@ -241,13 +260,13 @@ const workQuery = graphql(
   [workArticleFragment],
 )
 
-const sensitiveWorkQuery = graphql(
-  `query Work($id: ID!) {
-    work(id: $id) {
-      ...WorkArticle
+const userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      ...UserSetting
     }
   }`,
-  [sensitiveWorkArticleFragment],
+  [userSettingFragment],
 )
 
 const updateClickedCountCustomerAdvertisementMutation = graphql(

@@ -60,13 +60,14 @@ export default function NewImage() {
   const authContext = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()
+
   const ref = searchParams.get("generation")
 
   const now = getJstDate(new Date())
 
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
-  const { data: viewerData } = useQuery(ViewerQuery, {
+  const { data: viewerData, loading } = useQuery(ViewerQuery, {
     skip: authContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -83,7 +84,7 @@ export default function NewImage() {
     },
   })
 
-  const viewer = viewerData ?? data
+  const viewer = data
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
@@ -141,9 +142,9 @@ export default function NewImage() {
 
   useEffect(() => {
     const processImages = async () => {
-      if (viewer?.viewer?.imageGenerationResults) {
+      if (viewerData?.viewer?.imageGenerationResults && ref) {
         const base64Urls = await Promise.all(
-          viewer.viewer.imageGenerationResults
+          viewerData.viewer.imageGenerationResults
             .map((result) =>
               result.imageUrl ? createBase64FromImageURL(result.imageUrl) : "",
             )
@@ -152,7 +153,7 @@ export default function NewImage() {
 
         dispatch({
           type: "SET_ITEMS",
-          payload: viewer.viewer.imageGenerationResults.map(
+          payload: viewerData.viewer.imageGenerationResults.map(
             (result, index) => ({
               id: index + 1,
               content: base64Urls[index],
@@ -166,8 +167,8 @@ export default function NewImage() {
         })
 
         const imageUrl =
-          viewer.viewer.imageGenerationResults.length !== 0
-            ? viewer.viewer.imageGenerationResults[0].imageUrl
+          viewerData.viewer.imageGenerationResults.length !== 0
+            ? viewerData.viewer.imageGenerationResults[0].imageUrl
             : null
 
         if (!imageUrl) {
@@ -179,9 +180,10 @@ export default function NewImage() {
           : null
 
         if (pngInfo) {
-          pngInfo.params.prompt = viewer.viewer.imageGenerationResults[0].prompt
+          pngInfo.params.prompt =
+            viewerData.viewer.imageGenerationResults[0].prompt
           pngInfo.params.negativePrompt =
-            viewer.viewer.imageGenerationResults[0].negativePrompt
+            viewerData.viewer.imageGenerationResults[0].negativePrompt
         }
 
         dispatchInput({
@@ -192,7 +194,7 @@ export default function NewImage() {
         dispatchInput({
           type: "SET_AI_MODEL_ID",
           payload:
-            viewer.viewer.imageGenerationResults[0].postModelId?.toString() ??
+            viewerData.viewer.imageGenerationResults[0].postModelId?.toString() ??
             "",
         })
 
@@ -204,7 +206,7 @@ export default function NewImage() {
     }
 
     processImages()
-  }, [viewer?.viewer?.imageGenerationResults, dispatch])
+  }, [viewerData?.viewer?.imageGenerationResults, dispatch])
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(CreateWorkMutation)
@@ -227,7 +229,7 @@ export default function NewImage() {
       if (image === null) {
         return null
       }
-      return uploadPublicImage(image, viewer?.viewer?.token)
+      return uploadPublicImage(image, viewerData?.viewer?.token)
     })
     const imageUrls = await Promise.all(uploads)
     return imageUrls
@@ -292,7 +294,7 @@ export default function NewImage() {
 
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
-        viewer?.viewer?.token,
+        viewerData?.viewer?.token,
       )
 
       dispatch({ type: "SET_PROGRESS", payload: 40 })
@@ -301,7 +303,7 @@ export default function NewImage() {
 
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
-        viewer?.viewer?.token,
+        viewerData?.viewer?.token,
       )
 
       dispatch({ type: "SET_PROGRESS", payload: 50 })
@@ -309,7 +311,7 @@ export default function NewImage() {
       uploadedImageUrls.push(largeThumbnailUrl)
 
       const ogpBase64Url = state.ogpBase64
-        ? await uploadPublicImage(state.ogpBase64, viewer?.viewer?.token)
+        ? await uploadPublicImage(state.ogpBase64, viewerData?.viewer?.token)
         : null
 
       dispatch({ type: "SET_PROGRESS", payload: 60 })
@@ -358,11 +360,15 @@ export default function NewImage() {
             negativePrompt:
               inputState.imageInformation?.params.negativePrompt ?? null,
             seed: inputState.imageInformation?.params.seed?.toString() ?? null,
-            sampler: inputState.imageInformation?.params.sampler ?? null,
-            strength: inputState.imageInformation?.params.strength ?? null,
-            noise: inputState.imageInformation?.params.noise ?? null,
+            sampler:
+              inputState.imageInformation?.params.sampler?.toString() ?? null,
+            strength:
+              inputState.imageInformation?.params.strength?.toString() ?? null,
+            noise:
+              inputState.imageInformation?.params.noise?.toString() ?? null,
             modelName: inputState.imageInformation?.params.model ?? null,
-            modelHash: inputState.imageInformation?.params.modelHash ?? null,
+            modelHash:
+              inputState.imageInformation?.params.modelHash?.toString() ?? null,
             otherGenerationParams: null,
             pngInfo: inputState.imageInformation?.src ?? null,
             imageStyle: inputState.imageStyle,
@@ -516,6 +522,15 @@ export default function NewImage() {
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="max-w-[1200px] space-y-4">
+        {loading && (
+          <p className="text-center font-bold text-md">
+            {t(
+              "読み込み中です、完了まで操作しないようにご注意ください",
+              "Loading, please be patient",
+            )}
+          </p>
+        )}
+
         {authContext.isNotLoggedIn && (
           <p className="text-center font-bold text-md">
             {t(
@@ -524,7 +539,6 @@ export default function NewImage() {
             )}
           </p>
         )}
-
         <div className="relative">
           <PostFormHeader type="image" />
           {state.isOpenLoadingAi && (
@@ -549,9 +563,9 @@ export default function NewImage() {
           imageInformation={inputState.imageInformation}
           state={inputState}
           dispatch={dispatchInput}
-          albums={viewer?.albums ?? []}
-          currentPass={viewer?.viewer?.currentPass ?? null}
-          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
+          albums={viewerData?.albums ?? []}
+          currentPass={viewerData?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewerData?.viewer?.recentlyUsedTags ?? []}
           themes={
             viewer?.dailyThemes
               ? viewer.dailyThemes.map((theme) => ({
@@ -561,7 +575,7 @@ export default function NewImage() {
                 }))
               : null
           }
-          aiModels={viewer?.aiModels ?? []}
+          aiModels={viewerData?.aiModels ?? []}
           events={viewer?.appEvents ?? []}
           needFix={false}
         />

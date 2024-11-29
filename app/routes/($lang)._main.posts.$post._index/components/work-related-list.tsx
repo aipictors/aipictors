@@ -17,6 +17,7 @@ type Props = {
     userId: string
     isLiked: boolean
     subWorksCount: number
+    commentsCount: number
   }[]
 }
 
@@ -37,6 +38,7 @@ export function WorkRelatedList(props: Props) {
               size="md"
               imageWidth={work.smallThumbnailImageWidth}
               imageHeight={work.smallThumbnailImageHeight}
+              commentsCount={work.commentsCount}
             />
             <div className="absolute right-0 bottom-0">
               <LikeButton

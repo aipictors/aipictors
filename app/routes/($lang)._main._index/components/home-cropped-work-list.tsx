@@ -60,7 +60,7 @@ export function HomeCroppedWorkList(props: Props) {
                     <LikeButton
                       size={56}
                       targetWorkId={work.id}
-                      targetWorkOwnerUserId={work.user.id}
+                      targetWorkOwnerUserId={work.user?.id ?? ""}
                       defaultLiked={work.isLiked}
                       defaultLikedCount={0}
                       isBackgroundNone={true}
@@ -92,13 +92,15 @@ export function HomeCroppedWorkList(props: Props) {
                   work.enTitle.length > 0 ? work.enTitle : work.title,
                 )}
               </p>
-              <UserNameBadge
-                userId={work.user.id}
-                userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                name={work.user.name}
-                width={"lg"}
-                likesCount={work.likesCount}
-              />
+              {work.user && (
+                <UserNameBadge
+                  userId={work.user.id}
+                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                  name={work.user.name}
+                  width={"lg"}
+                  likesCount={work.likesCount}
+                />
+              )}
             </div>
           ))}
       </section>
@@ -128,7 +130,7 @@ export function HomeCroppedWorkList(props: Props) {
                     <LikeButton
                       size={56}
                       targetWorkId={work.id}
-                      targetWorkOwnerUserId={work.user.id}
+                      targetWorkOwnerUserId={work.user?.id ?? ""}
                       defaultLiked={work.isLiked}
                       defaultLikedCount={0}
                       isBackgroundNone={true}
@@ -138,7 +140,7 @@ export function HomeCroppedWorkList(props: Props) {
                   </div>
                 </div>
               </Link>
-              {props.isShowProfile && (
+              {work.user && props.isShowProfile && (
                 <>
                   <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
                     {work.title}

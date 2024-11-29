@@ -49,7 +49,7 @@ export function HomeMessagesContents() {
   }
 
   return (
-    <ScrollArea className="h-96 overflow-y-auto">
+    <ScrollArea className="h-64 overflow-y-auto md:h-96">
       <div className="flex max-w-96 flex-col space-y-1 overflow-hidden p-1">
         {messages.map((message) => (
           <Link

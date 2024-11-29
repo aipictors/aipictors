@@ -63,7 +63,6 @@ export function TagWorkSection(props: Props) {
         tagNames: [props.tag],
         orderBy: props.orderBy,
         sort: props.sort,
-        isSensitive: false,
         ratings: ["G", "R15"],
         hasPrompt: props.hasPrompt === 1 ? true : undefined,
         isPromptPublic: props.hasPrompt === 1 ? true : undefined,
@@ -116,7 +115,7 @@ export function TagWorkSection(props: Props) {
                 />
               )}
             </div>
-            <h1 className="mt-auto font-bold text-md">
+            <div className="mt-auto font-bold text-md">
               <p>
                 #{props.tag}
                 {t("の作品", "")}
@@ -125,7 +124,7 @@ export function TagWorkSection(props: Props) {
                 {props.worksCount}
                 {t("件", " posts")}
               </p>
-            </h1>
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
@@ -12,6 +11,13 @@ import { config } from "~/config"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "~/components/ui/carousel"
 
 type Props = {
   title: string
@@ -68,76 +74,79 @@ export function HomeAwardWorkSection(props: Props) {
           </Button>
         </Link>
       </div>
-      <CarouselWithGradation
-        items={workDisplayed
-          .filter((work) => work.work !== null)
-          .map((work) => ({
-            id: work.work?.id,
-            src: work.work?.smallThumbnailImageURL,
-            width: work.work?.smallThumbnailImageWidth,
-            height: work.work?.smallThumbnailImageHeight,
-            workId: work.work?.id,
-            thumbnailImagePosition: work.work?.thumbnailImagePosition,
-            userId: work.work?.user.id,
-            userIcon: work.work?.user.iconUrl,
-            userName: work.work?.user.name,
-            title: work.work?.title,
-            isLiked: work.work?.isLiked,
-            subWorksCount: work.work?.subWorksCount,
-            likesCount: work.work?.likesCount,
-          }))
-          .map((work, index) => (
-            <div key={index.toString()} className="flex flex-col space-y-2">
-              <div className="relative">
-                {work.workId && work.src && work.width && work.height && (
-                  <CroppedWorkSquare
-                    workId={work.workId}
-                    imageUrl={work.src}
-                    subWorksCount={work.subWorksCount}
-                    thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                    size="lg"
-                    imageWidth={work.width}
-                    imageHeight={work.height}
-                    ranking={index + 1}
-                  />
-                )}
-                {work.workId && work.userId && (
-                  <div className="absolute right-0 bottom-0">
-                    <LikeButton
-                      size={56}
-                      targetWorkId={work.workId}
-                      targetWorkOwnerUserId={work.userId}
-                      defaultLiked={work.isLiked}
-                      defaultLikedCount={0}
-                      isBackgroundNone={true}
-                      strokeWidth={2}
-                      isParticle={true}
+      <Carousel opts={{ dragFree: true, loop: false }}>
+        <CarouselContent>
+          {workDisplayed.map((work, index) => (
+            <CarouselItem
+              key={`carousel-${index.toString()}`}
+              className="relative basis-1/3.5 space-y-2"
+            >
+              <div key={index.toString()} className="flex flex-col space-y-2">
+                <div className="relative">
+                  {work.id &&
+                    work.work?.smallThumbnailImageURL &&
+                    work.work.smallThumbnailImageWidth &&
+                    work.work.smallThumbnailImageHeight && (
+                      <CroppedWorkSquare
+                        workId={work.work.id}
+                        imageUrl={work.work?.smallThumbnailImageURL}
+                        subWorksCount={work.work.subWorksCount}
+                        thumbnailImagePosition={
+                          work.work.thumbnailImagePosition ?? 0
+                        }
+                        size="lg"
+                        imageWidth={work.work.smallThumbnailImageWidth}
+                        imageHeight={work.work.smallThumbnailImageHeight}
+                        ranking={index + 1}
+                      />
+                    )}
+                  {work.work?.id && work.work?.user?.id && (
+                    <div className="absolute right-0 bottom-0">
+                      <LikeButton
+                        size={56}
+                        targetWorkId={work.work.id}
+                        targetWorkOwnerUserId={work.work.user?.id ?? ""}
+                        defaultLiked={work.work.isLiked}
+                        defaultLikedCount={0}
+                        isBackgroundNone={true}
+                        strokeWidth={2}
+                        isParticle={true}
+                      />
+                    </div>
+                  )}
+                </div>
+                <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                  {work.work?.title}
+                </p>
+                <div className="flex max-w-40 items-center justify-between">
+                  {work.work?.user?.id && work.work?.user?.name && (
+                    <UserNameBadge
+                      userId={work.work?.user?.id}
+                      userIconImageURL={withIconUrlFallback(
+                        work.work?.user?.iconUrl,
+                      )}
+                      name={work.work?.user?.name}
+                      width={"md"}
                     />
-                  </div>
-                )}
-              </div>
-              <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                {work.title}
-              </p>
-              <div className="flex max-w-40 items-center justify-between">
-                {work.userId && work.userName && (
-                  <UserNameBadge
-                    userId={work.userId}
-                    userIconImageURL={withIconUrlFallback(work.userIcon)}
-                    name={work.userName}
-                    width={"md"}
-                  />
-                )}
-                <div className="flex items-center space-x-1">
+                  )}
                   <div className="flex items-center space-x-1">
-                    <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
-                    <span className="text-xs">{work.likesCount}</span>
+                    <div className="flex items-center space-x-1">
+                      <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                      <span className="text-xs">{work.work?.likesCount}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </CarouselItem>
           ))}
-      />
+          <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
+          {/* <div className="relative basis-1/3.5 space-y-2" /> */}
+        </CarouselContent>
+        {/* <div className="absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-card to-transparent" /> */}
+        <CarouselPrevious className="absolute left-0" />
+        {/* <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-card" /> */}
+        <CarouselNext className="absolute right-0" />
+      </Carousel>
     </section>
   )
 }

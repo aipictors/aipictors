@@ -45,19 +45,21 @@ export function HomeAwardWorksSection(props: Props) {
                   <Link to={`/posts/${work.work?.id}`}>
                     <p className="font-semibold">{work.work?.title}</p>
                   </Link>
-                  <Link to={`/users/${work.work?.user.id}`}>
-                    <div className="flex items-center space-x-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage
-                          className="h-8 w-8 rounded-full"
-                          src={withIconUrlFallback(work.work?.user?.iconUrl)}
-                          alt="icon"
-                        />
-                        <AvatarFallback />
-                      </Avatar>
-                      <p>{work.work?.user?.name}</p>
-                    </div>
-                  </Link>
+                  {work.work?.user && (
+                    <Link to={`/users/${work.work?.user.id}`}>
+                      <div className="flex items-center space-x-2">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage
+                            className="h-8 w-8 rounded-full"
+                            src={withIconUrlFallback(work.work?.user?.iconUrl)}
+                            alt="icon"
+                          />
+                          <AvatarFallback />
+                        </Avatar>
+                        <p>{work.work?.user?.name}</p>
+                      </div>
+                    </Link>
+                  )}
                 </div>
               </div>
               <div className="absolute top-1 left-0 h-4 w-4 items-center rounded-full bg-white text-center font-semibold text-xs dark:text-black">

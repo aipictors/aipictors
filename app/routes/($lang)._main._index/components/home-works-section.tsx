@@ -41,8 +41,7 @@ export function HomeWorksSection(props: Props) {
       offset: props.page * perPageCount,
       limit: perPageCount,
       where: {
-        ratings: ["G"],
-        isSensitive: false,
+        ratings: ["G", "R15"],
         ...(props.workType !== null && {
           workType: props.workType,
         }),

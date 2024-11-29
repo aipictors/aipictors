@@ -841,7 +841,7 @@ const query = graphql(
       offset: 0,
       limit: $newUsersWorksLimit,
       where: {
-        ratings: [G],
+        ratings: [G, R15],
         isNowCreatedAt: true
       }
     ) {
@@ -858,7 +858,7 @@ const query = graphql(
       limit: 8,
       where: {
         isSensitive: false,
-        ratings: [G]
+        ratings: [G, R15]
       }
     ) {
       ...HomeNewComments
