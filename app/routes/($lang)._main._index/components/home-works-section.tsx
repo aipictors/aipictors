@@ -42,7 +42,6 @@ export function HomeWorksSection(props: Props) {
       limit: perPageCount,
       where: {
         ratings: ["G", "R15"],
-        isSensitive: false,
         ...(props.workType !== null && {
           workType: props.workType,
         }),

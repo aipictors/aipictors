@@ -22,10 +22,7 @@ import { getJstDate } from "~/utils/jst-date"
 import { createMeta } from "~/utils/create-meta"
 import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import {
-  HomeNewPostedUsersFragment,
-  HomeNewUsersSection,
-} from "~/routes/($lang)._main._index/components/home-new-users-section"
+import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { ArrowDownWideNarrow } from "lucide-react"
 import { useState, useEffect, Suspense } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
@@ -57,6 +54,7 @@ import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/
 import { FollowSensitiveTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-tags-feed-contents"
 import { FollowSensitiveUserFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-user-feed-contents"
 import { HomeSensitiveNewCommentsSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-comments"
+import { HomeNewSensitiveUsersSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-users-section"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -496,7 +494,7 @@ export default function Index() {
                       </div>
                     )}
                   {data.newPostedUsers && (
-                    <HomeNewUsersSection users={data.newPostedUsers} />
+                    <HomeNewSensitiveUsersSection users={data.newPostedUsers} />
                   )}
                   {data.newComments && data.newComments.length > 0 && (
                     <HomeSensitiveNewCommentsSection

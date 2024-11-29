@@ -53,7 +53,10 @@ export async function loader(props: LoaderFunctionArgs) {
         tagNames: [decodeURIComponent(props.params.tag)],
         orderBy: orderBy,
         sort: sort,
-        isSensitive: isSensitive,
+        ratings: ["G", "R15"],
+        ...(isSensitive === true && {
+          isSensitive: isSensitive,
+        }),
       },
     },
   })
