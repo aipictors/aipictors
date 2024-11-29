@@ -150,16 +150,15 @@ export function EditImageFormUploader(props: Props) {
             }}
           />
         )}
-        {props.state.thumbnailBase64 !== null &&
-          props.state.ogpBase64 !== null && (
-            <PostFormItemOgp
-              imageBase64={props.state.thumbnailBase64}
-              setOgpBase64={(base64) => {
-                props.dispatch({ type: "SET_OGP_BASE64", payload: base64 })
-              }}
-              ogpBase64={props.state.ogpBase64}
-            />
-          )}
+        {props.state.thumbnailBase64 !== null && (
+          <PostFormItemOgp
+            imageBase64={props.state.thumbnailBase64}
+            setOgpBase64={(base64) => {
+              props.dispatch({ type: "SET_OGP_BASE64", payload: base64 })
+            }}
+            ogpBase64={props.state.ogpBase64 ?? ""}
+          />
+        )}
       </div>
       <div className="flex justify-end space-x-2">
         <Button

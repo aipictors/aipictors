@@ -440,7 +440,9 @@ export default function EditImage() {
       uploadedImageUrls.push(largeThumbnailUrl)
 
       const ogpBase64Url =
-        state.ogpBase64 === "" || state.ogpBase64?.startsWith("https://")
+        state.ogpBase64 === null ||
+        state.ogpBase64 === "" ||
+        state.ogpBase64?.startsWith("https://")
           ? work.ogpThumbnailImageUrl
           : await uploadPublicImage(
               state.ogpBase64 ?? "",

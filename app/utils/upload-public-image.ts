@@ -11,7 +11,10 @@ export const uploadPublicImage = async (
   image: string,
   token: string | undefined | null,
 ): Promise<string> => {
-  if (token === null || token === undefined) throw new Error("Token is not set")
+  if (token === null || token === undefined)
+    throw new Error(
+      "ログイン情報が正しく取得できていません、画面更新もしくはログインしなおしてください",
+    )
 
   try {
     const base64data = image.split(",")[1]

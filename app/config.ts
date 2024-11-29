@@ -901,4 +901,11 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "View and manage your recommended works",
     isIndex: false,
   },
+  GENERATION_DEMO: {
+    title: "生成",
+    enTitle: "Generation",
+    description: "Generate AI illustrations",
+    enDescription: "Generate AI illustrations",
+    isIndex: false,
+  },
 }
