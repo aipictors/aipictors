@@ -563,9 +563,9 @@ export default function NewImage() {
           imageInformation={inputState.imageInformation}
           state={inputState}
           dispatch={dispatchInput}
-          albums={viewer?.albums ?? []}
-          currentPass={viewer?.viewer?.currentPass ?? null}
-          recentlyUsedTags={viewer?.viewer?.recentlyUsedTags ?? []}
+          albums={viewerData?.albums ?? []}
+          currentPass={viewerData?.viewer?.currentPass ?? null}
+          recentlyUsedTags={viewerData?.viewer?.recentlyUsedTags ?? []}
           themes={
             viewer?.dailyThemes
               ? viewer.dailyThemes.map((theme) => ({
@@ -575,7 +575,7 @@ export default function NewImage() {
                 }))
               : null
           }
-          aiModels={viewer?.aiModels ?? []}
+          aiModels={viewerData?.aiModels ?? []}
           events={viewer?.appEvents ?? []}
           needFix={false}
         />

@@ -277,7 +277,7 @@ export function DraftWorkArticle(props: Props) {
           </div>
           {props.work.dailyTheme && (
             <div className="flex items-center">
-              <span className="text-md">
+              <span className="text-sm">
                 {t("参加お題", "participation theme")}
                 {":"}
               </span>
