@@ -470,7 +470,7 @@ export function GenerationDemoSubmissionView(props: Props) {
           variables: {
             input: {
               count: 1,
-              model: modelName,
+              model: "flux.1 schnell",
               vae: context.config.vae ?? "",
               prompt: context.config.promptText,
               isPromptGenerationEnabled:
@@ -500,67 +500,28 @@ export function GenerationDemoSubmissionView(props: Props) {
           },
         })
       } else {
-        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
-          createFluxTask({
-            variables: {
-              input: {
-                count: 1,
-                prompt: promptsTexts[i],
-                isPromptGenerationEnabled:
-                  context.config.languageUsedForPrompt === "jp",
-                negativePrompt: context.config.negativePromptText,
-                seed: seeds[i],
-                steps:
-                  context.config.steps >
-                    config.generationFeature.imageGenerationMaxSteps ||
-                  context.config.steps < 9
-                    ? config.generationFeature.imageGenerationMaxSteps
-                    : context.config.steps,
-                scale: context.config.scale,
-                sizeType: context.config
-                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-                modelName: modelName,
-              },
+        createFluxTask({
+          variables: {
+            input: {
+              count: 1,
+              prompt: promptsTexts[i],
+              isPromptGenerationEnabled:
+                context.config.languageUsedForPrompt === "jp",
+              negativePrompt: context.config.negativePromptText,
+              seed: seeds[i],
+              steps:
+                context.config.steps >
+                  config.generationFeature.imageGenerationMaxSteps ||
+                context.config.steps < 9
+                  ? config.generationFeature.imageGenerationMaxSteps
+                  : context.config.steps,
+              scale: context.config.scale,
+              sizeType: context.config
+                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+              modelName: "flux.1 schnell",
             },
-          })
-        } else {
-          createTask({
-            variables: {
-              input: {
-                count: 1,
-                model: modelName,
-                vae: context.config.vae ?? "",
-                prompt: promptsTexts[i],
-                isPromptGenerationEnabled:
-                  context.config.languageUsedForPrompt === "jp",
-                negativePrompt: context.config.negativePromptText,
-                seed: seeds[i],
-                steps:
-                  context.config.steps >
-                    config.generationFeature.imageGenerationMaxSteps ||
-                  context.config.steps < 9
-                    ? config.generationFeature.imageGenerationMaxSteps
-                    : context.config.steps,
-                scale: context.config.scale,
-                sampler: context.config.sampler,
-                clipSkip: context.config.clipSkip,
-                sizeType: context.config
-                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-                type: generationType as IntrospectionEnum<"ImageGenerationType">,
-                t2tImageUrl: i2iFileUrl,
-                t2tDenoisingStrengthSize:
-                  context.config.i2iDenoisingStrengthSize.toString(),
-                controlNetImageUrl: controlNetImageUrl,
-                controlNetWeight: context.config.controlNetWeight
-                  ? Number(context.config.controlNetWeight)
-                  : null,
-                controlNetModel: context.config.controlNetModel,
-                controlNetModule: context.config.controlNetModule,
-                upscaleSize: context.config.upscaleSize,
-              },
-            },
-          })
-        }
+          },
+        })
       }
     })
     // タスクの作成後も呼び出す必要がある
