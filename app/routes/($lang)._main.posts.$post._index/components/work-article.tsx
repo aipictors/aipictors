@@ -442,7 +442,7 @@ export const workArticleFragment = graphql(
       createdLikesCount
       createdBookmarksCount
       isMuted
-      works(offset: 0, limit: 16, where: { isSensitive: false }) {
+      works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
         id
         userId
         largeThumbnailImageURL

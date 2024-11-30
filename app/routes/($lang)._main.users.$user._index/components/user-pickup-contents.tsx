@@ -53,7 +53,7 @@ export const UserPickupFragment = graphql(
       ...HomeWork
     }
     works(limit: 8, offset: 0, where: {
-      isSensitive: false
+      ratings:[G, R15]
     }) {
       ...HomeWork
     }

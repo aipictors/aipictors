@@ -583,7 +583,7 @@ export const sensitiveWorkArticleFragment = graphql(
       createdLikesCount
       createdBookmarksCount
       isMuted
-      works(offset: 0, limit: 16, where: { isSensitive: true }) {
+      works(offset: 0, limit: 16, where: { isSensitive: true, ratings: [R18, R18G] }) {
         id
         userId
         largeThumbnailImageURL
