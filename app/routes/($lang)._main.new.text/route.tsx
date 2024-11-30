@@ -209,7 +209,7 @@ export default function NewText() {
       if (image === null) {
         return null
       }
-      return uploadPublicImage(image, viewer?.viewer?.token)
+      return uploadPublicImage(image, viewerData?.viewer?.token)
     })
     const imageUrls = await Promise.all(uploads)
     return imageUrls
@@ -219,7 +219,7 @@ export default function NewText() {
     const url = uploadTextFile(
       inputState.md,
       "md",
-      viewer?.viewer?.token,
+      viewerData?.viewer?.token,
       "https://text-files.aipictors.com/c09d45d7-c949-4515-b477-d1c17f1dd038",
     )
 
@@ -281,7 +281,7 @@ export default function NewText() {
 
       const smallThumbnailUrl = await uploadPublicImage(
         smallThumbnail.base64,
-        viewer?.viewer?.token,
+        viewerData?.viewer?.token,
       )
 
       dispatch({ type: "SET_PROGRESS", payload: 40 })
@@ -290,7 +290,7 @@ export default function NewText() {
 
       const largeThumbnailUrl = await uploadPublicImage(
         largeThumbnail.base64,
-        viewer?.viewer?.token,
+        viewerData?.viewer?.token,
       )
 
       dispatch({ type: "SET_PROGRESS", payload: 50 })
@@ -298,7 +298,7 @@ export default function NewText() {
       uploadedImageUrls.push(largeThumbnailUrl)
 
       const ogpBase64Url = state.ogpBase64
-        ? await uploadPublicImage(state.ogpBase64, viewer?.viewer?.token)
+        ? await uploadPublicImage(state.ogpBase64, viewerData?.viewer?.token)
         : null
 
       dispatch({ type: "SET_PROGRESS", payload: 60 })
@@ -327,7 +327,7 @@ export default function NewText() {
       const textFile = await uploadTextFile(
         inputState.md,
         "md",
-        viewer?.viewer?.token,
+        viewerData?.viewer?.token,
       )
 
       if (textFile === null) {
