@@ -2,14 +2,7 @@ import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { GradientBorderButton } from "~/components/button/gradient-border-button"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog"
+import { Dialog, DialogTrigger } from "~/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +13,6 @@ import { Switch } from "~/components/ui/switch"
 import { AuthContext } from "~/contexts/auth-context"
 import { GenerationReserveCountInput } from "~/routes/($lang).generation._index/components/submission-view/generation-reserve-count-input"
 import { GenerationTermsButton } from "~/routes/($lang).generation._index/components/submission-view/generation-terms-button"
-import { SubscriptionDialogContent } from "~/routes/($lang).generation._index/components/submission-view/subscription-dialog-content"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { Loader2Icon, Minus, Plus, SettingsIcon } from "lucide-react"
 import { useContext } from "react"
@@ -340,23 +332,6 @@ export function GenerationDemoSubmitOperationParts(props: Props) {
                   />
                 </div>
               </DialogTrigger>
-              <DialogContent className="min-w-[64vw]">
-                <DialogHeader>
-                  <DialogTitle>
-                    {t(
-                      "Aipictorsの生成機能をご利用いただき、ありがとうございます。",
-                      "Thank you for using Aipictors' generation feature.",
-                    )}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {t(
-                      "Aipictors+に加入することで生成枚数などの特典を受けることができます。",
-                      "By subscribing to Aipictors+, you can enjoy additional benefits like increased generation count.",
-                    )}
-                  </DialogDescription>
-                </DialogHeader>
-                <SubscriptionDialogContent />
-              </DialogContent>
             </Dialog>
           )}
       </div>
