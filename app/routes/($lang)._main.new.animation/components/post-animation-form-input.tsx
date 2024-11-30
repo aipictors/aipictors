@@ -63,8 +63,8 @@ export function PostAnimationFormInput(props: Props) {
   const { data, loading } = useQuery(pageQuery, {
     variables: {
       isSensitive:
-        props.state.ratingRestriction === "R18" ||
-        props.state.ratingRestriction === "R18G",
+        props.state.ratingRestriction !== "R18" &&
+        props.state.ratingRestriction !== "R18G",
     },
   })
 

@@ -68,8 +68,8 @@ export function PostTextFormInput(props: Props) {
   const { data, loading } = useQuery(pageQuery, {
     variables: {
       isSensitive:
-        props.state.ratingRestriction === "R18" ||
-        props.state.ratingRestriction === "R18G",
+        props.state.ratingRestriction !== "R18" &&
+        props.state.ratingRestriction !== "R18G",
       prompts: !props.imageInformation?.params.prompt
         ? "girl"
         : props.imageInformation.params.prompt,
