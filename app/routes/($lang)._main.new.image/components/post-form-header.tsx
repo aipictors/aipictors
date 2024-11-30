@@ -10,16 +10,31 @@ type Props = {
 export function PostFormHeader(props: Props) {
   const t = useTranslation()
 
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
+
+  const getSensitiveLink = (path: string) => {
+    // Determine if the path starts with /r
+    if (/^\/r($|\s)/.test(path)) {
+      return "" // Return empty string for invalid paths
+    }
+
+    if (sensitivePath) {
+      return `/r${path}`
+    }
+
+    return path
+  }
+
   const handleImageNavigation = () => {
-    window.location.href = "/new/image"
+    window.location.href = getSensitiveLink("/new/image")
   }
 
   const handleAnimationNavigation = () => {
-    window.location.href = "/new/animation"
+    window.location.href = getSensitiveLink("/new/animation")
   }
 
   const handleTextNavigation = () => {
-    window.location.href = "/new/text"
+    window.location.href = getSensitiveLink("/new/text")
   }
 
   return (

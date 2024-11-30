@@ -155,6 +155,21 @@ export function HomeUserNavigationMenu(props: Props) {
     )
   }
 
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
+
+  const getSensitiveLink = (path: string) => {
+    // Determine if the path starts with /r
+    if (/^\/r($|\s)/.test(path)) {
+      return "" // Return empty string for invalid paths
+    }
+
+    if (sensitivePath) {
+      return `/r${path}`
+    }
+
+    return path
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -174,7 +189,7 @@ export function HomeUserNavigationMenu(props: Props) {
             }}
           >
             <Link
-              to={`/users/${authContext.login}`}
+              to={getSensitiveLink(`/users/${authContext.login}`)}
               className="absolute bottom-[-16px]"
             >
               <Avatar className="cursor-pointer ">
@@ -186,13 +201,19 @@ export function HomeUserNavigationMenu(props: Props) {
         </div>
         <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
           <div className="flex items-center gap-x-2 p-2">
-            <Link to="/following" className="w-16 hover:underline">
+            <Link
+              to={getSensitiveLink("/following")}
+              className="w-16 hover:underline"
+            >
               <p>{followCount}</p>
               <p className="text-xs opacity-80">
                 {t("フォロー中", "Following")}
               </p>
             </Link>
-            <Link to="/followers" className="w-16 hover:underline">
+            <Link
+              to={getSensitiveLink("/followers")}
+              className="w-16 hover:underline"
+            >
               <p>{followerCount}</p>
               <p className="text-xs opacity-80">
                 {t("フォロワー", "Followers")}
@@ -200,17 +221,17 @@ export function HomeUserNavigationMenu(props: Props) {
             </Link>
           </div>
           <MenuItemLink
-            href={`/users/${authContext.login}`}
+            href={getSensitiveLink(`/users/${authContext.login}`)}
             icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
             label={t("マイページ", "My page")}
           />
           <MenuItemLink
-            href={"/my"}
+            href={getSensitiveLink("/my")}
             icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
             label={t("ダッシュボード", "Dashboard")}
           />
           <MenuItemLink
-            href={"/my/posts"}
+            href={getSensitiveLink("/my/posts")}
             icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
             label={t("自分の作品", "My posts")}
           />
@@ -229,22 +250,22 @@ export function HomeUserNavigationMenu(props: Props) {
               />
             ))}
           <MenuItemLink
-            href="/settings/account/login"
+            href={getSensitiveLink("/settings/account/login")}
             icon={<UserIcon className="mr-2 inline-block w-4" />}
             label={t("アカウント", "Account")}
           />
           <MenuItemLink
-            href="/support/chat"
+            href={getSensitiveLink("/support/chat")}
             icon={<MessageCircleIcon className="mr-2 inline-block w-4" />}
             label={t("お問い合わせ", "Contact")}
           />
           <MenuItemLink
-            href="/plus"
+            href={getSensitiveLink("/plus")}
             icon={<GemIcon className="mr-2 inline-block w-4" />}
             label="Aipictors+"
           />
           <MenuItemLink
-            href="/settings"
+            href={getSensitiveLink("/settings")}
             icon={<SettingsIcon className="mr-2 inline-block w-4" />}
             label={t("設定", "Settings")}
           />
@@ -276,7 +297,7 @@ export function HomeUserNavigationMenu(props: Props) {
                   </DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
                 <MenuItemLink
-                  href="/settings/color"
+                  href={getSensitiveLink("/settings/color")}
                   icon={<SettingsIcon className="mr-2 inline-block w-4" />}
                   label={t("その他のカラー", "Other colors")}
                 />

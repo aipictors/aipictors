@@ -254,10 +254,10 @@ function HomeHeader(props: Props) {
           ) : (
             <>
               <div className="hidden space-x-2 md:flex">
-                <Link to={"/generation"}>
+                <Link to={getSensitiveLink("/generation")}>
                   <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
                 </Link>
-                <Link to={"/new/image"}>
+                <Link to={getSensitiveLink("/new/image")}>
                   <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
                 </Link>
               </div>
@@ -270,10 +270,14 @@ function HomeHeader(props: Props) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem asChild>
-                      <Link to={"/generation"}>{t("生成", "Generate")}</Link>
+                      <Link to={getSensitiveLink("/generation")}>
+                        {t("生成", "Generate")}
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to={"/new/image"}>{t("投稿", "Post")}</Link>
+                      <Link to={getSensitiveLink("/new/image")}>
+                        {t("投稿", "Post")}
+                      </Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -282,10 +286,10 @@ function HomeHeader(props: Props) {
           )}
           {isSearchFormOpen && (
             <div className="hidden space-x-2 md:flex">
-              <Link to={"/generation"}>
+              <Link to={getSensitiveLink("/generation")}>
                 <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
               </Link>
-              <Link to={"/new/image"}>
+              <Link to={getSensitiveLink("/new/image")}>
                 <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
               </Link>
             </div>
