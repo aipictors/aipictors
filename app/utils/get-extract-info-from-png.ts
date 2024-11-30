@@ -113,7 +113,11 @@ const extractInfoFromPNG = (file: File): Promise<PNGChunk[]> => {
             const text = arrayBufferUTF8ToString(
               buffer.slice(keywordEndIndex + 1, nextOffset + length),
             )
-            chunks.push({ keyword, text })
+
+            // Skip the XMP data
+            if (keyword !== "XML:com.adobe.xmp") {
+              chunks.push({ keyword, text })
+            }
           }
 
           readChunks(nextOffset + length + 4) // Add length and CRC
