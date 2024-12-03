@@ -3,7 +3,6 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { Link } from "@remix-run/react"
 import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
-import { useEffect } from "react"
 
 type Props = {
   rating: IntrospectionEnum<"Rating">
@@ -15,23 +14,6 @@ type Props = {
  */
 export function PostFormItemRating(props: Props) {
   const t = useTranslation()
-
-  // 初期レンダリング時にlocalStorageから値を取得
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedRating = localStorage.getItem("selectedRating")
-      if (savedRating) {
-        props.setRating(savedRating as IntrospectionEnum<"Rating">)
-      }
-    }
-  }, [])
-
-  // ratingが変更されたときにlocalStorageに保存
-  useEffect(() => {
-    if (typeof window !== "undefined" && props.rating && props.rating !== "G") {
-      localStorage.setItem("selectedRating", props.rating)
-    }
-  }, [props.rating])
 
   return (
     <Card>
