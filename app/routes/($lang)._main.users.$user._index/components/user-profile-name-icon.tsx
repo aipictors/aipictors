@@ -33,13 +33,16 @@ export function UserProfileNameIcon(props: Props) {
           <div className="hidden md:block">
             <div className="flex items-center space-x-2">
               <h1 className="text-nowrap font-bold text-2xl text-white">
-                {user.name}
+                {user.name.length > 0 ? user.name.length : t("名無し", "None")}
               </h1>
               <UserSubscriptionIcon passType={user.pass?.type} />
               <UserModeratorIcon isModerator={user.isModerator} />
             </div>
             <h2 className="text-nowrap font-bold text-sm text-white opacity-50">
-              @{user.login}
+              @
+              {user.login.length > 16
+                ? `${user.login.slice(0, 16)}...`
+                : user.login}
             </h2>
             <div className="flex">
               <div className="w-32">
@@ -79,11 +82,18 @@ export function UserProfileNameIcon(props: Props) {
         </div>
         <div className="block md:hidden">
           <div className="flex items-center space-x-2">
-            <h1 className="text-nowrap font-bold text-md">{user.name}</h1>
+            <h1 className="text-nowrap font-bold text-md">
+              {user.name.length > 0 ? user.name.length : t("名無し", "None")}
+            </h1>
             <UserSubscriptionIcon passType={user.pass?.type} />
             <UserModeratorIcon isModerator={user.isModerator} />
           </div>
-          <h2 className="font-bold text-sm opacity-50">@{user.login}</h2>
+          <h2 className="font-bold text-sm opacity-50">
+            @
+            {user.login.length > 8
+              ? `${user.login.slice(0, 8)}...`
+              : user.login}
+          </h2>
         </div>
       </div>
     </header>

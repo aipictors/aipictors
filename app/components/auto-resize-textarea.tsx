@@ -67,6 +67,7 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
           resize: "none",
           cursor: "text",
           height: textAreaHeight,
+          overflowAnchor: "none",
         }}
         onChange={(e) => {
           props.onChange?.(e)
