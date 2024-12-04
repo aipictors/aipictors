@@ -477,19 +477,19 @@ export default function Index() {
                   />
                 </div>
               )}
-              <HomeWorksTagSection
-                tag={data.firstTag}
-                works={data.firstTagWorks}
-                secondTag={data.secondTag}
-                secondWorks={data.secondTagWorks}
-                isCropped={true}
-              />
               <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
               <HomeNewUsersWorksSection works={data.newUserWorks} />
               <HomeAwardWorkSection
                 awardDateText={data.awardDateText}
                 title={t("前日ランキング", "Previous Day Ranking")}
                 awards={data.workAwards}
+              />
+              <HomeWorksTagSection
+                tag={data.firstTag}
+                works={data.firstTagWorks}
+                secondTag={data.secondTag}
+                secondWorks={data.secondTagWorks}
+                isCropped={true}
               />
               <HomeTagsSection
                 title={t("人気タグ", "Popular Tags")}
