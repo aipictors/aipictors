@@ -33,7 +33,7 @@ export function UserProfileNameIcon(props: Props) {
           <div className="hidden md:block">
             <div className="flex items-center space-x-2">
               <h1 className="text-nowrap font-bold text-2xl text-white">
-                {user.name.length > 0 ? user.name.length : t("名無し", "None")}
+                {user.name.length > 0 ? user.name : t("名無し", "None")}
               </h1>
               <UserSubscriptionIcon passType={user.pass?.type} />
               <UserModeratorIcon isModerator={user.isModerator} />
@@ -83,7 +83,7 @@ export function UserProfileNameIcon(props: Props) {
         <div className="block md:hidden">
           <div className="flex items-center space-x-2">
             <h1 className="text-nowrap font-bold text-md">
-              {user.name.length > 0 ? user.name.length : t("名無し", "None")}
+              {user.name.length > 0 ? user.name : t("名無し", "None")}
             </h1>
             <UserSubscriptionIcon passType={user.pass?.type} />
             <UserModeratorIcon isModerator={user.isModerator} />
