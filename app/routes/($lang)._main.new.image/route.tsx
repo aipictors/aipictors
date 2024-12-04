@@ -27,10 +27,7 @@ import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import {
-  getNsfwPredictions,
-  type NsfwResults,
-} from "~/utils/get-nsfw-predictions"
+import {} from "~/utils/get-nsfw-predictions"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
@@ -439,73 +436,64 @@ export default function NewImage() {
   )
 
   const onInputFiles = async (files: FileList) => {
-    if (inputState.ratingRestriction !== "G") {
-      return
-    }
-
-    // AI判定処理
-    dispatch({ type: "OPEN_LOADING_AI", payload: true })
-
-    const fileArray = Array.from(files)
-
-    const results = await Promise.all(
-      fileArray.map(async (file) => {
-        try {
-          const nsfwInfo = await getNsfwPredictions(file)
-          return nsfwInfo
-        } catch (error) {
-          console.error("Error processing NSFW predictions:", error)
-          return null
-        }
-      }),
-    )
-
-    const validResults = results.filter(
-      (nsfwInfo) => nsfwInfo !== null,
-    ) as NsfwResults[]
-
-    const mostSuitableStyle = validResults.reduce(
-      (currentStyle, nsfwInfo) => {
-        if (nsfwInfo.drawings >= 0.7) {
-          return "ILLUSTRATION"
-        }
-        if (nsfwInfo.drawings >= 0.5) {
-          return "SEMI_REAL"
-        }
-        return "REAL"
-      },
-      "ILLUSTRATION" as "ILLUSTRATION" | "REAL" | "SEMI_REAL",
-    )
-
-    const strictestRating = validResults.reduce(
-      (currentRating, nsfwInfo) => {
-        const newRating =
-          nsfwInfo.hentai >= 0.7
-            ? "R18"
-            : nsfwInfo.hentai >= 0.05 ||
-                nsfwInfo.porn >= 0.5 ||
-                nsfwInfo.sexy >= 0.8
-              ? "R15"
-              : "G"
-
-        if (
-          inputState.ratingRestriction === "R18G" ||
-          inputState.ratingRestriction === "R18"
-        ) {
-          return inputState.ratingRestriction
-        }
-
-        return newRating === "R18" ||
-          (newRating === "R15" && currentRating === "G")
-          ? newRating
-          : currentRating
-      },
-      "G" as "G" | "R15" | "R18" | "R18G",
-    )
-
-    dispatchInput({ type: "SET_RATING_RESTRICTION", payload: strictestRating })
-    dispatchInput({ type: "SET_IMAGE_STYLE", payload: mostSuitableStyle })
-    dispatch({ type: "OPEN_LOADING_AI", payload: false })
+    // if (inputState.ratingRestriction !== "G") {
+    //   return
+    // }
+    // // AI判定処理
+    // dispatch({ type: "OPEN_LOADING_AI", payload: true })
+    // const fileArray = Array.from(files)
+    // const results = await Promise.all(
+    //   fileArray.map(async (file) => {
+    //     try {
+    //       const nsfwInfo = await getNsfwPredictions(file)
+    //       return nsfwInfo
+    //     } catch (error) {
+    //       console.error("Error processing NSFW predictions:", error)
+    //       return null
+    //     }
+    //   }),
+    // )
+    // const validResults = results.filter(
+    //   (nsfwInfo) => nsfwInfo !== null,
+    // ) as NsfwResults[]
+    // const mostSuitableStyle = validResults.reduce(
+    //   (currentStyle, nsfwInfo) => {
+    //     if (nsfwInfo.drawings >= 0.7) {
+    //       return "ILLUSTRATION"
+    //     }
+    //     if (nsfwInfo.drawings >= 0.5) {
+    //       return "SEMI_REAL"
+    //     }
+    //     return "REAL"
+    //   },
+    //   "ILLUSTRATION" as "ILLUSTRATION" | "REAL" | "SEMI_REAL",
+    // )
+    // const strictestRating = validResults.reduce(
+    //   (currentRating, nsfwInfo) => {
+    //     const newRating =
+    //       nsfwInfo.hentai >= 0.7
+    //         ? "R18"
+    //         : nsfwInfo.hentai >= 0.05 ||
+    //             nsfwInfo.porn >= 0.5 ||
+    //             nsfwInfo.sexy >= 0.8
+    //           ? "R15"
+    //           : "G"
+    //     if (
+    //       inputState.ratingRestriction === "R18G" ||
+    //       inputState.ratingRestriction === "R18"
+    //     ) {
+    //       return inputState.ratingRestriction
+    //     }
+    //     return newRating === "R18" ||
+    //       (newRating === "R15" && currentRating === "G")
+    //       ? newRating
+    //       : currentRating
+    //   },
+    //   "G" as "G" | "R15" | "R18" | "R18G",
+    // )
+    // dispatchInput({ type: "SET_RATING_RESTRICTION", payload: strictestRating })
+    // dispatchInput({ type: "SET_IMAGE_STYLE", payload: mostSuitableStyle })
+    // dispatch({ type: "OPEN_LOADING_AI", payload: false })
   }
 
   useBeforeUnload(
