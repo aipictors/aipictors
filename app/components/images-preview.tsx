@@ -30,7 +30,18 @@ export function ImagesPreview(props: Props) {
   const closePreview = () => setIsOpen(false)
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (!isOpen) return
+    if (!isOpen) {
+      const tagName = document.activeElement?.tagName.toLowerCase()
+      if (
+        ["ArrowLeft", "ArrowRight"].includes(e.key) &&
+        tagName !== "input" &&
+        tagName !== "textarea"
+      ) {
+        e.preventDefault()
+      } else {
+        return
+      }
+    }
     if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
       e.preventDefault()
     }
