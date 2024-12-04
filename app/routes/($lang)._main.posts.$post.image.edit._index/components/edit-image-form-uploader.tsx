@@ -62,7 +62,12 @@ export function EditImageFormUploader(props: Props) {
           type: "SET_PNG_INFO",
           payload: pngInfo,
         })
-        toast(t("PNG情報を取得しました", "PNG information has been retrieved"))
+        toast(
+          t(
+            "PNG情報を取得しました、画像の種類によっては取得できていない場合があります",
+            "PNG information has been retrieved",
+          ),
+        )
         return
       }
       props.dispatch({ type: "SET_PNG_INFO", payload: null })
