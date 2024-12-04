@@ -55,6 +55,7 @@ import { FollowSensitiveTagsFeedContents } from "~/routes/($lang)._main._index/c
 import { FollowSensitiveUserFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-user-feed-contents"
 import { HomeSensitiveNewCommentsSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-comments"
 import { HomeNewSensitiveUsersSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-users-section"
+import { HomeSensitiveWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-users-recommended-section"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_SENSITIVE, undefined, props.params.lang)
@@ -433,6 +434,9 @@ export default function Index() {
                     hotTags={data.hotTags}
                   />
                 </div>
+                <HomeSensitiveWorksUsersRecommendedSection
+                  works={data.promotionWorks}
+                />
                 <HomeSensitiveNewUsersWorksSection works={data.newUserWorks} />
                 <HomeSensitiveAwardWorkSection
                   awardDateText={data.awardDateText}

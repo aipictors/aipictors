@@ -1,4 +1,5 @@
 import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { Button } from "~/components/ui/button"
 import { useMutation, useQuery } from "@apollo/client/index"
@@ -29,9 +30,9 @@ export function RecommendButton(props: Props) {
 
   const [isRecommended, setIsRecommended] = useState(props.isRecommended)
 
-  // useEffect(() => {
-  //   setIsRecommended(props.isRecommended)
-  // }, [props.isRecommended])
+  useEffect(() => {
+    setIsRecommended(props.isRecommended)
+  }, [props.isRecommended])
 
   const [deleteRecommend, { loading: isDeleting }] = useMutation(
     deleteRecommendedWorkMutation,
@@ -88,7 +89,11 @@ export function RecommendButton(props: Props) {
   return (
     <>
       {isRecommended ? (
-        <Button onClick={onDeleteRecommend} variant={"secondary"}>
+        <Button
+          key={props.workId}
+          onClick={onDeleteRecommend}
+          variant={"secondary"}
+        >
           {isDeleting ? (
             <Loader2Icon className="h-4 w-4 animate-spin" />
           ) : (
@@ -96,7 +101,11 @@ export function RecommendButton(props: Props) {
           )}
         </Button>
       ) : (
-        <Button onClick={onCreateRecommend} variant={"secondary"}>
+        <Button
+          key={props.workId}
+          onClick={onCreateRecommend}
+          variant={"secondary"}
+        >
           {isCreating ? (
             <Loader2Icon className="h-4 w-4 animate-spin" />
           ) : (
