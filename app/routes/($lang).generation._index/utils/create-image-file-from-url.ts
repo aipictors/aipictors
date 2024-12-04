@@ -1,11 +1,9 @@
-
-
 interface FileObject {
   name: string
   data: Uint8Array
 }
 
-type FileExtension = "png" | "webp" | "jpeg" | "jpg";
+type FileExtension = "png" | "webp" | "jpeg" | "jpg"
 
 type Props = {
   /**
@@ -58,16 +56,13 @@ export async function createImageFileFromUrl(props: Props) {
 
     // 指定された拡張子でBlobを作成
     const newBlob = await new Promise<Blob>((resolve) => {
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(blob)
-          } else {
-            throw new Error("画像の変換に失敗しました。")
-          }
-        },
-        `image/${extension}`
-      )
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob)
+        } else {
+          throw new Error("画像の変換に失敗しました。")
+        }
+      }, `image/${extension}`)
     })
 
     const arrayBuffer = await newBlob.arrayBuffer()
