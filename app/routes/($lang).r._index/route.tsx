@@ -433,18 +433,18 @@ export default function Index() {
                     hotTags={data.hotTags}
                   />
                 </div>
+                <HomeSensitiveNewUsersWorksSection works={data.newUserWorks} />
+                <HomeSensitiveAwardWorkSection
+                  awardDateText={data.awardDateText}
+                  title={t("前日ランキング", "Previous Day Ranking")}
+                  awards={data.workAwards}
+                />
                 <HomeSensitiveWorksTagSection
                   tag={data.firstTag}
                   works={data.firstTagWorks}
                   secondTag={data.secondTag}
                   secondWorks={data.secondTagWorks}
                   isCropped={true}
-                />
-                <HomeSensitiveNewUsersWorksSection works={data.newUserWorks} />
-                <HomeSensitiveAwardWorkSection
-                  awardDateText={data.awardDateText}
-                  title={t("前日ランキング", "Previous Day Ranking")}
-                  awards={data.workAwards}
                 />
                 <HomeSensitiveTagsSection
                   title={t("人気タグ", "Popular Tags")}

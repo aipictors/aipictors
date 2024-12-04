@@ -19,19 +19,21 @@ export function HomeNewSensitiveUsersSection(props: Props) {
       <h2 className="font-semibold">{t("新規クリエイター", "New Creators")}</h2>
       {props.users.map((user) => (
         <div key={user.id} className="flex items-center space-x-2">
-          <Avatar>
-            <AvatarImage
-              className="rounded-full"
-              src={withIconUrlFallback(user.iconUrl)}
-              alt=""
-            />
-            <AvatarFallback />
-          </Avatar>
           <Link
             to={`/r/users/${user.login}`}
             className="flex items-center space-x-2"
           >
-            <div className="font-semibold text-md">{user.name}</div>
+            <Avatar>
+              <AvatarImage
+                className="rounded-full"
+                src={withIconUrlFallback(user.iconUrl)}
+                alt=""
+              />
+              <AvatarFallback />
+            </Avatar>
+            <div className="font-semibold text-md">
+              {user.name.length > 0 ? user.name : "名無し"}
+            </div>
           </Link>
         </div>
       ))}
