@@ -64,7 +64,7 @@ export function EditImageFormUploader(props: Props) {
         })
         toast(
           t(
-            "PNG情報を取得しました、画像の種類によっては取得できていない場合があります",
+            "PNG情報の取得と反映処理をいたしました、画像の種類によっては取得できていない場合があります",
             "PNG information has been retrieved",
           ),
         )
