@@ -30,6 +30,7 @@ export function ImagesPreview(props: Props) {
   const closePreview = () => setIsOpen(false)
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isOpen) return
     if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
       e.preventDefault()
     }
@@ -209,7 +210,7 @@ export function ImagesPreview(props: Props) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown)
     }
-  }, [props.currentIndex])
+  }, [props.currentIndex, isOpen])
 
   useEffect(() => {
     if (isOpen) {
