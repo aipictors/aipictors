@@ -36,16 +36,29 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
   const onClose = () => setIsOpen(false)
 
   useEffect(() => {
-    setTranslate({ x: 0, y: 0 })
-    props.setThumbnailPosX(0)
-    props.setThumbnailPosY(0)
-
     if (props.thumbnailBase64 !== "") {
       const img = new Image()
       img.src = props.thumbnailBase64
       img.onload = () => {
+        const aspectRatio = img.width / img.height
         setIsSquare(img.width === img.height)
+        let translateX = 0
+        let translateY = 0
+        if (aspectRatio > 1) {
+          // 横長の画像の場合、画像を中央に配置するためのtranslateXを計算
+          translateX = -((aspectRatio - 1) / (2 * aspectRatio)) * 100
+        } else if (aspectRatio < 1) {
+          // 縦長の画像の場合、必要に応じてtranslateYを計算
+          translateY = -((1 - aspectRatio) * 50)
+        }
+        setTranslate({ x: translateX, y: translateY })
+        props.setThumbnailPosX(translateX)
+        props.setThumbnailPosY(translateY)
       }
+    } else {
+      setTranslate({ x: 0, y: 0 })
+      props.setThumbnailPosX(0)
+      props.setThumbnailPosY(0)
     }
   }, [props.thumbnailBase64])
 
@@ -153,7 +166,7 @@ export function ThumbnailPositionAdjustDialog(props: Props) {
           <div
             style={{
               cursor: props.isThumbnailLandscape ? "ew-resize" : "ns-resize",
-              touchAction: "none", // タッチアクションを無効化
+              touchAction: "none",
             }}
             className="absolute inset-0"
             onPointerDown={handlePointerDown}

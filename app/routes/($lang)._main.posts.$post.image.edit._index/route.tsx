@@ -23,11 +23,12 @@ import { useContext, useEffect, useReducer } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useBeforeUnload, useLoaderData } from "@remix-run/react"
+import { Link, useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditImageFormUploader } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/edit-image-form-uploader"
 import React from "react"
 import { getJstDate } from "~/utils/jst-date"
+import { useTranslation } from "~/hooks/use-translation"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.post === undefined) {
@@ -78,13 +79,15 @@ function getReservationDetails(createdAt: number) {
 export default function EditImage() {
   const authContext = useContext(AuthContext)
 
+  const t = useTranslation()
+
   const data = useLoaderData<typeof loader>()
 
   if (data === null) {
     return null
   }
 
-  const { data: workWithAuth = null } = useQuery(workQuery, {
+  const { data: workWithAuth = null, loading } = useQuery(workQuery, {
     skip: authContext.isLoading,
     variables: {
       id: data.id,
@@ -594,6 +597,17 @@ export default function EditImage() {
       [state],
     ),
   )
+
+  if (!loading && work === null) {
+    return (
+      <div className="m-auto text-center">
+        <p className="text-center">{t("作品が存在しません", "Not found")}</p>
+        <Link className="m-auto text-blue-600" to={"/my"}>
+          {t("ダッシュボードへ", "Dashboard")}
+        </Link>
+      </div>
+    )
+  }
 
   return work?.user !== null && work?.user.id === authContext.userId ? (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">

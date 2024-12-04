@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Card } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
@@ -11,6 +12,28 @@ type Props = {
 export function SenderMessage(props: Props) {
   const t = useTranslation()
 
+  const parseTextWithLinks = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    const parts = text.split(urlRegex)
+
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <Link
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500"
+            key={index.toString()}
+            to={part}
+          >
+            {part}
+          </Link>
+        )
+      }
+      return part
+    })
+  }
+
   return (
     <div className="flex justify-end">
       <div className="flex max-w-sm flex-col gap-y-2">
@@ -20,7 +43,7 @@ export function SenderMessage(props: Props) {
           }
         >
           <p className="overflow-hidden whitespace-pre-wrap break-words">
-            {props.message.text}
+            {parseTextWithLinks(props.message.text ?? "")}
           </p>
         </Card>
         <div className="flex justify-end space-x-2">

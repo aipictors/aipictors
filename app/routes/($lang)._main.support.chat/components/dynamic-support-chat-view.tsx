@@ -1,17 +1,20 @@
 import { MessageInput } from "~/routes/($lang)._main.support.chat/components/message-input"
 import {
   MessageListItemFragment,
-  MessageThreadRecipientFragment,
   SupportMessageList,
 } from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { startTransition } from "react"
+import { startTransition, useContext } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
+import { AuthContext } from "~/contexts/auth-context"
 
 export function SupportChatView() {
+  const authContext = useContext(AuthContext)
+
   const { data: supportMessages, refetch } = useQuery(MessagesQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       limit: 124,
       offset: 0,
@@ -44,7 +47,7 @@ export function SupportChatView() {
   }
 
   const adminAvatarURL =
-    "https://www.aipictors.com/wp-content/uploads/2023/04/aTyRPjXLGxJB9EKrqSM43CYfWFQ8is.webp"
+    "https://files.aipictors.com/1d0f3f99-fe3a-4331-9c2f-8cce9d04bdf6"
 
   const messages = supportMessages?.viewer?.supportMessages ?? []
 
@@ -69,7 +72,7 @@ const MessagesQuery = graphql(
       }
     }
   }`,
-  [MessageThreadRecipientFragment, MessageListItemFragment],
+  [MessageListItemFragment],
 )
 
 const createMessageMutation = graphql(

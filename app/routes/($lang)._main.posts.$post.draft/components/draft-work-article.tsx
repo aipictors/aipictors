@@ -83,6 +83,7 @@ export function DraftWorkArticle(props: Props) {
           <Link
             target="_blank"
             rel="noopener noreferrer"
+            className="text-blue-500"
             key={index.toString()}
             to={part}
           >
