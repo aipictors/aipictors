@@ -439,6 +439,11 @@ export default function NewImage() {
   )
 
   const onInputFiles = async (files: FileList) => {
+    if (inputState.ratingRestriction !== "G") {
+      return
+    }
+
+    // AI判定処理
     dispatch({ type: "OPEN_LOADING_AI", payload: true })
 
     const fileArray = Array.from(files)
