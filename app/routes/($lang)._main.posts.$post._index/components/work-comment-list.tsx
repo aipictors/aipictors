@@ -368,6 +368,7 @@ export function WorkCommentList(props: Props) {
                     iconUrl={withIconUrlFallback(userIcon)}
                     userName={newReply.user?.name}
                     replyId={newReply.id}
+                    targetCommentId={comment.id}
                     onDeleteComment={() => {
                       onDeleteComment(newReply.id)
                     }}
@@ -397,6 +398,7 @@ export function WorkCommentList(props: Props) {
                       )}
                       userName={reply.user?.name}
                       replyId={reply.id}
+                      targetCommentId={comment.id}
                       iconUrl={withIconUrlFallback(userIcon)}
                       onDeleteComment={() => {
                         onDeleteComment(reply.id)
@@ -501,6 +503,7 @@ export function WorkCommentList(props: Props) {
                         iconUrl={withIconUrlFallback(userIcon)}
                         userName={newReply.user?.name}
                         replyId={newReply.id}
+                        targetCommentId={comment.id}
                         onDeleteComment={() => {
                           onDeleteComment(newReply.id)
                         }}
@@ -530,6 +533,7 @@ export function WorkCommentList(props: Props) {
                           )}
                           userName={reply.user?.name}
                           replyId={reply.id}
+                          targetCommentId={comment.id}
                           iconUrl={withIconUrlFallback(userIcon)}
                           onDeleteComment={() => {
                             onDeleteComment(reply.id)

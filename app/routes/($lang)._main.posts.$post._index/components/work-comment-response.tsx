@@ -19,6 +19,7 @@ type Props = {
   text?: string
   createdAt: number
   replyId: string
+  targetCommentId: string
   userId: string
   iconUrl: string
   /* コメントで使われてるスタンプ情報 */
@@ -142,7 +143,7 @@ export function WorkCommentResponse(props: Props) {
       </div>
       {!props.isMine && openReplyInput && (
         <ReplyCommentInput
-          targetCommentId={props.replyId}
+          targetCommentId={props.targetCommentId}
           onReplyCompleted={(
             id: string,
             text: string,
