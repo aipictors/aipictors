@@ -54,12 +54,17 @@ interface CanvasState {
  */
 export function PaintCanvas(props: Props) {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
+
   const brushCanvasRef = useRef<HTMLCanvasElement | null>(null)
+
   const assistedCanvasRef = useRef<HTMLCanvasElement | null>(null)
+
   const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const [tool, setTool] = useState(props.isMosaicMode ? "eraser" : "brush")
+
   const [color, setColor] = useState("#000000") // ブラシの初期色
+
   const [brushSize, setBrushSize] = useState<number>(20)
 
   const [scale, setScale] = useState<number>(1)
@@ -67,14 +72,19 @@ export function PaintCanvas(props: Props) {
   const [translateY, setTranslateY] = useState<number>(0)
 
   const [points, setPoints] = useState<{ x: number; y: number }[]>([]) // 状態としてポイントを保存
+
   const [canvasWidth, setCanvasWidth] = useState<number>(props.width || 240)
+
   const [canvasHeight, setCanvasHeight] = useState<number>(props.height || 360)
+
   const [backgroundColor, setBackgroundColor] = useState("#fff")
+
   const [mosaicCanvasRef, setMosaicCanvasRef] =
     useState<HTMLCanvasElement | null>(null)
 
   // Canvas 描画状態の配列
   const [canvasStates, setCanvasStates] = useState<CanvasState[]>([])
+
   // 現在の Canvas の状態を示すインデックス
   const [stateIndex, setStateIndex] = useState<number>(0)
 
@@ -84,6 +94,7 @@ export function PaintCanvas(props: Props) {
 
   // Canvas の描画状態を保存する関数
   const saveCanvasState = (canvas: HTMLCanvasElement) => {
+    // 画像の読み込みが完了してから Canvas の状態を保存する
     const waitForImageLoad = new Promise<void>((resolve, reject) => {
       const img = new Image()
       img.onload = () => {
@@ -377,12 +388,14 @@ export function PaintCanvas(props: Props) {
     if (!assistedCanvas) return
 
     const ctx = imageCanvas.getContext("2d")
-    if (!ctx || !props.imageUrl) return
+    if (!ctx) return
 
     ctx.globalCompositeOperation = "copy"
 
+    if (!props.imageUrl) return
+
     const image = new Image()
-    image.crossOrigin = "Anonymous"
+    image.crossOrigin = "Anonymous" // CORSを回避するための設定
     image.src = props.imageUrl
     image.onload = () => {
       imageCanvas.width = image.width
@@ -395,16 +408,19 @@ export function PaintCanvas(props: Props) {
       setCanvasWidth(image.width)
       setCanvasHeight(image.height)
 
+      // Canvasに画像を描画
       ctx.drawImage(image, 0, 0, image.width, image.height)
+
       saveCanvasState(imageCanvas)
+      // ここで必要な処理を実行する（例: サーバーに送信する、他の要素に表示するなど）
     }
   }, [props.imageUrl])
 
   const handleWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
-    e.preventDefault()
+    e.preventDefault() // デフォルトのイベントをキャンセル
     const scaleFactor = 1.1
     const newScale = e.deltaY < 0 ? scale * scaleFactor : scale / scaleFactor
-    setScale(Math.max(0.1, Math.min(newScale, 10)))
+    setScale(Math.max(0.1, Math.min(newScale, 10))) // scale を更新
   }
 
   const resetCanvas = () => {
@@ -416,14 +432,18 @@ export function PaintCanvas(props: Props) {
 
   const resetMosaicCanvas = () => {
     const imageCanvas = imageCanvasRef.current
+
     if (!imageCanvas) return
+
     const ctx = imageCanvas.getContext("2d")
+
     if (!ctx || !props.imageUrl) return
 
     ctx.globalCompositeOperation = "copy"
 
     const image = new Image()
-    image.crossOrigin = "Anonymous"
+    image.crossOrigin = "Anonymous" // CORSを回避するための設定
+
     image.onload = () => {
       ctx.drawImage(image, 0, 0)
     }
@@ -432,7 +452,7 @@ export function PaintCanvas(props: Props) {
       console.error("画像の読み込みに失敗しました。")
     }
 
-    image.src = props.imageUrl
+    image.src = props.imageUrl // 画像URLを設定
   }
 
   const resetAssistedCanvas = () => {
@@ -457,7 +477,7 @@ export function PaintCanvas(props: Props) {
             </Button>
           )}
           {!props.isMosaicMode && (
-            <Button
+            <Button // 2. 投げ縄ボタンを追加
               className={cn(tool === "lasso" ? "mr-2 border" : "mr-2")}
               size="icon"
               variant="ghost"
@@ -467,7 +487,7 @@ export function PaintCanvas(props: Props) {
             </Button>
           )}
           {props.isMosaicMode && (
-            <Button
+            <Button // 2. 投げ縄ボタンを追加
               className={cn(tool === "lasso-mosaic" ? "mr-2 border" : "mr-2")}
               size="icon"
               variant="ghost"
@@ -588,32 +608,41 @@ export function PaintCanvas(props: Props) {
               `w-[${canvasWidth}px] h-[${canvasHeight}px] relative m-auto`,
             )}
             style={{
-              width: `${canvasWidth}px`,
-              height: `${canvasHeight}px`,
-              transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
-              transformOrigin: "top left",
+              width: `${props.width}px`,
+              height: `${props.height}px`,
+              transform: `scale(${scale})`,
+              transformOrigin: "center center",
             }}
-            onWheel={handleWheel}
+            onWheel={(event: React.WheelEvent<HTMLDivElement>) =>
+              handleWheel(event)
+            }
           >
             {props.isMosaicMode && props.imageUrl && (
               <MosaicCanvas
                 className={cn("absolute top-0 left-0")}
                 imageUrl={props.imageUrl}
                 mosaicSize={10}
-                width={canvasWidth}
-                height={canvasHeight}
+                width={props.width}
+                height={props.height}
                 onChangeCanvasRef={onChangeMosaicCanvasRef}
+                style={{
+                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+                }}
               />
             )}
 
+            {/* 真っ白な背景のキャンバスを描画する */}
             {props.isBackground && (
               <canvas
                 ref={backgroundCanvasRef}
-                width={canvasWidth}
-                height={canvasHeight}
+                width={props.width}
+                height={props.height}
                 className={cn("absolute top-0 left-0")}
                 style={{
                   backgroundColor: `${backgroundColor}`,
+                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
                 }}
               />
             )}
@@ -621,24 +650,34 @@ export function PaintCanvas(props: Props) {
             {props.imageUrl && (
               <canvas
                 ref={imageCanvasRef}
-                width={canvasWidth}
-                height={canvasHeight}
+                width={props.width}
+                height={props.height}
                 className={cn("absolute top-0 left-0")}
+                style={{
+                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+                }}
               />
             )}
-
             <canvas
               ref={brushCanvasRef}
-              width={canvasWidth}
-              height={canvasHeight}
+              width={props.width}
+              height={props.height}
               className={cn("absolute top-0 left-0")}
+              style={{
+                top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+              }}
             />
-
             <canvas
               ref={assistedCanvasRef}
-              width={canvasWidth}
-              height={canvasHeight}
+              width={props.width}
+              height={props.height}
               className={cn("absolute top-0 left-0 opacity-50")}
+              style={{
+                top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
+                left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
+              }}
             />
           </div>
           {props.isShowSubmitButton && (
