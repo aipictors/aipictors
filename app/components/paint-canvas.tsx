@@ -8,7 +8,7 @@ import {
   SlidersHorizontalIcon,
   LassoIcon,
   RotateCwIcon,
-  RotateCcwIcon, // 1. LassoIcon を追加
+  RotateCcwIcon,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -21,7 +21,7 @@ import MosaicCanvas from "~/components/mosaic-canvas"
 
 type Props = {
   width?: number // キャンバスの横幅
-  height?: number // キャンバスの立幅
+  height?: number // キャンバスの縦幅
   imageUrl?: string // 画像のURL
   isMosaicMode?: boolean
   isColorPicker?: boolean
@@ -32,7 +32,7 @@ type Props = {
   imageBase64?: string
   backImageBase64?: string
   onChangeBrushImageBase64?(value: string): void
-  onChangeSetDrawing?(value: boolean): void // 描画中かどうかの状態を変更する関数
+  onChangeSetDrawing?(value: boolean): void // 描画中かどうかの状態を変更
   onChangeCompositionCanvasBase64?(value: string): void // 合成画像のbase64を変更する関数
   onSubmit?(value: string): void
   onClose?(): void
@@ -40,57 +40,54 @@ type Props = {
   extension?: string // 保存する拡張子
 }
 
-// Canvas 描画状態を保存するためのインターフェース
 interface CanvasState {
-  dataUrl: string // Canvas のデータ URL
-  width: number // Canvas の幅
-  height: number // Canvas の高さ
+  dataUrl: string
+  width: number
+  height: number
 }
 
-/**
- * ペイント機能を提供する、ツールバーも提供する
- */
 export function PaintCanvas(props: Props) {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
-
   const brushCanvasRef = useRef<HTMLCanvasElement | null>(null)
-
   const assistedCanvasRef = useRef<HTMLCanvasElement | null>(null)
-
   const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const [tool, setTool] = useState(props.isMosaicMode ? "eraser" : "brush")
-
   const [color, setColor] = useState("#000000") // ブラシの初期色
-
   const [brushSize, setBrushSize] = useState<number>(20)
 
+  // 拡大縮小関連
   const [scale, setScale] = useState<number>(1)
+  const [translateX, setTranslateX] = useState<number>(0)
+  const [translateY, setTranslateY] = useState<number>(0)
 
-  const [points, setPoints] = useState<{ x: number; y: number }[]>([]) // 状態としてポイントを保存
-
+  const [points, setPoints] = useState<{ x: number; y: number }[]>([])
   const [canvasWidth, setCanvasWidth] = useState<number>(props.width || 240)
-
   const [canvasHeight, setCanvasHeight] = useState<number>(props.height || 360)
-
   const [backgroundColor, setBackgroundColor] = useState("#fff")
-
   const [mosaicCanvasRef, setMosaicCanvasRef] =
     useState<HTMLCanvasElement | null>(null)
 
-  // Canvas 描画状態の配列
   const [canvasStates, setCanvasStates] = useState<CanvasState[]>([])
-
-  // 現在の Canvas の状態を示すインデックス
   const [stateIndex, setStateIndex] = useState<number>(0)
+
+  const isTouchDevice =
+    typeof window !== "undefined" && "ontouchstart" in window
+
+  // ピンチズーム用
+  const [isPinching, setIsPinching] = useState(false)
+  const [initialPinchDistance, setInitialPinchDistance] = useState<
+    number | null
+  >(null)
+  const [initialScale, setInitialScale] = useState<number>(1)
+  const [initialMidX, setInitialMidX] = useState(0)
+  const [initialMidY, setInitialMidY] = useState(0)
 
   const onChangeMosaicCanvasRef = (canvas: HTMLCanvasElement) => {
     setMosaicCanvasRef(canvas)
   }
 
-  // Canvas の描画状態を保存する関数
   const saveCanvasState = (canvas: HTMLCanvasElement) => {
-    // 画像の読み込みが完了してから Canvas の状態を保存する
     const waitForImageLoad = new Promise<void>((resolve, reject) => {
       const img = new Image()
       img.onload = () => {
@@ -104,7 +101,7 @@ export function PaintCanvas(props: Props) {
 
     waitForImageLoad
       .then(() => {
-        const dataUrl = canvas.toDataURL() // Canvas のデータ URL を取得
+        const dataUrl = canvas.toDataURL()
         const newState: CanvasState = {
           dataUrl,
           width: canvas.width,
@@ -125,7 +122,6 @@ export function PaintCanvas(props: Props) {
       })
   }
 
-  // Canvas の描画状態を復元する関数
   const restoreCanvasState = (
     canvas: HTMLCanvasElement,
     state: CanvasState,
@@ -141,7 +137,6 @@ export function PaintCanvas(props: Props) {
     img.src = state.dataUrl
   }
 
-  // 戻るボタンのクリック時の処理
   const handleUndo = () => {
     if (stateIndex > 0) {
       const newIndex = stateIndex - 1
@@ -153,7 +148,6 @@ export function PaintCanvas(props: Props) {
     }
   }
 
-  // 進むボタンのクリック時の処理
   const handleRedo = () => {
     if (stateIndex < canvasStates.length - 1) {
       const newIndex = stateIndex + 1
@@ -167,13 +161,12 @@ export function PaintCanvas(props: Props) {
 
   useEffect(() => {
     if (props.imageBase64) {
-      // 画像のbase64がセットされたら、キャンバスに描画する
       const imageCanvas = imageCanvasRef.current
       if (!imageCanvas) return
       const ctx = imageCanvas.getContext("2d")
       if (!ctx) return
       const image = new Image()
-      image.crossOrigin = "Anonymous" // CORSを回避するための設定
+      image.crossOrigin = "Anonymous"
       image.src = props.imageBase64
       image.onload = () => {
         imageCanvas.width = image.width
@@ -186,21 +179,18 @@ export function PaintCanvas(props: Props) {
 
   useEffect(() => {
     if (props.backImageBase64) {
-      if (props.backImageBase64) {
-        // brashRefに対して再描画する
-        const brushCanvas = brushCanvasRef.current
-        if (!brushCanvas) return
-        const ctx = brushCanvas.getContext("2d")
-        if (!ctx) return
-        const image = new Image()
-        image.crossOrigin = "Anonymous" // CORSを回避するための設定
-        image.src = `data:image/png;base64,${props.backImageBase64}`
-        image.onload = () => {
-          brushCanvas.width = image.width
-          brushCanvas.height = image.height
-          ctx.drawImage(image, 0, 0, image.width, image.height)
-          saveCanvasState(brushCanvas)
-        }
+      const brushCanvas = brushCanvasRef.current
+      if (!brushCanvas) return
+      const ctx = brushCanvas.getContext("2d")
+      if (!ctx) return
+      const image = new Image()
+      image.crossOrigin = "Anonymous"
+      image.src = `data:image/png;base64,${props.backImageBase64}`
+      image.onload = () => {
+        brushCanvas.width = image.width
+        brushCanvas.height = image.height
+        ctx.drawImage(image, 0, 0, image.width, image.height)
+        saveCanvasState(brushCanvas)
       }
       if (props.setBackImageBase64) {
         props.setBackImageBase64("")
@@ -211,12 +201,8 @@ export function PaintCanvas(props: Props) {
   useEffect(() => {
     const brushCanvas = brushCanvasRef.current
     if (!brushCanvas) return
-
     const imageCanvas = imageCanvasRef.current
     if (props.isMosaicMode && !imageCanvas) return
-
-    const backgroundCanvas = backgroundCanvasRef.current
-
     const assistedCanvas = assistedCanvasRef.current
     if (!assistedCanvas) return
 
@@ -229,15 +215,23 @@ export function PaintCanvas(props: Props) {
     if (!assistedCtx) return
 
     const handleMouseDown = (e: MouseEvent | TouchEvent) => {
+      // スマホで2本指以上は拡大縮小用
+      if (isTouchDevice && "touches" in e && e.touches.length > 1) {
+        return
+      }
+
       if (props.onChangeSetDrawing) props.onChangeSetDrawing(true)
 
+      const brushRect = brushCanvas.getBoundingClientRect()
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
       const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
-      const rect = brushCanvas.getBoundingClientRect()
-      const x = (clientX - rect.left) / scale
-      const y = (clientY - rect.top) / scale
-      setPoints([]) // ポイントをリセット
-      points.push({ x, y }) // 最初の点を追加
+
+      // scale, translateを考慮したローカル座標
+      const x = (clientX - brushRect.left - translateX) / scale
+      const y = (clientY - brushRect.top - translateY) / scale
+
+      setPoints([])
+      points.push({ x, y })
 
       ctx.beginPath()
       ctx.moveTo(x, y)
@@ -252,12 +246,8 @@ export function PaintCanvas(props: Props) {
       } else if (tool === "eraser") {
         ctx.globalCompositeOperation = "destination-out"
         ctx.lineWidth = brushSize
-      } else if (tool === "lasso") {
+      } else if (tool === "lasso" || tool === "lasso-mosaic") {
         ctx.globalCompositeOperation = "source-over"
-        ctx.strokeStyle = color
-        ctx.lineWidth = 1
-      } else if (tool === "lasso-mosaic") {
-        ctx.globalCompositeOperation = "destination-out"
         ctx.strokeStyle = color
         ctx.lineWidth = 1
       } else {
@@ -267,20 +257,18 @@ export function PaintCanvas(props: Props) {
       }
 
       const handleMouseMove = (e: MouseEvent | TouchEvent) => {
+        if (isPinching) return
+
+        const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
+        const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
+        const x = (clientX - brushRect.left - translateX) / scale
+        const y = (clientY - brushRect.top - translateY) / scale
+
         if (tool !== "lasso" && tool !== "lasso-mosaic") {
-          const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
-          const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
-          const x = (clientX - rect.left) / scale
-          const y = (clientY - rect.top) / scale
-          points.push({ x, y }) // 追加の点を配列に保存
+          points.push({ x, y })
           ctx.lineTo(x, y)
           ctx.stroke()
         } else {
-          const clientX = "touches" in e ? e.touches[0].clientX : e.clientX
-          const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
-          const x = (clientX - rect.left) / scale
-          const y = (clientY - rect.top) / scale
-
           ctx.lineTo(x, y)
           ctx.stroke()
 
@@ -288,8 +276,7 @@ export function PaintCanvas(props: Props) {
           assistedCtx.stroke()
 
           if (tool === "lasso" || tool === "lasso-mosaic") {
-            // 投げ縄のときは描写範囲を塗りつぶす
-            assistedCtx.fillStyle = `rgba(${[120, 0, 0, 0.5]})`
+            assistedCtx.fillStyle = "rgba(120, 0, 0, 0.5)"
             assistedCtx.fill()
           } else {
             ctx.stroke()
@@ -301,24 +288,22 @@ export function PaintCanvas(props: Props) {
         if (canvasStates.length === 0) {
           if (props.isMosaicMode) {
             if (imageCanvas) {
-              // index以降の履歴を削除
               canvasStates.splice(stateIndex + 1)
               saveCanvasState(imageCanvas)
             }
           } else {
             if (brushCanvas) {
-              // index以降の履歴を削除
               canvasStates.splice(stateIndex + 1)
               saveCanvasState(brushCanvas)
             }
           }
         }
         if (tool === "lasso" || tool === "lasso-mosaic") {
-          ctx.lineTo(points[0].x, points[0].y) // 最初の点に戻る
+          ctx.lineTo(points[0].x, points[0].y)
           ctx.closePath()
-          ctx.fillStyle = color // 塗りつぶしの色
-          ctx.fill() // 形状を塗りつぶす
-          setPoints([]) // ポイントをリセット
+          ctx.fillStyle = color
+          ctx.fill()
+          setPoints([])
           resetAssistedCanvas()
         }
 
@@ -329,13 +314,11 @@ export function PaintCanvas(props: Props) {
 
         if (props.isMosaicMode) {
           if (imageCanvas) {
-            // index以降の履歴を削除
             canvasStates.splice(stateIndex + 1)
             saveCanvasState(imageCanvas)
           }
         } else {
           if (brushCanvas) {
-            // index以降の履歴を削除
             canvasStates.splice(stateIndex + 1)
             saveCanvasState(brushCanvas)
           }
@@ -344,14 +327,13 @@ export function PaintCanvas(props: Props) {
         if (props.onChangeSetDrawing) props.onChangeSetDrawing(false)
 
         if (props.onChangeCompositionCanvasBase64) {
-          // キャンバスを合成してbase64に変換してセットする
           const compositionCanvas = document.createElement("canvas")
           compositionCanvas.width = canvasWidth
           compositionCanvas.height = canvasHeight
           const compositionCtx = compositionCanvas.getContext("2d")
           if (compositionCtx) {
-            if (backgroundCanvas) {
-              compositionCtx.drawImage(backgroundCanvas, 0, 0)
+            if (backgroundCanvasRef.current) {
+              compositionCtx.drawImage(backgroundCanvasRef.current, 0, 0)
             }
             if (imageCanvas) {
               compositionCtx.drawImage(imageCanvas, 0, 0)
@@ -368,7 +350,6 @@ export function PaintCanvas(props: Props) {
       document.addEventListener("touchend", handleMouseUp)
 
       if (!props.isMosaicMode) {
-        // ブラシキャンバスのbase64画像を取得する
         if (props.onChangeBrushImageBase64) {
           props.onChangeBrushImageBase64(brushCanvas.toDataURL())
         }
@@ -382,50 +363,141 @@ export function PaintCanvas(props: Props) {
       assistedCanvas.removeEventListener("mousedown", handleMouseDown)
       assistedCanvas.removeEventListener("touchstart", handleMouseDown)
     }
-  }, [brushSize, color, props.isMosaicMode, scale, tool, points])
+  }, [
+    brushSize,
+    color,
+    props.isMosaicMode,
+    scale,
+    tool,
+    points,
+    isPinching,
+    isTouchDevice,
+    translateX,
+    translateY,
+    canvasHeight,
+    canvasWidth,
+  ])
 
   useEffect(() => {
     const imageCanvas = imageCanvasRef.current
     if (!imageCanvas) return
-    const brushCanvas = brushCanvasRef.current
-    if (!brushCanvas) return
-    const assistedCanvas = assistedCanvasRef.current
-    if (!assistedCanvas) return
-
     const ctx = imageCanvas.getContext("2d")
     if (!ctx) return
-
-    ctx.globalCompositeOperation = "copy"
-
     if (!props.imageUrl) return
 
     const image = new Image()
-    image.crossOrigin = "Anonymous" // CORSを回避するための設定
+    image.crossOrigin = "Anonymous"
     image.src = props.imageUrl
     image.onload = () => {
       imageCanvas.width = image.width
       imageCanvas.height = image.height
-      brushCanvas.width = image.width
-      brushCanvas.height = image.height
-      assistedCanvas.width = image.width
-      assistedCanvas.height = image.height
+      if (brushCanvasRef.current) {
+        brushCanvasRef.current.width = image.width
+        brushCanvasRef.current.height = image.height
+      }
+      if (assistedCanvasRef.current) {
+        assistedCanvasRef.current.width = image.width
+        assistedCanvasRef.current.height = image.height
+      }
 
       setCanvasWidth(image.width)
       setCanvasHeight(image.height)
 
-      // Canvasに画像を描画
       ctx.drawImage(image, 0, 0, image.width, image.height)
-
       saveCanvasState(imageCanvas)
-      // ここで必要な処理を実行する（例: サーバーに送信する、他の要素に表示するなど）
     }
   }, [props.imageUrl])
 
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  // PC用ホイールイベント: マウス位置を基準に拡大縮小
   const handleWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
-    e.preventDefault() // デフォルトのイベントをキャンセル
+    if (isTouchDevice) return // タッチデバイスなら何もしない
+    e.preventDefault()
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const mouseX = e.clientX - rect.left
+    const mouseY = e.clientY - rect.top
+
+    const localX = (mouseX - translateX) / scale
+    const localY = (mouseY - translateY) / scale
+
     const scaleFactor = 1.1
-    const newScale = e.deltaY < 0 ? scale * scaleFactor : scale / scaleFactor
-    setScale(Math.max(0.1, Math.min(newScale, 10))) // scale を更新
+    let newScale = e.deltaY < 0 ? scale * scaleFactor : scale / scaleFactor
+    newScale = Math.max(0.1, Math.min(newScale, 10))
+
+    const newTranslateX = mouseX - localX * newScale
+    const newTranslateY = mouseY - localY * newScale
+
+    setScale(newScale)
+    setTranslateX(newTranslateX)
+    setTranslateY(newTranslateY)
+  }
+
+  // モバイル用ピンチズーム
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isTouchDevice) return
+    if (e.touches.length === 2 && containerRef.current) {
+      setIsPinching(true)
+      const rect = containerRef.current.getBoundingClientRect()
+      const touch1 = e.touches[0]
+      const touch2 = e.touches[1]
+
+      const midX = (touch1.clientX + touch2.clientX) / 2 - rect.left
+      const midY = (touch1.clientY + touch2.clientY) / 2 - rect.top
+
+      const dx = touch2.clientX - touch1.clientX
+      const dy = touch2.clientY - touch1.clientY
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
+      setInitialPinchDistance(distance)
+      setInitialScale(scale)
+      setInitialMidX(midX)
+      setInitialMidY(midY)
+    }
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isTouchDevice) return
+    if (
+      isPinching &&
+      e.touches.length === 2 &&
+      initialPinchDistance &&
+      containerRef.current
+    ) {
+      e.preventDefault()
+      const rect = containerRef.current.getBoundingClientRect()
+      const touch1 = e.touches[0]
+      const touch2 = e.touches[1]
+
+      const midX = (touch1.clientX + touch2.clientX) / 2 - rect.left
+      const midY = (touch1.clientY + touch2.clientY) / 2 - rect.top
+
+      const dx = touch2.clientX - touch1.clientX
+      const dy = touch2.clientY - touch1.clientY
+      const distance = Math.sqrt(dx * dx + dy * dy)
+      const newScale = Math.min(
+        Math.max((distance / initialPinchDistance) * initialScale, 0.1),
+        10,
+      )
+
+      const localX = (initialMidX - translateX) / scale
+      const localY = (initialMidY - translateY) / scale
+
+      const newTranslateX = midX - localX * newScale
+      const newTranslateY = midY - localY * newScale
+
+      setScale(newScale)
+      setTranslateX(newTranslateX)
+      setTranslateY(newTranslateY)
+    }
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isTouchDevice) return
+    if (e.touches.length < 2 && isPinching) {
+      setIsPinching(false)
+    }
   }
 
   const resetCanvas = () => {
@@ -437,27 +509,20 @@ export function PaintCanvas(props: Props) {
 
   const resetMosaicCanvas = () => {
     const imageCanvas = imageCanvasRef.current
-
     if (!imageCanvas) return
-
     const ctx = imageCanvas.getContext("2d")
-
     if (!ctx || !props.imageUrl) return
-
     ctx.globalCompositeOperation = "copy"
 
     const image = new Image()
-    image.crossOrigin = "Anonymous" // CORSを回避するための設定
-
+    image.crossOrigin = "Anonymous"
     image.onload = () => {
       ctx.drawImage(image, 0, 0)
     }
-
     image.onerror = () => {
       console.error("画像の読み込みに失敗しました。")
     }
-
-    image.src = props.imageUrl // 画像URLを設定
+    image.src = props.imageUrl
   }
 
   const resetAssistedCanvas = () => {
@@ -482,7 +547,7 @@ export function PaintCanvas(props: Props) {
             </Button>
           )}
           {!props.isMosaicMode && (
-            <Button // 2. 投げ縄ボタンを追加
+            <Button
               className={cn(tool === "lasso" ? "mr-2 border" : "mr-2")}
               size="icon"
               variant="ghost"
@@ -492,7 +557,7 @@ export function PaintCanvas(props: Props) {
             </Button>
           )}
           {props.isMosaicMode && (
-            <Button // 2. 投げ縄ボタンを追加
+            <Button
               className={cn(tool === "lasso-mosaic" ? "mr-2 border" : "mr-2")}
               size="icon"
               variant="ghost"
@@ -607,20 +672,22 @@ export function PaintCanvas(props: Props) {
           className={cn(
             "flex h-[100%] w-full items-center justify-center overflow-hidden border border-gray-300 bg-card",
           )}
+          ref={containerRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onWheel={isTouchDevice ? undefined : handleWheel}
+          style={{ touchAction: isTouchDevice ? "pan-x pan-y" : "auto" }}
         >
+          {/* translateとscaleを適用したラッパー */}
           <div
-            className={cn(
-              `w-[${canvasWidth}px] h-[${canvasHeight}px] relative m-auto`,
-            )}
             style={{
-              width: `${props.width}px`,
-              height: `${props.height}px`,
-              transform: `scale(${scale})`,
-              transformOrigin: "center center",
+              position: "relative",
+              width: `${canvasWidth}px`,
+              height: `${canvasHeight}px`,
+              transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
+              transformOrigin: "top left",
             }}
-            onWheel={(event: React.WheelEvent<HTMLDivElement>) =>
-              handleWheel(event)
-            }
           >
             {props.isMosaicMode && props.imageUrl && (
               <MosaicCanvas
@@ -630,14 +697,9 @@ export function PaintCanvas(props: Props) {
                 width={props.width}
                 height={props.height}
                 onChangeCanvasRef={onChangeMosaicCanvasRef}
-                style={{
-                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
-                }}
               />
             )}
 
-            {/* 真っ白な背景のキャンバスを描画する */}
             {props.isBackground && (
               <canvas
                 ref={backgroundCanvasRef}
@@ -646,8 +708,6 @@ export function PaintCanvas(props: Props) {
                 className={cn("absolute top-0 left-0")}
                 style={{
                   backgroundColor: `${backgroundColor}`,
-                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
                 }}
               />
             )}
@@ -658,10 +718,6 @@ export function PaintCanvas(props: Props) {
                 width={props.width}
                 height={props.height}
                 className={cn("absolute top-0 left-0")}
-                style={{
-                  top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                  left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
-                }}
               />
             )}
             <canvas
@@ -669,20 +725,12 @@ export function PaintCanvas(props: Props) {
               width={props.width}
               height={props.height}
               className={cn("absolute top-0 left-0")}
-              style={{
-                top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
-              }}
             />
             <canvas
               ref={assistedCanvasRef}
               width={props.width}
               height={props.height}
               className={cn("absolute top-0 left-0 opacity-50")}
-              style={{
-                top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
-                left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
-              }}
             />
           </div>
           {props.isShowSubmitButton && (
@@ -690,17 +738,12 @@ export function PaintCanvas(props: Props) {
               className="absolute bottom-16 md:bottom-12"
               onClick={() => {
                 if (props.onSubmit) {
-                  // キャンバスを合成する（brush、image、background）
                   const compositeCanvas = document.createElement("canvas")
                   const ctx = compositeCanvas.getContext("2d")
-
                   if (!ctx) return
-
-                  // 各キャンバスのサイズに合わせて、合成用キャンバスのサイズを設定（この例では最初のキャンバスのサイズを使用）
                   compositeCanvas.width = brushCanvasRef?.current?.width || 0
                   compositeCanvas.height = brushCanvasRef?.current?.height || 0
 
-                  // 各キャンバスを合成キャンバスに描画（存在する場合のみ）
                   if (backgroundCanvasRef?.current) {
                     ctx.drawImage(backgroundCanvasRef.current, 0, 0)
                   }
@@ -714,13 +757,10 @@ export function PaintCanvas(props: Props) {
                     ctx.drawImage(brushCanvasRef.current, 0, 0)
                   }
 
-                  // 合成したキャンバスからDataURLを取得
                   const dataUrl = compositeCanvas.toDataURL(
                     `image/${props.extension ?? "webp"}`,
                     1.0,
                   )
-
-                  // onSubmit関数を呼び出し、DataURLを渡す
                   props.onSubmit(dataUrl)
                 }
                 if (props.onClose) {
@@ -739,7 +779,21 @@ export function PaintCanvas(props: Props) {
               max={10}
               step={0.1}
               onValueChange={(value) => {
-                setScale(value[0])
+                // スライダー操作で拡大縮小する場合、中心点は画面中央とするなどの対応が必要
+                // ここでは簡易的に中央に対してスケーリングする例
+                const centerX = canvasWidth / 2
+                const centerY = canvasHeight / 2
+
+                const localX = (centerX - translateX) / scale
+                const localY = (centerY - translateY) / scale
+
+                const newScale = value[0]
+                const newTranslateX = centerX - localX * newScale
+                const newTranslateY = centerY - localY * newScale
+
+                setScale(newScale)
+                setTranslateX(newTranslateX)
+                setTranslateY(newTranslateY)
               }}
             />
           </div>

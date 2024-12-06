@@ -62,7 +62,12 @@ export function PostImageFormUploader(props: Props) {
       const pngInfo = await getExtractInfoFromPNG(file)
       if (pngInfo.src !== null) {
         props.onChangeImageInformation(pngInfo)
-        toast(t("PNG情報を取得しました", "PNG information has been retrieved"))
+        toast(
+          t(
+            "PNG情報を取得と反映を実行しました、取得できない画像の場合は反映されないことがあります",
+            "PNG information has been retrieved",
+          ),
+        )
         return
       }
       toast(
