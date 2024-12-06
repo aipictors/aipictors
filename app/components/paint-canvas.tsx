@@ -232,6 +232,7 @@ export function PaintCanvas(props: Props) {
       assistedCtx.beginPath()
       assistedCtx.moveTo(x, y)
 
+      // ツールごとのグローバル合成モードや線の設定
       if (props.isMosaicMode && tool === "eraser") {
         ctx.globalCompositeOperation = "destination-out"
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
@@ -239,8 +240,12 @@ export function PaintCanvas(props: Props) {
       } else if (tool === "eraser") {
         ctx.globalCompositeOperation = "destination-out"
         ctx.lineWidth = brushSize
-      } else if (tool === "lasso" || tool === "lasso-mosaic") {
+      } else if (tool === "lasso") {
         ctx.globalCompositeOperation = "source-over"
+        ctx.strokeStyle = color
+        ctx.lineWidth = 1
+      } else if (tool === "lasso-mosaic") {
+        ctx.globalCompositeOperation = "destination-out"
         ctx.strokeStyle = color
         ctx.lineWidth = 1
       } else {
@@ -333,18 +338,16 @@ export function PaintCanvas(props: Props) {
             props.onChangeCompositionCanvasBase64(compositionCanvas.toDataURL())
           }
         }
+
+        if (!props.isMosaicMode && props.onChangeBrushImageBase64) {
+          props.onChangeBrushImageBase64(brushCanvas.toDataURL())
+        }
       }
 
       document.addEventListener("mousemove", handleMouseMove)
       document.addEventListener("mouseup", handleMouseUp)
       document.addEventListener("touchmove", handleMouseMove)
       document.addEventListener("touchend", handleMouseUp)
-
-      if (!props.isMosaicMode) {
-        if (props.onChangeBrushImageBase64) {
-          props.onChangeBrushImageBase64(brushCanvas.toDataURL())
-        }
-      }
     }
 
     assistedCanvas.addEventListener("mousedown", handleMouseDown)
@@ -581,7 +584,9 @@ export function PaintCanvas(props: Props) {
           )}
         >
           <div
-            className="relative"
+            className={cn(
+              `w-[${canvasWidth}px] h-[${canvasHeight}px] relative m-auto`,
+            )}
             style={{
               width: `${canvasWidth}px`,
               height: `${canvasHeight}px`,
@@ -595,8 +600,8 @@ export function PaintCanvas(props: Props) {
                 className={cn("absolute top-0 left-0")}
                 imageUrl={props.imageUrl}
                 mosaicSize={10}
-                width={props.width}
-                height={props.height}
+                width={canvasWidth}
+                height={canvasHeight}
                 onChangeCanvasRef={onChangeMosaicCanvasRef}
               />
             )}
@@ -604,8 +609,8 @@ export function PaintCanvas(props: Props) {
             {props.isBackground && (
               <canvas
                 ref={backgroundCanvasRef}
-                width={props.width}
-                height={props.height}
+                width={canvasWidth}
+                height={canvasHeight}
                 className={cn("absolute top-0 left-0")}
                 style={{
                   backgroundColor: `${backgroundColor}`,
@@ -616,21 +621,23 @@ export function PaintCanvas(props: Props) {
             {props.imageUrl && (
               <canvas
                 ref={imageCanvasRef}
-                width={props.width}
-                height={props.height}
+                width={canvasWidth}
+                height={canvasHeight}
                 className={cn("absolute top-0 left-0")}
               />
             )}
+
             <canvas
               ref={brushCanvasRef}
-              width={props.width}
-              height={props.height}
+              width={canvasWidth}
+              height={canvasHeight}
               className={cn("absolute top-0 left-0")}
             />
+
             <canvas
               ref={assistedCanvasRef}
-              width={props.width}
-              height={props.height}
+              width={canvasWidth}
+              height={canvasHeight}
               className={cn("absolute top-0 left-0 opacity-50")}
             />
           </div>
