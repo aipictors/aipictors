@@ -610,7 +610,7 @@ export function PaintCanvas(props: Props) {
             style={{
               width: `${props.width}px`,
               height: `${props.height}px`,
-              transform: `scale(${scale})`,
+              transform: `translate(${translateX}px, ${translateY}px) scale(${scale})`,
               transformOrigin: "center center",
             }}
             onWheel={(event: React.WheelEvent<HTMLDivElement>) =>
