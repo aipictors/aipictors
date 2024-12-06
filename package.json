@@ -100,7 +100,7 @@
     "postcss": "^8.4.41",
     "react": "18.3.0",
     "react-day-picker": "8.10.1",
-    "react-dom": "18.2.0",
+    "react-dom": "18.3.0",
     "react-dropzone-esm": "^15.0.1",
     "react-easy-crop": "^5.0.8",
     "react-error-boundary": "^4.0.13",
