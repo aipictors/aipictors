@@ -36,6 +36,11 @@ export function PostFormItemTitle(props: Props) {
     }, 300)
   }
 
+  // props.valueが更新されたらlocalValueも更新する
+  useEffect(() => {
+    setLocalValue(props.value || "")
+  }, [props.value])
+
   // クリーンアップ
   useEffect(() => {
     return () => {

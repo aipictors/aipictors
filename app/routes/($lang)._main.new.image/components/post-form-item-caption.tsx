@@ -32,6 +32,11 @@ export function PostFormItemCaption(props: Props) {
     }, 300)
   }
 
+  // props.valueが更新されたらlocalValueも更新する
+  useEffect(() => {
+    setLocalCaption(props.caption || "")
+  }, [props.caption])
+
   // クリーンアップ
   useEffect(() => {
     return () => {
