@@ -389,6 +389,11 @@ export default function EditImage() {
       return
     }
 
+    if (inputState.ratingRestriction === null) {
+      toast("年齢種別を選択してください")
+      return
+    }
+
     const uploadedImageUrls = []
 
     try {
