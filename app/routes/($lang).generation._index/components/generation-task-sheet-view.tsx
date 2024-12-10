@@ -1,7 +1,6 @@
 import { config, KeyCodes } from "~/config"
 import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 import {
   GenerationImageResultSheetContentFragment,
@@ -85,12 +84,14 @@ export function GenerationTaskSheetView(props: Props) {
    * @param token
    */
   const saveGenerationImage = async (fileName: string) => {
-    if (props.task.imageUrl) {
-      const image = await createImageFileFromUrl({
-        url: props.task.imageUrl,
-      })
-      downloadImageFile(image)
+    if (!props.task.imageUrl) {
+      toast("画像が存在しません")
+      return
     }
+
+    const name = `${new Date().toISOString().replace(/[^0-9]/g, "")}`
+
+    downloadImageFile(name, props.task.imageUrl)
   }
 
   const context = useGenerationContext()

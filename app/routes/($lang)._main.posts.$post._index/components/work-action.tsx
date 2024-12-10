@@ -40,12 +40,10 @@ export function WorkAction(props: Props) {
   const appContext = useContext(AuthContext)
 
   const onDownload = async () => {
-    if (props.currentImageUrl) {
-      const image = await createImageFileFromUrl({
-        url: props.currentImageUrl,
-      })
-      downloadImageFile(image)
+    if (!props.currentImageUrl) {
+      return
     }
+    downloadImageFile(props.targetWorkId, props.currentImageUrl)
   }
 
   const onZipAllDownload = async () => {
