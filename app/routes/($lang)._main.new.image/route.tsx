@@ -117,7 +117,7 @@ export default function NewImage() {
     imageInformation: null,
     imageStyle: "ILLUSTRATION",
     link: "",
-    ratingRestriction: "G",
+    ratingRestriction: null,
     reservationDate: null,
     reservationTime: null,
     tags: [],
@@ -269,6 +269,11 @@ export default function NewImage() {
           "Please enter a time for the scheduled post",
         ),
       )
+      return
+    }
+
+    if (inputState.ratingRestriction === null) {
+      toast(t("年齢制限を選択してください", "Please select an age restriction"))
       return
     }
 

@@ -5,20 +5,19 @@ import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  rating: IntrospectionEnum<"Rating">
+  rating?: IntrospectionEnum<"Rating">
   setRating: (value: IntrospectionEnum<"Rating">) => void
 }
 
-/**
- * 年齢制限入力
- */
 export function PostFormItemRating(props: Props) {
   const t = useTranslation()
 
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">{t("年齢制限", "Age Restriction")}</p>
+        <p className="font-bold text-sm">
+          {t("年齢制限（必須）", "Age Restriction")}
+        </p>
         <p className="font-bold text-xs opacity-70">
           {t(
             "入力画像からAIで判定されます",
@@ -32,7 +31,7 @@ export function PostFormItemRating(props: Props) {
           )}
         </p>
         <RadioGroup
-          value={props.rating}
+          value={props.rating ?? undefined}
           onValueChange={(value) => {
             props.setRating(value as IntrospectionEnum<"Rating">)
           }}
@@ -54,11 +53,7 @@ export function PostFormItemRating(props: Props) {
                   "軽度な性的、血流表現あり(",
                   "Mild sexual and blood flow expressions",
                 )}
-                <Link
-                  target="_blank"
-                  to="/terms"
-                  className="text-clear-bright-blue"
-                >
+                <Link target="_blank" to="/terms" className="text-blue-400">
                   {t("詳細", "Details")}
                 </Link>
                 {t("）", ")")}

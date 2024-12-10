@@ -212,7 +212,7 @@ export function PostImageFormInput(props: Props) {
         enCaption={props.state.enCaption}
       />
       <PostFormItemRating
-        rating={props.state.ratingRestriction}
+        rating={props.state.ratingRestriction ?? undefined}
         setRating={(value) => {
           props.dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
         }}
