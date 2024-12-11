@@ -3,7 +3,6 @@ import { Button } from "~/components/ui/button"
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
 } from "~/components/ui/pagination"
 import { config } from "~/config"
@@ -18,7 +17,19 @@ type Props = {
 }
 
 /**
- * レスポンシブ対応のページネーション
+ * 改善版ページネーション：
+ * 常に最初と最後のページを表示し、現在ページ付近に2ページ表示。
+ * 必要な場合は「...」を挟んで省略。
+ *
+ * 例:
+ * ページ総数が30で、現在ページが1の場合:
+ * [Prev] [1] [2] [3] ... [30] [Next]
+ *
+ * ページ総数が30で、現在ページが15の場合:
+ * [Prev] [1] ... [15] [16] ... [30] [Next]
+ *
+ * ページ総数が30で、現在ページが28の場合:
+ * [Prev] [1] ... [28] [29] ... [30] [Next]
  */
 export function ResponsivePagination({
   maxCount,
@@ -33,14 +44,14 @@ export function ResponsivePagination({
     ? Math.min(maxCount, config.query.offsetMax)
     : Math.min(maxCount, config.query.offsetMax)
 
-  const pageCount = Math.ceil(adjustedMaxCount / perPage) // 総ページ数の計算
-
+  const pageCount = Math.ceil(adjustedMaxCount / perPage)
   const currentPageIndex =
     currentPage >= pageCount ? pageCount - 1 : currentPage
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 0 && newPage < pageCount) {
       onPageChange(newPage)
+      window.scrollTo(0, 0)
     }
   }
 
@@ -48,93 +59,174 @@ export function ResponsivePagination({
     return null
   }
 
-  return (
-    <Pagination>
-      <PaginationContent className="flex items-center md:space-x-4">
-        {/* Prevボタン */}
-        {currentPageIndex !== 0 && (
+  const firstPageIndex = 0
+  const lastPageIndex = pageCount - 1
+
+  const showPrev = currentPageIndex > 0
+  const showNext = currentPageIndex < lastPageIndex
+
+  // 中央に表示するページ数は2固定
+  const middleCount = 2
+
+  // middleStart: 中央ブロックの開始ページIndex
+  // middleEnd: 中央ブロックの終了ページIndex
+  let middleStart = currentPageIndex
+  let middleEnd = middleStart + middleCount - 1
+
+  // 総ページ数が4以下なら全部表示
+  if (pageCount <= 4) {
+    // 全部表示する
+    const allPages = Array.from({ length: pageCount }, (_, i) => i)
+    return (
+      <Pagination>
+        <PaginationContent className="flex items-center space-x-2">
           <PaginationItem>
             <Button
-              variant={"secondary"}
+              variant="secondary"
               onClick={() => handlePageChange(currentPageIndex - 1)}
+              disabled={!showPrev}
             >
-              {"Prev"}
+              Prev
             </Button>
           </PaginationItem>
-        )}
-        {/* 先頭ページ */}
-        {currentPageIndex > 1 && pageCount > 2 && (
-          <>
-            <PaginationItem>
-              <Button variant={"secondary"} onClick={() => handlePageChange(0)}>
-                {1}
+          {allPages.map((p) => (
+            <PaginationItem key={p}>
+              <Button
+                variant={p === currentPageIndex ? undefined : "secondary"}
+                className={
+                  p === currentPageIndex && isActiveButtonStyle
+                    ? "bg-black text-white hover:bg-black hover:text-white dark:bg-white dark:text-black dark:hover:bg-white"
+                    : ""
+                }
+                onClick={() => handlePageChange(p)}
+              >
+                {p + 1}
               </Button>
             </PaginationItem>
-            <PaginationEllipsis />
-          </>
-        )}
-        {/* 前ページ */}
-        {currentPageIndex > 0 && (
+          ))}
           <PaginationItem>
             <Button
-              variant={"secondary"}
-              onClick={() => handlePageChange(currentPageIndex - 1)}
+              variant="secondary"
+              onClick={() => handlePageChange(currentPageIndex + 1)}
+              disabled={!showNext}
             >
-              {currentPageIndex}
+              Next
             </Button>
           </PaginationItem>
-        )}
-        {/* 現在のページ */}
+        </PaginationContent>
+      </Pagination>
+    )
+  }
+
+  // ページ数が多い場合、先頭・末尾は常に表示し、中間2ページを決める
+
+  // 中間が先頭に近すぎる場合
+  if (middleStart <= 1) {
+    middleStart = 1
+    middleEnd = middleStart + (middleCount - 1) // 1 + 1 = 2
+  }
+
+  // 中間が末尾に近すぎる場合
+  if (middleEnd >= lastPageIndex - 1) {
+    middleEnd = lastPageIndex - 1
+    middleStart = middleEnd - (middleCount - 1) // lastPageIndex-1 -1
+  }
+
+  // 表示する中間ページのリスト
+  const middlePages = []
+  for (let i = middleStart; i <= middleEnd; i++) {
+    if (i > firstPageIndex && i < lastPageIndex) {
+      middlePages.push(i)
+    }
+  }
+
+  // 左側に...を表示するか: middleStartがfirstPageIndex+1より大きければ...
+  const showLeftEllipsis = middleStart > firstPageIndex + 1
+
+  // 右側に...を表示するか: middleEndがlastPageIndex-1より小ければ...
+  const showRightEllipsis = middleEnd < lastPageIndex - 1
+
+  return (
+    <Pagination>
+      <PaginationContent className="flex items-center space-x-2">
+        {/* Prev */}
         <PaginationItem>
           <Button
+            variant="secondary"
+            onClick={() => handlePageChange(currentPageIndex - 1)}
+            disabled={!showPrev}
+          >
+            Prev
+          </Button>
+        </PaginationItem>
+
+        {/* 最初のページ */}
+        <PaginationItem>
+          <Button
+            variant={
+              currentPageIndex === firstPageIndex ? undefined : "secondary"
+            }
             className={
-              isActiveButtonStyle
+              currentPageIndex === firstPageIndex && isActiveButtonStyle
                 ? "bg-black text-white hover:bg-black hover:text-white dark:bg-white dark:text-black dark:hover:bg-white"
                 : ""
             }
+            onClick={() => handlePageChange(firstPageIndex)}
           >
-            {currentPageIndex + 1}
+            {firstPageIndex + 1}
           </Button>
         </PaginationItem>
-        {/* 次のページ */}
-        {currentPageIndex + 1 !== pageCount && (
-          <PaginationItem>
+
+        {/* 左側... */}
+        {/* {showLeftEllipsis && <PaginationEllipsis />} */}
+
+        {/* 中央2ページ */}
+        {middlePages.map((p) => (
+          <PaginationItem key={p}>
             <Button
-              variant={"secondary"}
-              onClick={() => handlePageChange(currentPageIndex + 1)}
+              variant={p === currentPageIndex ? undefined : "secondary"}
+              className={
+                p === currentPageIndex && isActiveButtonStyle
+                  ? "bg-black text-white hover:bg-black hover:text-white dark:bg-white dark:text-black dark:hover:bg-white"
+                  : ""
+              }
+              onClick={() => handlePageChange(p)}
             >
-              {currentPageIndex + 2}
+              {p + 1}
             </Button>
           </PaginationItem>
-        )}
-        {/* 末尾ページ */}
-        {currentPageIndex + 1 !== pageCount && (
-          <>
-            <PaginationEllipsis />{" "}
-            <PaginationItem>
-              <Button
-                variant={"secondary"}
-                onClick={() => handlePageChange(pageCount - 1)}
-              >
-                {pageCount}
-              </Button>
-            </PaginationItem>
-          </>
-        )}
-        {/* Nextボタン */}
-        {currentPageIndex + 1 !== pageCount && (
-          <PaginationItem>
-            <Button
-              variant={"secondary"}
-              onClick={(e) => {
-                e.preventDefault()
-                handlePageChange(currentPageIndex + 1)
-              }}
-            >
-              {"Next"}
-            </Button>
-          </PaginationItem>
-        )}
+        ))}
+
+        {/* 右側... */}
+        {/* {showRightEllipsis && <PaginationEllipsis />} */}
+
+        {/* 最後のページ */}
+        <PaginationItem>
+          <Button
+            variant={
+              currentPageIndex === lastPageIndex ? undefined : "secondary"
+            }
+            className={
+              currentPageIndex === lastPageIndex && isActiveButtonStyle
+                ? "bg-black text-white hover:bg-black hover:text-white dark:bg-white dark:text-black dark:hover:bg-white"
+                : ""
+            }
+            onClick={() => handlePageChange(lastPageIndex)}
+          >
+            {lastPageIndex + 1}
+          </Button>
+        </PaginationItem>
+
+        {/* Next */}
+        <PaginationItem>
+          <Button
+            variant="secondary"
+            onClick={() => handlePageChange(currentPageIndex + 1)}
+            disabled={!showNext}
+          >
+            Next
+          </Button>
+        </PaginationItem>
       </PaginationContent>
     </Pagination>
   )
