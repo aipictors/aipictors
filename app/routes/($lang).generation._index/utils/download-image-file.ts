@@ -1,6 +1,9 @@
 import { format } from "date-fns"
 
-export const downloadImageFile = async (fileName: string, imageUrl: string): Promise<void> => {
+export const downloadImageFile = async (
+  fileName: string,
+  imageUrl: string,
+): Promise<void> => {
   if (!imageUrl) {
     console.error("画像が存在しません")
     return

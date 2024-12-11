@@ -9,6 +9,9 @@ import {
   UserStickersItemFragment,
 } from "~/routes/($lang)._main.users.$user.stickers/components/user-sticker-list"
 import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { useContext } from "react"
+import { useQuery } from "@apollo/client/index"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -50,6 +53,7 @@ export async function loader(props: LoaderFunctionArgs) {
   return {
     page,
     stickers: stickersResp.data.user.stickers,
+    userId: userIdResp.data.user.id,
   }
 }
 
@@ -64,11 +68,24 @@ export default function UserPosts() {
     throw new ParamsError()
   }
 
+  const appContext = useContext(AuthContext)
+
   const data = useLoaderData<typeof loader>()
+
+  const { data: stickers } = useQuery(userStickersQuery, {
+    skip: appContext.isLoading || appContext.isNotLoggedIn,
+    variables: {
+      userId: data.userId,
+      offset: 0,
+      limit: 256,
+    },
+  })
+
+  const userStickers = data.stickers ?? stickers?.user?.stickers
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <UserStickerList stickers={data.stickers} page={data.page} />
+      <UserStickerList stickers={userStickers} page={data.page} />
     </div>
   )
 }

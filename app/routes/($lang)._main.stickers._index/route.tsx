@@ -15,6 +15,9 @@ import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { createMeta } from "~/utils/create-meta"
+import { AuthContext } from "~/contexts/auth-context"
+import { useContext } from "react"
+import { useQuery } from "@apollo/client/index"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.STICKERS, undefined, props.params.lang)
@@ -79,9 +82,22 @@ export default function StickersPage() {
 
   const t = useTranslation()
 
+  const appContext = useContext(AuthContext)
+
   if (data === null) {
     return null
   }
+
+  const { data: stickers } = useQuery(stickersQuery, {
+    skip: appContext.isLoading || appContext.isNotLoggedIn,
+    variables: {
+      offset: 0,
+      limit: 40,
+      where: {},
+    },
+  })
+
+  const newStickers = data.stickers ?? stickers?.stickers
 
   return (
     <main className="flex flex-col space-y-4">
@@ -89,7 +105,7 @@ export default function StickersPage() {
       <StickerSearchForm />
       <section className="flex flex-col gap-y-4">
         <h2 className="font-bold text-lg">{t("新着", "New Arrivals")}</h2>
-        <StickerList stickers={data.stickers} />
+        <StickerList stickers={newStickers} />
       </section>
       <section className="flex flex-col gap-y-4">
         <h2 className="font-bold text-lg">{t("人気", "Popular")}</h2>
