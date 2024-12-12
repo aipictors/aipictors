@@ -233,8 +233,9 @@ export function PostFormItemDraggableImages(props: Props) {
               const ctx = canvas.getContext("2d")
               ctx?.drawImage(img, 0, 0)
               const webpDataURL = canvas.toDataURL("image/webp")
+              const number = Math.floor(Math.random() * 1000000)
               props.items.push({
-                id: props.items.length,
+                id: number, // ← props.items.length ではなくUUIDを使う
                 content: webpDataURL,
               })
               props.onChangeItems([...props.items])
