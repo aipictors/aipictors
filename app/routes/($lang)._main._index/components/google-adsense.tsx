@@ -64,8 +64,6 @@ const viewerCurrentPassQuery = graphql(
         type
         payment {
           id
-          amount
-          stripePaymentIntentId
         }
         isDisabled
         periodStart

@@ -98,9 +98,6 @@ export const HomeNewCommentsFragment = graphql(
   `fragment HomeNewComments on NewCommentNode {
     user {
       id
-      name
-      login
-      iconUrl
     }
     sticker {
       id
