@@ -83,8 +83,8 @@
     "fflate": "^0.8.2",
     "firebase": "^11.0.1",
     "google-libphonenumber": "^3.2.38",
-    "gql.tada": "^1.8.6",
-    "graphql": "^16.9.0",
+    "gql.tada": "^1.8.10",
+    "graphql": "^16.10.0",
     "immer": "^10.1.1",
     "input-otp": "^1.2.4",
     "isbot": "^5.1.17",
@@ -121,6 +121,7 @@
     "zenn-content-css": "^0.1.155"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.16",
     "@biomejs/biome": "^1.9.1",
     "@cloudflare/workers-types": "^4.20241022.0",
     "@happy-dom/global-registrator": "^15.7.4",
@@ -159,5 +160,8 @@
     "vite-plugin-static-copy": "^2.1.0",
     "vite-tsconfig-paths": "^5.0.1",
     "wrangler": "^3.72.2"
+  },
+  "resolutions": {
+    "graphql": "^16.10.0"
   }
 }

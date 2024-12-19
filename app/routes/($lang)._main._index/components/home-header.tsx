@@ -91,7 +91,7 @@ function HomeHeader(props: Props) {
   )
 
   const isExistedNewNotification =
-    isExistedNewNotificationData.data?.viewer?.isExistedNewNotification
+    isExistedNewNotificationData.data?.viewer?.hasUnreadNotifications
 
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
 
@@ -359,7 +359,7 @@ const viewerIsExistedNewNotificationQuery = graphql(
   `query ViewerIsExistedNewNotification {
     viewer {
       id
-      isExistedNewNotification
+      hasUnreadNotifications(limit: 1, offset: 0)
       checkedNotificationTimes {
         ...CheckedNotificationTimes
       }

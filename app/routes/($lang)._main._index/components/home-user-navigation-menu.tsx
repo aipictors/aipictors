@@ -353,13 +353,8 @@ const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
       id
-      userId
-      favoritedImageGenerationModelIds
       preferenceRating
       featurePromptonRequest
-      isAnonymousLike
-      isAnonymousSensitiveLike
-      isNotifyComment
     }
   }`,
 )

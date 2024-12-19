@@ -34,7 +34,7 @@ export function SupportMessageList(props: Props) {
       ref={containerRef}
     >
       {messages.map((message) =>
-        message.isViewer ? (
+        message.isMine ? (
           <SenderMessage key={message.id} message={message} />
         ) : (
           <RecipientMessage
@@ -58,7 +58,7 @@ export const MessageThreadRecipientFragment = graphql(
 export const MessageListItemFragment = graphql(
   `fragment MessageListItem on MessageNode @_unmask {
     id
-    isViewer
+    isMine
     ...SenderMessage
     ...RecipientMessage
   }`,
