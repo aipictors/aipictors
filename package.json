@@ -160,5 +160,8 @@
     "vite-plugin-static-copy": "^2.1.0",
     "vite-tsconfig-paths": "^5.0.1",
     "wrangler": "^3.72.2"
+  },
+  "resolutions": {
+    "graphql": "^16.10.0"
   }
 }
