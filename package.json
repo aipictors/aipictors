@@ -121,6 +121,7 @@
     "zenn-content-css": "^0.1.155"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.16",
     "@biomejs/biome": "^1.9.1",
     "@cloudflare/workers-types": "^4.20241022.0",
     "@happy-dom/global-registrator": "^15.7.4",
