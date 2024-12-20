@@ -288,7 +288,12 @@ export default function Index() {
       searchParams.set("page", followUserFeedPage.toString())
       updateQueryParams(searchParams)
     }
-  }, [newWorksPage, followUserFeedPage, searchParams, updateQueryParams])
+
+    if (followTagFeedPage >= 0) {
+      searchParams.set("page", followTagFeedPage.toString())
+      updateQueryParams(searchParams)
+    }
+  }, [newWorksPage, followUserFeedPage, followTagFeedPage, searchParams, updateQueryParams])
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
