@@ -558,8 +558,6 @@ const viewerQuery = graphql(
       token
       user {
         id
-        nanoid
-        hasSignedImageGenerationTerms
       }
       currentPass {
         ...PostAnimationFormPass
@@ -622,17 +620,13 @@ const workQuery = graphql(
     work(id: $id) {
       id
       uuid
-      isMyRecommended
       title
       accessType
-      type
       promptAccessType
       rating
       description
-      isSensitive
       enTitle
       enDescription
-      imageURL
       largeThumbnailImageURL
       largeThumbnailImageWidth
       largeThumbnailImageHeight
@@ -640,18 +634,15 @@ const workQuery = graphql(
       smallThumbnailImageWidth
       smallThumbnailImageHeight
       thumbnailImagePosition
-      subWorksCount
       ogpThumbnailImageUrl
       tagNames
       createdAt
       model
       modelHash
-      generationModelId
       workModelId
       isTagEditable
       isCommentsEditable
       isPromotion
-      isGeneration
       ogpThumbnailImageUrl
       prompt
       negativePrompt
@@ -662,8 +653,6 @@ const workQuery = graphql(
       scale
       strength
       vae
-      clipSkip
-      otherGenerationParams
       pngInfo
       style
       url
@@ -672,15 +661,6 @@ const workQuery = graphql(
         id
         works(offset: 0, limit: 16) {
           id
-          userId
-          largeThumbnailImageURL
-          largeThumbnailImageWidth
-          largeThumbnailImageHeight
-          smallThumbnailImageURL
-          smallThumbnailImageWidth
-          smallThumbnailImageHeight
-          thumbnailImagePosition
-          subWorksCount
         }
       }
       album {
@@ -688,15 +668,12 @@ const workQuery = graphql(
       }
       dailyTheme {
         id
-        title
       }
       subWorks {
         id
-        imageUrl
       }
       moderatorReport {
         status
-        reportMessage
       }
     }
   }`,

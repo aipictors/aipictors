@@ -65,13 +65,6 @@ const viewerCurrentPassQuery = graphql(
         payment {
           id
         }
-        isDisabled
-        periodStart
-        periodEnd
-        trialPeriodStart
-        trialPeriodEnd
-        createdAt
-        price
       }
     }
   }`,

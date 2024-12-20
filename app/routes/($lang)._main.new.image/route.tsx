@@ -691,8 +691,6 @@ const ViewerQuery = graphql(
         modelHash
         model {
           id
-          name
-          type
         }
         vae
         nanoid
@@ -751,11 +749,6 @@ const ViewerQuery = graphql(
       }
     ) {
       id
-      description
-      title
-      tag
-      slug
-      endAt
     }
   }`,
   [

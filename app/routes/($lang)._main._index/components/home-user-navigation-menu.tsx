@@ -386,7 +386,6 @@ const viewerUserQuery = graphql(
         generatedCount
         promptonUser {
           id
-          name
         }
         receivedLikesCount
         receivedViewsCount

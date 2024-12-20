@@ -619,7 +619,6 @@ const viewerUserQuery = graphql(
       id
       user {
         id
-        iconUrl
       }
       userStickers(offset: 0, limit: 5, orderBy: DATE_USED) {
         ...StickerButton

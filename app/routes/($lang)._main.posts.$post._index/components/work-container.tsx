@@ -294,15 +294,8 @@ export const SideMenuAdvertisementsFragment = graphql(
       id
       imageUrl
       url
-      displayProbability
-      clickCount
-      impressionCount
       isSensitive
-      createdAt
       page
-      startAt
-      endAt
-      isActive
   }`,
 )
 

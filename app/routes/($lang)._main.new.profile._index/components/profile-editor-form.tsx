@@ -376,19 +376,9 @@ const userQuery = graphql(
     user(id: $userId) {
       id
       biography
-      createdBookmarksCount
-      login
-      nanoid
       name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
       iconUrl
       headerImageUrl
-      webFcmToken
       headerImageUrl
       featuredSensitiveWorks {
         ...DialogWork

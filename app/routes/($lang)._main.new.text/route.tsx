@@ -575,44 +575,15 @@ const viewerQuery = graphql(
         steps
         scale
         sampler
-        clipSkip
-        sizeType
-        t2tImageUrl
-        t2tMaskImageUrl
-        t2tDenoisingStrengthSize
-        t2tInpaintingFillSize
         rating
-        completedAt
-        isProtected
-        generationType
-        postModelId
         modelHash
         model {
           id
           name
-          type
         }
         vae
         nanoid
-        status
-        estimatedSeconds
-        controlNetControlMode
-        controlNetEnabled
-        controlNetGuidanceEnd
-        controlNetGuidanceStart
-        controlNetPixelPerfect
-        controlNetProcessorRes
-        controlNetResizeMode
-        controlNetThresholdA
-        controlNetThresholdB
-        controlNetWeight
-        controlNetModule
-        controlNetModel
-        controlNetSaveDetectedMap
-        controlNetHrOption
-        upscaleSize
         imageUrl
-        thumbnailUrl
       }
     }
     albums(

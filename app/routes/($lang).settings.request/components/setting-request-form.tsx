@@ -149,13 +149,7 @@ const userSettingQuery = graphql(
   `query UserSetting {
     userSetting {
       id
-      userId
-      favoritedImageGenerationModelIds
-      preferenceRating
       featurePromptonRequest
-      isAnonymousLike
-      isAnonymousSensitiveLike
-      isNotifyComment
     }
   }`,
 )
@@ -166,30 +160,7 @@ const userQuery = graphql(
   ) {
     user(id: $userId) {
       id
-      biography
-      createdBookmarksCount
-      login
-      nanoid
-      name
       receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
-      iconUrl
-      headerImageUrl
-      webFcmToken
-      isFollower
-      isFollowee
-      headerImageUrl
-      biography
-      enBiography
-      instagramAccountId
-      twitterAccountId
-      githubAccountId
-      siteURL
-      mailAddress
       promptonUser {
         id
       }
