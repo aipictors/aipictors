@@ -14,6 +14,7 @@ type Props = {
   currentPage: number
   onPageChange: (page: number) => void
   isActiveButtonStyle?: boolean
+  isNoScroll?: boolean
 }
 
 /**
@@ -37,6 +38,7 @@ export function ResponsivePagination({
   currentPage,
   onPageChange,
   isActiveButtonStyle,
+  isNoScroll,
 }: Props) {
   const authContext = useContext(AuthContext)
 
@@ -49,6 +51,10 @@ export function ResponsivePagination({
     currentPage >= pageCount ? pageCount - 1 : currentPage
 
   const handlePageChange = (newPage: number) => {
+    if (isNoScroll) {
+      return
+    }
+
     if (newPage >= 0 && newPage < pageCount) {
       onPageChange(newPage)
       window.scrollTo(0, 0)

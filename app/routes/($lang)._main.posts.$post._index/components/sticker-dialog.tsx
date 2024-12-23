@@ -180,6 +180,7 @@ export function StickerDialog(props: Props) {
               onPageChange={(page: number) => {
                 setCreatedSortStickerPage(page)
               }}
+              isNoScroll={true}
             />
           </div>
         )}

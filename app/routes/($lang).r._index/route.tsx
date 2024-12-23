@@ -226,74 +226,46 @@ export default function Index() {
   const location = useLocale()
 
   useEffect(() => {
-    if (isMounted) {
-      return
-    }
-
-    if (!searchParams.toString() || searchParams.get("tab") === "home") {
-      return
-    }
-
-    const page = searchParams.get("page")
-
-    const view = searchParams.get("view")
-
-    if (page) {
-      if (view === "new") {
-        const pageNumber = Number.parseInt(page)
-        if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
-        } else {
-          setNewWorksPage(pageNumber)
-        }
-      }
-      if (view === "new-user") {
-        const pageNumber = Number.parseInt(page)
-        if (Number.isNaN(pageNumber) || pageNumber < 1 || pageNumber > 100) {
-        } else {
-          setFollowUserFeedPage(pageNumber)
-        }
-      }
-    } else {
-      setNewWorksPage(0)
-      setFollowUserFeedPage(0)
-    }
-
-    const type = searchParams.get("workType")
-    if (type) setWorkType(type as IntrospectionEnum<"WorkType">)
-
-    const prompt = searchParams.get("isPromptPublic")
-    if (prompt)
-      setIsPromptPublic(
-        prompt === "true" ? true : prompt === "false" ? false : null,
+    if (!isMounted) {
+      // 例: new タブでは ?newPage=2 のようなクエリを読む
+      const newPage = Number.parseInt(searchParams.get("newPage") || "0", 10)
+      const followUserPage = Number.parseInt(
+        searchParams.get("followUserPage") || "0",
+        10,
+      )
+      const followTagPage = Number.parseInt(
+        searchParams.get("followTagPage") || "0",
+        10,
       )
 
-    const sort = searchParams.get("sortType")
-    if (sort) setSortType(sort as IntrospectionEnum<"WorkOrderBy">)
+      setNewWorksPage(!Number.isNaN(newPage) ? newPage : 0)
+      setFollowUserFeedPage(!Number.isNaN(followUserPage) ? followUserPage : 0)
+      setFollowTagFeedPage(!Number.isNaN(followTagPage) ? followTagPage : 0)
 
-    setIsMounted(true)
-  }, [searchParams])
+      setIsMounted(true)
+    }
+  }, [isMounted, searchParams])
 
   // newWorksPageが変更されたときにURLパラメータを更新
   useEffect(() => {
-    if (!searchParams.toString() || searchParams.get("tab") === "home") {
-      return
-    }
+    if (!isMounted) return
 
-    if (newWorksPage >= 0) {
-      searchParams.set("page", newWorksPage.toString())
-      updateQueryParams(searchParams)
-    }
+    // newWorksPage が変わったら newPage を更新
+    searchParams.set("newPage", newWorksPage.toString())
+    // followUserFeedPage が変わったら followUserPage を更新
+    searchParams.set("followUserPage", followUserFeedPage.toString())
+    // followTagFeedPage が変わったら followTagPage を更新
+    searchParams.set("followTagPage", followTagFeedPage.toString())
 
-    if (followUserFeedPage >= 0) {
-      searchParams.set("page", followUserFeedPage.toString())
-      updateQueryParams(searchParams)
-    }
-
-    if (followTagFeedPage >= 0) {
-      searchParams.set("page", followTagFeedPage.toString())
-      updateQueryParams(searchParams)
-    }
-  }, [newWorksPage, followUserFeedPage, followTagFeedPage, searchParams, updateQueryParams])
+    updateQueryParams(searchParams)
+  }, [
+    newWorksPage,
+    followUserFeedPage,
+    followTagFeedPage,
+    isMounted,
+    updateQueryParams,
+    searchParams,
+  ])
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
