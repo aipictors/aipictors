@@ -1,4 +1,3 @@
-import { GlowingGradientBorderButton } from "~/components/button/glowing-gradient-border-button"
 import { CharacterCard } from "~/routes/($lang).events.ai-idol-project/components/character-card"
 import { ImageSliderAnimation } from "~/routes/($lang).events.ai-idol-project/components/image-slider-animation"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
@@ -27,12 +26,14 @@ export default function EventAiIdolProject() {
       xlink: "https://x.com/Erica_Aipro",
     },
     {
-      name: "YASUNA",
+      name: "ゆうちゅす",
       imageURL: "https://assets.aipictors.com/3bc2d1b867ab3e80.webp",
-      prompt: "<lora:youchusu1.5:0.5>",
+      prompt:
+        "<lora:youchusu1.5:0.6>youchusu1.5, 1girl, blonde hair, green eyes, long hair, green ribbon,looking at viewer, upperbody,smile",
       negativePrompt: "",
-      profile: "ここにプロフィールが入ります",
-      xlink: "https://x.com/Yue_Aipro",
+      profile:
+        "たこ焼きに目がないギャルAITuber。TikTokで恋愛あるあるを言ったりYouTubeで生配信をする。座右の銘は「元気モリモリ💪('ω'💪)」",
+      xlink: "https://x.com/youchusu",
     },
     {
       name: "いなりくこ",
@@ -75,8 +76,8 @@ export default function EventAiIdolProject() {
       {/* タイトル */}
       <h1 className="font-bold text-2xl">
         {t(
-          "AI Vtuber × Aipictors バレンタインイベント",
-          "AI Vtuber × Aipictors Valentine's Event",
+          "AI VTuber × Aipictors バレンタインイベント",
+          "AI VTuber × Aipictors Valentine's Event",
         )}
       </h1>
 
@@ -86,7 +87,7 @@ export default function EventAiIdolProject() {
       </h2>
       <p className="mt-4 text-md">
         {t(
-          "今年のバレンタインは、AI Vtuberと一緒に盛り上がりましょう！Aipictorsでは、AI技術を活用したVTuberたちが、皆さんに“甘い”時間をお届けします。",
+          "今年のバレンタインは、AI VTuberと一緒に盛り上がりましょう！Aipictorsでは、AI技術を活用したVTuberたちが、皆さんに“甘い”時間をお届けします。",
           "Let's celebrate Valentine's Day together with AI VTubers! Aipictors is hosting a sweet event featuring VTubers powered by AI.",
         )}
         <br />
@@ -120,21 +121,9 @@ export default function EventAiIdolProject() {
         )}
       </p>
 
-      {/* 動画がないため iframe を削除または非表示に */}
-      {/* <iframe ...>ここに動画がある場合は使う</iframe> */}
-
-      {/* ボタンが不要であれば削除。別の用途で使うなら文言を変えて活かせる */}
-      <GlowingGradientBorderButton
-        onClick={() => {
-          alert("バレンタインイベントへの参加、ありがとうございます！")
-        }}
-      >
-        {t("イベントに参加する", "Join the Valentine's Event")}
-      </GlowingGradientBorderButton>
-
-      {/* Vtuber 一覧 */}
+      {/* VTuber 一覧 */}
       <h2 className="mt-4 font-bold text-xl">
-        {t("登場Vtuber一覧", "VTuber List")}
+        {t("登場VTuber一覧", "VTuber List")}
       </h2>
       <p className="text-sm">
         {t(
@@ -166,14 +155,14 @@ export const headers: HeadersFunction = () => ({
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "AI Vtuber × Aipictors バレンタインイベント" },
+    { title: "AI VTuber × Aipictors バレンタインイベント" },
     {
       description:
         "AI技術を活用したVTuberたちと一緒に楽しむバレンタインイベントページ。生成機能を使ってあなたの想いをカタチにしよう。",
     },
     {
       property: "og:title",
-      content: "AI Vtuber × Aipictors バレンタインイベント",
+      content: "AI VTuber × Aipictors バレンタインイベント",
     },
     {
       property: "og:description",
@@ -187,7 +176,7 @@ export const meta: MetaFunction = () => {
     },
     {
       name: "twitter:title",
-      content: "AI Vtuber × Aipictors バレンタインイベント",
+      content: "AI VTuber × Aipictors バレンタインイベント",
     },
     {
       name: "twitter:description",
