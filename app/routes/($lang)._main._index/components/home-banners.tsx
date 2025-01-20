@@ -25,15 +25,6 @@ export function HomeBanners(props: Props) {
     <Carousel opts={{ dragFree: true, loop: true }}>
       <CarouselContent className="m-auto">
         <CarouselItem className="basis-1/1 pl-0 xl:basis-1/1">
-          <Link to="/contributors">
-            <img
-              alt="home_banner_01"
-              className="h-40 w-auto md:h-48 md:max-h-auto"
-              src="https://assets.aipictors.com/home_banner_01.webp"
-            />
-          </Link>
-        </CarouselItem>
-        <CarouselItem className="basis-1/1 pl-0 xl:basis-1/1">
           <Link to="https://www.aipictors.com/events/cosplay-2025">
             <img
               alt="home_banner_01"
