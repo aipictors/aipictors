@@ -21,9 +21,11 @@ export default function EventAiIdolProject() {
     {
       name: "初祈 コトハ",
       imageURL: "https://assets.aipictors.com/01layer.webp",
-      prompt: "<lora:kotoha_512v07_ds:0.5>",
-      profile: "",
-      xlink: "https://x.com/Erica_Aipro",
+      prompt:
+        "<lora:kotoha_512v07_ds:0.6>,hatukikotoha,animal ears,aqua hair,blunt bangs,aqua eyes,",
+      profile:
+        "初祈と書いてハツキと読みます✨ 錆れた神社を復興する為にジュンさんと人工知能の力を借りてYouTubeでAI VTuberとして頑張ってるコト🦊 みんなよろしくね⛩",
+      xlink: "https://x.com/jun_sans",
     },
     {
       name: "ゆうちゅす",
