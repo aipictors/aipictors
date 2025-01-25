@@ -53,6 +53,7 @@ export async function loader(props: LoaderFunctionArgs) {
         orderBy: orderBy,
         sort: sort,
         isSensitive: true,
+        isNowCreatedAt: true,
       },
     },
   })

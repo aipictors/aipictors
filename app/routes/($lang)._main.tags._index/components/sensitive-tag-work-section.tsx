@@ -67,6 +67,7 @@ export function SensitiveTagWorkSection(props: Props) {
         isSensitive: true,
         hasPrompt: props.hasPrompt === 1 ? true : undefined,
         isPromptPublic: props.hasPrompt === 1 ? true : undefined,
+        isNowCreatedAt: true,
       },
     },
   })

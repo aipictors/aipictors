@@ -66,6 +66,7 @@ export function TagWorkSection(props: Props) {
         ratings: ["G", "R15"],
         hasPrompt: props.hasPrompt === 1 ? true : undefined,
         isPromptPublic: props.hasPrompt === 1 ? true : undefined,
+        isNowCreatedAt: true,
       },
     },
   })

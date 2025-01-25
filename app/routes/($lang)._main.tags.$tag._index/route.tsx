@@ -57,6 +57,7 @@ export async function loader(props: LoaderFunctionArgs) {
         ...(isSensitive === true && {
           isSensitive: isSensitive,
         }),
+        isNowCreatedAt: true,
       },
     },
   })
