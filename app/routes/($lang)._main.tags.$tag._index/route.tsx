@@ -15,6 +15,8 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { useContext } from "react"
+import { AuthContext } from "~/contexts/auth-context"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.tag === undefined) {
@@ -114,6 +116,8 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 export default function Tag() {
   const params = useParams()
 
+  const authContext = useContext(AuthContext)
+
   if (params.tag === undefined) {
     throw new ParamsError()
   }
@@ -131,7 +135,9 @@ export default function Tag() {
     IntrospectionEnum<"WorkOrderBy">
   >(
     (searchParams.get("orderBy") as IntrospectionEnum<"WorkOrderBy">) ||
-      "LIKES_COUNT",
+      authContext.isLoggedIn
+      ? "DATE_CREATED"
+      : "LIKES_COUNT",
   )
 
   const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(

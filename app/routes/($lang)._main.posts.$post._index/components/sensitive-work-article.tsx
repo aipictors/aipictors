@@ -5,7 +5,7 @@ import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post._index
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
 import { useContext, useEffect, useState } from "react"
-import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
+import { WorkSensitiveArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-sensitive-article-tags"
 import { type FragmentOf, graphql } from "gql.tada"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
 import { AuthContext } from "~/contexts/auth-context"
@@ -305,7 +305,7 @@ export function SensitiveWorkArticle(props: Props) {
               </Link>
             </div>
           )}
-          <WorkArticleTags
+          <WorkSensitiveArticleTags
             postId={props.work.id}
             tagNames={tagNames}
             setTagNames={setTagNames}
