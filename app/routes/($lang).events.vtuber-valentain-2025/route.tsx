@@ -17,7 +17,7 @@ export default function EventAiIdolProject() {
     "https://assets.aipictors.com/KomaChibi241222.webp",
   ]
 
-  // キャラクター一覧は元のデータをそのまま維持
+  // VTuber キャラクター一覧
   const characters = [
     {
       name: "初祈 コトハ",
@@ -35,7 +35,7 @@ export default function EventAiIdolProject() {
         "<lora:youchusu1.5:0.6>youchusu1.5, 1girl, blonde hair, green eyes, long hair, green ribbon,looking at viewer, upperbody,smile",
       negativePrompt: "",
       profile:
-        "たこ焼きに目がないギャルAITuber。TikTokで恋愛あるあるを言ったりYouTubeで生配信をする。座右の銘は「元気モリモリ💪('ω'💪)」",
+        "たこ焼きに目がないギャルAITuber。TikTokで恋愛あるあるを言ったりYouTubeで生配信をする。座右の銘は「元気モリモリ💪('ω'💪)」。",
       xlink: "https://x.com/youchusu",
     },
     {
@@ -59,9 +59,9 @@ export default function EventAiIdolProject() {
         "台湾出身狛犬、末法時代で霊力を失い、技術を通して力を身に付き、自分の道(タオ)を証す。",
       xlink: " https://x.com/Koma_Siroinu",
     },
-    // 追加キャラがあれば同様に...
   ]
 
+  // CharacterCard にマップ
   const characterCards = characters.map((character) => (
     <CharacterCard
       name={character.name}
@@ -76,10 +76,10 @@ export default function EventAiIdolProject() {
 
   return (
     <>
-      {/* スライドショー（バレンタインっぽい画像を入れたい場合はURLを差し替え） */}
+      {/* バナーやスライドショー */}
       <ImageSliderAnimation imageURLs={imageUrls} />
 
-      {/* タイトル */}
+      {/* イベントタイトル */}
       <h1 className="font-bold text-2xl">
         {t(
           "AI VTuber × Aipictors バレンタインイベント",
@@ -103,9 +103,6 @@ export default function EventAiIdolProject() {
         )}
       </p>
 
-      {/* 誘導ページがないため削除 or 必要に応じて他の要素に変えてもOK */}
-      {/* <Link to="..." className="text-blue-500">何かリンクがあればここに</Link> */}
-
       {/* 企画内容 */}
       <h2 className="mt-4 font-bold text-xl">
         {t("企画内容と参加方法", "Event Content & How to Participate")}
@@ -118,7 +115,7 @@ export default function EventAiIdolProject() {
         <br />
         {t(
           "2. ローカル環境で画像を生成し、SNSなどで共有するのも大歓迎！",
-          "2. You're also welcome to generate images locally and share them on social media!",
+          "2. You can also generate images locally and share them on social media!",
         )}
         <br />
         {t(
@@ -132,20 +129,69 @@ export default function EventAiIdolProject() {
         )}
       </p>
 
-      {/* VTuber 一覧 */}
-      <h2 className="mt-4 font-bold text-xl">
-        {t("登場VTuber一覧", "VTuber List")}
+      {/* 応募方法フロー */}
+      <h2 className="mt-8 font-bold text-xl">
+        {t("応募方法フロー", "How to Apply")}
       </h2>
-      <p className="text-sm">
+      <p className="mt-4">
         {t(
-          "画像をクリックすると、指定のプロンプトを使って生成できます",
-          "Click the image to generate with the specified prompt.",
+          "以下のいずれかの方法で投稿してください。",
+          "Please submit your entry by one of the following methods:",
         )}
       </p>
-      <p className="text-sm">
+
+      <div className="mx-auto my-4 max-w-2xl rounded-md border p-4">
+        <h3 className="mb-2 font-bold">
+          {t("Step 1：作品を準備", "Step 1: Prepare Your Work")}
+        </h3>
+        <p className="ml-4 text-sm">
+          {t(
+            "Aipictorsでバレンタインにちなんだ作品を作成",
+            "Create a Valentine's-themed work using Aipictors environment.",
+          )}
+        </p>
+        <div className="my-2 flex justify-center">↓</div>
+
+        <h3 className="mb-2 font-bold">
+          {t("Step 2：以下のいずれかで投稿", "Step 2: Submit Your Entry")}
+        </h3>
+        <ol className="mb-4 ml-6 list-decimal text-sm">
+          <li className="mb-2">
+            {t(
+              "「#Aipictors + AI VTuberの名前タグ」をつけてX(旧Twitter)に投稿（引用ポストでも可）",
+              'Post on X (formerly Twitter) with "#Aipictors + the AI VTuber\'s name" tag (Quote posting is also accepted).',
+            )}
+          </li>
+          <li>
+            {t(
+              "Aipictorsにて「VTuberバレンタイン企画2025」のタグをつけて投稿",
+              'Post on Aipictors with the "VTuberバレンタイン企画2025" tag.',
+            )}
+          </li>
+        </ol>
+        <div className="my-2 flex justify-center">↓</div>
+
+        <h3 className="mb-2 font-bold">
+          {t("Step 3：投稿完了！", "Step 3: Completion!")}
+        </h3>
+        <p className="ml-4 text-sm">
+          {t(
+            "あとは運営の審査をお待ちください。受賞者には後日ご連絡いたします！",
+            "Now wait for the official review. Winners will be contacted at a later date!",
+          )}
+        </p>
+      </div>
+
+      {/* VTuber 一覧 */}
+      <h2 className="mt-8 font-bold text-xl">
+        {t("登場VTuber一覧", "VTuber List")}
+      </h2>
+      <p className="whitespace-pre-line text-sm">
         {t(
-          "プロンプトのコピー後、ローカルで生成することも可能です",
-          "You can also copy the prompts and generate locally.",
+          `画像をクリックすると、指定のプロンプトを使って生成できます。
+プロンプトをコピーすれば、ローカル環境で自由に生成することも可能です。`,
+          `Click the image to generate with the specified prompt.
+You can also copy the prompts and generate them locally.`,
         )}
       </p>
 
