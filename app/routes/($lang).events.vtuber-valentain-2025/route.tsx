@@ -124,6 +124,11 @@ export default function EventAiIdolProject() {
           "3. バレンタインにまつわるメッセージやファンアートを投稿して、一緒にイベントを盛り上げましょう！",
           "3. Post your Valentine's messages or fan art to help liven up the event!",
         )}
+        <br />
+        {t(
+          "投稿された作品は審査させていただき、各VTuber賞を授与させていただきます！運営で審査させていただき最優秀賞の作品には、1万円分のAmazonギフト券をプレゼントさせていただきます！",
+          "Submitted works will be judged, and each VTuber will be awarded a prize! The best work judged by the management will receive a 10,000 yen Amazon gift card!",
+        )}
       </p>
 
       {/* VTuber 一覧 */}
