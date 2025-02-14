@@ -10,6 +10,7 @@ export default function EventAiIdolProject() {
 
   // 画像スライダーに使う画像URL（差し替え自由）
   const imageUrls = [
+    "https://assets.aipictors.com/vtuber-va.webp",
     "https://assets.aipictors.com/3bc2d1b867ab3e80.webp",
     "https://assets.aipictors.com/01layer.webp",
     "https://assets.aipictors.com/kuko_0913_default2024-12-17_20-23-47.045.webp",
