@@ -45,12 +45,13 @@ export default function EventAiIdolProject() {
         "<lora:kukoLora3:0.5>, fox ears, large fox tail, short blonde hair with bangs, blue and purple flower hair accessory,",
       negativePrompt: "",
       profile: "ここにプロフィールが入ります",
-      xlink: "https://x.com/Yue_Aipro",
+      xlink: "https://x.com/kukoinariai",
     },
     {
       name: "siroinukoma",
       imageURL: "https://assets.aipictors.com/KomaChibi241222.webp",
-      prompt: "<lora:KomaBalorMixV4V25-epoch120:0.5>",
+      prompt:
+        "<lora:SiroInukoma1_5new:0.41>, a SiroInuKoma ,  heterochromia eyes,  thick eyebrow,",
       negativePrompt: "",
       profile: "ここにプロフィールが入ります",
       xlink: "https://x.com/Yue_Aipro",
