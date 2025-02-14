@@ -182,8 +182,7 @@ export const meta: MetaFunction = () => {
     },
     {
       property: "og:image",
-      content:
-        "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/idolaipicheader.jpg",
+      content: "https://assets.aipictors.com/vtuber-va.webp",
     },
     {
       name: "twitter:title",
