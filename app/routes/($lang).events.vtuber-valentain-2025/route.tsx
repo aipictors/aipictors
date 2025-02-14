@@ -38,23 +38,25 @@ export default function EventAiIdolProject() {
       xlink: "https://x.com/youchusu",
     },
     {
-      name: "いなりくこ",
+      name: "稲荷クコ",
       imageURL:
         "https://assets.aipictors.com/kuko_0913_default2024-12-17_20-23-47.045.webp",
       prompt:
         "<lora:kukoLora3:0.5>, fox ears, large fox tail, short blonde hair with bangs, blue and purple flower hair accessory,",
       negativePrompt: "",
-      profile: "ここにプロフィールが入ります",
+      profile:
+        "稲荷クコは、東京ドームでのパフォーマンスを夢見る17歳のAIVTuber。好きな食べ物は稲荷寿司。",
       xlink: "https://x.com/kukoinariai",
     },
     {
-      name: "siroinukoma",
+      name: "白犬コマ",
       imageURL: "https://assets.aipictors.com/KomaChibi241222.webp",
       prompt:
         "<lora:SiroInukoma1_5new:0.41>, a SiroInuKoma ,  heterochromia eyes,  thick eyebrow,",
       negativePrompt: "",
-      profile: "ここにプロフィールが入ります",
-      xlink: "https://x.com/Yue_Aipro",
+      profile:
+        "台湾出身狛犬、末法時代で霊力を失い、技術を通して力を身に付き、自分の道(タオ)を証す。",
+      xlink: " https://x.com/Koma_Siroinu",
     },
     // 追加キャラがあれば同様に...
   ]
