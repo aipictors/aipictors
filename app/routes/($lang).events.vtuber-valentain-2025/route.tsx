@@ -2,11 +2,117 @@ import { CharacterCard } from "~/routes/($lang).events.ai-idol-project/component
 import { ImageSliderAnimation } from "~/routes/($lang).events.ai-idol-project/components/image-slider-animation"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { useTranslation } from "~/hooks/use-translation"
-import type { LoaderFunctionArgs } from "react-router-dom"
+import { useSearchParams, type LoaderFunctionArgs } from "react-router-dom"
 import { config } from "~/config"
+import { loaderClient } from "~/lib/loader-client"
+import {
+  EventAwardWorkList,
+  EventAwardWorkListItemFragment,
+} from "~/routes/($lang).events.$event._index/components/event-award-work-list"
+import {
+  EventWorkList,
+  EventWorkListItemFragment,
+} from "~/routes/($lang).events.$event._index/components/event-work-list"
+import { graphql } from "gql.tada"
+import type { SortType } from "~/types/sort-type"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useEffect } from "react"
+import React from "react"
+import { useLoaderData } from "@remix-run/react"
 
 export default function EventAiIdolProject() {
   const t = useTranslation()
+
+  const data = useLoaderData<typeof loader>()
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const [workType, setWorkType] =
+    React.useState<IntrospectionEnum<"WorkType"> | null>(
+      (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
+    )
+
+  const [WorkOrderby, setWorkOrderby] = React.useState<
+    IntrospectionEnum<"WorkOrderBy">
+  >(
+    (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
+      "DATE_CREATED",
+  )
+
+  const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
+    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
+  )
+
+  const [rating, setRating] =
+    React.useState<IntrospectionEnum<"Rating"> | null>(
+      (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
+    )
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+
+    params.set("page", String(data.page))
+    if (workType) params.set("workType", workType)
+    if (rating) params.set("rating", rating)
+    params.set("WorkOrderby", WorkOrderby)
+    params.set("worksOrderDeskAsc", worksOrderDeskAsc)
+
+    setSearchParams(params)
+  }, [
+    data.page,
+    workType,
+    rating,
+    WorkOrderby,
+    worksOrderDeskAsc,
+    setSearchParams,
+  ])
+
+  const onClickTitleSortButton = () => {
+    setWorkOrderby("NAME")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickLikeSortButton = () => {
+    setWorkOrderby("LIKES_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickBookmarkSortButton = () => {
+    setWorkOrderby("BOOKMARKS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickCommentSortButton = () => {
+    setWorkOrderby("COMMENTS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickViewSortButton = () => {
+    setWorkOrderby("VIEWS_COUNT")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickAccessTypeSortButton = () => {
+    setWorkOrderby("ACCESS_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickDateSortButton = () => {
+    setWorkOrderby("DATE_CREATED")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickWorkTypeSortButton = () => {
+    setWorkOrderby("WORK_TYPE")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const onClickIsPromotionSortButton = () => {
+    setWorkOrderby("IS_PROMOTION")
+    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  }
+
+  const [worksMaxCount, setWorksMaxCount] = React.useState(0)
 
   // 画像スライダーに使う画像URL（差し替え自由）
   const imageUrls = [
@@ -198,12 +304,84 @@ You can also copy the prompts and generate them locally.`,
       <div className="mt-8 flex flex-wrap justify-center space-x-8">
         {characterCards}
       </div>
+
+      {/* 作品 一覧 */}
+      {data.appEvent.awardWorks && (
+        <EventAwardWorkList
+          works={data.appEvent.awardWorks}
+          slug={data.appEvent.slug ?? ""}
+        />
+      )}
+      {data.appEvent.works && (
+        <EventWorkList
+          works={data.appEvent.works}
+          maxCount={data.appEvent.worksCount as number}
+          page={data.page}
+          slug={data.appEvent.slug ?? ""}
+          sort={worksOrderDeskAsc}
+          orderBy={WorkOrderby}
+          sumWorksCount={worksMaxCount}
+          workType={workType}
+          rating={rating}
+          onClickTitleSortButton={onClickTitleSortButton}
+          onClickLikeSortButton={onClickLikeSortButton}
+          onClickBookmarkSortButton={onClickBookmarkSortButton}
+          onClickCommentSortButton={onClickCommentSortButton}
+          onClickViewSortButton={onClickViewSortButton}
+          onClickAccessTypeSortButton={onClickAccessTypeSortButton}
+          onClickDateSortButton={onClickDateSortButton}
+          onClickWorkTypeSortButton={onClickWorkTypeSortButton}
+          onClickIsPromotionSortButton={onClickIsPromotionSortButton}
+          setWorkType={setWorkType}
+          setRating={setRating}
+          setSort={setWorksOrderDeskAsc}
+        />
+      )}
     </>
   )
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  return {}
+  const event = "vtuber-valentain-2025"
+
+  const urlParams = new URL(props.request.url).searchParams
+
+  const pageParam = urlParams.get("page")
+
+  const page = pageParam ? Number(pageParam) : 0
+
+  const orderBy = urlParams.get("WorkOrderby")
+    ? (urlParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">)
+    : "LIKES_COUNT"
+
+  const sort = urlParams.get("worksOrderDeskAsc")
+    ? (urlParams.get("worksOrderDeskAsc") as SortType)
+    : "DESC"
+
+  const eventsResp = await loaderClient.query({
+    query: appEventQuery,
+    variables: {
+      limit: 64,
+      offset: page * 64,
+      slug: event,
+      where: {
+        ratings: ["G", "R15"],
+        isNowCreatedAt: true,
+        orderBy: orderBy,
+        sort: sort,
+      },
+      isSensitive: false,
+    },
+  })
+
+  if (eventsResp.data.appEvent === null) {
+    throw new Response(null, { status: 404 })
+  }
+
+  return {
+    appEvent: eventsResp.data.appEvent,
+    page,
+  }
 }
 
 export const headers: HeadersFunction = () => ({
@@ -241,3 +419,27 @@ export const meta: MetaFunction = () => {
     },
   ]
 }
+
+const appEventQuery = graphql(
+  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!, $isSensitive: Boolean!) {
+    appEvent(slug: $slug) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      tag
+      worksCount
+      works(offset: $offset, limit: $limit, where: $where) {
+        ...EventWorkListItem
+      }
+      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+        ...EventAwardWorkListItem
+      }
+    }
+  }`,
+  [EventAwardWorkListItemFragment, EventWorkListItemFragment],
+)
