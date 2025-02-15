@@ -145,7 +145,11 @@ export function SensitiveWorkContainer(props: Props) {
               />
             )}
             {work.isCommentsEditable && (
-              <WorkCommentList workId={work.id} comments={comments} />
+              <WorkCommentList
+                workId={work.id}
+                comments={comments}
+                workOwnerIconImageURL={work.user?.iconUrl}
+              />
             )}
             {work.user !== null && (
               <div className="block md:mt-0 lg:hidden">

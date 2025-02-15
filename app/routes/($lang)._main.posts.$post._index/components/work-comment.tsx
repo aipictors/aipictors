@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { useMutation } from "@apollo/client/index"
-import { ArrowDownToLine, Loader2Icon } from "lucide-react"
+import { ArrowDownToLine, Heart, Loader2Icon, ThumbsUpIcon } from "lucide-react"
 import React from "react"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { Link } from "@remix-run/react"
@@ -11,6 +11,8 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { toast } from "sonner"
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
+import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/utils"
 
 type Props = {
   userId: string
@@ -20,6 +22,13 @@ type Props = {
   text?: string
   createdAt: number
   commentId: string
+  isLiked: boolean
+  isNowLiked: boolean
+  likesCount: number
+  workOwnerIconImageURL?: string
+  isWorkOwnerLiked: boolean
+  isLoadingCommentLike?: boolean
+  isDisabledCommentLike?: boolean
   /* コメントで使われてるスタンプ情報 */
   stickerImageURL?: string
   stickerTitle?: string
@@ -33,6 +42,8 @@ type Props = {
     stickerId: string,
     stickerImageURL: string,
   ) => void
+  onCreateCommentLike: () => void
+  onDeleteCommentLike: () => void
 }
 
 /**
@@ -105,10 +116,54 @@ export function WorkComment(props: Props) {
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
             <img className="w-32 py-2" alt="" src={props.stickerImageURL} />
           )}
-          <div className="flex space-x-2">
+          <div className="flex items-center space-x-2">
             <span className="text-xs opacity-50">
               {toDateTimeText(props.createdAt)}
             </span>
+            {props.isWorkOwnerLiked && (
+              <div className="relative">
+                <Avatar className="relative h-6 w-6">
+                  <AvatarImage
+                    src={withIconUrlFallback(props.workOwnerIconImageURL)}
+                    alt=""
+                  />
+                  <AvatarFallback />
+                </Avatar>
+                <Heart
+                  className={"absolute right-0 bottom-0 fill-rose-500"}
+                  size={"12"}
+                />
+              </div>
+            )}
+            {
+              <div className="flex items-center space-x-2">
+                <Button
+                  size={"icon"}
+                  variant={"ghost"}
+                  onClick={
+                    props.isLiked || props.isNowLiked
+                      ? props.onDeleteCommentLike
+                      : props.onCreateCommentLike
+                  }
+                  disabled={props.isDisabledCommentLike}
+                  className={"flex items-center space-x-2"}
+                >
+                  <ThumbsUpIcon
+                    className={cn(
+                      "w-3",
+                      props.isLiked || props.isNowLiked
+                        ? "fill-black dark:fill-white"
+                        : "",
+                    )}
+                  />
+                  {props.likesCount + (props.isNowLiked ? 1 : 0) > 0 && (
+                    <p className="cursor-pointer text-xs">
+                      {props.likesCount + (props.isNowLiked ? 1 : 0)}
+                    </p>
+                  )}
+                </Button>
+              </div>
+            }
             {props.isMine ? (
               <>
                 {isDeleteLoading ? (
@@ -164,6 +219,9 @@ export const WorkCommentFragment = graphql(
     id
     createdAt
     text
+    likesCount
+    isWorkOwnerLiked
+    isLiked
     user {
       id
       name

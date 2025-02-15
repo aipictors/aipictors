@@ -143,7 +143,11 @@ export function DraftWorkContainer(props: Props) {
               />
             )}
             {work.isCommentsEditable && (
-              <WorkCommentList workId={work.id} comments={comments} />
+              <WorkCommentList
+                workId={work.id}
+                comments={comments}
+                workOwnerIconImageURL={work.user?.iconUrl}
+              />
             )}
             {work.user && (
               <div className="block md:mt-0 lg:hidden">

@@ -272,6 +272,7 @@ export function FollowUserFeedContents(props: Props) {
                               workId={work.id}
                               comments={work.comments}
                               defaultShowCommentCount={3}
+                              workOwnerIconImageURL={work.user?.iconUrl}
                             />
                           )}
                         </div>

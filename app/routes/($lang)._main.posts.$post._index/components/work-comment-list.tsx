@@ -24,6 +24,7 @@ import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post._index/c
 
 type Props = {
   workId: string
+  workOwnerIconImageURL?: string | null
   comments: FragmentOf<typeof CommentListItemFragment>[]
   defaultShowCommentCount?: number
 }
@@ -33,6 +34,9 @@ type Comment = {
   id: string
   text: string
   createdAt: number
+  isLiked: boolean
+  likesCount: number
+  isWorkOwnerLiked: boolean
   user: {
     id: string
     name: string
@@ -51,6 +55,9 @@ type ReplyComment = {
   id: string
   text: string
   createdAt: number
+  isLiked: boolean
+  likesCount: number
+  isWorkOwnerLiked: boolean
   user: {
     id: string
     name: string
@@ -86,9 +93,20 @@ export function WorkCommentList(props: Props) {
     createWorkCommentMutation,
   )
 
+  const [createCommentLike, { loading: isCreatingCommentLike }] = useMutation(
+    createCommentLikeMutation,
+  )
+
+  const [deleteCommentLike, { loading: isDeletingCommentLike }] = useMutation(
+    deleteCommentLikeMutation,
+  )
+
   const [comment, setComment] = useState("")
+
   const [newComments, setNewComments] = useState<Comment[]>([])
+
   const [newReplyComments, setNewReplyComments] = useState<ReplyComment[]>([])
+
   const [hideCommentIds, setHideCommentIds] = useState<string[]>([])
 
   const showComments = props.comments.filter(
@@ -113,6 +131,10 @@ export function WorkCommentList(props: Props) {
   const showNewReplyComments = newReplyComments?.filter(
     (comment) => !hideCommentIds.includes(comment.id),
   )
+
+  const [likedCommentIds, setLikedCommentIds] = useState<string[]>([])
+
+  const [canceledCommentIds, setCanceledCommentIds] = useState<string[]>([])
 
   useEffect(() => {
     if (newComments !== null) {
@@ -146,6 +168,9 @@ export function WorkCommentList(props: Props) {
             id: res.data?.createWorkComment?.id ?? "",
             text: text,
             createdAt: getJSTDate().getTime() / 1000,
+            likesCount: 0,
+            isWorkOwnerLiked: false,
+            isLiked: false,
             user: {
               id: appContext.userId ?? "",
               name: appContext.displayName ?? "",
@@ -161,10 +186,52 @@ export function WorkCommentList(props: Props) {
         ])
       }
     } catch (e) {
+      // toast(
+      //   t(
+      //     "送信に失敗しました。同じコメントを何度も送信しようとしているか、通信エラーが発生しています。",
+      //     "Failed to send. Please try again.",
+      //   ),
+      // )
+    }
+  }
+
+  const onCreateCommentLike = async (commentId: string) => {
+    try {
+      await createCommentLike({
+        variables: {
+          input: {
+            commentId: commentId,
+          },
+        },
+      })
+      setLikedCommentIds([...likedCommentIds, commentId])
+      setCanceledCommentIds(canceledCommentIds.filter((id) => id !== commentId))
+    } catch (e) {
+      // toast(
+      //   t(
+      //     "いいねに失敗しました。通信エラーが発生しています。",
+      //     "Failed to like. Please try again.",
+      //   ),
+      // )
+    }
+  }
+
+  const onDeleteCommentLike = async (commentId: string) => {
+    try {
+      await deleteCommentLike({
+        variables: {
+          input: {
+            commentId: commentId,
+          },
+        },
+      })
+      setLikedCommentIds(likedCommentIds.filter((id) => id !== commentId))
+      setCanceledCommentIds([...canceledCommentIds, commentId])
+    } catch (e) {
       toast(
         t(
-          "送信に失敗しました。同じコメントを何度も送信しようとしているか、通信エラーが発生しています。",
-          "Failed to send. Please try again.",
+          "いいねの取り消しに失敗しました。通信エラーが発生しています。",
+          "Failed to unlike. Please try again.",
         ),
       )
     }
@@ -278,9 +345,29 @@ export function WorkCommentList(props: Props) {
                     createdAt={comment.createdAt}
                     stickerImageURL={comment.sticker?.image?.downloadURL}
                     text={comment.text}
-                    userIconImageURL={withIconUrlFallback(userIcon)}
+                    workOwnerIconImageURL={withIconUrlFallback(
+                      props.workOwnerIconImageURL,
+                    )}
+                    userIconImageURL={withIconUrlFallback(
+                      comment.user?.iconUrl,
+                    )}
                     userName={comment.user?.name}
                     commentId={comment.id}
+                    isLiked={
+                      comment.isLiked &&
+                      !canceledCommentIds.includes(comment.id)
+                    }
+                    isNowLiked={likedCommentIds.includes(comment.id)}
+                    likesCount={
+                      comment.likesCount -
+                      (canceledCommentIds.includes(comment.id) ? 1 : 0)
+                    }
+                    isWorkOwnerLiked={comment.isWorkOwnerLiked}
+                    isLoadingCommentLike={
+                      isCreatingCommentLike || isDeletingCommentLike
+                    }
+                    onCreateCommentLike={() => onCreateCommentLike(comment.id)}
+                    onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
                     onDeleteComment={() => onDeleteComment(comment.id)}
                     onReplyCompleted={(
                       id: string,
@@ -293,6 +380,9 @@ export function WorkCommentList(props: Props) {
                           id: id,
                           text: text,
                           createdAt: getJSTDate().getTime() / 1000,
+                          likesCount: 0,
+                          isWorkOwnerLiked: false,
+                          isLiked: false,
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
@@ -324,9 +414,27 @@ export function WorkCommentList(props: Props) {
                 stickerAccessType={comment.sticker?.accessType}
                 isStickerDownloadable={comment.sticker?.isDownloaded}
                 text={comment.text}
-                userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
                 userName={comment.user?.name}
                 commentId={comment.id}
+                isLiked={
+                  comment.isLiked && !canceledCommentIds.includes(comment.id)
+                }
+                isNowLiked={likedCommentIds.includes(comment.id)}
+                likesCount={
+                  comment.likesCount -
+                  (canceledCommentIds.includes(comment.id) ? 1 : 0)
+                }
+                isWorkOwnerLiked={comment.isWorkOwnerLiked}
+                onCreateCommentLike={() => onCreateCommentLike(comment.id)}
+                onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
+                isDisabledCommentLike={!appContext.isLoggedIn}
+                isLoadingCommentLike={
+                  isCreatingCommentLike || isDeletingCommentLike
+                }
+                workOwnerIconImageURL={withIconUrlFallback(
+                  props.workOwnerIconImageURL,
+                )}
+                userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
                 onDeleteComment={() => onDeleteComment(comment.id)}
                 onReplyCompleted={(
                   id: string,
@@ -341,6 +449,9 @@ export function WorkCommentList(props: Props) {
                       id: id,
                       text: text,
                       createdAt: new Date().getTime(),
+                      likesCount: 0,
+                      isWorkOwnerLiked: false,
+                      isLiked: false,
                       user: {
                         id: appContext.userId ?? "",
                         name: appContext.displayName ?? "",
@@ -369,6 +480,21 @@ export function WorkCommentList(props: Props) {
                     userName={newReply.user?.name}
                     replyId={newReply.id}
                     targetCommentId={comment.id}
+                    isLiked={
+                      newReply.isLiked &&
+                      !canceledCommentIds.includes(newReply.id)
+                    }
+                    isNowLiked={likedCommentIds.includes(newReply.id)}
+                    likesCount={
+                      newReply.likesCount -
+                      (canceledCommentIds.includes(newReply.id) ? 1 : 0)
+                    }
+                    isWorkOwnerLiked={newReply.isWorkOwnerLiked}
+                    isLoadingCommentLike={
+                      isCreatingCommentLike || isDeletingCommentLike
+                    }
+                    onCreateCommentLike={() => onCreateCommentLike(newReply.id)}
+                    onDeleteCommentLike={() => onDeleteCommentLike(newReply.id)}
                     onDeleteComment={() => {
                       onDeleteComment(newReply.id)
                     }}
@@ -392,10 +518,22 @@ export function WorkCommentList(props: Props) {
                       stickerId={reply.sticker?.id}
                       stickerAccessType={reply.sticker?.accessType}
                       isStickerDownloadable={reply.sticker?.isDownloaded}
+                      isWorkOwnerLiked={reply.isWorkOwnerLiked}
+                      isDisabledCommentLike={!appContext.isLoggedIn}
                       text={reply.text}
                       userIconImageURL={withIconUrlFallback(
                         reply.user?.iconUrl,
                       )}
+                      isLiked={
+                        reply.isLiked && !canceledCommentIds.includes(reply.id)
+                      }
+                      isNowLiked={likedCommentIds.includes(reply.id)}
+                      likesCount={
+                        reply.likesCount -
+                        (canceledCommentIds.includes(reply.id) ? 1 : 0)
+                      }
+                      onCreateCommentLike={() => onCreateCommentLike(reply.id)}
+                      onDeleteCommentLike={() => onDeleteCommentLike(reply.id)}
                       userName={reply.user?.name}
                       replyId={reply.id}
                       targetCommentId={comment.id}
@@ -417,6 +555,9 @@ export function WorkCommentList(props: Props) {
                             id: id,
                             text: text,
                             createdAt: new Date().getTime(),
+                            likesCount: 0,
+                            isWorkOwnerLiked: false,
+                            isLiked: false,
                             user: {
                               id: appContext.userId ?? "",
                               name: appContext.displayName ?? "",
@@ -456,10 +597,29 @@ export function WorkCommentList(props: Props) {
                     stickerId={comment.sticker?.id}
                     stickerAccessType={comment.sticker?.accessType}
                     isStickerDownloadable={comment.sticker?.isDownloaded}
-                    text={comment.text}
+                    isWorkOwnerLiked={comment.isWorkOwnerLiked}
+                    workOwnerIconImageURL={withIconUrlFallback(
+                      props.workOwnerIconImageURL,
+                    )}
                     userIconImageURL={withIconUrlFallback(
                       comment.user?.iconUrl,
                     )}
+                    isLiked={
+                      comment.isLiked &&
+                      !canceledCommentIds.includes(comment.id)
+                    }
+                    isNowLiked={likedCommentIds.includes(comment.id)}
+                    likesCount={
+                      comment.likesCount -
+                      (canceledCommentIds.includes(comment.id) ? 1 : 0)
+                    }
+                    onCreateCommentLike={() => onCreateCommentLike(comment.id)}
+                    onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
+                    isDisabledCommentLike={!appContext.isLoggedIn}
+                    isLoadingCommentLike={
+                      isCreatingCommentLike || isDeletingCommentLike
+                    }
+                    text={comment.text}
                     userName={comment.user?.name}
                     commentId={comment.id}
                     onDeleteComment={() => onDeleteComment(comment.id)}
@@ -476,6 +636,9 @@ export function WorkCommentList(props: Props) {
                           id: id,
                           text: text,
                           createdAt: new Date().getTime(),
+                          likesCount: 0,
+                          isWorkOwnerLiked: false,
+                          isLiked: false,
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
@@ -501,6 +664,28 @@ export function WorkCommentList(props: Props) {
                         stickerImageURL={newReply.sticker?.image?.downloadURL}
                         text={newReply.text}
                         iconUrl={withIconUrlFallback(userIcon)}
+                        isWorkOwnerLiked={newReply.isWorkOwnerLiked}
+                        isNowLiked={likedCommentIds.includes(newReply.id)}
+                        workOwnerIconImageURL={withIconUrlFallback(
+                          props.workOwnerIconImageURL,
+                        )}
+                        userIconImageURL={withIconUrlFallback(
+                          newReply.user.iconUrl,
+                        )}
+                        isLiked={
+                          newReply.isLiked &&
+                          !canceledCommentIds.includes(newReply.id)
+                        }
+                        likesCount={
+                          newReply.likesCount -
+                          (canceledCommentIds.includes(newReply.id) ? 1 : 0)
+                        }
+                        onCreateCommentLike={() =>
+                          onCreateCommentLike(newReply.id)
+                        }
+                        onDeleteCommentLike={() =>
+                          onDeleteCommentLike(newReply.id)
+                        }
                         userName={newReply.user?.name}
                         replyId={newReply.id}
                         targetCommentId={comment.id}
@@ -527,6 +712,26 @@ export function WorkCommentList(props: Props) {
                           stickerId={reply.sticker?.id}
                           stickerAccessType={reply.sticker?.accessType}
                           isStickerDownloadable={reply.sticker?.isDownloaded}
+                          isDisabledCommentLike={!appContext.isLoggedIn}
+                          isWorkOwnerLiked={reply.isWorkOwnerLiked}
+                          workOwnerIconImageURL={withIconUrlFallback(
+                            props.workOwnerIconImageURL,
+                          )}
+                          isNowLiked={likedCommentIds.includes(reply.id)}
+                          isLiked={
+                            reply.isLiked &&
+                            !canceledCommentIds.includes(reply.id)
+                          }
+                          likesCount={
+                            reply.likesCount -
+                            (canceledCommentIds.includes(reply.id) ? 1 : 0)
+                          }
+                          onCreateCommentLike={() =>
+                            onCreateCommentLike(reply.id)
+                          }
+                          onDeleteCommentLike={() =>
+                            onDeleteCommentLike(reply.id)
+                          }
                           text={reply.text}
                           userIconImageURL={withIconUrlFallback(
                             reply.user?.iconUrl,
@@ -552,6 +757,9 @@ export function WorkCommentList(props: Props) {
                                 id: id,
                                 text: text,
                                 createdAt: new Date().getTime(),
+                                likesCount: 0,
+                                isWorkOwnerLiked: false,
+                                isLiked: false,
                                 user: {
                                   id: appContext.userId ?? "",
                                   name: appContext.displayName ?? "",
@@ -608,6 +816,22 @@ export const CommentListItemFragment = graphql(
 const createWorkCommentMutation = graphql(
   `mutation CreateWorkComment($input: CreateWorkCommentInput!) {
     createWorkComment(input: $input) {
+      id
+    }
+  }`,
+)
+
+const createCommentLikeMutation = graphql(
+  `mutation CreateCommentLike($input: CreateCommentLikeInput!) {
+    createCommentLike(input: $input) {
+      id
+    }
+  }`,
+)
+
+const deleteCommentLikeMutation = graphql(
+  `mutation DeleteCommentLike($input: DeleteCommentLikeInput!) {
+    deleteCommentLike(input: $input) {
       id
     }
   }`,

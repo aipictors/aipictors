@@ -2,7 +2,7 @@ import { AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { Avatar } from "@radix-ui/react-avatar"
 import { useMutation } from "@apollo/client/index"
-import { ArrowDownToLine, Loader2Icon } from "lucide-react"
+import { ArrowDownToLine, Heart, Loader2Icon, ThumbsUpIcon } from "lucide-react"
 import React from "react"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { Link } from "@remix-run/react"
@@ -11,6 +11,9 @@ import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/com
 import { useTranslation } from "~/hooks/use-translation"
 import { toast } from "sonner"
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/utils"
 
 type Props = {
   isMine: boolean
@@ -22,6 +25,13 @@ type Props = {
   targetCommentId: string
   userId: string
   iconUrl: string
+  isLiked: boolean
+  likesCount: number
+  workOwnerIconImageURL?: string
+  isWorkOwnerLiked: boolean
+  isLoadingCommentLike?: boolean
+  isDisabledCommentLike?: boolean
+  isNowLiked: boolean
   /* コメントで使われてるスタンプ情報 */
   stickerImageURL?: string
   stickerTitle?: string
@@ -35,6 +45,8 @@ type Props = {
     stickerId: string,
     stickerImageURL: string,
   ) => void
+  onCreateCommentLike: () => void
+  onDeleteCommentLike: () => void
 }
 
 /**
@@ -105,10 +117,53 @@ export function WorkCommentResponse(props: Props) {
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
             <img className="w-32 py-2" alt="" src={props.stickerImageURL} />
           )}
-          <div className="flex space-x-2">
+          <div className="flex items-center space-x-2">
             <p className="text-xs opacity-50">
               {toDateTimeText(props.createdAt)}
             </p>
+            {props.isWorkOwnerLiked && (
+              <Avatar>
+                <AvatarImage
+                  src={withIconUrlFallback(props.workOwnerIconImageURL)}
+                  alt=""
+                />
+                <AvatarFallback />
+                <Heart
+                  className={"absolute top-2 right-2 fill-rose-500"}
+                  size={"8"}
+                  stroke={"none"}
+                />
+              </Avatar>
+            )}
+            {
+              <div className="flex items-center space-x-2">
+                <Button
+                  size={"icon"}
+                  variant={"ghost"}
+                  onClick={
+                    props.isLiked
+                      ? props.onDeleteCommentLike
+                      : props.onCreateCommentLike
+                  }
+                  disabled={props.isDisabledCommentLike}
+                  className={"flex items-center space-x-2"}
+                >
+                  <ThumbsUpIcon
+                    className={cn(
+                      "w-3",
+                      props.isLiked || props.isNowLiked
+                        ? "fill-black dark:fill-white"
+                        : "",
+                    )}
+                  />
+                  {props.likesCount + (props.isNowLiked ? 1 : 0) > 0 && (
+                    <p className="cursor-pointer text-xs">
+                      {props.likesCount + (props.isNowLiked ? 1 : 0)}
+                    </p>
+                  )}
+                </Button>
+              </div>
+            }
             {props.isMine ? (
               <>
                 {isDeleteLoading ? (
