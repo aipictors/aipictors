@@ -118,7 +118,7 @@ export function WorkComment(props: Props) {
           )}
           <div className="flex items-center space-x-2">
             <span className="text-xs opacity-50">
-              {toDateTimeText(props.createdAt)}
+              {toDateTimeText(props.createdAt, true)}
             </span>
             {props.isWorkOwnerLiked && (
               <div className="relative">

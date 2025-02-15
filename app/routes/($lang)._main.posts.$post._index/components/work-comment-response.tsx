@@ -119,7 +119,7 @@ export function WorkCommentResponse(props: Props) {
           )}
           <div className="flex items-center space-x-2">
             <p className="text-xs opacity-50">
-              {toDateTimeText(props.createdAt)}
+              {toDateTimeText(props.createdAt, true)}
             </p>
             {props.isWorkOwnerLiked && (
               <Avatar>
