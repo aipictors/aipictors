@@ -163,7 +163,7 @@ export default function EventAiIdolProject() {
       negativePrompt: "",
       profile:
         "台湾出身狛犬、末法時代で霊力を失い、技術を通して力を身に付き、自分の道(タオ)を証す。",
-      xlink: " https://x.com/Koma_Siroinu",
+      xlink: "https://x.com/Koma_Siroinu",
     },
   ]
 
