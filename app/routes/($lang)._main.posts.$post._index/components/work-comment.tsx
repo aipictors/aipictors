@@ -122,7 +122,7 @@ export function WorkComment(props: Props) {
             </span>
             {props.isWorkOwnerLiked && (
               <div className="relative">
-                <Avatar className="relative h-6 w-6">
+                <Avatar className="relative h-4 w-4">
                   <AvatarImage
                     src={withIconUrlFallback(props.workOwnerIconImageURL)}
                     alt=""
@@ -131,7 +131,7 @@ export function WorkComment(props: Props) {
                 </Avatar>
                 <Heart
                   className={"absolute right-0 bottom-0 fill-rose-500"}
-                  size={"12"}
+                  size={"8"}
                 />
               </div>
             )}

@@ -122,18 +122,19 @@ export function WorkCommentResponse(props: Props) {
               {toDateTimeText(props.createdAt, true)}
             </p>
             {props.isWorkOwnerLiked && (
-              <Avatar>
-                <AvatarImage
-                  src={withIconUrlFallback(props.workOwnerIconImageURL)}
-                  alt=""
-                />
-                <AvatarFallback />
+              <div className="relative">
+                <Avatar className="relative h-4 w-4">
+                  <AvatarImage
+                    src={withIconUrlFallback(props.workOwnerIconImageURL)}
+                    alt=""
+                  />
+                  <AvatarFallback />
+                </Avatar>
                 <Heart
-                  className={"absolute top-2 right-2 fill-rose-500"}
+                  className={"absolute right-0 bottom-0 fill-rose-500"}
                   size={"8"}
-                  stroke={"none"}
                 />
-              </Avatar>
+              </div>
             )}
             {
               <div className="flex items-center space-x-2">
