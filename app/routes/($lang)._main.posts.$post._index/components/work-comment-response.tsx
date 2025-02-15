@@ -147,7 +147,7 @@ export function WorkCommentResponse(props: Props) {
                       : props.onCreateCommentLike
                   }
                   disabled={props.isDisabledCommentLike}
-                  className={"flex items-center space-x-2"}
+                  className={"flex items-center space-x-1"}
                 >
                   <ThumbsUpIcon
                     className={cn(
