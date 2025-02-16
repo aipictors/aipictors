@@ -17,6 +17,48 @@ import {
   HomeVideosWorksSection,
 } from "~/routes/($lang)._main._index/components/home-video-works-section"
 
+/**
+ * 期間指定による createdAt 範囲を計算するヘルパー関数
+ */
+function getTimeRangeDates(timeRange: string) {
+  // 実際のロジックは要件に応じて JST に合わせるなど調整してください
+  const now = new Date()
+  now.setHours(0, 0, 0, 0) // 当日 0:00 に合わせる
+
+  switch (timeRange) {
+    case "TODAY": {
+      // 本日: 当日 0:00 以降
+      return {
+        createdAtAfter: now.toISOString(),
+        createdAtBefore: null,
+      }
+    }
+    case "YESTERDAY": {
+      // 昨日: 昨日の 0:00 〜 本日の 0:00
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      return {
+        createdAtAfter: yesterday.toISOString(),
+        createdAtBefore: null,
+      }
+    }
+    case "WEEK": {
+      // 1週間: 7日前の 0:00 〜
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      return {
+        createdAtAfter: weekAgo.toISOString(),
+        createdAtBefore: null,
+      }
+    }
+    default: {
+      // ALL (全期間) の場合は指定なし
+      return {
+        createdAtAfter: null,
+        createdAtBefore: null,
+      }
+    }
+  }
+}
+
 type Props = {
   isCropped?: boolean
   page: number
@@ -24,16 +66,24 @@ type Props = {
   workType: IntrospectionEnum<"WorkType"> | null
   isPromptPublic: boolean | null
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
+  // ★ 期間指定を追加
+  timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
 }
 
 /**
- * トップ画面ホーム作品一覧
+ * トップ画面ホーム作品一覧（画像・小説・動画）
  */
 export function HomeWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
+  // 1ページあたりの件数（映像は少なめに）
   const perPageCount = props.workType === "VIDEO" ? 8 : 32
+
+  // 期間指定から createdAtAfter/before を算出
+  const { createdAtAfter, createdAtBefore } = getTimeRangeDates(
+    props.timeRange || "ALL",
+  )
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
     skip: appContext.isLoading,
@@ -49,19 +99,27 @@ export function HomeWorksSection(props: Props) {
           hasPrompt: props.isPromptPublic,
           isPromptPublic: props.isPromptPublic,
         }),
+        // デフォルトは新着順
         ...((props.sortType !== null && {
           orderBy: props.sortType,
         }) || { orderBy: "DATE_CREATED" }),
+
         ...(props.style && {
           style: props.style,
         }),
+
+        // isNowCreatedAt: true は継承
         isNowCreatedAt: true,
+
+        // ★ 期間指定
+        ...(createdAtAfter && { createdAtAfter }),
       },
     },
   })
 
   return (
     <div className="space-y-4">
+      {/* 画像 or 全部 */}
       {(props.workType === "WORK" || props.workType === null) && (
         <HomeWorkSection
           title={""}
@@ -70,9 +128,11 @@ export function HomeWorksSection(props: Props) {
           isShowProfile={true}
         />
       )}
+      {/* 小説/コラム */}
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
         <HomeNovelsWorksSection title={""} works={worksResp?.works || []} />
       )}
+      {/* 動画 */}
       {props.workType === "VIDEO" && (
         <HomeVideosWorksSection
           title={""}
@@ -80,11 +140,13 @@ export function HomeWorksSection(props: Props) {
           isAutoPlay={true}
         />
       )}
+
       <div className="h-8" />
+      {/* ページネーション */}
       <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <ResponsivePagination
           perPage={perPageCount}
-          maxCount={1000}
+          maxCount={1000} // ここは API の最大数などにあわせて調整
           currentPage={props.page}
           onPageChange={(page: number) => {
             props.setPage(page)
