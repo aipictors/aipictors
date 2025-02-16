@@ -38,7 +38,7 @@ function getTimeRangeDates(timeRange: string) {
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
       return {
         createdAtAfter: yesterday.toISOString(),
-        createdAtBefore: null,
+        createdAtBefore: now.toISOString(),
       }
     }
     case "WEEK": {
@@ -66,7 +66,6 @@ type Props = {
   workType: IntrospectionEnum<"WorkType"> | null
   isPromptPublic: boolean | null
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
-  // ★ 期間指定を追加
   timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
 }
@@ -107,12 +106,11 @@ export function HomeWorksSection(props: Props) {
         ...(props.style && {
           style: props.style,
         }),
-
-        // isNowCreatedAt: true は継承
-        isNowCreatedAt: true,
+        ...(!createdAtAfter && !createdAtBefore && { isNowCreatedAt: true }),
 
         // ★ 期間指定
-        ...(createdAtAfter && { createdAtAfter }),
+        ...(createdAtAfter && { createdAtAfter: createdAtAfter }),
+        ...(createdAtBefore && { beforeCreatedAt: createdAtBefore }),
       },
     },
   })

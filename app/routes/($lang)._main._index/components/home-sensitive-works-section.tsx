@@ -17,6 +17,48 @@ import {
   HomeVideosWorksSection,
 } from "~/routes/($lang)._main._index/components/home-video-works-section"
 
+/**
+ * 期間指定による createdAt 範囲を計算するヘルパー関数
+ */
+function getTimeRangeDates(timeRange: string) {
+  // 実際のロジックは要件に応じて JST に合わせるなど調整してください
+  const now = new Date()
+  now.setHours(0, 0, 0, 0) // 当日 0:00 に合わせる
+
+  switch (timeRange) {
+    case "TODAY": {
+      // 本日: 当日 0:00 以降
+      return {
+        createdAtAfter: now.toISOString(),
+        createdAtBefore: null,
+      }
+    }
+    case "YESTERDAY": {
+      // 昨日: 昨日の 0:00 〜 本日の 0:00
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      return {
+        createdAtAfter: yesterday.toISOString(),
+        createdAtBefore: now.toISOString(),
+      }
+    }
+    case "WEEK": {
+      // 1週間: 7日前の 0:00 〜
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      return {
+        createdAtAfter: weekAgo.toISOString(),
+        createdAtBefore: null,
+      }
+    }
+    default: {
+      // ALL (全期間) の場合は指定なし
+      return {
+        createdAtAfter: null,
+        createdAtBefore: null,
+      }
+    }
+  }
+}
+
 type Props = {
   isCropped?: boolean
   page: number
@@ -24,6 +66,7 @@ type Props = {
   workType: IntrospectionEnum<"WorkType"> | null
   isPromptPublic: boolean | null
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
+  timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
 }
 
@@ -34,6 +77,11 @@ export function HomeSensitiveWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const perPageCount = props.workType === "VIDEO" ? 8 : 32
+
+  // 期間指定から createdAtAfter/before を算出
+  const { createdAtAfter, createdAtBefore } = getTimeRangeDates(
+    props.timeRange || "ALL",
+  )
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
     skip: appContext.isLoading,
@@ -56,7 +104,11 @@ export function HomeSensitiveWorksSection(props: Props) {
         ...(props.style && {
           style: props.style,
         }),
-        isNowCreatedAt: true,
+        ...(!createdAtAfter && !createdAtBefore && { isNowCreatedAt: true }),
+
+        // ★ 期間指定
+        ...(createdAtAfter && { createdAtAfter: createdAtAfter }),
+        ...(createdAtBefore && { beforeCreatedAt: createdAtBefore }),
       },
     },
   })

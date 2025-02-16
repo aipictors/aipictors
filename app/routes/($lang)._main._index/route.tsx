@@ -317,7 +317,10 @@ export default function Index() {
       newSearchParams.delete("page")
     }
 
-    // ここで timeRange などは残したいのであえて触らない
+    // ★ 期間指定
+    if (currentTab === "new") {
+      newSearchParams.set("timeRange", timeRange)
+    }
 
     updateQueryParams(newSearchParams)
   }, [
@@ -326,6 +329,7 @@ export default function Index() {
     followUserFeedPage,
     followTagFeedPage,
     isMounted,
+    timeRange,
     updateQueryParams,
     searchParams,
   ])

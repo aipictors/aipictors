@@ -27,12 +27,11 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs"
 import { AuthContext } from "~/contexts/auth-context"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
-import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
-import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/components/home-recommended-work-list"
-import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
-import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
 import { HomeSensitiveWorksTagSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-tag-section"
+import { HomeWorkSection } from "~/routes/($lang)._main._index/components/home-work-section"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME_3D, undefined, props.params.lang)
@@ -54,7 +53,7 @@ export async function loader(props: LoaderFunctionArgs) {
   // }
 
   // 下記カテゴリからランダムに2つ選んで返す
-  const categories = ["おっぱい", "JK"]
+  const categories = ["フォト", "コスプレ"]
 
   const getRandomCategories = () => {
     const currentTime = new Date()
@@ -115,12 +114,23 @@ export async function loader(props: LoaderFunctionArgs) {
     generationDateText,
     firstTag: randomCategories[0],
     secondTag: randomCategories[1],
+    headers: {
+      "Cache-Control": config.cacheControl.home,
+    },
   }
 }
 
 export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.home,
+  "Cache-Control": config.cacheControl.oneDay,
 })
+
+const useUpdateQueryParams = () => {
+  const updateQueryParams = (newParams: URLSearchParams) => {
+    const newUrl = `${window.location.pathname}?${newParams.toString()}`
+    window.history.replaceState(null, "", newUrl)
+  }
+  return updateQueryParams
+}
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
@@ -142,6 +152,10 @@ export default function Index() {
 
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
+
+  const [timeRange, setTimeRange] = useState<string>(
+    searchParams.get("timeRange") || "ALL",
+  )
 
   useEffect(() => {
     if (!searchParams.toString() || searchParams.get("tab") === "home") {
@@ -171,6 +185,11 @@ export default function Index() {
     const sort = searchParams.get("sortType")
     if (sort) setSortType(sort as IntrospectionEnum<"WorkOrderBy">)
 
+    const tr = searchParams.get("timeRange")
+    if (tr && tr !== "ALL") {
+      setTimeRange(tr)
+    }
+
     setIsMounted(true)
   }, [searchParams])
 
@@ -180,11 +199,16 @@ export default function Index() {
       return
     }
 
+    const newSearchParams = new URLSearchParams(searchParams)
+
     if (newWorksPage >= 0) {
-      searchParams.set("page", newWorksPage.toString())
-      updateQueryParams(searchParams)
+      newSearchParams.set("page", newWorksPage.toString())
     }
-  }, [newWorksPage, searchParams, updateQueryParams])
+
+    newSearchParams.set("timeRange", timeRange)
+
+    updateQueryParams(newSearchParams)
+  }, [newWorksPage, timeRange, searchParams, updateQueryParams])
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
@@ -230,6 +254,20 @@ export default function Index() {
   }
 
   const appContext = useContext(AuthContext)
+
+  // ★ 期間指定
+  const handleTimeRangeChange = (value: string) => {
+    const newSearchParams = new URLSearchParams(searchParams)
+
+    setTimeRange(value)
+    if (value === "ALL") {
+      newSearchParams.delete("timeRange")
+    } else {
+      newSearchParams.set("timeRange", value)
+    }
+
+    updateQueryParams(newSearchParams)
+  }
 
   // 推薦作品
   const { data: recommendedWorksResp } = useQuery(WorksQuery, {
@@ -278,7 +316,7 @@ export default function Index() {
                 style="REAL"
               />
               {workDisplayed !== undefined && workDisplayed?.length > 0 && (
-                <HomeRecommendedWorkList
+                <HomeWorkSection
                   title={t("ユーザからの推薦", "Recommended by users")}
                   works={workDisplayed}
                   isCropped={false}
@@ -291,93 +329,121 @@ export default function Index() {
 
         <TabsContent value="new">
           <div className="space-y-4">
-            <div className="flex space-x-4">
-              <Select
-                value={workType ? workType : ""}
-                onValueChange={handleWorkTypeChange}
-              >
-                <SelectTrigger>
+            {/* ▼ 絞り込み用のセレクト群 */}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex w-full space-x-4">
+                {/* 種類 */}
+                <Select
+                  value={workType ? workType : ""}
+                  onValueChange={handleWorkTypeChange}
+                >
+                  <SelectTrigger className="min-w-[120px]">
+                    <SelectValue
+                      placeholder={
+                        workType
+                          ? toWorkTypeText({
+                              type: workType,
+                              lang: location,
+                            })
+                          : t("種類", "Type")
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
+                    <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
+                    <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
+                    <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
+                    <SelectItem value="COLUMN">
+                      {t("コラム", "Column")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* プロンプト有無 */}
+                <Select
+                  value={
+                    isPromptPublic === null
+                      ? "ALL"
+                      : isPromptPublic
+                        ? "prompt"
+                        : "no-prompt"
+                  }
+                  onValueChange={handlePromptChange}
+                >
+                  <SelectTrigger className="min-w-[120px]">
+                    <SelectValue
+                      placeholder={
+                        isPromptPublic === null
+                          ? t("プロンプト有無", "Prompt")
+                          : isPromptPublic
+                            ? t("あり", "Yes")
+                            : t("なし", "No")
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">
+                      {t("プロンプト有無", "Prompt")}
+                    </SelectItem>
+                    <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
+                    <SelectItem value="no-prompt">{t("なし", "No")}</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* ソート */}
+                <Select
+                  value={sortType ? sortType : ""}
+                  onValueChange={handleSortTypeChange}
+                >
+                  <SelectTrigger className="min-w-[120px]">
+                    <ArrowDownWideNarrow />
+                    <SelectValue
+                      placeholder={sortType ? sortType : t("最新", "Latest")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DATE_CREATED">
+                      {t("最新", "Latest")}
+                    </SelectItem>
+                    <SelectItem value="LIKES_COUNT">
+                      {t("最も人気", "Most Liked")}
+                    </SelectItem>
+                    <SelectItem value="COMMENTS_COUNT">
+                      {t("コメント数", "Most Comments")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 期間指定 */}
+              <Select value={timeRange} onValueChange={handleTimeRangeChange}>
+                <SelectTrigger className="min-w-[120px]">
                   <SelectValue
                     placeholder={
-                      workType
-                        ? toWorkTypeText({
-                            type: workType,
-                            lang: location,
-                          })
-                        : t("種類", "Type")
+                      timeRange === "ALL" ? t("全期間", "All time") : timeRange
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
-                  <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
-                  <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
-                  <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
-                  <SelectItem value="COLUMN">
-                    {t("コラム", "Column")}
+                  <SelectItem value="ALL">{t("全期間", "All time")}</SelectItem>
+                  <SelectItem value="TODAY">{t("本日", "Today")}</SelectItem>
+                  <SelectItem value="YESTERDAY">
+                    {t("昨日", "Yesterday")}
                   </SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={
-                  isPromptPublic === null
-                    ? "ALL"
-                    : isPromptPublic
-                      ? "prompt"
-                      : "no-prompt"
-                }
-                onValueChange={handlePromptChange}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      isPromptPublic === null
-                        ? t("プロンプト有無", "Prompt")
-                        : isPromptPublic
-                          ? t("あり", "Yes")
-                          : t("なし", "No")
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">
-                    {t("プロンプト有無", "Prompt")}
-                  </SelectItem>
-                  <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
-                  <SelectItem value="no-prompt">{t("なし", "No")}</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={sortType ? sortType : ""}
-                onValueChange={handleSortTypeChange}
-              >
-                <SelectTrigger>
-                  <ArrowDownWideNarrow />
-                  <SelectValue
-                    placeholder={sortType ? sortType : t("最新", "Latest")}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="DATE_CREATED">
-                    {t("最新", "Latest")}
-                  </SelectItem>
-                  <SelectItem value="LIKES_COUNT">
-                    {t("最も人気", "Most Liked")}
-                  </SelectItem>
-                  <SelectItem value="COMMENTS_COUNT">
-                    {t("コメント数", "Most Commented")}
-                  </SelectItem>
+                  <SelectItem value="WEEK">{t("週間", "Week")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <Suspense fallback={<AppLoadingPage />}>
-              <HomeWorksSection
+              <HomeSensitiveWorksSection
                 page={newWorksPage}
                 setPage={setNewWorksPage}
                 workType={workType}
                 isPromptPublic={isPromptPublic}
                 sortType={sortType}
                 style="REAL"
+                timeRange={timeRange}
               />
             </Suspense>
           </div>
@@ -386,6 +452,15 @@ export default function Index() {
     </>
   )
 }
+
+const WorksQuery = graphql(
+  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...HomePromotionWork
+    }
+  }`,
+  [HomePromotionWorkFragment],
+)
 
 const query = graphql(
   `query HomeQuery(
@@ -471,13 +546,4 @@ const query = graphql(
     # }
   }`,
   [HomeBannerWorkFragment, HomePromotionWorkFragment, HomeTagWorkFragment],
-)
-
-const WorksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...HomePromotionWork
-    }
-  }`,
-  [HomePromotionWorkFragment],
 )

@@ -155,6 +155,10 @@ export default function Index() {
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
+  const [timeRange, setTimeRange] = useState<string>(
+    searchParams.get("timeRange") || "ALL",
+  )
+
   useEffect(() => {
     if (!searchParams.toString() || searchParams.get("tab") === "home") {
       return
@@ -183,6 +187,11 @@ export default function Index() {
     const sort = searchParams.get("sortType")
     if (sort) setSortType(sort as IntrospectionEnum<"WorkOrderBy">)
 
+    const tr = searchParams.get("timeRange")
+    if (tr && tr !== "ALL") {
+      setTimeRange(tr)
+    }
+
     setIsMounted(true)
   }, [searchParams])
 
@@ -192,11 +201,16 @@ export default function Index() {
       return
     }
 
+    const newSearchParams = new URLSearchParams(searchParams)
+
     if (newWorksPage >= 0) {
-      searchParams.set("page", newWorksPage.toString())
-      updateQueryParams(searchParams)
+      newSearchParams.set("page", newWorksPage.toString())
     }
-  }, [newWorksPage, searchParams, updateQueryParams])
+
+    newSearchParams.set("timeRange", timeRange)
+
+    updateQueryParams(newSearchParams)
+  }, [newWorksPage, timeRange, searchParams, updateQueryParams])
 
   const handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
@@ -241,6 +255,20 @@ export default function Index() {
     updateQueryParams(searchParams)
   }
 
+  // ★ 期間指定
+  const handleTimeRangeChange = (value: string) => {
+    const newSearchParams = new URLSearchParams(searchParams)
+
+    setTimeRange(value)
+    if (value === "ALL") {
+      newSearchParams.delete("timeRange")
+    } else {
+      newSearchParams.set("timeRange", value)
+    }
+
+    updateQueryParams(newSearchParams)
+  }
+
   const location = useLocale()
 
   if (data === null) {
@@ -280,84 +308,109 @@ export default function Index() {
 
         <TabsContent value="new">
           <div className="space-y-4">
-            <div className="flex space-x-4">
-              <Select
-                value={workType ? workType : ""}
-                onValueChange={handleWorkTypeChange}
-              >
-                <SelectTrigger>
+            {/* ▼ 絞り込み用のセレクト群 */}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex w-full space-x-4">
+                {/* 種類 */}
+                <Select
+                  value={workType ? workType : ""}
+                  onValueChange={handleWorkTypeChange}
+                >
+                  <SelectTrigger className="min-w-[120px]">
+                    <SelectValue
+                      placeholder={
+                        workType
+                          ? toWorkTypeText({
+                              type: workType,
+                              lang: location,
+                            })
+                          : t("種類", "Type")
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
+                    <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
+                    <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
+                    <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
+                    <SelectItem value="COLUMN">
+                      {t("コラム", "Column")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* プロンプト有無 */}
+                <Select
+                  value={
+                    isPromptPublic === null
+                      ? "ALL"
+                      : isPromptPublic
+                        ? "prompt"
+                        : "no-prompt"
+                  }
+                  onValueChange={handlePromptChange}
+                >
+                  <SelectTrigger className="min-w-[120px]">
+                    <SelectValue
+                      placeholder={
+                        isPromptPublic === null
+                          ? t("プロンプト有無", "Prompt")
+                          : isPromptPublic
+                            ? t("あり", "Yes")
+                            : t("なし", "No")
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ALL">
+                      {t("プロンプト有無", "Prompt")}
+                    </SelectItem>
+                    <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
+                    <SelectItem value="no-prompt">{t("なし", "No")}</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* ソート */}
+                <Select
+                  value={sortType ? sortType : ""}
+                  onValueChange={handleSortTypeChange}
+                >
+                  <SelectTrigger className="min-w-[120px]">
+                    <ArrowDownWideNarrow />
+                    <SelectValue
+                      placeholder={sortType ? sortType : t("最新", "Latest")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DATE_CREATED">
+                      {t("最新", "Latest")}
+                    </SelectItem>
+                    <SelectItem value="LIKES_COUNT">
+                      {t("最も人気", "Most Liked")}
+                    </SelectItem>
+                    <SelectItem value="COMMENTS_COUNT">
+                      {t("コメント数", "Most Comments")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 期間指定 */}
+              <Select value={timeRange} onValueChange={handleTimeRangeChange}>
+                <SelectTrigger className="min-w-[120px]">
                   <SelectValue
                     placeholder={
-                      workType
-                        ? toWorkTypeText({
-                            type: workType,
-                            lang: location,
-                          })
-                        : t("種類", "Type")
+                      timeRange === "ALL" ? t("全期間", "All time") : timeRange
                     }
                   />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
-                  <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
-                  <SelectItem value="VIDEO">{t("動画", "Video")}</SelectItem>
-                  <SelectItem value="NOVEL">{t("小説", "Novel")}</SelectItem>
-                  <SelectItem value="COLUMN">
-                    {t("コラム", "Column")}
+                  <SelectItem value="ALL">{t("全期間", "All time")}</SelectItem>
+                  <SelectItem value="TODAY">{t("本日", "Today")}</SelectItem>
+                  <SelectItem value="YESTERDAY">
+                    {t("昨日", "Yesterday")}
                   </SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={
-                  isPromptPublic === null
-                    ? "ALL"
-                    : isPromptPublic
-                      ? "prompt"
-                      : "no-prompt"
-                }
-                onValueChange={handlePromptChange}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      isPromptPublic === null
-                        ? t("プロンプト有無", "Prompt Presence")
-                        : isPromptPublic
-                          ? t("あり", "Present")
-                          : t("なし", "Absent")
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">
-                    {t("プロンプト有無", "Prompt Presence")}
-                  </SelectItem>
-                  <SelectItem value="prompt">{t("あり", "Present")}</SelectItem>
-                  <SelectItem value="no-prompt">
-                    {t("なし", "Absent")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={sortType ? sortType : ""}
-                onValueChange={handleSortTypeChange}
-              >
-                <SelectTrigger>
-                  <ArrowDownWideNarrow />
-                  <SelectValue
-                    placeholder={sortType ? sortType : t("最新", "Latest")}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="DATE_CREATED">
-                    {t("最新", "Latest")}
-                  </SelectItem>
-                  <SelectItem value="LIKES_COUNT">
-                    {t("最も人気", "Most Popular")}
-                  </SelectItem>
-                  <SelectItem value="COMMENTS_COUNT">
-                    {t("コメント数", "Most Commented")}
-                  </SelectItem>
+                  <SelectItem value="WEEK">{t("週間", "Week")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -369,6 +422,7 @@ export default function Index() {
                 isPromptPublic={isPromptPublic}
                 sortType={sortType}
                 style="ILLUSTRATION"
+                timeRange={timeRange}
               />
             </Suspense>
           </div>
