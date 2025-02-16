@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react"
+import { useContext, useState } from "react"
 import { Dialog, DialogContent } from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
 import { useQuery } from "@apollo/client/index"
@@ -47,19 +47,14 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [page, setPage] = useState(0)
-  const [selectedPage, setSelectedPage] = useState(0)
+  const [page, setPage] = useState(0) // "未選択"タブ用ページ
+  const [selectedPage, setSelectedPage] = useState(0) // "選択中"タブ用ページ
   const [tab, setTab] = useState<"NO_SELECTED" | "SELECTED">("NO_SELECTED")
 
   // 並び替えトグル (true でドラッグモード)
   const [isDragMode, setIsDragMode] = useState(false)
 
-  // 選択された作品をオンメモリで管理（表示用）
-  const [selectedWorksOnMemory, setSelectedWorksOnMemory] = useState<
-    FragmentOf<typeof DialogWorkFragment>[]
-  >([])
-
-  // ======== 全作品（NO_SELECTED 用） ========
+  // ======== 未選択タブ用クエリ (全作品 + ページング) ========
   const worksResult = useQuery(worksQuery, {
     skip: appContext.isLoading,
     variables: {
@@ -74,7 +69,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   })
   const works = worksResult.data?.works ?? []
 
-  // ======== 全作品数 (ページネーション) ========
+  // ======== 全作品数 (未選択タブのページネーション) ========
   const worksCountResp = useQuery(worksCountQuery, {
     skip: appContext.isLoading,
     variables: {
@@ -85,24 +80,48 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   })
   const worksMaxCount = worksCountResp.data?.worksCount ?? 0
 
+  // ======== 選択中タブ用クエリ (selectedWorkIds に合致する作品) ========
+  const selectedWorksResult = useQuery(worksQuery, {
+    skip: appContext.isLoading || props.selectedWorkIds.length === 0,
+    variables: {
+      offset: selectedPage * 32,
+      limit: 32,
+      where: {
+        ids: props.selectedWorkIds,
+        orderBy: "DATE_CREATED",
+        sort: "DESC",
+      },
+    },
+  })
+  const selectedWorksQueryData = selectedWorksResult.data?.works ?? []
+
+  // ======== 選択中タブの作品総数 (ページネーション) ========
+  const selectedWorksCountResp = useQuery(worksCountQuery, {
+    skip: appContext.isLoading || props.selectedWorkIds.length === 0,
+    variables: {
+      where: {
+        ids: props.selectedWorkIds,
+      },
+    },
+  })
+  const selectedWorksMaxCount = selectedWorksCountResp.data?.worksCount ?? 0
+
   // ======== タイトルを省略するヘルパー ========
   const truncateTitle = (title: string, maxLength: number) =>
     title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
 
-  // ======== 作品クリック (未選択タブ) ========
+  // ======== (未選択タブ) 作品クリック ========
   const handleWorkClick = (work: FragmentOf<typeof DialogWorkFragment>) => {
-    // 既に選択中なら解除、そうでなければ選択
     const isAlreadySelected = props.selectedWorkIds.includes(work.id)
     if (isAlreadySelected) {
+      // 選択解除
       const newIds = props.selectedWorkIds.filter((id) => id !== work.id)
       props.setSelectedWorkIds(newIds)
-      setSelectedWorksOnMemory((prev) => prev.filter((w) => w.id !== work.id))
     } else {
-      if (!props.limit || selectedWorksOnMemory.length < props.limit) {
+      // 新規選択
+      if (!props.limit || props.selectedWorkIds.length < props.limit) {
         const newIds = [...props.selectedWorkIds, work.id]
         props.setSelectedWorkIds(newIds)
-        // 作品をオンメモリにも追加
-        setSelectedWorksOnMemory((prev) => [...prev, work])
       } else {
         toast(
           t(
@@ -114,54 +133,11 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     }
   }
 
-  const handleWorkSelectorClick = (
-    work: FragmentOf<typeof DialogWorkFragment>,
-  ) => {
-    if (selectedWorksOnMemory.some((w) => w.id === work.id)) {
-      props.setSelectedWorkIds(
-        props.selectedWorkIds.filter((w) => w !== work.id),
-      )
-      setSelectedWorksOnMemory(
-        selectedWorksOnMemory.filter((w) => w.id !== work.id),
-      )
-    } else {
-      if (!props.limit || selectedWorksOnMemory.length < props.limit) {
-        props.setSelectedWorkIds([...props.selectedWorkIds, work.id])
-        setSelectedWorksOnMemory([...selectedWorksOnMemory, work])
-      } else {
-        toast(
-          t(
-            `選択できる作品数は${props.limit}つまでです。`,
-            `You can select up to ${props.limit} works.`,
-          ),
-        ) // 翻訳対応
-      }
-    }
-  }
-
-  // ======== 選択中の作品を props.selectedWorkIds の順番でセット ========
-  useEffect(() => {
-    // worksResult.data.works だけでは全部取得できないかもしれないため、
-    // 全作品の中からフィルタする方式なら、本来はページネーション外も全部要る。
-    // ここでは「既に取得できている作品からのフィルタ」として簡易実装。
-
-    // もし全作品を取得できていない場合は適宜クエリ追加 or
-    // あるいは親コンポーネントで "selectedWorkIdsに対応する作品" を全部渡す設計などに切り替える。
-
-    // とりあえず worksResult.data.works から該当分をフィルタ
-    const allWorks = worksResult.data?.works ?? []
-    // まずフィルタ
-    const filtered = allWorks.filter((w) =>
-      props.selectedWorkIds.includes(w.id),
-    )
-    // 順番どおりソート
-    const sorted = props.selectedWorkIds
-      .map((id) => filtered.find((w) => w.id === id))
-      .filter(Boolean) as FragmentOf<typeof DialogWorkFragment>[]
-
-    // state更新
-    setSelectedWorksOnMemory(sorted)
-  }, [props.selectedWorkIds, worksResult.data])
+  // ======== 「選択中」タブで表示する作品を ID の順番に並び替えた配列を生成 ========
+  // DnD などで並び順を変更するときは、props.selectedWorkIds こそが順序のソースになる想定。
+  const sortedSelectedWorks = props.selectedWorkIds
+    .map((id) => selectedWorksQueryData.find((w) => w.id === id))
+    .filter(Boolean) as FragmentOf<typeof DialogWorkFragment>[]
 
   // ======== 未選択タブの描画 ========
   const renderWorks = (
@@ -203,7 +179,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   // ドラッグ開始
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
-    const found = selectedWorksOnMemory.find((w) => w.id === active.id)
+    const found = sortedSelectedWorks.find((w) => w.id === active.id)
     if (found) {
       setActiveDragItem(found)
     }
@@ -223,11 +199,6 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
       if (oldIndex !== -1 && newIndex !== -1) {
         const newIds = arrayMove(props.selectedWorkIds, oldIndex, newIndex)
         props.setSelectedWorkIds(newIds)
-
-        // onMemory も同様に並び替える
-        const oldArray = selectedWorksOnMemory
-        const newArray = arrayMove(oldArray, oldIndex, newIndex)
-        setSelectedWorksOnMemory(newArray)
       }
     }
     setActiveDragItem(null)
@@ -260,9 +231,6 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                   (id) => id !== work.id,
                 )
                 props.setSelectedWorkIds(newIds)
-                setSelectedWorksOnMemory((prev) =>
-                  prev.filter((w) => w.id !== work.id),
-                )
               }
             : undefined
         }
@@ -294,11 +262,11 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={props.selectedWorkIds} // 順番通りに
+          items={props.selectedWorkIds} // 順番どおりに
           strategy={rectSortingStrategy}
         >
           <div className="flex flex-wrap">
-            {selectedWorksOnMemory.map((work) => (
+            {sortedSelectedWorks.map((work) => (
               <SortableItem key={work.id} work={work} />
             ))}
           </div>
@@ -318,9 +286,8 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
       </DndContext>
     )
   }
-  // ========== ドラッグ＆ドロップ ここまで ==========
 
-  // もし未選択タブで作品が全くない場合
+  // もし未選択タブで作品が全くない場合 (かつ、タブもNO_SELECTED) の例
   if (!works?.length && tab === "NO_SELECTED") {
     return (
       <div className="p-4">
@@ -334,8 +301,8 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
 
   return (
     <>
-      {/* 選択中が7件を超えたら「すべて見る」リンク */}
-      {selectedWorksOnMemory.length > 7 && (
+      {/* 「すべて見る」リンク：選択中が7件を超えたら表示例 */}
+      {props.selectedWorkIds.length > 7 && (
         // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <p
           onClick={() => setIsOpen(true)}
@@ -348,9 +315,9 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         </p>
       )}
 
-      {/* ダイアログ閉じている時：選択中先頭3件だけサムネ表示 */}
+      {/* ダイアログ外では先頭3件だけサムネ表示 */}
       <div className="flex flex-wrap items-center">
-        {selectedWorksOnMemory.slice(0, 3).map((work) => (
+        {sortedSelectedWorks.slice(0, 3).map((work) => (
           <div key={work.id} className="relative m-2 h-16 w-16 md:h-24 md:w-24">
             <img
               className="h-16 w-16 rounded-md object-cover md:h-24 md:w-24"
@@ -407,7 +374,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             {tab === "NO_SELECTED" && (
               <div className="flex flex-wrap">{renderWorks(works)}</div>
             )}
-            {tab === "SELECTED" && isDragMode && (
+            {tab === "SELECTED" && (
               <>
                 {/* 並び替えトグル */}
                 <div className="mb-4 flex items-center gap-2">
@@ -420,27 +387,14 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                       : t("並び替え", "Sort")}
                   </Button>
                 </div>
-
-                {/* DnD表示 */}
-                {renderSelectedWorksDnD()}
-              </>
-            )}
-            {tab === "SELECTED" && !isDragMode && (
-              <>
-                {/* 並び替えトグル */}
-                <div className="mb-4 flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsDragMode(!isDragMode)}
-                  >
-                    {isDragMode
-                      ? t("並び替え終了", "Stop Sorting")
-                      : t("並び替え", "Sort")}
-                  </Button>
-                </div>
-                <div className="flex flex-wrap">
-                  {renderWorks(selectedWorksOnMemory)}
-                </div>{" "}
+                {/* DnD表示 or クリック解除表示 */}
+                {isDragMode ? (
+                  renderSelectedWorksDnD()
+                ) : (
+                  <div className="flex flex-wrap">
+                    {renderWorks(sortedSelectedWorks)}
+                  </div>
+                )}
               </>
             )}
           </ScrollArea>
@@ -457,7 +411,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
           {tab === "SELECTED" && (
             <ResponsivePagination
               perPage={32}
-              maxCount={props.selectedWorkIds.length}
+              maxCount={selectedWorksMaxCount}
               currentPage={selectedPage}
               onPageChange={(p: number) => setSelectedPage(p)}
             />
@@ -478,6 +432,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
 }
 
 // ==== GraphQL Fragment ====
+// 作品サムネ・タイトル用のフラグメント
 export const DialogWorkFragment = graphql(`
   fragment DialogWork on WorkNode @_unmask {
     id
@@ -487,12 +442,14 @@ export const DialogWorkFragment = graphql(`
 `)
 
 // ==== GraphQL Queries ====
+// 総数取得 (任意の where 条件に対応)
 const worksCountQuery = graphql(`
   query WorksCount($where: WorksWhereInput) {
     worksCount(where: $where)
   }
 `)
 
+// ページング付き作品一覧取得 (任意の where 条件に対応)
 const worksQuery = graphql(
   `
     query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
