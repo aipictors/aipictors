@@ -5,7 +5,7 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
-import { Link, useNavigation, useLocation, useNavigate } from "@remix-run/react"
+import { useNavigation, useLocation, useNavigate } from "@remix-run/react"
 import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
 import { useBoolean } from "usehooks-ts"
@@ -38,46 +38,38 @@ function HomeHeader(props: Props) {
   const navigate = useNavigate()
 
   const authContext = useContext(AuthContext)
-
   const [searchText, setSearchText] = useState("")
 
   const sensitivePath = /\/r($|\/)/.test(location.pathname)
-
   const getSensitiveLink = (path: string) => {
-    // Determine if the path starts with /r
+    // パスが "/r" から始まる場合は空文字を返す
     if (/^\/r($|\s)/.test(path)) {
-      return "" // Return empty string for invalid paths
+      return ""
     }
-
+    // 現在のパスが sensitive なら "/r" を付与
     if (sensitivePath) {
       return `/r${path}`
     }
-
     return path
   }
 
   const onSearch = () => {
     const trimmedText = searchText.trim()
-
-    // '#' を取り除いた新しい文字列
+    // '#' を除去
     const sanitizedText = trimmedText.replace(/#/g, "")
-
-    // 他の禁止文字をチェック
+    // 禁止文字チェック
     const invalidChars = ["%", "/", "¥"]
     const hasInvalidChar = invalidChars.some((char) =>
       sanitizedText.includes(char),
     )
-
     if (sanitizedText === "") {
       navigate(getSensitiveLink("/search"))
       return
     }
-
     if (hasInvalidChar) {
       toast("入力された検索文字列には使用できない文字が含まれています。")
       return
     }
-
     const encodedText = encodeURIComponent(sanitizedText)
     const baseUrl = `/tags/${encodedText}`
     navigate(getSensitiveLink(baseUrl))
@@ -89,12 +81,10 @@ function HomeHeader(props: Props) {
     viewerIsExistedNewNotificationQuery,
     {},
   )
-
   const isExistedNewNotification =
     isExistedNewNotificationData.data?.viewer?.isExistedNewNotification
 
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
-
   const [isExistedNewNotificationState, setIsExistedNewNotificationState] =
     useState(isExistedNewNotification ?? false)
 
@@ -103,14 +93,9 @@ function HomeHeader(props: Props) {
       onSearch()
     }
   }
-
-  const onToggleSearchForm = () => {
-    setIsSearchFormOpen((prev) => !prev)
-  }
-
-  const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onToggleSearchForm = () => setIsSearchFormOpen((prev) => !prev)
+  const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) =>
     setSearchText(event.target.value)
-  }
 
   const {
     value: isOpenLogoutDialog,
@@ -119,17 +104,21 @@ function HomeHeader(props: Props) {
   } = useBoolean()
 
   const [isOpen, setIsOpen] = useState(false)
-
-  const close = () => {
-    setIsOpen(false)
-  }
-
+  const close = () => setIsOpen(false)
   const t = useTranslation()
 
   const isAnnouncementPath =
     location.pathname === "/" || location.pathname === "/generation"
-
   const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
+
+  // ヘルパー関数：内部リンクへ遷移
+  const navigateToInternal = (path: string) => {
+    navigate(getSensitiveLink(path))
+  }
+  // ヘルパー関数：外部リンクの場合は新規タブで開く
+  const navigateToExternal = (url: string) => {
+    window.open(url, "_blank", "noopener,noreferrer")
+  }
 
   return (
     <Suspense fallback={<AppLoadingPage />}>
@@ -139,14 +128,21 @@ function HomeHeader(props: Props) {
           announcementData?.emergencyAnnouncements &&
           announcementData.emergencyAnnouncements.content.length > 0 &&
           (announcementData.emergencyAnnouncements.url.length > 0 ? (
-            <Link
-              to={announcementData.emergencyAnnouncements.url}
+            <Button
+              variant="ghost"
               className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 md:px-2"
+              onClick={() =>
+                announcementData.emergencyAnnouncements.url.startsWith("http")
+                  ? navigateToExternal(
+                      announcementData.emergencyAnnouncements.url,
+                    )
+                  : navigate(announcementData.emergencyAnnouncements.url)
+              }
             >
               <div className="opacity-80">
                 {announcementData.emergencyAnnouncements.content}
               </div>
-            </Link>
+            </Button>
           ) : (
             <div className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 md:px-2">
               <div className="opacity-80">
@@ -159,24 +155,25 @@ function HomeHeader(props: Props) {
         <div className="flex min-w-fit items-center gap-x-2 md:flex">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant={"ghost"} size={"icon"}>
+              <Button variant="ghost" size="icon">
                 <MenuIcon />
               </Button>
             </SheetTrigger>
-            <SheetContent className="p-0" side={"left"}>
+            <SheetContent className="p-0" side="left">
               <ScrollArea className="h-full p-4">
                 <HomeRouteList onClickMenuItem={close} />
               </ScrollArea>
             </SheetContent>
           </Sheet>
           <div className="flex items-center">
-            <Link
+            <Button
+              variant="ghost"
               className="hidden items-center space-x-2 md:flex"
-              to={getSensitiveLink("/")}
+              onClick={() => navigate(getSensitiveLink("/"))}
             >
               {navigation.state === "loading" && (
                 <div className="flex h-8 w-8 items-center justify-center">
-                  <Loader2Icon className={"h-8 w-8 animate-spin"} />
+                  <Loader2Icon className="h-8 w-8 animate-spin" />
                 </div>
               )}
               {navigation.state !== "loading" && (
@@ -191,14 +188,14 @@ function HomeHeader(props: Props) {
               <div className="hidden flex-grow flex-row items-center md:flex">
                 <span className="font-bold text-xl">{title}</span>
               </div>
-            </Link>
+            </Button>
           </div>
           {!isSearchFormOpen && (
             <Button
               className="block md:hidden"
               onClick={onToggleSearchForm}
-              variant={"ghost"}
-              size={"icon"}
+              variant="ghost"
+              size="icon"
             >
               <Search className="m-auto w-auto" />
             </Button>
@@ -207,21 +204,25 @@ function HomeHeader(props: Props) {
         <div className="flex w-full justify-end gap-x-2">
           <div className="hidden w-full items-center space-x-2 md:flex">
             <div className="flex w-full justify-start space-x-2 font-semibold">
-              <Link to={getSensitiveLink("/themes")}>
-                <Button variant={"ghost"}>{t("お題", "Theme")}</Button>
-              </Link>
-              <Link
-                className="hidden lg:block"
-                to={getSensitiveLink("/rankings")}
+              <Button
+                variant="ghost"
+                onClick={() => navigate(getSensitiveLink("/themes"))}
               >
-                <Button variant={"ghost"}>{t("ランキング", "Ranking")}</Button>
-              </Link>
-              <Link to={getSensitiveLink("/?tab=follow-user")}>
-                <Button variant={"ghost"}>
-                  {t("フォロー新着", "Followed new posts")}
-                </Button>
-              </Link>
-
+                {t("お題", "Theme")}
+              </Button>
+              <Button
+                variant="ghost"
+                className="hidden lg:block"
+                onClick={() => navigate(getSensitiveLink("/rankings"))}
+              >
+                {t("ランキング", "Ranking")}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => navigate(getSensitiveLink("/?tab=follow-user"))}
+              >
+                {t("フォロー新着", "Followed new posts")}
+              </Button>
               <div className="w-full flex-1">
                 <Input
                   onChange={onChangeSearchText}
@@ -230,7 +231,7 @@ function HomeHeader(props: Props) {
                 />
               </div>
             </div>
-            <Button onClick={onSearch} variant={"ghost"} size={"icon"}>
+            <Button onClick={onSearch} variant="ghost" size="icon">
               <Search className="w-16" />
             </Button>
             <Separator orientation="vertical" />
@@ -240,8 +241,8 @@ function HomeHeader(props: Props) {
               <Button
                 className="block md:hidden"
                 onClick={onToggleSearchForm}
-                variant={"ghost"}
-                size={"icon"}
+                variant="ghost"
+                size="icon"
               >
                 <MoveLeft className="w-8" />
               </Button>
@@ -254,30 +255,36 @@ function HomeHeader(props: Props) {
           ) : (
             <>
               <div className="hidden space-x-2 md:flex">
-                <Link to={getSensitiveLink("/generation")}>
-                  <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
-                </Link>
-                <Link to={getSensitiveLink("/new/image")}>
-                  <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
-                </Link>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate(getSensitiveLink("/generation"))}
+                >
+                  {t("生成", "Generate")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate(getSensitiveLink("/new/image"))}
+                >
+                  {t("投稿", "Post")}
+                </Button>
               </div>
               <div className="flex space-x-2 md:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant={"ghost"} size={"icon"}>
+                    <Button variant="ghost" size="icon">
                       <Plus />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem asChild>
-                      <Link to={getSensitiveLink("/generation")}>
-                        {t("生成", "Generate")}
-                      </Link>
+                    <DropdownMenuItem
+                      onClick={() => navigate(getSensitiveLink("/generation"))}
+                    >
+                      {t("生成", "Generate")}
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={getSensitiveLink("/new/image")}>
-                        {t("投稿", "Post")}
-                      </Link>
+                    <DropdownMenuItem
+                      onClick={() => navigate(getSensitiveLink("/new/image"))}
+                    >
+                      {t("投稿", "Post")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -286,12 +293,18 @@ function HomeHeader(props: Props) {
           )}
           {isSearchFormOpen && (
             <div className="hidden space-x-2 md:flex">
-              <Link to={getSensitiveLink("/generation")}>
-                <Button variant={"ghost"}>{t("生成", "Generate")}</Button>
-              </Link>
-              <Link to={getSensitiveLink("/new/image")}>
-                <Button variant={"ghost"}>{t("投稿", "Post")}</Button>
-              </Link>
+              <Button
+                variant="ghost"
+                onClick={() => navigate(getSensitiveLink("/generation"))}
+              >
+                {t("生成", "Generate")}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => navigate(getSensitiveLink("/new/image"))}
+              >
+                {t("投稿", "Post")}
+              </Button>
             </div>
           )}
           {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
@@ -325,8 +338,8 @@ function HomeHeader(props: Props) {
             <Button
               className="md:hidden"
               onClick={onSearch}
-              variant={"ghost"}
-              size={"icon"}
+              variant="ghost"
+              size="icon"
             >
               <Search className="w-16" />
             </Button>
