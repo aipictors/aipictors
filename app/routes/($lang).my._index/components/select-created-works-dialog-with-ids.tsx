@@ -92,15 +92,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     },
   })
 
-  // props.selectedWorkIdsの順番で並び替える
-  // const selectedWorksQueryData = selectedWorksResult.data?.works ?? []
-
-  const selectedWorksQueryData =
-    selectedWorksResult.data?.works?.sort((a, b) => {
-      const aIndex = props.selectedWorkIds.indexOf(a.id)
-      const bIndex = props.selectedWorkIds.indexOf(b.id)
-      return aIndex - bIndex
-    }) ?? []
+  const selectedWorksQueryData = selectedWorksResult.data?.works ?? []
 
   // ======== 選択中タブの作品総数 (ページネーション) ========
   const selectedWorksCountResp = useQuery(worksCountQuery, {
