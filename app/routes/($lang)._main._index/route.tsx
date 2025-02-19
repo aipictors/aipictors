@@ -334,6 +334,13 @@ export default function Index() {
     searchParams,
   ])
 
+  useEffect(() => {
+    const urlTab = searchParams.get("tab") || "home"
+    if (urlTab !== currentTab) {
+      setCurrentTab(urlTab)
+    }
+  }, [searchParams])
+
   /**
    * 新着タブ内の「新着 / 人気 / 新規ユーザ」切り替え
    */
