@@ -1,5 +1,4 @@
 import { Button } from "~/components/ui/button"
-import { Link } from "@remix-run/react"
 import type { RemixiconComponentType } from "@remixicon/react"
 import type { LucideIcon } from "lucide-react"
 import { forwardRef } from "react"
@@ -14,70 +13,33 @@ type Props = {
 
 export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
   (props, ref) => {
-    if (props.isDisabled) {
-      return (
-        <Button
-          ref={ref}
-          variant={"ghost"}
-          disabled={true}
-          size={"sm"}
-          className="w-full justify-start"
-        >
-          {props.icon && <props.icon className="mr-4 w-4" />}
-          {props.children}
-        </Button>
-      )
-    }
-
-    if (props.href === undefined) {
-      return (
-        <Button
-          ref={ref}
-          variant={"ghost"}
-          className="w-full justify-start"
-          size={"sm"}
-          onClick={props.onClick}
-        >
-          {props.icon && <props.icon className="mr-4 w-4" />}
-          {props.children}
-        </Button>
-      )
-    }
-
-    if (props.href.startsWith("http")) {
-      return (
-        <Link
-          className="block"
-          to={props.href}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Button
-            variant={"ghost"}
-            size={"sm"}
-            className="w-full justify-start"
-            onClick={props.onClick}
-          >
-            {props.icon && <props.icon className="mr-4 w-4" />}
-            {props.children}
-          </Button>
-        </Link>
-      )
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      // 任意の onClick を実行
+      if (props.onClick) {
+        props.onClick()
+      }
+      // href が指定されている場合、リンク遷移を実行
+      if (props.href) {
+        if (props.href.startsWith("http")) {
+          window.open(props.href, "_blank", "noopener,noreferrer")
+        } else {
+          window.location.href = props.href
+        }
+      }
     }
 
     return (
-      <Link className="block" to={props.href}>
-        <Button
-          variant={"ghost"}
-          className="w-full justify-start"
-          size={"sm"}
-          disabled={props.isDisabled}
-          onClick={props.onClick}
-        >
-          {props.icon && <props.icon className="mr-4 w-4" />}
-          {props.children}
-        </Button>
-      </Link>
+      <Button
+        ref={ref}
+        variant={"ghost"}
+        size={"sm"}
+        className="w-full justify-start"
+        disabled={props.isDisabled}
+        onClick={!props.isDisabled ? handleClick : undefined}
+      >
+        {props.icon && <props.icon className="mr-4 w-4" />}
+        {props.children}
+      </Button>
     )
   },
 )
