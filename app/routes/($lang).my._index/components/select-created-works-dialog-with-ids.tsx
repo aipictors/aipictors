@@ -5,7 +5,6 @@ import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { ImageIcon, CheckIcon, PlusIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import type React from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -33,7 +32,6 @@ import {
 import { CSS } from "@dnd-kit/utilities"
 
 type Props = {
-  children?: React.ReactNode
   selectedWorkIds: string[]
   setSelectedWorkIds: (workIds: string[]) => void
   limit?: number
@@ -93,7 +91,16 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
       },
     },
   })
-  const selectedWorksQueryData = selectedWorksResult.data?.works ?? []
+
+  // props.selectedWorkIdsの順番で並び替える
+  // const selectedWorksQueryData = selectedWorksResult.data?.works ?? []
+
+  const selectedWorksQueryData =
+    selectedWorksResult.data?.works?.sort((a, b) => {
+      const aIndex = props.selectedWorkIds.indexOf(a.id)
+      const bIndex = props.selectedWorkIds.indexOf(b.id)
+      return aIndex - bIndex
+    }) ?? []
 
   // ======== 選択中タブの作品総数 (ページネーション) ========
   const selectedWorksCountResp = useQuery(worksCountQuery, {
@@ -272,7 +279,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
           </div>
         </SortableContext>
 
-        <DragOverlay adjustScale={false} style={{ transformOrigin: "0 0" }}>
+        <DragOverlay adjustScale={false} style={{ transformOrigin: "0 0 " }}>
           {activeDragItem && (
             <div className="h-24 w-24 border border-gray-300">
               <img

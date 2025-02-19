@@ -464,6 +464,8 @@ export function WorkCommentList(props: Props) {
                       },
                     },
                   ])
+
+                  onCreateCommentLike(comment.id)
                 }}
               />
               {/* 新しく追加した返信への返信 */}
@@ -541,7 +543,7 @@ export function WorkCommentList(props: Props) {
                       onDeleteComment={() => {
                         onDeleteComment(reply.id)
                       }}
-                      onReplyCompleted={(
+                      onReplyCompleted={async (
                         id: string,
                         text: string,
                         stickerId: string,
@@ -570,6 +572,8 @@ export function WorkCommentList(props: Props) {
                             },
                           },
                         ])
+
+                        onCreateCommentLike(comment.id)
                       }}
                     />
                   ))}
@@ -623,7 +627,7 @@ export function WorkCommentList(props: Props) {
                     userName={comment.user?.name}
                     commentId={comment.id}
                     onDeleteComment={() => onDeleteComment(comment.id)}
-                    onReplyCompleted={(
+                    onReplyCompleted={async (
                       id: string,
                       text: string,
                       stickerId: string,
@@ -651,6 +655,8 @@ export function WorkCommentList(props: Props) {
                           },
                         },
                       ])
+
+                      onCreateCommentLike(comment.id)
                     }}
                   />
                   {/* 新しく追加した返信への返信 */}
@@ -743,7 +749,7 @@ export function WorkCommentList(props: Props) {
                           onDeleteComment={() => {
                             onDeleteComment(reply.id)
                           }}
-                          onReplyCompleted={(
+                          onReplyCompleted={async (
                             id: string,
                             text: string,
                             stickerId: string,
@@ -772,6 +778,8 @@ export function WorkCommentList(props: Props) {
                                 },
                               },
                             ])
+
+                            onCreateCommentLike(comment.id)
                           }}
                         />
                       ))}

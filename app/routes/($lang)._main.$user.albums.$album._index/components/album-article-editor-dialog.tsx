@@ -11,7 +11,7 @@ import {
 import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
 import { useMutation } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Loader2Icon, PlusIcon } from "lucide-react"
+import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
@@ -116,13 +116,7 @@ export function AlbumArticleEditorDialog(props: Props) {
           <SelectCreatedWorksDialogWithIds
             selectedWorkIds={selectedWorks}
             setSelectedWorkIds={setSelectedWorks}
-          >
-            <div className="border-2 border-transparent p-1">
-              <Button className="h-16 w-16" size={"icon"} variant={"secondary"}>
-                <PlusIcon />
-              </Button>
-            </div>
-          </SelectCreatedWorksDialogWithIds>
+          />
         </>
         <DialogFooter>
           <Button disabled={isUpdating} className="w-full" onClick={onSubmit}>
