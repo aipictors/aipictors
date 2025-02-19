@@ -56,10 +56,7 @@ export const SearchHeader = () => {
       <div className="flex space-x-2">
         <div className="w-full flex-1">
           <Input
-            placeholder={t(
-              "タグや作者名で検索",
-              "Search by tag or author name",
-            )}
+            placeholder={t("タグで検索", "Search by tag")}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             onKeyDown={handleKeyDown}

@@ -16,6 +16,7 @@ import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
 import { SensitiveTagActionOther } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-action-other"
 import { Switch } from "~/components/ui/switch"
+import { GoogleCustomSearch } from "~/components/google-custom-search"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -130,6 +131,7 @@ export function SensitiveTagWorkSection(props: Props) {
           </div>
         </div>
       </div>
+      <GoogleCustomSearch />
       <div className="relative flex items-center">
         <div className="hidden items-center space-x-2 md:flex">
           <div className="min-w-32">

@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Dialog, DialogContent, DialogFooter } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { AuthContext } from "~/contexts/auth-context"
-import { useQuery, useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { useContext, useState, useEffect } from "react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import {
@@ -47,7 +47,7 @@ export function StickerDialog(props: Props) {
   const appContext = useContext(AuthContext)
 
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
-  const [relatedSortStickerPage, setRelatedSortStickerPage] = useState(0)
+
   const [type, setType] = useState("CREATED")
 
   const maxStickersPage = 120
@@ -68,19 +68,8 @@ export function StickerDialog(props: Props) {
     },
   )
 
-  const { data: relatedStickers = null } = useSuspenseQuery(
-    viewerUserStickersQuery,
-    {
-      skip: appContext.isLoading,
-      variables: {
-        limit: maxStickersPage,
-        offset: 0,
-        orderBy: "DATE_USED",
-      },
-    },
-  )
-
   const maxCount = stickersCount?.viewer?.userStickersCount ?? 0
+
   const t = useTranslation()
 
   // サイズ設定
@@ -180,7 +169,6 @@ export function StickerDialog(props: Props) {
               onPageChange={(page: number) => {
                 setCreatedSortStickerPage(page)
               }}
-              isNoScroll={true}
             />
           </div>
         )}

@@ -16,6 +16,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
 import { Switch } from "~/components/ui/switch"
+import { GoogleCustomSearch } from "~/components/google-custom-search"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -129,6 +130,7 @@ export function TagWorkSection(props: Props) {
           </div>
         </div>
       </div>
+      <GoogleCustomSearch />
       <div className="relative flex items-center">
         <div className="hidden items-center space-x-2 md:flex">
           <div className="min-w-32">

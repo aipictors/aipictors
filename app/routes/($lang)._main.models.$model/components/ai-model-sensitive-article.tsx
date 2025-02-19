@@ -45,7 +45,7 @@ export function AiModelSensitiveArticle(props: Props) {
       limit: 32,
       where: {
         ratings: props.isMoreRatings ? ["R18", "R18G"] : ["R18"],
-        isSensitive: false,
+        isSensitive: true,
         hasPrompt: props.hasPrompt,
         ...(props.hasPrompt && {
           isPromptPublic: true,
@@ -84,6 +84,7 @@ export function AiModelSensitiveArticle(props: Props) {
           size="small"
           isShowProfile={true}
         />
+        <div className="h-8" />
         <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <ResponsivePagination
             perPage={16}
