@@ -50,8 +50,8 @@
 以下のファイルを参考にしなさい。
 
 - `app/routes/*/route.tsx`
-- `app/routes/*/-components/*.tsx` - そのページでのみ使用されるコンポーネント
-- `app/routes/*/-types/*.ts` - そのページでのみ使用される型
+- `app/routes/*/components/*.tsx` - そのページでのみ使用されるコンポーネント
+- `app/routes/*/types/*.ts` - そのページでのみ使用される型
 
 また、「_main」はレイアウトになっているので基本的に使用される。
 
