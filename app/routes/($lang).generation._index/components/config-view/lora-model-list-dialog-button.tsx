@@ -46,7 +46,7 @@ export function LoraModelListDialogButton(props: Props) {
           {t("LoRA（エフェクト）を追加", "Add LoRA (Effect)")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
+      <DialogContent className="md:max-w-(--breakpoint-md) lg:max-w-(--breakpoint-lg) xl:max-w-(--breakpoint-xl)">
         <DialogHeader>
           <DialogTitle className="hidden md:block xl:block">
             {t("LoRAを選択", "Select LoRA")}

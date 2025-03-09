@@ -41,7 +41,7 @@ export function HomeTagList(props: Props) {
         ))}
         <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
       </CarouselContent>
-      {/* <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-card" /> */}
+      {/* <div className="absolute top-0 right-0 h-full w-16 bg-linear-to-r from-transparent to-card" /> */}
     </Carousel>
   )
 }

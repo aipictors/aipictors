@@ -30,7 +30,7 @@ export function HomeNotificationsContentReplyItem(props: Props) {
     <>
       <Link
         to={`/posts/${props.notification.work?.id}`}
-        className="flex items-center border-b transition-all hover:bg-zinc-100 hover:dark:bg-zinc-900"
+        className="flex items-center border-b transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900"
       >
         <Link to={`/users/${props.notification.user?.id}`}>
           <Avatar className="h-8 w-8">

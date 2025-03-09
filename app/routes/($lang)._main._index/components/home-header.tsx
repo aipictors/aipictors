@@ -130,7 +130,7 @@ function HomeHeader(props: Props) {
           (announcementData.emergencyAnnouncements.url.length > 0 ? (
             <Button
               variant="ghost"
-              className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 md:px-2"
+              className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur-sm supports-backdrop-filter:bg-background/80 md:px-2"
               onClick={() =>
                 announcementData.emergencyAnnouncements.url.startsWith("http")
                   ? navigateToExternal(
@@ -144,7 +144,7 @@ function HomeHeader(props: Props) {
               </div>
             </Button>
           ) : (
-            <div className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur supports-[backdrop-filter]:bg-background/80 md:px-2">
+            <div className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur-sm supports-backdrop-filter:bg-background/80 md:px-2">
               <div className="opacity-80">
                 {announcementData.emergencyAnnouncements.content}
               </div>
@@ -185,7 +185,7 @@ function HomeHeader(props: Props) {
                   height={40}
                 />
               )}
-              <div className="hidden flex-grow flex-row items-center md:flex">
+              <div className="hidden grow flex-row items-center md:flex">
                 <span className="font-bold text-xl">{title}</span>
               </div>
             </Button>

@@ -69,7 +69,7 @@ export function SensitiveThemeArticle(props: Props) {
   const t = useTranslation()
 
   return (
-    <div className="flex flex-col space-y-6 rounded-lg bg-gradient-to-b p-4">
+    <div className="flex flex-col space-y-6 rounded-lg bg-linear-to-b p-4">
       <Button
         onClick={() => {
           navigate("/themes")
@@ -149,7 +149,7 @@ export function SensitiveThemeArticle(props: Props) {
         <ResponsivePhotoWorksAlbum works={works} />
       </div>
       <div className="h-8" />
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
         <ResponsivePagination
           maxCount={Number(props.worksCount)}
           perPage={32}

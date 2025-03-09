@@ -73,7 +73,7 @@ export default function SettingColor() {
   const themeRadio = (value: string, label: string) => (
     <div
       className={cn(
-        "flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800",
+        "flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 dark:hover:bg-gray-800",
         { "bg-gray-100 bg-opacity-50 dark:bg-gray-800": mode === value },
       )}
       onClick={() => setColorTheme(value, colorSchema)}
@@ -102,7 +102,7 @@ export default function SettingColor() {
     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
     <div
       className={cn(
-        "flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 hover:dark:bg-gray-800",
+        "flex w-full cursor-pointer items-center space-x-2 rounded-lg border p-2 transition duration-150 hover:bg-gray-100 dark:hover:bg-gray-800",
         { "bg-gray-100 bg-opacity-50 dark:bg-gray-800": colorSchema === value },
       )}
       onClick={() => setColorTheme(mode, value)}

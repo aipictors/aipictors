@@ -13,7 +13,7 @@ export function AppPageCenter(props: Props) {
     <main className="flex w-full justify-center">
       <div
         className={cn(
-          "mx-auto w-full max-w-screen-sm items-start justify-center overflow-x-hidden",
+          "mx-auto w-full max-w-(--breakpoint-sm) items-start justify-center overflow-x-hidden",
           "pt-2 pb-16 md:pt-0",
           "space-y-4 md:space-y-8",
           props.className,

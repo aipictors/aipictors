@@ -30,7 +30,7 @@ export function HomeWorkAlbum(props: Props) {
           className="rounded transition-transform duration-300 group-hover:scale-105"
         />
       </Link>
-      <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end space-y-2 rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
+      <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end space-y-2 rounded bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-88">
         <Link className="w-48 font-bold" to={`/posts/${props.workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
             {props.workTitle}

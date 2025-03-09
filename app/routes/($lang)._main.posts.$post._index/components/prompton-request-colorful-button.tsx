@@ -31,7 +31,7 @@ export function PromptonRequestColorfulButton(props: Props) {
       type="button"
       onClick={onClick}
       className={cn(
-        "flex h-8 w-full items-center bg-gradient-to-r from-orange-400 via-pink-500 to-blue-500 px-2 py-1 text-white focus:outline-none md:h-10",
+        "flex h-8 w-full items-center bg-linear-to-r from-orange-400 via-pink-500 to-blue-500 px-2 py-1 text-white focus:outline-hidden md:h-10",
         props.rounded,
       )}
     >

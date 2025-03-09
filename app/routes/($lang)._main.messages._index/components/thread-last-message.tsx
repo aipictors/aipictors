@@ -8,7 +8,7 @@ type Props = {
 export function ThreadLastMessage(props: Props) {
   return (
     <div className="flex w-full flex-col items-start gap-y-2">
-      <p className="overflow-hidden overflow-ellipsis whitespace-pre-wrap break-words text-left">
+      <p className="overflow-hidden text-ellipsis whitespace-pre-wrap break-words text-left">
         {props.message.text}
       </p>
       <p>{toDateTimeText(props.message.createdAt)}</p>

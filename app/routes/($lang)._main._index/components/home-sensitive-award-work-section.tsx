@@ -142,9 +142,9 @@ export function HomeSensitiveAwardWorkSection(props: Props) {
           <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
           {/* <div className="relative basis-1/3.5 space-y-2" /> */}
         </CarouselContent>
-        {/* <div className="absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-card to-transparent" /> */}
+        {/* <div className="absolute top-0 left-0 h-full w-16 bg-linear-to-r from-card to-transparent" /> */}
         <CarouselPrevious className="absolute left-0" />
-        {/* <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-card" /> */}
+        {/* <div className="absolute top-0 right-0 h-full w-16 bg-linear-to-r from-transparent to-card" /> */}
         <CarouselNext className="absolute right-0" />
       </Carousel>
     </section>
