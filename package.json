@@ -17,7 +17,8 @@
     "chromatic": "chromatic --project-token=chpt_493a53501ada93b",
     "init:vscode": "bun run scripts/install-vscode-extensions.ts",
     "format": "biome check . --fix --unsafe",
-    "gql:generate": "gql-tada generate schema https://aipics.dev --output './schema.graphql'"
+    "gql:generate": "gql-tada generate schema https://aipics.dev --output './schema.graphql'",
+    "predev": "cp .github/copilot-instructions.md .clinerules"
   },
   "dependencies": {
     "@apollo/client": "^3.11.4",
