@@ -118,7 +118,7 @@ export function SettingRequestForm() {
             className="ml-auto block w-24"
           >
             {isUpdatingUserSetting ? (
-              <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+              <Loader2Icon className="m-auto size-4 animate-spin" />
             ) : (
               <p>{t("変更を保存する", "Save Changes")}</p>
             )}

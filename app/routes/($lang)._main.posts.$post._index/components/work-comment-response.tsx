@@ -85,10 +85,10 @@ export function WorkCommentResponse(props: Props) {
   return (
     <>
       <div className="flex items-start space-x-4 pl-16">
-        <Link className="block h-10 w-10" to={`/users/${props.userId}`}>
-          <Avatar className="block h-10 w-10">
+        <Link className="block size-10" to={`/users/${props.userId}`}>
+          <Avatar className="block size-10">
             <AvatarImage
-              className="h-10 w-10 rounded-full"
+              className="size-10 rounded-full"
               src={props.userIconImageURL}
               alt=""
             />
@@ -123,7 +123,7 @@ export function WorkCommentResponse(props: Props) {
             </p>
             {props.isWorkOwnerLiked && (
               <div className="relative">
-                <Avatar className="relative h-4 w-4">
+                <Avatar className="relative size-4">
                   <AvatarImage
                     src={withIconUrlFallback(props.workOwnerIconImageURL)}
                     alt=""
@@ -168,7 +168,7 @@ export function WorkCommentResponse(props: Props) {
             {props.isMine ? (
               <>
                 {isDeleteLoading ? (
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2Icon className="mr-2 size-4 animate-spin" />
                 ) : (
                   <DeleteCommentConfirmDialog
                     onDeleteComment={onDeleteComment}
@@ -189,7 +189,7 @@ export function WorkCommentResponse(props: Props) {
                       title={props.stickerTitle ?? ""}
                       imageUrl={props.stickerImageURL}
                     >
-                      <ArrowDownToLine className="h-4 w-4" />
+                      <ArrowDownToLine className="size-4" />
                     </StickerInfoDialog>
                   )}
               </>

@@ -51,10 +51,10 @@ export function CroppedMyWorkSquare(props: Props) {
           onMouseLeave={() => setIsHovered(false)}
           className={cn("relative overflow-hidden rounded", {
             "w-full": props.size === "auto",
-            "h-16 w-16": props.size === "xs",
-            "h-20 w-20": props.size === "sm",
-            "h-32 w-32": props.size === "md",
-            "h-40 w-40": props.size === "lg",
+            "size-16": props.size === "xs",
+            "size-20": props.size === "sm",
+            "size-32": props.size === "md",
+            "size-40": props.size === "lg",
           })}
         >
           <img
@@ -90,7 +90,7 @@ export function CroppedMyWorkSquare(props: Props) {
         </div>
         {props.ranking && (
           <div
-            className="absolute bottom-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-white text-xs"
+            className="absolute bottom-2 left-2 flex size-6 items-center justify-center rounded-full font-bold text-white text-xs"
             style={{ backgroundColor: backgroundColor() }}
           >
             {props.ranking}
@@ -98,7 +98,7 @@ export function CroppedMyWorkSquare(props: Props) {
         )}
         {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
           <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-            <Images className="h-3 w-3 text-white" />
+            <Images className="size-3 text-white" />
             <div className="font-bold text-white text-xs">
               {props.subWorksCount + 1}
             </div>

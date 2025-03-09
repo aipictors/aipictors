@@ -38,9 +38,9 @@ export function HomeWorkAlbum(props: Props) {
         </Link>
         <Link to={`/users/${props.userId}`}>
           <div className="flex items-center space-x-2">
-            <Avatar className="h-4 w-4 rounded-full">
+            <Avatar className="size-4 rounded-full">
               <AvatarImage
-                className="h-4 w-4 rounded-full"
+                className="size-4 rounded-full"
                 src={withIconUrlFallback(props.userIcon)}
                 alt={props.userName}
               />
@@ -66,7 +66,7 @@ export function HomeWorkAlbum(props: Props) {
       {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
         <div
           className={
-            "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
+            "absolute top-0 right-0 flex size-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
           }
           style={{ backgroundColor: "#00000052" }}
         >

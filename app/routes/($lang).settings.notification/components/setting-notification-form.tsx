@@ -130,7 +130,7 @@ export function SettingNotificationForm() {
         className="ml-auto block w-24 text-center"
       >
         {isUpdatingUserSetting ? (
-          <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+          <Loader2Icon className="m-auto size-4 animate-spin" />
         ) : (
           t("更新する", "Update")
         )}

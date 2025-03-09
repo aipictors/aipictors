@@ -11,7 +11,7 @@ export default function PlusCancel() {
       <div className="mx-auto w-full max-w-sm space-y-16 px-6 pt-16">
         <div className="space-y-4">
           <div className="flex w-full justify-center">
-            <FrownIcon className="h-16 w-16" />
+            <FrownIcon className="size-16" />
           </div>
           <div className="space-y-2">
             <p className="flex justify-center font-bold text-xl">

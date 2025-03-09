@@ -93,7 +93,7 @@ export default function Milestone() {
             <img
               src={release.thumbnail_url.url}
               alt={release.title}
-              className="h-16 w-16 rounded-md object-cover"
+              className="size-16 rounded-md object-cover"
             />
           )}
           <div className="flex flex-1 flex-col">

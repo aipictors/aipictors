@@ -9,9 +9,9 @@ export function HomeIcon() {
   const navigation = useNavigation()
 
   return (
-    <Avatar className="flex h-10 w-10 items-center justify-center">
+    <Avatar className="flex size-10 items-center justify-center">
       {navigation.state === "loading" && (
-        <Loader2Icon className={"h-8 w-8 animate-spin text-border"} />
+        <Loader2Icon className={"size-8 animate-spin text-border"} />
       )}
       {navigation.state !== "loading" && (
         <AvatarImage src="/icon.svg" alt="Aipictors" />

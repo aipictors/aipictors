@@ -179,11 +179,11 @@ export function DashboardHomeContents() {
                               {index + 1}
                             </div>
                           </div>
-                          <div className="h-12 w-12 overflow-hidden rounded-md">
+                          <div className="size-12 overflow-hidden rounded-md">
                             <img
                               src={work.smallThumbnailImageURL}
                               alt={work.title}
-                              className="h-16 w-16 object-cover"
+                              className="size-16 object-cover"
                             />
                           </div>
                           <div className="ml-4">

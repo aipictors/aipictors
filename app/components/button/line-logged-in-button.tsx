@@ -23,7 +23,7 @@ export function LineLoggedInButton(props: Props) {
         <div className="absolute left-2">
           <img
             alt="line icon"
-            className="h-8 w-8"
+            className="size-8"
             src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/btn_base.png"
           />
         </div>

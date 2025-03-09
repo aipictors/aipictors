@@ -284,7 +284,7 @@ export function UserSettingsForm() {
         className="ml-auto block w-full text-center"
       >
         {isUpdatingUserSetting ? (
-          <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+          <Loader2Icon className="m-auto size-4 animate-spin" />
         ) : (
           t("完了", "Save")
         )}

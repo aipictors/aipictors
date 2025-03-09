@@ -12,7 +12,7 @@ export function ThemeCard() {
         <p className="font-bold text-sm">{"作品名"}</p>
         <div className="flex items-center space-x-2">
           <img
-            className="h-10 w-10 rounded-full"
+            className="size-10 rounded-full"
             src="https://bit.ly/dan-abramov"
             alt="Dan Abrahmov"
           />

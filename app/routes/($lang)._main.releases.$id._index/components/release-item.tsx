@@ -93,7 +93,7 @@ export function ReleaseItem(props: Props) {
         {authContext.isLoading ? (
           <div className="flex flex-col space-y-2">
             <div className="flex space-x-2">
-              <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+              <Loader2Icon className="m-auto size-4 animate-spin" />
             </div>
             {props.description}
           </div>

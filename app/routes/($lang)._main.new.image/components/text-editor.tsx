@@ -113,28 +113,28 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
         pressed={editor.isActive("bold")}
         onPressedChange={() => editor.chain().focus().toggleBold().run()}
       >
-        <Bold className="h-4 w-4" />
+        <Bold className="size-4" />
       </Toggle>
       <Toggle
         size="sm"
         pressed={editor.isActive("italic")}
         onPressedChange={() => editor.chain().focus().toggleItalic().run()}
       >
-        <Italic className="h-4 w-4" />
+        <Italic className="size-4" />
       </Toggle>
       <Toggle
         size="sm"
         pressed={editor.isActive("strike")}
         onPressedChange={() => editor.chain().focus().toggleStrike().run()}
       >
-        <Strikethrough className="h-4 w-4" />
+        <Strikethrough className="size-4" />
       </Toggle>
       <Toggle
         size="sm"
         pressed={editor.isActive("codeBlock")}
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}
       >
-        <Code className="h-4 w-4" />
+        <Code className="size-4" />
       </Toggle>
 
       <Separator orientation="vertical" className="h-8 w-[1px]" />
@@ -164,14 +164,14 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
         pressed={editor.isActive("bulletList")}
         onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
       >
-        <List className="h-4 w-4" />
+        <List className="size-4" />
       </Toggle>
       <Toggle
         size="sm"
         pressed={editor.isActive("orderedList")}
         onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
       >
-        <ListOrdered className="h-4 w-4" />
+        <ListOrdered className="size-4" />
       </Toggle>
       {token?.viewer?.token && (
         <TextEditorUploaderDialog
@@ -179,7 +179,7 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
           onSelectImage={addImage}
         >
           <Button size="sm" variant={"ghost"}>
-            <ImageIcon className="h-4 w-4" />
+            <ImageIcon className="size-4" />
           </Button>
         </TextEditorUploaderDialog>
       )}
@@ -189,14 +189,14 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
         pressed={editor.isActive("blockquote")}
         onClick={() => editor.chain().focus().toggleBlockquote().run()}
       >
-        <Quote className="h-4 w-4" />
+        <Quote className="size-4" />
       </Toggle>
       <Toggle
         size="sm"
         pressed={editor.isActive("horizontalRule")}
         onClick={() => editor.chain().focus().setHorizontalRule().run()}
       >
-        <Minus className="h-4 w-4" />
+        <Minus className="size-4" />
       </Toggle>
       <Separator orientation="vertical" className="h-8 w-[1px]" />
       <Toggle
@@ -204,14 +204,14 @@ const RichTextEditorToolbar = ({ editor }: { editor: Editor }) => {
         pressed={editor.isActive("undo")}
         onClick={() => editor.chain().focus().undo().run()}
       >
-        <Undo className="h-4 w-4" />
+        <Undo className="size-4" />
       </Toggle>
       <Toggle
         size="sm"
         pressed={editor.isActive("redo")}
         onClick={() => editor.chain().focus().redo().run()}
       >
-        <Redo className="h-4 w-4" />
+        <Redo className="size-4" />
       </Toggle>
     </div>
   )

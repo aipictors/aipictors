@@ -286,7 +286,7 @@ export function AddStickerDialog(props: Props) {
               className="m-auto w-full"
               onClick={() => {}}
             >
-              <Loader2Icon className="h-4 w-4 animate-spin" />
+              <Loader2Icon className="size-4 animate-spin" />
             </Button>
           ) : (
             <Button

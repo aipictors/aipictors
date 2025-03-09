@@ -317,7 +317,7 @@ export function PostTextFormInput(props: Props) {
           props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
       />
-      {loading && <Loader2Icon className="h-4 w-4 animate-spin" />}
+      {loading && <Loader2Icon className="size-4 animate-spin" />}
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}
         onTagEditableChange={(value) => {

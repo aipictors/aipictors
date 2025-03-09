@@ -16,7 +16,7 @@ export function EventWakiaiaiCreatorCard(props: Props) {
   return (
     <Card className="overflow-hidden">
       <div className="flex space-x-2">
-        <div className="h-40 w-40 min-w-fit">
+        <div className="size-40 min-w-fit">
           <Link
             aria-label="Twitter"
             target="_blank"

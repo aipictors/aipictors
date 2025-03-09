@@ -38,20 +38,20 @@ export function RecommendedWorksSpList(props: Props) {
               </div>
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center">
-                  <FolderIcon className="mr-1 h-4 w-4" />
+                  <FolderIcon className="mr-1 size-4" />
                   {work.bookmarksCount}
                 </div>
                 <div className="flex items-center">
-                  <HeartIcon className="mr-1 h-4 w-4" />
+                  <HeartIcon className="mr-1 size-4" />
                   {work.likesCount}
                 </div>
                 <div className="flex items-center">
-                  <EyeIcon className="mr-1 h-4 w-4" />
+                  <EyeIcon className="mr-1 size-4" />
                   {work.viewsCount}
                 </div>
               </div>
               <div className="flex items-center">
-                <MessageCircle className="mr-1 h-4 w-4" />
+                <MessageCircle className="mr-1 size-4" />
                 {work.commentsCount}
               </div>
             </div>

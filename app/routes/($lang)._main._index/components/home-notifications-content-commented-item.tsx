@@ -14,11 +14,11 @@ type Props = {
 }
 
 const stickerSizeClasses = {
-  xl: "h-24 w-24 md:h-32 md:w-32",
-  lg: "h-20 w-20 md:h-24 md:w-24",
-  md: "h-12 w-12",
-  sm: "h-8 w-8",
-  xs: "h-6 w-6",
+  xl: "size-24 md:h-32 md:w-32",
+  lg: "size-20 md:h-24 md:w-24",
+  md: "size-12",
+  sm: "size-8",
+  xs: "size-6",
 }
 
 /**
@@ -46,7 +46,7 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
           <img
             src={withIconUrlFallback(props.notification.user?.iconUrl)}
             alt="thumbnail"
-            className="h-8 w-8 rounded-full object-cover"
+            className="size-8 rounded-full object-cover"
           />
           <div className="ml-2 flex w-full flex-col space-y-2 overflow-hidden">
             <p className="text-ellipsis">
@@ -83,20 +83,20 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
               )}
             </div>
           </div>
-          <div className="h-12 w-12 overflow-hidden rounded-md">
+          <div className="size-12 overflow-hidden rounded-md">
             <img
               src={props.notification.work?.smallThumbnailImageURL}
               alt="thumbnail"
-              className="h-16 w-16 object-cover"
+              className="size-16 object-cover"
             />
           </div>
         </>
       </Link>
       {reply && (
         <div className="ml-12 flex items-center space-x-2">
-          <Avatar className="h-8 w-8">
+          <Avatar className="size-8">
             <AvatarImage
-              className="h-8 w-8 rounded-full object-cover"
+              className="size-8 rounded-full object-cover"
               src={withIconUrlFallback(reply.user?.iconUrl)}
               alt="thumbnail"
             />

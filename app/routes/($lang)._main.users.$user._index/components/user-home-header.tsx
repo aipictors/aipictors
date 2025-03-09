@@ -20,7 +20,7 @@ export function UserHomeHeader(props: Props) {
       <div className="relative">
         <div className="relative min-h-[168px] overflow-hidden md:min-h-[320px]">
           <div className="relative m-auto">
-            <Avatar className="h-6 w-6">
+            <Avatar className="size-6">
               <AvatarImage
                 className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
                 src={withIconUrlFallback(user.iconUrl)}

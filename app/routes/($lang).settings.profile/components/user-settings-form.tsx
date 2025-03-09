@@ -121,15 +121,15 @@ export function SettingProfileForm() {
             ) : (
               <div className="h-40 w-full bg-gray-700" />
             )}
-            <div className="absolute bottom-[-24px] left-2 h-32 w-32">
+            <div className="absolute bottom-[-24px] left-2 size-32">
               {userInfo?.iconUrl ? (
                 <img
-                  className="absolute h-32 w-32 rounded-full border-2"
+                  className="absolute size-32 rounded-full border-2"
                   src={profileImage ? profileImage : userInfo?.iconUrl}
                   alt="header"
                 />
               ) : (
-                <div className="h-32 w-32 rounded-full border-2 bg-gray-700" />
+                <div className="size-32 rounded-full border-2 bg-gray-700" />
               )}
 
               <CropImageField
@@ -143,10 +143,10 @@ export function SettingProfileForm() {
                 fileExtension={"webp"}
               >
                 <Button
-                  className="absolute top-0 right-0 h-8 w-8 rounded-full p-0"
+                  className="absolute top-0 right-0 size-8 rounded-full p-0"
                   variant={"secondary"}
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="size-4" />
                 </Button>
               </CropImageField>
             </div>
@@ -162,10 +162,10 @@ export function SettingProfileForm() {
               fileExtension={"webp"}
             >
               <Button
-                className="absolute top-1 right-1 h-8 w-8 rounded-full p-0"
+                className="absolute top-1 right-1 size-8 rounded-full p-0"
                 variant={"secondary"}
               >
-                <Pencil className="h-4 w-4" />
+                <Pencil className="size-4" />
               </Button>
             </CropImageField>
           </div>
@@ -321,11 +321,7 @@ export function SettingProfileForm() {
               limit={3}
             >
               <div className="border-2 border-transparent p-1">
-                <Button
-                  className="h-16 w-16"
-                  size={"icon"}
-                  variant={"secondary"}
-                >
+                <Button className="size-16" size={"icon"} variant={"secondary"}>
                   <PlusIcon />
                 </Button>
               </div>
@@ -346,11 +342,7 @@ export function SettingProfileForm() {
               limit={3}
             >
               <div className="border-2 border-transparent p-1">
-                <Button
-                  className="h-16 w-16"
-                  size={"icon"}
-                  variant={"secondary"}
-                >
+                <Button className="size-16" size={"icon"} variant={"secondary"}>
                   <PlusIcon />
                 </Button>
               </div>
@@ -364,7 +356,7 @@ export function SettingProfileForm() {
           className="ml-auto block w-24"
         >
           {isUpdating ? (
-            <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+            <Loader2Icon className="m-auto size-4 animate-spin" />
           ) : (
             <p>{"更新する"}</p>
           )}

@@ -5,7 +5,7 @@ type Props = {
 export function ControlThumbnailPosition(props: Props) {
   return (
     <>
-      <div className="h-16 w-16 overflow-hidden">
+      <div className="size-16 overflow-hidden">
         <img src={props.imageBase64} alt="thumbnail" />
       </div>
     </>

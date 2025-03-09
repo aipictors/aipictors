@@ -98,7 +98,7 @@ export function EventAwardSensitiveWorkList(props: Props) {
                   />
                   <div className="flex items-center space-x-1">
                     <div className="flex items-center space-x-1">
-                      <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                      <Heart className="size-3 fill-gray-400 text-gray-400" />
                       <span className="text-xs">{work.likesCount}</span>
                     </div>
                   </div>

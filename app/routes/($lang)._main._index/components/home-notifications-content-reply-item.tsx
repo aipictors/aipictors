@@ -11,11 +11,11 @@ type Props = {
 }
 
 const stickerSizeClasses = {
-  xl: "h-24 w-24 md:h-32 md:w-32",
-  lg: "h-20 w-20 md:h-24 md:w-24",
-  md: "h-12 w-12",
-  sm: "h-8 w-8",
-  xs: "h-6 w-6",
+  xl: "size-24 md:h-32 md:w-32",
+  lg: "size-20 md:h-24 md:w-24",
+  md: "size-12",
+  sm: "size-8",
+  xs: "size-6",
 }
 
 /**
@@ -33,9 +33,9 @@ export function HomeNotificationsContentReplyItem(props: Props) {
         className="flex items-center border-b transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900"
       >
         <Link to={`/users/${props.notification.user?.id}`}>
-          <Avatar className="h-8 w-8">
+          <Avatar className="size-8">
             <AvatarImage
-              className="h-8 w-8 rounded-full object-cover"
+              className="size-8 rounded-full object-cover"
               src={withIconUrlFallback(props.notification.user?.iconUrl)}
               alt="thumbnail"
             />
@@ -51,18 +51,18 @@ export function HomeNotificationsContentReplyItem(props: Props) {
             <img
               src={props.notification.sticker.imageUrl}
               alt="sticker"
-              className={cn(stickerClass, "h-12 w-12")}
+              className={cn(stickerClass, "size-12")}
             />
           )}
           <p className="text-sm opacity-80">
             {toDateText(props.notification.createdAt)}
           </p>
         </div>
-        <div className="h-12 w-12 overflow-hidden rounded-md">
+        <div className="size-12 overflow-hidden rounded-md">
           <img
             src={props.notification.work?.smallThumbnailImageURL}
             alt="thumbnail"
-            className="h-16 w-16 object-cover"
+            className="size-16 object-cover"
           />
         </div>
       </Link>

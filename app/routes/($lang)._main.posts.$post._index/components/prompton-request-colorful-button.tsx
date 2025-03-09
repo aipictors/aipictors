@@ -38,7 +38,7 @@ export function PromptonRequestColorfulButton(props: Props) {
       <div className="m-auto flex items-center">
         {props.hideIcon !== true && (
           <span className="rounded-full bg-white bg-opacity-30 p-1">
-            <GiftIcon className="h-4 w-4" />
+            <GiftIcon className="size-4" />
           </span>
         )}
         <span className="font-bold">{t("サポートする", "Support")}</span>

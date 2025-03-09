@@ -88,7 +88,7 @@ export default function SettingColor() {
         htmlFor={value}
         className="flex cursor-pointer items-center peer-checked:text-blue-500"
       >
-        <span className="flex h-4 w-4 items-center justify-center rounded-full border border-gray-300 transition duration-150 peer-checked:border-blue-500 peer-checked:bg-blue-500" />
+        <span className="flex size-4 items-center justify-center rounded-full border border-gray-300 transition duration-150 peer-checked:border-blue-500 peer-checked:bg-blue-500" />
         <span className="ml-2">{t(label, label)}</span>
       </label>
     </div>
@@ -114,7 +114,7 @@ export default function SettingColor() {
       >
         <span
           className={cn(
-            "flex h-4 w-4 items-center justify-center rounded-full transition duration-150 peer-checked:ring-2 peer-checked:ring-blue-500",
+            "flex size-4 items-center justify-center rounded-full transition duration-150 peer-checked:ring-2 peer-checked:ring-blue-500",
             colorValue,
           )}
         />

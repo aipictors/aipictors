@@ -52,7 +52,7 @@ export function AiModelHeader(props: Props) {
             <img
               src={props.thumbnailImageURL}
               alt={props.name}
-              className="h-12 w-12 rounded-md border border-gray-300 object-cover"
+              className="size-12 rounded-md border border-gray-300 object-cover"
             />
           )}
           <div className="flex flex-col">

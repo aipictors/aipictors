@@ -238,7 +238,7 @@ export function FollowUserFeedContents(props: Props) {
                                   }
                                 }}
                               >
-                                <MessageCircleIcon className="h-5 w-5" />
+                                <MessageCircleIcon className="size-5" />
                                 <p>{work.commentsCount}</p>
                               </Button>
                             )}

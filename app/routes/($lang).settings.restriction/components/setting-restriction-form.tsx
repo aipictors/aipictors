@@ -160,7 +160,7 @@ export function SettingRestrictionForm() {
         variant={"secondary"}
       >
         {isUpdatingUserSetting ? (
-          <Loader2Icon className="h-4 w-4 animate-spin" />
+          <Loader2Icon className="size-4 animate-spin" />
         ) : (
           <span>{t("保存", "Save")}</span>
         )}

@@ -172,14 +172,14 @@ function HomeHeader(props: Props) {
               onClick={() => navigate(getSensitiveLink("/"))}
             >
               {navigation.state === "loading" && (
-                <div className="flex h-8 w-8 items-center justify-center">
-                  <Loader2Icon className="h-8 w-8 animate-spin" />
+                <div className="flex size-8 items-center justify-center">
+                  <Loader2Icon className="size-8 animate-spin" />
                 </div>
               )}
               {navigation.state !== "loading" && (
                 <img
                   src="/icon.svg"
-                  className="h-8 w-8 rounded-full"
+                  className="size-8 rounded-full"
                   alt="Avatar"
                   width={40}
                   height={40}
