@@ -16,7 +16,8 @@
     "ncu": "bunx ncu -p bun -t patch -u",
     "chromatic": "chromatic --project-token=chpt_493a53501ada93b",
     "init:vscode": "bun run scripts/install-vscode-extensions.ts",
-    "format": "biome check . --fix --unsafe"
+    "format": "biome check . --fix --unsafe",
+    "gql:generate": "gql-tada generate schema https://aipics.dev --output './schema.graphql'"
   },
   "dependencies": {
     "@apollo/client": "^3.11.4",
