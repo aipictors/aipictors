@@ -73,12 +73,12 @@ export function ImageGenerationSelectorDialog(props: Props) {
                   onClick={() =>
                     handleImageClick(result.imageUrl ?? "", result.id)
                   }
-                  className={cn("h-24 w-24 overflow-hidden", {
+                  className={cn("size-24 overflow-hidden", {
                     "border-4 border-blue-500": selectedIds.includes(result.id),
                   })}
                 >
                   <img
-                    className="h-24 w-24 rounded-md object-cover"
+                    className="size-24 rounded-md object-cover"
                     src={result.thumbnailUrl ?? ""}
                     alt={""}
                   />

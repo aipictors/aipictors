@@ -22,7 +22,7 @@ export function GradientBorderButton(props: Props) {
       type="button"
       disabled={props.disabled}
       className={cn(
-        "flex h-10 items-center rounded-lg bg-gradient-to-tr from-pink-300 to-blue-300 p-1 font-medium duration-200 hover:opacity-80 dark:text-black",
+        "flex h-10 items-center rounded-lg bg-linear-to-tr from-pink-300 to-blue-300 p-1 font-medium duration-200 hover:opacity-80 dark:text-black",
         props.className,
       )}
     >

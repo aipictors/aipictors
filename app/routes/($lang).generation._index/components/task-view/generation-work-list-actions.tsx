@@ -112,7 +112,7 @@ export function GenerationWorkListActions(props: Props) {
               variant={"destructive"}
               size={"icon"}
               onClick={onCancelModelSearch}
-              className="ml-2 h-3 w-3"
+              className="ml-2 size-3"
             >
               <XIcon className="w-4" />
             </Button>

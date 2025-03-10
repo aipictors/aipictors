@@ -35,7 +35,7 @@ export function ReleaseItem(props: Props) {
     editorProps: {
       attributes: {
         class:
-          "prose dark:prose-invert max-w-full w-full border-none bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
+          "prose dark:prose-invert max-w-full w-full border-none bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 overflow-auto",
       },
     },
     immediatelyRender: false,
@@ -93,7 +93,7 @@ export function ReleaseItem(props: Props) {
         {authContext.isLoading ? (
           <div className="flex flex-col space-y-2">
             <div className="flex space-x-2">
-              <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+              <Loader2Icon className="m-auto size-4 animate-spin" />
             </div>
             {props.description}
           </div>

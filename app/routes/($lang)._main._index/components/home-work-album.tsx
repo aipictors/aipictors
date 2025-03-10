@@ -30,7 +30,7 @@ export function HomeWorkAlbum(props: Props) {
           className="rounded transition-transform duration-300 group-hover:scale-105"
         />
       </Link>
-      <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end space-y-2 rounded bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
+      <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end space-y-2 rounded bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-88">
         <Link className="w-48 font-bold" to={`/posts/${props.workId}`}>
           <p className="overflow-hidden text-ellipsis text-nowrap text-white text-xs">
             {props.workTitle}
@@ -38,9 +38,9 @@ export function HomeWorkAlbum(props: Props) {
         </Link>
         <Link to={`/users/${props.userId}`}>
           <div className="flex items-center space-x-2">
-            <Avatar className="h-4 w-4 rounded-full">
+            <Avatar className="size-4 rounded-full">
               <AvatarImage
-                className="h-4 w-4 rounded-full"
+                className="size-4 rounded-full"
                 src={withIconUrlFallback(props.userIcon)}
                 alt={props.userName}
               />
@@ -66,7 +66,7 @@ export function HomeWorkAlbum(props: Props) {
       {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
         <div
           className={
-            "absolute top-0 right-0 flex h-8 w-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
+            "absolute top-0 right-0 flex size-8 items-center justify-center rounded-tr rounded-bl font-bold text-white text-xs"
           }
           style={{ backgroundColor: "#00000052" }}
         >

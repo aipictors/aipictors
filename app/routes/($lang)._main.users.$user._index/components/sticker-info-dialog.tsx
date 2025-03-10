@@ -66,7 +66,7 @@ export function StickerInfoDialog(props: Props) {
           {!isDownloaded ? (
             <Button className="w-full" onClick={onDownload}>
               {isCreatingUserSticker ? (
-                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2Icon className="mr-2 size-4 animate-spin" />
               ) : (
                 <span>{"マイスタンプに追加"}</span>
               )}

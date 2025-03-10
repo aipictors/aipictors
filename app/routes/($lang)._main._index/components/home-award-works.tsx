@@ -48,9 +48,9 @@ export function HomeAwardWorksSection(props: Props) {
                   {work.work?.user && (
                     <Link to={`/users/${work.work?.user.id}`}>
                       <div className="flex items-center space-x-2">
-                        <Avatar className="h-8 w-8">
+                        <Avatar className="size-8">
                           <AvatarImage
-                            className="h-8 w-8 rounded-full"
+                            className="size-8 rounded-full"
                             src={withIconUrlFallback(work.work?.user?.iconUrl)}
                             alt="icon"
                           />
@@ -62,7 +62,7 @@ export function HomeAwardWorksSection(props: Props) {
                   )}
                 </div>
               </div>
-              <div className="absolute top-1 left-0 h-4 w-4 items-center rounded-full bg-white text-center font-semibold text-xs dark:text-black">
+              <div className="absolute top-1 left-0 size-4 items-center rounded-full bg-white text-center font-semibold text-xs dark:text-black">
                 <p>{index + 1}</p>
               </div>
             </div>

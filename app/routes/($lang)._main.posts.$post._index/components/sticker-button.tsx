@@ -23,17 +23,17 @@ export function StickerButton(props: Props) {
   const sizeClasses = (() => {
     switch (props.size) {
       case "small":
-        return "h-8 w-8 p-1"
+        return "size-8 p-1"
       case "medium":
-        return "h-12 w-12 p-2"
+        return "size-12 p-2"
       case "large":
-        return "h-16 w-16 p-3"
+        return "size-16 p-3"
       case "x-large":
-        return "h-24 w-24 p-3"
+        return "size-24 p-3"
       case "2x-large":
-        return "h-32 w-32 p-3"
+        return "size-32 p-3"
       default:
-        return "h-24 w-24 p-2" // デフォルトは x-large サイズ
+        return "size-24 p-2" // デフォルトは x-large サイズ
     }
   })()
 

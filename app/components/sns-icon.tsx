@@ -18,27 +18,27 @@ type Props = {
 export function SnsIconLink(props: Props) {
   const icon = () => {
     if (props.url.includes("twitter") || props.url.includes("x.com")) {
-      return <RiTwitterXLine className="h-6 w-6" />
+      return <RiTwitterXLine className="size-6" />
     }
     if (props.url.includes("instagram")) {
-      return <RiInstagramLine className="h-6 w-6" />
+      return <RiInstagramLine className="size-6" />
     }
     if (props.url.includes("facebook")) {
-      return <RiFacebookBoxLine className="h-6 w-6" />
+      return <RiFacebookBoxLine className="size-6" />
     }
     if (props.url.includes("github")) {
-      return <RiGithubLine className="h-6 w-6" />
+      return <RiGithubLine className="size-6" />
     }
     // メールアドレス
     if (props.url.includes("mailto")) {
-      return <MailIcon className="h-6 w-6" />
+      return <MailIcon className="size-6" />
     }
     // その他
     return (
       // biome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
+        className="size-6"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -55,7 +55,7 @@ export function SnsIconLink(props: Props) {
 
   return (
     <Link className="block" to={props.url} target="_blank" rel="noreferrer">
-      <Button variant={"secondary"} className="h-10 w-10 rounded-md p-2">
+      <Button variant={"secondary"} className="size-10 rounded-md p-2">
         {icon()}
       </Button>
     </Link>

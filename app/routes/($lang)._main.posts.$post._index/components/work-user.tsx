@@ -51,7 +51,7 @@ export function WorkUser(props: Props) {
             <Avatar className="m-auto h-auto w-24">
               <AvatarImage src={props.userIconImageURL} alt="" />
               <AvatarFallback>
-                <Skeleton className="h-24 w-24 rounded-full" />
+                <Skeleton className="size-24 rounded-full" />
               </AvatarFallback>
             </Avatar>
             <p className="mt-2 text-center font-bold text-md">

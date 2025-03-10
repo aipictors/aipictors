@@ -22,7 +22,7 @@ export function ImageGenerationReferenceCard(props: Props) {
           <div className="ta-c relative z-10 m-auto mb-4 text-sm">
             {props.title}
           </div>
-          <div className="-inset-1 absolute z-0 rounded-lg bg-gradient-to-r from-red-600 to-violet-600 opacity-25 blur transition duration-1000 group-hover:opacity-90 group-hover:duration-200 dark:opacity-75" />
+          <div className="-inset-1 absolute z-0 rounded-lg bg-linear-to-r from-red-600 to-violet-600 opacity-25 blur-sm transition duration-1000 group-hover:opacity-90 group-hover:duration-200 dark:opacity-75" />
         </div>
       </div>
     </Link>

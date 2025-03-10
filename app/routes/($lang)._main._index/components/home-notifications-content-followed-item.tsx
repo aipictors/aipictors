@@ -26,9 +26,9 @@ export function HomeNotificationsContentFollowedItem(props: Props) {
       className="flex items-center p-1 transition-all"
       to={`/users/${props.notification.user.id}`}
     >
-      <Avatar className="h-8 w-8">
+      <Avatar className="size-8">
         <AvatarImage
-          className="h-8 w-8 rounded-full object-cover"
+          className="size-8 rounded-full object-cover"
           src={withIconUrlFallback(props.notification.user.iconUrl)}
           alt="thumbnail"
         />
@@ -49,7 +49,7 @@ export function HomeNotificationsContentFollowedItem(props: Props) {
         </p>
       </div>
       {props.notification.user.isFollowee && (
-        <ArrowLeftRightIcon className="h-6 w-6 text-zinc-500" />
+        <ArrowLeftRightIcon className="size-6 text-zinc-500" />
       )}
     </Link>
   )

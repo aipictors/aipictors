@@ -70,7 +70,7 @@ export function CharacterCard(props: Props) {
 
         <Link to={props.xlink} target="_blank" rel="noopener noreferrer">
           <div className="mt-2 mb-2 flex items-center">
-            <RiTwitterXFill className="mr-2 h-4 w-4" />
+            <RiTwitterXFill className="mr-2 size-4" />
             <p className="text-left">@{props.xlink.split("/").pop()}</p>
           </div>
         </Link>

@@ -68,13 +68,13 @@ export function LoginDialogContent() {
             disabled={isLoading}
             provider={new GoogleAuthProvider()}
             buttonText={t("Googleで続ける", "Continue with Google")}
-            icon={<RiGoogleFill className="mr-2 h-4 w-4" />}
+            icon={<RiGoogleFill className="mr-2 size-4" />}
           />
           <SocialLoginButton
             disabled={isLoading}
             provider={new TwitterAuthProvider()}
             buttonText={t("𝕏(Twitter)で続ける", "Continue with X (Twitter)")}
-            icon={<RiTwitterXFill className="mr-2 h-4 w-4" />}
+            icon={<RiTwitterXFill className="mr-2 size-4" />}
           />
           <Suspense
             fallback={<LineLoggedInButton disabled={true} onClick={() => {}} />}

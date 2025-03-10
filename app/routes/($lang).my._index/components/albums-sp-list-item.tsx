@@ -80,7 +80,7 @@ export function AlbumsSpListItem(props: Props) {
             </div>
             <div className="flex w-16 justify-center">
               {isLoadingDeleteAlbum ? (
-                <Loader2Icon className="h-4 w-4 animate-spin" />
+                <Loader2Icon className="size-4 animate-spin" />
               ) : (
                 <AlbumDeleteConfirmDialog
                   onDelete={() => onDeleteSeries(props.album.id)}

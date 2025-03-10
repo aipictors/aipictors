@@ -76,7 +76,7 @@ export function FoldersListTableRow(props: Props) {
           </TableCell>
           <TableCell>
             {isLoadingDeleteFolder ? (
-              <Loader2Icon className="h-4 w-4 animate-spin" />
+              <Loader2Icon className="size-4 animate-spin" />
             ) : (
               <DeleteFolderConfirmDialog
                 onDelete={async () => {

@@ -54,7 +54,7 @@ export function ImageModelCard(props: Props) {
     <div className={classes} onClick={props.onSelect} onKeyUp={() => {}}>
       <img
         className={
-          "relative w-full rounded-lg border-2 bg-center bg-cover focus:outline-none"
+          "relative w-full rounded-lg border-2 bg-center bg-cover focus:outline-hidden"
         }
         src={props.thumbnailImageURL ?? ""}
         alt={props.displayName ?? ""}

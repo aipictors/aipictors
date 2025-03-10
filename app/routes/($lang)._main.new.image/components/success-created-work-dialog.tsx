@@ -133,7 +133,7 @@ export function SuccessCreatedWorkDialog(props: Props) {
             {props.imageBase64 && (
               <Link to={link()}>
                 <img
-                  className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 h-24 w-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
+                  className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 size-24 rounded-md object-cover transition-opacity duration-300 ease-in-out hover:opacity-80"
                   src={props.imageBase64}
                   alt="work-image"
                 />

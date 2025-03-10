@@ -180,7 +180,7 @@ export function HomeNotificationsMenu(props: Props) {
         >
           <BellIcon className="w-16" />
           {props.isExistedNewNotification && (
-            <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+            <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
           )}
         </Button>
       </DropdownMenuTrigger>
@@ -199,7 +199,7 @@ export function HomeNotificationsMenu(props: Props) {
                       <div className="relative">
                         <HeartIcon className="w-4" />
                         {isNewLikeNotification && (
-                          <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
                         )}
                       </div>
                     )}
@@ -207,7 +207,7 @@ export function HomeNotificationsMenu(props: Props) {
                       <div className="relative">
                         <MessageCircle className="w-4" />
                         {isNewCommentNotification && (
-                          <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
                         )}
                       </div>
                     )}
@@ -215,7 +215,7 @@ export function HomeNotificationsMenu(props: Props) {
                       <div className="relative">
                         <AwardIcon className="w-4" />
                         {isNewAwardNotification && (
-                          <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
                         )}
                       </div>
                     )}
@@ -223,7 +223,7 @@ export function HomeNotificationsMenu(props: Props) {
                       <div className="relative">
                         <UserRoundCheck className="w-4" />
                         {isNewFollowNotification && (
-                          <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
                         )}
                       </div>
                     )}
@@ -231,7 +231,7 @@ export function HomeNotificationsMenu(props: Props) {
                       <div className="relative">
                         <MailIcon className="w-4" />
                         {isNewMessageNotification && (
-                          <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500" />
+                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
                         )}
                       </div>
                     )}

@@ -73,7 +73,7 @@ export function WorkActionBookmark(props: Props) {
       onClick={onCreateWorkBookmark}
     >
       {isCreatingFolderWork || isDeletingFolderWork ? (
-        <Loader2Icon className="h-4 w-4 animate-spin" />
+        <Loader2Icon className="size-4 animate-spin" />
       ) : (
         <FolderIcon
           className={

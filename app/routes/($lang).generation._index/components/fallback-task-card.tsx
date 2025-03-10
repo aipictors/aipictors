@@ -8,7 +8,7 @@ export function FallbackTaskCard() {
   return (
     <Card>
       <div className="flex flex-col p-4">
-        <Loader2Icon className="h-6 w-6 animate-spin" />
+        <Loader2Icon className="size-6 animate-spin" />
       </div>
     </Card>
   )

@@ -23,7 +23,7 @@ export function HomeRequestCard(props: Props) {
         </Link>
         <div className="flex items-center gap-x-2 p-2">
           {/* <Link to={`/users/${props.request.recipient.aipicsUser?.login}`}> */}
-          <Avatar className="h-6 w-6">
+          <Avatar className="size-6">
             <AvatarImage
               src={props.request.recipient?.aipicsUser?.iconUrl ?? undefined}
             />

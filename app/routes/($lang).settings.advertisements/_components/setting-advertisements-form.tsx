@@ -576,7 +576,7 @@ export function SettingAdvertisementsForm() {
               disabled={!imageBase64 || isUploading}
             >
               {isUploading ? (
-                <Loader2Icon className="h-4 w-4 animate-spin" />
+                <Loader2Icon className="size-4 animate-spin" />
               ) : (
                 <p>{t("画像をアップロード", "Upload Image")}</p>
               )}
@@ -706,7 +706,7 @@ export function SettingAdvertisementsForm() {
               onClick={isEditing ? handleUpdate : handleCreate}
             >
               {isCreating || isUpdating ? (
-                <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+                <Loader2Icon className="m-auto size-4 animate-spin" />
               ) : isEditing ? (
                 t("更新", "Update")
               ) : (

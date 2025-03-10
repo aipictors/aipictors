@@ -22,7 +22,7 @@ export function ResponsiveFoldersList(props: Props) {
             }
             alt={props.folder.title}
           />
-          <div className="absolute right-0 bottom-0 left-0 box-border h-8 bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
+          <div className="absolute right-0 bottom-0 left-0 box-border h-8 bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-80">
             <p className="absolute bottom-1 left-1 text-white">
               {props.folder.title}
             </p>

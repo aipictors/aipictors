@@ -64,9 +64,9 @@ export function StickerArticle(props: Props) {
           </p>
           <Link to={`/users/${props.sticker.user.login}`}>
             <div className="mt-2 flex items-center space-x-2">
-              <Avatar className="h-8 w-8">
+              <Avatar className="size-8">
                 <AvatarImage
-                  className="h-8 w-8 rounded-full"
+                  className="size-8 rounded-full"
                   src={withIconUrlFallback(props.sticker.user.iconUrl)}
                   alt=""
                 />

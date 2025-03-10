@@ -90,11 +90,11 @@ export function SelectCreatedWorksDialog(props: Props) {
       <div key={work.id}>
         {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
         <div
-          className="relative m-2 h-24 w-24 cursor-pointer"
+          className="relative m-2 size-24 cursor-pointer"
           onClick={() => handleWorkClick(work)}
         >
           <img
-            className="h-24 w-24 rounded-md object-cover"
+            className="size-24 rounded-md object-cover"
             src={work.smallThumbnailImageURL}
             alt=""
           />
@@ -114,7 +114,7 @@ export function SelectCreatedWorksDialog(props: Props) {
   if (!works?.length) {
     return (
       <div className="p-4">
-        <ImageIcon className="m-auto h-8 w-8 opacity-70" />
+        <ImageIcon className="m-auto size-8 opacity-70" />
         <p className="p-4 text-center text-sm">
           {t("作品がありません。", "No works available.")}
         </p>
@@ -139,9 +139,9 @@ export function SelectCreatedWorksDialog(props: Props) {
 
       <div className="flex flex-wrap items-center">
         {props.selectedWorks.slice(0, 7).map((work) => (
-          <div key={work.id} className="relative m-2 h-16 w-16 md:h-24 md:w-24">
+          <div key={work.id} className="relative m-2 size-16 md:h-24 md:w-24">
             <img
-              className="h-16 w-16 rounded-md object-cover md:h-24 md:w-24"
+              className="size-16 rounded-md object-cover md:h-24 md:w-24"
               src={work.smallThumbnailImageURL}
               alt=""
             />
@@ -156,7 +156,7 @@ export function SelectCreatedWorksDialog(props: Props) {
         <div className="border-2 border-transparent p-1">
           <Button
             onClick={() => setIsOpen(true)}
-            className="h-16 w-16 md:h-24 md:w-24"
+            className="size-16 md:h-24 md:w-24"
             size={"icon"}
             variant={"secondary"}
           >

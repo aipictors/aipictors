@@ -24,7 +24,7 @@ export function CollectionHeader(props: Props) {
           alt="コレクションの画像"
           className="h-full w-full object-cover"
         />
-        <div className="absolute right-0 bottom-0 left-0 rounded-md bg-gradient-to-t from-black to-transparent p-4">
+        <div className="absolute right-0 bottom-0 left-0 rounded-md bg-linear-to-t from-black to-transparent p-4">
           <h2 className="font-bold text-2xl text-white">
             {props.collectionName}
           </h2>

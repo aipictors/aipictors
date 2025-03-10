@@ -317,11 +317,11 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
           setIndexList={props.setIndexList}
           optionalButton={
             <Button
-              className="absolute bottom-2 left-2 h-6 w-6 md:h-8 md:w-8"
+              className="absolute bottom-2 left-2 size-6 md:h-8 md:w-8"
               size={"icon"}
               onClick={() => {}}
             >
-              <PencilLineIcon className="h-4 w-4 md:h-6 md:w-6" />
+              <PencilLineIcon className="size-4 md:h-6 md:w-6" />
             </Button>
           }
           onClickOptionButton={(index) => {
@@ -342,9 +342,9 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
                     inputElement.click()
                   }
                 }}
-                className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-md bg-zinc-600 hover:opacity-80 dark:bg-zinc-700"
+                className="flex size-32 cursor-pointer items-center justify-center rounded-md bg-zinc-600 hover:opacity-80 dark:bg-zinc-700"
               >
-                <PlusIcon className="h-12 w-12" />
+                <PlusIcon className="size-12" />
               </div>
             )
           }

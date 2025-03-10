@@ -139,7 +139,7 @@ export function ModerationReportsContainer(props: Props) {
             <Card key={report.id.toString()} className="rounded-none">
               <CardContent className="flex flex-col items-center space-x-2 space-y-2 p-4 md:flex-row">
                 {report.work && (
-                  <div className="h-32 w-32">
+                  <div className="size-32">
                     <CroppedWorkSquare
                       workId={report.work?.id}
                       subWorksCount={report.work.subWorksCount}

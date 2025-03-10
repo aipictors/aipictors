@@ -15,15 +15,15 @@ export function UserProfileAvatar({
   const getSize = (size: "sm" | "md" | "lg" | "auto") => {
     switch (size) {
       case "sm":
-        return "h-16 w-16"
+        return "size-16"
       case "md":
-        return "h-20 w-20"
+        return "size-20"
       case "lg":
-        return "h-32 w-32"
+        return "size-32"
       case "auto":
-        return "h-20 w-20 md:h-32 md:w-32"
+        return "size-20 md:h-32 md:w-32"
       default:
-        return "h-20 w-20"
+        return "size-20"
     }
   }
 

@@ -44,7 +44,7 @@ export function InProgressGenerationCard(props: Props) {
         <div>
           <div className="relative flex">
             <div className="m-auto flex flex-col gap-y-2 p-4">
-              <Loader2Icon className="mr-auto h-6 w-6 animate-spin" />
+              <Loader2Icon className="mr-auto size-6 animate-spin" />
               <span className="ta-c m-auto mb-4 text-sm">
                 {"generating..."}
               </span>

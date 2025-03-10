@@ -18,7 +18,7 @@ export function ConfigLoraModel(props: Props) {
     <Card>
       <CardContent className="flex items-center space-x-2 p-2">
         <img
-          className="h-16 w-16 rounded object-cover"
+          className="size-16 rounded object-cover"
           src={props.imageURL ?? ""}
           alt={props.name}
           draggable={false}
@@ -35,7 +35,7 @@ export function ConfigLoraModel(props: Props) {
                 variant={"ghost"}
                 onClick={props.onDelete}
               >
-                <XIcon className="h-4 w-4" />
+                <XIcon className="size-4" />
               </Button>
             </div>
 

@@ -86,7 +86,7 @@ export function ConfigModelButton(props: Props) {
         <Button
           disabled={props.isDisabled}
           onClick={props.onSearchClick}
-          className="absolute top-1 right-1 h-8 w-8 rounded-full border-2"
+          className="absolute top-1 right-1 size-8 rounded-full border-2"
           size={"icon"}
           variant={"secondary"}
         >

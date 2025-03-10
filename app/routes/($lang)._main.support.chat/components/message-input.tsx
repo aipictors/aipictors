@@ -36,7 +36,7 @@ export function MessageInput(props: Props) {
         <div key={index} className="relative">
           <img src={image} alt={`Selected ${index}`} />
           <RiCloseCircleLine
-            className="absolute top-2 right-2 flex h-8 w-8 cursor-pointer items-center justify-center"
+            className="absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center"
             onClick={() => handleDeleteImage(index)}
           />
         </div>

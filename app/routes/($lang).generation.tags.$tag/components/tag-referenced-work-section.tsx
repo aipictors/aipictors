@@ -68,9 +68,9 @@ export function TagReferencedWorkSection(props: Props) {
                 </Link>
                 <Link to={`/users/${photo.userId}`}>
                   <div className="flex items-center space-x-2">
-                    <Avatar className="h-6 w-6">
+                    <Avatar className="size-6">
                       <AvatarImage
-                        className="h-6 w-6 rounded-full"
+                        className="size-6 rounded-full"
                         src={withIconUrlFallback(photo.userIcon)}
                         alt=""
                       />

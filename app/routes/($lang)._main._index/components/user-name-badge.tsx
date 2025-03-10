@@ -30,16 +30,16 @@ export function UserNameBadge(props: Props) {
         <div className="flex items-center space-x-2">
           <Avatar
             className={cn("rounded-full", {
-              "h-4 w-4": props.width === "sm",
-              "h-6 w-6": props.width === "md",
-              "h-8 w-8": props.width === "lg",
+              "size-4": props.width === "sm",
+              "size-6": props.width === "md",
+              "size-8": props.width === "lg",
             })}
           >
             <AvatarImage
               className={cn("rounded-full", {
-                "h-4 w-4": props.width === "sm",
-                "h-6 w-6": props.width === "md",
-                "h-8 w-8": props.width === "lg",
+                "size-4": props.width === "sm",
+                "size-6": props.width === "md",
+                "size-8": props.width === "lg",
               })}
               src={withIconUrlFallback(props.userIconImageURL)}
               alt="user icon"
@@ -65,7 +65,7 @@ export function UserNameBadge(props: Props) {
         {props.likesCount !== undefined && (
           <div className="ml-auto items-center">
             <div className="flex items-center space-x-1">
-              <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+              <Heart className="size-3 fill-gray-400 text-gray-400" />
               <span className="text-xs">{props.likesCount}</span>
               {props.snapshotLikedCount && (
                 <span className="text-xs opacity-80">

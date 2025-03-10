@@ -119,7 +119,7 @@ export function SettingFcmForm() {
         >
           {t("通知を受信する", "Enable Notifications")}
           {isLoadingNotifySetting && (
-            <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
+            <Loader2Icon className="ml-2 size-4 animate-spin" />
           )}
         </Button>
 
@@ -132,7 +132,7 @@ export function SettingFcmForm() {
           >
             {t("Push通知解除", "Disable Push Notifications")}
             {isLoadingNotifySetting && (
-              <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
+              <Loader2Icon className="ml-2 size-4 animate-spin" />
             )}
           </Button>
         )}
@@ -148,7 +148,7 @@ export function SettingFcmForm() {
           <div className="flex items-center">
             {Notification.permission !== "granted" ? (
               <>
-                <XIcon className="h-4 w-4" />
+                <XIcon className="size-4" />
                 <span className="text-sm">
                   {t(
                     "ブラウザの通知設定がOFF",
@@ -158,7 +158,7 @@ export function SettingFcmForm() {
               </>
             ) : (
               <>
-                <CircleCheckBigIcon className="h-4 w-4" />
+                <CircleCheckBigIcon className="size-4" />
                 <span className="text-sm">
                   {t("ブラウザの通知設定がON", "Browser notifications are ON")}
                 </span>
@@ -168,7 +168,7 @@ export function SettingFcmForm() {
           <div className="flex items-center">
             {!data?.viewer?.user.webFcmToken && !webFcmToken ? (
               <>
-                <XIcon className="h-4 w-4" />
+                <XIcon className="size-4" />
                 <span className="text-sm">
                   {t(
                     "通知に必要な情報をサーバに未送信",
@@ -178,7 +178,7 @@ export function SettingFcmForm() {
               </>
             ) : (
               <>
-                <CircleCheckBigIcon className="h-4 w-4" />
+                <CircleCheckBigIcon className="size-4" />
                 <span className="text-sm">
                   {t(
                     "通知に必要な情報をサーバに送信済み",

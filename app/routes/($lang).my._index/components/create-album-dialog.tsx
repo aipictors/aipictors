@@ -240,7 +240,7 @@ export function CreateAlbumDialog(props: Props) {
                   >
                     <div className="border-2 border-transparent p-1">
                       <Button
-                        className="h-16 w-16"
+                        className="size-16"
                         size={"icon"}
                         variant={"secondary"}
                       >

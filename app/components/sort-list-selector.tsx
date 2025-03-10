@@ -32,14 +32,14 @@ export function SortListSelector(props: Props) {
                 {props.nowSort === "ASC" ? (
                   <>
                     <div>
-                      <ChevronUp className="h-4 w-4" />
-                      <ChevronDown className="h-4 w-4 opacity-40" />
+                      <ChevronUp className="size-4" />
+                      <ChevronDown className="size-4 opacity-40" />
                     </div>
                   </>
                 ) : (
                   <div>
-                    <ChevronUp className="h-4 w-4 opacity-40" />
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronUp className="size-4 opacity-40" />
+                    <ChevronDown className="size-4" />
                   </div>
                 )}
               </div>

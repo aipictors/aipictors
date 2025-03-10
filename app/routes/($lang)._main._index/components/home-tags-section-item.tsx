@@ -15,7 +15,7 @@ export function HomeTagsSectionItem(props: Props) {
           src={props.tagThumbnailUrl}
           alt={props.tagName}
         />
-        <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88">
+        <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-88">
           <p className="text-white">{`#${props.tagName}`}</p>
         </div>
       </Link>

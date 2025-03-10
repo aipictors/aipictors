@@ -153,7 +153,7 @@ export function TextEditorUploaderDialog(props: Props) {
               disabled={!imageBase64 || isUploading}
             >
               {isUploading ? (
-                <Loader2Icon className="h-4 w-4 animate-spin" />
+                <Loader2Icon className="size-4 animate-spin" />
               ) : (
                 <p>{t("画像をアップロード", "Upload Image")}</p>
               )}
@@ -166,7 +166,7 @@ export function TextEditorUploaderDialog(props: Props) {
                     onClick={() => onSelectImage(url)}
                     className="flex h-18 w-full items-center space-x-2"
                   >
-                    <div className="h-16 w-16 overflow-hidden rounded">
+                    <div className="size-16 overflow-hidden rounded">
                       <img
                         src={url}
                         alt={t("アップロードされた画像", "uploaded")}
@@ -176,10 +176,10 @@ export function TextEditorUploaderDialog(props: Props) {
                   </Button>
                   <Button
                     onClick={() => onDeleteImage(url)}
-                    className="h-12 w-12"
+                    className="size-12"
                     variant={"destructive"}
                   >
-                    <XIcon className="h-8 w-8" />
+                    <XIcon className="size-8" />
                   </Button>
                 </div>
               ))}

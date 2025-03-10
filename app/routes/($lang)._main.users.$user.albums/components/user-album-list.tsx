@@ -33,14 +33,14 @@ export function UserAlbumList(props: Props) {
                     }
                     alt={album.title}
                   />
-                  <div className="absolute right-0 bottom-0 left-0 box-border h-8 bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80">
+                  <div className="absolute right-0 bottom-0 left-0 box-border h-8 bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-80">
                     <p className="absolute bottom-1 left-1 text-white">
                       {album.title}
                     </p>
                   </div>
                   {album.worksCount !== undefined && album.worksCount !== 0 && (
                     <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <Images className="h-3 w-3 text-white" />
+                      <Images className="size-3 text-white" />
                       <div className="font-bold text-white text-xs">
                         {album.worksCount}
                       </div>

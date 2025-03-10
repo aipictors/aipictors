@@ -132,9 +132,9 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                 <Link to={`/users/${photo.context.user?.id}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Avatar className="h-4 w-4">
+                      <Avatar className="size-4">
                         <AvatarImage
-                          className="h-4 w-4 rounded-full"
+                          className="size-4 rounded-full"
                           src={withIconUrlFallback(photo.context.user?.iconUrl)}
                           alt={photo.context.user?.name}
                         />
@@ -146,7 +146,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                     </div>
                     <div className="flex items-center">
                       <div className="flex items-center space-x-1">
-                        <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                        <Heart className="size-3 fill-gray-400 text-gray-400" />
                         <span className="text-xs">
                           {photo.context.likesCount}
                         </span>

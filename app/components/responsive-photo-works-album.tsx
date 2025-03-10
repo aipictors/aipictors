@@ -44,7 +44,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                 />
                 {workItem.subWorksCount > 0 && (
                   <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                    <Images className="h-3 w-3 text-white" />
+                    <Images className="size-3 text-white" />
                     <div className="font-bold text-white text-xs">
                       {workItem.subWorksCount + 1}
                     </div>
@@ -52,7 +52,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                 )}
                 {workItem.commentsCount > 0 && (
                   <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                    <MessageCircle className="h-3 w-3 text-white" />
+                    <MessageCircle className="size-3 text-white" />
                     <div className="font-bold text-white text-xs">
                       {workItem.commentsCount}
                     </div>
@@ -139,7 +139,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   </div>
                   {photo.context.subWorksCount > 0 && (
                     <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <Images className="h-3 w-3 text-white" />
+                      <Images className="size-3 text-white" />
                       <div className="font-bold text-white text-xs">
                         {photo.context.subWorksCount + 1}
                       </div>
@@ -147,7 +147,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   )}
                   {photo.context.commentsCount > 0 && (
                     <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <MessageCircle className="h-3 w-3 text-white" />
+                      <MessageCircle className="size-3 text-white" />
                       <div className="font-bold text-white text-xs">
                         {photo.context.commentsCount}
                       </div>
@@ -166,9 +166,9 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                       <div className="flex items-center justify-between">
                         <Link to={`/users/${photo.context.user?.id}`}>
                           <div className="flex items-center space-x-2">
-                            <Avatar className="h-6 w-6">
+                            <Avatar className="size-6">
                               <AvatarImage
-                                className="h-6 w-6 rounded-full"
+                                className="size-6 rounded-full"
                                 src={withIconUrlFallback(
                                   photo.context.user?.iconUrl,
                                 )}
@@ -182,7 +182,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                           </div>
                         </Link>
                         <div className="absolute right-0 ml-auto flex items-center space-x-1 rounded-md bg-card p-1">
-                          <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                          <Heart className="size-3 fill-gray-400 text-gray-400" />
                           <span className="text-xs">
                             {photo.context.likesCount}
                           </span>

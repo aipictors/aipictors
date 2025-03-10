@@ -121,7 +121,7 @@ export function AlbumArticleEditorDialog(props: Props) {
         <DialogFooter>
           <Button disabled={isUpdating} className="w-full" onClick={onSubmit}>
             {isUpdating ? (
-              <Loader2Icon className="m-auto h-4 w-4 animate-spin" />
+              <Loader2Icon className="m-auto size-4 animate-spin" />
             ) : (
               t("更新する", "Update")
             )}

@@ -33,7 +33,7 @@ export function PromptCategoriesDialogContent(props: Props) {
 
   return (
     <>
-      <DialogContent className="md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl">
+      <DialogContent className="md:max-w-(--breakpoint-md) lg:max-w-(--breakpoint-lg) xl:max-w-(--breakpoint-xl)">
         <DialogHeader />
         <ScrollArea className="h-full max-h-[80vh] overflow-auto">
           <Accordion

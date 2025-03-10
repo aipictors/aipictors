@@ -20,11 +20,11 @@ export function HomeNotificationsContentAwardItem(props: Props) {
       className="flex items-center p-1 transition-all"
     >
       <>
-        <div className="h-12 w-12 overflow-hidden rounded-md">
+        <div className="size-12 overflow-hidden rounded-md">
           <img
             src={props.notification.work.smallThumbnailImageURL}
             alt="thumbnail"
-            className="h-16 w-16 object-cover"
+            className="size-16 object-cover"
           />
         </div>
         <div className="ml-2 w-full overflow-hidden">

@@ -122,7 +122,7 @@ export function WorkComment(props: Props) {
             </span>
             {props.isWorkOwnerLiked && (
               <div className="relative">
-                <Avatar className="relative h-4 w-4">
+                <Avatar className="relative size-4">
                   <AvatarImage
                     src={withIconUrlFallback(props.workOwnerIconImageURL)}
                     alt=""
@@ -167,7 +167,7 @@ export function WorkComment(props: Props) {
             {props.isMine ? (
               <>
                 {isDeleteLoading ? (
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2Icon className="mr-2 size-4 animate-spin" />
                 ) : (
                   <DeleteCommentConfirmDialog
                     onDeleteComment={onDeleteComment}
@@ -188,7 +188,7 @@ export function WorkComment(props: Props) {
                       title={props.stickerTitle ?? ""}
                       imageUrl={props.stickerImageURL}
                     >
-                      <ArrowDownToLine className="h-4 w-4" />
+                      <ArrowDownToLine className="size-4" />
                     </StickerInfoDialog>
                   )}
               </>

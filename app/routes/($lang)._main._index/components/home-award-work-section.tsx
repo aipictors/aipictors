@@ -131,7 +131,7 @@ export function HomeAwardWorkSection(props: Props) {
                   )}
                   <div className="flex items-center space-x-1">
                     <div className="flex items-center space-x-1">
-                      <Heart className="h-3 w-3 fill-gray-400 text-gray-400" />
+                      <Heart className="size-3 fill-gray-400 text-gray-400" />
                       <span className="text-xs">{work.work?.likesCount}</span>
                     </div>
                   </div>
@@ -142,9 +142,9 @@ export function HomeAwardWorkSection(props: Props) {
           <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
           {/* <div className="relative basis-1/3.5 space-y-2" /> */}
         </CarouselContent>
-        {/* <div className="absolute top-0 left-0 h-full w-16 bg-gradient-to-r from-card to-transparent" /> */}
+        {/* <div className="absolute top-0 left-0 h-full w-16 bg-linear-to-r from-card to-transparent" /> */}
         <CarouselPrevious className="absolute left-0" />
-        {/* <div className="absolute top-0 right-0 h-full w-16 bg-gradient-to-r from-transparent to-card" /> */}
+        {/* <div className="absolute top-0 right-0 h-full w-16 bg-linear-to-r from-transparent to-card" /> */}
         <CarouselNext className="absolute right-0" />
       </Carousel>
     </section>

@@ -10,7 +10,7 @@ export function MutedUser(props: Props) {
   return (
     <div className="flex justify-between">
       <div className="flex items-center">
-        <div className="h-8 w-8 overflow-hidden rounded-full">
+        <div className="size-8 overflow-hidden rounded-full">
           <img
             src={props.iconImageURL ?? undefined}
             alt={props.name}

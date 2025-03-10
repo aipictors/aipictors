@@ -131,7 +131,7 @@ export function CropImageField(props: Props) {
               variant="ghost"
               onClick={onDeleteImage}
             >
-              <XIcon className="h-6 w-6" />
+              <XIcon className="size-6" />
             </Button>
           </Card>
         )}
@@ -171,7 +171,7 @@ export function CropImageField(props: Props) {
       ) : (
         <div className="relative">
           <div className="rounded-lg border p-4">
-            <ArrowUpFromLineIcon className="m-auto h-4 w-4 opacity-80" />
+            <ArrowUpFromLineIcon className="m-auto size-4 opacity-80" />
             <div className="text-center text-sm opacity-80">
               {t("画像アップロード", "Upload image")}
             </div>

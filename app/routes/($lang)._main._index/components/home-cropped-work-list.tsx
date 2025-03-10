@@ -70,7 +70,7 @@ export function HomeCroppedWorkList(props: Props) {
                   </div>
                   {work.subWorksCount > 0 && (
                     <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <Images className="h-3 w-3 text-white" />
+                      <Images className="size-3 text-white" />
                       <div className="font-bold text-white text-xs">
                         {work.subWorksCount + 1}
                       </div>
@@ -78,7 +78,7 @@ export function HomeCroppedWorkList(props: Props) {
                   )}
                   {work.commentsCount > 0 && (
                     <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <MessageCircle className="h-3 w-3 text-white" />
+                      <MessageCircle className="size-3 text-white" />
                       <div className="font-bold text-white text-xs">
                         {work.commentsCount}
                       </div>

@@ -78,7 +78,7 @@ export function StarRating(props: Props) {
             }}
           >
             {props.isLoading ? (
-              <Loader2Icon className="h-6 w-6 animate-spin" />
+              <Loader2Icon className="size-6 animate-spin" />
             ) : (
               <StarIcon
                 className={cn(props.value > index && "fill-yellow-500")}

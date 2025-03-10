@@ -39,7 +39,7 @@ export function DeleteStickerConfirmDialog(props: Props) {
           className="absolute top-1 right-1 rounded-full"
           onClick={() => setIsOpen(true)}
         >
-          <XIcon className="h-4 w-4" />
+          <XIcon className="size-4" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

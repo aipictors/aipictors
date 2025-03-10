@@ -582,7 +582,7 @@ export function PaintCanvas(props: Props) {
               type="color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-              className="mr-2 h-10 w-10 cursor-pointer border-0 p-0"
+              className="mr-2 size-10 cursor-pointer border-0 p-0"
               style={{ backgroundColor: color }}
               title="Choose a color"
             />
@@ -592,7 +592,7 @@ export function PaintCanvas(props: Props) {
               type="color"
               value={color}
               onChange={(e) => setBackgroundColor(e.target.value)}
-              className="mr-2 h-10 w-10 cursor-pointer border-0 p-0"
+              className="mr-2 size-10 cursor-pointer border-0 p-0"
               style={{ backgroundColor: color }}
               title="Choose a color"
             />
