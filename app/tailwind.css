@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 @plugin 'tailwindcss-animate';
+@import './theme.css';
 
 :root {
   --background: hsl(0 0% 100%);
@@ -38,38 +39,6 @@
   --chart-3: hsl(197 37% 24%);
   --chart-4: hsl(43 74% 66%);
   --chart-5: hsl(27 87% 67%);
-}
-
-.dark {
-  --background: hsl(20, 14.3%, 4.1%);
-  --foreground: hsl(60, 9.1%, 97.8%);
-  --card: hsl(20, 14.3%, 4.1%);
-  --card-foreground: hsl(60, 9.1%, 97.8%);
-  --popover: hsl(20, 14.3%, 4.1%);
-  --popover-foreground: hsl(60, 9.1%, 97.8%);
-  --primary: hsl(60, 9.1%, 97.8%);
-  --primary-foreground: hsl(24, 9.8%, 10%);
-  --secondary: hsl(12, 6.5%, 15.1%);
-  --secondary-foreground: hsl(60, 9.1%, 97.8%);
-  --muted: hsl(12, 6.5%, 15.1%);
-  --muted-foreground: hsl(24, 5.4%, 63.9%);
-  --accent: hsl(12, 6.5%, 15.1%);
-  --accent-foreground: hsl(60, 9.1%, 97.8%);
-  --destructive: hsl(0, 62.8%, 30.6%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --border: hsl(12, 6.5%, 24%);
-  --input: hsl(12, 6.5%, 15.1%);
-  --monotone-50: hsl(0, 0%, 5%);
-  --monotone-100: hsl(0, 0%, 10%);
-  --monotone-200: hsl(0, 0%, 20%);
-  --monotone-300: hsl(0, 0%, 30%);
-  --monotone-400: hsl(0, 0%, 40%);
-  --monotone-500: hsl(0, 0%, 50%);
-  --monotone-600: hsl(0, 0%, 60%);
-  --monotone-700: hsl(0, 0%, 70%);
-  --monotone-800: hsl(0, 0%, 80%);
-  --monotone-900: hsl(0, 0%, 90%);
-  --ring: hsl(24, 5.7%, 82.9%);
 }
 
 @theme inline {
