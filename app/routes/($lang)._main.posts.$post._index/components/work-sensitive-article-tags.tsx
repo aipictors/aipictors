@@ -38,7 +38,7 @@ export function WorkSensitiveArticleTags(props: Props) {
             onClick={() => {
               setIsOpenEdit(!isOpenEdit)
             }}
-            className="h-8 w-8"
+            className="size-8"
             size={"icon"}
             variant={"ghost"}
           >

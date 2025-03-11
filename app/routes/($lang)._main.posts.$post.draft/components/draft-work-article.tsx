@@ -308,7 +308,7 @@ export function DraftWorkArticle(props: Props) {
           props.work.user !== null &&
           props.work.user.id === appContext.userId && (
             <p className="flex items-center gap-x-2 font-bold opacity-60">
-              <ShieldAlert className="block h-6 w-6" />
+              <ShieldAlert className="block size-6" />
               <p>
                 {t(
                   "生成情報は非公開状態です、ご自身のみ閲覧可能です",

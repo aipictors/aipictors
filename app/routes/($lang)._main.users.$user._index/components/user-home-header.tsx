@@ -20,7 +20,7 @@ export function UserHomeHeader(props: Props) {
       <div className="relative">
         <div className="relative min-h-[168px] overflow-hidden md:min-h-[320px]">
           <div className="relative m-auto">
-            <Avatar className="h-6 w-6">
+            <Avatar className="size-6">
               <AvatarImage
                 className="absolute top-0 left-0 h-full max-h-full min-h-[320px] w-full max-w-full object-cover object-center blur-[120px] transition-opacity duration-500 md:block md:blur-[120px]"
                 src={withIconUrlFallback(user.iconUrl)}
@@ -29,7 +29,7 @@ export function UserHomeHeader(props: Props) {
               <AvatarFallback />
             </Avatar>
           </div>
-          <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
+          <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
         </div>
         <div className="absolute top-0 left-8 z-20">{props.userIconView}</div>
       </div>
@@ -47,7 +47,7 @@ export function UserHomeHeader(props: Props) {
             maxHeight: "240px",
           }}
         />
-        <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
+        <div className="absolute right-0 bottom-0 left-0 z-10 box-border flex h-24 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-7 opacity-0 md:opacity-50" />
         <div className="relative m-auto">
           <div className="absolute top-0 left-0 max-h-full min-h-[168px] w-full max-w-full overflow-hidden md:min-h-[320px]">
             <img

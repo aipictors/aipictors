@@ -130,7 +130,7 @@ export function WorksListTableRow(props: Props) {
           <TableCell>{toAccessTypeText(props.work.accessType)}</TableCell>
           <TableCell>
             {isLoadingDeleteWork ? (
-              <Loader2Icon className="h-4 w-4 animate-spin" />
+              <Loader2Icon className="size-4 animate-spin" />
             ) : (
               <DeleteWorkConfirmDialog
                 onDelete={async () => {

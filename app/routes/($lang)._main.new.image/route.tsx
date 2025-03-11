@@ -541,7 +541,7 @@ export default function NewImage() {
           <PostFormHeader type="image" />
           {state.isOpenLoadingAi && (
             <div className="absolute top-12 right-2 z-10 flex items-center space-x-2 opacity-80">
-              <Loader2Icon className="h-4 w-4 animate-spin text-white" />
+              <Loader2Icon className="size-4 animate-spin text-white" />
               <p className="text-white">
                 {t(
                   "AIでテイスト、年齢種別を判定中",

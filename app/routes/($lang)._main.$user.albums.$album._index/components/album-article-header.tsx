@@ -35,9 +35,9 @@ export function AlbumArticleHeader(props: Props) {
       <div className="mt-4 flex flex-col items-center">
         <Link to={`/users/${props.album.user.login}`}>
           <div className="flex max-w-32 items-center overflow-hidden">
-            <Avatar className="h-8 w-8">
+            <Avatar className="size-8">
               <AvatarImage
-                className="mr-2 h-8 w-8 rounded-full"
+                className="mr-2 size-8 rounded-full"
                 src={withIconUrlFallback(props.album.user.iconUrl)}
                 alt={props.album.user.name}
               />
@@ -67,10 +67,10 @@ export function AlbumArticleHeader(props: Props) {
                 userNanoid={props.album.user.nanoid}
               >
                 <Button
-                  className="absolute right-1 bottom-1 h-12 w-12 rounded-full p-0"
+                  className="absolute right-1 bottom-1 size-12 rounded-full p-0"
                   variant={"secondary"}
                 >
-                  <Pencil className="h-8 w-8" />
+                  <Pencil className="size-8" />
                 </Button>
               </AlbumArticleEditorDialog>
             </Suspense>

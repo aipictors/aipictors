@@ -170,7 +170,7 @@ export function ThemeList(props: Props) {
                     <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 z-10 w-14 transform text-wrap rounded-md p-2 text-center font-bold text-white text-xs md:w-24 md:text-md">
                       {block.title}
                     </div>
-                    <div className="absolute right-0 bottom-0 left-0 box-border flex h-24 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-80 md:h-24 md:opacity-100" />
+                    <div className="absolute right-0 bottom-0 left-0 box-border flex h-24 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-80 md:h-24 md:opacity-100" />
                   </>
                 )}
                 {block.title && !block.thumbnailUrl && (

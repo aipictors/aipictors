@@ -64,7 +64,7 @@ export default function EventWakiaiai() {
   return (
     <div className="space-y-6 py-8">
       <div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
-        <div className="max-w-[640px] flex-shrink-0">
+        <div className="max-w-[640px] shrink-0">
           <EventWakiaiaiImage
             alt={t("和気あいAI", "Wakiaiai")}
             imageURL="https://assets.aipictors.com/wakiaiai-halloween.webp"

@@ -24,7 +24,7 @@ export function GenerationMenuButton(props: Props) {
       size="sm"
       className={cn(props.className, "pad-0")}
     >
-      <Loader2Icon color="black" className="m-auto h-4 w-4 animate-spin" />
+      <Loader2Icon color="black" className="m-auto size-4 animate-spin" />
     </Button>
   ) : (
     <Button
@@ -36,7 +36,7 @@ export function GenerationMenuButton(props: Props) {
       className={cn(props.className, "pad-0")}
     >
       <div className="pad-8">
-        {props.icon && <props.icon className="m-auto h-4 w-4" />}
+        {props.icon && <props.icon className="m-auto size-4" />}
       </div>
       {props.text && <p className="ml-1">{props.text}</p>}
     </Button>

@@ -57,7 +57,7 @@ export function SocialLoginButton(props: Props) {
     >
       <div className="absolute left-4">
         {props.disabled ? (
-          <RiRestartLine className="mr-2 h-4 w-4 animate-spin" />
+          <RiRestartLine className="mr-2 size-4 animate-spin" />
         ) : (
           props.icon
         )}

@@ -149,7 +149,7 @@ export function DashboardHomeContents() {
                           />
                           {/* biome-ignore lint/nursery/useSortedClasses: <explanation> */}
                           {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
-                          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-30 rounded-md"></div>
+                          <div className="absolute inset-0 bg-linear-to-b from-transparent to-black opacity-30 rounded-md"></div>
                           <div className="absolute bottom-0 left-0 p-4">
                             {/* biome-ignore lint/nursery/useSortedClasses: <explanation> */}
                             <div className="bg-yellow-500 rounded-full text-white w-8 text-center font-bold px-2 py-1">
@@ -179,11 +179,11 @@ export function DashboardHomeContents() {
                               {index + 1}
                             </div>
                           </div>
-                          <div className="h-12 w-12 overflow-hidden rounded-md">
+                          <div className="size-12 overflow-hidden rounded-md">
                             <img
                               src={work.smallThumbnailImageURL}
                               alt={work.title}
-                              className="h-16 w-16 object-cover"
+                              className="size-16 object-cover"
                             />
                           </div>
                           <div className="ml-4">

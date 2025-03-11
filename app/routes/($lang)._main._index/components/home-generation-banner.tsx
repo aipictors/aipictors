@@ -35,33 +35,33 @@ export function HomeGenerationBanner(props: Props) {
       <div className="ml-2 flex justify-center rounded">
         {workA && (
           <Link to={`/generation?work=${workA.id}`}>
-            <div className="h-32 w-32 overflow-hidden">
+            <div className="size-32 overflow-hidden">
               <img
                 src={workA.smallThumbnailImageURL}
                 alt="Generation Banner"
-                className="h-32 w-32 object-cover transition-all hover:scale-110"
+                className="size-32 object-cover transition-all hover:scale-110"
               />
             </div>
           </Link>
         )}
         {workB && (
           <Link to={`/generation?work=${workB.id}`}>
-            <div className="h-32 w-32 overflow-hidden">
+            <div className="size-32 overflow-hidden">
               <img
                 src={workB.smallThumbnailImageURL}
                 alt="Generation Banner"
-                className="h-32 w-32 object-cover transition-all hover:scale-110"
+                className="size-32 object-cover transition-all hover:scale-110"
               />
             </div>
           </Link>
         )}
         {workC && (
           <Link to={`/generation?work=${workC.id}`}>
-            <div className="h-32 w-32 overflow-hidden">
+            <div className="size-32 overflow-hidden">
               <img
                 src={workC.smallThumbnailImageURL}
                 alt="Generation Banner"
-                className="h-32 w-32 object-cover transition-all hover:scale-110"
+                className="size-32 object-cover transition-all hover:scale-110"
               />
             </div>
           </Link>

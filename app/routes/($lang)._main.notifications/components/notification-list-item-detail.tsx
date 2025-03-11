@@ -25,11 +25,11 @@ type Props = {
 }
 
 const stickerSizeClasses = {
-  xl: "h-24 w-24 md:h-32 md:w-32",
-  lg: "h-20 w-20 md:h-24 md:w-24",
-  md: "h-12 w-12",
-  sm: "h-8 w-8",
-  xs: "h-6 w-6",
+  xl: "size-24 md:h-32 md:w-32",
+  lg: "size-20 md:h-24 md:w-24",
+  md: "size-12",
+  sm: "size-8",
+  xs: "size-6",
 }
 
 /**
@@ -58,7 +58,7 @@ export function NotificationListItemDetail(props: Props) {
                 <img
                   src={props.notification.work?.smallThumbnailImageURL}
                   alt="thumbnail"
-                  className="h-24 w-24 rounded-md object-cover"
+                  className="size-24 rounded-md object-cover"
                 />
               </Link>
             </TableCell>
@@ -73,7 +73,7 @@ export function NotificationListItemDetail(props: Props) {
                   <img
                     src={withIconUrlFallback(props.notification.user?.iconUrl)}
                     alt="user icon"
-                    className="h-8 w-8 rounded-full object-cover"
+                    className="size-8 rounded-full object-cover"
                   />
                   <span className="font-medium">
                     {props.notification.user?.name}さんがコメントしました
@@ -116,7 +116,7 @@ export function NotificationListItemDetail(props: Props) {
             <TableRow className="border-gray-200 border-t bg-zinc-50 dark:border-gray-700 dark:bg-zinc-700">
               <TableCell colSpan={3} className="p-4">
                 <div className="flex items-start space-x-2">
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="size-8">
                     <AvatarImage
                       src={withIconUrlFallback(reply.user?.iconUrl)}
                       alt="reply user icon"
@@ -125,7 +125,7 @@ export function NotificationListItemDetail(props: Props) {
                   </Avatar>
                   <div className="flex-1 border-gray-400 border-l-2 pl-2">
                     <div className="flex items-center space-x-2">
-                      <ReplyIcon className="h-5 w-5 " />
+                      <ReplyIcon className="size-5 " />
                       <p className="font-medium text-sm">
                         {reply.user?.name} が返信しました
                       </p>

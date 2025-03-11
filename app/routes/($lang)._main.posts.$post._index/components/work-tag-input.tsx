@@ -49,7 +49,7 @@ export function WorkTagInput(props: Props) {
       />
       <Button className="w-full" onClick={handleSave} size={"icon"}>
         {isUpdatingWorkTags ? (
-          <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+          <Loader2Icon className="mr-2 size-4 animate-spin" />
         ) : (
           t("保存", "Save")
         )}

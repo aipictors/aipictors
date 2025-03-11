@@ -175,7 +175,7 @@ export function FollowSensitiveTagsFeedContents(props: Props) {
                             {work.subWorks.length > 0 && (
                               <>
                                 {!subWorksVisible[work.id] && (
-                                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-gradient-to-t from-black to-transparent p-4 pb-3 opacity-88" />
+                                  <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-88" />
                                 )}
                                 <Button
                                   className="-translate-x-1/2 absolute bottom-2 left-1/2 transform rounded-full opacity-80"
@@ -237,7 +237,7 @@ export function FollowSensitiveTagsFeedContents(props: Props) {
                                   }
                                 }}
                               >
-                                <MessageCircleIcon className="h-5 w-5" />
+                                <MessageCircleIcon className="size-5" />
                                 <p>{work.commentsCount}</p>
                               </Button>
                             )}

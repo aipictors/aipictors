@@ -14,7 +14,7 @@ type Props = {
 export function GenerationExtrasToggleButton(props: Props) {
   // ボタンのスタイルを動的に変更するためのクラス名を決定する
   const buttonClass = props.isChecked
-    ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white"
+    ? "bg-linear-to-r from-cyan-500 to-blue-500 text-white"
     : "bg-gray-700 text-gray-300"
 
   return (
@@ -22,7 +22,7 @@ export function GenerationExtrasToggleButton(props: Props) {
       onClick={props.onClick}
       className={cn(
         buttonClass,
-        "relative h-10 w-full text-balance rounded-lg px-4 py-2 shadow-md transition duration-300 ease-in-out hover:dark:bg-primary/40",
+        "relative h-10 w-full text-balance rounded-lg px-4 py-2 shadow-md transition duration-300 ease-in-out dark:hover:bg-primary/40",
         props.className,
       )}
       size="lg"

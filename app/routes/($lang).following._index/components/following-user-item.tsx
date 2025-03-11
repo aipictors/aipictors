@@ -48,9 +48,9 @@ export function FollowingUserItem(props: Props) {
             key={index.toString()}
             className="relative block"
           >
-            <div className="h-32 w-32 rounded-md">
+            <div className="size-32 rounded-md">
               <img
-                className="h-32 w-32 object-cover"
+                className="size-32 object-cover"
                 alt={work.title}
                 key={work.id}
                 src={work.smallThumbnailImageURL}

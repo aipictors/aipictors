@@ -76,7 +76,7 @@ export function HomeSensitiveNewCommentsSection(props: Props) {
                   <img
                     src={comment.sticker.imageUrl}
                     alt="sticker"
-                    className="h-8 w-8 rounded-md md:h-12 md:w-12"
+                    className="size-8 rounded-md md:h-12 md:w-12"
                   />
                 )}
                 <div className="text-sm">

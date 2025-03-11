@@ -185,7 +185,7 @@ export function StickerChangeAccessTypeActionDialog(props: Props) {
             {accessType === "PRIVATE" ? (
               <Button className="w-full" onClick={onChangePublic}>
                 {isChangeStickerAccessType ? (
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2Icon className="mr-2 size-4 animate-spin" />
                 ) : (
                   <span>{t("公開する", "Make Public")}</span>
                 )}

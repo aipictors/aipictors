@@ -17,7 +17,7 @@ export function ContributorCard(props: Props) {
     <div className="relative">
       <Card className="relative z-10 h-full">
         <div className="flex space-x-2 p-2">
-          <div className="h-40 w-40 min-w-fit">
+          <div className="size-40 min-w-fit">
             <Link
               aria-label="Twitter"
               target="_blank"
@@ -34,7 +34,7 @@ export function ContributorCard(props: Props) {
               <img
                 alt={props.user.name}
                 src={props.user.iconImageURL}
-                className="h-24 w-24 rounded shadow-xl md:h-full md:w-full"
+                className="size-24 rounded shadow-xl md:h-full md:w-full"
                 style={{ height: "100%", objectFit: "contain" }}
               />
             </Link>
@@ -80,7 +80,7 @@ export function ContributorCard(props: Props) {
                       <img
                         src="/icon.svg"
                         cmr-2
-                        className="ro-full h-4 w-4"
+                        className="ro-full size-4"
                         alt="aipictors-icon"
                         width={32}
                         height={32}
@@ -92,7 +92,7 @@ export function ContributorCard(props: Props) {
           </div>
         </div>
       </Card>
-      <div className="-inset-1 absolute z-0 rounded-lg bg-gradient-to-r from-red-600 to-violet-600 opacity-25 blur transition duration-1000 group-hover:opacity-90 group-hover:duration-200 dark:opacity-75" />
+      <div className="-inset-1 absolute z-0 rounded-lg bg-linear-to-r from-red-600 to-violet-600 opacity-25 blur-sm transition duration-1000 group-hover:opacity-90 group-hover:duration-200 dark:opacity-75" />
     </div>
   )
 }
