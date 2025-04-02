@@ -1,7 +1,5 @@
 import { Link } from "@remix-run/react"
-
-import { graphql, readFragment, type FragmentOf } from "gql.tada"
-
+import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import {
   Carousel,
   CarouselContent,
