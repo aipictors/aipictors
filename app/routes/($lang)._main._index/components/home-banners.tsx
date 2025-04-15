@@ -1,5 +1,4 @@
 import { Link } from "@remix-run/react"
-import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import {
   Carousel,
   CarouselContent,
@@ -7,93 +6,41 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "~/components/ui/carousel"
-import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 
-type Props = {
-  works: FragmentOf<typeof HomeBannerWorkFragment>[]
-}
-
-/**
- * ホームのバナー
- */
-export function HomeBanners(props: Props) {
-  const works = props.works.map((work) => {
-    return readFragment(HomeBannerWorkFragment, work)
-  })
+export function HomeBanners() {
+  const banners = [
+    {
+      href: "https://www.aipictors.com/events/spring",
+      src: "https://assets.aipictors.com/spring-event.webp",
+    },
+    {
+      href: "/generation",
+      src: "https://assets.aipictors.com/home_banner_02.webp",
+    },
+    {
+      href: "https://docs.google.com/forms/d/e/1FAIpQLSfyDAMllfLp8PyKJFEFhm8K7bQnSm0Nc066opKcoSp130_gkg/viewform?usp=pp_url",
+      src: "https://assets.aipictors.com/home_banner_03.webp",
+      blank: true,
+    },
+  ]
 
   return (
-    <Carousel opts={{ dragFree: true, loop: true }}>
-      <CarouselContent className="m-auto">
-        <CarouselItem className="basis-1/1 pl-0 xl:basis-1/1">
-          <Link to="https://www.aipictors.com/events/spring">
-            <img
-              alt="home_banner_01"
-              className="h-40 w-auto md:h-48 md:max-h-auto"
-              src="https://assets.aipictors.com/spring-event.webp"
-            />
-          </Link>
-        </CarouselItem>
-        <CarouselItem className="basis-1/1 xl:basis-1/1">
-          <Link to="/generation">
-            <img
-              alt="home_banner_01"
-              className="h-40 w-auto md:h-48 md:max-h-auto"
-              src="https://assets.aipictors.com/home_banner_02.webp"
-            />
-          </Link>
-        </CarouselItem>
-        <CarouselItem className="basis-1/1 xl:basis-1/1">
-          <Link
-            target="_blank"
-            to="https://docs.google.com/forms/d/e/1FAIpQLSfyDAMllfLp8PyKJFEFhm8K7bQnSm0Nc066opKcoSp130_gkg/viewform?usp=pp_url"
-          >
-            <img
-              alt="home_banner_01"
-              className="h-40 w-auto md:h-48 md:max-h-auto"
-              src="https://assets.aipictors.com/home_banner_03.webp"
-            />
-          </Link>
-        </CarouselItem>
-        <CarouselItem className="basis-1/1 pl-0 xl:basis-1/1">
-          <Link to="https://www.aipictors.com/events/spring">
-            <img
-              alt="home_banner_01"
-              className="h-40 w-auto md:h-48 md:max-h-auto"
-              src="https://assets.aipictors.com/spring-event.webp"
-            />
-          </Link>
-        </CarouselItem>
-        <CarouselItem className="basis-1/1 xl:basis-1/1">
-          <Link to="/generation">
-            <img
-              alt="home_banner_01"
-              className="h-40 w-auto md:h-48 md:max-h-auto"
-              src="https://assets.aipictors.com/home_banner_02.webp"
-            />
-          </Link>
-        </CarouselItem>
-        <CarouselItem className="basis-1/1 xl:basis-1/1">
-          <Link
-            target="_blank"
-            to="https://docs.google.com/forms/d/e/1FAIpQLSfyDAMllfLp8PyKJFEFhm8K7bQnSm0Nc066opKcoSp130_gkg/viewform?usp=pp_url"
-          >
-            <img
-              alt="home_banner_01"
-              className="h-40 w-auto md:h-48 md:max-h-auto"
-              src="https://assets.aipictors.com/home_banner_03.webp"
-            />
-          </Link>
-        </CarouselItem>
+    <Carousel opts={{ dragFree: true, loop: true, align: "start" }}>
+      <CarouselContent className="flex w-max space-x-4">
+        {banners.map(({ href, src, blank }, i) => (
+          <CarouselItem key={i.toString()} className="shrink-0 basis-auto">
+            <Link to={href} target={blank ? "_blank" : undefined}>
+              <img
+                src={src}
+                alt={`home_banner_${i + 1}`}
+                className="h-40 w-auto md:h-48"
+              />
+            </Link>
+          </CarouselItem>
+        ))}
       </CarouselContent>
-      <CarouselPrevious className="absolute top-1/2 left-0" />
-      <CarouselNext className="absolute top-1/2 right-0" />
+      <CarouselPrevious className="-translate-y-1/2 absolute top-1/2 left-0" />
+      <CarouselNext className="-translate-y-1/2 absolute top-1/2 right-0" />
     </Carousel>
   )
 }
-
-export const HomeBannerWorkFragment = graphql(
-  `fragment HomeBannerWork on WorkNode {
-    ...HomeGenerationBannerWork
-  }`,
-  [HomeGenerationBannerWorkFragment],
-)
