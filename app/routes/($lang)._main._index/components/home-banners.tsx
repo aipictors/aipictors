@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import {
   Carousel,
   CarouselContent,
@@ -6,8 +7,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "~/components/ui/carousel"
+import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 
-export function HomeBanners() {
+type Props = {
+  works: FragmentOf<typeof HomeBannerWorkFragment>[]
+}
+
+/**
+ * ホームのバナー
+ */
+export function HomeBanners(props: Props) {
   const banners = [
     {
       href: "https://www.aipictors.com/events/spring",
@@ -44,3 +53,10 @@ export function HomeBanners() {
     </Carousel>
   )
 }
+
+export const HomeBannerWorkFragment = graphql(
+  `fragment HomeBannerWork on WorkNode {
+    ...HomeGenerationBannerWork
+  }`,
+  [HomeGenerationBannerWorkFragment],
+)
