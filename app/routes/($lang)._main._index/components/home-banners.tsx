@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react"
-import { type FragmentOf, graphql } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import {
   Carousel,
   CarouselContent,
@@ -35,9 +35,9 @@ export function HomeBanners(props: Props) {
 
   return (
     <Carousel opts={{ dragFree: true, loop: true, align: "start" }}>
-      <CarouselContent className="flex w-max space-x-4">
+      <CarouselContent className="flex gap-x-4">
         {banners.map(({ href, src, blank }, i) => (
-          <CarouselItem key={i.toString()} className="shrink-0 basis-auto">
+          <CarouselItem key={i.toString()} className="flex-none">
             <Link to={href} target={blank ? "_blank" : undefined}>
               <img
                 src={src}
@@ -48,6 +48,8 @@ export function HomeBanners(props: Props) {
           </CarouselItem>
         ))}
       </CarouselContent>
+
+      {/* ナビゲーションボタン */}
       <CarouselPrevious className="-translate-y-1/2 absolute top-1/2 left-0" />
       <CarouselNext className="-translate-y-1/2 absolute top-1/2 right-0" />
     </Carousel>
