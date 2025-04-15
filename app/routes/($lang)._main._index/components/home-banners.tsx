@@ -24,7 +24,7 @@ export function HomeBanners(props: Props) {
   return (
     <Carousel opts={{ dragFree: true, loop: true }}>
       <CarouselContent className="m-auto">
-        <CarouselItem className="basis-1/1 pl-0 xl:basis-1/1">
+        <CarouselItem className="basis-1/3 pl-0 xl:basis-1/3">
           <Link to="https://www.aipictors.com/events/spring">
             <img
               alt="home_banner_01"
@@ -33,7 +33,7 @@ export function HomeBanners(props: Props) {
             />
           </Link>
         </CarouselItem>
-        <CarouselItem className="basis-1/1 xl:basis-1/1">
+        <CarouselItem className="basis-1/3 xl:basis-1/3">
           <Link to="/generation">
             <img
               alt="home_banner_01"
@@ -42,7 +42,7 @@ export function HomeBanners(props: Props) {
             />
           </Link>
         </CarouselItem>
-        <CarouselItem className="basis-1/1 xl:basis-1/1">
+        <CarouselItem className="basis-1/3 xl:basis-1/3">
           <Link
             target="_blank"
             to="https://docs.google.com/forms/d/e/1FAIpQLSfyDAMllfLp8PyKJFEFhm8K7bQnSm0Nc066opKcoSp130_gkg/viewform?usp=pp_url"
