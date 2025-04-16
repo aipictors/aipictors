@@ -159,22 +159,26 @@ export function GenerationTaskList(props: Props) {
 
   return (
     <>
-      <ScrollArea type="always" className="max-h-[calc(72vh-128px)] md:px-4">
+      <ScrollArea type="always" className="md:px-4">
         {/* <Suspense fallback={<AppLoadingPage />}> */}
         <div
-          className={cn("grid gap-2 pt-0", {
-            "grid-cols-0": props.thumbnailSize === 10,
-            "grid-cols-1": props.thumbnailSize === 9,
-            "grid-cols-2": props.thumbnailSize === 8,
-            "grid-cols-3": props.thumbnailSize === 7,
-            "grid-cols-4": props.thumbnailSize === 6,
-            "grid-cols-5": props.thumbnailSize === 5,
-            "grid-cols-6": props.thumbnailSize === 4,
-            "grid-cols-7": props.thumbnailSize === 3,
-            "grid-cols-8": props.thumbnailSize === 2,
-            "grid-cols-9": props.thumbnailSize === 1,
-            "grid-cols-10": props.thumbnailSize === 10,
-          })}
+          className={cn(
+            "grid gap-2 pt-0",
+            {
+              "grid-cols-0": props.thumbnailSize === 10,
+              "grid-cols-1": props.thumbnailSize === 9,
+              "grid-cols-2": props.thumbnailSize === 8,
+              "grid-cols-3": props.thumbnailSize === 7,
+              "grid-cols-4": props.thumbnailSize === 6,
+              "grid-cols-5": props.thumbnailSize === 5,
+              "grid-cols-6": props.thumbnailSize === 4,
+              "grid-cols-7": props.thumbnailSize === 3,
+              "grid-cols-8": props.thumbnailSize === 2,
+              "grid-cols-9": props.thumbnailSize === 1,
+              "grid-cols-10": props.thumbnailSize === 10,
+            },
+            "max-h-96 md:max-h-[calc(72vh-128px)]",
+          )}
         >
           {combinedTasks.map((task) => (
             <ErrorBoundary key={task.id} fallback={<ErrorResultCard />}>
