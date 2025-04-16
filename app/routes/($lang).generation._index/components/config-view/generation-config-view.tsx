@@ -132,7 +132,7 @@ export function GenerationConfigView() {
       )}
     >
       <ScrollArea type="always">
-        <div className={"flex flex-col gap-y-4 px-0 md:px-4"}>
+        <div className={"flex max-h-[72vh] flex-col gap-y-4 px-0 md:px-4"}>
           <GenerationConfigModels
             models={context.imageModels}
             favoritedModelIds={context.config.favoriteModelIds}
