@@ -20,7 +20,7 @@ export function SettingsNavigation() {
   const t = useTranslation() // useTranslation フックを使う
 
   return (
-    <div className="w-full space-y-1 md:w-auto">
+    <div className="w-full space-y-1 md:w-auto md:max-w-48">
       <HomeNavigationButton href={"/"} icon={ArrowLeftIcon}>
         {t("もどる", "Back")}
       </HomeNavigationButton>
