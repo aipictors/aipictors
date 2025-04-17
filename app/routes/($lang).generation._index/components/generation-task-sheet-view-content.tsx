@@ -133,7 +133,12 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
   return (
     <>
-      <ScrollArea className={cn({ "mx-auto w-full": props.isListFullSize })}>
+      <ScrollArea
+        className={cn(
+          "mx-auto w-full",
+          "md:h-[64vh]", // ← max-height ではなく height に
+        )}
+      >
         <div
           className={cn("p-4", {
             "mx-auto w-full": props.isListFullSize,
