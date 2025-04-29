@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
+  BoxIcon,
   HomeIcon,
   Image,
   ImageIcon,
@@ -15,7 +16,6 @@ import {
 } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
-import { SensitiveChangeConfirmHomeNavigationButton } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-home-navigation-button"
 
 type Props = {
   onClickMenuItem?: () => void
@@ -76,13 +76,6 @@ export function HomeRouteList(props: Props) {
           {t("ホーム - 全年齢", "Home - G")}
         </HomeNavigationButton>
       )}
-      {/* <HomeNavigationButton
-        href={createLink("/generation")}
-        icon={AwardIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("画像生成", "Generate image")}
-      </HomeNavigationButton> */}
       <HomeNavigationButton
         href={createLink("/themes")}
         icon={LightbulbIcon}
@@ -142,47 +135,18 @@ export function HomeRouteList(props: Props) {
       >
         {t("フォト", "Photo")}
       </HomeNavigationButton>
-      <SensitiveChangeConfirmHomeNavigationButton />
+      <HomeNavigationButton
+        href={createLink("/r")}
+        icon={BoxIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("センシティブ", "BoxIcon")}
+      </HomeNavigationButton>
       {authContext.isNotLoading && (
         <div className={"py-2"}>
           <Separator />
         </div>
       )}
-      {/* {authContext.isLoggedIn && (
-        <HomeNavigationButton
-          href={createLink("/settings/account/login")}
-          icon={UserIcon}
-          onClick={closeHeaderMenu}
-        >
-          {t("アカウント", "Account")}
-        </HomeNavigationButton>
-      )} */}
-      {/* {authContext.isLoggedIn && (
-        <HomeNavigationButton
-          href={createLink("/support/chat")}
-          icon={MessageCircleIcon}
-          onClick={closeHeaderMenu}
-        >
-          {t("お問い合わせ", "Contact")}
-        </HomeNavigationButton>
-      )} */}
-      {/* <HomeNavigationButton
-        href={createLink("/plus")}
-        icon={GemIcon}
-        onClick={closeHeaderMenu}
-      >
-        {"Aipictors+"}
-      </HomeNavigationButton> */}
-      {/* {authContext.isLoggedIn && (
-        <HomeNavigationButton
-          href={createLink("/settings")}
-          icon={SettingsIcon}
-          onClick={closeHeaderMenu}
-        >
-          {t("設定", "Settings")}
-        </HomeNavigationButton>
-      )} */}
-      {/* {authContext.isLoggedIn && <NavigationLogoutDialogButton />} */}
       <footer>
         <div className="flex flex-col space-y-2 p-2">
           <div className="flex items-center justify-start space-x-2">
@@ -216,7 +180,7 @@ export function HomeRouteList(props: Props) {
           <Link className="text-xs opacity-80" to="/terms">
             {t("利用規約", "Terms")}
           </Link>
-          <p className="text-xs opacity-80">{"©2024 Aipictors Co.,Ltd."}</p>
+          <p className="text-xs opacity-80">{"©2025 Aipictors Co.,Ltd."}</p>
         </div>
       </footer>
     </div>
