@@ -403,21 +403,21 @@ export function SettingAdvertisementsForm() {
           </div>
           {/* 広告リスト */}
           <Card className="space-y-4">
-            <CardContent className="flex flex-col space-y-2 p-2">
+            <CardContent className="flex flex-col gap-x-2 space-y-2 p-2">
               {filteredAdvertisements?.map(
                 (advertisement: FragmentOf<typeof AdvertisementsFragment>) => (
                   <Card
                     key={advertisement.id}
                     className="flex items-center justify-between border p-4"
                   >
-                    <CardContent className="flex flex-col space-y-2 p-2">
+                    <CardContent className="flex flex-col gap-x-2 space-y-2 p-2">
                       <div className="m-auto max-w-64 space-x-4 text-wrap md:flex md:max-w-full">
                         <img
                           src={advertisement.imageUrl}
                           alt={t("サムネイル", "Thumbnail")}
                           className="m-auto h-auto w-32"
                         />
-                        <div className="flex flex-col space-y-2">
+                        <div className="ml-2 flex flex-col space-y-2">
                           <Link
                             target="_blank"
                             to={
@@ -434,6 +434,14 @@ export function SettingAdvertisementsForm() {
                             {advertisement.displayProbability}
                           </p>
                           <p>
+                            {t("表示回数", "View")}:{" "}
+                            {advertisement.impressionCount}
+                          </p>
+                          <p>
+                            {t("クリック回数", "Clicked")}:{" "}
+                            {advertisement.clickCount}
+                          </p>
+                          <p>
                             {t("作成日", "Created At")}:{" "}
                             {toDateText(advertisement.createdAt)}
                           </p>
@@ -441,7 +449,7 @@ export function SettingAdvertisementsForm() {
                             {t("配信日", "Start At")}:{" "}
                             {toDateText(advertisement.startAt)}
                           </p>
-                          <div className="flex space-x-2">
+                          <div className="mt-2 flex space-x-2">
                             <Badge
                               variant={
                                 advertisement.isActive ? "default" : "secondary"
@@ -467,7 +475,7 @@ export function SettingAdvertisementsForm() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex space-x-2">
+                      <div className="mt-2 flex space-x-2">
                         <Button
                           variant={"secondary"}
                           onClick={() => handleEdit(advertisement)}
