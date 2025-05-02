@@ -290,7 +290,6 @@ export function PostFormItemDraggableImages(props: Props) {
       >
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
         {props.items.length === 0 && !props.isOnlyMove && (
-          // biome-ignore lint/complexity/noUselessFragments: <explanation>
           <>
             {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
             <div
