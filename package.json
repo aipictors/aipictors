@@ -116,7 +116,7 @@
     "tiptap-markdown": "^0.8.10",
     "use-image": "^1.1.1",
     "usehooks-ts": "^3.1.0",
-    "uvcanvas": "^0.2.1",
+    "uvcanvas": "^0.3.0",
     "valibot": "^0.42.0",
     "vaul": "^1.1.1",
     "vite-bundle-analyzer": "^0.20.1",
