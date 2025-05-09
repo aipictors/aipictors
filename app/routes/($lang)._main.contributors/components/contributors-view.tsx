@@ -105,7 +105,7 @@ export function ContributorsView() {
               </Button>
             </Link>
             <Link
-              to="https://discord.gg/aipictors"
+              to="https://discord.gg/Rz7jQq3KZh"
               target="_blank"
               rel="noopener noreferrer"
             >
