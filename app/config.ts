@@ -230,7 +230,7 @@ export const config = {
       apiKey:
         import.meta.env.MODE === "development"
           ? env.VITE_MICRO_CMS_API_KEY
-          : import.meta.env.VITE_MICRO_CMS_API_KEY,
+          : (import.meta.env.VITE_MICRO_CMS_API_KEY ?? ""),
     },
   },
   /**
