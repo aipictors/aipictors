@@ -12,7 +12,9 @@ describe("fetchImage", () => {
       Promise.resolve({
         blob: () => Promise.resolve(mockBlob),
       } as Response),
-    )
+    ) as unknown as typeof fetch
+
+    global.fetch.preconnect = jest.fn()
 
     global.URL.createObjectURL = jest.fn(() => mockUrl)
 
@@ -27,7 +29,10 @@ describe("fetchImage", () => {
   })
 
   test("画像の取得が失敗した場合、エラーメッセージをスローする", async () => {
-    global.fetch = jest.fn(() => Promise.reject(new Error("Fetch failed")))
+    global.fetch = Object.assign(
+      jest.fn(() => Promise.reject(new Error("Fetch failed"))),
+      { preconnect: jest.fn() },
+    )
 
     const imageURL = "https://example.com/image.jpg"
 
@@ -35,7 +40,10 @@ describe("fetchImage", () => {
   })
 
   test("fetchが不明なエラーを返した場合のエラーメッセージ", async () => {
-    global.fetch = jest.fn(() => Promise.reject("Unknown error"))
+    global.fetch = Object.assign(
+      jest.fn(() => Promise.reject("Unknown error")),
+      { preconnect: jest.fn() },
+    )
 
     const imageURL = "https://example.com/image.jpg"
 

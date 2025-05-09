@@ -1,6 +1,6 @@
 import { graphql, type FragmentOf } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
-import { UnstableSSR as SSR } from "react-photo-album/ssr"
+import SSR from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
