@@ -98,9 +98,9 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (awardWorks.data.workAwards.length === 0) {
-    throw new Response(null, { status: 404 })
-  }
+  // if (awardWorks.data.workAwards.length === 0) {
+  //   throw new Response(null, { status: 404 })
+  // }
 
   return {
     post: props.params.post,
