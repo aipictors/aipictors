@@ -105,9 +105,9 @@ export function WorksSpList(props: Props) {
               <Link to={postUrl(work)}>
                 <CroppedMyWorkSquare
                   workId={work.id}
-                  imageUrl={work.smallThumbnailImageURL}
+                  smallThumbnailImageURL={work.smallThumbnailImageURL}
                   size="sm"
-                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  thumbnailImagePosition={work.thumbnailImagePosition}
                   imageWidth={work.smallThumbnailImageWidth}
                   imageHeight={work.smallThumbnailImageHeight}
                 />
@@ -186,7 +186,7 @@ export function WorksSpList(props: Props) {
 }
 
 export const MobileWorkListItemFragment = graphql(
-  `fragment MobileWorkListItem on WorkNode @_unmask {
+  `fragment MobileWorkListItem on WorkNode {
     id
     uuid
     title
@@ -199,7 +199,6 @@ export const MobileWorkListItemFragment = graphql(
     bookmarksCount
     createdAt
     accessType
-    uuid
     isPromotion
     smallThumbnailImageHeight
     smallThumbnailImageWidth

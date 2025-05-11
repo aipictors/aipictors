@@ -4,7 +4,7 @@ import { cn } from "~/lib/utils"
 
 type Props = {
   workId: string
-  imageUrl: string
+  smallThumbnailImageURL: string
   thumbnailImagePosition: number
   size: "xs" | "sm" | "md" | "lg" | "auto"
   imageWidth: number
@@ -58,9 +58,9 @@ export function CroppedMyWorkSquare(props: Props) {
           })}
         >
           <img
-            src={props.imageUrl}
+            src={props.smallThumbnailImageURL}
             alt=""
-            key={props.imageUrl}
+            key={props.smallThumbnailImageURL}
             className={cn(
               "max-w-none rounded transition-transform duration-300 ease-in-out",
               {

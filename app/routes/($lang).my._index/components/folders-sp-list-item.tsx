@@ -61,7 +61,7 @@ export function FoldersSpListItem(props: Props) {
               className="mr-2"
             >
               <img
-                src={props.folder.thumbnailImageURL ?? undefined}
+                src={props.folder.thumbnailImageURL}
                 alt=""
                 className="mr-4 h-[72px] w-[72px] min-w-[72px] rounded-md object-cover"
               />
@@ -97,7 +97,7 @@ export function FoldersSpListItem(props: Props) {
 }
 
 export const MobileFolderListItemFragment = graphql(
-  `fragment MobileFolderListItem on FolderNode @_unmask {
+  `fragment MobileFolderListItem on FolderNode {
     id
     nanoid
     title

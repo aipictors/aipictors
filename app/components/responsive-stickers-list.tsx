@@ -11,7 +11,8 @@ type Props = {
  * レスポンシブ対応のスタンプ一覧
  */
 export function ResponsiveStickersList(props: Props) {
-  if (props.stickers === null || props.stickers.length === 0) {
+  // Remove redundant null check as TypeScript type guarantees it's not null
+  if (props.stickers.length === 0) {
     return null
   }
 
@@ -26,7 +27,7 @@ export function ResponsiveStickersList(props: Props) {
             <div className="overflow-hidden rounded-md">
               <img
                 className="m-auto max-w-32 rounded-md transition-transform duration-200 ease-in-out group-hover:scale-105"
-                src={sticker.imageUrl ?? ""}
+                src={sticker.imageUrl} // Remove the ?? "" as it's handled by fragment
                 alt={sticker.title}
               />
             </div>
@@ -51,7 +52,7 @@ export function ResponsiveStickersList(props: Props) {
 }
 
 export const StickerListItemFragment = graphql(
-  `fragment StickerListItem on StickerNode @_unmask {
+  `fragment StickerListItem on StickerNode {
     id
     title
     downloadsCount

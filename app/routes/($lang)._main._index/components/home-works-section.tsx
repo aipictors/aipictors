@@ -81,7 +81,7 @@ export function HomeWorksSection(props: Props) {
 
   // 期間指定から createdAtAfter/before を算出
   const { createdAtAfter, createdAtBefore } = getTimeRangeDates(
-    props.timeRange || "ALL",
+    props.timeRange, // Removed the unnecessary || "ALL"
   )
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
