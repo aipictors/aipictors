@@ -54,7 +54,7 @@ export async function getCroppedImage(
   // canvasを画像に変換してBase64形式で返す
   return new Promise((resolve, reject) => {
     try {
-      const base64 = canvas.toDataURL(`image/${fileExtension ?? "png"}`)
+      const base64 = canvas.toDataURL(`image/${fileExtension}`)
       resolve(base64)
     } catch (error) {
       reject(new Error("Failed to convert canvas to Base64"))
