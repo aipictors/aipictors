@@ -53,17 +53,15 @@ export function ThemeList(props: Props) {
     return {
       id: `/${props.year}-${props.month}-${index}`,
       day: day,
-      title: !shouldHideTitle ? (theme?.title ?? null) : null, // 7日後以降はお題内容を表示しない
-      isSunday: dayOfWeek === 0, // 日曜日
-      isSaturday: dayOfWeek === 6, // 土曜日
+      title: !shouldHideTitle ? theme?.title : null,
+      isSunday: dayOfWeek === 0,
+      isSaturday: dayOfWeek === 6,
       isToday: isToday,
       isFuture: isFuture,
       date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
-      thumbnailUrl: isFuture
-        ? null
-        : (theme?.firstWork?.smallThumbnailImageURL ?? null),
-      proposerId: theme?.proposer?.id ?? null,
-      proposerName: theme?.proposer?.name ?? null,
+      thumbnailUrl: isFuture ? null : theme?.firstWork?.smallThumbnailImageURL,
+      proposerId: theme?.proposer?.id,
+      proposerName: theme?.proposer?.name,
     }
   })
 

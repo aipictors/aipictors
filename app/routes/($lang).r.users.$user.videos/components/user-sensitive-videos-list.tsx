@@ -63,7 +63,7 @@ export function UserSensitiveVideoList(props: Props) {
 }
 
 export const UserVideosItemFragment = graphql(
-  `fragment UserVideosItem on WorkNode @_unmask {
+  `fragment UserVideosItem on WorkNode {
     id
     title
     url

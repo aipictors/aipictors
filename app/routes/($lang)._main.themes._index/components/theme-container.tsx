@@ -58,7 +58,11 @@ export function ThemeContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const [tab, setTab] = useState(
-    searchParams.get("tab") || props.defaultTab || "list",
+    searchParams.get("tab")
+      ? searchParams.get("tab")
+      : props.defaultTab
+        ? props.defaultTab
+        : "list",
   )
   const [date, setDate] = useState(
     props.day

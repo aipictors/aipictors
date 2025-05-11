@@ -2,8 +2,6 @@ import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Card } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
-import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
-import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
 
 type Props = {
   message: FragmentOf<typeof SenderMessageFragment>
@@ -43,20 +41,9 @@ export function SenderMessage(props: Props) {
           }
         >
           <p className="overflow-hidden whitespace-pre-wrap break-words">
-            {parseTextWithLinks(props.message.text ?? "")}
+            {parseTextWithLinks(props.message.text ? props.message.text : "")}
           </p>
         </Card>
-        <div className="flex justify-end space-x-2">
-          <span className="text-xs">
-            {props.message.isRead ? t("既読", "Read") : ""}
-          </span>
-          <p className="text-xs">
-            {t(
-              toElapsedTimeText(props.message.createdAt),
-              toElapsedTimeEnText(props.message.createdAt),
-            )}
-          </p>
-        </div>
       </div>
     </div>
   )

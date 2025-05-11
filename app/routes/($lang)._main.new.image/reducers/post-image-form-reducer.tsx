@@ -94,7 +94,7 @@ export const postImageFormReducer = (
       )
       const [item] = updatedItems
       const thumbnailBase64 =
-        item.content === state.editTargetImageBase64
+        item && item.content === state.editTargetImageBase64
           ? action.payload.base64
           : state.thumbnailBase64
       return {

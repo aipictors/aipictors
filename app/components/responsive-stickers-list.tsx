@@ -27,7 +27,7 @@ export function ResponsiveStickersList(props: Props) {
             <div className="overflow-hidden rounded-md">
               <img
                 className="m-auto max-w-32 rounded-md transition-transform duration-200 ease-in-out group-hover:scale-105"
-                src={sticker.imageUrl} // Remove the ?? "" as it's handled by fragment
+                src={sticker.imageUrl}
                 alt={sticker.title}
               />
             </div>

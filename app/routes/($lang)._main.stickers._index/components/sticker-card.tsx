@@ -12,12 +12,12 @@ export function StickerCard(props: Props) {
       <Card className="h-full">
         <img
           className="rounded-lg"
-          src={props.sticker.imageUrl ?? ""}
-          alt={props.sticker.title ?? "no title"}
+          src={props.sticker.imageUrl ? props.sticker.imageUrl : ""}
+          alt={props.sticker.title ? props.sticker.title : "no title"}
         />
         <CardContent className="flex flex-col justify-between space-y-1 p-2">
           <h3 className="overflow-hidden text-ellipsis whitespace-nowrap font-bold text-sm">
-            {props.sticker.title ?? "no title"}
+            {props.sticker.title ? props.sticker.title : "no title"}
           </h3>
           <div className="flex items-center space-x-4">
             <div className="flex">
@@ -36,7 +36,7 @@ export function StickerCard(props: Props) {
 }
 
 export const StickerCardFragment = graphql(
-  `fragment StickerCard on StickerNode @_unmask {
+  `fragment StickerCard on StickerNode {
     id
     title
     imageUrl

@@ -38,7 +38,7 @@ export function HomeSensitiveWorksUsersRecommendedSection(props: Props) {
     },
   })
 
-  const workDisplayed = recommendedWorksResp?.works ?? props.works
+  const workDisplayed = recommendedWorksResp?.works || props.works
 
   const t = useTranslation()
 

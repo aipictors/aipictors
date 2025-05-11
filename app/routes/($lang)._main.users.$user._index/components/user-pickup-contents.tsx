@@ -23,9 +23,13 @@ export function UserPickupContents(props: Props) {
     },
   })
 
-  const workDisplayed = workRes?.user?.featuredWorks ?? props.userPickupWorks
+  const workDisplayed = workRes?.user?.featuredWorks
+    ? workRes.user.featuredWorks
+    : props.userPickupWorks
 
-  const newWorkDisplayed = workRes?.user?.works ?? props.userNewWorks
+  const newWorkDisplayed = workRes?.user?.works
+    ? workRes.user.works
+    : props.userNewWorks
 
   return (
     <div className="items-center">
@@ -48,7 +52,7 @@ export function UserPickupContents(props: Props) {
 }
 
 export const UserPickupFragment = graphql(
-  `fragment UserPickup on UserNode @_unmask {
+  `fragment UserPickup on UserNode {
     featuredWorks {
       ...HomeWork
     }

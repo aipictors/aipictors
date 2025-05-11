@@ -49,7 +49,7 @@ export function UserMuteButton(props: Props) {
 
   return (
     <Button
-      variant={props.variant ?? "secondary"}
+      variant={props.variant ? props.variant : "secondary"}
       onClick={isMute ? unMuteUser : muteUser}
     >
       {isMuteLoading || isUnMuteLoading ? (

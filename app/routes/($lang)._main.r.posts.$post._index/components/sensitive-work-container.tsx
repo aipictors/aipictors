@@ -51,7 +51,7 @@ export function SensitiveWorkContainer(props: Props) {
     },
   })
 
-  const work = data?.work ?? props.work
+  const work = data?.work ? data.work : props.work
 
   const { data: workCommentsRet } = useQuery(workCommentsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,

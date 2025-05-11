@@ -30,7 +30,9 @@ export function RankingSensitiveHeader(props: Props) {
 
   const [day, setDay] = useState(props.day)
 
-  const [weekIndex, setWeekIndex] = useState(props.weekIndex ?? 1)
+  const [weekIndex, setWeekIndex] = useState(
+    props.weekIndex ? props.weekIndex : 1,
+  )
 
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"

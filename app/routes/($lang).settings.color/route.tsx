@@ -63,8 +63,7 @@ export default function SettingColor() {
   }
 
   const getColorSchema = (theme: string): string => {
-    if (["system", "light", "dark"].includes(theme)) return "none"
-    return theme.replace(/(light|dark)-/, "") ?? "none"
+    return theme.replace(/(light|dark)-/, "") || "none"
   }
 
   const mode = getMode(theme ?? "system")

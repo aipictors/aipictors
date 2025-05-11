@@ -92,16 +92,13 @@ export function EditImageFormUploader(props: Props) {
         >
           {props.state.items.length !== 0 && (
             <div className="mb-4 bg-zinc-600 p-1 pl-4 dark:bg-blend-darken">
-              <div className="flex space-x-4 text-white">
-                <div className="flex">{selectedImagesCountText()}</div>
-                <div className="flex">{selectedFilesSizeText()}</div>
-              </div>
+              <div className="flex space-x-4 text-white" />
             </div>
           )}
           <PostFormItemDraggableImages
             isOnlyMove={true}
             indexList={props.state.indexList}
-            items={props.state.items ?? []}
+            items={props.state.items}
             setItems={(items) => {
               props.dispatch({ type: "SET_ITEMS", payload: items })
             }}
@@ -161,7 +158,7 @@ export function EditImageFormUploader(props: Props) {
             setOgpBase64={(base64) => {
               props.dispatch({ type: "SET_OGP_BASE64", payload: base64 })
             }}
-            ogpBase64={props.state.ogpBase64 ?? ""}
+            ogpBase64={props.state.ogpBase64}
           />
         )}
       </div>

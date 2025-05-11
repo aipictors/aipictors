@@ -1,5 +1,5 @@
 import { loaderClient } from "~/lib/loader-client"
-import { type MetaFunction, useLoaderData } from "@remix-run/react"
+import type { MetaFunction } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { ThemeListItemFragment } from "~/routes/($lang)._main.themes._index/components/theme-list"
 import { config, META } from "~/config"
@@ -152,21 +152,15 @@ export const meta: MetaFunction = (props) => {
 }
 
 export default function Themes() {
-  const data = useLoaderData<typeof loader>()
-
-  if (data === null) {
-    return null
-  }
-
   return (
     <>
       <ThemeContainer
         dailyThemes={data.dailyThemes}
         todayTheme={data.todayTheme}
-        works={data.works ?? []}
+        works={data.works ? data.works : []}
         afterSevenDayThemes={data.afterSevenDayThemes}
         dailyBeforeThemes={data.dailyBeforeThemes}
-        worksCount={data.worksCount ?? 0}
+        worksCount={data.worksCount ? data.worksCount : 0}
         page={data.page}
         year={data.year}
         month={data.month}

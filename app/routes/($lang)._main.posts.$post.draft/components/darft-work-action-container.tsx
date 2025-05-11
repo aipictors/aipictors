@@ -27,7 +27,7 @@ export function DraftWorkActionContainer(props: Props) {
     },
   })
 
-  const isLiked = data?.work?.isLiked ?? false
+  const isLiked = data?.work?.isLiked ? data.work.isLiked : false
 
   const isBookmarked = data?.work?.isBookmarked ?? false
 

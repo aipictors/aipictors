@@ -31,7 +31,9 @@ export function RankingHeader(props: Props) {
 
   const [day, setDay] = useState(props.day)
 
-  const [weekIndex, setWeekIndex] = useState(props.weekIndex ?? 1)
+  const [weekIndex, setWeekIndex] = useState(
+    props.weekIndex ? props.weekIndex : 1,
+  )
 
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
@@ -58,7 +60,7 @@ export function RankingHeader(props: Props) {
     setYear(props.year)
     setMonth(props.month)
     setDay(props.day)
-    setWeekIndex(props.weekIndex ?? 1)
+    setWeekIndex(props.weekIndex ? props.weekIndex : 1)
   }, [props.year, props.month, props.day, props.weekIndex])
 
   useEffect(() => {

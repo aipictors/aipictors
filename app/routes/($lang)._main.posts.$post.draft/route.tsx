@@ -38,7 +38,9 @@ export async function loader(props: LoaderFunctionArgs) {
   return {
     post: props.params.post,
     work: workResp.data.work,
-    workComments: workCommentsResp?.data?.work?.comments ?? [],
+    workComments: workCommentsResp?.data?.work?.comments
+      ? workCommentsResp.data.work.comments
+      : [],
     newComments: newComments.data.newComments,
   }
 }

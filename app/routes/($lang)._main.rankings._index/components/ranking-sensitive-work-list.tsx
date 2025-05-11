@@ -19,8 +19,6 @@ type Props = {
 export function RankingSensitiveWorkList(props: Props) {
   const appContext = useContext(AuthContext)
 
-  const works = props.awards
-
   const { data: awardWorks } = useQuery(workAwardsQuery, {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
     variables: {

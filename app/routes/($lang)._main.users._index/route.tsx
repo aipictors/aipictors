@@ -19,7 +19,9 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const url = new URL(props.request.url)
 
-  const search = url.searchParams.get("search") ?? ""
+  const search = url.searchParams.get("search")
+    ? url.searchParams.get("search")
+    : ""
 
   const usersResp = await loaderClient.query({
     query: usersQuery,

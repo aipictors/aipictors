@@ -31,7 +31,7 @@ export function UserHomeMenu(props: Props) {
 
   const t = useTranslation()
 
-  const isFollowee = user?.isFollowee ?? false
+  const isFollowee = user?.isFollowee ? user.isFollowee : false
 
   const isMuted = user?.isMuted ?? false
 

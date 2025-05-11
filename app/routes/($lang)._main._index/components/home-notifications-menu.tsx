@@ -73,7 +73,7 @@ export function HomeNotificationsMenu(props: Props) {
       (item) => item.type === notificationType,
     )?.checkedTime
 
-    return createdAt > (checkedTimeForType ?? 0)
+    return createdAt > (checkedTimeForType || 0)
   }
 
   const likeNotificationData = useQuery(viewerNotificationsQuery, {
