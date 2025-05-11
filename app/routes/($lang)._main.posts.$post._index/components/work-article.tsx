@@ -131,7 +131,7 @@ export function WorkArticle(props: Props) {
           title={props.work.title}
         />
       )}
-      <section className="mt-4 space-y-4">
+      <section className="mt-4 flex flex-col space-y-4">
         {props.work.isGeneration && (
           <Link to={`/generation?work=${props.work.id}`}>
             <Button variant={"secondary"} className="w-full">
