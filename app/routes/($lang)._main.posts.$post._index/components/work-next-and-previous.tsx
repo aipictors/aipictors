@@ -79,7 +79,9 @@ export function WorkNextAndPrevious(props: Props) {
           <div className="w-full">
             <CroppedWorkSquare
               workId={props.work.nextWork.id}
-              imageUrl={props.work.nextWork.smallThumbnailImageURL}
+              smallThumbnailImageURL={
+                props.work.nextWork.smallThumbnailImageURL
+              }
               imageWidth={props.work.nextWork.smallThumbnailImageWidth}
               imageHeight={props.work.nextWork.smallThumbnailImageHeight}
               thumbnailImagePosition={

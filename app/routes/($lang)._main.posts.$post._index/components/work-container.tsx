@@ -60,7 +60,7 @@ export function WorkContainer(props: Props) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
-  const work = workRet?.work ?? props.work
+  const work = workRet?.work || props.work
 
   const { data: workCommentsRet } = useQuery(workCommentsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
