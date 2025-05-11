@@ -3,9 +3,12 @@ name: CI + Dependabot Auto-Merge
 on:
   pull_request:
     branches: [ "main" ]
+  push:
+    branches: [ "main" ]
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   # 1️⃣ どんな PR でもテストを実行
