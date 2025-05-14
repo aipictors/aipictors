@@ -24,7 +24,7 @@ import { SortableItem } from "~/components/drag/sortable-item"
 type Props = {
   items: TSortableItem[]
   setItems: (items: TSortableItem[]) => void
-  setIndexList(value: number[]): void
+  setIndexList: (value: number[]) => void
   isDeletable?: boolean
   optionalButton?: React.ReactNode
   onClickOptionButton?: (id: number) => void
@@ -38,7 +38,16 @@ export function SortableItems(props: Props) {
   const [activeItem, setActiveItem] = useState<TSortableItem>()
   const [isDragging, setIsDragging] = useState(false)
 
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor))
+  // TouchSensor を優先して長押し／スワイプでドラッグ開始できるように
+  const sensors = useSensors(
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150, // 長押し 150ms 後にドラッグ開始
+        tolerance: 5, // 5px 移動でドラッグ開始
+      },
+    }),
+    useSensor(PointerSensor),
+  )
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
@@ -64,28 +73,23 @@ export function SortableItems(props: Props) {
     const { active, over } = event
     if (!over) return
 
-    const activeItem = props.items.find((item) => item.id === active.id)
-    const overItem = props.items.find((item) => item.id === over.id)
-
-    if (!activeItem || !overItem) {
-      return
-    }
-
     const activeIndex = props.items.findIndex((item) => item.id === active.id)
     const overIndex = props.items.findIndex((item) => item.id === over.id)
     const newItems =
       activeIndex !== overIndex
         ? arrayMove<TSortableItem>(props.items, activeIndex, overIndex)
         : props.items
+
     setActiveItem(undefined)
     setIsDragging(false)
+
+    // アイテムの id をインデックスに合わせて振り直し
     props.setItems(
       newItems.map((item, index) => ({
         ...item,
         id: index,
       })),
     )
-    // インデックス並び替え
     changeIndexList(activeIndex, overIndex)
   }
 
@@ -93,26 +97,22 @@ export function SortableItems(props: Props) {
     const newIds = props.items
       .map((item) => item.id)
       .map((id) => {
-        if (id === activeIndex) {
-          return overIndex
-        }
-        if (id === overIndex) {
-          return activeIndex
-        }
+        if (id === activeIndex) return overIndex
+        if (id === overIndex) return activeIndex
         return id
       })
     props.setIndexList(newIds)
   }
 
   const deleteIndex = (deletedId: number) => {
-    // deletedId以降は1つずつ前にずらす
+    // deletedId 以降はひとつ前に詰める
     const draftIds = props.items
       .map((item) => item.id)
       .filter((id) => id !== deletedId)
       .map((id) => (id > deletedId ? id - 1 : id))
     props.setIndexList(draftIds)
 
-    // itemsの各itemsのidを今の並び順ごとに0, 1, 2...と振り直す
+    // items の各 id を振り直す
     const newItems = props.items.filter((item) => item.id !== deletedId)
     props.setItems(
       newItems.map((item, index) => ({
@@ -134,10 +134,11 @@ export function SortableItems(props: Props) {
         <div className="flex w-full flex-wrap justify-center gap-4">
           {props.items.map((item) => (
             <SortableItem
-              onDelete={deleteIndex}
-              isDeletable={props.isDeletable}
               key={item.id}
+              className="touch-none" // タッチアクションを無効化
               item={item}
+              isDeletable={props.isDeletable}
+              onDelete={deleteIndex}
               optionalButton={props.optionalButton}
               onClickOptionButton={props.onClickOptionButton}
             />
@@ -145,8 +146,9 @@ export function SortableItems(props: Props) {
           {props.dummyEnableDragItem && <div>{props.dummyEnableDragItem}</div>}
         </div>
       </SortableContext>
+
       {isDragging && (
-        <DragOverlay adjustScale style={{ transformOrigin: "0 0 " }}>
+        <DragOverlay adjustScale style={{ transformOrigin: "0 0" }}>
           {activeItem ? <ImageItem item={activeItem} isDragging /> : null}
         </DragOverlay>
       )}
