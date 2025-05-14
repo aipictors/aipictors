@@ -4,12 +4,11 @@
 
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { LikeButton } from "~/components/like-button"
 import { Separator } from "~/components/ui/separator"
 
 type Props = {
   works: {
-    smallThumbnailImageURL: string
+    smallThumbnailImageURL: string // imageUrlからsmallThumbnailImageURLに変更
     thumbnailImagePosition: number
     smallThumbnailImageWidth: number
     smallThumbnailImageHeight: number
@@ -33,24 +32,15 @@ export function WorkRelatedList(props: Props) {
             <CroppedWorkSquare
               workId={work.id}
               subWorksCount={work.subWorksCount}
-              imageUrl={work.smallThumbnailImageURL}
-              thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+              smallThumbnailImageURL={work.smallThumbnailImageURL}
+              thumbnailImagePosition={
+                work.thumbnailImagePosition ? work.thumbnailImagePosition : 0
+              }
               size="md"
               imageWidth={work.smallThumbnailImageWidth}
               imageHeight={work.smallThumbnailImageHeight}
               commentsCount={work.commentsCount}
             />
-            <div className="absolute right-0 bottom-0">
-              <LikeButton
-                size={32}
-                targetWorkId={work.id}
-                targetWorkOwnerUserId={work.userId}
-                defaultLiked={work.isLiked}
-                defaultLikedCount={0}
-                isBackgroundNone={true}
-                strokeWidth={2}
-              />
-            </div>
           </div>
         ))}
       />

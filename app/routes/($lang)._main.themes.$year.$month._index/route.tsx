@@ -181,10 +181,10 @@ export default function MonthThemes() {
       <ThemeContainer
         dailyThemes={data.dailyThemes}
         todayTheme={data.todayTheme}
-        works={data.works ?? []}
+        works={data.works ? data.works : []}
         afterSevenDayThemes={data.afterSevenDayThemes}
         dailyBeforeThemes={data.dailyBeforeThemes}
-        worksCount={data.worksCount ?? 0}
+        worksCount={data.worksCount ? data.worksCount : 0}
         page={data.page}
         year={data.year}
         month={data.month}

@@ -75,7 +75,7 @@ export function ReleaseItem(props: Props) {
       return
     }
 
-    editor.commands.setContent(props.description || "")
+    editor.commands.setContent(props.description ? props.description : "")
   }, [props.description, editor])
 
   return (

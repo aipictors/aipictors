@@ -21,7 +21,7 @@ export function ThreadRecipient(props: Props) {
 }
 
 export const ThreadRecipientFragment = graphql(
-  `fragment ThreadRecipient on UserNode @_unmask {
+  `fragment ThreadRecipient on UserNode {
     id
     name
     iconUrl

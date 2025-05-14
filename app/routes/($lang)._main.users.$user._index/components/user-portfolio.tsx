@@ -90,7 +90,7 @@ export function UserPortfolio(props: Props) {
     },
   })
 
-  const works = workRes?.works ?? props.works
+  const works = workRes?.works ? workRes.works : props.works
 
   const novelWorks = novelWorkRes?.works || props.novelWorks
 

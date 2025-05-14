@@ -82,7 +82,7 @@ export default function EditText() {
     },
   })
 
-  const work = workWithAuth?.work ?? null
+  const work = workWithAuth?.work ? workWithAuth.work : null
 
   const [markdownContent, setMarkdownContent] = useState<string>("")
 

@@ -231,7 +231,7 @@ const viewerUserQuery = graphql(
 )
 
 export const MyWorkFragment = graphql(
-  `fragment MyWork on WorkNode @_unmask {
+  `fragment MyWork on WorkNode {
     id
     title
     smallThumbnailImageURL

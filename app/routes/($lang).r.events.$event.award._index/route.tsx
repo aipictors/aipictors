@@ -189,7 +189,7 @@ export default function FollowingLayout() {
               {toEventDateTimeText(data.appEvent.endAt)}
             </div>
             <div className="mt-2 mr-auto text-sm">
-              応募作品数: {data.appEvent.worksCount?.toString() ?? "0"}
+              応募作品数: {data.appEvent.worksCount?.toString() || "0"}
             </div>
             <div className="mt-2 mr-auto text-sm">
               <span>参加タグ: {data.appEvent.tag}</span>

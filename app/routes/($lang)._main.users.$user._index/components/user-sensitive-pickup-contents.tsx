@@ -24,7 +24,7 @@ export function UserSensitivePickupContents(props: Props) {
 
   const featureWorks = workRes?.user?.featuredSensitiveWorks
 
-  const workDisplayed = featureWorks ?? props.userPickupWorks
+  const workDisplayed = featureWorks ? featureWorks : props.userPickupWorks
 
   return (
     <div className="items-center">
@@ -40,7 +40,7 @@ export function UserSensitivePickupContents(props: Props) {
 }
 
 const UserContentsFragment = graphql(
-  `fragment UserProfile on UserNode @_unmask {
+  `fragment UserProfile on UserNode {
     featuredWorks {
       ...HomeWork
     }

@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { type FragmentOf, graphql, readFragment } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { AuthContext } from "~/contexts/auth-context"
@@ -16,23 +16,18 @@ type Props = {
  */
 export function HomeNewCommentsSection(props: Props) {
   const t = useTranslation()
-
   const authContext = useContext(AuthContext)
-
-  const comments = readFragment(HomeNewCommentsFragment, props.comments)
 
   const { data: newCommentsRet } = useQuery(homeNewCommentsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
-  const newComments = newCommentsRet?.newComments
-    ? readFragment(HomeNewCommentsFragment, newCommentsRet?.newComments)
-    : comments
+  const comments = newCommentsRet?.newComments || props.comments
 
   return (
     <div className="flex flex-col space-y-4">
       <h2 className="font-semibold">{t("新規コメント", "New Comments")}</h2>
-      {newComments.map((comment) => (
+      {comments.map((comment) => (
         <div
           key={comment.comment?.id}
           className="flex items-center space-x-2 opacity-80"

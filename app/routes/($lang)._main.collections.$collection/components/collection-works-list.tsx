@@ -37,7 +37,7 @@ export function CollectionWorkList(props: Props) {
 }
 
 export const CollectionWorkListItemFragment = graphql(
-  `fragment CollectionWorkListItem on WorkNode @_unmask {
+  `fragment CollectionWorkListItem on WorkNode {
     ...PhotoAlbumWork
   }`,
   [PhotoAlbumWorkFragment],
