@@ -31,8 +31,8 @@ type Props = {
  */
 export function GenerationModelListButton(props: Props) {
   const context = useGenerationContext()
-
   const { value, setTrue, setFalse } = useBoolean()
+  const t = useTranslation()
 
   const onSelectModel = (id: string, type: string, prompt: string) => {
     props.onSelect(id, type, prompt)
@@ -63,7 +63,8 @@ export function GenerationModelListButton(props: Props) {
     }
   }
 
-  const t = useTranslation()
+  // Check if any model has isNew: true
+  const hasNewModels = props.models.some((model) => model.isNew)
 
   return (
     <Dialog
@@ -76,11 +77,24 @@ export function GenerationModelListButton(props: Props) {
       <DialogTrigger asChild>
         <Button
           size={"sm"}
-          className="w-full"
+          className="flex w-full items-center gap-2"
           variant={"secondary"}
           onClick={setTrue}
+          aria-label={
+            hasNewModels
+              ? t(
+                  "すべてのモデル（新作モデルあり）",
+                  "All models (new models available)",
+                )
+              : t("すべてのモデル", "All models")
+          }
         >
           {props.label ? props.label : t("すべてのモデル", "All models")}
+          {hasNewModels && (
+            <span className="rounded-full bg-blue-500 px-2 py-0.5 font-bold text-white text-xs">
+              {t("新作", "New")}
+            </span>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className="md:max-w-(--breakpoint-md) lg:max-w-(--breakpoint-lg) xl:max-w-(--breakpoint-xl)">
@@ -113,7 +127,6 @@ export function GenerationModelListButton(props: Props) {
             </label>
           </div>
         </div>
-
         <ImageModelsList
           isInitFavorited={props.isInitFavorited}
           models={props.models}

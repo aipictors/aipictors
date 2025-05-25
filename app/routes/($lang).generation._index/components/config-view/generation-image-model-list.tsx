@@ -282,7 +282,7 @@ export function ImageModelsList(props: Props) {
                       }}
                     />
                     {model.isNew && (
-                      <span className="absolute bottom-8 left-2 rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs">
+                      <span className="absolute bottom-2 left-2 rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs">
                         {"New"}
                       </span>
                     )}
