@@ -14,9 +14,15 @@ import { ImageModelCard } from "~/routes/($lang).generation._index/components/co
 import type { ImageModelContextFragment } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { toCategoryName } from "~/routes/($lang).generation._index/utils/to-category-name"
 import type { FragmentOf } from "gql.tada"
-import { StarIcon } from "lucide-react"
+import { StarIcon, InfoIcon } from "lucide-react"
 import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+// Import HoverCard components
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "~/components/ui/hover-card"
 
 type Props = {
   models: FragmentOf<typeof ImageModelContextFragment>[]
@@ -36,17 +42,9 @@ export function ImageModelsList(props: Props) {
   const [showFavoriteModels, setShowFavoriteModels] = useState(
     props.isInitFavorited,
   )
+  const [showNewModels, setShowNewModels] = useState(false)
 
-  /**
-   * モデルの種類
-   * SD1など
-   */
   const modelTypes = removeDuplicates(props.models.map((m) => m.type))
-
-  /**
-   * カテゴリ
-   * 美少女など
-   */
   const modelCategories = removeDuplicates(
     props.models.map((m) => m.category),
   ).sort((a, b) => {
@@ -72,22 +70,13 @@ export function ImageModelsList(props: Props) {
     return a.localeCompare(b)
   })
 
-  /**
-   * 選択されているカテゴリ
-   */
   const activeCategories =
     selectedCategory === "ALL" ? modelCategories : [selectedCategory]
 
-  /**
-   * お気に入りのモデルかどうか
-   * @param modelId モデルID
-   * @returns
-   */
   const isFavorited = (modelId: number) => {
     return props.favoritedModelIds.includes(modelId)
   }
 
-  // モデルをフィルタリングする関数
   const filterModels = () => {
     const universalModels = props.models.filter(
       (model) => model.category === "UNIVERSAL",
@@ -96,28 +85,22 @@ export function ImageModelsList(props: Props) {
       (model) => model.category !== "UNIVERSAL",
     )
 
-    return (
-      [...universalModels, ...otherModels]
-        .filter((model) => {
-          // お気に入りフィルタリング
-          return showFavoriteModels ? isFavorited(Number(model.id)) : true
-        })
-        .filter((model) => {
-          // カテゴリフィルタリング
-          return (
-            selectedCategory === "ALL" || model.category === selectedCategory
-          )
-        })
-        .filter((model) => {
-          // 種別フィルタリング
-          return selectedType === "ALL" || model.type === selectedType
-        })
-        // displayNameで昇順にソート
-        .sort((a, b) => a.displayName.localeCompare(b.displayName))
-    )
+    return [...universalModels, ...otherModels]
+      .filter((model) => {
+        return showFavoriteModels ? isFavorited(Number(model.id)) : true
+      })
+      .filter((model) => {
+        return selectedCategory === "ALL" || model.category === selectedCategory
+      })
+      .filter((model) => {
+        return selectedType === "ALL" || model.type === selectedType
+      })
+      .filter((model) => {
+        return showNewModels ? model.isNew : true
+      })
+      .sort((a, b) => a.displayName.localeCompare(b.displayName))
   }
 
-  // カテゴリセクションの生成
   const categorySections = activeCategories.map((category) => {
     const models = filterModels().filter((m) => m.category === category)
     if (models.length === 0) return null
@@ -125,7 +108,7 @@ export function ImageModelsList(props: Props) {
   })
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <div className="flex gap-x-2">
         <Select
           onOpenChange={() => {
@@ -173,7 +156,6 @@ export function ImageModelsList(props: Props) {
             ))}
           </SelectContent>
         </Select>
-
         <Button
           onClick={() => {
             setShowFavoriteModels((prev) => !prev)
@@ -186,13 +168,29 @@ export function ImageModelsList(props: Props) {
             className={cn(showFavoriteModels ? "fill-yellow-500" : "")}
           />
         </Button>
+        <Button
+          onClick={() => {
+            setShowNewModels((prev) => !prev)
+          }}
+          aria-label={t("新着", "New")}
+          size={"icon"}
+          variant="secondary"
+        >
+          <span
+            className={cn(
+              "font-bold text-sm",
+              showNewModels ? "text-blue-500" : "",
+            )}
+          >
+            {t("新作", "New")}
+          </span>
+        </Button>
       </div>
       <ScrollArea className="-mx-4 max-h-[50vh] min-h-[50vh] overflow-auto">
         <div className="space-y-4">
           {removeDuplicates(categorySections).map((item) => (
             <div key={item.category} className="space-y-2 px-4">
               <p className="font-bold">{toCategoryName(item.category)}</p>
-
               <div className="hidden grid-cols-4 gap-2 md:grid md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
                 {item.models.map((model) => (
                   <div className="relative" key={model.id}>
@@ -210,6 +208,11 @@ export function ImageModelsList(props: Props) {
                         )
                       }}
                     />
+                    {model.isNew && (
+                      <span className="absolute bottom-8 left-2 rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs">
+                        {"New"}
+                      </span>
+                    )}
                     <Button
                       className="absolute top-2 right-2"
                       aria-label={t("お気に入り", "Favorites")}
@@ -231,6 +234,27 @@ export function ImageModelsList(props: Props) {
                         )}
                       />
                     </Button>
+                    {/* HoverCard for description */}
+                    {model.explanation && (
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <Button
+                            className="absolute top-28 right-0 hover:bg-transparent"
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <InfoIcon className="h-4 w-4 fill-white text-neutral-950" />
+                          </Button>
+                        </HoverCardTrigger>
+                        <HoverCardContent
+                          className="w-80 rounded-lg border border-gray-200 bg-white/95 p-4 text-gray-900 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/95 dark:text-white"
+                          side="top"
+                          align="end"
+                        >
+                          <p className="text-sm">{model.explanation}</p>
+                        </HoverCardContent>
+                      </HoverCard>
+                    )}
                   </div>
                 ))}
               </div>
@@ -257,7 +281,11 @@ export function ImageModelsList(props: Props) {
                         props.onSearchClick(model.id, model.displayName)
                       }}
                     />
-
+                    {model.isNew && (
+                      <span className="absolute bottom-8 left-2 rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs">
+                        {"New"}
+                      </span>
+                    )}
                     <Button
                       className="absolute top-8 right-2"
                       aria-label={t("お気に入り", "Favorites")}
@@ -278,6 +306,27 @@ export function ImageModelsList(props: Props) {
                         )}
                       />
                     </Button>
+                    {/* HoverCard for description */}
+                    {model.explanation && (
+                      <HoverCard>
+                        <HoverCardTrigger asChild>
+                          <Button
+                            className="absolute top-8 right-10"
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <InfoIcon className="h-4 w-4 text-gray-500" />
+                          </Button>
+                        </HoverCardTrigger>
+                        <HoverCardContent
+                          className="w-80 rounded-lg border border-gray-200 bg-white/95 p-4 text-gray-900 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/95 dark:text-white"
+                          side="top"
+                          align="end"
+                        >
+                          <p className="text-sm">{model.explanation}</p>
+                        </HoverCardContent>
+                      </HoverCard>
+                    )}
                   </div>
                 ))}
               </div>
@@ -285,6 +334,6 @@ export function ImageModelsList(props: Props) {
           ))}
         </div>
       </ScrollArea>
-    </>
+    </div>
   )
 }

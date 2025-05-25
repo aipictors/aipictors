@@ -58,5 +58,6 @@ export const imageModelCardFragment = graphql(
     style
     thumbnailImageURL
     type
+    isNew
   }`,
 )

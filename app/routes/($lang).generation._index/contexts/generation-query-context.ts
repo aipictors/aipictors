@@ -36,12 +36,14 @@ export const ImageModelContextFragment = graphql(
     displayName
     category
     description
+    explanation
     license
     prompts
     slug
     style
     thumbnailImageURL
     type
+    isNew
   }`,
 )
 
