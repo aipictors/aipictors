@@ -10,15 +10,17 @@ type Props = {
  * レスポンシブ対応のスタンプ一覧
  */
 export function ResponsiveStickersList(props: Props) {
-  if (!props.stickers || props.stickers.length === 0) {
+  if (props.stickers.length === 0) {
     return null
   }
 
+  const stickers = props.stickers.map((sticker) => {
+    return readFragment(StickerListItemFragment, sticker)
+  })
+
   return (
     <div className="flex flex-wrap">
-      {props.stickers.map((stickerRef) => {
-        const sticker = readFragment(StickerListItemFragment, stickerRef)
-
+      {stickers.map((sticker) => {
         return (
           <div key={sticker.id} className="m-2 overflow-hidden rounded-md">
             <Link
