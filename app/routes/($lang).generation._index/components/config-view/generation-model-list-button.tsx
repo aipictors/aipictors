@@ -92,7 +92,7 @@ export function GenerationModelListButton(props: Props) {
           {props.label ? props.label : t("すべてのモデル", "All models")}
           {hasNewModels && (
             <span className="rounded-full bg-blue-500 px-2 py-0.5 font-bold text-white text-xs">
-              {t("新作", "New")}
+              {"New"}
             </span>
           )}
         </Button>

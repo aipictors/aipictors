@@ -182,7 +182,7 @@ export function ImageModelsList(props: Props) {
               showNewModels ? "text-blue-500" : "",
             )}
           >
-            {t("新作", "New")}
+            {"New"}
           </span>
         </Button>
       </div>
