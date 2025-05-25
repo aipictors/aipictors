@@ -94,7 +94,7 @@ export default function EditImage() {
     },
   })
 
-  const work = workWithAuth?.work ?? null
+  const work = workWithAuth?.work ? workWithAuth.work : null
 
   useEffect(() => {
     if (work) {
@@ -104,91 +104,117 @@ export default function EditImage() {
           items: [
             {
               id: 0,
-              content: work?.imageURL ?? "",
+              content: work.imageURL ? work.imageURL : "",
             },
-            ...(work?.subWorks ?? []).map((subWork, index) => ({
-              id: index + 1,
-              content: subWork.imageUrl ?? "",
-            })),
+            ...(work?.subWorks
+              ? work.subWorks.map((subWork, index) => ({
+                  id: index + 1,
+                  content: subWork.imageUrl ? subWork.imageUrl : "",
+                }))
+              : []),
           ],
           indexList: [],
           isThumbnailLandscape:
-            (work?.smallThumbnailImageWidth ?? 0) >
-            (work?.smallThumbnailImageHeight ?? 0),
-          thumbnailBase64: work?.largeThumbnailImageURL ?? "",
-          ogpBase64: work?.ogpThumbnailImageUrl ?? "",
+            (work.smallThumbnailImageWidth
+              ? work.smallThumbnailImageWidth
+              : 0) >
+            (work.smallThumbnailImageHeight
+              ? work.smallThumbnailImageHeight
+              : 0),
+          thumbnailBase64: work.largeThumbnailImageURL
+            ? work.largeThumbnailImageURL
+            : "",
+          ogpBase64: work.ogpThumbnailImageUrl ? work.ogpThumbnailImageUrl : "",
           pngInfo: {
-            src: work?.pngInfo ?? "",
+            src: work.pngInfo ? work.pngInfo : "",
             params: {
-              prompt: work?.prompt ?? "",
-              negativePrompt: work?.negativePrompt ?? "",
-              seed: work?.seed?.toString() ?? "",
-              sampler: work?.sampler ?? "",
-              strength: work?.strength ?? "",
-              noise: work?.noise ?? "",
-              model: work?.model ?? "",
-              modelHash: work?.modelHash ?? "",
-              steps: work?.steps ? work?.steps.toString() : "",
-              scale: work?.scale ? work?.scale.toString() : "",
+              prompt: work.prompt ? work.prompt : "",
+              negativePrompt: work.negativePrompt ? work.negativePrompt : "",
+              seed: work.seed ? work.seed.toString() : "",
+              sampler: work.sampler ? work.sampler : "",
+              strength: work.strength ? work.strength : "",
+              noise: work.noise ? work.noise : "",
+              model: work.model ? work.model : "",
+              modelHash: work.modelHash ? work.modelHash : "",
+              steps: work.steps ? work.steps.toString() : "",
+              scale: work.scale ? work.scale.toString() : "",
               vae: "",
             },
           },
           thumbnailPosX:
-            (work?.smallThumbnailImageWidth ??
-            0 > (work?.smallThumbnailImageHeight ?? 0))
-              ? (work?.thumbnailImagePosition ?? 0)
+            (work.smallThumbnailImageWidth
+              ? work.smallThumbnailImageWidth
+              : 0) >
+            (work.smallThumbnailImageHeight
+              ? work.smallThumbnailImageHeight
+              : 0)
+              ? work.thumbnailImagePosition
+                ? work.thumbnailImagePosition
+                : 0
               : 0,
           thumbnailPosY:
-            (work?.smallThumbnailImageWidth ??
-            0 > (work?.smallThumbnailImageHeight ?? 0))
+            (work.smallThumbnailImageWidth
+              ? work.smallThumbnailImageWidth
+              : 0) >
+            (work.smallThumbnailImageHeight
+              ? work.smallThumbnailImageHeight
+              : 0)
               ? 0
-              : (work?.thumbnailImagePosition ?? 0),
-          isSelectedGenerationImage: work?.isGeneration ?? false,
+              : work.thumbnailImagePosition
+                ? work.thumbnailImagePosition
+                : 0,
+          isSelectedGenerationImage: work.isGeneration
+            ? work.isGeneration
+            : false,
         },
       })
 
       dispatchInput({
         type: "INITIALIZE",
         payload: {
-          accessType: work?.accessType ?? "PUBLIC",
-          aiModelId: work?.workModelId?.toString() ?? "1",
-          albumId: work?.album?.id ?? null,
-          caption: work?.description ?? "",
-          date: new Date(work?.createdAt * 1000),
-          enCaption: work?.enDescription ?? "",
-          enTitle: work?.enTitle ?? "",
+          accessType: work.accessType ? work.accessType : "PUBLIC",
+          aiModelId: work.workModelId ? work.workModelId.toString() : "1",
+          albumId: work.album ? work.album.id : null,
+          caption: work.description ? work.description : "",
+          date: new Date(work.createdAt * 1000),
+          enCaption: work.enDescription ? work.enDescription : "",
+          enTitle: work.enTitle ? work.enTitle : "",
           imageInformation: {
             params: {
-              prompt: work?.prompt ?? "",
-              negativePrompt: work?.negativePrompt ?? "",
-              seed: work?.seed?.toString() ?? "",
-              steps: work?.steps ? work?.steps.toString() : "",
-              strength: work?.strength ?? "",
-              noise: work?.noise ?? "",
-              scale: work?.scale ? work?.scale.toString() : "",
-              sampler: work?.sampler ?? "",
-              vae: work?.vae ?? "",
-              modelHash: work?.modelHash ?? "",
-              model: work?.model ?? "",
+              prompt: work.prompt ? work.prompt : "",
+              negativePrompt: work.negativePrompt ? work.negativePrompt : "",
+              seed: work.seed ? work.seed.toString() : "",
+              steps: work.steps ? work.steps.toString() : "",
+              strength: work.strength ? work.strength : "",
+              noise: work.noise ? work.noise : "",
+              scale: work.scale ? work.scale.toString() : "",
+              sampler: work.sampler ? work.sampler : "",
+              vae: work.vae ? work.vae : "",
+              modelHash: work.modelHash ? work.modelHash : "",
+              model: work.model ? work.model : "",
             },
-            src: work?.pngInfo ?? "",
+            src: work.pngInfo ? work.pngInfo : "",
           },
-          imageStyle: work?.style ?? "ILLUSTRATION",
-          link: work?.relatedUrl ?? "",
-          ratingRestriction: work?.rating ?? "G",
-          reservationDate: getReservationDetails(work?.createdAt ?? 0)
-            .reservationDate,
-          reservationTime: getReservationDetails(work?.createdAt ?? 0)
-            .reservationTime,
-          tags: work?.tagNames.length
-            ? work?.tagNames.map((tag) => ({ id: tag, text: tag }))
+          imageStyle: work.style ? work.style : "ILLUSTRATION",
+          link: work.relatedUrl ? work.relatedUrl : "",
+          ratingRestriction: work.rating ? work.rating : "G",
+          reservationDate: getReservationDetails(
+            work.createdAt ? work.createdAt : 0,
+          ).reservationDate,
+          reservationTime: getReservationDetails(
+            work.createdAt ? work.createdAt : 0,
+          ).reservationTime,
+          tags: work.tagNames?.length
+            ? work.tagNames.map((tag) => ({ id: tag, text: tag }))
             : [],
-          themeId: work?.dailyTheme?.id ?? null,
-          title: work?.title ?? "",
-          useCommentFeature: work?.isCommentsEditable ?? true,
-          useGenerationParams: work?.promptAccessType === "PUBLIC",
-          usePromotionFeature: work?.isPromotion ?? false,
-          useTagFeature: work?.isTagEditable ?? false,
+          themeId: work.dailyTheme ? work.dailyTheme.id : null,
+          title: work.title ? work.title : "",
+          useCommentFeature: work.isCommentsEditable
+            ? work.isCommentsEditable
+            : true,
+          useGenerationParams: work.promptAccessType === "PUBLIC",
+          usePromotionFeature: work.isPromotion ? work.isPromotion : false,
+          useTagFeature: work.isTagEditable ? work.isTagEditable : false,
           correctionMessage: "",
         },
       })
@@ -203,49 +229,56 @@ export default function EditImage() {
     isOpenImageGenerationDialog: false,
     isSelectedGenerationImage: false,
     isThumbnailLandscape:
-      (work?.smallThumbnailImageWidth ?? 0) >
-      (work?.smallThumbnailImageHeight ?? 0),
+      (work?.smallThumbnailImageWidth ? work.smallThumbnailImageWidth : 0) >
+      (work?.smallThumbnailImageHeight ? work.smallThumbnailImageHeight : 0),
     items: [
       {
         id: 0,
-        content: work?.imageURL ?? "",
+        content: work?.imageURL ? work.imageURL : "",
       },
-      ...(work?.subWorks ?? []).map((subWork, index) => ({
-        id: index + 1,
-        content: subWork.imageUrl ?? "",
-      })),
+      ...(work?.subWorks
+        ? work.subWorks.map((subWork, index) => ({
+            id: index + 1,
+            content: subWork.imageUrl ? subWork.imageUrl : "",
+          }))
+        : []),
     ],
-    ogpBase64: work?.ogpThumbnailImageUrl ?? "",
+    ogpBase64: work?.ogpThumbnailImageUrl ? work.ogpThumbnailImageUrl : "",
     pngInfo: {
-      src: work?.pngInfo ?? "",
+      src: work?.pngInfo ? work.pngInfo : "",
       params: {
-        prompt: work?.prompt ?? "",
-        negativePrompt: work?.negativePrompt ?? "",
-        seed: work?.seed?.toString() ?? "",
-        sampler: work?.sampler ?? "",
-        strength: work?.strength ?? "",
-        noise: work?.noise ?? "",
-        model: work?.model ?? "",
-        modelHash: work?.modelHash ?? "",
-        steps: work?.steps ? work?.steps.toString() : "",
-        scale: work?.scale ? work?.scale.toString() : "",
+        prompt: work?.prompt ? work.prompt : "",
+        negativePrompt: work?.negativePrompt ? work.negativePrompt : "",
+        seed: work?.seed ? work.seed.toString() : "",
+        sampler: work?.sampler ? work.sampler : "",
+        strength: work?.strength ? work.strength : "",
+        noise: work?.noise ? work.noise : "",
+        model: work?.model ? work.model : "",
+        modelHash: work?.modelHash ? work.modelHash : "",
+        steps: work?.steps ? work.steps.toString() : "",
+        scale: work?.scale ? work.scale.toString() : "",
         vae: "",
       },
     },
     progress: 0,
     selectedImageGenerationIds: [],
-    thumbnailBase64: work?.largeThumbnailImageURL ?? "",
+    thumbnailBase64: work?.largeThumbnailImageURL
+      ? work.largeThumbnailImageURL
+      : "",
     thumbnailPosX:
-      (work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0))
-        ? (work?.thumbnailImagePosition ?? 0)
+      (work?.smallThumbnailImageWidth ? work.smallThumbnailImageWidth : 0) >
+      (work?.smallThumbnailImageHeight ? work.smallThumbnailImageHeight : 0)
+        ? work?.thumbnailImagePosition
+          ? work.thumbnailImagePosition
+          : 0
         : 0,
     thumbnailPosY:
-      (work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0) ??
-      0)
+      (work?.smallThumbnailImageWidth ? work.smallThumbnailImageWidth : 0) >
+      (work?.smallThumbnailImageHeight ? work.smallThumbnailImageHeight : 0)
         ? 0
-        : (work?.thumbnailImagePosition ?? 0),
+        : work?.thumbnailImagePosition
+          ? work.thumbnailImagePosition
+          : 0,
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
@@ -253,11 +286,11 @@ export default function EditImage() {
   })
 
   const { reservationDate, reservationTime } = getReservationDetails(
-    work?.createdAt ?? 0,
+    work?.createdAt ? work.createdAt : 0,
   )
 
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
-    accessType: work?.accessType ?? "PUBLIC",
+    accessType: work?.accessType ? work.accessType : "PUBLIC",
     generationParamAccessType:
       work?.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
     aiModelId: work?.workModelId?.toString() ?? null,

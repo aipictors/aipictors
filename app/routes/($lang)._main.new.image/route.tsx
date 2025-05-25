@@ -73,7 +73,7 @@ export default function NewImage() {
       generationLimit: 64,
       generationOffset: 0,
       generationWhere: {
-        nanoids: ref?.split("|") ?? [],
+        nanoids: ref ? ref.split("|") : [],
       },
       startAt: now.toISOString().split("T")[0],
       startDate: now.toISOString().split("T")[0],
@@ -191,8 +191,9 @@ export default function NewImage() {
         dispatchInput({
           type: "SET_AI_MODEL_ID",
           payload:
-            viewerData.viewer.imageGenerationResults[0].postModelId?.toString() ??
-            "",
+            viewerData.viewer.imageGenerationResults[0].postModelId?.toString()
+              ? viewerData.viewer.imageGenerationResults[0].postModelId?.toString()
+              : "",
         })
 
         dispatch({

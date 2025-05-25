@@ -42,7 +42,9 @@ export function DraftWorkArticle(props: Props) {
 
   const [tagNames, setTagNames] = useState<string[]>(props.work.tagNames)
 
-  const bookmarkFolderId = data?.viewer?.bookmarkFolderId ?? null
+  const bookmarkFolderId = data?.viewer?.bookmarkFolderId
+    ? data.viewer.bookmarkFolderId
+    : null
 
   const toDateTextUrl = (time: number, dateFormat: string) => {
     const date = new Date(time * 1000)

@@ -56,7 +56,7 @@ export function DraftWorkContainer(props: Props) {
     },
   })
 
-  const work = data?.work ?? props.work
+  const work = data?.work ? data.work : props.work
 
   const { data: workCommentsRet } = useQuery(workCommentsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -126,20 +126,7 @@ export function DraftWorkContainer(props: Props) {
             <DraftWorkArticle work={work} />
             {work.user && (
               <WorkRelatedList
-                works={work.user.works.map((relatedWork) => ({
-                  smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
-                  thumbnailImagePosition:
-                    relatedWork.thumbnailImagePosition ?? 0,
-                  smallThumbnailImageWidth:
-                    relatedWork.smallThumbnailImageWidth,
-                  smallThumbnailImageHeight:
-                    relatedWork.smallThumbnailImageHeight,
-                  id: relatedWork.id,
-                  userId: relatedWork.userId,
-                  isLiked: relatedWork.isLiked,
-                  subWorksCount: relatedWork.subWorksCount,
-                  commentsCount: relatedWork.commentsCount,
-                }))}
+                works={work.user.works} // 詰め替えずに直接渡す
               />
             )}
             {work.isCommentsEditable && (

@@ -36,16 +36,16 @@ export function HomeWorksUsersRecommendedSection(props: Props) {
     },
   })
 
-  const workDisplayed = recommendedWorksResp?.works ?? props.works
+  const works = recommendedWorksResp?.works || props.works
 
   const t = useTranslation()
 
   return (
     <>
-      {workDisplayed.length > 0 && (
+      {works.length > 0 && (
         <HomeRecommendedWorkList
           title={t("ユーザからの推薦", "Recommended by users")}
-          works={workDisplayed}
+          works={works}
           isCropped={false}
           isShowProfile={true}
         />

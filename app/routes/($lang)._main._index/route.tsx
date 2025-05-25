@@ -194,7 +194,7 @@ export default function Index() {
 
   // ★ 期間指定の state を追加し、URL パラメータから初期値を読む
   const [timeRange, setTimeRange] = useState<string>(
-    searchParams.get("timeRange") || "ALL",
+    searchParams.get("timeRange"),
   )
 
   const location = useLocale()

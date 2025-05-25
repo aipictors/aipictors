@@ -14,7 +14,8 @@ type Props = {
  * クロップ済み作品一覧
  */
 export function HomeCroppedWorkListWithScroll(props: Props) {
-  if (props.works === null || props.works.length === 0) {
+  // Remove redundant check for null since TypeScript type doesn't allow it
+  if (props.works.length === 0) {
     return null
   }
 
@@ -64,7 +65,7 @@ export function HomeCroppedWorkListWithScroll(props: Props) {
 }
 
 export const HomeCoppedWorkFragment = graphql(
-  `fragment HomeCoppedWork on WorkNode @_unmask {
+  `fragment HomeCoppedWork on WorkNode {
     id
     title
     likesCount

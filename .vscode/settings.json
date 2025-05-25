@@ -67,6 +67,7 @@
   ],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.enablePromptUseWorkspaceTsdk": true,
+  "github.copilot.chat.edits.enabled": true,
   "todo-tree.regex.regex": "(?:(?://|#|<!--|;|/\\*\\*?|\\*)\\s*($TAGS)|^\\s*- \\[ \\])",
   "todo-tree.general.tags": [
     "TODO",

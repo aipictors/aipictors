@@ -31,7 +31,7 @@ export function SensitiveWorkTagsWorks(props: Props) {
     },
   })
 
-  const tagWork = suggestedWorkResp?.works ?? []
+  const tagWork = suggestedWorkResp?.works ? suggestedWorkResp.works : []
 
   return <ResponsivePhotoWorksAlbum isShowProfile={true} works={tagWork} />
 }

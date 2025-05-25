@@ -3,5 +3,5 @@
  * @param nodes
  */
 export function removeDuplicates<T>(nodes: T[]) {
-  return Array.from(new Set(nodes)).flatMap((node) => node ?? [])
+  return Array.from(new Set(nodes)).flatMap((node) => (node ? [node] : []))
 }

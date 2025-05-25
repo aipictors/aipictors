@@ -81,7 +81,7 @@ export function AlbumArticleHeader(props: Props) {
 }
 
 export const AlbumArticleHeaderFragment = graphql(
-  `fragment AlbumArticleHeader on AlbumNode @_unmask {
+  `fragment AlbumArticleHeader on AlbumNode {
     id
     title
     description

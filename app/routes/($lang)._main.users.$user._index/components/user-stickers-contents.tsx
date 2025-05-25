@@ -28,7 +28,7 @@ export function UserStickersContents(props: Props) {
     },
   })
 
-  const stickers = stickersResp?.stickers ?? []
+  const stickers = stickersResp?.stickers
 
   const stickersCountResp = useSuspenseQuery(stickersCountQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -39,7 +39,7 @@ export function UserStickersContents(props: Props) {
     },
   })
 
-  const stickersCount = stickersCountResp.data?.stickersCount ?? 0
+  const stickersCount = stickersCountResp.data?.stickersCount
 
   return (
     <>

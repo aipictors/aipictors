@@ -156,7 +156,7 @@ export default function Index() {
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
 
   const [timeRange, setTimeRange] = useState<string>(
-    searchParams.get("timeRange") || "ALL",
+    searchParams.get("timeRange") ? searchParams.get("timeRange") : "ALL",
   )
 
   useEffect(() => {

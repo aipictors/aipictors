@@ -65,7 +65,7 @@ export function HomeUserNavigationMenu(props: Props) {
 
   const locale = useLocale()
 
-  const promptonUser = data?.viewer?.user?.promptonUser?.id ?? ""
+  const promptonUser = data?.viewer?.user?.promptonUser?.id
 
   const followerCount = data?.viewer?.user?.followersCount ?? 0
 

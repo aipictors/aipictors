@@ -16,7 +16,7 @@ export function WorkList(props: Props) {
           <CroppedWorkSquare
             workId={work.id}
             imageUrl={work.smallThumbnailImageURL}
-            thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+            thumbnailImagePosition={work.thumbnailImagePosition}
             size="lg"
             imageWidth={work.smallThumbnailImageWidth}
             imageHeight={work.smallThumbnailImageHeight}

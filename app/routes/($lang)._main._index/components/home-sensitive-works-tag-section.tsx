@@ -61,12 +61,12 @@ export function HomeSensitiveWorksTagSection(props: Props) {
     },
   })
 
-  const workDisplayed = firstTagWorksResp?.works ?? props.works
-  const secondWorkDisplayed = secondTagWorksResp?.works ?? props.secondWorks
+  const workDisplayed = firstTagWorksResp?.works || props.works
+  const secondWorkDisplayed = secondTagWorksResp?.works || props.secondWorks
 
   const combinedWorks = [
-    ...(workDisplayed ?? []),
-    ...(secondWorkDisplayed ?? []),
+    ...(workDisplayed || []),
+    ...(secondWorkDisplayed || []),
   ]
 
   const t = useTranslation()

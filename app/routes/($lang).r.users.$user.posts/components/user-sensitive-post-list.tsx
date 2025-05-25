@@ -62,7 +62,7 @@ export function UserSensitivePostList(props: Props) {
 }
 
 export const UserPostsItemFragment = graphql(
-  `fragment UserPostsItem on WorkNode @_unmask {
+  `fragment UserPostsItem on WorkNode {
     id
     title
     enTitle

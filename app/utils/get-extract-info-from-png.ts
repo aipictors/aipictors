@@ -140,17 +140,17 @@ const getPngInfo = (chunks: PNGChunk[]): string => {
 
 const exchangeFromPNGItem = (item: PNGItem): ImageParameters => {
   const parameters: ImageParameters = {
-    prompt: item.prompt ?? "",
-    negativePrompt: item.negativePrompt ?? "",
-    seed: item.seed ?? "",
-    steps: item.steps ?? "",
-    strength: item.strength ?? "",
-    noise: item.noise ?? "",
-    scale: item.scale ?? "",
-    sampler: item.sampler ?? "",
-    vae: item.vae ?? "",
-    modelHash: item.modelHash ?? "",
-    model: item.model ?? "",
+    prompt: item.prompt ? item.prompt : "",
+    negativePrompt: item.negativePrompt ? item.negativePrompt : "",
+    seed: item.seed ? item.seed : "",
+    steps: item.steps ? item.steps : "",
+    strength: item.strength ? item.strength : "",
+    noise: item.noise ? item.noise : "",
+    scale: item.scale ? item.scale : "",
+    sampler: item.sampler ? item.sampler : "",
+    vae: item.vae ? item.vae : "",
+    modelHash: item.modelHash ? item.modelHash : "",
+    model: item.model ? item.model : "",
   }
   return parameters
 }

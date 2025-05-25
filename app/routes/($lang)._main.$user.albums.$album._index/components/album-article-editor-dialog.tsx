@@ -27,7 +27,7 @@ export function AlbumArticleEditorDialog(props: Props) {
   const t = useTranslation()
 
   const [selectedWorks, setSelectedWorks] = useState<string[]>(
-    props.album.workIds.map((work) => work.toString()),
+    props.album.workIds.map(String), // Use String constructor instead of toString
   )
 
   const [title, setTitle] = useState(props.album.title)
@@ -133,7 +133,7 @@ export function AlbumArticleEditorDialog(props: Props) {
 }
 
 export const AlbumArticleEditorDialogFragment = graphql(
-  `fragment AlbumArticleEditorDialog on AlbumNode @_unmask {
+  `fragment AlbumArticleEditorDialog on AlbumNode {
     id
     title
     description

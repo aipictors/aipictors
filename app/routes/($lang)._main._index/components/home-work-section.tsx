@@ -34,9 +34,7 @@ export function HomeWorkSection(props: Props) {
     <section className={cn(props.title ? "space-y-4" : "gap-y-4")}>
       <div className="flex items-center justify-between">
         <h2 className="items-center space-x-2 font-bold text-md">
-          <p className="text-left font-bold text-xl">
-            {props.title && props.title}
-          </p>
+          <p className="text-left font-bold text-xl">{props.title}</p>
           {props.tooltip && (
             <TooltipProvider>
               <Tooltip>
@@ -73,7 +71,7 @@ export function HomeWorkSection(props: Props) {
 }
 
 export const HomeWorkFragment = graphql(
-  `fragment HomeWork on WorkNode @_unmask {
+  `fragment HomeWork on WorkNode {
     ...PhotoAlbumWork
     ...HomeCoppedWork
   }`,
