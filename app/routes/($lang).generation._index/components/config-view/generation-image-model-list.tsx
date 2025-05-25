@@ -255,7 +255,7 @@ export function ImageModelsList(props: Props) {
                       <HoverCard>
                         <HoverCardTrigger asChild>
                           <Button
-                            className="absolute top-28 right-0 hover:bg-transparent"
+                            className="absolute top-28 right-0 z-50 hover:bg-transparent"
                             size="icon"
                             variant="ghost"
                           >
