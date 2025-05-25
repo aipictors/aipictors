@@ -1,4 +1,5 @@
 import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import {
   Select,
@@ -17,7 +18,6 @@ import type { FragmentOf } from "gql.tada"
 import { StarIcon, InfoIcon } from "lucide-react"
 import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
-// Import HoverCard components
 import {
   HoverCard,
   HoverCardContent,
@@ -43,6 +43,7 @@ export function ImageModelsList(props: Props) {
     props.isInitFavorited,
   )
   const [showNewModels, setShowNewModels] = useState(false)
+  const [searchText, setSearchText] = useState("") // 検索テキストのステートを追加
 
   const modelTypes = removeDuplicates(props.models.map((m) => m.type))
   const modelCategories = removeDuplicates(
@@ -98,6 +99,14 @@ export function ImageModelsList(props: Props) {
       .filter((model) => {
         return showNewModels ? model.isNew : true
       })
+      .filter((model) => {
+        // 検索テキストが空の場合は全てのモデルを表示
+        if (!searchText) return true
+        // モデル名に検索テキストが含まれる場合のみ表示（大文字小文字を無視）
+        return model.displayName
+          .toLowerCase()
+          .includes(searchText.toLowerCase())
+      })
       .sort((a, b) => a.displayName.localeCompare(b.displayName))
   }
 
@@ -109,82 +118,90 @@ export function ImageModelsList(props: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-x-2">
-        <Select
-          onOpenChange={() => {
-            if (isSelectorOpen) {
-              setTimeout(() => {
+      <div className="flex flex-col gap-y-2">
+        <div className="flex gap-x-2">
+          <Select
+            onOpenChange={() => {
+              if (isSelectorOpen) {
+                setTimeout(() => {
+                  setIsSelectorOpen(!isSelectorOpen)
+                }, 100)
+              } else {
                 setIsSelectorOpen(!isSelectorOpen)
-              }, 100)
-            } else {
-              setIsSelectorOpen(!isSelectorOpen)
-            }
-          }}
-          onValueChange={selectCategory}
-        >
-          <SelectTrigger className="w-32 sm:w-40">
-            <SelectValue placeholder={t("カテゴリ", "Category")} />
-          </SelectTrigger>
-          <SelectContent>
-            {["ALL", ...modelCategories].map((category) => (
-              <SelectItem key={category} value={category}>
-                {toCategoryName(category)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          onOpenChange={() => {
-            if (isSelectorOpen) {
-              setTimeout(() => {
-                setIsSelectorOpen(!isSelectorOpen)
-              }, 100)
-            } else {
-              setIsSelectorOpen(!isSelectorOpen)
-            }
-          }}
-          onValueChange={selectType}
-        >
-          <SelectTrigger className="w-32 sm:w-40">
-            <SelectValue placeholder={t("種別", "Type")} />
-          </SelectTrigger>
-          <SelectContent>
-            {["ALL", ...modelTypes].map((type) => (
-              <SelectItem key={type} value={type}>
-                {type === "ALL" ? t("全て", "All") : type}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          onClick={() => {
-            setShowFavoriteModels((prev) => !prev)
-          }}
-          aria-label={t("お気に入り", "Favorites")}
-          size={"icon"}
-          variant="ghost"
-        >
-          <StarIcon
-            className={cn(showFavoriteModels ? "fill-yellow-500" : "")}
-          />
-        </Button>
-        <Button
-          onClick={() => {
-            setShowNewModels((prev) => !prev)
-          }}
-          aria-label={t("新着", "New")}
-          size={"icon"}
-          variant="secondary"
-        >
-          <span
-            className={cn(
-              "font-bold text-sm",
-              showNewModels ? "text-blue-500" : "",
-            )}
+              }
+            }}
+            onValueChange={selectCategory}
           >
-            {"New"}
-          </span>
-        </Button>
+            <SelectTrigger className="w-32 sm:w-40">
+              <SelectValue placeholder={t("カテゴリ", "Category")} />
+            </SelectTrigger>
+            <SelectContent>
+              {["ALL", ...modelCategories].map((category) => (
+                <SelectItem key={category} value={category}>
+                  {toCategoryName(category)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            onOpenChange={() => {
+              if (isSelectorOpen) {
+                setTimeout(() => {
+                  setIsSelectorOpen(!isSelectorOpen)
+                }, 100)
+              } else {
+                setIsSelectorOpen(!isSelectorOpen)
+              }
+            }}
+            onValueChange={selectType}
+          >
+            <SelectTrigger className="w-32 sm:w-40">
+              <SelectValue placeholder={t("種別", "Type")} />
+            </SelectTrigger>
+            <SelectContent>
+              {["ALL", ...modelTypes].map((type) => (
+                <SelectItem key={type} value={type}>
+                  {type === "ALL" ? t("全て", "All") : type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={() => {
+              setShowFavoriteModels((prev) => !prev)
+            }}
+            aria-label={t("お気に入り", "Favorites")}
+            size={"icon"}
+            variant="ghost"
+          >
+            <StarIcon
+              className={cn(showFavoriteModels ? "fill-yellow-500" : "")}
+            />
+          </Button>
+          <Button
+            onClick={() => {
+              setShowNewModels((prev) => !prev)
+            }}
+            aria-label={t("新着", "New")}
+            size={"icon"}
+            variant="secondary"
+          >
+            <span
+              className={cn(
+                "font-bold text-sm",
+                showNewModels ? "text-blue-500" : "",
+              )}
+            >
+              {"New"}
+            </span>
+          </Button>
+        </div>
+        <Input
+          placeholder={t("モデル名で検索", "Search by model name")}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          className="w-full"
+        />
       </div>
       <ScrollArea className="-mx-4 max-h-[50vh] min-h-[50vh] overflow-auto">
         <div className="space-y-4">
@@ -234,7 +251,6 @@ export function ImageModelsList(props: Props) {
                         )}
                       />
                     </Button>
-                    {/* HoverCard for description */}
                     {model.explanation && (
                       <HoverCard>
                         <HoverCardTrigger asChild>
@@ -306,7 +322,6 @@ export function ImageModelsList(props: Props) {
                         )}
                       />
                     </Button>
-                    {/* HoverCard for description */}
                     {model.explanation && (
                       <HoverCard>
                         <HoverCardTrigger asChild>
