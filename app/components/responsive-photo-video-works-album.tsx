@@ -30,7 +30,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
   const { data: videosWorks } = useQuery(UserVideosQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
-      offset: props.page ?? 1 * 32,
+      offset: (props.page ?? 1) * 32,
       limit: 32,
       where: {
         userId: cachedWorks[0]?.user?.id ?? "",
