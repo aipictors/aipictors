@@ -61,7 +61,7 @@ export function WorkUser(props: Props) {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex w-full flex-col space-y-4">
-        <div className="m-auto flex items-center space-x-4">
+        <div className="m-auto mb-4 flex items-center space-x-4">
           <div className="flex items-center">
             <p className="font-bold text-sm">{`${props.userFollowersCount}`}</p>
             <p className="text-sm opacity-50">{t("フォロワー", "Followers")}</p>
