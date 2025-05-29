@@ -1,39 +1,21 @@
-import { type FragmentOf, graphql } from "gql.tada"
-import { AuthContext } from "~/contexts/auth-context"
-import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { type FragmentOf, readFragment } from "gql.tada"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
+import {
+  PhotoAlbumVideoWorkFragment,
+  ResponsivePhotoVideoWorksAlbum,
+} from "~/components/responsive-photo-video-works-album"
 
 type Props = {
-  works: FragmentOf<typeof UserVideosItemFragment>[]
+  works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
   page: number
   maxCount: number
 }
 
 export function UserVideoList(props: Props) {
-  const authContext = useContext(AuthContext)
+  const cachedWorks = readFragment(PhotoAlbumVideoWorkFragment, props.works)
 
-  const userId = props.works[0]?.user?.id ?? ""
-
-  const userLogin = props.works[0]?.user?.login ?? ""
-
-  const { data: videosWorks } = useQuery(UserVideosQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn || userId === "",
-    variables: {
-      offset: props.page * 32,
-      limit: 32,
-      where: {
-        userId: userId,
-        ratings: ["G", "R15"],
-        workType: "VIDEO",
-        isNowCreatedAt: true,
-      },
-    },
-  })
-
-  const videos = videosWorks?.works ?? props.works
+  const userLogin = cachedWorks[0]?.user?.login ?? ""
 
   const navigate = useNavigate()
 
@@ -44,6 +26,7 @@ export function UserVideoList(props: Props) {
           <ResponsivePhotoVideoWorksAlbum
             isAutoPlay={true}
             works={props.works}
+            page={props.page}
           />
         </section>
       </div>
@@ -61,32 +44,3 @@ export function UserVideoList(props: Props) {
     </div>
   )
 }
-
-export const UserVideosItemFragment = graphql(
-  `fragment UserVideosItem on WorkNode @_unmask {
-    id
-    title
-    url
-    smallThumbnailImageHeight
-    smallThumbnailImageWidth
-    smallThumbnailImageURL
-    likesCount
-    isLiked
-    user {
-      login
-      id
-      name
-      iconUrl
-    }
-  }`,
-)
-
-export const UserVideosQuery = graphql(
-  `query UserVideos($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
-      ...UserVideosItem
-    }
-    worksCount(where: $where)
-  }`,
-  [UserVideosItemFragment],
-)

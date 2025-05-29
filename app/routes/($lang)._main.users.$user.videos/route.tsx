@@ -4,11 +4,9 @@ import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import {
-  UserVideoList,
-  UserVideosItemFragment,
-} from "~/routes/($lang)._main.users.$user.videos/components/user-videos-list"
+import { UserVideoList } from "~/routes/($lang)._main.users.$user.videos/components/user-videos-list"
 import { config } from "~/config"
+import { PhotoAlbumVideoWorkFragment } from "~/components/responsive-photo-video-works-album"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -90,9 +88,9 @@ const userIdQuery = graphql(
 export const userVideosQuery = graphql(
   `query UserWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...UserVideosItem
+      ...PhotoAlbumVideoWork
     }
     worksCount(where: $where)
   }`,
-  [UserVideosItemFragment],
+  [PhotoAlbumVideoWorkFragment],
 )

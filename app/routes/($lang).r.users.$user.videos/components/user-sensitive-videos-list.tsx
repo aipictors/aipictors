@@ -1,13 +1,16 @@
-import { type FragmentOf, graphql } from "gql.tada"
+import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
+import {
+  PhotoAlbumVideoWorkFragment,
+  ResponsivePhotoVideoWorksAlbum,
+} from "~/components/responsive-photo-video-works-album"
 
 type Props = {
-  works: FragmentOf<typeof UserVideosItemFragment>[]
+  works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
   page: number
   maxCount: number
 }
@@ -15,9 +18,11 @@ type Props = {
 export function UserSensitiveVideoList(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const userId = props.works[0]?.user?.id ?? ""
+  const cachedWorks = readFragment(PhotoAlbumVideoWorkFragment, props.works)
 
-  const userLogin = props.works[0]?.user?.login ?? ""
+  const userId = cachedWorks[0]?.user?.id ?? ""
+
+  const userLogin = cachedWorks[0]?.user?.login ?? ""
 
   const { data: videosWorks } = useQuery(UserVideosQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn || userId === "",
@@ -44,6 +49,7 @@ export function UserSensitiveVideoList(props: Props) {
           <ResponsivePhotoVideoWorksAlbum
             isAutoPlay={true}
             works={props.works}
+            page={props.page}
           />
         </section>
       </div>
@@ -88,5 +94,5 @@ export const UserVideosQuery = graphql(
     }
     worksCount(where: $where)
   }`,
-  [UserVideosItemFragment],
+  [PhotoAlbumVideoWorkFragment],
 )

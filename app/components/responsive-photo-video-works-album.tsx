@@ -1,25 +1,50 @@
-import { graphql, type FragmentOf } from "gql.tada"
+import { graphql, readFragment, type FragmentOf } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import SSR from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
-import { useRef, useCallback } from "react"
+import { useRef, useCallback, useContext } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { AuthContext } from "~/contexts/auth-context"
+import { useQuery } from "@apollo/client/index"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
   targetRowHeight?: number
   isAutoPlay?: boolean
+  page?: number
 }
 
 /**
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoVideoWorksAlbum(props: Props) {
+  const cachedWorks = readFragment(PhotoAlbumVideoWorkFragment, props.works)
+
+  const authContext = useContext(AuthContext)
+
+  const { data: videosWorks } = useQuery(UserVideosQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      offset: props.page ?? 1 * 32,
+      limit: 32,
+      where: {
+        userId: cachedWorks[0]?.user?.id ?? "",
+        ratings: cachedWorks.map((work) => work.rating ?? "G"),
+        workType: "VIDEO",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
+  const newWorks = videosWorks?.works
+    ? readFragment(PhotoAlbumVideoWorkFragment, videosWorks?.works)
+    : cachedWorks
+
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
 
   const isAutoPlay = props.isAutoPlay ?? true
@@ -46,22 +71,22 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
     }
   }, [])
 
-  if (props.works.length === 1) {
+  if (newWorks.length === 1) {
     return (
       <div className="relative transition-all" style={{ position: "relative" }}>
         <div
           className="relative inline-block h-full w-full"
-          onMouseEnter={() => handleMouseEnter(Number(props.works[0].id))}
-          onMouseLeave={() => handleMouseLeave(Number(props.works[0].id))}
+          onMouseEnter={() => handleMouseEnter(Number(newWorks[0].id))}
+          onMouseLeave={() => handleMouseLeave(Number(newWorks[0].id))}
         >
           <Link
-            to={`/posts/${props.works[0].id}`}
+            to={`/posts/${newWorks[0].id}`}
             className="max-h-32 overflow-hidden rounded"
           >
             <video
-              src={props.works[0].url ?? ""}
+              src={newWorks[0].url ?? ""}
               // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
-              ref={(el) => (videoRefs.current[Number(props.works[0].id)] = el)}
+              ref={(el) => (videoRefs.current[Number(newWorks[0].id)] = el)}
               className="absolute top-0 left-0 hidden max-h-72 w-full overflow-hidden rounded object-contain md:block"
               style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
               muted
@@ -71,7 +96,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
             >
               <track
                 kind="captions"
-                src={props.works[0].url ?? ""}
+                src={newWorks[0].url ?? ""}
                 label="English"
               />
             </video>
@@ -90,7 +115,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
   return (
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum
-        photos={props.works.map((work, index) => ({
+        photos={newWorks.map((work, index) => ({
           key: work.id,
           src: work.smallThumbnailImageURL,
           url: work.url,
@@ -223,7 +248,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
 }
 
 export const PhotoAlbumVideoWorkFragment = graphql(
-  `fragment PhotoAlbumVideoWork on WorkNode @_unmask {
+  `fragment PhotoAlbumVideoWork on WorkNode {
     id
     title
     url
@@ -232,10 +257,22 @@ export const PhotoAlbumVideoWorkFragment = graphql(
     smallThumbnailImageURL
     likesCount
     isLiked
+    rating
     user {
       id
       name
       iconUrl
+      login
     }
   }`,
+)
+
+export const UserVideosQuery = graphql(
+  `query UserVideos($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PhotoAlbumVideoWork
+    }
+    worksCount(where: $where)
+  }`,
+  [PhotoAlbumVideoWorkFragment],
 )
