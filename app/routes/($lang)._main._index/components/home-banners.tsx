@@ -23,10 +23,6 @@ export function HomeBanners(props: Props) {
       src: "https://assets.aipictors.com/rainbow-banner-2025.webp",
     },
     {
-      href: "https://www.aipictors.com/events/spring",
-      src: "https://assets.aipictors.com/spring-event.webp",
-    },
-    {
       href: "/generation",
       src: "https://assets.aipictors.com/home_banner_02.webp",
     },
