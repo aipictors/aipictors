@@ -254,13 +254,13 @@ export function ImageModelsList(props: Props) {
                     {model.explanation && (
                       <HoverCard>
                         <HoverCardTrigger asChild>
-                          <Button
+                          {/* <Button
                             className="absolute top-28 right-0 z-50 hover:bg-transparent"
                             size="icon"
                             variant="ghost"
-                          >
-                            <InfoIcon className="h-4 w-4 fill-white text-neutral-950" />
-                          </Button>
+                          > */}
+                          <InfoIcon className="absolute right-4 bottom-10 z-50 h-4 w-4 fill-white text-neutral-950 hover:bg-transparent" />
+                          {/* </Button> */}
                         </HoverCardTrigger>
                         <HoverCardContent
                           className="w-80 rounded-lg border border-gray-200 bg-white/95 p-4 text-gray-900 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/95 dark:text-white"
@@ -325,13 +325,7 @@ export function ImageModelsList(props: Props) {
                     {model.explanation && (
                       <HoverCard>
                         <HoverCardTrigger asChild>
-                          <Button
-                            className="absolute top-8 right-10"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <InfoIcon className="h-4 w-4 text-gray-500" />
-                          </Button>
+                          <InfoIcon className="absolute top-11 right-14 z-50 h-4 w-4 fill-white text-neutral-950 " />
                         </HoverCardTrigger>
                         <HoverCardContent
                           className="w-80 rounded-lg border border-gray-200 bg-white/95 p-4 text-gray-900 shadow-lg backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/95 dark:text-white"

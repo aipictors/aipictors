@@ -16,7 +16,7 @@ export function GenerationLinksView() {
         {isNonSubscription ? (
           <Link to="https://forms.gle/Md4kZmTsZHA2TqYz6">
             <img
-              src="https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/nonsubscription-banner.jpg"
+              src="https://assets.aipictors.com/aipictors-link-banner-generation.webp"
               alt="google form non subscription"
               className="mb-4 max-h-32 w-auto rounded-md"
             />
@@ -24,19 +24,19 @@ export function GenerationLinksView() {
         ) : (
           <Link to="https://forms.gle/3bPTebm44vyF3HjD6">
             <img
-              src="https://www.aipictors.com/wp-content/uploads/2023/11/gene-anke-banner-2.webp"
+              src="https://assets.aipictors.com/aipictors-link-banner-generation.webp"
               alt="google form"
               className="mb-4 max-h-32 w-auto rounded-md"
             />
           </Link>
         )}
         <Link
-          to="https://discord.com/invite/aipictors"
+          to="https://discord.gg/Rz7jQq3KZh"
           target="_blank"
           rel="noreferrer"
         >
           <img
-            src="https://www.aipictors.com/wp-content/themes/AISite/images/banner/discord-generation-banner-3.webp"
+            src="https://assets.aipictors.com/aipictors-link-banner-discord.webp"
             alt="discord"
             className="mb-4 max-h-32 w-auto rounded-md"
           />
