@@ -94,6 +94,7 @@ export const ImageLoraModelContextFragment = graphql(
     name
     description
     license
+    triggerWord
     prompts
     slug
     thumbnailImageURL

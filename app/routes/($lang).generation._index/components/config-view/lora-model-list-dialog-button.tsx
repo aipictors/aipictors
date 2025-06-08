@@ -19,7 +19,7 @@ type Props = {
   models: FragmentOf<typeof ImageLoraModelContextFragment>[]
   selectedModelNames: string[]
   availableImageGenerationMaxTasksCount: number
-  onSelect(name: string, isAdded: boolean): void
+  onSelect(name: string, triggerWord?: string): void
   onClose(): void
 }
 
@@ -70,6 +70,11 @@ export function LoraModelListDialogButton(props: Props) {
           models={props.models.map((model) => ({
             ...model,
             genre: model.genre || t("その他", "Other"),
+            // TODO: 型解決
+            triggerWord:
+              typeof model.triggerWord === "string"
+                ? model.triggerWord
+                : undefined,
           }))}
           selectedModelNames={props.selectedModelNames}
           onSelect={props.onSelect}

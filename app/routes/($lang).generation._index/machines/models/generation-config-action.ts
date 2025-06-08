@@ -494,7 +494,7 @@ export class GenerationConfigAction {
    * @param name
    * @returns
    */
-  changeLoraModel(name: string) {
+  changeLoraModel(name: string, triggerWord?: string) {
     /**
      * LoRAのモデルの名前
      */
@@ -509,7 +509,7 @@ export class GenerationConfigAction {
     const isAdded = !loraModelNames.includes(name)
 
     if (isAdded) {
-      return this.addLoraModel(name)
+      return this.addLoraModel(name, triggerWord)
     }
 
     return this.removeLoraModel(name)
@@ -831,8 +831,8 @@ export class GenerationConfigAction {
    * @param name
    * @returns
    */
-  addLoraModel(name: string) {
-    // 選択可能な数を超えている場合
+  addLoraModel(name: string, triggerWord?: string) {
+    // 選択可能な数を超えている場合は何もしない
     if (
       this.props.availableLoraModelsCount <=
       this.getPromptLoraModelNames().length
@@ -840,13 +840,29 @@ export class GenerationConfigAction {
       return this
     }
 
+    /** triggerWord があれば空白区切り ⇒ “,” 区切りに変換しておく
+     *   例: "cat girl" → "cat, girl"
+     *   単語が 1 つだけならそのまま (“cat” → “cat”)
+     */
+    const triggerWordsPart =
+      typeof triggerWord === "string" && triggerWord.trim() !== ""
+        ? triggerWord.trim().split(/\s+/).join(", ")
+        : undefined
+
+    // 既に入っている LoRA タグと今回追加するタグをまとめる
     const loraModels = [
       ...this.getPromptLoraModelNames().map((text) => `<lora:${text}>`),
-      `<lora:${name}:1>`,
+      `<lora:${name}:1>,`, // 今回追加分（末尾にカンマ）
     ]
 
-    const promptText = [this.promptTextWithoutLora, ...loraModels]
-      .join(" ")
+    // プロンプト本体 → triggerWord → LoRA タグ の順で結合
+    const promptText = [
+      this.promptTextWithoutLora, // ベースプロンプト
+      triggerWordsPart, // 追加トリガーワード（あれば）
+      ...loraModels, // LoRA タグ
+    ]
+      .filter(Boolean) // undefined を除外
+      .join(" ") // 半角スペースで結合
       .trim()
 
     return new GenerationConfigAction(

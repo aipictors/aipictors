@@ -117,7 +117,7 @@ export const config = {
      * デフォルトのモデルのID
      */
     defaultImageModelIds: ["1", "3", "19"],
-    imageGenerationMaxSteps: 25,
+    imageGenerationMaxSteps: 30,
     imageGenerationMinSteps: 9,
     /**
      * デフォルトのモデルのID

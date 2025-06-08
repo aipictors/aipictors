@@ -12,6 +12,7 @@ import { useMemo, useState } from "react"
 type Model = {
   id: string
   name: string
+  triggerWord?: string
   description: string | null
   thumbnailImageURL: string | null
   genre: string
@@ -20,7 +21,7 @@ type Model = {
 type Props = {
   models: Model[]
   selectedModelNames: string[]
-  onSelect(name: string, isAdded: boolean): void
+  onSelect(name: string, triggerWord?: string): void
 }
 
 export function LoraImageModelList(props: Props) {
@@ -63,10 +64,7 @@ export function LoraImageModelList(props: Props) {
                 thumbnailImageURL={model.thumbnailImageURL}
                 description={model.description}
                 onSelect={() => {
-                  props.onSelect(
-                    model.name,
-                    !props.selectedModelNames.includes(model.name),
-                  )
+                  props.onSelect(model.name, model.triggerWord ?? undefined)
                 }}
               />
             </div>
