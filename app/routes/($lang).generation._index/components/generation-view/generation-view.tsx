@@ -50,7 +50,7 @@ export function GenerationView(props: Props) {
   if (state === "HISTORY_LIST_FULL" || state === "WORK_LIST_FULL") {
     return (
       <div className="flex flex-col space-y-2 md:h-[calc(100vh-72px)]">
-        <main className="flex flex-col gap-4 overflow-hidden md:flex-row">
+        <main className="flex h-full flex-col gap-4 overflow-hidden md:flex-row">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel className="flex flex-col gap-y-2 lg:min-w-80 xl:min-w-80">
               {props.asideHeader}
@@ -65,7 +65,7 @@ export function GenerationView(props: Props) {
 
   return (
     <div className="flex flex-col space-y-2 md:h-[calc(100vh-72px)]">
-      <main className="flex flex-col gap-4 overflow-hidden md:flex-row">
+      <main className="flex h-full flex-col gap-4 overflow-hidden md:flex-row">
         <ResizablePanelGroup defaultValue={1} direction="horizontal">
           <ResizablePanelWithMemory
             id="generation-header-menu"
