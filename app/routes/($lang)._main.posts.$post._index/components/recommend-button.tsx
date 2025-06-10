@@ -24,8 +24,12 @@ export function RecommendButton(props: Props) {
 
   const passData = pass?.viewer?.currentPass
 
-  const isStandardOrPremium =
-    passData?.type === "STANDARD" || passData?.type === "PREMIUM"
+  const isSubscriptionUser =
+    passData?.type === "LITE" ||
+    passData?.type === "STANDARD" ||
+    passData?.type === "PREMIUM"
+
+  const isLitePlanUser = passData?.type === "LITE"
 
   const [isRecommended, setIsRecommended] = useState(props.isRecommended)
 
@@ -63,12 +67,18 @@ export function RecommendButton(props: Props) {
       toast("ログインしてください")
       return
     }
-    if (!isStandardOrPremium) {
+    if (!isSubscriptionUser) {
       toast(
-        "作品を推薦して、注目度をアップできます！スタンダード、プレミアムプランのみ対応しています",
+        "作品を推薦して、注目度をアップできます！Aipictors＋ユーザのみ対応しています",
       )
       return
     }
+
+    if (isLitePlanUser && props.ownerUserId === authContext.userId) {
+      toast("ライトプランユーザは自身の作品のみ推薦できます")
+      return
+    }
+
     try {
       await createRecommend({
         variables: {
