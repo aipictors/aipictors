@@ -50,7 +50,7 @@ import {
 import { useState, useEffect, Suspense } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { ArrowDownWideNarrow } from "lucide-react"
+import { ArrowDownWideNarrow, List, Navigation } from "lucide-react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import {
@@ -76,6 +76,7 @@ import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-r
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
 import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-dialog"
 import { ConstructionAlert } from "~/components/construction-alert"
+import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 
 // カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
 function useScrollRestoration(isMounted: boolean) {
@@ -207,6 +208,10 @@ export default function Index() {
   // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え
   const [workView, setWorkView] = useState(searchParams.get("view") || "new")
 
+  const [internalIsPagination, setInternalIsPagination] = useState(
+    searchParams.get("isPagination") === "true",
+  )
+
   /**
    * マウント時に、すでに URL に入っているクエリパラメータを用いて
    * 各 state を初期化する
@@ -226,6 +231,14 @@ export default function Index() {
         } else if (currentTab === "follow-tag") {
           setFollowTagFeedPage(pageNumber)
         }
+      }
+
+      // internalIsPagination
+      const isPaginationParam = searchParams.get("isPagination")
+      if (isPaginationParam === "true") {
+        setInternalIsPagination(true)
+      } else if (isPaginationParam === "false") {
+        setInternalIsPagination(false)
       }
 
       // workType
@@ -752,17 +765,64 @@ export default function Index() {
                   </SelectContent>
                 </Select>
               </div>
+              {/* ▼ ページネーション / 無限スクロール 切り替え UI */}
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={internalIsPagination ? "outline" : "default"}
+                  size="sm"
+                  onClick={() => {
+                    setInternalIsPagination(false)
+
+                    const p = new URLSearchParams(searchParams)
+                    p.set("isPagination", "false")
+                    updateQueryParams(p)
+                  }}
+                  className="flex items-center space-x-1"
+                >
+                  <List className="h-4 w-4" />
+                  <span>{t("無限スクロール", "Infinite")}</span>
+                </Button>
+
+                <Button
+                  variant={internalIsPagination ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setInternalIsPagination(true)
+
+                    const p = new URLSearchParams(searchParams)
+                    p.set("isPagination", "true")
+                    updateQueryParams(p)
+                  }}
+                  className="flex items-center space-x-1"
+                >
+                  <Navigation className="h-4 w-4" />
+                  <span>{t("ページネーション", "Pagination")}</span>
+                </Button>
+              </div>
 
               {/* 新着作品 */}
               <Suspense fallback={<AppLoadingPage />}>
-                <HomeWorksSection
-                  page={newWorksPage}
-                  setPage={setNewWorksPage}
-                  workType={workType}
-                  isPromptPublic={isPromptPublic}
-                  sortType={sortType}
-                  timeRange={timeRange}
-                />
+                {internalIsPagination ? (
+                  <HomePaginationWorksSection
+                    page={newWorksPage}
+                    setPage={setNewWorksPage}
+                    workType={workType}
+                    isPromptPublic={isPromptPublic}
+                    sortType={sortType}
+                    timeRange={timeRange}
+                  />
+                ) : (
+                  <HomeWorksSection
+                    page={newWorksPage}
+                    setPage={setNewWorksPage}
+                    workType={workType}
+                    isPromptPublic={isPromptPublic}
+                    sortType={sortType}
+                    timeRange={timeRange}
+                    isPagination={false}
+                    onPaginationModeChange={setInternalIsPagination}
+                  />
+                )}
               </Suspense>
             </div>
           )}
