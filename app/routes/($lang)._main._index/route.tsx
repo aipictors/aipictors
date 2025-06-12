@@ -330,6 +330,13 @@ export default function Index() {
       newSearchParams.delete("page")
     }
 
+    // internalIsPagination
+    if (internalIsPagination) {
+      newSearchParams.set("isPagination", "true")
+    } else {
+      newSearchParams.set("isPagination", "false")
+    }
+
     // ★ 期間指定
     if (currentTab === "new") {
       newSearchParams.set("timeRange", timeRange)
@@ -345,6 +352,7 @@ export default function Index() {
     timeRange,
     updateQueryParams,
     searchParams,
+    internalIsPagination,
   ])
 
   useEffect(() => {

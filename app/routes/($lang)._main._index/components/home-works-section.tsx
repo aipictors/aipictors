@@ -136,15 +136,25 @@ function getTimeRangeDates(range: HomeWorksProps["timeRange"] = "ALL") {
 }
 
 /* ───────── anchorAt (タブ内で一度だけ決定) ───────── */
-let persistedAnchorAt: string | null = null
+// let persistedAnchorAt: string | null = null
+const ANCHOR_TTL_MS = 1000 * 60 * 1 // 1 分
+
 function getAnchorAt() {
   if (typeof window === "undefined") return new Date().toISOString()
-  if (persistedAnchorAt) return persistedAnchorAt
-  persistedAnchorAt =
-    window.sessionStorage.getItem("home-works-anchorAt") ??
-    new Date().toISOString()
-  window.sessionStorage.setItem("home-works-anchorAt", persistedAnchorAt)
-  return persistedAnchorAt
+
+  const saved = sessionStorage.getItem("home-works-anchorAt")
+  const savedAt = sessionStorage.getItem("home-works-anchorAt:ts")
+
+  const now = Date.now()
+
+  // 10 分経過していたらリセット
+  if (!saved || !savedAt || now - Number(savedAt) > ANCHOR_TTL_MS) {
+    const fresh = new Date().toISOString()
+    sessionStorage.setItem("home-works-anchorAt", fresh)
+    sessionStorage.setItem("home-works-anchorAt:ts", String(now))
+    return fresh
+  }
+  return saved
 }
 
 /* ───────── where 生成 ───────── */
