@@ -109,7 +109,13 @@ function HomeHeader(props: Props) {
 
   const isAnnouncementPath =
     location.pathname === "/" || location.pathname === "/generation"
-  const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
+  // const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
+  const announcementData = {
+    emergencyAnnouncements: {
+      url: "https://www.aipictors.com/releases/743jc9r48s3z",
+      content: "Firebaseの不具合によりログイン不可の状況について",
+    },
+  }
 
   // ヘルパー関数：内部リンクへ遷移
   const navigateToInternal = (path: string) => {
