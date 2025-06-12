@@ -48,7 +48,7 @@ import {
   HomeNewCommentsFragment,
   HomeNewCommentsSection,
 } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, Suspense, useCallback, useMemo } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { ArrowDownWideNarrow } from "lucide-react"
@@ -163,24 +163,72 @@ export default function Index() {
   const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
 
-  const [isMounted, setIsMounted] = useState(false)
-  const [newWorksPage, setNewWorksPage] = useState(0)
-  const [followUserFeedPage, setFollowUserFeedPage] = useState(0)
-  const [followTagFeedPage, setFollowTagFeedPage] = useState(0)
+  // URLパラメータから初期値を直接取得（useMemoで最適化）
+  const initialValues = useMemo(() => {
+    const urlTab = searchParams.get("tab") || "home"
+    const pageParam = searchParams.get("page")
+    const pageNumber = pageParam ? Number.parseInt(pageParam, 10) : 0
+    const validPageNumber =
+      !Number.isNaN(pageNumber) && pageNumber >= 0 && pageNumber <= 100
+        ? pageNumber
+        : 0
+
+    const wtParam = searchParams.get("workType")
+    const workType =
+      wtParam && wtParam !== "ALL"
+        ? (wtParam as IntrospectionEnum<"WorkType">)
+        : null
+
+    const isPromptParam = searchParams.get("isPromptPublic")
+    const isPromptPublic =
+      isPromptParam === "true" ? true : isPromptParam === "false" ? false : null
+
+    const sortTypeParam = searchParams.get("sortType")
+    const sortType =
+      sortTypeParam === "DATE_CREATED" ||
+      sortTypeParam === "LIKES_COUNT" ||
+      sortTypeParam === "COMMENTS_COUNT"
+        ? (sortTypeParam as IntrospectionEnum<"WorkOrderBy">)
+        : null
+
+    const timeRangeParam = searchParams.get("timeRange") || "ALL"
+    const viewParam = searchParams.get("view") || "new"
+    const isPaginationParam = searchParams.get("isPagination") === "true"
+
+    return {
+      tab: urlTab,
+      page: validPageNumber,
+      workType,
+      isPromptPublic,
+      sortType,
+      timeRange: timeRangeParam,
+      view: viewParam,
+      isPagination: isPaginationParam,
+    }
+  }, [searchParams])
+
+  // 状態を初期値で初期化
+  const [currentTab, setCurrentTab] = useState(initialValues.tab)
+  const [newWorksPage, setNewWorksPage] = useState(
+    initialValues.tab === "new" ? initialValues.page : 0,
+  )
+  const [followUserFeedPage, setFollowUserFeedPage] = useState(
+    initialValues.tab === "follow-user" ? initialValues.page : 0,
+  )
+  const [followTagFeedPage, setFollowTagFeedPage] = useState(
+    initialValues.tab === "follow-tag" ? initialValues.page : 0,
+  )
   const [workType, setWorkType] =
-    useState<IntrospectionEnum<"WorkType"> | null>(null)
-  const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
+    useState<IntrospectionEnum<"WorkType"> | null>(initialValues.workType)
+  const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(
+    initialValues.isPromptPublic,
+  )
   const [sortType, setSortType] =
-    useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
-  const [timeRange, setTimeRange] = useState<string>(
-    searchParams.get("timeRange") || "ALL",
-  )
-  const [currentTab, setCurrentTab] = useState(
-    searchParams.get("tab") || "home",
-  )
-  const [workView, setWorkView] = useState(searchParams.get("view") || "new")
+    useState<IntrospectionEnum<"WorkOrderBy"> | null>(initialValues.sortType)
+  const [timeRange, setTimeRange] = useState<string>(initialValues.timeRange)
+  const [workView, setWorkView] = useState(initialValues.view)
   const [internalIsPagination, setInternalIsPagination] = useState(
-    searchParams.get("isPagination") === "true",
+    initialValues.isPagination,
   )
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
@@ -202,80 +250,38 @@ export default function Index() {
     passData?.type === "STANDARD" ||
     passData?.type === "PREMIUM"
 
-  useEffect(() => {
-    if (!isMounted) {
-      const page = searchParams.get("page")
-      const pageNumber = page ? Number.parseInt(page, 10) : 0
+  // URLパラメータを更新する関数
+  const updateUrlParams = useCallback(() => {
+    const newSearchParams = new URLSearchParams()
 
-      if (!Number.isNaN(pageNumber) && pageNumber >= 0 && pageNumber <= 100) {
-        if (currentTab === "new") {
-          setNewWorksPage(pageNumber)
-        } else if (currentTab === "follow-user") {
-          setFollowUserFeedPage(pageNumber)
-        } else if (currentTab === "follow-tag") {
-          setFollowTagFeedPage(pageNumber)
-        }
-      }
-
-      const wtParam = searchParams.get("workType")
-      if (wtParam && wtParam !== "ALL") {
-        setWorkType(wtParam as IntrospectionEnum<"WorkType">)
-      }
-
-      const isPromptParam = searchParams.get("isPromptPublic")
-      if (isPromptParam === "true") {
-        setIsPromptPublic(true)
-      } else if (isPromptParam === "false") {
-        setIsPromptPublic(false)
-      }
-
-      const sortTypeParam = searchParams.get("sortType")
-      if (
-        sortTypeParam === "DATE_CREATED" ||
-        sortTypeParam === "LIKES_COUNT" ||
-        sortTypeParam === "COMMENTS_COUNT"
-      ) {
-        setSortType(sortTypeParam as IntrospectionEnum<"WorkOrderBy">)
-      }
-
-      const tr = searchParams.get("timeRange")
-      if (tr && tr !== "ALL") {
-        setTimeRange(tr)
-      }
-
-      const viewParam = searchParams.get("view")
-      if (viewParam) {
-        setWorkView(viewParam)
-      }
-
-      setIsMounted(true)
-    }
-  }, [isMounted, searchParams, currentTab])
-
-  useEffect(() => {
-    if (!isMounted) return
-    const newSearchParams = new URLSearchParams(searchParams)
-
+    // タブ
     newSearchParams.set("tab", currentTab)
 
+    // ページネーション対応タブの場合はページ番号を設定
     if (currentTab === "new") {
       newSearchParams.set("page", newWorksPage.toString())
+      newSearchParams.set("view", workView)
+      newSearchParams.set("timeRange", timeRange)
+
+      // フィルター系のパラメータ
+      if (workType) {
+        newSearchParams.set("workType", workType)
+      }
+      if (isPromptPublic !== null) {
+        newSearchParams.set("isPromptPublic", isPromptPublic ? "true" : "false")
+      }
+      if (sortType) {
+        newSearchParams.set("sortType", sortType)
+      }
     } else if (currentTab === "follow-user") {
       newSearchParams.set("page", followUserFeedPage.toString())
     } else if (currentTab === "follow-tag") {
       newSearchParams.set("page", followTagFeedPage.toString())
-    } else {
-      newSearchParams.delete("page")
     }
 
-    if (currentTab === "new") {
-      newSearchParams.set("timeRange", timeRange)
-    }
-
+    // ページネーションモード
     if (internalIsPagination) {
       newSearchParams.set("isPagination", "true")
-    } else {
-      newSearchParams.delete("isPagination")
     }
 
     updateQueryParams(newSearchParams)
@@ -284,105 +290,73 @@ export default function Index() {
     newWorksPage,
     followUserFeedPage,
     followTagFeedPage,
-    isMounted,
+    workView,
     timeRange,
-    updateQueryParams,
-    searchParams,
+    workType,
+    isPromptPublic,
+    sortType,
     internalIsPagination,
+    updateQueryParams,
   ])
 
+  // 状態が変更されたらURLを更新（初回レンダリング後のみ）
   useEffect(() => {
-    const urlTab = searchParams.get("tab") || "home"
-    if (urlTab !== currentTab) {
-      setCurrentTab(urlTab)
-    }
-  }, [searchParams])
+    const timeoutId = setTimeout(() => {
+      updateUrlParams()
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
+  }, [updateUrlParams])
 
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab)
+    // タブ切り替え時はページを0にリセット
     setNewWorksPage(0)
     setFollowUserFeedPage(0)
     setFollowTagFeedPage(0)
-
-    const newSearchParams = new URLSearchParams(searchParams)
-    newSearchParams.set("tab", tab)
-
-    if (tab === "new") {
-      newSearchParams.set("page", "0")
-    } else if (tab === "follow-user") {
-      newSearchParams.set("page", "0")
-    } else if (tab === "follow-tag") {
-      newSearchParams.set("page", "0")
-    } else {
-      newSearchParams.delete("page")
-    }
-
-    updateQueryParams(newSearchParams)
   }
 
   const handleWorkViewChange = (view: string) => {
     setWorkView(view)
-    const newSearchParams = new URLSearchParams(searchParams)
-    newSearchParams.set("view", view)
-    updateQueryParams(newSearchParams)
+    // 表示形式切り替え時はページを0にリセット
+    setNewWorksPage(0)
   }
 
   const handleWorkTypeChange = (value: string) => {
-    const newSearchParams = new URLSearchParams(searchParams)
-
     if (value === "ALL") {
-      newSearchParams.delete("workType")
       setWorkType(null)
     } else {
-      newSearchParams.set("workType", value)
       setWorkType(value as IntrospectionEnum<"WorkType">)
     }
-
-    newSearchParams.set("page", "0")
+    // フィルター変更時はページを0にリセット
     setNewWorksPage(0)
-    updateQueryParams(newSearchParams)
   }
 
   const handlePromptChange = (value: string) => {
-    const newSearchParams = new URLSearchParams(searchParams)
-
     if (value === "ALL") {
-      newSearchParams.delete("isPromptPublic")
       setIsPromptPublic(null)
     } else {
       const isPrompt = value === "prompt"
-      newSearchParams.set("isPromptPublic", isPrompt ? "true" : "false")
       setIsPromptPublic(isPrompt)
     }
-
-    updateQueryParams(newSearchParams)
+    // フィルター変更時はページを0にリセット
+    setNewWorksPage(0)
   }
 
   const handleSortTypeChange = (value: string) => {
-    const newSearchParams = new URLSearchParams(searchParams)
-
     if (value === "ALL") {
-      newSearchParams.delete("sortType")
       setSortType(null)
     } else {
-      newSearchParams.set("sortType", value)
       setSortType(value as IntrospectionEnum<"WorkOrderBy">)
     }
-
-    updateQueryParams(newSearchParams)
+    // ソート変更時はページを0にリセット
+    setNewWorksPage(0)
   }
 
   const handleTimeRangeChange = (value: string) => {
-    const newSearchParams = new URLSearchParams(searchParams)
-
     setTimeRange(value)
-    if (value === "ALL") {
-      newSearchParams.delete("timeRange")
-    } else {
-      newSearchParams.set("timeRange", value)
-    }
-
-    updateQueryParams(newSearchParams)
+    // 時間範囲変更時はページを0にリセット
+    setNewWorksPage(0)
   }
 
   const onClickAdvertisement = async () => {
@@ -592,7 +566,7 @@ export default function Index() {
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
                     <div className="flex items-center space-x-2">
                       <Select
-                        value={workType ? workType : ""}
+                        value={workType || "ALL"}
                         onValueChange={handleWorkTypeChange}
                       >
                         <SelectTrigger className="w-full md:w-[140px]">
@@ -662,7 +636,7 @@ export default function Index() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Select
-                        value={sortType ? sortType : ""}
+                        value={sortType || "DATE_CREATED"}
                         onValueChange={handleSortTypeChange}
                       >
                         <SelectTrigger className="w-full md:w-[140px]">
@@ -670,7 +644,11 @@ export default function Index() {
                             <ArrowDownWideNarrow className="h-4 w-4" />
                             <SelectValue
                               placeholder={
-                                sortType ? sortType : t("最新", "Latest")
+                                sortType === "LIKES_COUNT"
+                                  ? t("最も人気", "Most Liked")
+                                  : sortType === "COMMENTS_COUNT"
+                                    ? t("コメント数", "Most Comments")
+                                    : t("最新", "Latest")
                               }
                             />
                           </div>
@@ -768,12 +746,10 @@ export default function Index() {
         </TabsContent>
 
         <TabsContent value="follow-user">
-          {/* <Suspense fallback={<AppLoadingPage />}> */}
           <FollowUserFeedContents
             page={followUserFeedPage}
             setPage={setFollowUserFeedPage}
           />
-          {/* </Suspense> */}
         </TabsContent>
 
         <TabsContent value="follow-tag">
@@ -793,7 +769,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.home,
 })
 
-// ... 残りのコード（queryなど）は同じ
+// 残りのコードは同じ...
 const query = graphql(
   `query HomeQuery(
     $year: Int!

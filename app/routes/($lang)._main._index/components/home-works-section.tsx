@@ -33,6 +33,10 @@ import {
 const PER_IMG = 32
 const PER_VID = 8
 
+interface PaginationModeProps extends HomeWorksProps {
+  anchorAt: string
+}
+
 /* ───────── GraphQL ───────── */
 const WorksQuery = graphql(
   `query Works($offset:Int!,$limit:Int!,$where:WorksWhereInput!) {
@@ -145,15 +149,15 @@ function getAnchorAt() {
 }
 
 /* ───────── where 生成 ───────── */
+/* ───────── 修正 1: makeWhere ───────── */
 function makeWhere(
   props: Omit<HomeWorksProps, "page" | "setPage">,
   anchorAt: string,
 ): WorksWhereInput {
-  const { createdAtAfter, createdAtBefore, isNowCreatedAt } = getTimeRangeDates(
-    props.timeRange,
-  )
+  const { createdAtAfter, createdAtBefore } = getTimeRangeDates(props.timeRange)
 
-  const needAnchor = !props.timeRange || props.timeRange === "ALL"
+  const needAllMode = !props.timeRange || props.timeRange === "ALL"
+  const needAnchor = needAllMode // ← 常に anchor 付ける
 
   return {
     ratings: ["G", "R15"],
@@ -164,7 +168,6 @@ function makeWhere(
     }),
     orderBy: props.sortType ?? "DATE_CREATED",
     ...(props.style && { style: props.style }),
-    ...(isNowCreatedAt && { isNowCreatedAt }),
     ...(createdAtAfter && { createdAtAfter }),
     ...(createdAtBefore && { beforeCreatedAt: createdAtBefore }),
     ...(!createdAtBefore && needAnchor ? { beforeCreatedAt: anchorAt } : {}),
@@ -188,9 +191,12 @@ export function HomeWorksSection(props: HomeWorksProps) {
   }, [props.isPagination])
 
   const handlePaginationModeChange = (isPagination: boolean) => {
-    if (props.isPagination !== undefined) {
-      props.onPaginationModeChange?.(isPagination)
-      props.setPage?.(0)
+    props.onPaginationModeChange?.(isPagination)
+
+    // 無限スクロール → ページネーションに切り替える時は anchor をクリア
+    if (isPagination) {
+      window.sessionStorage.removeItem("home-works-anchorAt")
+      persistedAnchorAt = null
     }
   }
 
@@ -234,10 +240,6 @@ export function HomeWorksSection(props: HomeWorksProps) {
 /* ===========================================================
    Pagination Mode
    =========================================================== */
-interface PaginationModeProps extends HomeWorksProps {
-  anchorAt: string
-}
-
 function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
   const PER_PAGE = rest.workType === "VIDEO" ? PER_VID : PER_IMG
   const { isLoading: authLoading } = useContext(AuthContext)
@@ -247,13 +249,15 @@ function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
   const currentPage = rest.page ?? 0
   const setPage = rest.setPage ?? (() => {})
 
+  /* ★ where は固定 (page 間で変えない) */
   const where = useMemo(() => makeWhere(rest, anchorAt), [rest, anchorAt])
 
-  const { data, loading, refetch } = useQuery(WorksQuery, {
+  /* ★ always offset 0, limit (page+1)*PER_PAGE */
+  const { data } = useQuery(WorksQuery, {
     skip: authLoading,
     variables: {
-      offset: currentPage * PER_PAGE,
-      limit: PER_PAGE,
+      offset: 0,
+      limit: (currentPage + 1) * PER_PAGE,
       // @ts-ignore
       where,
     },
@@ -261,18 +265,15 @@ function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
     errorPolicy: "ignore",
   })
 
-  /*
-   * "works" はマージ戦略 (keyArgs: ["where"]) によって既に結合済みのキャッシュが返る。
-   * currentPage を使って表示対象を slice しないと、ページを進めても同じ一覧が見えてしまう。
-   */
   const worksAll = data?.works ?? []
+
+  /* ページ分 slice するだけで OK */
   const displayedWorks = useMemo(() => {
     const start = currentPage * PER_PAGE
     return worksAll.slice(start, start + PER_PAGE)
   }, [worksAll, currentPage, PER_PAGE])
 
-  useScrollRestoration("home-works-pagination", !!worksAll.length)
-
+  /* --- URL 同期だけ残す --- */
   useEffect(() => {
     const urlPage = Number(searchParams.get("page") ?? "0")
     if (urlPage !== currentPage) {
@@ -282,24 +283,8 @@ function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
     }
   }, [currentPage, searchParams, navigate])
 
-  useEffect(() => {
-    if (currentPage !== 0) {
-      setPage(0)
-    }
-  }, [rest.workType, rest.isPromptPublic, rest.sortType, rest.timeRange])
-
-  const handlePageChange = (page: number) => {
-    setPage(page)
-    const newParams = new URLSearchParams(searchParams)
-    newParams.set("page", page.toString())
-    navigate(`?${newParams.toString()}`)
-    refetch({
-      offset: page * PER_PAGE,
-      limit: PER_PAGE,
-      // @ts-ignore
-      where,
-    })
-  }
+  /* ハンドラでは refetch 不要。page だけ変えれば variables が再評価 */
+  const handlePageChange = (page: number) => setPage(page)
 
   return (
     <div className="space-y-4">
@@ -336,7 +321,10 @@ interface InfiniteModeProps extends Omit<HomeWorksProps, "page" | "setPage"> {
 function InfiniteMode({ anchorAt, ...rest }: InfiniteModeProps) {
   const client = useApolloClient()
   const PER_PAGE = rest.workType === "VIDEO" ? PER_VID : PER_IMG
+
+  /* InfiniteMode */
   const where = useMemo(() => makeWhere(rest, anchorAt), [rest, anchorAt])
+
   const { isLoading: authLoading } = useContext(AuthContext)
 
   const initialPages = useMemo(() => {
