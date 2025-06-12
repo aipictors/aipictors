@@ -1,3 +1,4 @@
+// ~/routes/($lang)._main._index/route.tsx
 import { loaderClient } from "~/lib/loader-client"
 import {
   HomeAwardWorkSection,
@@ -76,55 +77,43 @@ import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-r
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
 import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-dialog"
 import { ConstructionAlert } from "~/components/construction-alert"
+import { CollapsibleFilterSection } from "~/routes/($lang)._main._index/components/collapsible-filter-section"
 
-// カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
-function useScrollRestoration(isMounted: boolean) {
-  useEffect(() => {
-    if (isMounted) {
-      // スクロール位置の復元を行わない（React Routerが自動的に保持する場合）
-    }
-  }, [isMounted])
+const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
+
+const getUtcDateString = (date: Date) => {
+  const year = date.getUTCFullYear()
+  const month = `0${date.getUTCMonth() + 1}`.slice(-2)
+  const day = `0${date.getUTCDate()}`.slice(-2)
+  return `${year}/${month}/${day}`
+}
+
+const getRandomCategories = () => {
+  const currentTime = new Date()
+  const secondSeed = Math.floor(currentTime.getTime() / 1000)
+
+  const seededRandom = (seed: number, str: string) => {
+    const combined = seed + str.charCodeAt(0)
+    const x = Math.sin(combined) * 10000
+    return x - Math.floor(x)
+  }
+
+  return categories
+    .map((cat) => ({
+      cat,
+      sortKey: seededRandom(secondSeed, cat),
+    }))
+    .sort((a, b) => a.sortKey - b.sortKey)
+    .slice(0, 2)
+    .map((item) => item.cat)
 }
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
 }
 
-const getUtcDateString = (date: Date) => {
-  const year = date.getUTCFullYear()
-  const month = `0${date.getUTCMonth() + 1}`.slice(-2)
-  const day = `0${date.getUTCDate()}`.slice(-2)
-
-  return `${year}/${month}/${day}`
-}
-
 export async function loader(props: LoaderFunctionArgs) {
-  const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
-
-  const getRandomCategories = () => {
-    const currentTime = new Date()
-    const secondSeed = Math.floor(currentTime.getTime() / 1000)
-
-    const seededRandom = (seed: number, str: string) => {
-      const combined = seed + str.charCodeAt(0)
-      const x = Math.sin(combined) * 10000
-      return x - Math.floor(x)
-    }
-
-    const randomCategories = categories
-      .map((cat) => ({
-        cat,
-        sortKey: seededRandom(secondSeed, cat),
-      }))
-      .sort((a, b) => a.sortKey - b.sortKey)
-      .slice(0, 2)
-      .map((item) => item.cat)
-
-    return randomCategories
-  }
-
   const randomCategories = getRandomCategories()
-
   const now = getJstDate()
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
@@ -169,52 +158,49 @@ export async function loader(props: LoaderFunctionArgs) {
 
 export default function Index() {
   const data = useLoaderData<typeof loader>()
-
-  if (data === null) {
-    return null
-  }
-
   const t = useTranslation()
-
-  const [searchParams, setSearchParams] = useSearchParams()
+  const location = useLocale()
+  const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
 
   const [isMounted, setIsMounted] = useState(false)
-
-  // タブ関連
   const [newWorksPage, setNewWorksPage] = useState(0)
   const [followUserFeedPage, setFollowUserFeedPage] = useState(0)
   const [followTagFeedPage, setFollowTagFeedPage] = useState(0)
-
   const [workType, setWorkType] =
     useState<IntrospectionEnum<"WorkType"> | null>(null)
   const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
-
-  // ★ 期間指定の state を追加し、URL パラメータから初期値を読む
   const [timeRange, setTimeRange] = useState<string>(
     searchParams.get("timeRange") || "ALL",
   )
-
-  const location = useLocale()
-
-  // タブ（home / new / follow-user / follow-tag）
   const [currentTab, setCurrentTab] = useState(
     searchParams.get("tab") || "home",
   )
-
-  // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え
   const [workView, setWorkView] = useState(searchParams.get("view") || "new")
 
-  /**
-   * マウント時に、すでに URL に入っているクエリパラメータを用いて
-   * 各 state を初期化する
-   */
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+  const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    variables: {
+      where: {
+        isSensitive: false,
+        page: "work",
+      },
+    },
+  })
+  const [updateClickedCountCustomerAdvertisement] = useMutation(
+    updateClickedCountCustomerAdvertisementMutation,
+  )
+
+  const passData = pass?.viewer?.currentPass
+  const isSubscriptionUser =
+    passData?.type === "LITE" ||
+    passData?.type === "STANDARD" ||
+    passData?.type === "PREMIUM"
+
   useEffect(() => {
-    // 初回のみ実行
     if (!isMounted) {
-      // ページ番号
       const page = searchParams.get("page")
       const pageNumber = page ? Number.parseInt(page, 10) : 0
 
@@ -228,13 +214,11 @@ export default function Index() {
         }
       }
 
-      // workType
       const wtParam = searchParams.get("workType")
       if (wtParam && wtParam !== "ALL") {
         setWorkType(wtParam as IntrospectionEnum<"WorkType">)
       }
 
-      // isPromptPublic
       const isPromptParam = searchParams.get("isPromptPublic")
       if (isPromptParam === "true") {
         setIsPromptPublic(true)
@@ -242,7 +226,6 @@ export default function Index() {
         setIsPromptPublic(false)
       }
 
-      // sortType
       const sortTypeParam = searchParams.get("sortType")
       if (
         sortTypeParam === "DATE_CREATED" ||
@@ -252,13 +235,11 @@ export default function Index() {
         setSortType(sortTypeParam as IntrospectionEnum<"WorkOrderBy">)
       }
 
-      // timeRange
       const tr = searchParams.get("timeRange")
       if (tr && tr !== "ALL") {
         setTimeRange(tr)
       }
 
-      // workView
       const viewParam = searchParams.get("view")
       if (viewParam) {
         setWorkView(viewParam)
@@ -268,45 +249,12 @@ export default function Index() {
     }
   }, [isMounted, searchParams, currentTab])
 
-  // タブ変更時（Tabs の onValueChange）などで呼ばれる
-  const handleTabChange = (tab: string) => {
-    setCurrentTab(tab)
-    setNewWorksPage(0)
-    setFollowUserFeedPage(0)
-    setFollowTagFeedPage(0)
-
-    // ★ ここで既存パラメータをコピーして編集
-    const newSearchParams = new URLSearchParams(searchParams)
-    newSearchParams.set("tab", tab)
-
-    // 別タブでは page 不要なので消す or 0 にする
-    if (tab === "new") {
-      newSearchParams.set("page", "0")
-    } else if (tab === "follow-user") {
-      newSearchParams.set("page", "0")
-    } else if (tab === "follow-tag") {
-      newSearchParams.set("page", "0")
-    } else {
-      newSearchParams.delete("page")
-    }
-
-    // ★ 期間指定など他のパラメータは消さずに残す
-    // そのまま newSearchParams を使えば維持される
-
-    updateQueryParams(newSearchParams)
-  }
-
-  /**
-   * タブ or ページ番号の変更時にクエリパラメータを更新
-   */
   useEffect(() => {
     if (!isMounted) return
     const newSearchParams = new URLSearchParams(searchParams)
 
-    // タブ
     newSearchParams.set("tab", currentTab)
 
-    // ページ
     if (currentTab === "new") {
       newSearchParams.set("page", newWorksPage.toString())
     } else if (currentTab === "follow-user") {
@@ -317,7 +265,6 @@ export default function Index() {
       newSearchParams.delete("page")
     }
 
-    // ★ 期間指定
     if (currentTab === "new") {
       newSearchParams.set("timeRange", timeRange)
     }
@@ -341,18 +288,35 @@ export default function Index() {
     }
   }, [searchParams])
 
-  /**
-   * 新着タブ内の「新着 / 人気 / 新規ユーザ」切り替え
-   */
+  const handleTabChange = (tab: string) => {
+    setCurrentTab(tab)
+    setNewWorksPage(0)
+    setFollowUserFeedPage(0)
+    setFollowTagFeedPage(0)
+
+    const newSearchParams = new URLSearchParams(searchParams)
+    newSearchParams.set("tab", tab)
+
+    if (tab === "new") {
+      newSearchParams.set("page", "0")
+    } else if (tab === "follow-user") {
+      newSearchParams.set("page", "0")
+    } else if (tab === "follow-tag") {
+      newSearchParams.set("page", "0")
+    } else {
+      newSearchParams.delete("page")
+    }
+
+    updateQueryParams(newSearchParams)
+  }
+
   const handleWorkViewChange = (view: string) => {
     setWorkView(view)
     const newSearchParams = new URLSearchParams(searchParams)
     newSearchParams.set("view", view)
-    // ページリセットしたければココで newSearchParams.set("page", "0")
     updateQueryParams(newSearchParams)
   }
 
-  // workType チェンジ
   const handleWorkTypeChange = (value: string) => {
     const newSearchParams = new URLSearchParams(searchParams)
 
@@ -364,14 +328,11 @@ export default function Index() {
       setWorkType(value as IntrospectionEnum<"WorkType">)
     }
 
-    // ページリセット
     newSearchParams.set("page", "0")
     setNewWorksPage(0)
-
     updateQueryParams(newSearchParams)
   }
 
-  // プロンプト公開有無
   const handlePromptChange = (value: string) => {
     const newSearchParams = new URLSearchParams(searchParams)
 
@@ -387,7 +348,6 @@ export default function Index() {
     updateQueryParams(newSearchParams)
   }
 
-  // ソート
   const handleSortTypeChange = (value: string) => {
     const newSearchParams = new URLSearchParams(searchParams)
 
@@ -402,7 +362,6 @@ export default function Index() {
     updateQueryParams(newSearchParams)
   }
 
-  // ★ 期間指定
   const handleTimeRangeChange = (value: string) => {
     const newSearchParams = new URLSearchParams(searchParams)
 
@@ -416,19 +375,6 @@ export default function Index() {
     updateQueryParams(newSearchParams)
   }
 
-  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
-  const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
-    variables: {
-      where: {
-        isSensitive: false,
-        page: "work",
-      },
-    },
-  })
-  const [updateClickedCountCustomerAdvertisement] = useMutation(
-    updateClickedCountCustomerAdvertisementMutation,
-  )
-
   const onClickAdvertisement = async () => {
     if (advertisements?.randomCustomerAdvertisement) {
       await updateClickedCountCustomerAdvertisement({
@@ -439,14 +385,9 @@ export default function Index() {
     }
   }
 
-  const passData = pass?.viewer?.currentPass
-  const isSubscriptionUser =
-    passData?.type === "LITE" ||
-    passData?.type === "STANDARD" ||
-    passData?.type === "PREMIUM"
-
-  // スクロール位置復元しない
-  useScrollRestoration(isMounted)
+  if (data === null) {
+    return null
+  }
 
   return (
     <>
@@ -498,7 +439,6 @@ export default function Index() {
           </TabsTrigger>
         </TabsList>
 
-        {/* ---------------------- タブ: ホーム ---------------------- */}
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
           {data.adWorks && data.adWorks.length > 0 && (
             <HomeBanners works={data.adWorks} />
@@ -588,23 +528,22 @@ export default function Index() {
           </div>
         </TabsContent>
 
-        {/* ---------------------- タブ: 新着・人気 ---------------------- */}
         <TabsContent value="new" className="flex flex-col space-y-4">
-          {/* 新着 or 人気 or 新規ユーザの切り替えボタン */}
-          <div className="flex space-x-4">
+          {/* 表示形式ボタン */}
+          <div className="flex flex-wrap gap-2 md:gap-4">
             <Button
-              variant={workView === "new" ? "default" : "secondary"}
+              variant={workView === "new" ? "default" : "outline"}
               onClick={() => handleWorkViewChange("new")}
+              size="sm"
             >
               {t("新着", "New")}
             </Button>
             <Button
-              variant={
-                searchParams.get("view") === "popular" ? "default" : "secondary"
-              }
+              variant={workView === "popular" ? "default" : "outline"}
               onClick={() => handleWorkViewChange("popular")}
+              size="sm"
             >
-              <div className="flex space-x-2">
+              <div className="flex items-center space-x-1">
                 <p>{t("人気", "Popular")}</p>
                 <CrossPlatformTooltip
                   text={t(
@@ -615,14 +554,11 @@ export default function Index() {
               </div>
             </Button>
             <Button
-              variant={
-                searchParams.get("view") === "new-user"
-                  ? "default"
-                  : "secondary"
-              }
+              variant={workView === "new-user" ? "default" : "outline"}
               onClick={() => handleWorkViewChange("new-user")}
+              size="sm"
             >
-              <div className="flex space-x-2">
+              <div className="flex items-center space-x-1">
                 <p>{t("新規ユーザ", "New Users")}</p>
                 <CrossPlatformTooltip
                   text={t(
@@ -636,140 +572,165 @@ export default function Index() {
 
           {workView === "new" && (
             <div className="space-y-4">
-              {/* ▼ 絞り込み用のセレクト群 */}
-              <div className="flex flex-wrap gap-4">
-                <div className="flex w-full space-x-4">
-                  {/* 種類 */}
-                  <Select
-                    value={workType ? workType : ""}
-                    onValueChange={handleWorkTypeChange}
-                  >
-                    <SelectTrigger className="min-w-[120px]">
-                      <SelectValue
-                        placeholder={
-                          workType
-                            ? toWorkTypeText({
-                                type: workType,
-                                lang: location,
-                              })
-                            : t("種類", "Type")
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
-                      <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
-                      <SelectItem value="VIDEO">
-                        {t("動画", "Video")}
-                      </SelectItem>
-                      <SelectItem value="NOVEL">
-                        {t("小説", "Novel")}
-                      </SelectItem>
-                      <SelectItem value="COLUMN">
-                        {t("コラム", "Column")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+              {/* フィルターオプション */}
+              <CollapsibleFilterSection
+                title={t("フィルター", "Filters")}
+                defaultOpen={false}
+              >
+                <div className="space-y-3">
+                  {/* PCでは横並び、スマホでは縦並び */}
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+                    <div className="flex items-center space-x-2">
+                      <Select
+                        value={workType ? workType : ""}
+                        onValueChange={handleWorkTypeChange}
+                      >
+                        <SelectTrigger className="w-full md:w-[140px]">
+                          <SelectValue
+                            placeholder={
+                              workType
+                                ? toWorkTypeText({
+                                    type: workType,
+                                    lang: location,
+                                  })
+                                : t("種類", "Type")
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">
+                            {t("種類", "Type")}
+                          </SelectItem>
+                          <SelectItem value="WORK">
+                            {t("画像", "Image")}
+                          </SelectItem>
+                          <SelectItem value="VIDEO">
+                            {t("動画", "Video")}
+                          </SelectItem>
+                          <SelectItem value="NOVEL">
+                            {t("小説", "Novel")}
+                          </SelectItem>
+                          <SelectItem value="COLUMN">
+                            {t("コラム", "Column")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
 
-                  {/* プロンプト有無 */}
-                  <Select
-                    value={
-                      isPromptPublic === null
-                        ? "ALL"
-                        : isPromptPublic
-                          ? "prompt"
-                          : "no-prompt"
-                    }
-                    onValueChange={handlePromptChange}
-                  >
-                    <SelectTrigger className="min-w-[120px]">
-                      <SelectValue
-                        placeholder={
+                      <Select
+                        value={
                           isPromptPublic === null
-                            ? t("プロンプト有無", "Prompt")
+                            ? "ALL"
                             : isPromptPublic
-                              ? t("あり", "Yes")
-                              : t("なし", "No")
+                              ? "prompt"
+                              : "no-prompt"
                         }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">
-                        {t("プロンプト有無", "Prompt")}
-                      </SelectItem>
-                      <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
-                      <SelectItem value="no-prompt">
-                        {t("なし", "No")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                        onValueChange={handlePromptChange}
+                      >
+                        <SelectTrigger className="w-full md:w-[140px]">
+                          <SelectValue
+                            placeholder={
+                              isPromptPublic === null
+                                ? t("プロンプト", "Prompt")
+                                : isPromptPublic
+                                  ? t("あり", "Yes")
+                                  : t("なし", "No")
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">
+                            {t("プロンプト", "Prompt")}
+                          </SelectItem>
+                          <SelectItem value="prompt">
+                            {t("あり", "Yes")}
+                          </SelectItem>
+                          <SelectItem value="no-prompt">
+                            {t("なし", "No")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Select
+                        value={sortType ? sortType : ""}
+                        onValueChange={handleSortTypeChange}
+                      >
+                        <SelectTrigger className="w-full md:w-[140px]">
+                          <div className="flex items-center space-x-2">
+                            <ArrowDownWideNarrow className="h-4 w-4" />
+                            <SelectValue
+                              placeholder={
+                                sortType ? sortType : t("最新", "Latest")
+                              }
+                            />
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="DATE_CREATED">
+                            {t("最新", "Latest")}
+                          </SelectItem>
+                          <SelectItem value="LIKES_COUNT">
+                            {t("最も人気", "Most Liked")}
+                          </SelectItem>
+                          <SelectItem value="COMMENTS_COUNT">
+                            {t("コメント数", "Most Comments")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
 
-                  {/* ソート */}
-                  <Select
-                    value={sortType ? sortType : ""}
-                    onValueChange={handleSortTypeChange}
-                  >
-                    <SelectTrigger className="min-w-[120px]">
-                      <ArrowDownWideNarrow />
-                      <SelectValue
-                        placeholder={sortType ? sortType : t("最新", "Latest")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DATE_CREATED">
-                        {t("最新", "Latest")}
-                      </SelectItem>
-                      <SelectItem value="LIKES_COUNT">
-                        {t("最も人気", "Most Liked")}
-                      </SelectItem>
-                      <SelectItem value="COMMENTS_COUNT">
-                        {t("コメント数", "Most Comments")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                      <Select
+                        value={timeRange}
+                        onValueChange={handleTimeRangeChange}
+                      >
+                        <SelectTrigger className="w-full md:w-[140px]">
+                          <SelectValue
+                            placeholder={
+                              timeRange === "ALL"
+                                ? t("全期間", "All time")
+                                : timeRange === "TODAY"
+                                  ? t("本日", "Today")
+                                  : timeRange === "YESTERDAY"
+                                    ? t("昨日", "Yesterday")
+                                    : timeRange === "WEEK"
+                                      ? t("週間", "Week")
+                                      : timeRange
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">
+                            {t("全期間", "All time")}
+                          </SelectItem>
+                          <SelectItem value="TODAY">
+                            {t("本日", "Today")}
+                          </SelectItem>
+                          <SelectItem value="YESTERDAY">
+                            {t("昨日", "Yesterday")}
+                          </SelectItem>
+                          <SelectItem value="WEEK">
+                            {t("週間", "Week")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
+              </CollapsibleFilterSection>
 
-                {/* 期間指定 */}
-                <Select value={timeRange} onValueChange={handleTimeRangeChange}>
-                  <SelectTrigger className="min-w-[120px]">
-                    <SelectValue
-                      placeholder={
-                        timeRange === "ALL"
-                          ? t("全期間", "All time")
-                          : timeRange
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">
-                      {t("全期間", "All time")}
-                    </SelectItem>
-                    <SelectItem value="TODAY">{t("本日", "Today")}</SelectItem>
-                    <SelectItem value="YESTERDAY">
-                      {t("昨日", "Yesterday")}
-                    </SelectItem>
-                    <SelectItem value="WEEK">{t("週間", "Week")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* 新着作品 */}
-              <Suspense fallback={<AppLoadingPage />}>
-                <HomeWorksSection
-                  page={newWorksPage}
-                  setPage={setNewWorksPage}
-                  workType={workType}
-                  isPromptPublic={isPromptPublic}
-                  sortType={sortType}
-                  timeRange={timeRange}
-                />
-              </Suspense>
+              <HomeWorksSection
+                page={newWorksPage}
+                setPage={setNewWorksPage}
+                workType={workType}
+                isPromptPublic={isPromptPublic}
+                sortType={sortType}
+                timeRange={timeRange}
+                isPagination={false}
+              />
             </div>
           )}
 
           {workView === "popular" && (
             <div className="space-y-4">
-              {/* 人気作品 */}
               <Suspense fallback={<AppLoadingPage />}>
                 <HomeHotWorksSection
                   page={newWorksPage}
@@ -784,7 +745,6 @@ export default function Index() {
 
           {workView === "new-user" && (
             <div className="space-y-4">
-              {/* 新規ユーザ作品 */}
               <Suspense fallback={<AppLoadingPage />}>
                 <HomeNewUsersWorkListSection
                   workType={workType}
@@ -796,17 +756,15 @@ export default function Index() {
           )}
         </TabsContent>
 
-        {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
         <TabsContent value="follow-user">
-          <Suspense fallback={<AppLoadingPage />}>
-            <FollowUserFeedContents
-              page={followUserFeedPage}
-              setPage={setFollowUserFeedPage}
-            />
-          </Suspense>
+          {/* <Suspense fallback={<AppLoadingPage />}> */}
+          <FollowUserFeedContents
+            page={followUserFeedPage}
+            setPage={setFollowUserFeedPage}
+          />
+          {/* </Suspense> */}
         </TabsContent>
 
-        {/* ---------------------- タブ: お気に入りタグ ---------------------- */}
         <TabsContent value="follow-tag">
           <Suspense fallback={<AppLoadingPage />}>
             <FollowTagsFeedContents
@@ -824,6 +782,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.home,
 })
 
+// ... 残りのコード（queryなど）は同じ
 const query = graphql(
   `query HomeQuery(
     $year: Int!
