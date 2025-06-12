@@ -240,17 +240,25 @@ export function HomeWorksSection(props: HomeWorksProps) {
 function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
   const PER_PAGE = rest.workType === "VIDEO" ? PER_VID : PER_IMG
   const { isLoading: authLoading } = useContext(AuthContext)
+
+  /* ① URL の page を唯一のソースとする */
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const urlPage = Number(searchParams.get("page") ?? "0")
+  const currentPage = urlPage >= 0 ? urlPage : 0
 
-  const currentPage = rest.page ?? 0
-  const setPage = rest.setPage ?? (() => {})
+  /* ② URL → 親 state へ同期（片方向） */
+  useEffect(() => {
+    if (rest.setPage && rest.page !== currentPage) {
+      rest.setPage(currentPage)
+    }
+  }, [currentPage, rest.page, rest.setPage])
 
-  /* where は固定（ページ間で変えない） */
+  /* where はページに依存しない */
   const where = useMemo(() => makeWhere(rest, anchorAt), [rest, anchorAt])
 
-  /* ✅ Pagination だけは cache を使わない */
-  const { data, refetch } = useQuery(WorksQuery, {
+  /* cache を使わず毎ページ取得 */
+  const { data, loading } = useQuery(WorksQuery, {
     skip: authLoading,
     variables: {
       offset: currentPage * PER_PAGE,
@@ -258,41 +266,31 @@ function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
       // @ts-ignore
       where,
     },
-    fetchPolicy: "no-cache", // ← ここ
+    fetchPolicy: "no-cache",
     errorPolicy: "ignore",
   })
 
-  /* そのまま描画 */
   const displayedWorks = data?.works ?? []
 
-  /* URL ↔︎ state 同期 */
-  useEffect(() => {
-    const urlPage = Number(searchParams.get("page") ?? "0")
-    if (urlPage !== currentPage) {
-      const p = new URLSearchParams(searchParams)
-      p.set("page", currentPage.toString())
-      navigate(`?${p.toString()}`, { replace: true })
-    }
-  }, [currentPage, searchParams, navigate])
-
-  /* ページ変更時は常に refetch（no-cache なので毎回ネットワーク）*/
+  /* ③ ユーザ操作時だけ push（履歴を残す） */
   const handlePageChange = (page: number) => {
-    setPage(page)
-    refetch({
-      offset: page * PER_PAGE,
-      limit: PER_PAGE,
-      // @ts-ignore
-      where,
-    })
+    navigate(`?page=${page}`) // replace:false がデフォルト
+    rest.setPage?.(page) // 親にも通知
   }
 
   return (
     <div className="space-y-4">
-      <RenderByType
-        workType={rest.workType}
-        works={displayedWorks}
-        isCropped={rest.isCropped}
-      />
+      {loading && !displayedWorks.length ? (
+        <div className="flex justify-center py-8">
+          <Loader2Icon className="size-8 animate-spin text-border" />
+        </div>
+      ) : (
+        <RenderByType
+          workType={rest.workType}
+          works={displayedWorks}
+          isCropped={rest.isCropped}
+        />
+      )}
 
       {displayedWorks.length > 0 && (
         <>
