@@ -179,6 +179,9 @@ export default function Index() {
     searchParams.get("tab") || "home",
   )
   const [workView, setWorkView] = useState(searchParams.get("view") || "new")
+  const [internalIsPagination, setInternalIsPagination] = useState(
+    searchParams.get("isPagination") === "true",
+  )
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
@@ -269,6 +272,12 @@ export default function Index() {
       newSearchParams.set("timeRange", timeRange)
     }
 
+    if (internalIsPagination) {
+      newSearchParams.set("isPagination", "true")
+    } else {
+      newSearchParams.delete("isPagination")
+    }
+
     updateQueryParams(newSearchParams)
   }, [
     currentTab,
@@ -279,6 +288,7 @@ export default function Index() {
     timeRange,
     updateQueryParams,
     searchParams,
+    internalIsPagination,
   ])
 
   useEffect(() => {
@@ -724,7 +734,8 @@ export default function Index() {
                 isPromptPublic={isPromptPublic}
                 sortType={sortType}
                 timeRange={timeRange}
-                isPagination={false}
+                isPagination={internalIsPagination}
+                onPaginationModeChange={setInternalIsPagination}
               />
             </div>
           )}

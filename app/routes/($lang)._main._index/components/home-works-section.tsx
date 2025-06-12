@@ -179,25 +179,22 @@ function chunkWorks<T>(arr: T[], size: number): T[][] {
 
 /* ───────── Root Component ───────── */
 export function HomeWorksSection(props: HomeWorksProps) {
-  const [internalIsPagination, setInternalIsPagination] = useState(
-    props.isPagination ?? false,
-  )
-
   const anchorAt = getAnchorAt()
 
   useEffect(() => {
-    if (props.isPagination !== undefined) {
-      setInternalIsPagination(props.isPagination)
+    if (props.isPagination !== undefined && props.onPaginationModeChange) {
+      props.onPaginationModeChange(props.isPagination)
     }
   }, [props.isPagination])
 
   const handlePaginationModeChange = (isPagination: boolean) => {
-    setInternalIsPagination(isPagination)
-    props.onPaginationModeChange?.(isPagination)
-    props.setPage?.(0)
+    if (props.isPagination !== undefined) {
+      props.onPaginationModeChange?.(isPagination)
+      props.setPage?.(0)
+    }
   }
 
-  const key = `${props.timeRange}-${props.workType}-${props.sortType}-${internalIsPagination}`
+  const key = `${props.timeRange}-${props.workType}-${props.sortType}-${props.isPagination}`
 
   return (
     <div className="space-y-4">
@@ -205,7 +202,7 @@ export function HomeWorksSection(props: HomeWorksProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <Button
-            variant={internalIsPagination ? "outline" : "default"}
+            variant={props.isPagination ? "outline" : "default"}
             size="sm"
             onClick={() => handlePaginationModeChange(false)}
             className="flex items-center space-x-1"
@@ -214,7 +211,7 @@ export function HomeWorksSection(props: HomeWorksProps) {
             <span>無限スクロール</span>
           </Button>
           <Button
-            variant={internalIsPagination ? "default" : "outline"}
+            variant={props.isPagination ? "default" : "outline"}
             size="sm"
             onClick={() => handlePaginationModeChange(true)}
             className="flex items-center space-x-1"
@@ -225,7 +222,7 @@ export function HomeWorksSection(props: HomeWorksProps) {
         </div>
       </div>
 
-      {internalIsPagination ? (
+      {props.isPagination ? (
         <PaginationMode key={key} {...props} anchorAt={anchorAt} />
       ) : (
         <InfiniteMode key={key} {...props} anchorAt={anchorAt} />
