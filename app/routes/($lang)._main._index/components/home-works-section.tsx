@@ -237,9 +237,6 @@ export function HomeWorksSection(props: HomeWorksProps) {
   )
 }
 
-/* ===========================================================
-   Pagination Mode
-   =========================================================== */
 function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
   const PER_PAGE = rest.workType === "VIDEO" ? PER_VID : PER_IMG
   const { isLoading: authLoading } = useContext(AuthContext)
@@ -249,42 +246,45 @@ function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
   const currentPage = rest.page ?? 0
   const setPage = rest.setPage ?? (() => {})
 
-  /* ★ where は固定 (page 間で変えない) */
+  /* where は固定（ページ間で変えない） */
   const where = useMemo(() => makeWhere(rest, anchorAt), [rest, anchorAt])
 
-  /* ★ always offset 0, limit (page+1)*PER_PAGE */
-  const { data } = useQuery(WorksQuery, {
+  /* ✅ Pagination だけは cache を使わない */
+  const { data, refetch } = useQuery(WorksQuery, {
     skip: authLoading,
     variables: {
-      offset: 0,
-      limit: (currentPage + 1) * PER_PAGE,
+      offset: currentPage * PER_PAGE,
+      limit: PER_PAGE,
       // @ts-ignore
       where,
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "no-cache", // ← ここ
     errorPolicy: "ignore",
   })
 
-  const worksAll = data?.works ?? []
+  /* そのまま描画 */
+  const displayedWorks = data?.works ?? []
 
-  /* ページ分 slice するだけで OK */
-  const displayedWorks = useMemo(() => {
-    const start = currentPage * PER_PAGE
-    return worksAll.slice(start, start + PER_PAGE)
-  }, [worksAll, currentPage, PER_PAGE])
-
-  /* --- URL 同期だけ残す --- */
+  /* URL ↔︎ state 同期 */
   useEffect(() => {
     const urlPage = Number(searchParams.get("page") ?? "0")
     if (urlPage !== currentPage) {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.set("page", currentPage.toString())
-      navigate(`?${newParams.toString()}`, { replace: true })
+      const p = new URLSearchParams(searchParams)
+      p.set("page", currentPage.toString())
+      navigate(`?${p.toString()}`, { replace: true })
     }
   }, [currentPage, searchParams, navigate])
 
-  /* ハンドラでは refetch 不要。page だけ変えれば variables が再評価 */
-  const handlePageChange = (page: number) => setPage(page)
+  /* ページ変更時は常に refetch（no-cache なので毎回ネットワーク）*/
+  const handlePageChange = (page: number) => {
+    setPage(page)
+    refetch({
+      offset: page * PER_PAGE,
+      limit: PER_PAGE,
+      // @ts-ignore
+      where,
+    })
+  }
 
   return (
     <div className="space-y-4">
@@ -294,7 +294,7 @@ function PaginationMode({ anchorAt, ...rest }: PaginationModeProps) {
         isCropped={rest.isCropped}
       />
 
-      {worksAll.length > 0 && (
+      {displayedWorks.length > 0 && (
         <>
           <div className="h-8" />
           <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
