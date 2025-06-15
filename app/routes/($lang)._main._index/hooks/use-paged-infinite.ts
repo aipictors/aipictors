@@ -1,73 +1,234 @@
-import { useCallback, useState } from "react"
+// hooks/use-paged-infinite.ts
+import { useCallback, useState, useMemo } from "react"
 
-/**
- * `pages` を sessionStorage に永続化して、
- * 画面遷移後に戻ってきても一覧を即復元できるフック。
- *
- * @param initial 初期ページ配列（キャッシュ復元などで 1 ページ目だけ渡す）
- * @param storageKey フィルタ条件＋anchorAt など一意なキーを渡すと永続化される
- */
-export function usePagedInfinite<T>(initial: T[][] = [], storageKey?: string) {
-  /* ---------- internal ---------- */
+type ObjectWithId = {
+  id: string | number
+  [key: string]: string | number | boolean | null | undefined | object
+}
+
+interface UsePagedInfiniteOptions<T extends ObjectWithId> {
+  idKey?: keyof T
+  debug?: boolean
+}
+
+export function usePagedInfinite<T extends ObjectWithId>(
+  initial: T[][] = [],
+  storageKey?: string,
+  options: UsePagedInfiniteOptions<T> = {},
+) {
+  const { idKey = "id" as keyof T, debug = false } = options
   const STORAGE_ID = storageKey ? `homeWorks-pages:${storageKey}` : undefined
 
-  /* ---------- 初期化 ---------- */
   const [pages, _setPages] = useState<T[][]>(() => {
     if (!STORAGE_ID) return initial
     try {
       const saved = sessionStorage.getItem(STORAGE_ID)
-      return saved ? (JSON.parse(saved) as T[][]) : initial
-    } catch {
+      if (!saved) return initial
+
+      const parsed = JSON.parse(saved)
+      if (
+        Array.isArray(parsed) &&
+        parsed.every((page) => Array.isArray(page))
+      ) {
+        const restored = parsed as T[][]
+        if (debug) {
+          console.log(
+            "[usePagedInfinite] Restored from storage:",
+            restored.length,
+            "pages",
+          )
+        }
+        return restored
+      }
+      return initial
+    } catch (error) {
+      if (debug) {
+        console.warn(
+          "[usePagedInfinite] Failed to restore from storage:",
+          error,
+        )
+      }
       return initial
     }
   })
 
-  /* ---------- util ---------- */
-  const persist = (next: T[][]) => {
-    if (!STORAGE_ID) return
-    try {
-      sessionStorage.setItem(STORAGE_ID, JSON.stringify(next))
-    } catch {
-      /* quota exceeded 等は無視 */
+  const existingIds = useMemo(() => {
+    const ids = new Set<T[keyof T]>()
+    for (const page of pages) {
+      for (const item of page) {
+        const id = item[idKey]
+        if (id != null) {
+          ids.add(id)
+        }
+      }
     }
-  }
+    return ids
+  }, [pages, idKey])
 
-  const setPages = (updater: (prev: T[][]) => T[][]) => {
-    _setPages((prev) => {
-      const next = updater(prev)
-      persist(next)
-      return next
-    })
-  }
+  const persist = useCallback(
+    (next: T[][]) => {
+      if (!STORAGE_ID) return
+      try {
+        sessionStorage.setItem(STORAGE_ID, JSON.stringify(next))
+        if (debug) {
+          console.log("[usePagedInfinite] Persisted:", next.length, "pages")
+        }
+      } catch (error) {
+        if (debug) {
+          console.warn("[usePagedInfinite] Failed to persist:", error)
+        }
+      }
+    },
+    [STORAGE_ID, debug],
+  )
 
-  const flat = pages.flat()
+  const setPages = useCallback(
+    (updater: (prev: T[][]) => T[][]) => {
+      _setPages((prev) => {
+        const next = updater(prev)
+        persist(next)
+        return next
+      })
+    },
+    [persist],
+  )
 
-  /* ---------- API ---------- */
-  const appendPage = useCallback((newPage: T[]) => {
-    if (newPage.length === 0) return
-    setPages((prev) => [...prev, newPage])
-  }, [])
+  const deduplicateItems = useCallback(
+    (items: T[], currentIds?: Set<T[keyof T]>): T[] => {
+      const idsToCheck = currentIds ?? existingIds
+      const deduplicated = items.filter((item) => {
+        const id = item[idKey]
+        return id == null || !idsToCheck.has(id)
+      })
 
-  const appendPages = useCallback((newPages: T[][]) => {
-    const filtered = newPages.filter((p) => p.length > 0)
-    if (filtered.length === 0) return
-    setPages((prev) => [...prev, ...filtered])
-  }, [])
+      if (debug && deduplicated.length !== items.length) {
+        console.log(
+          `[usePagedInfinite] Removed ${items.length - deduplicated.length} duplicates`,
+        )
+      }
 
-  const replaceFirstPage = useCallback((page1: T[]) => {
-    setPages((prev) => [page1, ...prev.slice(1)])
-  }, [])
+      return deduplicated
+    },
+    [existingIds, idKey, debug],
+  )
 
-  /** 一括置換（キャッシュ復元など） */
-  const setPagesDirect = useCallback((all: T[][]) => {
-    _setPages(all)
-    persist(all)
-  }, [])
+  const flat = useMemo(() => pages.flat(), [pages])
 
-  /** 永続化を手動でクリアしたい場合に呼ぶ */
+  const appendPage = useCallback(
+    (newPage: T[]) => {
+      if (newPage.length === 0) return
+
+      const deduplicated = deduplicateItems(newPage)
+      if (deduplicated.length === 0) {
+        if (debug) {
+          console.log(
+            "[usePagedInfinite] All items were duplicates, skipping append",
+          )
+        }
+        return
+      }
+
+      setPages((prev) => [...prev, deduplicated])
+    },
+    [deduplicateItems, debug, setPages],
+  )
+
+  const appendPages = useCallback(
+    (newPages: T[][]) => {
+      if (newPages.length === 0) return
+
+      const currentIds = new Set(existingIds)
+      const deduplicatedPages: T[][] = []
+
+      for (const page of newPages) {
+        const deduplicated = deduplicateItems(page, currentIds)
+        if (deduplicated.length > 0) {
+          for (const item of deduplicated) {
+            const id = item[idKey]
+            if (id != null) {
+              currentIds.add(id)
+            }
+          }
+          deduplicatedPages.push(deduplicated)
+        }
+      }
+
+      if (deduplicatedPages.length === 0) {
+        if (debug) {
+          console.log(
+            "[usePagedInfinite] All pages were duplicates, skipping append",
+          )
+        }
+        return
+      }
+
+      setPages((prev) => [...prev, ...deduplicatedPages])
+    },
+    [existingIds, deduplicateItems, idKey, debug, setPages],
+  )
+
+  // ✅ 修正: 初回のみ実行されるように
+  const replaceFirstPage = useCallback(
+    (page1: T[]) => {
+      const otherPagesIds = new Set<T[keyof T]>()
+      for (let i = 1; i < pages.length; i++) {
+        for (const item of pages[i]) {
+          const id = item[idKey]
+          if (id != null) {
+            otherPagesIds.add(id)
+          }
+        }
+      }
+
+      const deduplicated = page1.filter((item) => {
+        const id = item[idKey]
+        return id == null || !otherPagesIds.has(id)
+      })
+
+      if (debug && deduplicated.length !== page1.length) {
+        console.log(
+          `[usePagedInfinite] Removed ${page1.length - deduplicated.length} duplicates from first page`,
+        )
+      }
+
+      setPages((prev) => [deduplicated, ...prev.slice(1)])
+    },
+    [pages, idKey, debug, setPages],
+  )
+
+  const setPagesDirect = useCallback(
+    (all: T[][]) => {
+      _setPages(all)
+      persist(all)
+    },
+    [persist],
+  )
+
+  const clearAll = useCallback(() => {
+    _setPages([])
+    if (STORAGE_ID) {
+      sessionStorage.removeItem(STORAGE_ID)
+    }
+  }, [STORAGE_ID])
+
   const clearPersisted = useCallback(() => {
-    if (STORAGE_ID) sessionStorage.removeItem(STORAGE_ID)
-  }, [])
+    if (STORAGE_ID) {
+      sessionStorage.removeItem(STORAGE_ID)
+      if (debug) {
+        console.log("[usePagedInfinite] Cleared persisted data")
+      }
+    }
+  }, [STORAGE_ID, debug])
+
+  const stats = useMemo(
+    () => ({
+      pageCount: pages.length,
+      totalItems: flat.length,
+      averageItemsPerPage: pages.length > 0 ? flat.length / pages.length : 0,
+      uniqueIds: existingIds.size,
+    }),
+    [pages.length, flat.length, existingIds.size],
+  )
 
   return {
     pages,
@@ -76,6 +237,9 @@ export function usePagedInfinite<T>(initial: T[][] = [], storageKey?: string) {
     appendPages,
     replaceFirstPage,
     setPages: setPagesDirect,
+    clearAll,
     clearPersisted,
-  }
+    stats,
+    ...(debug ? { existingIds } : {}),
+  } as const
 }

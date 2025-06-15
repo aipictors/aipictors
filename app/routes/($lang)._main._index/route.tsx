@@ -612,20 +612,20 @@ export default function Index() {
         {/* ---------------------- タブ: 新着・人気 ---------------------- */}
         <TabsContent value="new" className="flex flex-col space-y-4">
           {/* 新着 or 人気 or 新規ユーザの切り替えボタン */}
-          <div className="flex space-x-4">
+          <div className="flex space-x-2 md:space-x-4">
             <Button
               variant={workView === "new" ? "default" : "secondary"}
               onClick={() => handleWorkViewChange("new")}
+              size="sm"
             >
               {t("新着", "New")}
             </Button>
             <Button
-              variant={
-                searchParams.get("view") === "popular" ? "default" : "secondary"
-              }
+              variant={workView === "popular" ? "default" : "secondary"} // ← 修正
               onClick={() => handleWorkViewChange("popular")}
+              size="sm"
             >
-              <div className="flex space-x-2">
+              <div className="flex space-x-1 md:space-x-2">
                 <p>{t("人気", "Popular")}</p>
                 <CrossPlatformTooltip
                   text={t(
@@ -636,15 +636,15 @@ export default function Index() {
               </div>
             </Button>
             <Button
-              variant={
-                searchParams.get("view") === "new-user"
-                  ? "default"
-                  : "secondary"
-              }
+              variant={workView === "new-user" ? "default" : "secondary"} // ← 修正
               onClick={() => handleWorkViewChange("new-user")}
+              size="sm"
             >
-              <div className="flex space-x-2">
-                <p>{t("新規ユーザ", "New Users")}</p>
+              <div className="flex space-x-1 md:space-x-2">
+                <p className="hidden sm:block">
+                  {t("新規ユーザ", "New Users")}
+                </p>
+                <p className="block sm:hidden">{t("新規", "New")}</p>
                 <CrossPlatformTooltip
                   text={t(
                     "新規登録されたユーザの作品一覧です",
@@ -657,15 +657,16 @@ export default function Index() {
 
           {workView === "new" && (
             <div className="space-y-4">
-              {/* ▼ 絞り込み用のセレクト群 */}
-              <div className="flex flex-wrap gap-4">
-                <div className="flex w-full space-x-4">
+              {/* ▼ 絞り込み用のセレクト群 - レスポンシブレイアウト */}
+              <div className="space-y-3">
+                {/* フィルター行1: 種類、プロンプト、ソート */}
+                <div className="grid grid-cols-3 gap-2 md:flex md:space-x-4">
                   {/* 種類 */}
                   <Select
                     value={workType ? workType : ""}
                     onValueChange={handleWorkTypeChange}
                   >
-                    <SelectTrigger className="min-w-[120px]">
+                    <SelectTrigger className="min-w-0 text-xs md:min-w-[120px] md:text-sm">
                       <SelectValue
                         placeholder={
                           workType
@@ -703,11 +704,11 @@ export default function Index() {
                     }
                     onValueChange={handlePromptChange}
                   >
-                    <SelectTrigger className="min-w-[120px]">
+                    <SelectTrigger className="min-w-0 text-xs md:min-w-[120px] md:text-sm">
                       <SelectValue
                         placeholder={
                           isPromptPublic === null
-                            ? t("プロンプト有無", "Prompt")
+                            ? t("プロンプト", "Prompt")
                             : isPromptPublic
                               ? t("あり", "Yes")
                               : t("なし", "No")
@@ -716,7 +717,7 @@ export default function Index() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="ALL">
-                        {t("プロンプト有無", "Prompt")}
+                        {t("プロンプト", "Prompt")}
                       </SelectItem>
                       <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
                       <SelectItem value="no-prompt">
@@ -730,8 +731,8 @@ export default function Index() {
                     value={sortType ? sortType : ""}
                     onValueChange={handleSortTypeChange}
                   >
-                    <SelectTrigger className="min-w-[120px]">
-                      <ArrowDownWideNarrow />
+                    <SelectTrigger className="min-w-0 text-xs md:min-w-[120px] md:text-sm">
+                      <ArrowDownWideNarrow className="h-3 w-3 md:h-4 md:w-4" />
                       <SelectValue
                         placeholder={sortType ? sortType : t("最新", "Latest")}
                       />
@@ -741,71 +742,92 @@ export default function Index() {
                         {t("最新", "Latest")}
                       </SelectItem>
                       <SelectItem value="LIKES_COUNT">
-                        {t("最も人気", "Most Liked")}
+                        {t("人気", "Popular")}
                       </SelectItem>
                       <SelectItem value="COMMENTS_COUNT">
-                        {t("コメント数", "Most Comments")}
+                        {t("コメント", "Comments")}
                       </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                {/* 期間指定 */}
-                <Select value={timeRange} onValueChange={handleTimeRangeChange}>
-                  <SelectTrigger className="min-w-[120px]">
-                    <SelectValue
-                      placeholder={
-                        timeRange === "ALL"
-                          ? t("全期間", "All time")
-                          : timeRange
+                {/* フィルター行2: 期間指定 + 表示方式切り替え */}
+                <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between md:space-y-0">
+                  {/* 期間指定 */}
+                  <Select
+                    value={timeRange}
+                    onValueChange={handleTimeRangeChange}
+                  >
+                    <SelectTrigger className="w-full text-xs md:w-auto md:min-w-[120px] md:text-sm">
+                      <SelectValue
+                        placeholder={
+                          timeRange === "ALL"
+                            ? t("全期間", "All time")
+                            : timeRange
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL">
+                        {t("全期間", "All time")}
+                      </SelectItem>
+                      <SelectItem value="TODAY">
+                        {t("本日", "Today")}
+                      </SelectItem>
+                      <SelectItem value="YESTERDAY">
+                        {t("昨日", "Yesterday")}
+                      </SelectItem>
+                      <SelectItem value="WEEK">{t("週間", "Week")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {/* 表示方式切り替え - よりスタイリッシュなデザイン */}
+                  <div className="flex rounded-lg bg-muted p-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setInternalIsPagination(false)
+                        const p = new URLSearchParams(searchParams)
+                        p.set("isPagination", "false")
+                        updateQueryParams(p)
+                      }}
+                      className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                        !internalIsPagination
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
                       }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">
-                      {t("全期間", "All time")}
-                    </SelectItem>
-                    <SelectItem value="TODAY">{t("本日", "Today")}</SelectItem>
-                    <SelectItem value="YESTERDAY">
-                      {t("昨日", "Yesterday")}
-                    </SelectItem>
-                    <SelectItem value="WEEK">{t("週間", "Week")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {/* ▼ ページネーション / 無限スクロール 切り替え UI */}
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant={internalIsPagination ? "outline" : "default"}
-                  size="sm"
-                  onClick={() => {
-                    setInternalIsPagination(false)
+                      `}
+                    >
+                      <List className="h-3 w-3" />
+                      <span className="hidden sm:inline">
+                        {t("フィード", "Feed")}
+                      </span>
+                    </Button>
 
-                    const p = new URLSearchParams(searchParams)
-                    p.set("isPagination", "false")
-                    updateQueryParams(p)
-                  }}
-                  className="flex items-center space-x-1"
-                >
-                  <List className="h-4 w-4" />
-                  <span>{t("無限スクロール", "Infinite")}</span>
-                </Button>
-
-                <Button
-                  variant={internalIsPagination ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => {
-                    setInternalIsPagination(true)
-
-                    const p = new URLSearchParams(searchParams)
-                    p.set("isPagination", "true")
-                    updateQueryParams(p)
-                  }}
-                  className="flex items-center space-x-1"
-                >
-                  <Navigation className="h-4 w-4" />
-                  <span>{t("ページネーション", "Pagination")}</span>
-                </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setInternalIsPagination(true)
+                        const p = new URLSearchParams(searchParams)
+                        p.set("isPagination", "true")
+                        updateQueryParams(p)
+                      }}
+                      className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                        internalIsPagination
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }
+                      `}
+                    >
+                      <Navigation className="h-3 w-3" />
+                      <span className="hidden sm:inline">
+                        {t("ページ", "Pages")}
+                      </span>
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               {/* 新着作品 */}
@@ -837,7 +859,52 @@ export default function Index() {
 
           {workView === "popular" && (
             <div className="space-y-4">
-              {/* 人気作品 */}
+              {/* 表示方式切り替え */}
+              <div className="flex justify-end">
+                <div className="flex rounded-lg bg-muted p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setInternalIsPagination(false)
+                      const p = new URLSearchParams(searchParams)
+                      p.set("isPagination", "false")
+                      updateQueryParams(p)
+                    }}
+                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                      !internalIsPagination
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <List className="h-3 w-3" />
+                    <span className="hidden sm:inline">
+                      {t("フィード", "Feed")}
+                    </span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setInternalIsPagination(true)
+                      const p = new URLSearchParams(searchParams)
+                      p.set("isPagination", "true")
+                      updateQueryParams(p)
+                    }}
+                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                      internalIsPagination
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Navigation className="h-3 w-3" />
+                    <span className="hidden sm:inline">
+                      {t("ページ", "Pages")}
+                    </span>
+                  </Button>
+                </div>
+              </div>
+
               <Suspense fallback={<AppLoadingPage />}>
                 <HomeHotWorksSection
                   page={newWorksPage}
@@ -845,6 +912,8 @@ export default function Index() {
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
+                  isPagination={internalIsPagination}
+                  onPaginationModeChange={setInternalIsPagination}
                 />
               </Suspense>
             </div>
@@ -852,12 +921,61 @@ export default function Index() {
 
           {workView === "new-user" && (
             <div className="space-y-4">
-              {/* 新規ユーザ作品 */}
+              {/* 表示方式切り替え */}
+              <div className="flex justify-end">
+                <div className="flex rounded-lg bg-muted p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setInternalIsPagination(false)
+                      const p = new URLSearchParams(searchParams)
+                      p.set("isPagination", "false")
+                      updateQueryParams(p)
+                    }}
+                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                      !internalIsPagination
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <List className="h-3 w-3" />
+                    <span className="hidden sm:inline">
+                      {t("フィード", "Feed")}
+                    </span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setInternalIsPagination(true)
+                      const p = new URLSearchParams(searchParams)
+                      p.set("isPagination", "true")
+                      updateQueryParams(p)
+                    }}
+                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                      internalIsPagination
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Navigation className="h-3 w-3" />
+                    <span className="hidden sm:inline">
+                      {t("ページ", "Pages")}
+                    </span>
+                  </Button>
+                </div>
+              </div>
+
               <Suspense fallback={<AppLoadingPage />}>
                 <HomeNewUsersWorkListSection
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
+                  // page={newWorksPage}
+                  // setPage={setNewWorksPage}
+                  // isPagination={internalIsPagination}
+                  // onPaginationModeChange={setInternalIsPagination}
                 />
               </Suspense>
             </div>
@@ -870,6 +988,8 @@ export default function Index() {
             <FollowUserFeedContents
               page={followUserFeedPage}
               setPage={setFollowUserFeedPage}
+              // isPagination={internalIsPagination}
+              // onPaginationModeChange={setInternalIsPagination}
             />
           </Suspense>
         </TabsContent>
@@ -880,6 +1000,8 @@ export default function Index() {
             <FollowTagsFeedContents
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}
+              // isPagination={internalIsPagination}
+              // onPaginationModeChange={setInternalIsPagination}
             />
           </Suspense>
         </TabsContent>
@@ -888,6 +1010,7 @@ export default function Index() {
   )
 }
 
+// 残りのコードは同じ...
 export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.home,
 })

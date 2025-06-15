@@ -1,20 +1,8 @@
-import { AuthContext } from "~/contexts/auth-context"
-import {
-  HomeWorkFragment,
-  HomeWorkSection,
-} from "~/routes/($lang)._main._index/components/home-work-section"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useContext } from "react"
+import { useMemo } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import {
-  HomeNovelsWorkListItemFragment,
-  HomeNovelsWorksSection,
-} from "~/routes/($lang)._main._index/components/home-novels-works-section"
-import {
-  HomeVideosWorkListItemFragment,
-  HomeVideosWorksSection,
-} from "~/routes/($lang)._main._index/components/home-video-works-section"
+import { WorksInfiniteMode } from "./works-infinite-mode"
+import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
+import { WorksPaginationMode } from "~/routes/($lang)._main._index/components/works-pagination-mode"
 
 type Props = {
   isCropped?: boolean
@@ -24,68 +12,28 @@ type Props = {
   isPromptPublic: boolean | null
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
   style?: IntrospectionEnum<"ImageStyle">
+  isPagination?: boolean
+  onPaginationModeChange?: (isPagination: boolean) => void
 }
 
-/**
- * トップ画面人気作品一覧
- */
 export function HomeHotWorksSection(props: Props) {
-  const appContext = useContext(AuthContext)
+  const anchorAt = useMemo(() => getAnchorAt(), [])
+  const key = `hot-${props.workType}-${props.sortType}-${props.isPagination}`
 
-  const perPageCount = props.workType === "VIDEO" ? 8 : 32
-
-  const { data: worksResp } = useSuspenseQuery(WorksQuery, {
-    skip: appContext.isLoading,
-    variables: {
-      offset: props.page * perPageCount,
-      limit: perPageCount,
-      where: {
-        isSensitive: false,
-        ...(props.workType !== null && {
-          workType: props.workType,
-        }),
-      },
-    },
-  })
+  // 人気作品用の特別なprops
+  const hotWorksProps = {
+    ...props,
+    sortType: "LIKES_COUNT" as IntrospectionEnum<"WorkOrderBy">, // 人気順固定
+    timeRange: "WEEK" as string, // 週間人気
+  }
 
   return (
     <div className="space-y-4">
-      {(props.workType === "WORK" || props.workType === null) && (
-        <HomeWorkSection
-          title={""}
-          works={worksResp?.popularWorks || []}
-          isCropped={props.isCropped}
-          isShowProfile={true}
-        />
-      )}
-      {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
-        <HomeNovelsWorksSection
-          title={""}
-          works={worksResp?.popularWorks || []}
-        />
-      )}
-      {props.workType === "VIDEO" && (
-        <HomeVideosWorksSection
-          title={""}
-          works={worksResp?.popularWorks || []}
-          isAutoPlay={true}
-        />
+      {props.isPagination ? (
+        <WorksPaginationMode key={key} {...hotWorksProps} anchorAt={anchorAt} />
+      ) : (
+        <WorksInfiniteMode key={key} {...hotWorksProps} anchorAt={anchorAt} />
       )}
     </div>
   )
 }
-
-const WorksQuery = graphql(
-  `query Works($where: PopularWorksWhereInput!) {
-    popularWorks(where: $where) {
-      ...HomeWork
-      ...HomeNovelsWorkListItem
-      ...HomeVideosWorkListItem
-    }
-  }`,
-  [
-    HomeWorkFragment,
-    HomeNovelsWorkListItemFragment,
-    HomeVideosWorkListItemFragment,
-  ],
-)
