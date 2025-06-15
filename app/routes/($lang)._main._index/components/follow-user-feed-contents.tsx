@@ -628,7 +628,8 @@ function FeedContent({
                         ))}
                       </div>
                       <div className="text-sm">
-                        {toDateTimeText(Number(work.createdAt))}
+                        {work.createdAt &&
+                          toDateTimeText(Number(work.createdAt))}
                       </div>
                     </div>
                     <div
