@@ -6,10 +6,15 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["app/graphql-env.d.ts", "storybook-static/**"]
+    "includes": ["**", "!**/app/graphql-env.d.ts", "!**/storybook-static/**"]
   },
   "linter": {
-    "ignore": ["app/components/ui/*", "app/hooks/*", "./tailwind.config.ts"],
+    "includes": [
+      "**",
+      "!**/app/components/ui/**/*",
+      "!**/app/hooks/**/*",
+      "!tailwind.config.ts"
+    ],
     "rules": {
       "recommended": true,
       "correctness": {
@@ -24,6 +29,18 @@
             "functions": ["cn"]
           }
         }
+      },
+      "style": {
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error"
       }
     }
   },
@@ -31,9 +48,7 @@
     "indentStyle": "space",
     "lineEnding": "lf"
   },
-  "organizeImports": {
-    "enabled": false
-  },
+  "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "javascript": {
     "formatter": {
       "semicolons": "asNeeded"

@@ -125,7 +125,7 @@
     "zenn-content-css": "^0.1.155"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.1",
+    "@biomejs/biome": "^2.0.0",
     "@cloudflare/workers-types": "^4.20241022.0",
     "@happy-dom/global-registrator": "^15.7.4",
     "@million/lint": "latest",
