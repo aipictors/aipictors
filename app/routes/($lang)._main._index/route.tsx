@@ -983,13 +983,59 @@ export default function Index() {
         </TabsContent>
 
         {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
-        <TabsContent value="follow-user">
+        <TabsContent value="follow-user" className="space-y-4">
+          {/* ▼ Feed / Pages 切り替えボタン */}
+          <div className="flex justify-end">
+            <div className="flex rounded-lg bg-muted p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInternalIsPagination(false)
+                  const p = new URLSearchParams(searchParams)
+                  p.set("isPagination", "false")
+                  updateQueryParams(p)
+                }}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                  !internalIsPagination
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <List className="h-3 w-3" />
+                <span className="hidden sm:inline">
+                  {t("フィード", "Feed")}
+                </span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInternalIsPagination(true)
+                  const p = new URLSearchParams(searchParams)
+                  p.set("isPagination", "true")
+                  updateQueryParams(p)
+                }}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                  internalIsPagination
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Navigation className="h-3 w-3" />
+                <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* ▼ コンテンツ */}
           <Suspense fallback={<AppLoadingPage />}>
             <FollowUserFeedContents
               page={followUserFeedPage}
               setPage={setFollowUserFeedPage}
-              // isPagination={internalIsPagination}
-              // onPaginationModeChange={setInternalIsPagination}
+              isPagination={internalIsPagination}
+              onPaginationModeChange={setInternalIsPagination}
             />
           </Suspense>
         </TabsContent>

@@ -6,7 +6,7 @@ import {
   useState,
   useEffect,
   useMemo,
-  type CSSProperties,
+  useCallback,
 } from "react"
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
@@ -33,6 +33,8 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 type Props = {
   page: number
   setPage: (page: number) => void
+  isPagination?: boolean
+  onPaginationModeChange?: (v: boolean) => void
 }
 
 const PER_PAGE = 32
@@ -54,7 +56,22 @@ function chunkPosts(arr: PostItem[], size: number): PostItem[][] {
 }
 
 export function FollowUserFeedContents(props: Props) {
-  const [internalIsPagination, setInternalIsPagination] = useState(false)
+  const [internalIsPagination, setInternalIsPagination] = useState(
+    props.isPagination ?? false,
+  )
+
+  useEffect(() => {
+    if (
+      props.isPagination !== undefined &&
+      props.isPagination !== internalIsPagination
+    ) {
+      setInternalIsPagination(props.isPagination)
+    }
+  }, [props.isPagination, internalIsPagination])
+
+  const handleModeChange = (v: boolean) => {
+    props.onPaginationModeChange?.(v) ?? setInternalIsPagination(v)
+  }
 
   const handlePaginationModeChange = (isPagination: boolean) => {
     setInternalIsPagination(isPagination)
@@ -204,7 +221,7 @@ function PaginationMode(props: Props) {
 }
 
 /* ===========================================================
-   Infinite Scroll Mode
+   Infinite Scroll Mode  (refactored)
    =========================================================== */
 function InfiniteMode(props: Props) {
   const client = useApolloClient()
@@ -215,138 +232,144 @@ function InfiniteMode(props: Props) {
   const [isTimelineView, setIsTimelineView] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
-  // キャッシュからの初期データ取得
+  // ─── クエリ & 共通変数 ───────────────────────────────
+  const QUERY = isTimelineView ? feedQuery : feedWorkListQuery
+  const PER_PAGE = 32
+  const feedWhere = useMemo(
+    () => ({
+      userId: authContext.userId ?? "-1",
+      type: "FOLLOW_USER" as const,
+    }),
+    [authContext.userId],
+  )
+  const feedPostsWhere = {
+    ratings: ["G", "R15"] as Array<"G" | "R15" | "R18" | "R18G">,
+  }
+
+  // クエリ引数一式 (キャッシュキー生成にも使う)
+  const queryVars = useMemo(
+    () => ({
+      offset: 0,
+      limit: PER_PAGE,
+      feedWhere,
+      feedPostsWhere,
+    }),
+    [PER_PAGE, feedWhere],
+  )
+
+  // ─── 初期ページをキャッシュから生成 ──────────────────
   const initialPages = useMemo(() => {
-    if (authContext.isLoading || !authContext.userId) return []
+    if (authContext.isLoading || authContext.isNotLoggedIn) return []
 
     try {
-      const cached = client.readQuery({
-        query: isTimelineView ? feedQuery : feedWorkListQuery,
+      const cached = client.readQuery<{ feed?: { posts?: PostItem[] } }>({
+        query: QUERY,
         variables: {
-          offset: 0,
-          limit: PER_PAGE,
-          feedWhere: {
-            userId: authContext.userId,
-            type: "FOLLOW_USER",
-          },
+          ...queryVars,
           feedPostsWhere: {
-            ratings: ["G", "R15"],
+            ...queryVars.feedPostsWhere,
+            ratings: [...(queryVars.feedPostsWhere.ratings ?? [])],
           },
         },
-      }) as { feed?: { posts?: PostItem[] } } | null
-
+      })
       return cached?.feed?.posts?.length
         ? chunkPosts(cached.feed.posts, PER_PAGE)
         : []
     } catch {
       return []
     }
-  }, [client, isTimelineView, authContext.userId, authContext.isLoading])
+  }, [
+    client,
+    QUERY,
+    queryVars,
+    authContext.isLoading,
+    authContext.isNotLoggedIn,
+  ])
 
+  // ─── Remote fetch ──────────────────────────────────────
   const {
     data,
     fetchMore,
     loading: loadingFirst,
-  } = useQuery(isTimelineView ? feedQuery : feedWorkListQuery, {
+  } = useQuery(QUERY, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
-    variables: {
-      offset: 0,
-      limit: PER_PAGE,
-      feedWhere: {
-        userId: authContext.userId ?? "-1",
-        type: "FOLLOW_USER",
-      },
-      feedPostsWhere: {
-        ratings: ["G", "R15"],
-      },
-    },
+    variables: queryVars,
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",
     errorPolicy: "ignore",
   })
 
-  // ページ単位の状態管理
-  const { pages, replaceFirstPage, appendPage, appendPages, flat } =
-    usePagedInfinite<PostItem>(initialPages)
+  // ─── usePagedInfinite (local store key 付き) ─────────────
+  /**
+   * `isTimelineView` が変わるたびに別ストアにしたいので
+   *   `timeline:<bool>|user:<id>` を JSON 化
+   */
+  const keyForStore = useMemo(
+    () => JSON.stringify({ tv: isTimelineView, uid: authContext.userId }),
+    [isTimelineView, authContext.userId],
+  )
+  const { pages, appendPage, appendPages, replaceFirstPage, flat } =
+    usePagedInfinite<PostItem>(initialPages, keyForStore)
 
-  // 初回データの処理
+  // ─── 初回 / クエリ更新時のページ反映 ──────────────────
   useEffect(() => {
     if (!data?.feed?.posts?.length) return
 
     const posts = data.feed.posts as PostItem[]
     const chunked = chunkPosts(posts, PER_PAGE)
+    if (chunked.length === 0) return
 
-    if (chunked.length > 0) {
-      if (pages.length === 0) {
-        // 初回ロード
-        replaceFirstPage(chunked[0])
-        if (chunked.length > 1) {
-          appendPages(chunked.slice(1))
-        }
-      } else if (pages.length === 1 && pages[0].length === 0) {
-        // 空のページを置き換え
-        replaceFirstPage(chunked[0])
-        if (chunked.length > 1) {
-          appendPages(chunked.slice(1))
-        }
-      }
+    // 既に同じ長さならスキップして “ちらつき” を防ぐ
+    if (pages.length === 0 || chunked[0].length !== pages[0]?.length) {
+      replaceFirstPage(chunked[0])
+      if (chunked.length > 1) appendPages(chunked.slice(1))
     }
-  }, [data?.feed?.posts, pages.length, replaceFirstPage, appendPages])
+  }, [data?.feed?.posts, PER_PAGE, pages, replaceFirstPage, appendPages])
 
-  const ready = !!initialPages.length || !!data?.feed?.posts?.length
-  useScrollRestoration("follow-user-infinite", ready)
+  // ─── スクロール復元 ────────────────────────────────
+  const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
+  useScrollRestoration("follow-user-infinite", ready /* header offset */)
 
-  // 追加読み込み処理
-  const lastPage = pages[pages.length - 1] ?? []
-  const hasNext = lastPage.length === PER_PAGE
+  // ─── 追加ロード ────────────────────────────────────
+  const hasNext = (pages.at(-1)?.length ?? 0) === PER_PAGE
 
-  const loadMore = async () => {
-    if (!hasNext || loadingFirst || isLoadingMore || !authContext.userId) return
+  const loadMore = useCallback(async () => {
+    if (!hasNext || loadingFirst || isLoadingMore) return
 
     setIsLoadingMore(true)
     try {
-      const result = await fetchMore({
-        variables: {
-          offset: flat.length,
-          limit: PER_PAGE,
-          feedWhere: {
-            userId: authContext.userId,
-            type: "FOLLOW_USER",
-          },
-          feedPostsWhere: {
-            ratings: ["G", "R15"],
-          },
-        },
+      const res = await fetchMore({
+        variables: { ...queryVars, offset: flat.length },
       })
-
-      if (result.data?.feed?.posts && result.data.feed.posts.length > 0) {
-        appendPage(result.data.feed.posts as PostItem[])
-      }
-    } catch (error) {
-      console.error("Failed to load more posts:", error)
+      const newPosts = res.data?.feed?.posts as PostItem[] | undefined
+      if (newPosts?.length) appendPage(newPosts)
     } finally {
       setIsLoadingMore(false)
     }
-  }
+  }, [
+    hasNext,
+    loadingFirst,
+    isLoadingMore,
+    fetchMore,
+    queryVars,
+    flat.length,
+    appendPage,
+  ])
 
   const sentinelRef = useInfiniteScroll(loadMore, {
     hasNext,
-    loading: loadingFirst || isLoadingMore,
+    loading: loadingFirst,
   })
 
+  // ─── 早期 return (ログイン／空データ系) ──────────────
   if (authContext.isLoading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2Icon className={"size-8 animate-spin text-border"} />
+        <Loader2Icon className="size-8 animate-spin text-border" />
       </div>
     )
   }
-
-  if (
-    authContext.isNotLoggedIn ||
-    authContext.userId === undefined ||
-    !authContext.userId
-  ) {
+  if (authContext.isNotLoggedIn || !authContext.userId) {
     return (
       <div className="flex h-64 items-center justify-center">
         <p className="text-center">
@@ -358,7 +381,6 @@ function InfiniteMode(props: Props) {
       </div>
     )
   }
-
   if (flat.length === 0 && !loadingFirst) {
     return (
       <div className="flex h-64 items-center justify-center">
@@ -372,40 +394,33 @@ function InfiniteMode(props: Props) {
     )
   }
 
+  // ─── 描画 ──────────────────────────────────────────
   return (
     <div className="space-y-8">
-      {loadingFirst && flat.length === 0 ? (
-        <div className="flex justify-center py-8">
-          <Loader2Icon className={"size-8 animate-spin text-border"} />
+      {pages.map(
+        (pagePosts, idx) =>
+          pagePosts.length > 0 && (
+            <FeedContent
+              key={idx.toString()}
+              posts={pagePosts}
+              isTimelineView={isTimelineView}
+              setIsTimelineView={setIsTimelineView}
+              navigate={navigate}
+              t={t}
+              showControls={idx === 0}
+              isPagination={false}
+            />
+          ),
+      )}
+
+      {isLoadingMore && (
+        <div className="flex justify-center py-4">
+          <Loader2Icon className="size-8 animate-spin text-border" />
         </div>
-      ) : (
-        <>
-          {pages.map(
-            (pagePosts, idx) =>
-              pagePosts.length > 0 && (
-                <FeedContent
-                  posts={pagePosts}
-                  isTimelineView={isTimelineView}
-                  setIsTimelineView={setIsTimelineView}
-                  navigate={navigate}
-                  t={t}
-                  showControls={idx === 0} // 最初のページでのみコントロールを表示
-                  isPagination={false}
-                />
-              ),
-          )}
+      )}
 
-          {/* 追加読み込み中のローディング表示 */}
-          {isLoadingMore && (
-            <div className="flex justify-center py-4">
-              <Loader2Icon className={"size-8 animate-spin text-border"} />
-            </div>
-          )}
-
-          {hasNext && (
-            <div ref={sentinelRef} style={{ height: 1 } as CSSProperties} />
-          )}
-        </>
+      {hasNext && (
+        <div ref={sentinelRef} style={{ height: 1 } as React.CSSProperties} />
       )}
     </div>
   )
