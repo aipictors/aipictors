@@ -205,7 +205,7 @@ export const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
     const text = chunks[0].text
     const promptMatch = text.match(/^(.*?)\s*Negative prompt:/s)
     const prompt = promptMatch ? promptMatch[1].trim() : ""
-    info.prompt = prompt
+    info.prompt = prompt.replace("�", "").replace("�", "")
 
     // negativePrompts
     const negativePromptMatch = text.match(
@@ -214,7 +214,7 @@ export const parsePNGInfo = (chunks: PNGChunk[]): PNGItem => {
     const negativePrompt = negativePromptMatch
       ? negativePromptMatch[1].trim()
       : ""
-    info.negativePrompt = negativePrompt
+    info.negativePrompt = negativePrompt.replace("�", "").replace("�", "")
 
     // seed
     const seedMatch = text.match(/Seed:\s*(\d+),/)
@@ -287,17 +287,15 @@ const controlCodeToSpace = (str: string): string => {
 }
 
 const arrayBufferUTF8ToString = (arrayBuffer: ArrayBuffer): string => {
-  const uint8Array = new Uint8Array(arrayBuffer)
-  const binStr = String.fromCharCode(...uint8Array)
-  return decodeURIComponent(escapeBinStr(binStr))
+  return new TextDecoder().decode(new Uint8Array(arrayBuffer))
 }
 
-const escapeBinStr = (str: string): string => {
-  return str.replace(/[^a-zA-Z0-9@*_+\-./]/g, (m) => {
-    const code = m.charCodeAt(0)
-    if (code <= 0xff) {
-      return `%${`00${code.toString(16)}`.slice(-2).toUpperCase()}`
-    }
-    return `%u${`0000${code.toString(16)}`.slice(-4).toUpperCase()}`
-  })
-}
+// const escapeBinStr = (str: string): string => {
+//   return str.replace(/[^a-zA-Z0-9@*_+\-./]/g, (m) => {
+//     const code = m.charCodeAt(0)
+//     if (code <= 0xff) {
+//       return `%${`00${code.toString(16)}`.slice(-2).toUpperCase()}`
+//     }
+//     return `%u${`0000${code.toString(16)}`.slice(-4).toUpperCase()}`
+//   })
+// }
