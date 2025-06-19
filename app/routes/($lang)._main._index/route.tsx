@@ -99,7 +99,7 @@ const getUtcDateString = (date: Date) => {
   return `${year}/${month}/${day}`
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
 
   const getRandomCategories = () => {
@@ -171,13 +171,9 @@ export async function loader(props: LoaderFunctionArgs) {
 export default function Index() {
   const data = useLoaderData<typeof loader>()
 
-  if (data === null) {
-    return null
-  }
-
   const t = useTranslation()
 
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, _setSearchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
 
   const [isMounted, setIsMounted] = useState(false)
@@ -468,6 +464,10 @@ export default function Index() {
 
   // スクロール位置復元しない
   useScrollRestoration(isMounted)
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <>
@@ -796,8 +796,7 @@ export default function Index() {
                         !internalIsPagination
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
-                      }
-                      `}
+                      } `}
                     >
                       <List className="h-3 w-3" />
                       <span className="hidden sm:inline">
@@ -818,8 +817,7 @@ export default function Index() {
                         internalIsPagination
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
-                      }
-                      `}
+                      } `}
                     >
                       <Navigation className="h-3 w-3" />
                       <span className="hidden sm:inline">
@@ -1041,13 +1039,57 @@ export default function Index() {
         </TabsContent>
 
         {/* ---------------------- タブ: お気に入りタグ ---------------------- */}
-        <TabsContent value="follow-tag">
+        <TabsContent value="follow-tag" className="space-y-4">
+          {/* ▼ Feed / Pages 切り替えボタン */}
+          <div className="flex justify-end">
+            <div className="flex rounded-lg bg-muted p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInternalIsPagination(false)
+                  const p = new URLSearchParams(searchParams)
+                  p.set("isPagination", "false")
+                  updateQueryParams(p)
+                }}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                  !internalIsPagination
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <List className="h-3 w-3" />
+                <span className="hidden sm:inline">
+                  {t("フィード", "Feed")}
+                </span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInternalIsPagination(true)
+                  const p = new URLSearchParams(searchParams)
+                  p.set("isPagination", "true")
+                  updateQueryParams(p)
+                }}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                  internalIsPagination
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Navigation className="h-3 w-3" />
+                <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
+              </Button>
+            </div>
+          </div>
+
           <Suspense fallback={<AppLoadingPage />}>
             <FollowTagsFeedContents
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}
-              // isPagination={internalIsPagination}
-              // onPaginationModeChange={setInternalIsPagination}
+              isPagination={internalIsPagination}
             />
           </Suspense>
         </TabsContent>
