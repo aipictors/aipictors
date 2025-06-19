@@ -32,7 +32,7 @@ const worksQuery = graphql(
     $limit: Int!
     $where: WorksWhereInput
   ) {
-    works(offset: $offset, limit: $limit, where: $where) {
+    tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...TagsWork
     }
   }`,
@@ -69,7 +69,7 @@ export function WorkTagsWorks({ tagName, rating }: Props) {
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",
     onCompleted(res) {
-      setPages([res.works]) // 1 ページ目を保存
+      setPages([res.tagWorks]) // 1 ページ目を保存
     },
   })
 
@@ -85,8 +85,8 @@ export function WorkTagsWorks({ tagName, rating }: Props) {
       const res = await fetchMore({
         variables: { offset: pages.flat().length, limit: PER_PAGE, where },
       })
-      if (res.data?.works?.length) {
-        setPages((prev) => [...prev, res.data.works])
+      if (res.data?.tagWorks?.length) {
+        setPages((prev) => [...prev, res.data.tagWorks])
       }
     } finally {
       setIsLoadingMore(false)

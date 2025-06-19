@@ -74,7 +74,7 @@ export function WorkContainer(props: Props) {
   const tags = work?.tagNames ?? []
 
   const randomTag =
-    tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
+    tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : "女の子"
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
