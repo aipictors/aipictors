@@ -390,43 +390,49 @@ export default function Index() {
         onValueChange={handleTabChange}
         className="space-y-4"
       >
-        <TabsList>
-          <TabsTrigger value="home">{t("ホーム", "Home")}</TabsTrigger>
-          <TabsTrigger value="new">
-            <p className="hidden md:block">
-              {t("新着・人気", "New & Popular")}
-            </p>
-            <p className="block md:hidden">{t("新着", "New")}</p>
-          </TabsTrigger>
-          <TabsTrigger value="follow-user">
-            <div className="flex items-center space-x-2">
+        <div className="flex items-center sm:gap-x-2 md:gap-x-4">
+          <TabsList>
+            <TabsTrigger value="home">{t("ホーム", "Home")}</TabsTrigger>
+            <TabsTrigger value="new">
               <p className="hidden md:block">
-                {t("フォロー新着", "Followed Users")}
+                {t("新着・人気", "New & Popular")}
               </p>
-              <p className="block md:hidden">{t("フォロー", "Followed")}</p>
-              <CrossPlatformTooltip
-                text={t(
-                  "フォローしたユーザの新着作品が表示されます、現在はリニューアル版の投稿ページにて投稿された作品が表示されていますのでご注意ください",
-                  "Displays works from followed users",
-                )}
-              />
-            </div>
-          </TabsTrigger>
-          <TabsTrigger value="follow-tag">
-            <div className="flex items-center space-x-2">
-              <p className="hidden md:block">
-                {t("お気に入りタグ新着", "Favorite Tags")}
-              </p>
-              <p className="block md:hidden">{t("タグ", "Tags")}</p>
-              <CrossPlatformTooltip
-                text={t(
-                  "お気に入り登録したタグの新着作品が表示されます",
-                  "Displays works from favorite tags",
-                )}
-              />
-            </div>
-          </TabsTrigger>
-        </TabsList>
+              <p className="block md:hidden">{t("新着", "New")}</p>
+            </TabsTrigger>
+            <TabsTrigger value="follow-user">
+              <div className="flex items-center space-x-2">
+                <p className="hidden md:block">
+                  {t("フォロー新着", "Followed Users")}
+                </p>
+                <p className="block md:hidden">{t("フォロー", "Followed")}</p>
+                <CrossPlatformTooltip
+                  text={t(
+                    "フォローしたユーザの新着作品が表示されます、現在はリニューアル版の投稿ページにて投稿された作品が表示されていますのでご注意ください",
+                    "Displays works from followed users",
+                  )}
+                />
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="follow-tag">
+              <div className="flex items-center space-x-2">
+                <p className="hidden md:block">
+                  {t("お気に入りタグ新着", "Favorite Tags")}
+                </p>
+                <p className="block md:hidden">{t("タグ", "Tags")}</p>
+                <CrossPlatformTooltip
+                  text={t(
+                    "お気に入り登録したタグの新着作品が表示されます",
+                    "Displays works from favorite tags",
+                  )}
+                />
+              </div>
+            </TabsTrigger>
+          </TabsList>
+          <Button variant={"secondary"} size="sm" onClick={() => navigate("/")}>
+            {"全年齢"}
+          </Button>
+        </div>
+
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
           {data && (
             <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
