@@ -17,7 +17,7 @@ export function AppContents(props: Props) {
         <div className="w-full pt-24">
           <div
             className={
-              "w-full space-y-4 pb-4 md:max-w-[calc(100vw_-_96px)] lg:ml-[218px] lg:max-w-[calc(100vw_-_248px)]"
+              "w-full space-y-4 pb-4 sm:ml-[0px] md:ml-[72px] md:max-w-[calc(100vw_-_96px)] lg:ml-[218px] lg:max-w-[calc(100vw_-_248px)]"
             }
           >
             {props.outlet}
