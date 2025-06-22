@@ -461,7 +461,7 @@ function HomeHeader(props: Props) {
                 <Input
                   value={searchText}
                   onChange={onChangeSearchText}
-                  onKeyDown={handleKeyDown}
+                  onKeyUp={handleKeyDown}
                   placeholder={t("作品を検索", "Search for posts")}
                 />
                 <div className="absolute right-4">
@@ -486,7 +486,7 @@ function HomeHeader(props: Props) {
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
-                onKeyDown={handleKeyDown}
+                onKeyUp={handleKeyDown}
                 placeholder={t("作品を検索", "Search for posts")}
               />
             </div>
