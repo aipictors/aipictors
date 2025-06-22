@@ -227,7 +227,7 @@ export function WorkViewerDialog({
               <img
                 src={w.smallThumbnailImageURL}
                 alt={w.title}
-                className="h-20 w-full object-cover"
+                className="h-20 w-full rounded-md object-cover"
               />
             </button>
           ))}
