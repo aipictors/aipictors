@@ -1,9 +1,7 @@
-import { cn } from "~/lib/utils"
-
 type Props = Readonly<{
   outlet: React.ReactNode
   aside?: React.ReactNode
-  isOpen: boolean
+  header?: React.ReactNode
 }>
 
 /**
@@ -12,15 +10,18 @@ type Props = Readonly<{
 export function AppContents(props: Props) {
   return (
     <>
-      <div className="flex">
-        {props.aside && props.aside}
-        <div
-          className={cn("m-auto w-full space-y-4 overflow-auto pb-4", {
-            "px-4 md:pr-8 md:pl-52": props.isOpen,
-            "px-4 md:px-8": !props.isOpen,
-          })}
-        >
-          {props.outlet}
+      <div className="flex px-2">
+        <div className="hidden md:block">{props.aside && props.aside}</div>
+        <div className="pointer-events-none fixed inset-x-0 top-0 z-20 h-24 bg-linear-gradient-top-to-bottom dark:opacity-20" />
+        <div className="absolute top-0">{props.header && props.header}</div>
+        <div className="w-full pt-24">
+          <div
+            className={
+              "w-full space-y-4 pb-4 md:max-w-[calc(100vw_-_96px)] lg:ml-[218px] lg:max-w-[calc(100vw_-_248px)]"
+            }
+          >
+            {props.outlet}
+          </div>
         </div>
       </div>
     </>

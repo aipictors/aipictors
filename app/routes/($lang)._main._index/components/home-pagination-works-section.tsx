@@ -140,15 +140,12 @@ export function HomePaginationWorksSection(props: Props) {
       )}
 
       <div className="h-8" />
-      {/* ページネーション */}
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="fixed inset-x-0 bottom-0 z-10 flex justify-center border border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <ResponsivePagination
           perPage={perPageCount}
-          maxCount={1000} // ここは API の最大数などにあわせて調整
+          maxCount={1000}
           currentPage={props.page}
-          onPageChange={(page: number) => {
-            props.setPage(page)
-          }}
+          onPageChange={(page) => props.setPage(page)}
         />
       </div>
     </div>

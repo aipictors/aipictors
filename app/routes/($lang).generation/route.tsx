@@ -61,7 +61,10 @@ export default function GenerationLayout() {
 
   return (
     <>
-      <HomeHeader title={t("Aipictors画像生成", "Aipictors Generator")} />
+      <HomeHeader
+        alwaysShowTitle={true}
+        title={t("Aipictors画像生成", "Aipictors Generator")}
+      />
       <Suspense fallback={<AppLoadingPage />}>
         <GenerationQueryProvider generationQueryContext={data.data}>
           <GenerationConfigProvider>

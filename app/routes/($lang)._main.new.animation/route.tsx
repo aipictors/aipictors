@@ -41,10 +41,6 @@ import { loaderClient } from "~/lib/loader-client"
 export default function NewAnimation() {
   const data = useLoaderData<typeof loader>()
 
-  if (data === null) {
-    return null
-  }
-
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
@@ -323,7 +319,9 @@ export default function NewAnimation() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
+  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   useBeforeUnload(
+    // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
     React.useCallback(
       (event) => {
         if (state) {
@@ -338,6 +336,10 @@ export default function NewAnimation() {
       [state, t],
     ),
   )
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
@@ -367,7 +369,7 @@ export default function NewAnimation() {
         />
         <div className="h-4" />
         <Button
-          className="fixed bottom-0 left-0 w-full rounded-none xl:left-auto xl:max-w-[1200px] xl:rounded-md"
+          className="fixed bottom-0 left-0 z-60 w-full rounded-none xl:left-auto xl:max-w-[1200px]"
           size={"lg"}
           type="submit"
           onClick={onPost}
@@ -398,7 +400,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.NEW_ANIMATION, undefined, props.params.lang)
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {

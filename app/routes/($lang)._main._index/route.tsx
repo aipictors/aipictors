@@ -75,7 +75,6 @@ import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/
 import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
 import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-dialog"
-import { ConstructionAlert } from "~/components/construction-alert"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 
 // カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
@@ -471,11 +470,11 @@ export default function Index() {
 
   return (
     <>
-      <ConstructionAlert
+      {/* <ConstructionAlert
         type="WARNING"
         message="旧版はこちら"
         fallbackURL="https://legacy.aipictors.com"
-      />
+      /> */}
       <Tabs
         value={currentTab}
         onValueChange={handleTabChange}
@@ -525,7 +524,7 @@ export default function Index() {
             <HomeBanners works={data.adWorks} />
           )}
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-            <div className="flex flex-col space-y-4 md:w-[80%]">
+            <div className="flex flex-col space-y-4 md:w-[72%]">
               <HomeReleaseList releaseList={data.releaseList} />
               {data.dailyTheme && (
                 <div>

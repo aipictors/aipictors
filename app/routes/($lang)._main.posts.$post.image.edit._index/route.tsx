@@ -83,10 +83,6 @@ export default function EditImage() {
 
   const data = useLoaderData<typeof loader>()
 
-  if (data === null) {
-    return null
-  }
-
   const { data: workWithAuth = null, loading } = useQuery(workQuery, {
     skip: authContext.isLoading,
     variables: {
@@ -604,6 +600,10 @@ export default function EditImage() {
     ),
   )
 
+  if (data === null) {
+    return null
+  }
+
   if (!loading && work === null) {
     return (
       <div className="m-auto text-center">
@@ -644,7 +644,7 @@ export default function EditImage() {
         <div className="h-4" />
         <Button
           disabled={disabledSubmit}
-          className="fixed bottom-0 left-0 w-full rounded-none xl:left-auto xl:max-w-[1200px] xl:rounded-md"
+          className="fixed bottom-0 left-0 z-60 w-full rounded-none xl:left-auto xl:max-w-[1200px]"
           size={"lg"}
           type="submit"
           onClick={onPost}

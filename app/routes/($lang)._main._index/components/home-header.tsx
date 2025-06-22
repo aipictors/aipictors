@@ -5,9 +5,14 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
 import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
-import { useNavigation, useLocation, useNavigate } from "@remix-run/react"
+import {
+  useNavigation,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "@remix-run/react"
 import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search } from "lucide-react"
-import { Suspense, useContext, useState } from "react"
+import { Suspense, useContext, useState, useEffect, useRef } from "react"
 import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
@@ -26,19 +31,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
+import { cn } from "~/lib/utils"
 
 type Props = {
   title?: string
   onToggleSideMenu?: () => void
+  alwaysShowTitle?: boolean
 }
 
 function HomeHeader(props: Props) {
   const navigation = useNavigation()
   const location = useLocation()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState("")
+  const timeoutRef = useRef<NodeJS.Timeout>()
+  const previousLocationRef = useRef(location.pathname)
+  const isNavigatingRef = useRef(false)
+  const isManualNavigationRef = useRef(false) // 手動ナビゲーションフラグを追加
 
   const sensitivePath = /\/r($|\/)/.test(location.pathname)
   const getSensitiveLink = (path: string) => {
@@ -51,6 +63,81 @@ function HomeHeader(props: Props) {
       return `/r${path}`
     }
     return path
+  }
+
+  // ページ遷移の検出
+  useEffect(() => {
+    const currentPath = location.pathname
+    const previousPath = previousLocationRef.current
+
+    // ページが変更された場合
+    if (currentPath !== previousPath) {
+      // フラグをリセット
+      isNavigatingRef.current = false
+      isManualNavigationRef.current = false
+      previousLocationRef.current = currentPath
+    }
+  }, [location.pathname])
+
+  // 初期化時とURL変更時に検索テキストを設定
+  useEffect(() => {
+    const currentPath = location.pathname
+
+    // 手動ナビゲーション中の場合は検索テキストの更新をスキップ
+    if (isManualNavigationRef.current) {
+      return
+    }
+
+    if (
+      currentPath.startsWith("/tags/") ||
+      currentPath.startsWith("/r/tags/")
+    ) {
+      // タグページの場合、URLからタグ名を抽出
+      const tagMatch = currentPath.match(/\/tags\/([^/]+)/)
+      if (tagMatch) {
+        const decodedTag = decodeURIComponent(tagMatch[1])
+        setSearchText(decodedTag)
+      }
+    } else if (currentPath === "/search" || currentPath === "/r/search") {
+      // 検索ページの場合
+      const query = searchParams.get("q") || ""
+      setSearchText(query)
+    } else {
+      // その他のページの場合は検索テキストをクリア
+      setSearchText("")
+    }
+  }, [location.pathname, searchParams])
+
+  // 検索テキスト変更時のリアルタイム検索（デバウンス付き）
+  const performSearch = (text: string) => {
+    // ナビゲーション中またはマニュアルナビゲーション中は検索を実行しない
+    if (isNavigatingRef.current || isManualNavigationRef.current) {
+      return
+    }
+
+    const trimmedText = text.trim()
+
+    // 空文字の場合は何もしない
+    if (trimmedText === "") {
+      return
+    }
+
+    const sanitizedText = trimmedText.replace(/#/g, "")
+
+    // 禁止文字チェック
+    const invalidChars = ["%", "/", "¥"]
+    const hasInvalidChar = invalidChars.some((char) =>
+      sanitizedText.includes(char),
+    )
+
+    if (hasInvalidChar) {
+      return // 禁止文字が含まれている場合は何もしない
+    }
+
+    // タグ検索ページへ遷移
+    const encodedText = encodeURIComponent(sanitizedText)
+    const baseUrl = `/tags/${encodedText}`
+    navigate(getSensitiveLink(baseUrl), { replace: true })
   }
 
   const onSearch = () => {
@@ -94,8 +181,49 @@ function HomeHeader(props: Props) {
     }
   }
   const onToggleSearchForm = () => setIsSearchFormOpen((prev) => !prev)
-  const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setSearchText(event.target.value)
+  const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newText = event.target.value
+    setSearchText(newText)
+
+    // 既存のタイマーをクリア
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    // 検索関連ページにいる場合のみリアルタイム検索を実行
+    const currentPath = location.pathname
+    const isSearchRelatedPage =
+      currentPath === "/search" ||
+      currentPath === "/r/search" ||
+      currentPath.startsWith("/tags/") ||
+      currentPath.startsWith("/r/tags/")
+
+    // リアルタイム検索の条件：
+    // 1. 検索関連ページにいる
+    // 2. ナビゲーション中ではない
+    // 3. マニュアルナビゲーション中ではない
+    // 4. テキストが空ではない
+    if (
+      isSearchRelatedPage &&
+      !isNavigatingRef.current &&
+      !isManualNavigationRef.current &&
+      newText.trim() !== ""
+    ) {
+      // 300ms後に検索実行（デバウンス）
+      timeoutRef.current = setTimeout(() => {
+        performSearch(newText)
+      }, 300)
+    }
+  }
+
+  // クリーンアップ
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
   const {
     value: isOpenLogoutDialog,
@@ -104,25 +232,45 @@ function HomeHeader(props: Props) {
   } = useBoolean()
 
   const [isOpen, setIsOpen] = useState(false)
-  const close = () => setIsOpen(false)
+  const close = () => {
+    // マニュアルナビゲーション中フラグを設定
+    isManualNavigationRef.current = true
+    setIsOpen(false)
+  }
   const t = useTranslation()
 
   const isAnnouncementPath =
     location.pathname === "/" || location.pathname === "/generation"
   const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
 
-  // ヘルパー関数：内部リンクへ遷移
-  const navigateToInternal = (path: string) => {
-    navigate(getSensitiveLink(path))
-  }
   // ヘルパー関数：外部リンクの場合は新規タブで開く
   const navigateToExternal = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer")
   }
 
+  // ナビゲーション関数を修正
+  const handleNavigate = (path: string) => {
+    // タイマーをクリア
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    // マニュアルナビゲーション中フラグを設定
+    isManualNavigationRef.current = true
+
+    // 検索テキストをクリア（検索関連ページ以外への遷移時）
+    const isSearchRelatedPath = path === "/search" || path.startsWith("/tags/")
+    if (!isSearchRelatedPath) {
+      setSearchText("")
+    }
+
+    navigate(getSensitiveLink(path))
+  }
+
   return (
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader
+        isSmallLeftPadding={props.alwaysShowTitle}
         announcement={
           isAnnouncementPath &&
           announcementData?.emergencyAnnouncements &&
@@ -136,7 +284,7 @@ function HomeHeader(props: Props) {
                   ? navigateToExternal(
                       announcementData.emergencyAnnouncements.url,
                     )
-                  : navigate(announcementData.emergencyAnnouncements.url)
+                  : handleNavigate(announcementData.emergencyAnnouncements.url)
               }
             >
               <div className="opacity-80">
@@ -152,7 +300,12 @@ function HomeHeader(props: Props) {
           ))
         }
       >
-        <div className="flex min-w-fit items-center gap-x-2 md:flex">
+        <div
+          className={cn(
+            "flex min-w-fit items-center gap-x-2",
+            props.alwaysShowTitle ? "" : "md:hidden",
+          )}
+        >
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -166,29 +319,55 @@ function HomeHeader(props: Props) {
             </SheetContent>
           </Sheet>
           <div className="flex items-center">
-            <Button
-              variant="ghost"
-              className="hidden items-center space-x-2 md:flex"
-              onClick={() => navigate(getSensitiveLink("/"))}
-            >
-              {navigation.state === "loading" && (
-                <div className="flex size-8 items-center justify-center">
-                  <Loader2Icon className="size-8 animate-spin" />
+            {props.alwaysShowTitle ? (
+              <Button
+                variant="ghost"
+                className="hidden items-center space-x-2 md:flex"
+                onClick={() => handleNavigate("/")}
+              >
+                {navigation.state === "loading" && (
+                  <div className="flex size-8 items-center justify-center">
+                    <Loader2Icon className="size-8 animate-spin" />
+                  </div>
+                )}
+                {navigation.state !== "loading" && (
+                  <img
+                    src="/icon.svg"
+                    className="size-8 rounded-full"
+                    alt="Avatar"
+                    width={40}
+                    height={40}
+                  />
+                )}
+                <div className="flex grow flex-row items-center">
+                  <span className="font-bold text-xl">{title}</span>
                 </div>
-              )}
-              {navigation.state !== "loading" && (
-                <img
-                  src="/icon.svg"
-                  className="size-8 rounded-full"
-                  alt="Avatar"
-                  width={40}
-                  height={40}
-                />
-              )}
-              <div className="hidden grow flex-row items-center md:flex">
-                <span className="font-bold text-xl">{title}</span>
-              </div>
-            </Button>
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                className="hidden items-center space-x-2 md:flex"
+                onClick={() => handleNavigate("/")}
+              >
+                {navigation.state === "loading" && (
+                  <div className="flex size-8 items-center justify-center">
+                    <Loader2Icon className="size-8 animate-spin" />
+                  </div>
+                )}
+                {navigation.state !== "loading" && (
+                  <img
+                    src="/icon.svg"
+                    className="size-8 rounded-full"
+                    alt="Avatar"
+                    width={40}
+                    height={40}
+                  />
+                )}
+                <div className="hidden grow flex-row items-center md:flex">
+                  <span className="font-bold text-xl">{title}</span>
+                </div>
+              </Button>
+            )}
           </div>
           {!isSearchFormOpen && (
             <Button
@@ -204,36 +383,20 @@ function HomeHeader(props: Props) {
         <div className="flex w-full justify-end gap-x-2">
           <div className="hidden w-full items-center space-x-2 md:flex">
             <div className="flex w-full justify-start space-x-2 font-semibold">
-              <Button
-                variant="ghost"
-                onClick={() => navigate(getSensitiveLink("/themes"))}
-              >
-                {t("お題", "Theme")}
-              </Button>
-              <Button
-                variant="ghost"
-                className="hidden lg:block"
-                onClick={() => navigate(getSensitiveLink("/rankings"))}
-              >
-                {t("ランキング", "Ranking")}
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => navigate(getSensitiveLink("/?tab=follow-user"))}
-              >
-                {t("フォロー新着", "Followed new posts")}
-              </Button>
-              <div className="w-full flex-1">
+              <div className="relative flex w-full flex-1 shrink-0 flex-col rounded-xl border border-light-100 bg-light-input shadow-[0px_7px_21px_0px_rgba(51,_51,_51,_0.05)] dark:border-dark-750 dark:bg-dark-input dark:shadow-[0px_7px_21px_0px_rgba(0,_0,_0,_0.25)]">
                 <Input
+                  value={searchText}
                   onChange={onChangeSearchText}
                   onKeyDown={handleKeyDown}
                   placeholder={t("作品を検索", "Search for posts")}
                 />
+                <div className="absolute right-4">
+                  <Button onClick={onSearch} variant="ghost" size="icon">
+                    <Search className="w-16" />
+                  </Button>
+                </div>
               </div>
             </div>
-            <Button onClick={onSearch} variant="ghost" size="icon">
-              <Search className="w-16" />
-            </Button>
             <Separator orientation="vertical" />
           </div>
           {isSearchFormOpen ? (
@@ -247,6 +410,7 @@ function HomeHeader(props: Props) {
                 <MoveLeft className="w-8" />
               </Button>
               <Input
+                value={searchText}
                 onChange={onChangeSearchText}
                 onKeyDown={handleKeyDown}
                 placeholder={t("作品を検索", "Search for posts")}
@@ -256,14 +420,14 @@ function HomeHeader(props: Props) {
             <>
               <div className="hidden space-x-2 md:flex">
                 <Button
-                  variant="ghost"
-                  onClick={() => navigate(getSensitiveLink("/generation"))}
+                  variant="secondary"
+                  onClick={() => handleNavigate("/generation")}
                 >
                   {t("生成", "Generate")}
                 </Button>
                 <Button
-                  variant="ghost"
-                  onClick={() => navigate(getSensitiveLink("/new/image"))}
+                  variant="secondary"
+                  onClick={() => handleNavigate("/new/image")}
                 >
                   {t("投稿", "Post")}
                 </Button>
@@ -277,12 +441,12 @@ function HomeHeader(props: Props) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem
-                      onClick={() => navigate(getSensitiveLink("/generation"))}
+                      onClick={() => handleNavigate("/generation")}
                     >
                       {t("生成", "Generate")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => navigate(getSensitiveLink("/new/image"))}
+                      onClick={() => handleNavigate("/new/image")}
                     >
                       {t("投稿", "Post")}
                     </DropdownMenuItem>
@@ -295,13 +459,13 @@ function HomeHeader(props: Props) {
             <div className="hidden space-x-2 md:flex">
               <Button
                 variant="ghost"
-                onClick={() => navigate(getSensitiveLink("/generation"))}
+                onClick={() => handleNavigate("/generation")}
               >
                 {t("生成", "Generate")}
               </Button>
               <Button
                 variant="ghost"
-                onClick={() => navigate(getSensitiveLink("/new/image"))}
+                onClick={() => handleNavigate("/new/image")}
               >
                 {t("投稿", "Post")}
               </Button>

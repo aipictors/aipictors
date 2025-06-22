@@ -1,5 +1,6 @@
 import { AppContents } from "~/components/app/app-contents"
 import HomeHeader from "~/routes/($lang)._main._index/components/home-header"
+import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
 
 type Props = Readonly<{
   outlet: React.ReactNode
@@ -12,8 +13,11 @@ type Props = Readonly<{
 export function AppCommonLayout(props: Props) {
   return (
     <>
-      <HomeHeader onToggleSideMenu={() => {}} title={props.title} />
-      <AppContents outlet={props.outlet} isOpen={false} />
+      <AppContents
+        outlet={props.outlet}
+        aside={<HomeRouteList title={props.title} />}
+        header={<HomeHeader title={props.title} />}
+      />
     </>
   )
 }

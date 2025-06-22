@@ -1,16 +1,20 @@
+import { cn } from "~/lib/utils"
+
 type Props = Readonly<{
   children: React.ReactNode
   announcement?: React.ReactNode
+  isSmallLeftPadding?: boolean
 }>
 
 export function AppHeader(props: Props) {
   return (
     <>
-      <header className="fixed z-50 w-full">
+      <header className="fixed z-30 w-full">
         <div
-          className={
-            "flex w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/95 px-4 py-4 backdrop-blur-sm supports-backdrop-filter:bg-background/80 md:px-8"
-          }
+          className={cn(
+            "flex w-full items-center justify-between space-x-4 bg-none px-4 py-4",
+            props.isSmallLeftPadding ? "md:pl-8" : "md:pl-54",
+          )}
         >
           {props.children}
         </div>

@@ -27,7 +27,6 @@ import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import {} from "~/utils/get-nsfw-predictions"
 import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
@@ -47,10 +46,6 @@ import { loaderClient } from "~/lib/loader-client"
 
 export default function NewImage() {
   const data = useLoaderData<typeof loader>()
-
-  if (data === null) {
-    return null
-  }
 
   const t = useTranslation()
 
@@ -151,7 +146,7 @@ export default function NewImage() {
         dispatch({
           type: "SET_ITEMS",
           payload: viewerData.viewer.imageGenerationResults.map(
-            (result, index) => ({
+            (_result, index) => ({
               id: index + 1,
               content: base64Urls[index],
             }),
@@ -440,7 +435,7 @@ export default function NewImage() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  const onInputFiles = async (files: FileList) => {
+  const onInputFiles = async (_files: FileList) => {
     // if (inputState.ratingRestriction !== "G") {
     //   return
     // }
@@ -501,7 +496,9 @@ export default function NewImage() {
     // dispatch({ type: "OPEN_LOADING_AI", payload: false })
   }
 
+  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   useBeforeUnload(
+    // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
     React.useCallback(
       (event) => {
         if (state) {
@@ -516,6 +513,10 @@ export default function NewImage() {
       [state, t],
     ),
   )
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
@@ -579,7 +580,7 @@ export default function NewImage() {
         />
         <div className="h-4" />
         <Button
-          className="fixed bottom-0 left-0 w-full rounded-none xl:left-auto xl:max-w-[1200px] xl:rounded-md"
+          className="fixed bottom-0 left-0 z-60 w-full rounded-none xl:left-auto xl:max-w-[1200px]"
           size={"lg"}
           type="submit"
           onClick={onPost}
@@ -610,7 +611,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.NEW_IMAGE, undefined, props.params.lang)
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {

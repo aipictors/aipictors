@@ -23,12 +23,6 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  // const redirectResponse = checkLocaleRedirect(props.request)
-
-  // if (redirectResponse) {
-  //   return redirectResponse
-  // }
-
   const url = new URL(props.request.url)
   const page = url.searchParams.get("page")
     ? Number.parseInt(url.searchParams.get("page") as string) > 100
@@ -45,6 +39,9 @@ export async function loader(props: LoaderFunctionArgs) {
     : "DESC"
 
   const isSensitive = url.searchParams.get("sensitive") === "1"
+
+  // mode パラメータを追加
+  const mode = url.searchParams.get("mode") || "feed"
 
   const worksResp = await loaderClient.query({
     query: tagWorksQuery,
@@ -80,6 +77,7 @@ export async function loader(props: LoaderFunctionArgs) {
     worksCount: tagWorksCountResp.data.tagWorksCount,
     page: page,
     isSensitive: isSensitive,
+    mode: mode, // mode を追加
   }
 }
 
@@ -115,7 +113,6 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 
 export default function Tag() {
   const params = useParams()
-
   const authContext = useContext(AuthContext)
 
   if (params.tag === undefined) {
@@ -123,7 +120,6 @@ export default function Tag() {
   }
 
   const data = useLoaderData<typeof loader>()
-
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [workType, setWorkType] =
@@ -135,19 +131,28 @@ export default function Tag() {
     IntrospectionEnum<"WorkOrderBy">
   >(
     (searchParams.get("orderBy") as IntrospectionEnum<"WorkOrderBy">) ||
-      authContext.isLoggedIn
-      ? "DATE_CREATED"
-      : "LIKES_COUNT",
+      (authContext.isLoggedIn ? "DATE_CREATED" : "LIKES_COUNT"),
   )
 
   const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
     (searchParams.get("sort") as SortType) || "DESC",
   )
 
-  const [rating, setRating] =
+  const [_rating, setRating] =
     React.useState<IntrospectionEnum<"Rating"> | null>(
       (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
     )
+
+  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
+
+  const [hasPrompt, setHasPrompt] = React.useState(
+    Number(searchParams.get("prompt")) || 0,
+  )
+
+  // mode の状態を追加
+  const [mode, setMode] = React.useState<"feed" | "pagination">(
+    (searchParams.get("mode") as "feed" | "pagination") || "feed",
+  )
 
   const onClickTitleSortButton = () => {
     setWorkOrderby("NAME")
@@ -194,34 +199,44 @@ export default function Tag() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
-  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
-
-  const [hasPrompt, setHasPrompt] = React.useState(
-    Number(searchParams.get("prompt")) || 0,
-  )
-
-  if (data === null) {
-    return null
-  }
-
   // URLパラメータの監視と更新
   useEffect(() => {
     const params = new URLSearchParams()
+
     if (workType) {
       params.set("workType", workType)
     }
+
     params.set("orderBy", WorkOrderby)
     params.set("sort", worksOrderDeskAsc)
     params.set("page", page.toString())
     params.set("prompt", hasPrompt.toString())
+
+    // mode パラメータの処理（デフォルトがfeedなのでpaginationの時のみセット）
+    if (mode === "pagination") {
+      params.set("mode", "pagination")
+    }
 
     // isSensitiveのパラメータが1なら、セット
     if (data.isSensitive) {
       params.set("sensitive", "1")
     }
 
-    setSearchParams(params)
-  }, [page, hasPrompt, workType, WorkOrderby, worksOrderDeskAsc])
+    setSearchParams(params, { replace: true })
+  }, [
+    page,
+    hasPrompt,
+    workType,
+    WorkOrderby,
+    worksOrderDeskAsc,
+    mode,
+    data.isSensitive,
+    setSearchParams,
+  ])
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <>
@@ -232,6 +247,8 @@ export default function Tag() {
         page={page}
         setPage={setPage}
         hasPrompt={hasPrompt}
+        mode={mode}
+        setMode={setMode}
         onClickTitleSortButton={onClickTitleSortButton}
         onClickLikeSortButton={onClickLikeSortButton}
         onClickBookmarkSortButton={onClickBookmarkSortButton}

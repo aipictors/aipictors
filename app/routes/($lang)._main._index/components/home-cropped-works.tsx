@@ -17,11 +17,11 @@ type Props = {
  * クロップ済み作品一覧
  */
 export function HomeCroppedWorks(props: Props) {
+  const t = useTranslation()
+
   if (!props.works || props.works.length === 0) {
     return null
   }
-
-  const t = useTranslation()
 
   return (
     <>

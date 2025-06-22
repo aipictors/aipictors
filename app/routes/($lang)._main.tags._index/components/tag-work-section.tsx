@@ -5,8 +5,15 @@ import {
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
-import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { useApolloClient, useQuery } from "@apollo/client/index"
+import {
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react"
 import { tagWorksQuery } from "~/routes/($lang)._main.tags.$tag._index/route"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
@@ -16,7 +23,9 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
 import { Switch } from "~/components/ui/switch"
+import { Button } from "~/components/ui/button"
 import { GoogleCustomSearch } from "~/components/google-custom-search"
+import { Grid, List } from "lucide-react"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -26,7 +35,9 @@ type Props = {
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   hasPrompt: number
+  mode: "feed" | "pagination"
   setPage: (page: number) => void
+  setMode: (mode: "feed" | "pagination") => void
   setAccessType?: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
@@ -45,18 +56,77 @@ type Props = {
 
 export function TagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
+  const client = useApolloClient()
 
-  const { data = null, refetch } = useQuery(viewerFollowedTagsQuery, {
+  // 表示モード状態
+  const [isPagination, setIsPagination] = useState(props.mode === "pagination")
+
+  // 無限スクロール用の状態
+  const [infinitePages, setInfinitePages] = useState<
+    FragmentOf<typeof PhotoAlbumWorkFragment>[][]
+  >([])
+  const [hasNextPage, setHasNextPage] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const loadingRef = useRef<HTMLDivElement>(null)
+
+  // 状態管理用のキー
+  const stateKey = `tag-works-${props.tag}-${props.orderBy}-${props.sort}-${props.hasPrompt}`
+
+  const t = useTranslation()
+
+  // props.mode の変更を監視して内部状態を同期
+  useEffect(() => {
+    setIsPagination(props.mode === "pagination")
+  }, [props.mode])
+
+  // キャッシュから初期データを取得（フィードモード用）
+  const cachedInitialPages = useMemo(() => {
+    if (isPagination) return []
+
+    try {
+      const cached = client.readQuery({
+        query: tagWorksQuery,
+        variables: {
+          offset: 0,
+          limit: 32,
+          where: {
+            tagNames: [props.tag],
+            orderBy: props.orderBy,
+            sort: props.sort,
+            ratings: ["G", "R15"],
+            hasPrompt: props.hasPrompt === 1 ? true : undefined,
+            isPromptPublic: props.hasPrompt === 1 ? true : undefined,
+            isNowCreatedAt: true,
+          },
+        },
+      })
+      return cached?.tagWorks?.length ? [cached.tagWorks] : []
+    } catch {
+      return []
+    }
+  }, [
+    client,
+    props.tag,
+    props.orderBy,
+    props.sort,
+    props.hasPrompt,
+    isPagination,
+  ])
+
+  // フォロー中のタグを取得
+  const { data: followedTagsData = null } = useQuery(viewerFollowedTagsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: { offset: 0, limit: 32 },
   })
 
+  // ページネーション用のクエリ
   const {
-    data: resp,
-    loading,
-    error,
+    data: paginationResp,
+    loading: paginationLoading,
+    error: paginationError,
   } = useQuery(tagWorksQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip: !isPagination || authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: props.page * 32,
       limit: 32,
@@ -70,13 +140,235 @@ export function TagWorkSection(props: Props) {
         isNowCreatedAt: true,
       },
     },
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-first",
   })
 
-  const t = useTranslation()
+  // 無限スクロール用のクエリ
+  const {
+    data: infiniteResp,
+    loading: infiniteLoading,
+    fetchMore,
+  } = useQuery(tagWorksQuery, {
+    skip: isPagination || authContext.isLoading || authContext.isNotLoggedIn,
+    variables: {
+      offset: 0,
+      limit: 32,
+      where: {
+        tagNames: [props.tag],
+        orderBy: props.orderBy,
+        sort: props.sort,
+        ratings: ["G", "R15"],
+        hasPrompt: props.hasPrompt === 1 ? true : undefined,
+        isPromptPublic: props.hasPrompt === 1 ? true : undefined,
+        isNowCreatedAt: true,
+      },
+    },
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-first",
+    notifyOnNetworkStatusChange: true,
+  })
 
-  const works = resp?.tagWorks ?? props.works
+  // スクロール位置復元（ページネーションモード）
+  useEffect(() => {
+    if (isPagination && typeof window !== "undefined") {
+      const savedScrollY = sessionStorage.getItem(
+        `scroll-pagination-${stateKey}-${props.page}`,
+      )
+      if (savedScrollY) {
+        setTimeout(() => {
+          window.scrollTo(0, Number.parseInt(savedScrollY, 10))
+        }, 100)
+      }
+    }
+  }, [isPagination, stateKey, props.page])
 
-  const firstWork = works.length ? works[0] : null
+  // ページネーションモードでのスクロール位置保存
+  useEffect(() => {
+    if (!isPagination) return
+
+    const saveScrollPosition = () => {
+      sessionStorage.setItem(
+        `scroll-pagination-${stateKey}-${props.page}`,
+        window.scrollY.toString(),
+      )
+    }
+
+    const handleBeforeUnload = () => saveScrollPosition()
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+      saveScrollPosition()
+    }
+  }, [isPagination, stateKey, props.page])
+
+  // フィードモード用のデータ初期化
+  useEffect(() => {
+    if (isPagination) return
+
+    // 初期ページデータを設定
+    if (cachedInitialPages.length > 0 && infinitePages.length === 0) {
+      setInfinitePages(cachedInitialPages)
+      setHasNextPage(cachedInitialPages[0].length === 32)
+      // スクロール位置復元
+      const savedScrollY = sessionStorage.getItem(`scroll-infinite-${stateKey}`)
+      if (savedScrollY) {
+        setTimeout(() => {
+          window.scrollTo(0, Number.parseInt(savedScrollY, 10))
+        }, 100)
+      }
+      return
+    }
+
+    // 新しいデータが取得された場合
+    if (infiniteResp?.tagWorks && infinitePages.length === 0) {
+      setInfinitePages([infiniteResp.tagWorks])
+      setHasNextPage(infiniteResp.tagWorks.length === 32)
+      // スクロール位置復元
+      const savedScrollY = sessionStorage.getItem(`scroll-infinite-${stateKey}`)
+      if (savedScrollY) {
+        setTimeout(() => {
+          window.scrollTo(0, Number.parseInt(savedScrollY, 10))
+        }, 100)
+      }
+    }
+  }, [
+    infiniteResp,
+    isPagination,
+    cachedInitialPages,
+    infinitePages.length,
+    stateKey,
+  ])
+
+  // フィードモードでのスクロール位置保存
+  useEffect(() => {
+    if (isPagination) return
+
+    const saveScrollPosition = () => {
+      sessionStorage.setItem(
+        `scroll-infinite-${stateKey}`,
+        window.scrollY.toString(),
+      )
+    }
+
+    const handleBeforeUnload = () => saveScrollPosition()
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+      saveScrollPosition()
+    }
+  }, [isPagination, stateKey])
+
+  // ソート条件やタグが変更された時にデータをリセット
+  useEffect(() => {
+    if (!isPagination) {
+      setInfinitePages([])
+      setHasNextPage(true)
+      // スクロール位置をクリア
+      sessionStorage.removeItem(`scroll-infinite-${stateKey}`)
+    }
+  }, [
+    props.tag,
+    props.orderBy,
+    props.sort,
+    props.hasPrompt,
+    isPagination,
+    stateKey,
+  ])
+
+  // 無限スクロールのロード処理
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasNextPage || isPagination) return
+
+    const flatWorks = infinitePages.flat()
+    setIsLoadingMore(true)
+    try {
+      const result = await fetchMore({
+        variables: {
+          offset: flatWorks.length,
+          limit: 32,
+          where: {
+            tagNames: [props.tag],
+            orderBy: props.orderBy,
+            sort: props.sort,
+            ratings: ["G", "R15"],
+            hasPrompt: props.hasPrompt === 1 ? true : undefined,
+            isPromptPublic: props.hasPrompt === 1 ? true : undefined,
+            isNowCreatedAt: true,
+          },
+        },
+      })
+
+      if (result.data?.tagWorks) {
+        const newWorks = result.data.tagWorks
+        setInfinitePages((prev) => [...prev, newWorks])
+        setHasNextPage(newWorks.length === 32)
+      }
+    } catch (error) {
+      console.error("Failed to load more works:", error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [
+    isLoadingMore,
+    hasNextPage,
+    isPagination,
+    infinitePages,
+    fetchMore,
+    props.tag,
+    props.orderBy,
+    props.sort,
+    props.hasPrompt,
+  ])
+
+  // Intersection Observer の設定
+  useEffect(() => {
+    if (isPagination) return
+
+    const currentRef = loadingRef.current
+    if (!currentRef) return
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0]
+        if (target.isIntersecting && hasNextPage && !isLoadingMore) {
+          loadMore()
+        }
+      },
+      { threshold: 0.1 },
+    )
+
+    observerRef.current.observe(currentRef)
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect()
+      }
+    }
+  }, [isPagination, hasNextPage, isLoadingMore, loadMore])
+
+  // 表示する作品データの決定
+  const displayedWorks = useMemo(() => {
+    if (isPagination) {
+      return paginationResp?.tagWorks ?? props.works
+    }
+    const flatWorks = infinitePages.flat()
+    return flatWorks.length > 0
+      ? flatWorks
+      : cachedInitialPages.length > 0
+        ? cachedInitialPages[0]
+        : props.works
+  }, [
+    isPagination,
+    paginationResp,
+    props.works,
+    infinitePages,
+    cachedInitialPages,
+  ])
+
+  const firstWork = displayedWorks.length ? displayedWorks[0] : null
 
   const allSortType = [
     "LIKES_COUNT",
@@ -87,9 +379,43 @@ export function TagWorkSection(props: Props) {
     "NAME",
   ] as IntrospectionEnum<"WorkOrderBy">[]
 
-  const isFollowedTag = data?.viewer?.followingTags.some(
+  const isFollowedTag = followedTagsData?.viewer?.followingTags.some(
     (tag) => tag.name === props.tag,
   )
+
+  const handleModeChange = (newMode: "pagination" | "feed") => {
+    // 現在のスクロール位置を保存
+    if (isPagination) {
+      sessionStorage.setItem(
+        `scroll-pagination-${stateKey}-${props.page}`,
+        window.scrollY.toString(),
+      )
+    } else {
+      sessionStorage.setItem(
+        `scroll-infinite-${stateKey}`,
+        window.scrollY.toString(),
+      )
+    }
+
+    const newIsPagination = newMode === "pagination"
+    setIsPagination(newIsPagination)
+
+    // 親コンポーネントの状態を更新（URLパラメータもここで更新される）
+    props.setMode(newMode)
+
+    if (newIsPagination) {
+      props.setPage(0)
+    } else {
+      setHasNextPage(true)
+    }
+  }
+
+  // ローディング状態の判定
+  const isLoading = isPagination
+    ? paginationLoading && !paginationResp
+    : infiniteLoading &&
+      infinitePages.length === 0 &&
+      cachedInitialPages.length === 0
 
   return (
     <div className="flex flex-col space-y-6">
@@ -130,7 +456,9 @@ export function TagWorkSection(props: Props) {
           </div>
         </div>
       </div>
+
       <GoogleCustomSearch />
+
       <div className="relative flex items-center">
         <div className="hidden items-center space-x-2 md:flex">
           <div className="min-w-32">
@@ -173,6 +501,7 @@ export function TagWorkSection(props: Props) {
           <TagActionOther tag={props.tag} />
         </div>
       </div>
+
       <div className="flex items-center space-x-2 md:hidden">
         <div className="min-w-32">
           <WorksListSortableSetting
@@ -203,18 +532,82 @@ export function TagWorkSection(props: Props) {
           </div>
         </div>
       </div>
-      <ResponsivePhotoWorksAlbum works={works} isShowProfile={true} />
-      <div className="h-8" />
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-        <ResponsivePagination
-          maxCount={Number(props.worksCount)}
-          perPage={32}
-          currentPage={props.page}
-          onPageChange={(page: number) => {
-            props.setPage(page)
-          }}
-        />
+
+      {/* 表示モード切り替えボタン - 右寄せでフィード・ページネーションの順 */}
+      <div className="flex justify-end">
+        <div className="flex items-center space-x-2">
+          <Button
+            variant={!isPagination ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleModeChange("feed")}
+            className="flex items-center space-x-1"
+          >
+            <List className="h-4 w-4" />
+            <span>{t("フィード", "Feed")}</span>
+          </Button>
+          <Button
+            variant={isPagination ? "default" : "outline"}
+            size="sm"
+            onClick={() => handleModeChange("pagination")}
+            className="flex items-center space-x-1"
+          >
+            <Grid className="h-4 w-4" />
+            <span>{t("ページネーション", "Pagination")}</span>
+          </Button>
+        </div>
       </div>
+
+      {isLoading ? (
+        <div className="flex justify-center py-8">
+          <div className="flex items-center space-x-2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+            <span>{t("読み込み中...", "Loading...")}</span>
+          </div>
+        </div>
+      ) : (
+        <ResponsivePhotoWorksAlbum
+          works={displayedWorks}
+          isShowProfile={true}
+        />
+      )}
+
+      {/* 無限スクロール用のローディング表示 */}
+      {!isPagination && !isLoading && (
+        <div ref={loadingRef} className="flex justify-center py-4">
+          {isLoadingMore && (
+            <div className="flex items-center space-x-2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+              <span>{t("読み込み中...", "Loading...")}</span>
+            </div>
+          )}
+          {!hasNextPage && infinitePages.flat().length > 0 && (
+            <p className="text-muted-foreground">
+              {t("すべての作品を表示しました", "All works have been displayed")}
+            </p>
+          )}
+        </div>
+      )}
+
+      <div className="h-8" />
+
+      {/* ページネーション用のコントロール */}
+      {isPagination && (
+        <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
+          <ResponsivePagination
+            maxCount={Number(props.worksCount)}
+            perPage={32}
+            currentPage={props.page}
+            onPageChange={(page: number) => {
+              // 現在のページのスクロール位置を保存
+              sessionStorage.setItem(
+                `scroll-pagination-${stateKey}-${props.page}`,
+                window.scrollY.toString(),
+              )
+              props.setPage(page)
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

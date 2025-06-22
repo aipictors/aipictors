@@ -1,7 +1,7 @@
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
-import { Link, useNavigate, useLocation } from "@remix-run/react"
+import { HomeNavigationButton } from "./home-navigation-button"
+import { Link, useNavigate, useLocation, useNavigation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
@@ -10,63 +10,88 @@ import {
   Image,
   ImageIcon,
   LightbulbIcon,
+  Loader2Icon,
   RocketIcon,
   StampIcon,
   StarIcon,
 } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
+import { Button } from "~/components/ui/button"
 
 type Props = {
+  title?: string
   onClickMenuItem?: () => void
 }
 
-export function HomeRouteList(props: Props) {
+export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const authContext = useContext(AuthContext)
+
+  const navigation = useNavigation()
 
   const location = useLocation()
 
   const navigate = useNavigate()
 
-  // `sensitive` フラグが現在の URL に含まれているかチェック
-  const isSensitive = /\/r($|\/)/.test(location.pathname)
-
-  const closeHeaderMenu = () => {
-    if (props.onClickMenuItem) {
-      props.onClickMenuItem()
-    }
-  }
-
-  // 規約や概要ページには sensitive を付けないリンクの生成関数
-  const createLink = (path: string) => {
-    if (isSensitive && !["/about", "/terms"].includes(path)) {
-      return `/r${path}`
-    }
-    return path
-  }
-
-  const toggleSensitive = () => {
-    // センシティブフラグを削除（Cookieの有効期限を過去に設定）
-    document.cookie = "sensitive=1; max-age=0; path=/"
-
-    // URLから/rを取り除きリダイレクト
-    const newUrl = location.pathname.replace("/r", "")
-
-    navigate(newUrl === "" ? "/" : newUrl, { replace: true }) // URLを更新してリダイレクト
-  }
-
   const t = useTranslation()
 
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
+
+  const isSensitive = sensitivePath
+
+  const title = isSensitive ? "Aipictors R18" : (propTitle ?? "Aipictors")
+
+  const getSensitiveLink = (path: string) =>
+    /^\/r($|\s)/.test(path) ? "" : sensitivePath ? `/r${path}` : path
+
+  const createLink = (path: string) =>
+    isSensitive && !["/about", "/terms"].includes(path) ? `/r${path}` : path
+
+  const toggleSensitive = () => {
+    // biome-ignore lint/suspicious/noDocumentCookie: <explanation>
+    document.cookie = "sensitive=1; max-age=0; path=/"
+    const newUrl = location.pathname.replace("/r", "")
+    navigate(newUrl === "" ? "/" : newUrl, { replace: true })
+  }
+
+  const closeHeaderMenu = () => onClickMenuItem?.()
+
   return (
-    <div className="h-[80vh] w-full space-y-1 pr-4 pb-16">
+    <div className="fixed top-0 z-40 flex h-screen w-[216px] flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 md:w-16 lg:w-[216px] ">
+      {/* Logo ----------------------------------------------------- */}
+      <div className="mb-10 flex justify-start md:justify-center lg:justify-start">
+        <Button
+          variant="ghost"
+          className="flex items-center space-x-2 p-0 md:p-2"
+          onClick={() => navigate(getSensitiveLink("/"))}
+        >
+          {navigation.state === "loading" ? (
+            <Loader2Icon className="size-8 animate-spin" />
+          ) : (
+            <img
+              src="/icon.svg"
+              className="m-auto size-8 rounded-full md:pb-2 lg:mr-2 lg:pb-2"
+              alt="Avatar"
+              width={40}
+              height={40}
+            />
+          )}
+          <span className="inline font-bold text-xl md:hidden lg:inline">
+            {title}
+          </span>
+        </Button>
+      </div>
+
+      {/* Main nav ------------------------------------------------- */}
       <HomeNavigationButton
         href={isSensitive ? "/r" : "/"}
-        onClick={closeHeaderMenu}
+        // onClick={closeHeaderMenu}
         icon={HomeIcon}
       >
         {t("ホーム", "Home")}
         {isSensitive && " - R18"}
       </HomeNavigationButton>
+
       {isSensitive && (
         <HomeNavigationButton
           onClick={toggleSensitive}
@@ -76,6 +101,7 @@ export function HomeRouteList(props: Props) {
           {t("ホーム - 全年齢", "Home - G")}
         </HomeNavigationButton>
       )}
+
       <HomeNavigationButton
         href={createLink("/themes")}
         icon={LightbulbIcon}
@@ -83,6 +109,7 @@ export function HomeRouteList(props: Props) {
       >
         {t("お題", "Themes")}
       </HomeNavigationButton>
+
       <HomeNavigationButton
         href={createLink("/rankings")}
         icon={AwardIcon}
@@ -90,6 +117,7 @@ export function HomeRouteList(props: Props) {
       >
         {t("ランキング", "Ranking")}
       </HomeNavigationButton>
+
       <HomeNavigationButton
         href={createLink("/?tab=follow-user")}
         icon={Image}
@@ -97,6 +125,7 @@ export function HomeRouteList(props: Props) {
       >
         {t("フォロー新着", "Followed new posts")}
       </HomeNavigationButton>
+
       <HomeNavigationButton
         href={createLink("/stickers")}
         icon={StampIcon}
@@ -104,6 +133,7 @@ export function HomeRouteList(props: Props) {
       >
         {t("スタンプ広場", "Stickers")}
       </HomeNavigationButton>
+
       <HomeNavigationButton
         href={createLink("/events")}
         icon={StarIcon}
@@ -111,6 +141,7 @@ export function HomeRouteList(props: Props) {
       >
         {t("イベント", "Events")}
       </HomeNavigationButton>
+
       <HomeNavigationButton
         href={createLink("/releases")}
         icon={RocketIcon}
@@ -118,9 +149,13 @@ export function HomeRouteList(props: Props) {
       >
         {t("更新情報", "Update Information")}
       </HomeNavigationButton>
-      <div className={"py-2"}>
+
+      {/* Separator ------------------------------------------------ */}
+      <div className="hidden px-3 py-2 lg:block">
         <Separator />
       </div>
+
+      {/* Categories ---------------------------------------------- */}
       <HomeNavigationButton
         href={createLink("/posts/2d")}
         icon={ImageIcon}
@@ -128,6 +163,7 @@ export function HomeRouteList(props: Props) {
       >
         {t("イラスト", "Illust")}
       </HomeNavigationButton>
+
       <HomeNavigationButton
         href={createLink("/posts/3d")}
         icon={BookImageIcon}
@@ -135,6 +171,7 @@ export function HomeRouteList(props: Props) {
       >
         {t("フォト", "Photo")}
       </HomeNavigationButton>
+
       <HomeNavigationButton
         href={createLink("/r")}
         icon={BoxIcon}
@@ -142,14 +179,18 @@ export function HomeRouteList(props: Props) {
       >
         {t("センシティブ", "BoxIcon")}
       </HomeNavigationButton>
+
+      {/* Separator (auth) ---------------------------------------- */}
       {authContext.isNotLoading && (
-        <div className={"py-2"}>
+        <div className="hidden px-3 py-2 lg:block">
           <Separator />
         </div>
       )}
-      <footer>
-        <div className="flex flex-col space-y-2 p-2">
-          <div className="flex items-center justify-start space-x-2">
+
+      {/* Footer --------------------------------------------------- */}
+      <footer className="mt-auto sm:block md:hidden lg:block">
+        <div className="mb-16 flex flex-col space-y-2 p-2">
+          <div className="flex items-center space-x-2">
             <Link
               target="_blank"
               rel="noopener noreferrer"
@@ -180,7 +221,7 @@ export function HomeRouteList(props: Props) {
           <Link className="text-xs opacity-80" to="/terms">
             {t("利用規約", "Terms")}
           </Link>
-          <p className="text-xs opacity-80">{"©2025 Aipictors Co.,Ltd."}</p>
+          <p className="text-xs opacity-80">©2025 Aipictors Co.,Ltd.</p>
         </div>
       </footer>
     </div>

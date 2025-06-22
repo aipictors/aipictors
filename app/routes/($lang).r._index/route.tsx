@@ -69,7 +69,7 @@ const getUtcDateString = (date: Date) => {
   return `${year}/${month}/${day}`
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {
@@ -430,7 +430,7 @@ export default function Index() {
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
           {data && (
             <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-              <div className="flex flex-col space-y-4 md:w-[80%]">
+              <div className="flex flex-col space-y-4 md:w-[72%]">
                 <div>
                   <HomeSensitiveTagList
                     themeTitle={data.dailyTheme?.title}

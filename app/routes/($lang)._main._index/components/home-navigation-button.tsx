@@ -1,45 +1,65 @@
-import { Button } from "~/components/ui/button"
-import type { RemixiconComponentType } from "@remixicon/react"
+import { Link, useLocation } from "@remix-run/react"
 import type { LucideIcon } from "lucide-react"
-import { forwardRef } from "react"
+import clsx from "clsx"
+import type { ReactNode } from "react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip"
 
 type Props = {
-  icon?: LucideIcon | RemixiconComponentType
-  href?: string
-  children: React.ReactNode
-  onClick?(): void
-  isDisabled?: boolean
+  href: string
+  icon: LucideIcon
+  children: ReactNode
+  onClick?: () => void
 }
 
-export const HomeNavigationButton = forwardRef<HTMLButtonElement, Props>(
-  (props, ref) => {
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-      // 任意の onClick を実行
-      if (props.onClick) {
-        props.onClick()
-      }
-      // href が指定されている場合、リンク遷移を実行
-      if (props.href) {
-        if (props.href.startsWith("http")) {
-          window.open(props.href, "_blank", "noopener,noreferrer")
-        } else {
-          window.location.href = props.href
-        }
-      }
-    }
+/**
+ * ラベル表示ルール
+ * ───────────────
+ * xs-sm (<768 px) : 表示（inline）
+ * md   (768-1023) : 非表示（hidden）
+ * lg-  (>=1024 px): 再表示（inline）
+ */
+export function HomeNavigationButton({
+  href,
+  icon: Icon,
+  children,
+  onClick,
+}: Props) {
+  const { pathname } = useLocation()
+  const active = pathname === href || pathname.startsWith(`${href}/`)
 
-    return (
-      <Button
-        ref={ref}
-        variant={"ghost"}
-        size={"sm"}
-        className="w-full justify-start"
-        disabled={props.isDisabled}
-        onClick={!props.isDisabled ? handleClick : undefined}
-      >
-        {props.icon && <props.icon className="mr-4 w-4" />}
-        {props.children}
-      </Button>
-    )
-  },
-)
+  return (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        {/* ボタン本体 */}
+        <TooltipTrigger asChild>
+          <Link
+            to={href}
+            onClick={onClick}
+            className={clsx(
+              "flex items-center rounded-md px-3 py-2 font-medium text-sm transition-colors",
+              active
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted/20 hover:text-foreground",
+              // xs-sm 左寄せ → md 中央寄せ → lg- 左寄せ
+              "justify-start md:justify-center lg:justify-start",
+            )}
+          >
+            <Icon className="size-5 shrink-0" />
+            {/* xs-sm と lg- で表示 / md で隠す */}
+            <span className="ml-3 inline md:hidden lg:inline">{children}</span>
+          </Link>
+        </TooltipTrigger>
+
+        {/* ラベルが非表示になる md 幅だけツールチップを出す */}
+        <TooltipContent side="right" className="hidden md:block lg:hidden">
+          {children}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
