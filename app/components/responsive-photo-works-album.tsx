@@ -116,6 +116,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                     {props.onSelect ? (
                       <button
                         type="button"
+                        className="block h-full w-full overflow-hidden rounded"
                         onClick={() => props.onSelect?.(index)}
                       >
                         <img

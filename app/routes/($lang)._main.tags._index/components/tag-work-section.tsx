@@ -685,6 +685,9 @@ export function TagWorkSection(props: Props) {
           works={displayedWorks}
           startIndex={dialogIndex}
           onClose={() => setDialogIndex(null)}
+          loadMore={!isPagination ? loadMore : undefined}
+          hasNextPage={hasNextPage}
+          isLoadingMore={isLoadingMore}
         />
       )}
     </div>
