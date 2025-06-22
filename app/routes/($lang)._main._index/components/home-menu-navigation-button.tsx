@@ -23,7 +23,7 @@ type Props = {
  * md   (768-1023) : 非表示（hidden）
  * lg-  (>=1024 px): 再表示（inline）
  */
-export function HomeNavigationButton({
+export function HomeMenuNavigationButton({
   href,
   icon: Icon,
   children,
@@ -50,7 +50,7 @@ export function HomeNavigationButton({
             )}
           >
             <Icon className="size-5 shrink-0" />
-            <span className="ml-3 hidden lg:inline">{children}</span>
+            <span className="ml-3 inline">{children}</span>
           </Link>
         </TooltipTrigger>
 

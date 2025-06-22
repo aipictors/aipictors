@@ -4,7 +4,6 @@ import { Button } from "~/components/ui/button"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
-import { HomeRouteList } from "~/routes/($lang)._main._index/components/home-route-list"
 import {
   useNavigation,
   useLocation,
@@ -32,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { cn } from "~/lib/utils"
+import { HomeMenuRouteList } from "~/routes/($lang)._main._index/components/home-menu-route-list"
 
 type Props = {
   title?: string
@@ -314,7 +314,7 @@ function HomeHeader(props: Props) {
             </SheetTrigger>
             <SheetContent className="p-0" side="left">
               <ScrollArea className="h-full p-4">
-                <HomeRouteList onClickMenuItem={close} />
+                <HomeMenuRouteList onClickMenuItem={close} />
               </ScrollArea>
             </SheetContent>
           </Sheet>
