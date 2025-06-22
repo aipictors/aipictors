@@ -51,7 +51,25 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 32,
       limit: 32,
       where: {
-        tagNames: [decodeURIComponent(props.params.tag)],
+        tagNames: [
+          decodeURIComponent(props.params.tag),
+          decodeURIComponent(props.params.tag).toLowerCase(),
+          decodeURIComponent(props.params.tag).toUpperCase(),
+          // カタカナをひらがなに変換
+          decodeURIComponent(props.params.tag).replace(
+            /[\u30A1-\u30F6]/g,
+            (match) => {
+              return String.fromCharCode(match.charCodeAt(0) - 96)
+            },
+          ),
+          // ひらがなをカタカナに変換
+          decodeURIComponent(props.params.tag).replace(
+            /[\u3041-\u3096]/g,
+            (match) => {
+              return String.fromCharCode(match.charCodeAt(0) + 96)
+            },
+          ),
+        ],
         orderBy: orderBy,
         sort: sort,
         isSensitive: true,
@@ -140,7 +158,7 @@ export default function Tag() {
     (searchParams.get("sort") as SortType) || "DESC",
   )
 
-  const [rating, setRating] =
+  const [_rating, setRating] =
     React.useState<IntrospectionEnum<"Rating"> | null>(
       (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
     )
@@ -196,10 +214,6 @@ export default function Tag() {
     Number(searchParams.get("prompt")) || 0,
   )
 
-  if (data === null) {
-    return null
-  }
-
   // URLパラメータの監視と更新
   useEffect(() => {
     const params = new URLSearchParams()
@@ -218,6 +232,10 @@ export default function Tag() {
 
     setSearchParams(params)
   }, [page, hasPrompt, workType, WorkOrderby, worksOrderDeskAsc])
+
+  if (data === null) {
+    return null
+  }
 
   return (
     <>

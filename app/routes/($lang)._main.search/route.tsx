@@ -16,7 +16,6 @@ import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
 import { Separator } from "~/components/ui/separator"
-import { GoogleCustomSearch } from "~/components/google-custom-search"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -71,10 +70,10 @@ export default function Search() {
       </div>
       {/* Googleカスタム検索エンジンのスクリプトを非同期で読み込み */}
       <Separator />
-      <div className="m-auto md:max-w-96">
+      {/* <div className="m-auto md:max-w-96">
         {t("その他の検索", "Other Search")}
         <GoogleCustomSearch />
-      </div>
+      </div> */}
       <h2 className="font-bold">{t("モデル一覧", "Model List")}</h2>
       <ModelList />
       <h2 className="font-bold">{t("人気作品", "Popular Works")}</h2>

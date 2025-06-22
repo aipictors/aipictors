@@ -16,7 +16,6 @@ import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
 import { SensitiveTagActionOther } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-action-other"
 import { Switch } from "~/components/ui/switch"
-import { GoogleCustomSearch } from "~/components/google-custom-search"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -61,7 +60,17 @@ export function SensitiveTagWorkSection(props: Props) {
       offset: props.page * 32,
       limit: 32,
       where: {
-        tagNames: [props.tag],
+        tagNames: [
+          decodeURIComponent(props.tag),
+          decodeURIComponent(props.tag).toLowerCase(),
+          decodeURIComponent(props.tag).toUpperCase(),
+          decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+            String.fromCharCode(m.charCodeAt(0) - 96),
+          ),
+          decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
+            String.fromCharCode(m.charCodeAt(0) + 96),
+          ),
+        ],
         orderBy: props.orderBy,
         sort: props.sort,
         ratings: ["R18", "R18G"],
@@ -131,7 +140,7 @@ export function SensitiveTagWorkSection(props: Props) {
           </div>
         </div>
       </div>
-      <GoogleCustomSearch />
+      {/* <GoogleCustomSearch /> */}
       <div className="relative flex items-center">
         <div className="hidden items-center space-x-2 md:flex">
           <div className="min-w-32">

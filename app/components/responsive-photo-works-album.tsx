@@ -10,6 +10,8 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
+import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -17,6 +19,8 @@ type Props = {
   direction?: "rows" | "columns"
   size?: "small" | "medium" | "large"
   isShowProfile?: boolean
+  /** 作品クリック時に index を返す。未指定なら従来通りリンク遷移 */
+  onSelect?: (index: number) => void
 }
 
 /**
@@ -26,7 +30,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
   if (props.works.length <= 2) {
     return (
       <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">
-        {props.works.map((workItem, index) => {
+        {props.works.map((workItem, _index) => {
           return (
             <div
               key={workItem.id.toString()}
@@ -109,16 +113,29 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
               extras: (_, { photo, index }) => (
                 <div key={index}>
                   <div className="absolute top-0 z-10 w-full rounded-md">
-                    <Link
-                      className="block h-full w-full overflow-hidden rounded"
-                      to={`/posts/${photo.context.id}`}
-                    >
-                      <img
-                        src={photo.src}
-                        alt={photo.context.title}
-                        className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                      />
-                    </Link>
+                    {props.onSelect ? (
+                      <button
+                        type="button"
+                        onClick={() => props.onSelect?.(index)}
+                      >
+                        <img
+                          src={photo.src}
+                          alt={photo.context.title}
+                          className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+                        />
+                      </button>
+                    ) : (
+                      <Link
+                        className="block h-full w-full overflow-hidden rounded"
+                        to={`/posts/${photo.context.id}`}
+                      >
+                        <img
+                          src={photo.src}
+                          alt={photo.context.title}
+                          className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+                        />
+                      </Link>
+                    )}
                   </div>
                   <div
                     className={cn(
@@ -155,14 +172,27 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   )}
                   {props.isShowProfile && (
                     <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
-                      <Link
-                        className="w-48 font-bold"
-                        to={`/posts/${photo.context.id}`}
-                      >
-                        <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
-                          {photo.context.title}
-                        </p>
-                      </Link>
+                      {props.onSelect ? (
+                        <button
+                          type="button"
+                          className="w-48 font-bold"
+                          onClick={() => props.onSelect?.(index)}
+                        >
+                          <p className="overflow-hidden text-ellipsis text-nowrap text-left text-sm">
+                            {photo.context.title}
+                          </p>
+                        </button>
+                      ) : (
+                        <Link
+                          className="w-48 font-bold"
+                          to={`/posts/${photo.context.id}`}
+                        >
+                          <p className="overflow-hidden text-ellipsis text-nowrap text-left text-sm">
+                            {photo.context.title}
+                          </p>
+                        </Link>
+                      )}
+
                       <div className="flex items-center justify-between">
                         <Link to={`/users/${photo.context.user?.id}`}>
                           <div className="flex items-center space-x-2">
@@ -212,6 +242,10 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
               //   )
               // },
             }}
+            onClick={(clickHandlerProps) => {
+              console.log("clickHandlerProps", clickHandlerProps)
+              return props.onSelect?.(clickHandlerProps.index)
+            }}
           />
         </SSR>
       </div>
@@ -224,25 +258,201 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
 
 export const PhotoAlbumWorkFragment = graphql(
   `fragment PhotoAlbumWork on WorkNode @_unmask {
-    id
+ id
+    isMyRecommended
     title
-    enTitle
+    mdUrl
+    accessType
+    type
+    adminAccessType
+    promptAccessType
+    rating
     description
-    likesCount
-    isLiked
-    smallThumbnailImageURL
-    smallThumbnailImageHeight
-    smallThumbnailImageWidth
+    isSensitive
+    enTitle
+    enDescription
+    imageURL
     largeThumbnailImageURL
-    largeThumbnailImageHeight
     largeThumbnailImageWidth
+    largeThumbnailImageHeight
+    smallThumbnailImageURL
+    smallThumbnailImageWidth
+    smallThumbnailImageHeight
     thumbnailImagePosition
     subWorksCount
-    commentsCount
+    url
+    isDeleted
     user {
+      id
+      biography
+      enBiography
+      login
+      nanoid
+      name
+      receivedLikesCount
+      receivedViewsCount
+      awardsCount
+      followersCount
+      worksCount
+      iconUrl
+      headerImageUrl
+      webFcmToken
+      isFollower
+      isFollowee
+      headerImageUrl
+      receivedLikesCount
+      createdLikesCount
+      createdBookmarksCount
+      isMuted
+      works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
+        id
+        userId
+        largeThumbnailImageURL
+        largeThumbnailImageWidth
+        largeThumbnailImageHeight
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+        thumbnailImagePosition
+        subWorksCount
+        commentsCount
+        isLiked
+      }
+      promptonUser {
+        id
+      }
+    }
+    likedUsers(offset: 0, limit: 120) {
       id
       name
       iconUrl
+      login
+    }
+    album {
+      id
+      title
+      description
+    }
+    dailyTheme {
+      id
+      title
+      dateText
+    }
+    tagNames
+    createdAt
+    likesCount
+    viewsCount
+    commentsCount
+    subWorks {
+      id
+      imageUrl
+    }
+    nextWork {
+      id
+      smallThumbnailImageURL
+      smallThumbnailImageWidth
+      smallThumbnailImageHeight
+      thumbnailImagePosition
+    }
+    previousWork {
+      id
+      smallThumbnailImageURL
+      smallThumbnailImageWidth
+      smallThumbnailImageHeight
+      thumbnailImagePosition
+    }
+    model
+    modelHash
+    generationModelId
+    workModelId
+    isTagEditable
+    isCommentsEditable
+    isLiked
+    isBookmarked
+    isInCollection
+    isPromotion
+    isGeneration
+    ogpThumbnailImageUrl
+    prompt
+    negativePrompt
+    noise
+    seed
+    steps
+    sampler
+    scale
+    strength
+    vae
+    clipSkip
+    otherGenerationParams
+    pngInfo
+    style
+    url
+    updatedAt
+    dailyRanking
+    weeklyRanking
+    monthlyRanking
+    relatedUrl
+    nanoid
+  }`,
+)
+
+const _userQuery = graphql(
+  `query User(
+    $userId: ID!,
+  ) {
+    user(id: $userId) {
+      id
+      iconUrl
     }
   }`,
+)
+
+export const CommentListItemFragment = graphql(
+  `fragment Comment on CommentNode @_unmask {
+      ...WorkComment
+      responses(offset: 0, limit: 128) {
+        ...WorkComment
+      }
+  }`,
+  [WorkCommentFragment],
+)
+
+const _createWorkCommentMutation = graphql(
+  `mutation CreateWorkComment($input: CreateWorkCommentInput!) {
+    createWorkComment(input: $input) {
+      id
+    }
+  }`,
+)
+
+const _createCommentLikeMutation = graphql(
+  `mutation CreateCommentLike($input: CreateCommentLikeInput!) {
+    createCommentLike(input: $input) {
+      id
+    }
+  }`,
+)
+
+const _deleteCommentLikeMutation = graphql(
+  `mutation DeleteCommentLike($input: DeleteCommentLikeInput!) {
+    deleteCommentLike(input: $input) {
+      id
+    }
+  }`,
+)
+
+const _viewerUserQuery = graphql(
+  `query ViewerUser {
+    viewer {
+      id
+      user {
+        id
+        iconUrl
+      }
+      userStickers(offset: 0, limit: 5, orderBy: DATE_USED) {
+        ...StickerButton
+      }
+    }
+  }`,
+  [StickerButtonFragment],
 )

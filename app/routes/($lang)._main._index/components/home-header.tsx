@@ -44,27 +44,20 @@ function HomeHeader(props: Props) {
   const location = useLocation()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-
   const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState("")
   const timeoutRef = useRef<NodeJS.Timeout>()
   const previousLocationRef = useRef(location.pathname)
   const isNavigatingRef = useRef(false)
   const isManualNavigationRef = useRef(false) // 手動ナビゲーションフラグを追加
-
   const sensitivePath = /\/r($|\/)/.test(location.pathname)
-  const getSensitiveLink = (path: string) => {
-    // パスが "/r" から始まる場合は空文字を返す
-    if (/^\/r($|\s)/.test(path)) {
-      return ""
-    }
-    // 現在のパスが sensitive なら "/r" を付与
-    if (sensitivePath) {
-      return `/r${path}`
-    }
+  const getSensitiveLink = (path: string, forceSensitive = false) => {
+    // すでに /r 付与済みならそのまま返す
+    if (path.startsWith("/r/") || path === "/r") return path
+    // 現在のページが R18 か、もしくは引数で強制する場合
+    if (sensitivePath || forceSensitive) return `/r${path}`
     return path
   }
-
   // ページ遷移の検出
   useEffect(() => {
     const currentPath = location.pathname
@@ -108,6 +101,82 @@ function HomeHeader(props: Props) {
     }
   }, [location.pathname, searchParams])
 
+  const isSensitiveTag = (tag: string): boolean => {
+    const keyword = tag.toLowerCase()
+    const SENSITIVE_PATTERNS: RegExp[] = [
+      /r18$/i,
+      /18禁$/i,
+      /エロ$/i,
+      /ero$/i,
+      /nsfw$/i,
+      /porn$/i,
+      /nude$/i,
+      /nudity$/i,
+      /fetish$/i,
+      /hentai$/i,
+      /sex$/i,
+      /裸$/i,
+      /陵辱$/i,
+      /アダルト$/i,
+      /adult$/i,
+      /セクシー$/i,
+      /sexiness$/i,
+      /性行為$/i,
+      /レイプ$/i,
+      /れいぷ$/i,
+      /rape$/i,
+      /強姦$/i,
+      /強制わいせつ$/i,
+      /強制猥褻$/i,
+      /脱糞$/i,
+      /defecation$/i,
+      /排泄$/i,
+      /セックス$/i,
+      /せっくす$/i,
+      /おっぱい/i,
+      /パイズリ/i,
+      /乳首/i,
+      /乳輪/i,
+      /乳首責め/i,
+      /精子$/i,
+      /射精$/i,
+      /精液$/i,
+      /フェラ/i,
+      /フェラチオ/i,
+      /クンニ/i,
+      /クンニリングス/i,
+      /アナル/i,
+      /アナルセックス/i,
+      /肛門/i,
+      /肛門セックス/i,
+      /オナニー/i,
+      /自慰/i,
+      /自慰行為/i,
+      /無修正/i,
+      /裏ビデオ/i,
+      /\bAV\b/i,
+      /ロリ(コン)?/i,
+      /巨乳/i,
+      /痴女/i,
+      /痴漢/i,
+      /中出し/i,
+      /パイパン/i,
+      /顔射/i,
+      /69|シックスナイン/i,
+      /3P/i,
+      /\bSM\b/i,
+      /ハードコア/i,
+      /緊縛/i,
+      /拘束/i,
+      /レズ/i,
+      /同性愛/i,
+      /痴態/i,
+      /コスプレSEX|コスプレセックス/i,
+    ]
+
+    return SENSITIVE_PATTERNS.some((re) => re.test(keyword))
+  }
+
   // 検索テキスト変更時のリアルタイム検索（デバウンス付き）
   const performSearch = (text: string) => {
     // ナビゲーション中またはマニュアルナビゲーション中は検索を実行しない
@@ -137,7 +206,10 @@ function HomeHeader(props: Props) {
     // タグ検索ページへ遷移
     const encodedText = encodeURIComponent(sanitizedText)
     const baseUrl = `/tags/${encodedText}`
-    navigate(getSensitiveLink(baseUrl), { replace: true })
+    console.log("Navigating to:", isSensitiveTag(sanitizedText))
+    navigate(getSensitiveLink(baseUrl, isSensitiveTag(sanitizedText)), {
+      replace: true,
+    })
   }
 
   const onSearch = () => {
@@ -159,7 +231,9 @@ function HomeHeader(props: Props) {
     }
     const encodedText = encodeURIComponent(sanitizedText)
     const baseUrl = `/tags/${encodedText}`
-    navigate(getSensitiveLink(baseUrl))
+    navigate(getSensitiveLink(baseUrl, isSensitiveTag(sanitizedText)), {
+      replace: true,
+    })
   }
 
   const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors")

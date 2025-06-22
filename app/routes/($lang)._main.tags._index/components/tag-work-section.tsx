@@ -24,8 +24,30 @@ import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
 import { Switch } from "~/components/ui/switch"
 import { Button } from "~/components/ui/button"
-import { GoogleCustomSearch } from "~/components/google-custom-search"
-import { Grid, List } from "lucide-react"
+import { Grid, List, PlaySquare, ExternalLink } from "lucide-react"
+
+import { useNavigate } from "@remix-run/react"
+import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
+import { Separator } from "~/components/ui/separator"
+
+// ──────────────────────────────────────────────────────────────────────────────
+// GraphQL
+// ──────────────────────────────────────────────────────────────────────────────
+const viewerFollowedTagsQuery = graphql(
+  `query ViewerFollowedTags($offset: Int!, $limit: Int!) {
+    viewer {
+      id
+      followingTags(offset: $offset, limit: $limit) {
+        id
+        name
+      }
+    }
+  }`,
+)
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Component
+// ──────────────────────────────────────────────────────────────────────────────
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -57,9 +79,15 @@ type Props = {
 export function TagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
   const client = useApolloClient()
+  const navigate = useNavigate()
 
-  // 表示モード状態
+  // 表示モード状態（ページネーション / 無限スクロール）
   const [isPagination, setIsPagination] = useState(props.mode === "pagination")
+  // 作品遷移モード（ダイアログ / 直接リンク）
+  const [isDialogMode, setIsDialogMode] = useState(false)
+
+  // ダイアログ制御
+  const [dialogIndex, setDialogIndex] = useState<number | null>(null)
 
   // 無限スクロール用の状態
   const [infinitePages, setInfinitePages] = useState<
@@ -91,7 +119,17 @@ export function TagWorkSection(props: Props) {
           offset: 0,
           limit: 32,
           where: {
-            tagNames: [props.tag],
+            tagNames: [
+              decodeURIComponent(props.tag),
+              decodeURIComponent(props.tag).toLowerCase(),
+              decodeURIComponent(props.tag).toUpperCase(),
+              decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+                String.fromCharCode(m.charCodeAt(0) - 96),
+              ),
+              decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
+                String.fromCharCode(m.charCodeAt(0) + 96),
+              ),
+            ],
             orderBy: props.orderBy,
             sort: props.sort,
             ratings: ["G", "R15"],
@@ -120,31 +158,40 @@ export function TagWorkSection(props: Props) {
     variables: { offset: 0, limit: 32 },
   })
 
-  // ページネーション用のクエリ
-  const {
-    data: paginationResp,
-    loading: paginationLoading,
-    error: paginationError,
-  } = useQuery(tagWorksQuery, {
-    skip: !isPagination || authContext.isLoading || authContext.isNotLoggedIn,
-    variables: {
-      offset: props.page * 32,
-      limit: 32,
-      where: {
-        tagNames: [props.tag],
-        orderBy: props.orderBy,
-        sort: props.sort,
-        ratings: ["G", "R15"],
-        hasPrompt: props.hasPrompt === 1 ? true : undefined,
-        isPromptPublic: props.hasPrompt === 1 ? true : undefined,
-        isNowCreatedAt: true,
+  // ────────────────────　ページネーション用クエリ ────────────────────
+  const { data: paginationResp, loading: paginationLoading } = useQuery(
+    tagWorksQuery,
+    {
+      skip: !isPagination || authContext.isLoading || authContext.isNotLoggedIn,
+      variables: {
+        offset: props.page * 32,
+        limit: 32,
+        where: {
+          tagNames: [
+            decodeURIComponent(props.tag),
+            decodeURIComponent(props.tag).toLowerCase(),
+            decodeURIComponent(props.tag).toUpperCase(),
+            decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+              String.fromCharCode(m.charCodeAt(0) - 96),
+            ),
+            decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
+              String.fromCharCode(m.charCodeAt(0) + 96),
+            ),
+          ],
+          orderBy: props.orderBy,
+          sort: props.sort,
+          ratings: ["G", "R15"],
+          hasPrompt: props.hasPrompt === 1 ? true : undefined,
+          isPromptPublic: props.hasPrompt === 1 ? true : undefined,
+          isNowCreatedAt: true,
+        },
       },
+      fetchPolicy: "cache-first",
+      nextFetchPolicy: "cache-first",
     },
-    fetchPolicy: "cache-first",
-    nextFetchPolicy: "cache-first",
-  })
+  )
 
-  // 無限スクロール用のクエリ
+  // ────────────────────　無限スクロール用クエリ ────────────────────
   const {
     data: infiniteResp,
     loading: infiniteLoading,
@@ -155,7 +202,17 @@ export function TagWorkSection(props: Props) {
       offset: 0,
       limit: 32,
       where: {
-        tagNames: [props.tag],
+        tagNames: [
+          decodeURIComponent(props.tag),
+          decodeURIComponent(props.tag).toLowerCase(),
+          decodeURIComponent(props.tag).toUpperCase(),
+          decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+            String.fromCharCode(m.charCodeAt(0) - 96),
+          ),
+          decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
+            String.fromCharCode(m.charCodeAt(0) + 96),
+          ),
+        ],
         orderBy: props.orderBy,
         sort: props.sort,
         ratings: ["G", "R15"],
@@ -169,16 +226,17 @@ export function TagWorkSection(props: Props) {
     notifyOnNetworkStatusChange: true,
   })
 
-  // スクロール位置復元（ページネーションモード）
+  // ────────────────────　スクロール位置復元 ────────────────────
   useEffect(() => {
     if (isPagination && typeof window !== "undefined") {
       const savedScrollY = sessionStorage.getItem(
         `scroll-pagination-${stateKey}-${props.page}`,
       )
       if (savedScrollY) {
-        setTimeout(() => {
-          window.scrollTo(0, Number.parseInt(savedScrollY, 10))
-        }, 100)
+        setTimeout(
+          () => window.scrollTo(0, Number.parseInt(savedScrollY, 10)),
+          100,
+        )
       }
     }
   }, [isPagination, stateKey, props.page])
@@ -196,41 +254,38 @@ export function TagWorkSection(props: Props) {
 
     const handleBeforeUnload = () => saveScrollPosition()
     window.addEventListener("beforeunload", handleBeforeUnload)
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload)
       saveScrollPosition()
     }
   }, [isPagination, stateKey, props.page])
 
-  // フィードモード用のデータ初期化
+  // フィードモードデータ初期化
   useEffect(() => {
     if (isPagination) return
 
-    // 初期ページデータを設定
     if (cachedInitialPages.length > 0 && infinitePages.length === 0) {
       setInfinitePages(cachedInitialPages)
       setHasNextPage(cachedInitialPages[0].length === 32)
-      // スクロール位置復元
       const savedScrollY = sessionStorage.getItem(`scroll-infinite-${stateKey}`)
       if (savedScrollY) {
-        setTimeout(() => {
-          window.scrollTo(0, Number.parseInt(savedScrollY, 10))
-        }, 100)
+        setTimeout(
+          () => window.scrollTo(0, Number.parseInt(savedScrollY, 10)),
+          100,
+        )
       }
       return
     }
 
-    // 新しいデータが取得された場合
     if (infiniteResp?.tagWorks && infinitePages.length === 0) {
       setInfinitePages([infiniteResp.tagWorks])
       setHasNextPage(infiniteResp.tagWorks.length === 32)
-      // スクロール位置復元
       const savedScrollY = sessionStorage.getItem(`scroll-infinite-${stateKey}`)
       if (savedScrollY) {
-        setTimeout(() => {
-          window.scrollTo(0, Number.parseInt(savedScrollY, 10))
-        }, 100)
+        setTimeout(
+          () => window.scrollTo(0, Number.parseInt(savedScrollY, 10)),
+          100,
+        )
       }
     }
   }, [
@@ -241,7 +296,7 @@ export function TagWorkSection(props: Props) {
     stateKey,
   ])
 
-  // フィードモードでのスクロール位置保存
+  // フィードモード位置保存
   useEffect(() => {
     if (isPagination) return
 
@@ -254,19 +309,17 @@ export function TagWorkSection(props: Props) {
 
     const handleBeforeUnload = () => saveScrollPosition()
     window.addEventListener("beforeunload", handleBeforeUnload)
-
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload)
       saveScrollPosition()
     }
   }, [isPagination, stateKey])
 
-  // ソート条件やタグが変更された時にデータをリセット
+  // ソート・タグ変更時リセット
   useEffect(() => {
     if (!isPagination) {
       setInfinitePages([])
       setHasNextPage(true)
-      // スクロール位置をクリア
       sessionStorage.removeItem(`scroll-infinite-${stateKey}`)
     }
   }, [
@@ -278,7 +331,7 @@ export function TagWorkSection(props: Props) {
     stateKey,
   ])
 
-  // 無限スクロールのロード処理
+  // 無限スクロール読み込み
   const loadMore = useCallback(async () => {
     if (isLoadingMore || !hasNextPage || isPagination) return
 
@@ -290,7 +343,17 @@ export function TagWorkSection(props: Props) {
           offset: flatWorks.length,
           limit: 32,
           where: {
-            tagNames: [props.tag],
+            tagNames: [
+              decodeURIComponent(props.tag),
+              decodeURIComponent(props.tag).toLowerCase(),
+              decodeURIComponent(props.tag).toUpperCase(),
+              decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+                String.fromCharCode(m.charCodeAt(0) - 96),
+              ),
+              decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
+                String.fromCharCode(m.charCodeAt(0) + 96),
+              ),
+            ],
             orderBy: props.orderBy,
             sort: props.sort,
             ratings: ["G", "R15"],
@@ -300,7 +363,6 @@ export function TagWorkSection(props: Props) {
           },
         },
       })
-
       if (result.data?.tagWorks) {
         const newWorks = result.data.tagWorks
         setInfinitePages((prev) => [...prev, newWorks])
@@ -323,40 +385,30 @@ export function TagWorkSection(props: Props) {
     props.hasPrompt,
   ])
 
-  // Intersection Observer の設定
+  // Intersection Observer
   useEffect(() => {
     if (isPagination) return
-
     const currentRef = loadingRef.current
     if (!currentRef) return
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        const target = entries[0]
-        if (target.isIntersecting && hasNextPage && !isLoadingMore) {
+        if (entries[0].isIntersecting && hasNextPage && !isLoadingMore) {
           loadMore()
         }
       },
       { threshold: 0.1 },
     )
-
     observerRef.current.observe(currentRef)
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect()
-      }
-    }
+    return () => observerRef.current?.disconnect()
   }, [isPagination, hasNextPage, isLoadingMore, loadMore])
 
-  // 表示する作品データの決定
+  // 表示作品
   const displayedWorks = useMemo(() => {
-    if (isPagination) {
-      return paginationResp?.tagWorks ?? props.works
-    }
-    const flatWorks = infinitePages.flat()
-    return flatWorks.length > 0
-      ? flatWorks
+    if (isPagination) return paginationResp?.tagWorks ?? props.works
+    const flat = infinitePages.flat()
+    return flat.length > 0
+      ? flat
       : cachedInitialPages.length > 0
         ? cachedInitialPages[0]
         : props.works
@@ -368,6 +420,7 @@ export function TagWorkSection(props: Props) {
     cachedInitialPages,
   ])
 
+  // 一覧の最初の作品（バナー用）
   const firstWork = displayedWorks.length ? displayedWorks[0] : null
 
   const allSortType = [
@@ -380,11 +433,12 @@ export function TagWorkSection(props: Props) {
   ] as IntrospectionEnum<"WorkOrderBy">[]
 
   const isFollowedTag = followedTagsData?.viewer?.followingTags.some(
-    (tag) => tag.name === props.tag,
+    (t) => t.name === props.tag,
   )
 
+  // ───────────────────────── mode 切替 ─────────────────────────
   const handleModeChange = (newMode: "pagination" | "feed") => {
-    // 現在のスクロール位置を保存
+    // 現在位置保存
     if (isPagination) {
       sessionStorage.setItem(
         `scroll-pagination-${stateKey}-${props.page}`,
@@ -399,32 +453,38 @@ export function TagWorkSection(props: Props) {
 
     const newIsPagination = newMode === "pagination"
     setIsPagination(newIsPagination)
-
-    // 親コンポーネントの状態を更新（URLパラメータもここで更新される）
     props.setMode(newMode)
+    if (newIsPagination) props.setPage(0)
+    else setHasNextPage(true)
+  }
 
-    if (newIsPagination) {
-      props.setPage(0)
+  // ───────────────────────── 作品クリック ─────────────────────────
+  const openWork = (idx: number) => {
+    console.log("Open work at index:", idx)
+    if (isDialogMode) {
+      setDialogIndex(idx)
     } else {
-      setHasNextPage(true)
+      navigate(`/posts/${displayedWorks[idx].id}`)
     }
   }
 
-  // ローディング状態の判定
+  // ───────────────────────── ローディング判定 ─────────────────────────
   const isLoading = isPagination
     ? paginationLoading && !paginationResp
     : infiniteLoading &&
       infinitePages.length === 0 &&
       cachedInitialPages.length === 0
 
+  // ───────────────────────── JSX ─────────────────────────
   return (
     <div className="flex flex-col space-y-6">
+      {/* ────────── バナー ────────── */}
       <div className="relative h-32">
         {firstWork?.smallThumbnailImageURL && (
           <div className="relative h-16 w-full overflow-hidden">
             <img
               src={firstWork.smallThumbnailImageURL}
-              alt={`${props.tag}のサムネイル`}
+              alt={`${props.tag} thumbnail`}
               className="h-full w-full object-cover opacity-50"
             />
           </div>
@@ -457,53 +517,12 @@ export function TagWorkSection(props: Props) {
         </div>
       </div>
 
-      <GoogleCustomSearch />
+      {/* ────────── Google 検索 ────────── */}
+      {/* <GoogleCustomSearch /> */}
 
-      <div className="relative flex items-center">
-        <div className="hidden items-center space-x-2 md:flex">
-          <div className="min-w-32">
-            <WorksListSortableSetting
-              nowSort={props.sort}
-              nowOrderBy={props.orderBy}
-              allOrderBy={allSortType}
-              setSort={props.setSort}
-              onClickTitleSortButton={props.onClickTitleSortButton}
-              onClickLikeSortButton={props.onClickLikeSortButton}
-              onClickBookmarkSortButton={props.onClickBookmarkSortButton}
-              onClickCommentSortButton={props.onClickCommentSortButton}
-              onClickViewSortButton={props.onClickViewSortButton}
-              onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
-              onClickDateSortButton={props.onClickDateSortButton}
-              onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
-              onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
-            />
-          </div>
-          <div className="min-w-32">
-            <div className="flex items-center space-x-2">
-              <Switch
-                onClick={() => {
-                  props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)
-                }}
-                checked={props.hasPrompt === 1}
-              />
-              <span className="text-sm">
-                {t("プロンプト有", "With Prompts")}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="ml-auto flex w-full items-center space-x-4 md:w-64">
-          <TagFollowButton
-            className="w-full"
-            tag={props.tag}
-            isFollow={isFollowedTag ?? false}
-          />
-          <TagActionOther tag={props.tag} />
-        </div>
-      </div>
-
-      <div className="flex items-center space-x-2 md:hidden">
-        <div className="min-w-32">
+      {/* ────────── ソート & フィルタ エリア (md 以上) ────────── */}
+      <div className="relative hidden items-center md:flex">
+        <div className="flex items-center space-x-2">
           <WorksListSortableSetting
             nowSort={props.sort}
             nowOrderBy={props.orderBy}
@@ -519,44 +538,96 @@ export function TagWorkSection(props: Props) {
             onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
             onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
           />
-        </div>
-        <div className="min-w-32">
           <div className="flex items-center space-x-2">
             <Switch
-              onClick={() => {
-                props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)
-              }}
+              onClick={() => props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)}
               checked={props.hasPrompt === 1}
             />
             <span className="text-sm">{t("プロンプト有", "With Prompts")}</span>
           </div>
         </div>
+        <div className="ml-auto flex w-64 items-center space-x-4">
+          <TagFollowButton
+            className="w-full"
+            tag={props.tag}
+            isFollow={isFollowedTag ?? false}
+          />
+          <TagActionOther tag={props.tag} />
+        </div>
       </div>
 
-      {/* 表示モード切り替えボタン - 右寄せでフィード・ページネーションの順 */}
-      <div className="flex justify-end">
+      {/* ────────── ソート & フィルタ (モバイル) ────────── */}
+      <div className="flex items-center space-x-2 md:hidden">
+        <WorksListSortableSetting
+          nowSort={props.sort}
+          nowOrderBy={props.orderBy}
+          allOrderBy={allSortType}
+          setSort={props.setSort}
+          onClickTitleSortButton={props.onClickTitleSortButton}
+          onClickLikeSortButton={props.onClickLikeSortButton}
+          onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+          onClickCommentSortButton={props.onClickCommentSortButton}
+          onClickViewSortButton={props.onClickViewSortButton}
+          onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+          onClickDateSortButton={props.onClickDateSortButton}
+          onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+          onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+        />
         <div className="flex items-center space-x-2">
+          <Switch
+            onClick={() => props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)}
+            checked={props.hasPrompt === 1}
+          />
+          <span className="text-sm">{t("プロンプト有", "With Prompts")}</span>
+        </div>
+      </div>
+
+      {/* ────────── 表示モード ＆ 遷移モード ────────── */}
+      <div className="flex justify-end gap-2">
+        {/* フィード / ページネーション */}
+        <Button
+          variant={!isPagination ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleModeChange("feed")}
+          className="flex items-center space-x-1"
+        >
+          <List className="h-4 w-4" />
+          <span>{t("フィード", "Feed")}</span>
+        </Button>
+        <Button
+          variant={isPagination ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleModeChange("pagination")}
+          className="flex items-center space-x-1"
+        >
+          <Grid className="h-4 w-4" />
+          <span>{t("ページネーション", "Pagination")}</span>
+        </Button>
+        {/* リンク遷移 / ダイアログ */}
+        <Separator orientation="vertical" />
+        <div className="hidden gap-2 md:flex">
           <Button
-            variant={!isPagination ? "default" : "outline"}
+            variant={!isDialogMode ? "default" : "outline"}
             size="sm"
-            onClick={() => handleModeChange("feed")}
+            onClick={() => setIsDialogMode(false)}
             className="flex items-center space-x-1"
           >
-            <List className="h-4 w-4" />
-            <span>{t("フィード", "Feed")}</span>
+            <ExternalLink className="h-4 w-4" />
+            <span>{t("リンク遷移", "Open page")}</span>
           </Button>
           <Button
-            variant={isPagination ? "default" : "outline"}
+            variant={isDialogMode ? "default" : "outline"}
             size="sm"
-            onClick={() => handleModeChange("pagination")}
+            onClick={() => setIsDialogMode(true)}
             className="flex items-center space-x-1"
           >
-            <Grid className="h-4 w-4" />
-            <span>{t("ページネーション", "Pagination")}</span>
+            <PlaySquare className="h-4 w-4" />
+            <span>{t("ダイアログ", "Dialog")}</span>
           </Button>
         </div>
       </div>
 
+      {/* ────────── メイン一覧 ────────── */}
       {isLoading ? (
         <div className="flex justify-center py-8">
           <div className="flex items-center space-x-2">
@@ -568,10 +639,11 @@ export function TagWorkSection(props: Props) {
         <ResponsivePhotoWorksAlbum
           works={displayedWorks}
           isShowProfile={true}
+          onSelect={isDialogMode ? openWork : undefined}
         />
       )}
 
-      {/* 無限スクロール用のローディング表示 */}
+      {/* 無限スクロール ローディング / 完了 */}
       {!isPagination && !isLoading && (
         <div ref={loadingRef} className="flex justify-center py-4">
           {isLoadingMore && (
@@ -588,38 +660,33 @@ export function TagWorkSection(props: Props) {
         </div>
       )}
 
-      <div className="h-8" />
-
-      {/* ページネーション用のコントロール */}
+      {/* ページネーション コントロール */}
       {isPagination && (
-        <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
+        <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
           <ResponsivePagination
             maxCount={Number(props.worksCount)}
             perPage={32}
             currentPage={props.page}
-            onPageChange={(page: number) => {
-              // 現在のページのスクロール位置を保存
+            onPageChange={(p: number) => {
               sessionStorage.setItem(
                 `scroll-pagination-${stateKey}-${props.page}`,
                 window.scrollY.toString(),
               )
-              props.setPage(page)
+              props.setPage(p)
             }}
           />
         </div>
       )}
+
+      {/* ────────── 作品ダイアログ ────────── */}
+      {dialogIndex !== null && (
+        <WorkViewerDialog
+          // key={dialogIndex}
+          works={displayedWorks}
+          startIndex={dialogIndex}
+          onClose={() => setDialogIndex(null)}
+        />
+      )}
     </div>
   )
 }
-
-const viewerFollowedTagsQuery = graphql(
-  `query ViewerFollowedTags($offset: Int!, $limit: Int!) {
-    viewer {
-      id
-      followingTags(offset: $offset, limit: $limit) {
-        id
-        name
-      }
-    }
-  }`,
-)
