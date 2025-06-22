@@ -60,9 +60,9 @@ export function HomeMenuRouteList({
   const closeHeaderMenu = () => onClickMenuItem?.()
 
   return (
-    <div className="fixed top-0 z-40 flex h-screen w-[216px] flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 md:w-16 lg:w-[216px] ">
+    <div className="fixed top-0 z-40 flex h-screen w-[216px] flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200">
       {/* Logo ----------------------------------------------------- */}
-      <div className="mb-10 flex justify-start md:justify-center lg:justify-start">
+      <div className="mb-10 flex justify-start">
         <Button
           variant="ghost"
           className="flex items-center space-x-2 p-0 md:p-2"
@@ -79,9 +79,7 @@ export function HomeMenuRouteList({
               height={40}
             />
           )}
-          <span className="inline font-bold text-xl md:hidden lg:inline">
-            {title}
-          </span>
+          <span className="inline font-bold text-xl">{title}</span>
         </Button>
       </div>
 

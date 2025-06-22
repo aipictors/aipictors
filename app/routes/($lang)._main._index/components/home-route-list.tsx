@@ -57,7 +57,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const closeHeaderMenu = () => onClickMenuItem?.()
 
   return (
-    <div className="fixed top-0 z-40 flex h-screen w-[216px] flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 md:w-16 lg:w-[216px] ">
+    <div className="fixed top-0 flex h-screen w-[216px] flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 md:z-30 md:w-16 lg:w-[216px] ">
       {/* Logo ----------------------------------------------------- */}
       <div className="mb-10 flex justify-start md:justify-center lg:justify-start">
         <Button
@@ -66,11 +66,11 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
           onClick={() => navigate(getSensitiveLink("/"))}
         >
           {navigation.state === "loading" ? (
-            <Loader2Icon className="size-8 animate-spin" />
+            <Loader2Icon className="size-8 animate-spin md:hidden lg:block" />
           ) : (
             <img
               src="/icon.svg"
-              className="m-auto size-8 rounded-full md:pb-2 lg:mr-2 lg:pb-2"
+              className="m-auto size-8 rounded-full md:hidden md:pb-2 lg:mr-2 lg:block lg:pb-2"
               alt="Avatar"
               width={40}
               height={40}

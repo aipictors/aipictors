@@ -303,7 +303,7 @@ function HomeHeader(props: Props) {
         <div
           className={cn(
             "flex min-w-fit items-center gap-x-2",
-            props.alwaysShowTitle ? "" : "md:hidden",
+            props.alwaysShowTitle ? "" : "lg:hidden",
           )}
         >
           <Sheet open={isOpen} onOpenChange={setIsOpen}>

@@ -46,7 +46,7 @@ export function HomeMenuNavigationButton({
                 ? "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:bg-muted/20 hover:text-foreground",
               // xs-sm 左寄せ → md 中央寄せ → lg- 左寄せ
-              "justify-start md:justify-center lg:justify-start",
+              "justify-start lg:justify-start",
             )}
           >
             <Icon className="size-5 shrink-0" />

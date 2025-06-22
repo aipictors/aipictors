@@ -68,7 +68,7 @@ export default function GenerationLayout() {
       <Suspense fallback={<AppLoadingPage />}>
         <GenerationQueryProvider generationQueryContext={data.data}>
           <GenerationConfigProvider>
-            <div className="container max-w-none px-8">
+            <div className="container max-w-none px-4">
               <Outlet />
             </div>
           </GenerationConfigProvider>
