@@ -249,7 +249,7 @@ function HomeHeader(props: Props) {
   const [isExistedNewNotificationState, setIsExistedNewNotificationState] =
     useState(isExistedNewNotification ?? false)
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const _handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
       onSearch()
     }
@@ -461,7 +461,7 @@ function HomeHeader(props: Props) {
                 <Input
                   value={searchText}
                   onChange={onChangeSearchText}
-                  onKeyUp={handleKeyDown}
+                  // onKeyUp={handleKeyDown}
                   placeholder={t("作品を検索", "Search for posts")}
                 />
                 <div className="absolute right-4">
@@ -486,7 +486,7 @@ function HomeHeader(props: Props) {
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
-                onKeyUp={handleKeyDown}
+                // onKeyUp={handleKeyDown}
                 placeholder={t("作品を検索", "Search for posts")}
               />
             </div>
