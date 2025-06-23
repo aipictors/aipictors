@@ -1,3 +1,15 @@
+// ---------------------------------------------
+// 開発時に Apollo の詳細エラーを出す
+// ---------------------------------------------
+if (import.meta.env.DEV) {
+  import("@apollo/client/dev").then(
+    ({ loadDevMessages, loadErrorMessages }) => {
+      loadDevMessages()
+      loadErrorMessages()
+    },
+  )
+}
+
 import { typePolicies } from "~/lib/type-policies"
 import { config } from "~/config"
 import {
@@ -16,23 +28,14 @@ const httpLink = createHttpLink({
 const contextSetter: ContextSetter = async (_, context) => {
   if (getApps().length === 0) {
     return {
-      headers: {
-        ...context.headers,
-        authorization: null,
-        platform: "web",
-      },
+      headers: { ...context.headers, authorization: null, platform: "web" },
     }
   }
 
   const currentUser = getAuth().currentUser
-
-  if (currentUser === null) {
+  if (!currentUser) {
     return {
-      headers: {
-        ...context.headers,
-        authorization: null,
-        platform: "web",
-      },
+      headers: { ...context.headers, authorization: null, platform: "web" },
     }
   }
 
@@ -49,12 +52,10 @@ const contextSetter: ContextSetter = async (_, context) => {
 
 const authLink = setContext(contextSetter)
 
-const cache = new InMemoryCache({
-  typePolicies: typePolicies,
-})
+const cache = new InMemoryCache({ typePolicies })
 
 export const apolloClient = new ApolloClient({
   ssrMode: false,
   link: authLink.concat(httpLink),
-  cache: cache,
+  cache,
 })

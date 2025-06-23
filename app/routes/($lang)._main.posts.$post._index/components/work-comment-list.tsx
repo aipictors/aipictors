@@ -185,7 +185,7 @@ export function WorkCommentList(props: Props) {
           },
         ])
       }
-    } catch (e) {
+    } catch (_e) {
       // toast(
       //   t(
       //     "送信に失敗しました。同じコメントを何度も送信しようとしているか、通信エラーが発生しています。",
@@ -206,7 +206,7 @@ export function WorkCommentList(props: Props) {
       })
       setLikedCommentIds([...likedCommentIds, commentId])
       setCanceledCommentIds(canceledCommentIds.filter((id) => id !== commentId))
-    } catch (e) {
+    } catch (_e) {
       // toast(
       //   t(
       //     "いいねに失敗しました。通信エラーが発生しています。",
@@ -227,7 +227,7 @@ export function WorkCommentList(props: Props) {
       })
       setLikedCommentIds(likedCommentIds.filter((id) => id !== commentId))
       setCanceledCommentIds([...canceledCommentIds, commentId])
-    } catch (e) {
+    } catch (_e) {
       toast(
         t(
           "いいねの取り消しに失敗しました。通信エラーが発生しています。",
@@ -288,6 +288,7 @@ export function WorkCommentList(props: Props) {
                       sticker.id,
                       sticker.imageUrl ?? "",
                       props.workId,
+                      userIcon,
                     )
                   } catch (error) {
                     console.error("Failed to send comment:", error)
@@ -372,7 +373,7 @@ export function WorkCommentList(props: Props) {
                     onReplyCompleted={(
                       id: string,
                       text: string,
-                      stickerId: string,
+                      _stickerId: string,
                       stickerImageURL: string,
                     ) => {
                       setNewComments([
@@ -439,7 +440,7 @@ export function WorkCommentList(props: Props) {
                 onReplyCompleted={(
                   id: string,
                   text: string,
-                  stickerId: string,
+                  _stickerId: string,
                   stickerImageURL: string,
                 ) => {
                   setNewReplyComments([
@@ -448,7 +449,7 @@ export function WorkCommentList(props: Props) {
                       replyTargetId: comment.id,
                       id: id,
                       text: text,
-                      createdAt: new Date().getTime(),
+                      createdAt: Date.now(),
                       likesCount: 0,
                       isWorkOwnerLiked: false,
                       isLiked: false,
@@ -544,7 +545,7 @@ export function WorkCommentList(props: Props) {
                       onReplyCompleted={(
                         id: string,
                         text: string,
-                        stickerId: string,
+                        _stickerId: string,
                         stickerImageURL: string,
                       ) => {
                         // 表示コメントを追加
@@ -554,7 +555,7 @@ export function WorkCommentList(props: Props) {
                             replyTargetId: comment.id,
                             id: id,
                             text: text,
-                            createdAt: new Date().getTime(),
+                            createdAt: Date.now(),
                             likesCount: 0,
                             isWorkOwnerLiked: false,
                             isLiked: false,
@@ -626,7 +627,7 @@ export function WorkCommentList(props: Props) {
                     onReplyCompleted={(
                       id: string,
                       text: string,
-                      stickerId: string,
+                      _stickerId: string,
                       stickerImageURL: string,
                     ) => {
                       setNewReplyComments([
@@ -635,7 +636,7 @@ export function WorkCommentList(props: Props) {
                           replyTargetId: comment.id,
                           id: id,
                           text: text,
-                          createdAt: new Date().getTime(),
+                          createdAt: Date.now(),
                           likesCount: 0,
                           isWorkOwnerLiked: false,
                           isLiked: false,
@@ -746,7 +747,7 @@ export function WorkCommentList(props: Props) {
                           onReplyCompleted={(
                             id: string,
                             text: string,
-                            stickerId: string,
+                            _stickerId: string,
                             stickerImageURL: string,
                           ) => {
                             // 表示コメントを追加
@@ -756,7 +757,7 @@ export function WorkCommentList(props: Props) {
                                 replyTargetId: comment.id,
                                 id: id,
                                 text: text,
-                                createdAt: new Date().getTime(),
+                                createdAt: Date.now(),
                                 likesCount: 0,
                                 isWorkOwnerLiked: false,
                                 isLiked: false,
@@ -785,7 +786,7 @@ export function WorkCommentList(props: Props) {
         isOpen={isOpen}
         onClose={onClose}
         onSend={async (stickerId: string, url: string) => {
-          await sendComment(comment, stickerId, url, props.workId)
+          await sendComment(comment, stickerId, url, props.workId, userIcon)
         }}
       />
     </>
@@ -814,11 +815,14 @@ export const CommentListItemFragment = graphql(
 )
 
 const createWorkCommentMutation = graphql(
-  `mutation CreateWorkComment($input: CreateWorkCommentInput!) {
+  `
+  mutation CreateWorkComment($input: CreateWorkCommentInput!) {
     createWorkComment(input: $input) {
-      id
+      ...WorkComment
     }
-  }`,
+  }
+`,
+  [WorkCommentFragment],
 )
 
 const createCommentLikeMutation = graphql(

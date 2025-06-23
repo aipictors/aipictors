@@ -1,4 +1,3 @@
-// components/WorksPaginationMode.tsx
 import { useContext, useEffect, useMemo } from "react"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
@@ -26,9 +25,11 @@ interface Props {
   style?: ImageStyle
   page?: number
   setPage?: (p: number) => void
+  // ★★★ 追加
+  onSelect?: (index: number) => void
 }
 
-export function WorksPaginationMode({ anchorAt, ...rest }: Props) {
+export function WorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
 
@@ -73,6 +74,7 @@ export function WorksPaginationMode({ anchorAt, ...rest }: Props) {
           workType={rest.workType}
           works={displayedWorks}
           isCropped={rest.isCropped}
+          onSelect={onSelect}
         />
       )}
 

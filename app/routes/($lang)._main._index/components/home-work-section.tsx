@@ -25,6 +25,7 @@ type Props = {
   isCropped?: boolean
   targetRowHeight?: number
   isShowProfile?: boolean
+  onSelect?: (index: number) => void
 }
 
 export function HomeWorkSection(props: Props) {
@@ -66,6 +67,7 @@ export function HomeWorkSection(props: Props) {
           size="large"
           targetRowHeight={props.targetRowHeight}
           isShowProfile={props.isShowProfile}
+          onSelect={props.onSelect}
         />
       )}
     </section>

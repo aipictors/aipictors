@@ -259,7 +259,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
 
 export const PhotoAlbumWorkFragment = graphql(
   `fragment PhotoAlbumWork on WorkNode @_unmask {
- id
+    id
     isMyRecommended
     title
     mdUrl

@@ -15,6 +15,7 @@ interface Props {
   setPage?: (p: number) => void
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
+  onSelect?: (index: number) => void
 }
 
 export function HomeWorksSection(props: Props) {
@@ -24,9 +25,19 @@ export function HomeWorksSection(props: Props) {
   return (
     <div className="space-y-4">
       {props.isPagination ? (
-        <WorksPaginationMode key={key} {...props} anchorAt={anchorAt} />
+        <WorksPaginationMode
+          key={key}
+          {...props}
+          anchorAt={anchorAt}
+          onSelect={props.onSelect}
+        />
       ) : (
-        <WorksInfiniteMode key={key} {...props} anchorAt={anchorAt} />
+        <WorksInfiniteMode
+          key={key}
+          {...props}
+          anchorAt={anchorAt}
+          onSelect={props.onSelect}
+        />
       )}
     </div>
   )

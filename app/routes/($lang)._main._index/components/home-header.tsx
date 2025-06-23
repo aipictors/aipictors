@@ -178,7 +178,7 @@ function HomeHeader(props: Props) {
   }
 
   // 検索テキスト変更時のリアルタイム検索（デバウンス付き）
-  const performSearch = (text: string) => {
+  const _performSearch = (text: string) => {
     // ナビゲーション中またはマニュアルナビゲーション中は検索を実行しない
     if (isNavigatingRef.current || isManualNavigationRef.current) {
       return
@@ -258,36 +258,6 @@ function HomeHeader(props: Props) {
   const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newText = event.target.value
     setSearchText(newText)
-
-    // 既存のタイマーをクリア
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
-
-    // 検索関連ページにいる場合のみリアルタイム検索を実行
-    const currentPath = location.pathname
-    const isSearchRelatedPage =
-      currentPath === "/search" ||
-      currentPath === "/r/search" ||
-      currentPath.startsWith("/tags/") ||
-      currentPath.startsWith("/r/tags/")
-
-    // リアルタイム検索の条件：
-    // 1. 検索関連ページにいる
-    // 2. ナビゲーション中ではない
-    // 3. マニュアルナビゲーション中ではない
-    // 4. テキストが空ではない
-    if (
-      isSearchRelatedPage &&
-      !isNavigatingRef.current &&
-      !isManualNavigationRef.current &&
-      newText.trim() !== ""
-    ) {
-      // 300ms後に検索実行（デバウンス）
-      timeoutRef.current = setTimeout(() => {
-        performSearch(newText)
-      }, 300)
-    }
   }
 
   // クリーンアップ
@@ -320,6 +290,13 @@ function HomeHeader(props: Props) {
   // ヘルパー関数：外部リンクの場合は新規タブで開く
   const navigateToExternal = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer")
+  }
+
+  const onSubmitSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault() // Enterキーでのフォーム送信を防ぐ
+      onSearch()
+    }
   }
 
   // ナビゲーション関数を修正
@@ -461,7 +438,7 @@ function HomeHeader(props: Props) {
                 <Input
                   value={searchText}
                   onChange={onChangeSearchText}
-                  // onKeyUp={handleKeyDown}
+                  onKeyDown={onSubmitSearch}
                   placeholder={t("作品を検索", "Search for posts")}
                 />
                 <div className="absolute right-4">
@@ -483,10 +460,11 @@ function HomeHeader(props: Props) {
               >
                 <MoveLeft className="w-8" />
               </Button>
+              S
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
-                // onKeyUp={handleKeyDown}
+                onKeyUp={onSubmitSearch}
                 placeholder={t("作品を検索", "Search for posts")}
               />
             </div>

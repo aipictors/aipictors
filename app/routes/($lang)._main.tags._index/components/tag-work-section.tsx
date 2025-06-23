@@ -78,7 +78,7 @@ type Props = {
 
 export function TagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
-  const client = useApolloClient()
+  const _client = useApolloClient()
   const navigate = useNavigate()
 
   // 表示モード状態（ページネーション / 無限スクロール）
@@ -98,6 +98,11 @@ export function TagWorkSection(props: Props) {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadingRef = useRef<HTMLDivElement>(null)
 
+  // 初期データが設定されたかどうかのフラグ
+  const [isInitialDataSet, setIsInitialDataSet] = useState(false)
+  // 初期化完了フラグ
+  const [isInitialized, setIsInitialized] = useState(false)
+
   // 状態管理用のキー
   const stateKey = `tag-works-${props.tag}-${props.orderBy}-${props.sort}-${props.hasPrompt}`
 
@@ -107,50 +112,6 @@ export function TagWorkSection(props: Props) {
   useEffect(() => {
     setIsPagination(props.mode === "pagination")
   }, [props.mode])
-
-  // キャッシュから初期データを取得（フィードモード用）
-  const cachedInitialPages = useMemo(() => {
-    if (isPagination) return []
-
-    try {
-      const cached = client.readQuery({
-        query: tagWorksQuery,
-        variables: {
-          offset: 0,
-          limit: 32,
-          where: {
-            tagNames: [
-              decodeURIComponent(props.tag),
-              decodeURIComponent(props.tag).toLowerCase(),
-              decodeURIComponent(props.tag).toUpperCase(),
-              decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
-                String.fromCharCode(m.charCodeAt(0) - 96),
-              ),
-              decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
-                String.fromCharCode(m.charCodeAt(0) + 96),
-              ),
-            ],
-            orderBy: props.orderBy,
-            sort: props.sort,
-            ratings: ["G", "R15"],
-            hasPrompt: props.hasPrompt === 1 ? true : undefined,
-            isPromptPublic: props.hasPrompt === 1 ? true : undefined,
-            isNowCreatedAt: true,
-          },
-        },
-      })
-      return cached?.tagWorks?.length ? [cached.tagWorks] : []
-    } catch {
-      return []
-    }
-  }, [
-    client,
-    props.tag,
-    props.orderBy,
-    props.sort,
-    props.hasPrompt,
-    isPagination,
-  ])
 
   // フォロー中のタグを取得
   const { data: followedTagsData = null } = useQuery(viewerFollowedTagsQuery, {
@@ -162,7 +123,11 @@ export function TagWorkSection(props: Props) {
   const { data: paginationResp, loading: paginationLoading } = useQuery(
     tagWorksQuery,
     {
-      skip: !isPagination || authContext.isLoading || authContext.isNotLoggedIn,
+      skip:
+        !isPagination ||
+        !isInitialized ||
+        authContext.isLoading ||
+        authContext.isNotLoggedIn,
       variables: {
         offset: props.page * 32,
         limit: 32,
@@ -197,7 +162,11 @@ export function TagWorkSection(props: Props) {
     loading: infiniteLoading,
     fetchMore,
   } = useQuery(tagWorksQuery, {
-    skip: isPagination || authContext.isLoading || authContext.isNotLoggedIn,
+    skip:
+      isPagination ||
+      !isInitialized ||
+      authContext.isLoading ||
+      authContext.isNotLoggedIn,
     variables: {
       offset: 0,
       limit: 32,
@@ -226,9 +195,34 @@ export function TagWorkSection(props: Props) {
     notifyOnNetworkStatusChange: true,
   })
 
-  // ────────────────────　スクロール位置復元 ────────────────────
+  // 初期化: props.worksを必ず使用
   useEffect(() => {
-    if (isPagination && typeof window !== "undefined") {
+    if (!isInitialDataSet && props.works.length > 0) {
+      if (!isPagination) {
+        // フィードモードの場合、props.worksを初期データとして設定
+        setInfinitePages([props.works])
+        setHasNextPage(props.works.length === 32)
+      }
+      setIsInitialDataSet(true)
+      setIsInitialized(true)
+
+      // スクロール位置復元
+      const scrollKey = isPagination
+        ? `scroll-pagination-${stateKey}-${props.page}`
+        : `scroll-infinite-${stateKey}`
+      const savedScrollY = sessionStorage.getItem(scrollKey)
+      if (savedScrollY) {
+        setTimeout(
+          () => window.scrollTo(0, Number.parseInt(savedScrollY, 10)),
+          100,
+        )
+      }
+    }
+  }, [props.works, isPagination, isInitialDataSet, stateKey, props.page])
+
+  // ────────────────────　スクロール位置復元 (ページネーション) ────────────────────
+  useEffect(() => {
+    if (isPagination && isInitialized && typeof window !== "undefined") {
       const savedScrollY = sessionStorage.getItem(
         `scroll-pagination-${stateKey}-${props.page}`,
       )
@@ -239,11 +233,11 @@ export function TagWorkSection(props: Props) {
         )
       }
     }
-  }, [isPagination, stateKey, props.page])
+  }, [isPagination, stateKey, props.page, isInitialized])
 
   // ページネーションモードでのスクロール位置保存
   useEffect(() => {
-    if (!isPagination) return
+    if (!isPagination || !isInitialized) return
 
     const saveScrollPosition = () => {
       sessionStorage.setItem(
@@ -258,47 +252,11 @@ export function TagWorkSection(props: Props) {
       window.removeEventListener("beforeunload", handleBeforeUnload)
       saveScrollPosition()
     }
-  }, [isPagination, stateKey, props.page])
-
-  // フィードモードデータ初期化
-  useEffect(() => {
-    if (isPagination) return
-
-    if (cachedInitialPages.length > 0 && infinitePages.length === 0) {
-      setInfinitePages(cachedInitialPages)
-      setHasNextPage(cachedInitialPages[0].length === 32)
-      const savedScrollY = sessionStorage.getItem(`scroll-infinite-${stateKey}`)
-      if (savedScrollY) {
-        setTimeout(
-          () => window.scrollTo(0, Number.parseInt(savedScrollY, 10)),
-          100,
-        )
-      }
-      return
-    }
-
-    if (infiniteResp?.tagWorks && infinitePages.length === 0) {
-      setInfinitePages([infiniteResp.tagWorks])
-      setHasNextPage(infiniteResp.tagWorks.length === 32)
-      const savedScrollY = sessionStorage.getItem(`scroll-infinite-${stateKey}`)
-      if (savedScrollY) {
-        setTimeout(
-          () => window.scrollTo(0, Number.parseInt(savedScrollY, 10)),
-          100,
-        )
-      }
-    }
-  }, [
-    infiniteResp,
-    isPagination,
-    cachedInitialPages,
-    infinitePages.length,
-    stateKey,
-  ])
+  }, [isPagination, stateKey, props.page, isInitialized])
 
   // フィードモード位置保存
   useEffect(() => {
-    if (isPagination) return
+    if (isPagination || !isInitialized) return
 
     const saveScrollPosition = () => {
       sessionStorage.setItem(
@@ -313,14 +271,18 @@ export function TagWorkSection(props: Props) {
       window.removeEventListener("beforeunload", handleBeforeUnload)
       saveScrollPosition()
     }
-  }, [isPagination, stateKey])
+  }, [isPagination, stateKey, isInitialized])
 
   // ソート・タグ変更時リセット
   useEffect(() => {
-    if (!isPagination) {
-      setInfinitePages([])
-      setHasNextPage(true)
-      sessionStorage.removeItem(`scroll-infinite-${stateKey}`)
+    if (isInitialized) {
+      setIsInitialDataSet(false)
+      setIsInitialized(false)
+      if (!isPagination) {
+        setInfinitePages([])
+        setHasNextPage(true)
+        sessionStorage.removeItem(`scroll-infinite-${stateKey}`)
+      }
     }
   }, [
     props.tag,
@@ -333,7 +295,7 @@ export function TagWorkSection(props: Props) {
 
   // 無限スクロール読み込み
   const loadMore = useCallback(async () => {
-    if (isLoadingMore || !hasNextPage || isPagination) return
+    if (isLoadingMore || !hasNextPage || isPagination || !isInitialized) return
 
     const flatWorks = infinitePages.flat()
     setIsLoadingMore(true)
@@ -383,11 +345,12 @@ export function TagWorkSection(props: Props) {
     props.orderBy,
     props.sort,
     props.hasPrompt,
+    isInitialized,
   ])
 
   // Intersection Observer
   useEffect(() => {
-    if (isPagination) return
+    if (isPagination || !isInitialized) return
     const currentRef = loadingRef.current
     if (!currentRef) return
 
@@ -401,23 +364,32 @@ export function TagWorkSection(props: Props) {
     )
     observerRef.current.observe(currentRef)
     return () => observerRef.current?.disconnect()
-  }, [isPagination, hasNextPage, isLoadingMore, loadMore])
+  }, [isPagination, hasNextPage, isLoadingMore, loadMore, isInitialized])
 
-  // 表示作品
+  // 表示作品の決定: 初期表示時は必ずprops.worksを使用
   const displayedWorks = useMemo(() => {
-    if (isPagination) return paginationResp?.tagWorks ?? props.works
+    // 初期化が完了していない場合は必ずprops.worksを使用
+    if (!isInitialized) {
+      return props.works
+    }
+
+    if (isPagination) {
+      // ページネーションモード: 初回はprops.works、その後はpaginationResp
+      if (props.page === 0 && !paginationResp) {
+        return props.works
+      }
+      return paginationResp?.tagWorks ?? props.works
+    }
+    // フィードモード: infinitePagesが空の場合はprops.works
     const flat = infinitePages.flat()
-    return flat.length > 0
-      ? flat
-      : cachedInitialPages.length > 0
-        ? cachedInitialPages[0]
-        : props.works
+    return flat.length > 0 ? flat : props.works
   }, [
+    isInitialized,
     isPagination,
-    paginationResp,
     props.works,
+    props.page,
+    paginationResp,
     infinitePages,
-    cachedInitialPages,
   ])
 
   // 一覧の最初の作品（バナー用）
@@ -454,8 +426,17 @@ export function TagWorkSection(props: Props) {
     const newIsPagination = newMode === "pagination"
     setIsPagination(newIsPagination)
     props.setMode(newMode)
-    if (newIsPagination) props.setPage(0)
-    else setHasNextPage(true)
+
+    // モード切替時は初期化をリセット
+    setIsInitialDataSet(false)
+    setIsInitialized(false)
+
+    if (newIsPagination) {
+      props.setPage(0)
+    } else {
+      setInfinitePages([])
+      setHasNextPage(true)
+    }
   }
 
   // ───────────────────────── 作品クリック ─────────────────────────
@@ -469,11 +450,11 @@ export function TagWorkSection(props: Props) {
   }
 
   // ───────────────────────── ローディング判定 ─────────────────────────
-  const isLoading = isPagination
-    ? paginationLoading && !paginationResp
-    : infiniteLoading &&
-      infinitePages.length === 0 &&
-      cachedInitialPages.length === 0
+  const isLoading =
+    !isInitialized ||
+    (isPagination
+      ? paginationLoading && !paginationResp && props.page > 0
+      : infiniteLoading && infinitePages.length === 0 && isInitialDataSet)
 
   // ───────────────────────── JSX ─────────────────────────
   return (
@@ -516,9 +497,6 @@ export function TagWorkSection(props: Props) {
           </div>
         </div>
       </div>
-
-      {/* ────────── Google 検索 ────────── */}
-      {/* <GoogleCustomSearch /> */}
 
       {/* ────────── ソート & フィルタ エリア (md 以上) ────────── */}
       <div className="relative hidden items-center md:flex">
@@ -681,7 +659,6 @@ export function TagWorkSection(props: Props) {
       {/* ────────── 作品ダイアログ ────────── */}
       {dialogIndex !== null && (
         <WorkViewerDialog
-          // key={dialogIndex}
           works={displayedWorks}
           startIndex={dialogIndex}
           onClose={() => setDialogIndex(null)}

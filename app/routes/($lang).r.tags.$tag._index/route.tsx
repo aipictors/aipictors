@@ -51,25 +51,7 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 32,
       limit: 32,
       where: {
-        tagNames: [
-          decodeURIComponent(props.params.tag),
-          decodeURIComponent(props.params.tag).toLowerCase(),
-          decodeURIComponent(props.params.tag).toUpperCase(),
-          // カタカナをひらがなに変換
-          decodeURIComponent(props.params.tag).replace(
-            /[\u30A1-\u30F6]/g,
-            (match) => {
-              return String.fromCharCode(match.charCodeAt(0) - 96)
-            },
-          ),
-          // ひらがなをカタカナに変換
-          decodeURIComponent(props.params.tag).replace(
-            /[\u3041-\u3096]/g,
-            (match) => {
-              return String.fromCharCode(match.charCodeAt(0) + 96)
-            },
-          ),
-        ],
+        tagNames: [decodeURIComponent(props.params.tag)],
         orderBy: orderBy,
         sort: sort,
         isSensitive: true,

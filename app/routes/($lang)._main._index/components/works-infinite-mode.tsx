@@ -30,6 +30,7 @@ interface Props {
   sortType: WorkOrderBy | null
   timeRange?: string
   style?: ImageStyle
+  onSelect?: (index: number) => void
 }
 
 export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
@@ -149,6 +150,7 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
           workType={rest.workType}
           works={page}
           isCropped={rest.isCropped}
+          onSelect={rest.onSelect}
         />
       ))}
 

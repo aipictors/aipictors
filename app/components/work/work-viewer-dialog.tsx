@@ -18,6 +18,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { Link } from "@remix-run/react"
 
 // ───────────────── Types ─────────────────
 interface Props {
@@ -176,18 +177,23 @@ export function WorkViewerDialog({
         <aside className="hidden w-full flex-col bg-background/80 backdrop-blur-sm md:flex">
           <DialogHeader className="border-b p-4 pb-2">
             <DialogTitle className="truncate font-bold text-lg">
-              {currentWork.title}
+              <Link to={`/posts/${currentWork.id}`}>{currentWork.title}</Link>
             </DialogTitle>
-            <div className="mt-2 flex items-center space-x-2">
-              <Avatar className="size-6">
-                <AvatarImage
-                  src={withIconUrlFallback(currentWork.user?.iconUrl)}
-                />
-                <AvatarFallback />
-              </Avatar>
-              <span className="font-medium text-sm">
-                {currentWork.user?.name}
-              </span>
+            <div className="mt-2">
+              <Link
+                to={`/users/${currentWork.user?.login}`}
+                className="flex items-center space-x-2"
+              >
+                <Avatar className="size-6">
+                  <AvatarImage
+                    src={withIconUrlFallback(currentWork.user?.iconUrl)}
+                  />
+                  <AvatarFallback />
+                </Avatar>
+                <span className="font-medium text-sm">
+                  {currentWork.user?.name}
+                </span>
+              </Link>
             </div>
           </DialogHeader>
           <div className="flex flex-1 flex-col gap-y-6 overflow-y-auto overscroll-y-contain p-4">
@@ -228,6 +234,7 @@ export function WorkViewerDialog({
                 src={w.smallThumbnailImageURL}
                 alt={w.title}
                 className="h-20 w-full rounded-md object-cover"
+                draggable={false}
               />
             </button>
           ))}

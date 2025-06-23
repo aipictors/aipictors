@@ -14,9 +14,10 @@ interface Props {
   workType: WorkType | null
   works: WorkItem[]
   isCropped?: boolean
+  onSelect?: (index: number) => void
 }
 
-export function WorksRenderer({ workType, works, isCropped }: Props) {
+export function WorksRenderer({ workType, works, isCropped, onSelect }: Props) {
   if (workType === "NOVEL" || workType === "COLUMN") {
     return (
       <HomeNovelsWorksSection
@@ -42,6 +43,7 @@ export function WorksRenderer({ workType, works, isCropped }: Props) {
       works={works as FragmentOf<typeof HomeWorkFragment>[]}
       isCropped={isCropped}
       isShowProfile
+      onSelect={onSelect}
     />
   )
 }
