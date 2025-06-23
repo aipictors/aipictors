@@ -37,24 +37,70 @@ export function LikeButton(props: Props) {
     deleteWorkLikeMutation,
   )
 
-  const [isLiked, setIsLiked] = useState(props.defaultLiked)
+  // ローカルストレージのキー
+  const localStorageKey = `work_like_${props.targetWorkId}`
 
-  const [likedCount, setLikedCount] = useState(props.defaultLikedCount)
+  // ローカルストレージから状態を取得する関数
+  const getLocalLikeState = useCallback(() => {
+    if (typeof window === "undefined") return null
+    try {
+      const stored = localStorage.getItem(localStorageKey)
+      return stored ? JSON.parse(stored) : null
+    } catch {
+      return null
+    }
+  }, [localStorageKey])
 
-  const handleFavoritedKeyDown = useCallback((event: KeyboardEvent) => {
-    const tagName = document.activeElement?.tagName.toLowerCase()
-    if (
-      tagName === "input" ||
-      tagName === "textarea" ||
-      isLiked ||
-      props.defaultLiked
-    ) {
-      return
+  // ローカルストレージに状態を保存する関数
+  const setLocalLikeState = useCallback(
+    (liked: boolean, count: number) => {
+      if (typeof window === "undefined") return
+      try {
+        localStorage.setItem(localStorageKey, JSON.stringify({ liked, count }))
+      } catch {
+        // ローカルストレージへの保存に失敗した場合は無視
+      }
+    },
+    [localStorageKey],
+  )
+
+  // 初期状態の設定
+  const getInitialState = useCallback(() => {
+    const localState = getLocalLikeState()
+    if (localState !== null) {
+      return {
+        isLiked: localState.liked,
+        likedCount: localState.count,
+      }
     }
-    if (event.code === KeyCodes.F) {
-      handleOnClick(event)
+    return {
+      isLiked: props.defaultLiked,
+      likedCount: props.defaultLikedCount,
     }
-  }, [])
+  }, [getLocalLikeState, props.defaultLiked, props.defaultLikedCount])
+
+  const [isLiked, setIsLiked] = useState(() => getInitialState().isLiked)
+  const [likedCount, setLikedCount] = useState(
+    () => getInitialState().likedCount,
+  )
+
+  const handleFavoritedKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const tagName = document.activeElement?.tagName.toLowerCase()
+      if (
+        tagName === "input" ||
+        tagName === "textarea" ||
+        isLiked ||
+        props.defaultLiked
+      ) {
+        return
+      }
+      if (event.code === KeyCodes.F) {
+        handleOnClick(event)
+      }
+    },
+    [isLiked, props.defaultLiked],
+  )
 
   useEffect(() => {
     if (props.isUsedShortcutKey) {
@@ -63,12 +109,23 @@ export function LikeButton(props: Props) {
         document.addEventListener("keydown", handleFavoritedKeyDown)
       }
     }
-  }, [props.targetWorkId])
+  }, [props.targetWorkId, handleFavoritedKeyDown])
 
+  // targetWorkIdが変更されたときの処理
   useEffect(() => {
-    setIsLiked(props.defaultLiked)
-    setLikedCount(props.defaultLikedCount)
-  }, [props.defaultLiked, props.defaultLikedCount, props.targetWorkId])
+    const initialState = getInitialState()
+    setIsLiked(initialState.isLiked)
+    setLikedCount(initialState.likedCount)
+  }, [props.targetWorkId, getInitialState])
+
+  // propsが変更されたときにローカルストレージの状態がない場合のみ更新
+  useEffect(() => {
+    const localState = getLocalLikeState()
+    if (localState === null) {
+      setIsLiked(props.defaultLiked)
+      setLikedCount(props.defaultLikedCount)
+    }
+  }, [props.defaultLiked, props.defaultLikedCount, getLocalLikeState])
 
   const handleOnClick = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -76,6 +133,16 @@ export function LikeButton(props: Props) {
     if (props.onClick) {
       props.onClick(!isLiked)
     }
+
+    // 楽観的更新でローカル状態を即座に更新
+    const newIsLiked = !isLiked
+    const newLikedCount = newIsLiked ? likedCount + 1 : likedCount - 1
+
+    setIsLiked(newIsLiked)
+    setLikedCount(newLikedCount)
+
+    // ローカルストレージに保存
+    setLocalLikeState(newIsLiked, newLikedCount)
 
     try {
       if (!isLiked) {
@@ -85,8 +152,6 @@ export function LikeButton(props: Props) {
               workId: props.targetWorkId,
             },
           },
-        }).then(() => {
-          setIsLiked(true)
         })
       } else {
         await deleteWorkLike({
@@ -95,12 +160,15 @@ export function LikeButton(props: Props) {
               workId: props.targetWorkId,
             },
           },
-        }).then(() => {
-          setIsLiked(false)
         })
       }
     } catch (error) {
       console.error("Error updating like status", error)
+
+      // エラーが発生した場合は状態を元に戻す
+      setIsLiked(isLiked)
+      setLikedCount(likedCount)
+      setLocalLikeState(isLiked, likedCount)
     }
   }
 
