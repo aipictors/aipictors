@@ -147,6 +147,7 @@ export type FollowTagsFeedContentsProps = {
   page: number
   setPage: (p: number) => void
   isPagination: boolean
+  onSelect?: (index: number) => void
 }
 
 /* -----------------------------------------------------------------
@@ -156,6 +157,7 @@ export function FollowTagsFeedContents({
   page,
   setPage,
   isPagination,
+  onSelect,
 }: FollowTagsFeedContentsProps) {
   const navigate = useNavigate()
   const t = useTranslation()
@@ -214,12 +216,14 @@ export function FollowTagsFeedContents({
           setPage={setPage}
           isTimelineView={isTimelineView}
           setIsTimelineView={setIsTimelineView}
+          onSelect={onSelect}
         />
       ) : (
         <InfiniteMode
           key={key}
           isTimelineView={isTimelineView}
           setIsTimelineView={setIsTimelineView}
+          onSelect={onSelect}
         />
       )}
     </div>
@@ -234,11 +238,13 @@ function PaginationMode({
   setPage,
   isTimelineView,
   setIsTimelineView,
+  onSelect,
 }: {
   page: number
   setPage: (n: number) => void
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
+  onSelect?: (index: number) => void
 }) {
   const auth = useContext(AuthContext)
   const _t = useTranslation()
@@ -277,6 +283,7 @@ function PaginationMode({
         posts={posts as PostItem[]}
         isTimelineView={isTimelineView}
         setIsTimelineView={setIsTimelineView}
+        onSelect={onSelect}
       />
 
       <div className="h-8" />
@@ -298,9 +305,11 @@ function PaginationMode({
 function InfiniteMode({
   isTimelineView,
   setIsTimelineView,
+  onSelect,
 }: {
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
+  onSelect?: (index: number) => void
 }) {
   const client = useApolloClient()
   const auth = useContext(AuthContext)
@@ -400,6 +409,7 @@ function InfiniteMode({
           posts={p}
           isTimelineView={isTimelineView}
           setIsTimelineView={setIsTimelineView}
+          onSelect={onSelect}
         />
       ))}
       {isLoadingMore && <Loader />}
@@ -415,10 +425,12 @@ function FeedContent({
   posts,
   isTimelineView,
   setIsTimelineView,
+  onSelect,
 }: {
   posts: PostItem[]
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
+  onSelect?: (index: number) => void
 }) {
   const t = useTranslation()
   const [hiddenComments, setHiddenComments] = useState<Record<string, boolean>>(

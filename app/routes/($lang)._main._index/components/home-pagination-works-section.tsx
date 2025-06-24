@@ -68,6 +68,7 @@ type Props = {
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
   timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
+  onSelect?: (index: number) => void
 }
 
 /**
@@ -124,11 +125,16 @@ export function HomePaginationWorksSection(props: Props) {
           works={worksResp?.works || []}
           isCropped={props.isCropped}
           isShowProfile={true}
+          onSelect={props.onSelect}
         />
       )}
       {/* 小説/コラム */}
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
-        <HomeNovelsWorksSection title={""} works={worksResp?.works || []} />
+        <HomeNovelsWorksSection
+          title={""}
+          works={worksResp?.works || []}
+          onSelect={props.onSelect}
+        />
       )}
       {/* 動画 */}
       {props.workType === "VIDEO" && (

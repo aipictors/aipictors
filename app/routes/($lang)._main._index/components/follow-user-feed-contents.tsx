@@ -35,6 +35,7 @@ type Props = {
   setPage: (page: number) => void
   isPagination?: boolean
   onPaginationModeChange?: (v: boolean) => void
+  onSelect?: (index: number) => void
 }
 
 const PER_PAGE = 32
@@ -69,11 +70,11 @@ export function FollowUserFeedContents(props: Props) {
     }
   }, [props.isPagination, internalIsPagination])
 
-  const handleModeChange = (v: boolean) => {
+  const _handleModeChange = (v: boolean) => {
     props.onPaginationModeChange?.(v) ?? setInternalIsPagination(v)
   }
 
-  const handlePaginationModeChange = (isPagination: boolean) => {
+  const _handlePaginationModeChange = (isPagination: boolean) => {
     setInternalIsPagination(isPagination)
     if (props.setPage) {
       props.setPage(0)
@@ -99,7 +100,7 @@ export function FollowUserFeedContents(props: Props) {
 function PaginationMode(props: Props) {
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const [_searchParams] = useSearchParams()
   const t = useTranslation()
 
   const [isTimelineView, setIsTimelineView] = useState(false)
@@ -200,6 +201,7 @@ function PaginationMode(props: Props) {
           navigate={navigate}
           t={t}
           isPagination={true}
+          onSelect={props.onSelect}
         />
       )}
 
@@ -223,7 +225,7 @@ function PaginationMode(props: Props) {
 /* ===========================================================
    Infinite Scroll Mode  (refactored)
    =========================================================== */
-function InfiniteMode(props: Props) {
+function InfiniteMode(_props: Props) {
   const client = useApolloClient()
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
@@ -437,6 +439,7 @@ type FeedContentProps = {
   t: ReturnType<typeof useTranslation>
   showControls?: boolean
   isPagination: boolean
+  onSelect?: (index: number) => void
 }
 
 function FeedContent({
@@ -447,6 +450,7 @@ function FeedContent({
   t,
   showControls = true,
   isPagination,
+  onSelect,
 }: FeedContentProps) {
   const [hiddenComments, setHiddenComments] = useState<{
     [key: string]: boolean
@@ -676,6 +680,7 @@ function FeedContent({
               works as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]
             }
             isShowProfile={true}
+            onSelect={onSelect}
           />
         </div>
       )}

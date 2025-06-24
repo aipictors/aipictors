@@ -52,7 +52,7 @@ import {
   HomeNewCommentsFragment,
   HomeNewCommentsSection,
 } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, Suspense, useMemo } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { ArrowDownWideNarrow, List, Navigation } from "lucide-react"
@@ -66,7 +66,7 @@ import {
   SelectItem,
 } from "~/components/ui/select"
 import { Separator } from "~/components/ui/separator"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs"
+import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
 import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
@@ -81,15 +81,10 @@ import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-r
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
 import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-dialog"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
-
-// カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
-function useScrollRestoration(isMounted: boolean) {
-  useEffect(() => {
-    if (isMounted) {
-      // スクロール位置の復元を行わない（React Routerが自動的に保持する場合）
-    }
-  }, [isMounted])
-}
+import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
+import type { FragmentOf } from "gql.tada"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -172,6 +167,15 @@ export async function loader(_props: LoaderFunctionArgs) {
   }
 }
 
+// カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
+function useScrollRestoration(isMounted: boolean) {
+  useEffect(() => {
+    if (isMounted) {
+      // スクロール位置の復元を行わない（React Routerが自動的に保持する場合）
+    }
+  }, [isMounted])
+}
+
 export default function Index() {
   const data = useLoaderData<typeof loader>()
 
@@ -195,7 +199,7 @@ export default function Index() {
 
   const navigate = useNavigate()
 
-  // ★ 期間指定の state を追加し、URL パラメータから初期値を読む
+  // 期間指定の state を追加し、URL パラメータから初期値を読む
   const [timeRange, setTimeRange] = useState<string>(
     searchParams.get("timeRange") || "ALL",
   )
@@ -213,6 +217,101 @@ export default function Index() {
   const [internalIsPagination, setInternalIsPagination] = useState(
     searchParams.get("isPagination") === "true",
   )
+
+  // 作品遷移モード（ダイアログ / 直接リンク）
+  const [isDialogMode, _setIsDialogMode] = useState(false)
+
+  // ダイアログ制御
+  const [dialogIndex, setDialogIndex] = useState<number | null>(null)
+
+  // 作品データの管理用state
+  const [currentWorks, setCurrentWorks] = useState<
+    FragmentOf<typeof PhotoAlbumWorkFragment>[]
+  >([])
+
+  // ホームタブ用の作品データを管理するstate
+  const [homeWorks, _setHomeWorks] = useState<
+    FragmentOf<typeof PhotoAlbumWorkFragment>[]
+  >([])
+
+  // ホームタブの作品データを初期化
+  // useEffect(() => {
+  //   if (data && currentTab === "home") {
+  //     const works: FragmentOf<typeof PhotoAlbumWorkFragment>[] = []
+
+  //     // バナー作品を追加
+  //     if (data.adWorks) {
+  //       // HomeBannerWorkFragment から PhotoAlbumWorkFragment へ変換
+  //       const bannerWorks = data.adWorks.filter(
+  //         (work) => work && typeof work === "object" && "id" in work,
+  //       )
+  //       works.push(
+  //         ...(bannerWorks as unknown as FragmentOf<
+  //           typeof PhotoAlbumWorkFragment
+  //         >[]),
+  //       )
+  //     }
+
+  //     // プロモーション作品を追加
+  //     if (data.promotionWorks) {
+  //       works.push(...data.promotionWorks)
+  //     }
+
+  //     // 新規ユーザ作品を追加
+  //     if (data.newUserWorks) {
+  //       works.push(...data.newUserWorks)
+  //     }
+
+  //     // 受賞作品を追加
+  //     if (data.workAwards) {
+  //       // award.work を PhotoAlbumWorkFragment 型に変換する
+  //       const convertAwardWorkToPhotoAlbumWork = (
+  //         work: any,
+  //       ): FragmentOf<typeof PhotoAlbumWorkFragment> | null => {
+  //         if (!work) return null
+  //         // 必要なフィールドをマッピング
+  //         return {
+  //           id: work.id,
+  //           isMyRecommended: work.isMyRecommended ?? false,
+  //           title: work.title,
+  //           mdUrl: work.mdUrl ?? "",
+  //           accessType: work.accessType ?? "PUBLIC",
+  //           type: work.type ?? "WORK",
+  //           adminAccessType: work.adminAccessType ?? "PUBLIC",
+  //           likesCount: work.likesCount ?? 0,
+  //           isLiked: work.isLiked ?? false,
+  //           smallThumbnailImageURL: work.smallThumbnailImageURL ?? "",
+  //           smallThumbnailImageHeight: work.smallThumbnailImageHeight ?? 0,
+  //           smallThumbnailImageWidth: work.smallThumbnailImageWidth ?? 0,
+  //           thumbnailImagePosition: work.thumbnailImagePosition ?? null,
+  //           subWorksCount: work.subWorksCount ?? 0,
+  //           user: work.user ?? null,
+  //           nanoid: work.nanoid ?? null,
+  //           // 他に必要なフィールドがあればここで追加
+  //         } as FragmentOf<typeof PhotoAlbumWorkFragment>
+  //       }
+
+  //       works.push(
+  //         ...data.workAwards
+  //           .map((award) => convertAwardWorkToPhotoAlbumWork(award.work))
+  //           .filter(
+  //             (work): work is FragmentOf<typeof PhotoAlbumWorkFragment> =>
+  //               work !== null,
+  //           ),
+  //       )
+  //     }
+
+  //     // タグ作品を追加
+  //     if (data.firstTagWorks) {
+  //       works.push(...data.firstTagWorks)
+  //     }
+  //     if (data.secondTagWorks) {
+  //       works.push(...data.secondTagWorks)
+  //     }
+
+  //     setHomeWorks(works)
+  //   }
+  // }, [data, currentTab])
 
   /**
    * マウント時に、すでに URL に入っているクエリパラメータを用いて
@@ -290,7 +389,7 @@ export default function Index() {
     setFollowUserFeedPage(0)
     setFollowTagFeedPage(0)
 
-    // ★ ここで既存パラメータをコピーして編集
+    // 既存パラメータをコピーして編集
     const newSearchParams = new URLSearchParams(searchParams)
     newSearchParams.set("tab", tab)
 
@@ -304,9 +403,6 @@ export default function Index() {
     } else {
       newSearchParams.delete("page")
     }
-
-    // ★ 期間指定など他のパラメータは消さずに残す
-    // そのまま newSearchParams を使えば維持される
 
     updateQueryParams(newSearchParams)
   }
@@ -339,7 +435,7 @@ export default function Index() {
       newSearchParams.set("isPagination", "false")
     }
 
-    // ★ 期間指定
+    // 期間指定
     if (currentTab === "new") {
       newSearchParams.set("timeRange", timeRange)
     }
@@ -371,7 +467,6 @@ export default function Index() {
     setWorkView(view)
     const newSearchParams = new URLSearchParams(searchParams)
     newSearchParams.set("view", view)
-    // ページリセットしたければココで newSearchParams.set("page", "0")
     updateQueryParams(newSearchParams)
   }
 
@@ -425,7 +520,7 @@ export default function Index() {
     updateQueryParams(newSearchParams)
   }
 
-  // ★ 期間指定
+  // 期間指定
   const handleTimeRangeChange = (value: string) => {
     const newSearchParams = new URLSearchParams(searchParams)
 
@@ -471,60 +566,139 @@ export default function Index() {
   // スクロール位置復元しない
   useScrollRestoration(isMounted)
 
+  const [hasNextPage, _setHasNextPage] = useState(true)
+  const [isLoadingMore, _setIsLoadingMore] = useState(false)
+
+  // ダイアログで表示する作品データを決定
+  const displayedWorks = useMemo(() => {
+    switch (currentTab) {
+      case "home":
+        return homeWorks
+
+      case "new":
+      case "follow-user":
+      case "follow-tag":
+        return currentWorks
+
+      default:
+        return []
+    }
+  }, [currentTab, homeWorks, currentWorks])
+
+  // 作品クリック時の処理
+  const openWork = (idx: number) => {
+    console.log("Open work at index:", idx)
+    console.log("Displayed works:", displayedWorks)
+    console.log("Current tab:", currentTab)
+
+    if (idx < 0 || idx >= displayedWorks.length) {
+      console.warn(
+        "Invalid index for displayed works:",
+        idx,
+        "Length:",
+        displayedWorks.length,
+      )
+      return
+    }
+
+    const work = displayedWorks[idx]
+    if (!work) {
+      console.warn("Work not found at index:", idx)
+      return
+    }
+
+    if (isDialogMode) {
+      setDialogIndex(idx)
+    } else {
+      navigate(`/posts/${work.id}`)
+    }
+  }
+
+  // currentWorksを更新するコールバック関数
+  const _updateCurrentWorks = (
+    works: FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  ) => {
+    setCurrentWorks(works)
+  }
+
+  // 無限スクロール用のloadMore関数
+  const loadMore = async () => {
+    if (isLoadingMore || !hasNextPage || internalIsPagination) return
+    // setIsLoadingMore(true)
+    // try {
+    //   // 各コンポーネントのloadMore関数を呼び出す
+    //   // この部分は実際の実装に合わせて調整が必要
+    // } catch (error) {
+    //   console.error("Failed to load more works:", error)
+    // } finally {
+    //   setIsLoadingMore(false)
+    // }
+  }
+
+  // ホームタブでの作品インデックス計算
+  const _getHomeWorkIndex = (sectionIndex: number, workIndex: number) => {
+    let totalIndex = 0
+
+    // バナー作品のインデックス
+    if (sectionIndex === 0) {
+      return workIndex
+    }
+    totalIndex += data.adWorks?.length || 0
+
+    // プロモーション作品のインデックス
+    if (sectionIndex === 1) {
+      return totalIndex + workIndex
+    }
+    totalIndex += data.promotionWorks?.length || 0
+
+    // 新規ユーザ作品のインデックス
+    if (sectionIndex === 2) {
+      return totalIndex + workIndex
+    }
+    totalIndex += data.newUserWorks?.length || 0
+
+    // 受賞作品のインデックス
+    if (sectionIndex === 3) {
+      return totalIndex + workIndex
+    }
+    totalIndex += data.workAwards?.length || 0
+
+    // 第1タグ作品のインデックス
+    if (sectionIndex === 4) {
+      return totalIndex + workIndex
+    }
+    totalIndex += data.firstTagWorks?.length || 0
+
+    // 第2タグ作品のインデックス
+    if (sectionIndex === 5) {
+      return totalIndex + workIndex
+    }
+
+    return totalIndex + workIndex
+  }
+
   if (data === null) {
     return null
   }
 
   return (
     <>
-      {/* <ConstructionAlert
-        type="WARNING"
-        message="旧版はこちら"
-        fallbackURL="https://legacy.aipictors.com"
-      /> */}
       <Tabs
         value={currentTab}
         onValueChange={handleTabChange}
         className="space-y-4"
       >
         <div className="flex items-center sm:gap-x-2 md:gap-x-4">
-          <TabsList>
-            <TabsTrigger value="home">{t("ホーム", "Home")}</TabsTrigger>
-            <TabsTrigger value="new">
-              <p className="hidden md:block">
-                {t("新着・人気", "New & Popular")}
-              </p>
-              <p className="block md:hidden">{t("新着", "New")}</p>
-            </TabsTrigger>
-            <TabsTrigger value="follow-user">
-              <div className="flex items-center space-x-2">
-                <p className="hidden md:block">
-                  {t("フォロー新着", "Followed Users")}
-                </p>
-                <p className="block md:hidden">{t("フォロー", "Followed")}</p>
-                <CrossPlatformTooltip
-                  text={t(
-                    "フォローしたユーザの新着作品が表示されます、現在はリニューアル版の投稿ページにて投稿された作品が表示されていますのでご注意ください",
-                    "Displays works from followed users",
-                  )}
-                />
-              </div>
-            </TabsTrigger>
-            <TabsTrigger value="follow-tag">
-              <div className="flex items-center space-x-2">
-                <p className="hidden md:block">
-                  {t("お気に入りタグ新着", "Favorite Tags")}
-                </p>
-                <p className="block md:hidden">{t("タグ", "Tags")}</p>
-                <CrossPlatformTooltip
-                  text={t(
-                    "お気に入り登録したタグの新着作品が表示されます",
-                    "Displays works from favorite tags",
-                  )}
-                />
-              </div>
-            </TabsTrigger>
-          </TabsList>
+          <AppAnimatedTabs
+            tabs={[
+              { label: "ホーム", value: "home" },
+              { label: "新着・人気", value: "new" },
+              { label: "フォロー新着", value: "follow-user" },
+              { label: "お気に入りタグ新着", value: "follow-tag" },
+            ]}
+            value={currentTab}
+            onChange={setCurrentTab}
+          />
           <Button
             variant={"secondary"}
             size="sm"
@@ -537,7 +711,14 @@ export default function Index() {
         {/* ---------------------- タブ: ホーム ---------------------- */}
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
           {data.adWorks && data.adWorks.length > 0 && (
-            <HomeBanners works={data.adWorks} />
+            <HomeBanners
+              works={data.adWorks}
+              // onSelect={
+              //   isDialogMode
+              //     ? (idx) => openWork(getHomeWorkIndex(0, idx))
+              //     : undefined
+              // }
+            />
           )}
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex flex-col space-y-4 md:w-[56%] lg:w-[64%]">
@@ -550,12 +731,31 @@ export default function Index() {
                   />
                 </div>
               )}
-              <HomeWorksUsersRecommendedSection works={data.promotionWorks} />
-              <HomeNewUsersWorksSection works={data.newUserWorks} />
+              <HomeWorksUsersRecommendedSection
+                works={data.promotionWorks}
+                // onSelect={
+                //   isDialogMode
+                //     ? (idx) => openWork(getHomeWorkIndex(1, idx))
+                //     : undefined
+                // }
+              />
+              <HomeNewUsersWorksSection
+                works={data.newUserWorks}
+                // onSelect={
+                //   isDialogMode
+                //     ? (idx) => openWork(getHomeWorkIndex(2, idx))
+                //     : undefined
+                // }
+              />
               <HomeAwardWorkSection
                 awardDateText={data.awardDateText}
                 title={t("前日ランキング", "Previous Day Ranking")}
                 awards={data.workAwards}
+                // onSelect={
+                //   isDialogMode
+                //     ? (idx) => openWork(getHomeWorkIndex(3, idx))
+                //     : undefined
+                // }
               />
               <HomeWorksTagSection
                 tag={data.firstTag}
@@ -563,6 +763,19 @@ export default function Index() {
                 secondTag={data.secondTag}
                 secondWorks={data.secondTagWorks}
                 isCropped={true}
+                // onSelect={
+                //   isDialogMode
+                //     ? (idx) => {
+                //         // 第1タグと第2タグの作品を区別する必要がある
+                //         const firstTagLength = data.firstTagWorks?.length || 0
+                //         if (idx < firstTagLength) {
+                //           openWork(getHomeWorkIndex(4, idx))
+                //         } else {
+                //           openWork(getHomeWorkIndex(5, idx - firstTagLength))
+                //         }
+                //       }
+                //     : undefined
+                // }
               />
               <HomeTagsSection
                 title={t("人気タグ", "Popular Tags")}
@@ -636,7 +849,7 @@ export default function Index() {
               {t("新着", "New")}
             </Button>
             <Button
-              variant={workView === "popular" ? "default" : "secondary"} // ← 修正
+              variant={workView === "popular" ? "default" : "secondary"}
               onClick={() => handleWorkViewChange("popular")}
               size="sm"
             >
@@ -651,7 +864,7 @@ export default function Index() {
               </div>
             </Button>
             <Button
-              variant={workView === "new-user" ? "default" : "secondary"} // ← 修正
+              variant={workView === "new-user" ? "default" : "secondary"}
               onClick={() => handleWorkViewChange("new-user")}
               size="sm"
             >
@@ -672,7 +885,7 @@ export default function Index() {
 
           {workView === "new" && (
             <div className="space-y-4">
-              {/* ▼ 絞り込み用のセレクト群 - レスポンシブレイアウト */}
+              {/* 絞り込み用のセレクト群 - レスポンシブレイアウト */}
               <div className="space-y-3">
                 {/* フィルター行1: 種類、プロンプト、ソート */}
                 <div className="grid grid-cols-3 gap-2 md:flex md:space-x-4">
@@ -839,6 +1052,27 @@ export default function Index() {
                         {t("ページ", "Pages")}
                       </span>
                     </Button>
+
+                    {/* <div className="hidden gap-2 md:flex">
+                      <Button
+                        variant={!isDialogMode ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setIsDialogMode(false)}
+                        className="flex items-center space-x-1"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                        <span>{t("リンク遷移", "Open page")}</span>
+                      </Button>
+                      <Button
+                        variant={isDialogMode ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setIsDialogMode(true)}
+                        className="flex items-center space-x-1"
+                      >
+                        <PlaySquare className="h-4 w-4" />
+                        <span>{t("ダイアログ", "Dialog")}</span>
+                      </Button>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -853,6 +1087,7 @@ export default function Index() {
                     isPromptPublic={isPromptPublic}
                     sortType={sortType}
                     timeRange={timeRange}
+                    onSelect={isDialogMode ? openWork : undefined}
                   />
                 ) : (
                   <HomeWorksSection
@@ -864,6 +1099,7 @@ export default function Index() {
                     timeRange={timeRange}
                     isPagination={false}
                     onPaginationModeChange={setInternalIsPagination}
+                    onSelect={isDialogMode ? openWork : undefined}
                   />
                 )}
               </Suspense>
@@ -915,6 +1151,26 @@ export default function Index() {
                       {t("ページ", "Pages")}
                     </span>
                   </Button>
+                  {/* <div className="hidden gap-2 md:flex">
+                    <Button
+                      variant={!isDialogMode ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setIsDialogMode(false)}
+                      className="flex items-center space-x-1"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      <span>{t("リンク遷移", "Open page")}</span>
+                    </Button>
+                    <Button
+                      variant={isDialogMode ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setIsDialogMode(true)}
+                      className="flex items-center space-x-1"
+                    >
+                      <PlaySquare className="h-4 w-4" />
+                      <span>{t("ダイアログ", "Dialog")}</span>
+                    </Button>
+                  </div> */}
                 </div>
               </div>
 
@@ -927,6 +1183,7 @@ export default function Index() {
                   sortType={sortType}
                   isPagination={internalIsPagination}
                   onPaginationModeChange={setInternalIsPagination}
+                  onSelect={isDialogMode ? openWork : undefined}
                 />
               </Suspense>
             </div>
@@ -977,6 +1234,26 @@ export default function Index() {
                       {t("ページ", "Pages")}
                     </span>
                   </Button>
+                  {/* <div className="hidden gap-2 md:flex">
+                    <Button
+                      variant={!isDialogMode ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setIsDialogMode(false)}
+                      className="flex items-center space-x-1"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      <span>{t("リンク遷移", "Open page")}</span>
+                    </Button>
+                    <Button
+                      variant={isDialogMode ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setIsDialogMode(true)}
+                      className="flex items-center space-x-1"
+                    >
+                      <PlaySquare className="h-4 w-4" />
+                      <span>{t("ダイアログ", "Dialog")}</span>
+                    </Button>
+                  </div> */}
                 </div>
               </div>
 
@@ -985,10 +1262,7 @@ export default function Index() {
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
-                  // page={newWorksPage}
-                  // setPage={setNewWorksPage}
-                  // isPagination={internalIsPagination}
-                  // onPaginationModeChange={setInternalIsPagination}
+                  onSelect={isDialogMode ? openWork : undefined}
                 />
               </Suspense>
             </div>
@@ -997,7 +1271,7 @@ export default function Index() {
 
         {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
         <TabsContent value="follow-user" className="space-y-4">
-          {/* ▼ Feed / Pages 切り替えボタン */}
+          {/* Feed / Pages 切り替えボタン */}
           <div className="flex justify-end">
             <div className="flex rounded-lg bg-muted p-1">
               <Button
@@ -1039,23 +1313,45 @@ export default function Index() {
                 <Navigation className="h-3 w-3" />
                 <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
               </Button>
+
+              {/* <div className="hidden gap-2 md:flex">
+                <Button
+                  variant={!isDialogMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setIsDialogMode(false)}
+                  className="flex items-center space-x-1"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span>{t("リンク遷移", "Open page")}</span>
+                </Button>
+                <Button
+                  variant={isDialogMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setIsDialogMode(true)}
+                  className="flex items-center space-x-1"
+                >
+                  <PlaySquare className="h-4 w-4" />
+                  <span>{t("ダイアログ", "Dialog")}</span>
+                </Button>
+              </div> */}
             </div>
           </div>
 
-          {/* ▼ コンテンツ */}
+          {/* コンテンツ */}
           <Suspense fallback={<AppLoadingPage />}>
             <FollowUserFeedContents
               page={followUserFeedPage}
               setPage={setFollowUserFeedPage}
               isPagination={internalIsPagination}
               onPaginationModeChange={setInternalIsPagination}
+              onSelect={isDialogMode ? openWork : undefined}
             />
           </Suspense>
         </TabsContent>
 
         {/* ---------------------- タブ: お気に入りタグ ---------------------- */}
         <TabsContent value="follow-tag" className="space-y-4">
-          {/* ▼ Feed / Pages 切り替えボタン */}
+          {/* Feed / Pages 切り替えボタン */}
           <div className="flex justify-end">
             <div className="flex rounded-lg bg-muted p-1">
               <Button
@@ -1097,6 +1393,27 @@ export default function Index() {
                 <Navigation className="h-3 w-3" />
                 <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
               </Button>
+
+              {/* <div className="hidden gap-2 md:flex">
+                <Button
+                  variant={!isDialogMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setIsDialogMode(false)}
+                  className="flex items-center space-x-1"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span>{t("リンク遷移", "Open page")}</span>
+                </Button>
+                <Button
+                  variant={isDialogMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setIsDialogMode(true)}
+                  className="flex items-center space-x-1"
+                >
+                  <PlaySquare className="h-4 w-4" />
+                  <span>{t("ダイアログ", "Dialog")}</span>
+                </Button>
+              </div> */}
             </div>
           </div>
 
@@ -1105,15 +1422,27 @@ export default function Index() {
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}
               isPagination={internalIsPagination}
+              onSelect={isDialogMode ? openWork : undefined}
             />
           </Suspense>
         </TabsContent>
       </Tabs>
+
+      {/* ────────── 作品ダイアログ ────────── */}
+      {dialogIndex !== null && displayedWorks.length > 0 && (
+        <WorkViewerDialog
+          works={displayedWorks}
+          startIndex={dialogIndex}
+          onClose={() => setDialogIndex(null)}
+          loadMore={!internalIsPagination ? loadMore : undefined}
+          hasNextPage={hasNextPage}
+          isLoadingMore={isLoadingMore}
+        />
+      )}
     </>
   )
 }
 
-// 残りのコードは同じ...
 export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.home,
 })

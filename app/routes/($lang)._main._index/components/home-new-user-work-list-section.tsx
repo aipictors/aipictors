@@ -22,6 +22,7 @@ type Props = {
   isPromptPublic: boolean | null
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
   style?: IntrospectionEnum<"ImageStyle">
+  onSelect?: (index: number) => void
 }
 
 /**
@@ -42,6 +43,7 @@ export function HomeNewUsersWorkListSection(props: Props) {
           works={worksResp?.newUserWorks || []}
           isCropped={props.isCropped}
           isShowProfile={true}
+          onSelect={props.onSelect}
         />
       )}
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (

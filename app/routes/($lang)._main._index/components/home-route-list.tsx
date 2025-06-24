@@ -189,7 +189,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
 
       {/* Footer --------------------------------------------------- */}
       <footer className="mt-auto sm:block md:hidden lg:block">
-        <div className="mb-16 flex flex-col space-y-2 p-2">
+        <div className="flex flex-col space-y-2 p-2">
           <div className="flex items-center space-x-2">
             <Link
               target="_blank"

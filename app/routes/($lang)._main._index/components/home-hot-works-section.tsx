@@ -14,6 +14,7 @@ type Props = {
   style?: IntrospectionEnum<"ImageStyle">
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
+  onSelect?: (index: number) => void
 }
 
 export function HomeHotWorksSection(props: Props) {
