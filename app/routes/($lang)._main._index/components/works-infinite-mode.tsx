@@ -31,6 +31,8 @@ interface Props {
   timeRange?: string
   style?: ImageStyle
   onSelect?: (index: number) => void
+  onWorksLoaded?: (works: WorkItem[]) => void
+  initialWorks?: WorkItem[] // SSRで取得した初期データ
 }
 
 export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
@@ -42,6 +44,12 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
   const keyForStore = useMemo(() => JSON.stringify(where), [where])
 
   const initialPages = useMemo(() => {
+    // SSRから初期データが提供されている場合はそれを優先して使用
+    if (rest.initialWorks && rest.initialWorks.length > 0) {
+      return chunkWorks(rest.initialWorks, PER_PAGE)
+    }
+
+    // それ以外の場合はキャッシュを確認
     try {
       const cached = client.readQuery({
         query: WorksQuery,
@@ -52,14 +60,15 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
     } catch {
       return []
     }
-  }, [client, PER_PAGE, where])
+  }, [client, PER_PAGE, where, rest.initialWorks])
 
   const {
     data,
     fetchMore,
     loading: loadingFirst,
   } = useQuery(WorksQuery, {
-    skip: authLoading,
+    // 認証ロード中またはSSRから初期データが提供されている場合はクエリをスキップ
+    skip: authLoading || (rest.initialWorks && rest.initialWorks.length > 0),
     variables: {
       offset: 0,
       limit: PER_PAGE,
@@ -91,13 +100,30 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
         handleAppendPages(chunked.slice(1))
       }
     }
+
+    // 親コンポーネントにデータを通知
+    if (rest.onWorksLoaded && data.works) {
+      rest.onWorksLoaded(data.works)
+    }
   }, [
     data?.works,
     PER_PAGE,
     handleReplaceFirstPage,
     handleAppendPages,
     pages.length,
+    rest.onWorksLoaded,
   ])
+
+  // SSRから取得した初期データがある場合に、マウント時に親コンポーネントに通知
+  useEffect(() => {
+    if (
+      rest.initialWorks &&
+      rest.initialWorks.length > 0 &&
+      rest.onWorksLoaded
+    ) {
+      rest.onWorksLoaded(rest.initialWorks)
+    }
+  }, [rest.initialWorks, rest.onWorksLoaded])
 
   const ready = initialPages.length > 0 || !!data?.works?.length
   useScrollRestoration("home-works-infinite", ready)
@@ -120,6 +146,10 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
       })
       if (result.data?.works?.length) {
         appendPage(result.data.works)
+        // 追加読み込みした作品データも親コンポーネントに通知
+        if (rest.onWorksLoaded) {
+          rest.onWorksLoaded(result.data.works)
+        }
       }
     } catch (e) {
       console.error("Failed to load more works:", e)
@@ -135,6 +165,7 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
     PER_PAGE,
     where,
     appendPage,
+    rest.onWorksLoaded,
   ])
 
   const sentinelRef = useInfiniteScroll(loadMore, {

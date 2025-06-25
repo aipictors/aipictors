@@ -1,7 +1,12 @@
 import { useMemo } from "react"
 import { WorksPaginationMode } from "./works-pagination-mode"
 import { WorksInfiniteMode } from "./works-infinite-mode"
-import type { WorkType, WorkOrderBy, ImageStyle } from "../types/works"
+import type {
+  WorkType,
+  WorkOrderBy,
+  ImageStyle,
+  WorkItem,
+} from "../types/works"
 import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
 
 interface Props {
@@ -16,6 +21,8 @@ interface Props {
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
   onSelect?: (index: number) => void
+  onWorksLoaded?: (works: WorkItem[]) => void
+  initialWorks?: WorkItem[] // SSRで取得した初期データ
 }
 
 export function HomeWorksSection(props: Props) {
@@ -37,6 +44,8 @@ export function HomeWorksSection(props: Props) {
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}
+          onWorksLoaded={props.onWorksLoaded}
+          initialWorks={props.initialWorks}
         />
       )}
     </div>

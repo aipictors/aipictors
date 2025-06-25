@@ -3,6 +3,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { WorksInfiniteMode } from "./works-infinite-mode"
 import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
 import { WorksPaginationMode } from "~/routes/($lang)._main._index/components/works-pagination-mode"
+import type { WorkItem } from "../types/works"
 
 type Props = {
   isCropped?: boolean
@@ -15,6 +16,7 @@ type Props = {
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
   onSelect?: (index: number) => void
+  initialWorks?: WorkItem[] // SSRで取得した初期データ
 }
 
 export function HomeHotWorksSection(props: Props) {
@@ -33,7 +35,12 @@ export function HomeHotWorksSection(props: Props) {
       {props.isPagination ? (
         <WorksPaginationMode key={key} {...hotWorksProps} anchorAt={anchorAt} />
       ) : (
-        <WorksInfiniteMode key={key} {...hotWorksProps} anchorAt={anchorAt} />
+        <WorksInfiniteMode
+          key={key}
+          {...hotWorksProps}
+          anchorAt={anchorAt}
+          initialWorks={props.initialWorks}
+        />
       )}
     </div>
   )

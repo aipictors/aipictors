@@ -83,7 +83,7 @@ import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/comp
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import type { FragmentOf } from "gql.tada"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 
 export const meta: MetaFunction = (props) => {
@@ -156,6 +156,33 @@ export async function loader(_props: LoaderFunctionArgs) {
     },
   })
 
+  // 新着作品データを取得
+  const newWorksResult = await loaderClient.query({
+    query: newWorksQuery,
+    variables: {
+      offset: 0,
+      limit: 20, // 初期表示用の作品数
+      where: {
+        isNowCreatedAt: true,
+        ratings: ["G", "R15"],
+      },
+    },
+  })
+
+  // 人気作品データを取得
+  const hotWorksResult = await loaderClient.query({
+    query: hotWorksQuery,
+    variables: {
+      offset: 0,
+      limit: 20, // 初期表示用の作品数
+      where: {
+        isNowCreatedAt: true,
+        ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
+      },
+    },
+  })
+
   const awardDateText = getUtcDateString(yesterday)
 
   return {
@@ -164,6 +191,9 @@ export async function loader(_props: LoaderFunctionArgs) {
     firstTag: randomCategories[0],
     secondTag: randomCategories[1],
     releaseList,
+    // 初期表示用の新着・人気作品データを追加
+    initialNewWorks: newWorksResult.data?.works || [],
+    initialHotWorks: hotWorksResult.data?.works || [],
   }
 }
 
@@ -230,88 +260,89 @@ export default function Index() {
   >([])
 
   // ホームタブ用の作品データを管理するstate
-  const [homeWorks, _setHomeWorks] = useState<
+  const [homeWorks, setHomeWorks] = useState<
     FragmentOf<typeof PhotoAlbumWorkFragment>[]
   >([])
 
   // ホームタブの作品データを初期化
-  // useEffect(() => {
-  //   if (data && currentTab === "home") {
-  //     const works: FragmentOf<typeof PhotoAlbumWorkFragment>[] = []
+  useEffect(() => {
+    if (data && currentTab === "home") {
+      const works: FragmentOf<typeof PhotoAlbumWorkFragment>[] = []
 
-  //     // バナー作品を追加
-  //     if (data.adWorks) {
-  //       // HomeBannerWorkFragment から PhotoAlbumWorkFragment へ変換
-  //       const bannerWorks = data.adWorks.filter(
-  //         (work) => work && typeof work === "object" && "id" in work,
-  //       )
-  //       works.push(
-  //         ...(bannerWorks as unknown as FragmentOf<
-  //           typeof PhotoAlbumWorkFragment
-  //         >[]),
-  //       )
-  //     }
+      // バナー作品を追加
+      if (data.adWorks) {
+        // HomeBannerWorkFragment から PhotoAlbumWorkFragment へ変換
+        const bannerWorks = data.adWorks.filter(
+          (work) => work && typeof work === "object" && "id" in work,
+        )
+        works.push(
+          ...(bannerWorks as unknown as FragmentOf<
+            typeof PhotoAlbumWorkFragment
+          >[]),
+        )
+      }
 
-  //     // プロモーション作品を追加
-  //     if (data.promotionWorks) {
-  //       works.push(...data.promotionWorks)
-  //     }
+      // プロモーション作品を追加
+      if (data.promotionWorks) {
+        works.push(...data.promotionWorks)
+      }
 
-  //     // 新規ユーザ作品を追加
-  //     if (data.newUserWorks) {
-  //       works.push(...data.newUserWorks)
-  //     }
+      // 新規ユーザ作品を追加
+      if (data.newUserWorks) {
+        works.push(...data.newUserWorks)
+      }
 
-  //     // 受賞作品を追加
-  //     if (data.workAwards) {
-  //       // award.work を PhotoAlbumWorkFragment 型に変換する
-  //       const convertAwardWorkToPhotoAlbumWork = (
-  //         work: any,
-  //       ): FragmentOf<typeof PhotoAlbumWorkFragment> | null => {
-  //         if (!work) return null
-  //         // 必要なフィールドをマッピング
-  //         return {
-  //           id: work.id,
-  //           isMyRecommended: work.isMyRecommended ?? false,
-  //           title: work.title,
-  //           mdUrl: work.mdUrl ?? "",
-  //           accessType: work.accessType ?? "PUBLIC",
-  //           type: work.type ?? "WORK",
-  //           adminAccessType: work.adminAccessType ?? "PUBLIC",
-  //           likesCount: work.likesCount ?? 0,
-  //           isLiked: work.isLiked ?? false,
-  //           smallThumbnailImageURL: work.smallThumbnailImageURL ?? "",
-  //           smallThumbnailImageHeight: work.smallThumbnailImageHeight ?? 0,
-  //           smallThumbnailImageWidth: work.smallThumbnailImageWidth ?? 0,
-  //           thumbnailImagePosition: work.thumbnailImagePosition ?? null,
-  //           subWorksCount: work.subWorksCount ?? 0,
-  //           user: work.user ?? null,
-  //           nanoid: work.nanoid ?? null,
-  //           // 他に必要なフィールドがあればここで追加
-  //         } as FragmentOf<typeof PhotoAlbumWorkFragment>
-  //       }
+      // 受賞作品を追加
+      if (data.workAwards) {
+        // award.work を PhotoAlbumWorkFragment 型に変換する
+        const convertAwardWorkToPhotoAlbumWork = (
+          work: Record<string, unknown>,
+        ): FragmentOf<typeof PhotoAlbumWorkFragment> | null => {
+          if (!work) return null
+          // 必要なフィールドをマッピング
+          return {
+            id: work.id,
+            isMyRecommended: work.isMyRecommended ?? false,
+            title: work.title,
+            mdUrl: work.mdUrl ?? "",
+            accessType: work.accessType ?? "PUBLIC",
+            type: work.type ?? "WORK",
+            adminAccessType: work.adminAccessType ?? "PUBLIC",
+            likesCount: work.likesCount ?? 0,
+            isLiked: work.isLiked ?? false,
+            smallThumbnailImageURL: work.smallThumbnailImageURL ?? "",
+            smallThumbnailImageHeight: work.smallThumbnailImageHeight ?? 0,
+            smallThumbnailImageWidth: work.smallThumbnailImageWidth ?? 0,
+            thumbnailImagePosition: work.thumbnailImagePosition ?? null,
+            subWorksCount: work.subWorksCount ?? 0,
+            user: work.user ?? null,
+            nanoid: work.nanoid ?? null,
+            // 他に必要なフィールドがあればここで追加
+          } as FragmentOf<typeof PhotoAlbumWorkFragment>
+        }
 
-  //       works.push(
-  //         ...data.workAwards
-  //           .map((award) => convertAwardWorkToPhotoAlbumWork(award.work))
-  //           .filter(
-  //             (work): work is FragmentOf<typeof PhotoAlbumWorkFragment> =>
-  //               work !== null,
-  //           ),
-  //       )
-  //     }
+        works.push(
+          ...data.workAwards
+            .filter((award) => award.work !== null)
+            .map((award) => convertAwardWorkToPhotoAlbumWork(award.work!))
+            .filter(
+              (work): work is FragmentOf<typeof PhotoAlbumWorkFragment> =>
+                work !== null,
+            ),
+        )
+      }
 
-  //     // タグ作品を追加
-  //     if (data.firstTagWorks) {
-  //       works.push(...data.firstTagWorks)
-  //     }
-  //     if (data.secondTagWorks) {
-  //       works.push(...data.secondTagWorks)
-  //     }
+      // タグ作品を追加
+      if (data.firstTagWorks) {
+        works.push(...data.firstTagWorks)
+      }
+      if (data.secondTagWorks) {
+        works.push(...data.secondTagWorks)
+      }
 
-  //     setHomeWorks(works)
-  //   }
-  // }, [data, currentTab])
+      setHomeWorks(works)
+    }
+  }, [data, currentTab])
 
   /**
    * マウント時に、すでに URL に入っているクエリパラメータを用いて
@@ -566,8 +597,8 @@ export default function Index() {
   // スクロール位置復元しない
   useScrollRestoration(isMounted)
 
-  const [hasNextPage, _setHasNextPage] = useState(true)
-  const [isLoadingMore, _setIsLoadingMore] = useState(false)
+  const [hasNextPage, setHasNextPage] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   // ダイアログで表示する作品データを決定
   const displayedWorks = useMemo(() => {
@@ -615,24 +646,47 @@ export default function Index() {
   }
 
   // currentWorksを更新するコールバック関数
-  const _updateCurrentWorks = (
-    works: FragmentOf<typeof PhotoAlbumWorkFragment>[],
-  ) => {
-    setCurrentWorks(works)
+  // WorkItem[]をFragmentOf<typeof PhotoAlbumWorkFragment>[]に変換してセット
+  const updateCurrentWorks = (works: any[]) => {
+    setCurrentWorks(works as FragmentOf<typeof PhotoAlbumWorkFragment>[])
   }
 
   // 無限スクロール用のloadMore関数
   const loadMore = async () => {
     if (isLoadingMore || !hasNextPage || internalIsPagination) return
-    // setIsLoadingMore(true)
-    // try {
-    //   // 各コンポーネントのloadMore関数を呼び出す
-    //   // この部分は実際の実装に合わせて調整が必要
-    // } catch (error) {
-    //   console.error("Failed to load more works:", error)
-    // } finally {
-    //   setIsLoadingMore(false)
-    // }
+
+    setIsLoadingMore(true)
+    try {
+      // 現在のタブに応じて追加読み込みを行う
+      if (currentTab === "home") {
+        // ホームタブの追加読み込みは特別な処理が必要かもしれません
+        // 現在の表示中作品のカウントを計算
+        const currentCount = homeWorks.length
+        // APIの実装に応じて、適切なoffsetとlimitを設定してAPIを呼び出す
+        // 例: さらに10件読み込む
+        // const additionalWorks = await fetchMoreWorks(currentCount, 10);
+        // setHomeWorks([...homeWorks, ...additionalWorks]);
+
+        // 今回は読み込みがないと仮定
+        if (currentCount > 100) {
+          setHasNextPage(false)
+        }
+      } else if (currentTab === "new") {
+        // 新着タブの追加読み込みロジック
+        // タブ内の対応するコンポーネントにロードモア関数を実装する必要があります
+      } else if (currentTab === "follow-user") {
+        // フォローユーザータブの追加読み込みロジック
+      } else if (currentTab === "follow-tag") {
+        // フォロータグタブの追加読み込みロジック
+      }
+
+      // 注: 各タブの具体的な追加読み込み処理は、タブ内の対応するコンポーネントで実装する必要があります
+      // ここではインターフェースのみを提供
+    } catch (error) {
+      console.error("Failed to load more works:", error)
+    } finally {
+      setIsLoadingMore(false)
+    }
   }
 
   // ホームタブでの作品インデックス計算
@@ -1100,6 +1154,8 @@ export default function Index() {
                     isPagination={false}
                     onPaginationModeChange={setInternalIsPagination}
                     onSelect={isDialogMode ? openWork : undefined}
+                    onWorksLoaded={updateCurrentWorks}
+                    initialWorks={data.initialNewWorks}
                   />
                 )}
               </Suspense>
@@ -1184,6 +1240,7 @@ export default function Index() {
                   isPagination={internalIsPagination}
                   onPaginationModeChange={setInternalIsPagination}
                   onSelect={isDialogMode ? openWork : undefined}
+                  initialWorks={data.initialHotWorks}
                 />
               </Suspense>
             </div>
@@ -1621,3 +1678,25 @@ const updateClickedCountCustomerAdvertisementMutation = graphql(`
     }
   }
 `)
+
+// 新着作品クエリ
+const newWorksQuery = graphql(
+  `
+  query NewWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PhotoAlbumWork
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+// 人気作品クエリ
+const hotWorksQuery = graphql(
+  `
+  query HotWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PhotoAlbumWork
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
