@@ -41,7 +41,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const isSensitive = url.searchParams.get("sensitive") === "1"
 
   // mode パラメータを追加
-  const mode = url.searchParams.get("mode") || "feed"
+  const mode = url.searchParams.get("mode") || "pagination"
 
   const worksResp = await loaderClient.query({
     query: tagWorksQuery,
@@ -151,7 +151,7 @@ export default function Tag() {
 
   // mode の状態を追加
   const [mode, setMode] = React.useState<"feed" | "pagination">(
-    (searchParams.get("mode") as "feed" | "pagination") || "feed",
+    (searchParams.get("mode") as "feed" | "pagination") || "pagination",
   )
 
   const onClickTitleSortButton = () => {
