@@ -55,7 +55,7 @@ import {
 import { useState, useEffect, Suspense, useMemo } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { ArrowDownWideNarrow, List, Navigation } from "lucide-react"
+import { ArrowDownWideNarrow, Navigation } from "lucide-react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import {
@@ -214,9 +214,10 @@ export default function Index() {
   // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え
   const [workView, setWorkView] = useState(searchParams.get("view") || "new")
 
-  const [internalIsPagination, setInternalIsPagination] = useState(
-    searchParams.get("isPagination") === "true",
-  )
+  // const [internalIsPagination, setInternalIsPagination] = useState(
+  //   searchParams.get("isPagination") === "true",
+  // )
+  const [internalIsPagination, setInternalIsPagination] = useState(true)
 
   // 作品遷移モード（ダイアログ / 直接リンク）
   const [isDialogMode, _setIsDialogMode] = useState(false)
@@ -335,12 +336,12 @@ export default function Index() {
       }
 
       // internalIsPagination
-      const isPaginationParam = searchParams.get("isPagination")
-      if (isPaginationParam === "true") {
-        setInternalIsPagination(true)
-      } else if (isPaginationParam === "false") {
-        setInternalIsPagination(false)
-      }
+      // const isPaginationParam = searchParams.get("isPagination")
+      // if (isPaginationParam === "true") {
+      //   setInternalIsPagination(true)
+      // } else if (isPaginationParam === "false") {
+      //   setInternalIsPagination(false)
+      // }
 
       // workType
       const wtParam = searchParams.get("workType")
@@ -429,11 +430,11 @@ export default function Index() {
     }
 
     // internalIsPagination
-    if (internalIsPagination) {
-      newSearchParams.set("isPagination", "true")
-    } else {
-      newSearchParams.set("isPagination", "false")
-    }
+    // if (internalIsPagination) {
+    //   newSearchParams.set("isPagination", "true")
+    // } else {
+    //   newSearchParams.set("isPagination", "false")
+    // }
 
     // 期間指定
     if (currentTab === "new") {
@@ -694,7 +695,7 @@ export default function Index() {
               { label: "ホーム", value: "home" },
               { label: "新着・人気", value: "new" },
               { label: "フォロー新着", value: "follow-user" },
-              // { label: "お気に入りタグ新着", value: "follow-tag" },
+              { label: "お気に入りタグ新着", value: "follow-tag" },
             ]}
             value={currentTab}
             onChange={setCurrentTab}
@@ -1011,7 +1012,7 @@ export default function Index() {
 
                   {/* 表示方式切り替え - よりスタイリッシュなデザイン */}
                   <div className="flex rounded-lg bg-muted p-1">
-                    <Button
+                    {/* <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => {
@@ -1030,7 +1031,7 @@ export default function Index() {
                       <span className="hidden sm:inline">
                         {t("フィード", "Feed")}
                       </span>
-                    </Button>
+                    </Button> */}
 
                     <Button
                       variant="ghost"
@@ -1111,7 +1112,7 @@ export default function Index() {
               {/* 表示方式切り替え */}
               <div className="flex justify-end">
                 <div className="flex rounded-lg bg-muted p-1">
-                  <Button
+                  {/* <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => {
@@ -1130,7 +1131,7 @@ export default function Index() {
                     <span className="hidden sm:inline">
                       {t("フィード", "Feed")}
                     </span>
-                  </Button>
+                  </Button> */}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1194,7 +1195,7 @@ export default function Index() {
               {/* 表示方式切り替え */}
               <div className="flex justify-end">
                 <div className="flex rounded-lg bg-muted p-1">
-                  <Button
+                  {/* <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => {
@@ -1213,7 +1214,7 @@ export default function Index() {
                     <span className="hidden sm:inline">
                       {t("フィード", "Feed")}
                     </span>
-                  </Button>
+                  </Button> */}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1274,7 +1275,7 @@ export default function Index() {
           {/* Feed / Pages 切り替えボタン */}
           <div className="flex justify-end">
             <div className="flex rounded-lg bg-muted p-1">
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
@@ -1293,7 +1294,7 @@ export default function Index() {
                 <span className="hidden sm:inline">
                   {t("フィード", "Feed")}
                 </span>
-              </Button>
+              </Button> */}
 
               <Button
                 variant="ghost"
@@ -1354,7 +1355,7 @@ export default function Index() {
           {/* Feed / Pages 切り替えボタン */}
           <div className="flex justify-end">
             <div className="flex rounded-lg bg-muted p-1">
-              <Button
+              {/* <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
@@ -1373,7 +1374,7 @@ export default function Index() {
                 <span className="hidden sm:inline">
                   {t("フィード", "Feed")}
                 </span>
-              </Button>
+              </Button> */}
 
               <Button
                 variant="ghost"
