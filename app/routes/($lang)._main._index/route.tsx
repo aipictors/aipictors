@@ -694,7 +694,7 @@ export default function Index() {
               { label: "ホーム", value: "home" },
               { label: "新着・人気", value: "new" },
               { label: "フォロー新着", value: "follow-user" },
-              { label: "お気に入りタグ新着", value: "follow-tag" },
+              // { label: "お気に入りタグ新着", value: "follow-tag" },
             ]}
             value={currentTab}
             onChange={setCurrentTab}
