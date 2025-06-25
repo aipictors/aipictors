@@ -360,7 +360,9 @@ function InfiniteMode(_props: Props) {
 
   const sentinelRef = useInfiniteScroll(loadMore, {
     hasNext,
-    loading: loadingFirst,
+    loading: loadingFirst || isLoadingMore,
+    threshold: 0.1,
+    rootMargin: "500px", // より早くスクロール感知を行うために余裕を持たせる
   })
 
   // ─── 早期 return (ログイン／空データ系) ──────────────
@@ -422,7 +424,11 @@ function InfiniteMode(_props: Props) {
       )}
 
       {hasNext && (
-        <div ref={sentinelRef} style={{ height: 1 } as React.CSSProperties} />
+        <div
+          ref={sentinelRef}
+          style={{ height: 20, marginTop: 20, marginBottom: 20 }}
+          data-testid="follow-user-infinite-sentinel"
+        />
       )}
     </div>
   )

@@ -148,6 +148,7 @@ export type FollowTagsFeedContentsProps = {
   setPage: (p: number) => void
   isPagination: boolean
   onSelect?: (index: number) => void
+  onPaginationModeChange?: (isPagination: boolean) => void // 追加
 }
 
 /* -----------------------------------------------------------------
@@ -158,10 +159,27 @@ export function FollowTagsFeedContents({
   setPage,
   isPagination,
   onSelect,
+  onPaginationModeChange,
 }: FollowTagsFeedContentsProps) {
   const navigate = useNavigate()
   const t = useTranslation()
   const [isTimelineView, setIsTimelineView] = useState<boolean>(false)
+  const [internalIsPagination, setInternalIsPagination] =
+    useState<boolean>(isPagination)
+
+  // 外部から isPagination が変更された場合、内部状態も更新
+  useEffect(() => {
+    setInternalIsPagination(isPagination)
+  }, [isPagination])
+
+  // ページネーションモード変更ハンドラー
+  const _handlePaginationModeChange = (newMode: boolean) => {
+    if (onPaginationModeChange) {
+      onPaginationModeChange(newMode)
+    } else {
+      setInternalIsPagination(newMode)
+    }
+  }
 
   /* タグプレビュー取得 */
   const { data: tagData } = useSuspenseQuery(followedTagsPreviewQuery, {
@@ -171,7 +189,7 @@ export function FollowTagsFeedContents({
   const tagsToShow = tags.slice(0, 5)
   const hasMoreTags = tags.length > 5
 
-  const key = `follow-tags-${isPagination}`
+  const key = `follow-tags-${internalIsPagination}`
 
   return (
     <div className="space-y-4">
@@ -209,7 +227,7 @@ export function FollowTagsFeedContents({
       )}
 
       {/* --- フィード本体 --- */}
-      {isPagination ? (
+      {internalIsPagination ? (
         <PaginationMode
           key={key}
           page={page}
@@ -394,7 +412,9 @@ function InfiniteMode({
 
   const sentinelRef = useInfiniteScroll(loadMore, {
     hasNext,
-    loading: loadingFirst,
+    loading: loadingFirst || isLoadingMore,
+    threshold: 0.1,
+    rootMargin: "500px", // より早くスクロール感知を行うために余裕を持たせる
   })
 
   if (auth.isLoading) return <Loader />
@@ -413,7 +433,13 @@ function InfiniteMode({
         />
       ))}
       {isLoadingMore && <Loader />}
-      {hasNext && <div ref={sentinelRef} style={{ height: 1 }} />}
+      {hasNext && (
+        <div
+          ref={sentinelRef}
+          style={{ height: 20, marginTop: 20, marginBottom: 20 }}
+          data-testid="follow-tag-infinite-sentinel"
+        />
+      )}
     </div>
   )
 }

@@ -364,7 +364,14 @@ export function TagWorkSection(props: Props) {
     )
     observerRef.current.observe(currentRef)
     return () => observerRef.current?.disconnect()
-  }, [isPagination, hasNextPage, isLoadingMore, loadMore, isInitialized])
+  }, [
+    isPagination,
+    hasNextPage,
+    isLoadingMore,
+    loadMore,
+    isInitialized,
+    loadingRef.current,
+  ])
 
   // 表示作品の決定: 初期表示時は必ずprops.worksを使用
   const displayedWorks = useMemo(() => {

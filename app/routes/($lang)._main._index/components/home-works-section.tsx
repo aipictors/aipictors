@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { WorksPaginationMode } from "./works-pagination-mode"
 import { WorksInfiniteMode } from "./works-infinite-mode"
 import type {
@@ -27,20 +27,36 @@ interface Props {
 
 export function HomeWorksSection(props: Props) {
   const anchorAt = useMemo(() => getAnchorAt(), [])
-  const key = `${props.timeRange}-${props.workType}-${props.sortType}-${props.isPagination}`
+  // props変更を検知するためのキー
+  const contentKey = useMemo(() => {
+    return `${props.timeRange}-${props.workType}-${props.sortType}-${props.isPagination}-${Date.now()}`
+  }, [props.timeRange, props.workType, props.sortType, props.isPagination])
+
+  // モード変更時やprops変更時にコンテンツをリセットするための内部状態
+  const [resetKey, setResetKey] = useState(Date.now())
+
+  // propsの変更を検知してresetKeyを更新
+  useEffect(() => {
+    console.log("HomeWorksSection props changed, resetting component")
+    setResetKey(Date.now())
+    // スクロール位置をリセット
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0)
+    }
+  }, [props.timeRange, props.workType, props.sortType, props.isPagination])
 
   return (
     <div className="space-y-4">
       {props.isPagination ? (
         <WorksPaginationMode
-          key={key}
+          key={`pagination-${contentKey}-${resetKey}`}
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}
         />
       ) : (
         <WorksInfiniteMode
-          key={key}
+          key={`infinite-${contentKey}-${resetKey}`}
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}

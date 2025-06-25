@@ -15,7 +15,12 @@ function startOfDay(date: Date) {
 
 export function chunkWorks<T>(arr: T[], size: number): T[][] {
   const res: T[][] = []
-  for (let i = 0; i < arr.length; i += size) res.push(arr.slice(i, i + size))
+  if (!arr || arr.length === 0) {
+    return res
+  }
+  for (let i = 0; i < arr.length; i += size) {
+    res.push(arr.slice(i, i + size))
+  }
   return res
 }
 
@@ -70,6 +75,9 @@ export function makeWhere(
   const needAllMode = !props.timeRange || props.timeRange === "ALL"
   const needAnchor = needAllMode // ← 常に anchor 付ける
 
+  // orderByが指定されていない場合はデフォルトをDATE_CREATEDに
+  const orderBy = props.sortType ?? "DATE_CREATED"
+
   return {
     ratings: ["G", "R15"],
     ...(props.workType && { workType: props.workType }),
@@ -77,7 +85,7 @@ export function makeWhere(
       hasPrompt: props.isPromptPublic,
       isPromptPublic: props.isPromptPublic,
     }),
-    orderBy: props.sortType ?? "DATE_CREATED",
+    orderBy,
     ...(props.style && { style: props.style }),
     ...(createdAtAfter && { createdAtAfter }),
     ...(createdAtBefore && { beforeCreatedAt: createdAtBefore }),

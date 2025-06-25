@@ -167,9 +167,16 @@ export function usePagedInfinite<T extends ObjectWithId>(
     [existingIds, deduplicateItems, idKey, debug, setPages],
   )
 
-  // ✅ 修正: 初回のみ実行されるように
+  // 初回やタブ切り替え時に実行される関数を強化
   const replaceFirstPage = useCallback(
     (page1: T[]) => {
+      // ページが空の場合、ただ置き換える（タブ切り替え時など）
+      if (pages.length === 0) {
+        setPages(() => [page1])
+        return
+      }
+
+      // 他のページのIDを収集
       const otherPagesIds = new Set<T[keyof T]>()
       for (let i = 1; i < pages.length; i++) {
         for (const item of pages[i]) {
@@ -180,6 +187,7 @@ export function usePagedInfinite<T extends ObjectWithId>(
         }
       }
 
+      // 重複を除外
       const deduplicated = page1.filter((item) => {
         const id = item[idKey]
         return id == null || !otherPagesIds.has(id)
@@ -191,7 +199,27 @@ export function usePagedInfinite<T extends ObjectWithId>(
         )
       }
 
-      setPages((prev) => [deduplicated, ...prev.slice(1)])
+      // 最初のページを置き換え
+      setPages((prev) => {
+        // タブ切り替え時など、完全に新しいデータの場合は全体を置き換える
+        const isDifferentDataSet =
+          prev.length > 0 &&
+          prev[0].length > 0 &&
+          deduplicated.length > 0 &&
+          prev[0][0][idKey] !== deduplicated[0][idKey]
+
+        if (isDifferentDataSet) {
+          if (debug) {
+            console.log(
+              "[usePagedInfinite] Detected tab change, replacing all pages",
+            )
+          }
+          return [deduplicated]
+        }
+
+        // 通常の更新
+        return [deduplicated, ...prev.slice(1)]
+      })
     },
     [pages, idKey, debug, setPages],
   )

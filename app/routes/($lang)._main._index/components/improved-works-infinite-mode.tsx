@@ -1,3 +1,4 @@
+// 改良版の作品無限スクロールコンポーネント
 import {
   type CSSProperties,
   useContext,
@@ -8,7 +9,7 @@ import {
 } from "react"
 import { useApolloClient, useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
-import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
+import { useImprovedInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-improved-infinite-scroll"
 import { usePagedInfinite } from "../hooks/use-paged-infinite"
 import { makeWhere, getPerPage, chunkWorks } from "../utils/works-utils"
 import { WorksRenderer } from "./works-renderer"
@@ -34,27 +35,22 @@ interface Props {
   initialWorks?: WorkItem[] // SSRで取得した初期データ
 }
 
-export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
+export function ImprovedWorksInfiniteMode({ anchorAt, ...rest }: Props) {
   const client = useApolloClient()
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
-  // 追加ロード状態
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-
   const where = useMemo(() => makeWhere(rest, anchorAt), [rest, anchorAt])
   const keyForStore = useMemo(() => JSON.stringify(where), [where])
 
+  // SSR/初期データを必ず最初のページとしてセット
   const initialPages = useMemo(() => {
-    // SSRから初期データが提供されている場合はそれを優先して使用
     if (rest.initialWorks && rest.initialWorks.length > 0) {
       return chunkWorks(rest.initialWorks, PER_PAGE)
     }
-
-    // それ以外の場合はキャッシュを確認
     try {
       const cached = client.readQuery({
         query: WorksQuery,
-        // @ts-ignore - GraphQL type mismatch
+        // @ts-ignore
         variables: { offset: 0, limit: PER_PAGE, where },
       }) as { works?: WorkItem[] } | null
       return cached?.works?.length ? chunkWorks(cached.works, PER_PAGE) : []
@@ -63,126 +59,115 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
     }
   }, [client, PER_PAGE, where, rest.initialWorks])
 
+  // ページデータ管理
+  const { pages, appendPage, appendPages, replaceFirstPage, flat, clearAll } =
+    usePagedInfinite<WorkItem>(initialPages, keyForStore)
+
+  // SSR初期化済みか
+  const [isInitialDataSet, setIsInitialDataSet] = useState(false)
+  // 初期化完了フラグ
+  const [isInitialized, setIsInitialized] = useState(false)
+  // 追加ロード状態
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  // 次ページ有無
+  const [hasNextPage, setHasNextPage] = useState(true)
+
+  // GraphQLクエリ
   const {
     data,
     fetchMore,
     loading: loadingFirst,
+    error,
   } = useQuery(WorksQuery, {
-    // 認証ロード中またはSSRから初期データが提供されている場合はクエリをスキップ
     skip: authLoading || (rest.initialWorks && rest.initialWorks.length > 0),
     variables: {
       offset: 0,
       limit: PER_PAGE,
-      // @ts-ignore - GraphQL type mismatch
+      // @ts-ignore
       where,
     },
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",
     errorPolicy: "ignore",
+    notifyOnNetworkStatusChange: true,
   })
 
-  const { pages, appendPage, appendPages, replaceFirstPage, flat } =
-    usePagedInfinite<WorkItem>(initialPages, keyForStore)
-
-  const handleReplaceFirstPage = useCallback(replaceFirstPage, [
-    replaceFirstPage,
-  ])
-  const handleAppendPages = useCallback(appendPages, [appendPages])
-
+  // 初期化: SSR/初期データを必ずセット
   useEffect(() => {
-    if (!data?.works?.length) return
+    if (!isInitialDataSet && initialPages.length > 0) {
+      replaceFirstPage(initialPages[0])
+      setHasNextPage(initialPages[0].length === PER_PAGE)
+      setIsInitialDataSet(true)
+      setIsInitialized(true)
+    }
+  }, [initialPages, isInitialDataSet, replaceFirstPage, PER_PAGE])
 
+  // データ取得時のページ追加
+  useEffect(() => {
+    if (!isInitialized) return
+    if (!data?.works?.length) return
     const chunked = chunkWorks(data.works, PER_PAGE)
     if (chunked.length === 0) return
-
+    // 既存ページと異なる場合のみ更新
     if (pages.length === 0 || chunked[0].length !== pages[0]?.length) {
-      handleReplaceFirstPage(chunked[0])
+      replaceFirstPage(chunked[0])
       if (chunked.length > 1) {
-        handleAppendPages(chunked.slice(1))
+        appendPages(chunked.slice(1))
       }
+      setHasNextPage(chunked[0].length === PER_PAGE)
     }
-
-    // 親コンポーネントにデータを通知
     if (rest.onWorksLoaded && data.works) {
       rest.onWorksLoaded(data.works)
     }
   }, [
     data?.works,
     PER_PAGE,
-    handleReplaceFirstPage,
-    handleAppendPages,
-    pages.length,
+    replaceFirstPage,
+    appendPages,
+    pages,
     rest.onWorksLoaded,
+    isInitialized,
   ])
 
-  // SSRから取得した初期データがある場合に、マウント時に親コンポーネントに通知
+  // ソート・フィルタ・タブ切り替え時リセット
   useEffect(() => {
-    if (
-      rest.initialWorks &&
-      rest.initialWorks.length > 0 &&
-      rest.onWorksLoaded
-    ) {
-      rest.onWorksLoaded(rest.initialWorks)
-    }
-  }, [rest.initialWorks, rest.onWorksLoaded])
+    setIsInitialDataSet(false)
+    setIsInitialized(false)
+    clearAll()
+    setHasNextPage(true)
+  }, [keyForStore, clearAll])
 
-  // ソートやフィルター変更時など、リセットが必要な際のクリーンアップ
-  useEffect(() => {
-    return () => {
-      // アンマウント時にスクロール位置を保存しない
-      if (typeof window !== "undefined") {
-        // keyForStoreに基づいてセッションストレージをクリア
-        if (keyForStore) {
-          const storageKey = `homeWorks-pages:${keyForStore}`
-          sessionStorage.removeItem(storageKey)
-        }
-      }
-    }
-  }, [keyForStore])
-
-  const lastPage = pages[pages.length - 1] ?? []
-  const hasNext = lastPage.length === PER_PAGE
-
+  // 追加ロード
   const loadMore = useCallback(async () => {
-    if (!hasNext || loadingFirst || isLoadingMore) return
-    console.log("Loading more works...", {
-      flat_length: flat.length,
-      per_page: PER_PAGE,
-      where,
-    })
+    if (isLoadingMore || !hasNextPage || !isInitialized) return
     setIsLoadingMore(true)
     try {
       const result = await fetchMore({
         variables: {
           offset: flat.length,
           limit: PER_PAGE,
-          // @ts-ignore - GraphQL type mismatch
+          // @ts-ignore
           where,
         },
       })
       if (result.data?.works?.length) {
-        console.log("Loaded more works:", result.data.works.length)
         appendPage(result.data.works)
-        // 追加読み込みした作品データも親コンポーネントに通知
+        setHasNextPage(result.data.works.length === PER_PAGE)
         if (rest.onWorksLoaded) {
           rest.onWorksLoaded(result.data.works)
         }
       } else {
-        console.log("No more works to load")
-        // 結果が空の場合は次のページがないことを示す
-        // hasNextはpages[pages.length - 1]?.length === PER_PAGEで判定されるが、
-        // 次のページの結果が0件の場合にhasNextをfalseにする必要がある
-        appendPage([])
+        setHasNextPage(false)
       }
-    } catch (e) {
-      console.error("Failed to load more works:", e)
+    } catch {
+      setHasNextPage(false)
     } finally {
       setIsLoadingMore(false)
     }
   }, [
-    hasNext,
-    loadingFirst,
     isLoadingMore,
+    hasNextPage,
+    isInitialized,
     fetchMore,
     flat.length,
     PER_PAGE,
@@ -191,15 +176,36 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
     rest.onWorksLoaded,
   ])
 
-  const sentinelRef = useInfiniteScroll(loadMore, {
-    hasNext,
+  // センチネル監視
+  const sentinelRef = useImprovedInfiniteScroll(loadMore, {
+    hasNext: hasNextPage,
     loading: loadingFirst || isLoadingMore,
     threshold: 0.1,
-    rootMargin: "500px", // より早くスクロール感知を行うために余裕を持たせる
+    rootMargin: "500px",
   })
 
+  // エラー表示
+  if (error && !loadingFirst && pages.length === 0) {
+    return (
+      <div className="my-8 flex flex-col items-center justify-center gap-4 text-center">
+        <p className="text-muted-foreground text-sm">
+          データの読み込み中にエラーが発生しました。
+        </p>
+        <button
+          type="button"
+          className="cursor-pointer rounded-md bg-primary px-4 py-2 text-primary-foreground text-sm"
+          onClick={() => window.location.reload()}
+        >
+          ページを再読み込み
+        </button>
+      </div>
+    )
+  }
+
+  // レンダリング
   return (
     <div className="space-y-8">
+      {/* 作品リスト */}
       {pages.map((page, idx) => (
         <WorksRenderer
           key={idx.toString()}
@@ -209,8 +215,8 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
           onSelect={rest.onSelect}
         />
       ))}
-
-      {hasNext && (
+      {/* センチネル＋ボタン */}
+      {hasNextPage && (
         <div
           ref={sentinelRef}
           style={
@@ -227,39 +233,44 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
           }
           data-testid="infinite-scroll-sentinel"
           className="flex items-center justify-center"
+          tabIndex={0}
+          // biome-ignore lint/a11y/useSemanticElements: <explanation>
+          role="button"
+          onClick={() => {
+            if (!isLoadingMore && hasNextPage) {
+              loadMore()
+            }
+          }}
+          onKeyDown={(event) => {
+            if (
+              (event.key === "Enter" || event.key === " ") &&
+              !isLoadingMore &&
+              hasNextPage
+            ) {
+              loadMore()
+            }
+          }}
         >
           {isLoadingMore ? (
             <div className="rounded-md bg-muted/20 px-4 py-2 text-muted-foreground text-sm">
               読み込み中...
             </div>
-          ) : hasNext ? (
+          ) : hasNextPage ? (
             <button
               type="button"
               className="cursor-pointer rounded-md bg-muted/10 px-4 py-2 text-muted-foreground text-sm transition-colors hover:bg-muted/20"
               onClick={() => {
-                if (!isLoadingMore && hasNext) {
-                  console.log("Manual load triggered by user click")
+                if (!isLoadingMore && hasNextPage) {
                   loadMore()
                 }
               }}
-              onKeyDown={(event) => {
-                if (
-                  (event.key === "Enter" || event.key === " ") &&
-                  !isLoadingMore &&
-                  hasNext
-                ) {
-                  event.preventDefault()
-                  loadMore()
-                }
-              }}
-              tabIndex={0}
             >
               続きを読み込む
             </button>
           ) : null}
         </div>
       )}
-
+      {/* ローディング表示 */}
       <WorksLoading
         loading={loadingFirst || isLoadingMore}
         hasWorks={flat.length > 0}

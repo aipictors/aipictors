@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { WorksInfiniteMode } from "./works-infinite-mode"
+import { ImprovedWorksInfiniteMode } from "./improved-works-infinite-mode"
 import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
 import { WorksPaginationMode } from "~/routes/($lang)._main._index/components/works-pagination-mode"
 import type { WorkItem } from "../types/works"
@@ -17,6 +17,7 @@ type Props = {
   onPaginationModeChange?: (isPagination: boolean) => void
   onSelect?: (index: number) => void
   initialWorks?: WorkItem[] // SSRで取得した初期データ
+  onWorksLoaded?: (works: WorkItem[]) => void // 作品データが読み込まれた時のコールバック
 }
 
 export function HomeHotWorksSection(props: Props) {
@@ -33,13 +34,19 @@ export function HomeHotWorksSection(props: Props) {
   return (
     <div className="space-y-4">
       {props.isPagination ? (
-        <WorksPaginationMode key={key} {...hotWorksProps} anchorAt={anchorAt} />
+        <WorksPaginationMode
+          key={key}
+          {...hotWorksProps}
+          anchorAt={anchorAt}
+          // initialWorks={props.initialWorks}
+        />
       ) : (
-        <WorksInfiniteMode
+        <ImprovedWorksInfiniteMode
           key={key}
           {...hotWorksProps}
           anchorAt={anchorAt}
           initialWorks={props.initialWorks}
+          onWorksLoaded={props.onWorksLoaded}
         />
       )}
     </div>

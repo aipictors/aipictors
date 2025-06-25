@@ -69,6 +69,7 @@ type Props = {
   timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
   onSelect?: (index: number) => void
+  initialWorks?: Array<Record<string, unknown>> // SSRで取得した初期データ
 }
 
 /**
@@ -85,8 +86,13 @@ export function HomePaginationWorksSection(props: Props) {
     props.timeRange || "ALL",
   )
 
+  // ページ数が0かつinitialWorksがある場合は、初期データ使用フラグを立てる
+  const shouldUseInitialData =
+    props.page === 0 && props.initialWorks && props.initialWorks.length > 0
+
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
-    skip: appContext.isLoading,
+    // 初期データがあれば最初のクエリをスキップ
+    skip: appContext.isLoading || shouldUseInitialData,
     variables: {
       offset: props.page * perPageCount,
       limit: perPageCount,
@@ -116,13 +122,18 @@ export function HomePaginationWorksSection(props: Props) {
     },
   })
 
+  // 表示用の作品データ
+  const displayWorks = shouldUseInitialData
+    ? props.initialWorks
+    : worksResp?.works || []
+
   return (
     <div className="space-y-4">
       {/* 画像 or 全部 */}
       {(props.workType === "WORK" || props.workType === null) && (
         <HomeWorkSection
           title={""}
-          works={worksResp?.works || []}
+          works={displayWorks}
           isCropped={props.isCropped}
           isShowProfile={true}
           onSelect={props.onSelect}
@@ -132,7 +143,7 @@ export function HomePaginationWorksSection(props: Props) {
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
         <HomeNovelsWorksSection
           title={""}
-          works={worksResp?.works || []}
+          works={displayWorks}
           onSelect={props.onSelect}
         />
       )}
@@ -140,7 +151,7 @@ export function HomePaginationWorksSection(props: Props) {
       {props.workType === "VIDEO" && (
         <HomeVideosWorksSection
           title={""}
-          works={worksResp?.works || []}
+          works={displayWorks}
           isAutoPlay={true}
         />
       )}

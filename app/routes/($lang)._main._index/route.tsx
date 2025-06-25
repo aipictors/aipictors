@@ -206,7 +206,7 @@ function useScrollRestoration(isMounted: boolean) {
   }, [isMounted])
 }
 
-export default function Index() {
+export default function Home() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -244,9 +244,16 @@ export default function Index() {
   // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え
   const [workView, setWorkView] = useState(searchParams.get("view") || "new")
 
-  const [internalIsPagination, setInternalIsPagination] = useState(
+  const [internalIsPagination, setInternalIsPagination] = useState<boolean>(
     searchParams.get("isPagination") === "true",
   )
+  const [newTabIsPagination, setNewTabIsPagination] = useState<boolean>(
+    searchParams.get("isPagination") === "true",
+  )
+  const [followUserTabIsPagination, setFollowUserTabIsPagination] =
+    useState<boolean>(searchParams.get("isPagination") === "true")
+  const [followTagTabIsPagination, setFollowTagTabIsPagination] =
+    useState<boolean>(searchParams.get("isPagination") === "true")
 
   // 作品遷移モード（ダイアログ / 直接リンク）
   const [isDialogMode, _setIsDialogMode] = useState(false)
@@ -413,16 +420,76 @@ export default function Index() {
     }
   }, [isMounted, searchParams, currentTab])
 
+  // タブ切り替え時にステートをリセットする関数
+  const resetTabState = (tab: string) => {
+    console.log(`Resetting state for tab: ${tab}`)
+
+    // セッションストレージから関連するスクロール位置データをクリア
+    if (typeof window !== "undefined") {
+      // 無限スクロールのスクロール位置をクリア
+      sessionStorage.removeItem("scroll-home-works-infinite")
+      sessionStorage.removeItem("scroll-follow-user-infinite")
+      sessionStorage.removeItem("scroll-follow-tag-infinite")
+
+      // homeWorks-pages:* の形式のすべてのエントリを検索して削除
+      Object.keys(sessionStorage).forEach((key) => {
+        if (key.startsWith("homeWorks-pages:")) {
+          console.log("Clearing session storage key:", key)
+          sessionStorage.removeItem(key)
+        }
+      })
+    }
+
+    // 現在の作品データを確実にクリア
+    setCurrentWorks([])
+
+    // 状態に応じてページ番号も再設定
+    if (tab === "new") {
+      setNewWorksPage(0)
+    } else if (tab === "follow-user") {
+      setFollowUserFeedPage(0)
+    } else if (tab === "follow-tag") {
+      setFollowTagFeedPage(0)
+    }
+  }
+
   // タブ変更時（Tabs の onValueChange）などで呼ばれる
   const handleTabChange = (tab: string) => {
+    if (currentTab === tab) return // 同じタブの場合は何もしない
+
+    console.log(`Tab changed from ${currentTab} to ${tab}`)
+
+    // 現在の作品データを即時クリア（タブ切り替え時に前のタブのデータが表示されるのを防ぐ）
+    setCurrentWorks([])
+
+    // タブ情報を更新
     setCurrentTab(tab)
+
+    // タブ切り替え時にページをリセット
     setNewWorksPage(0)
     setFollowUserFeedPage(0)
     setFollowTagFeedPage(0)
 
+    // 各タブ専用のページネーションモードを継承する
+    let isPaginationValue = false
+    if (tab === "new") {
+      isPaginationValue = newTabIsPagination
+    } else if (tab === "follow-user") {
+      isPaginationValue = followUserTabIsPagination
+    } else if (tab === "follow-tag") {
+      isPaginationValue = followTagTabIsPagination
+    } else {
+      isPaginationValue = internalIsPagination
+    }
+    setInternalIsPagination(isPaginationValue)
+
+    // スクロール位置をリセット
+    window.scrollTo(0, 0)
+
     // 既存パラメータをコピーして編集
     const newSearchParams = new URLSearchParams(searchParams)
     newSearchParams.set("tab", tab)
+    newSearchParams.set("isPagination", isPaginationValue.toString())
 
     // 別タブでは page 不要なので消す or 0 にする
     if (tab === "new") {
@@ -436,6 +503,12 @@ export default function Index() {
     }
 
     updateQueryParams(newSearchParams)
+
+    // タブ切り替え後に少し遅延させてリセットする（レンダリング後に実行させるため）
+    // 300msに短縮して、より早くリセットを行う
+    setTimeout(() => {
+      resetTabState(tab)
+    }, 300)
   }
 
   /**
@@ -495,9 +568,19 @@ export default function Index() {
    * 新着タブ内の「新着 / 人気 / 新規ユーザ」切り替え
    */
   const handleWorkViewChange = (view: string) => {
+    if (workView === view) return // 同じビューの場合は何もしない
+
+    // 現在の作品データをクリア（ビュー切り替え時に前のビューのデータが表示されるのを防ぐ）
+    setCurrentWorks([])
+
     setWorkView(view)
     const newSearchParams = new URLSearchParams(searchParams)
     newSearchParams.set("view", view)
+
+    // ページをリセット
+    newSearchParams.set("page", "0")
+    setNewWorksPage(0)
+
     updateQueryParams(newSearchParams)
   }
 
@@ -616,6 +699,33 @@ export default function Index() {
     }
   }, [currentTab, homeWorks, currentWorks])
 
+  // タブごとのページネーション状態を更新する関数
+  const updateTabPagination = (isPagination: boolean) => {
+    const p = new URLSearchParams(searchParams)
+    p.set("isPagination", isPagination.toString())
+
+    // 現在のタブに応じてステート変数を更新
+    switch (currentTab) {
+      case "new":
+        setNewTabIsPagination(isPagination)
+        break
+      case "follow-user":
+        setFollowUserTabIsPagination(isPagination)
+        break
+      case "follow-tag":
+        setFollowTagTabIsPagination(isPagination)
+        break
+      default:
+        // ホームタブなどの場合
+        break
+    }
+
+    // 共通のページネーション状態も更新（後方互換性のため）
+    setInternalIsPagination(isPagination)
+
+    updateQueryParams(p)
+  }
+
   // 作品クリック時の処理
   const openWork = (idx: number) => {
     console.log("Open work at index:", idx)
@@ -662,8 +772,7 @@ export default function Index() {
         // ホームタブの追加読み込みは特別な処理が必要かもしれません
         // 現在の表示中作品のカウントを計算
         const currentCount = homeWorks.length
-        // APIの実装に応じて、適切なoffsetとlimitを設定してAPIを呼び出す
-        // 例: さらに10件読み込む
+        // APIの実装に応じて、適切なoffsetとlimitを設定してAPIを呼び出す例:
         // const additionalWorks = await fetchMoreWorks(currentCount, 10);
         // setHomeWorks([...homeWorks, ...additionalWorks]);
 
@@ -672,16 +781,13 @@ export default function Index() {
           setHasNextPage(false)
         }
       } else if (currentTab === "new") {
-        // 新着タブの追加読み込みロジック
-        // タブ内の対応するコンポーネントにロードモア関数を実装する必要があります
+        // 新着タブの追加読み込みロジック - 具体的な実装はタブ内コンポーネントに委譲
+        // WorksInfiniteModeコンポーネント内で実装済み
       } else if (currentTab === "follow-user") {
-        // フォローユーザータブの追加読み込みロジック
+        // フォローユーザータブの追加読み込みロジック - FollowUserFeedContentsコンポーネントに委譲
       } else if (currentTab === "follow-tag") {
-        // フォロータグタブの追加読み込みロジック
+        // フォロータグタブの追加読み込みロジック - FollowTagsFeedContentsコンポーネントに委譲
       }
-
-      // 注: 各タブの具体的な追加読み込み処理は、タブ内の対応するコンポーネントで実装する必要があります
-      // ここではインターフェースのみを提供
     } catch (error) {
       console.error("Failed to load more works:", error)
     } finally {
@@ -1069,13 +1175,10 @@ export default function Index() {
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        setInternalIsPagination(false)
-                        const p = new URLSearchParams(searchParams)
-                        p.set("isPagination", "false")
-                        updateQueryParams(p)
+                        updateTabPagination(false)
                       }}
                       className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
-                        !internalIsPagination
+                        !newTabIsPagination
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       } `}
@@ -1090,13 +1193,10 @@ export default function Index() {
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        setInternalIsPagination(true)
-                        const p = new URLSearchParams(searchParams)
-                        p.set("isPagination", "true")
-                        updateQueryParams(p)
+                        updateTabPagination(true)
                       }}
                       className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
-                        internalIsPagination
+                        newTabIsPagination
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
                       } `}
@@ -1133,7 +1233,7 @@ export default function Index() {
 
               {/* 新着作品 */}
               <Suspense fallback={<AppLoadingPage />}>
-                {internalIsPagination ? (
+                {newTabIsPagination ? (
                   <HomePaginationWorksSection
                     page={newWorksPage}
                     setPage={setNewWorksPage}
@@ -1142,6 +1242,7 @@ export default function Index() {
                     sortType={sortType}
                     timeRange={timeRange}
                     onSelect={isDialogMode ? openWork : undefined}
+                    initialWorks={data.initialNewWorks}
                   />
                 ) : (
                   <HomeWorksSection
@@ -1152,7 +1253,9 @@ export default function Index() {
                     sortType={sortType}
                     timeRange={timeRange}
                     isPagination={false}
-                    onPaginationModeChange={setInternalIsPagination}
+                    onPaginationModeChange={(isPagination) =>
+                      updateTabPagination(isPagination)
+                    }
                     onSelect={isDialogMode ? openWork : undefined}
                     onWorksLoaded={updateCurrentWorks}
                     initialWorks={data.initialNewWorks}
@@ -1171,13 +1274,10 @@ export default function Index() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      setInternalIsPagination(false)
-                      const p = new URLSearchParams(searchParams)
-                      p.set("isPagination", "false")
-                      updateQueryParams(p)
+                      updateTabPagination(false)
                     }}
                     className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
-                      !internalIsPagination
+                      !newTabIsPagination
                         ? "bg-background text-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
@@ -1191,13 +1291,10 @@ export default function Index() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      setInternalIsPagination(true)
-                      const p = new URLSearchParams(searchParams)
-                      p.set("isPagination", "true")
-                      updateQueryParams(p)
+                      updateTabPagination(true)
                     }}
                     className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
-                      internalIsPagination
+                      newTabIsPagination
                         ? "bg-background text-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
@@ -1237,10 +1334,13 @@ export default function Index() {
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
-                  isPagination={internalIsPagination}
-                  onPaginationModeChange={setInternalIsPagination}
+                  isPagination={newTabIsPagination}
+                  onPaginationModeChange={(isPagination) =>
+                    updateTabPagination(isPagination)
+                  }
                   onSelect={isDialogMode ? openWork : undefined}
                   initialWorks={data.initialHotWorks}
+                  onWorksLoaded={updateCurrentWorks}
                 />
               </Suspense>
             </div>
@@ -1255,13 +1355,10 @@ export default function Index() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      setInternalIsPagination(false)
-                      const p = new URLSearchParams(searchParams)
-                      p.set("isPagination", "false")
-                      updateQueryParams(p)
+                      updateTabPagination(false)
                     }}
                     className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
-                      !internalIsPagination
+                      !newTabIsPagination
                         ? "bg-background text-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
@@ -1275,13 +1372,10 @@ export default function Index() {
                     variant="ghost"
                     size="sm"
                     onClick={() => {
-                      setInternalIsPagination(true)
-                      const p = new URLSearchParams(searchParams)
-                      p.set("isPagination", "true")
-                      updateQueryParams(p)
+                      updateTabPagination(true)
                     }}
                     className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
-                      internalIsPagination
+                      newTabIsPagination
                         ? "bg-background text-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
@@ -1334,14 +1428,9 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setInternalIsPagination(false)
-                  const p = new URLSearchParams(searchParams)
-                  p.set("isPagination", "false")
-                  updateQueryParams(p)
-                }}
+                onClick={() => updateTabPagination(false)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
-                  !internalIsPagination
+                  !followUserTabIsPagination
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -1355,14 +1444,9 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setInternalIsPagination(true)
-                  const p = new URLSearchParams(searchParams)
-                  p.set("isPagination", "true")
-                  updateQueryParams(p)
-                }}
+                onClick={() => updateTabPagination(true)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
-                  internalIsPagination
+                  followUserTabIsPagination
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -1399,8 +1483,10 @@ export default function Index() {
             <FollowUserFeedContents
               page={followUserFeedPage}
               setPage={setFollowUserFeedPage}
-              isPagination={internalIsPagination}
-              onPaginationModeChange={setInternalIsPagination}
+              isPagination={followUserTabIsPagination}
+              onPaginationModeChange={(isPagination) =>
+                updateTabPagination(isPagination)
+              }
               onSelect={isDialogMode ? openWork : undefined}
             />
           </Suspense>
@@ -1414,14 +1500,9 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setInternalIsPagination(false)
-                  const p = new URLSearchParams(searchParams)
-                  p.set("isPagination", "false")
-                  updateQueryParams(p)
-                }}
+                onClick={() => updateTabPagination(false)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
-                  !internalIsPagination
+                  !followTagTabIsPagination
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -1435,14 +1516,9 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setInternalIsPagination(true)
-                  const p = new URLSearchParams(searchParams)
-                  p.set("isPagination", "true")
-                  updateQueryParams(p)
-                }}
+                onClick={() => updateTabPagination(true)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
-                  internalIsPagination
+                  followTagTabIsPagination
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
@@ -1478,7 +1554,7 @@ export default function Index() {
             <FollowTagsFeedContents
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}
-              isPagination={internalIsPagination}
+              isPagination={followTagTabIsPagination}
               onSelect={isDialogMode ? openWork : undefined}
             />
           </Suspense>
