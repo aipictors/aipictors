@@ -305,34 +305,15 @@ export const PhotoAlbumWorkFragment = graphql(
       createdLikesCount
       createdBookmarksCount
       isMuted
-      works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
-        id
-        userId
-        largeThumbnailImageURL
-        largeThumbnailImageWidth
-        largeThumbnailImageHeight
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-        subWorksCount
-        commentsCount
-        isLiked
-      }
       promptonUser {
         id
       }
     }
-    likedUsers(offset: 0, limit: 120) {
+    likedUsers(offset: 0, limit: 8) {
       id
       name
       iconUrl
       login
-    }
-    album {
-      id
-      title
-      description
     }
     dailyTheme {
       id
@@ -347,20 +328,6 @@ export const PhotoAlbumWorkFragment = graphql(
     subWorks {
       id
       imageUrl
-    }
-    nextWork {
-      id
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
-    }
-    previousWork {
-      id
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
     }
     model
     modelHash

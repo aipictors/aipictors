@@ -38,6 +38,7 @@ export function MutedUserList() {
           <MutedUser
             key={user.id}
             name={user.name}
+            login={user.login}
             iconImageURL={withIconUrlFallback(user.iconUrl)}
             onClick={() => handleUnmute(user.id)}
           />
@@ -65,6 +66,15 @@ const viewerMutedUsersQuery = graphql(
   }`,
 )
 
+const _userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      isShowingMutedUsersComments
+      isShowingMutedUsersWorks
+    }
+  }`,
+)
+
 const muteUserMutation = graphql(
   `mutation MuteUser($input: MuteUserInput!) {
     muteUser(input: $input) {
@@ -73,3 +83,12 @@ const muteUserMutation = graphql(
     }
   }`,
 )
+
+const _updateUserSettingMutation = graphql(`
+  mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
+    updateUserSetting(input: $input) {
+      isShowingMutedUsersComments
+      isShowingMutedUsersWorks
+    }
+  }
+`)

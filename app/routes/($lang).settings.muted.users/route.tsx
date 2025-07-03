@@ -5,6 +5,7 @@ import type {
 } from "@remix-run/cloudflare"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
+import { MuteSetting } from "~/routes/($lang).settings.muted.users/components/mute-setting"
 import { MutedUserList } from "~/routes/($lang).settings.muted.users/components/muted-user-list"
 import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import { createMeta } from "~/utils/create-meta"
@@ -13,7 +14,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.SETTINGS_MUTE_USERS, undefined, props.params.lang)
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {
@@ -35,6 +36,7 @@ export default function SettingMutedUsers() {
       <div className="block md:hidden">
         <SettingsHeader title={t("ミュートしているユーザ", "Muted Users")} />
       </div>
+      <MuteSetting />
       <MutedUserList />
     </div>
   )

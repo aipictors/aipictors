@@ -460,7 +460,6 @@ function HomeHeader(props: Props) {
               >
                 <MoveLeft className="w-8" />
               </Button>
-              S
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}

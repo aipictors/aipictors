@@ -35,6 +35,7 @@ type Comment = {
   text: string
   createdAt: number
   isLiked: boolean
+  isMuted: boolean
   likesCount: number
   isWorkOwnerLiked: boolean
   user: {
@@ -56,6 +57,7 @@ type ReplyComment = {
   text: string
   createdAt: number
   isLiked: boolean
+  isMuted: boolean
   likesCount: number
   isWorkOwnerLiked: boolean
   user: {
@@ -181,6 +183,7 @@ export function WorkCommentList(props: Props) {
                 downloadURL: stickerImageURL,
               },
             },
+            isMuted: false,
             ...newComments,
           },
         ])
@@ -358,6 +361,7 @@ export function WorkCommentList(props: Props) {
                       comment.isLiked &&
                       !canceledCommentIds.includes(comment.id)
                     }
+                    isMuted={comment.isLiked}
                     isNowLiked={likedCommentIds.includes(comment.id)}
                     likesCount={
                       comment.likesCount -
@@ -394,6 +398,7 @@ export function WorkCommentList(props: Props) {
                               downloadURL: stickerImageURL,
                             },
                           },
+                          isMuted: false,
                           ...newComments,
                         },
                       ])
@@ -420,6 +425,7 @@ export function WorkCommentList(props: Props) {
                 isLiked={
                   comment.isLiked && !canceledCommentIds.includes(comment.id)
                 }
+                isMuted={comment.isMuted}
                 isNowLiked={likedCommentIds.includes(comment.id)}
                 likesCount={
                   comment.likesCount -
@@ -453,6 +459,7 @@ export function WorkCommentList(props: Props) {
                       likesCount: 0,
                       isWorkOwnerLiked: false,
                       isLiked: false,
+                      isMuted: false,
                       user: {
                         id: appContext.userId ?? "",
                         name: appContext.displayName ?? "",
@@ -485,6 +492,7 @@ export function WorkCommentList(props: Props) {
                       newReply.isLiked &&
                       !canceledCommentIds.includes(newReply.id)
                     }
+                    isMuted={newReply.isMuted}
                     isNowLiked={likedCommentIds.includes(newReply.id)}
                     likesCount={
                       newReply.likesCount -
@@ -528,6 +536,7 @@ export function WorkCommentList(props: Props) {
                       isLiked={
                         reply.isLiked && !canceledCommentIds.includes(reply.id)
                       }
+                      isMuted={reply.isMuted}
                       isNowLiked={likedCommentIds.includes(reply.id)}
                       likesCount={
                         reply.likesCount -
@@ -559,6 +568,7 @@ export function WorkCommentList(props: Props) {
                             likesCount: 0,
                             isWorkOwnerLiked: false,
                             isLiked: false,
+                            isMuted: false,
                             user: {
                               id: appContext.userId ?? "",
                               name: appContext.displayName ?? "",
@@ -609,6 +619,7 @@ export function WorkCommentList(props: Props) {
                       comment.isLiked &&
                       !canceledCommentIds.includes(comment.id)
                     }
+                    isMuted={comment.isMuted}
                     isNowLiked={likedCommentIds.includes(comment.id)}
                     likesCount={
                       comment.likesCount -
@@ -640,6 +651,7 @@ export function WorkCommentList(props: Props) {
                           likesCount: 0,
                           isWorkOwnerLiked: false,
                           isLiked: false,
+                          isMuted: false,
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
@@ -677,6 +689,7 @@ export function WorkCommentList(props: Props) {
                           newReply.isLiked &&
                           !canceledCommentIds.includes(newReply.id)
                         }
+                        isMuted={newReply.isMuted}
                         likesCount={
                           newReply.likesCount -
                           (canceledCommentIds.includes(newReply.id) ? 1 : 0)
@@ -723,6 +736,7 @@ export function WorkCommentList(props: Props) {
                             reply.isLiked &&
                             !canceledCommentIds.includes(reply.id)
                           }
+                          isMuted={reply.isMuted}
                           likesCount={
                             reply.likesCount -
                             (canceledCommentIds.includes(reply.id) ? 1 : 0)
@@ -761,6 +775,7 @@ export function WorkCommentList(props: Props) {
                                 likesCount: 0,
                                 isWorkOwnerLiked: false,
                                 isLiked: false,
+                                isMuted: false,
                                 user: {
                                   id: appContext.userId ?? "",
                                   name: appContext.displayName ?? "",

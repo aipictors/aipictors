@@ -86,7 +86,7 @@ export function HomeMenuRouteList({
       {/* Main nav ------------------------------------------------- */}
       <HomeMenuNavigationButton
         href={isSensitive ? "/r" : "/"}
-        // onClick={closeHeaderMenu}
+        onClick={closeHeaderMenu}
         icon={HomeIcon}
       >
         {t("ホーム", "Home")}

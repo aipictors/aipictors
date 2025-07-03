@@ -55,7 +55,13 @@ import {
 import { useState, useEffect, Suspense, useMemo } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { ArrowDownWideNarrow, Navigation } from "lucide-react"
+import {
+  ArrowDownWideNarrow,
+  ExternalLink,
+  List,
+  Navigation,
+  PlaySquare,
+} from "lucide-react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import {
@@ -220,7 +226,7 @@ export default function Index() {
   const [internalIsPagination, setInternalIsPagination] = useState(true)
 
   // 作品遷移モード（ダイアログ / 直接リンク）
-  const [isDialogMode, _setIsDialogMode] = useState(false)
+  const [isDialogMode, setIsDialogMode] = useState(false)
 
   // ダイアログ制御
   const [dialogIndex, setDialogIndex] = useState<number | null>(null)
@@ -1012,7 +1018,7 @@ export default function Index() {
 
                   {/* 表示方式切り替え - よりスタイリッシュなデザイン */}
                   <div className="flex rounded-lg bg-muted p-1">
-                    {/* <Button
+                    <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => {
@@ -1031,7 +1037,7 @@ export default function Index() {
                       <span className="hidden sm:inline">
                         {t("フィード", "Feed")}
                       </span>
-                    </Button> */}
+                    </Button>
 
                     <Button
                       variant="ghost"
@@ -1054,7 +1060,7 @@ export default function Index() {
                       </span>
                     </Button>
 
-                    {/* <div className="hidden gap-2 md:flex">
+                    <div className="hidden">
                       <Button
                         variant={!isDialogMode ? "default" : "outline"}
                         size="sm"
@@ -1073,7 +1079,7 @@ export default function Index() {
                         <PlaySquare className="h-4 w-4" />
                         <span>{t("ダイアログ", "Dialog")}</span>
                       </Button>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1112,7 +1118,7 @@ export default function Index() {
               {/* 表示方式切り替え */}
               <div className="flex justify-end">
                 <div className="flex rounded-lg bg-muted p-1">
-                  {/* <Button
+                  <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => {
@@ -1131,7 +1137,7 @@ export default function Index() {
                     <span className="hidden sm:inline">
                       {t("フィード", "Feed")}
                     </span>
-                  </Button> */}
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1195,7 +1201,7 @@ export default function Index() {
               {/* 表示方式切り替え */}
               <div className="flex justify-end">
                 <div className="flex rounded-lg bg-muted p-1">
-                  {/* <Button
+                  <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => {
@@ -1214,7 +1220,7 @@ export default function Index() {
                     <span className="hidden sm:inline">
                       {t("フィード", "Feed")}
                     </span>
-                  </Button> */}
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1275,7 +1281,7 @@ export default function Index() {
           {/* Feed / Pages 切り替えボタン */}
           <div className="flex justify-end">
             <div className="flex rounded-lg bg-muted p-1">
-              {/* <Button
+              <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
@@ -1294,7 +1300,7 @@ export default function Index() {
                 <span className="hidden sm:inline">
                   {t("フィード", "Feed")}
                 </span>
-              </Button> */}
+              </Button>
 
               <Button
                 variant="ghost"
@@ -1355,7 +1361,7 @@ export default function Index() {
           {/* Feed / Pages 切り替えボタン */}
           <div className="flex justify-end">
             <div className="flex rounded-lg bg-muted p-1">
-              {/* <Button
+              <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
@@ -1374,7 +1380,7 @@ export default function Index() {
                 <span className="hidden sm:inline">
                   {t("フィード", "Feed")}
                 </span>
-              </Button> */}
+              </Button>
 
               <Button
                 variant="ghost"

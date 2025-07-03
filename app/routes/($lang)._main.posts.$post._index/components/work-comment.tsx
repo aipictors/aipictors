@@ -1,7 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { useMutation } from "@apollo/client/index"
-import { ArrowDownToLine, Heart, Loader2Icon, ThumbsUpIcon } from "lucide-react"
+import {
+  ArrowDownToLine,
+  Heart,
+  Loader2Icon,
+  ThumbsUpIcon,
+  Eye,
+  EyeOff,
+} from "lucide-react"
 import React from "react"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { Link } from "@remix-run/react"
@@ -35,6 +42,7 @@ type Props = {
   stickerId?: string
   stickerAccessType?: string
   isStickerDownloadable?: boolean
+  isMuted: boolean
   onDeleteComment: () => void
   onReplyCompleted: (
     id: string,
@@ -57,6 +65,7 @@ export function WorkComment(props: Props) {
   )
 
   const [openReplyInput, setOpenReplyInput] = React.useState(false)
+  const [showMutedComment, setShowMutedComment] = React.useState(false)
 
   const onDeleteComment = async () => {
     props.onDeleteComment()
@@ -79,9 +88,40 @@ export function WorkComment(props: Props) {
     }
   }
 
+  // ミュートされたコメントの表示
+  if (props.isMuted && !showMutedComment) {
+    return (
+      <div className="flex items-center space-x-4 rounded-lg border p-2">
+        <EyeOff className="size-5 text-gray-400" />
+        <div className="flex-1">
+          <p className="text-sm">
+            {t(
+              "ミュートしているユーザのコメントです",
+              "This is a comment from a muted user",
+            )}
+          </p>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setShowMutedComment(true)}
+        >
+          <Eye className="mr-2 size-4" />
+          {t("表示", "Show")}
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <>
-      <div className="flex items-start space-x-4">
+      <div
+        className={cn(
+          "flex items-start space-x-4",
+          props.isMuted &&
+            "border-gray-300 border-l-2 pl-4 opacity-60 dark:border-gray-700",
+        )}
+      >
         <Link to={`/users/${props.userId}`}>
           <Avatar>
             <AvatarImage
@@ -93,9 +133,19 @@ export function WorkComment(props: Props) {
           </Avatar>
         </Link>
         <div className="flex flex-col space-y-2">
-          <Link to={`/users/${props.userId}`}>
-            <span>{props.userName}</span>
-          </Link>
+          <div className="flex items-center space-x-2">
+            <Link to={`/users/${props.userId}`}>
+              <span>{props.userName}</span>
+            </Link>
+            {props.isMuted && (
+              <div className="flex items-center space-x-1">
+                <EyeOff className="size-3 text-gray-400" />
+                <span className="text-gray-500 text-xs dark:text-gray-400">
+                  {t("ミュート中", "Muted")}
+                </span>
+              </div>
+            )}
+          </div>
           {props.text && (
             <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
               {props.text}
@@ -165,15 +215,11 @@ export function WorkComment(props: Props) {
               </div>
             }
             {props.isMine ? (
-              <>
-                {isDeleteLoading ? (
-                  <Loader2Icon className="mr-2 size-4 animate-spin" />
-                ) : (
-                  <DeleteCommentConfirmDialog
-                    onDeleteComment={onDeleteComment}
-                  />
-                )}
-              </>
+              isDeleteLoading ? (
+                <Loader2Icon className="mr-2 size-4 animate-spin" />
+              ) : (
+                <DeleteCommentConfirmDialog onDeleteComment={onDeleteComment} />
+              )
             ) : (
               <>
                 {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
@@ -192,6 +238,16 @@ export function WorkComment(props: Props) {
                     </StickerInfoDialog>
                   )}
               </>
+            )}
+            {props.isMuted && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowMutedComment(false)}
+              >
+                <EyeOff className="mr-1 size-3" />
+                {t("非表示", "Hide")}
+              </Button>
             )}
           </div>
         </div>
@@ -239,6 +295,7 @@ export const WorkCommentFragment = graphql(
       downloadsCount
       accessType
     }
+    isMuted
   }`,
 )
 

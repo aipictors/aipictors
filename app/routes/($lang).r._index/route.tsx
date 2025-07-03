@@ -338,97 +338,102 @@ export default function Index() {
           {workView === "new" && (
             <>
               <div className="flex flex-wrap gap-4">
-                {/* type */}
-                <Select
-                  value={workType ?? ""}
-                  onValueChange={(v) => {
-                    setWorkType(v === "ALL" ? null : (v as any))
-                    syncParam("workType", v === "ALL" ? null : v)
-                  }}
-                >
-                  <SelectTrigger className="min-w-[120px]">
-                    <SelectValue
-                      placeholder={
-                        workType
-                          ? toWorkTypeText({ type: workType, lang: locale })
-                          : t("種類", "Type")
-                      }
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {["ALL", "WORK", "VIDEO", "NOVEL", "COLUMN"].map((v) => (
-                      <SelectItem key={v} value={v}>
-                        {t(
-                          v === "WORK"
-                            ? "画像"
-                            : v === "VIDEO"
-                              ? "動画"
-                              : v === "NOVEL"
-                                ? "小説"
-                                : v === "COLUMN"
-                                  ? "コラム"
-                                  : "種類",
-                          v,
-                        )}
+                <div className="flex w-full space-x-4">
+                  {/* type */}
+                  <Select
+                    value={workType ?? ""}
+                    onValueChange={(v) => {
+                      setWorkType(v === "ALL" ? null : (v as any))
+                      syncParam("workType", v === "ALL" ? null : v)
+                    }}
+                  >
+                    <SelectTrigger className="min-w-[120px]">
+                      <SelectValue
+                        placeholder={
+                          workType
+                            ? toWorkTypeText({ type: workType, lang: locale })
+                            : t("種類", "Type")
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["ALL", "WORK", "VIDEO", "NOVEL", "COLUMN"].map((v) => (
+                        <SelectItem key={v} value={v}>
+                          {t(
+                            v === "WORK"
+                              ? "画像"
+                              : v === "VIDEO"
+                                ? "動画"
+                                : v === "NOVEL"
+                                  ? "小説"
+                                  : v === "COLUMN"
+                                    ? "コラム"
+                                    : "種類",
+                            v,
+                          )}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* prompt */}
+                  <Select
+                    value={
+                      isPromptPublic === null
+                        ? "ALL"
+                        : isPromptPublic
+                          ? "prompt"
+                          : "no-prompt"
+                    }
+                    onValueChange={(v) => {
+                      setIsPromptPublic(v === "ALL" ? null : v === "prompt")
+                      syncParam(
+                        "isPromptPublic",
+                        v === "ALL" ? null : v === "prompt" ? "true" : "false",
+                      )
+                    }}
+                  >
+                    <SelectTrigger className="min-w-[120px]">
+                      <SelectValue
+                        placeholder={t("プロンプト有無", "Prompt")}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ALL">
+                        {t("プロンプト有無", "Prompt")}
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
+                      <SelectItem value="no-prompt">
+                        {t("なし", "No")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
 
-                {/* prompt */}
-                <Select
-                  value={
-                    isPromptPublic === null
-                      ? "ALL"
-                      : isPromptPublic
-                        ? "prompt"
-                        : "no-prompt"
-                  }
-                  onValueChange={(v) => {
-                    setIsPromptPublic(v === "ALL" ? null : v === "prompt")
-                    syncParam(
-                      "isPromptPublic",
-                      v === "ALL" ? null : v === "prompt" ? "true" : "false",
-                    )
-                  }}
-                >
-                  <SelectTrigger className="min-w-[120px]">
-                    <SelectValue placeholder={t("プロンプト有無", "Prompt")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ALL">
-                      {t("プロンプト有無", "Prompt")}
-                    </SelectItem>
-                    <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
-                    <SelectItem value="no-prompt">{t("なし", "No")}</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* sort */}
-                <Select
-                  value={sortType ?? ""}
-                  onValueChange={(v) => {
-                    setSortType(v === "ALL" ? null : (v as any))
-                    syncParam("sortType", v === "ALL" ? null : v)
-                  }}
-                >
-                  <SelectTrigger className="min-w-[120px]">
-                    <ArrowDownWideNarrow />
-                    <SelectValue placeholder={t("最新", "Latest")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DATE_CREATED">
-                      {t("最新", "Latest")}
-                    </SelectItem>
-                    <SelectItem value="LIKES_COUNT">
-                      {t("最も人気", "Most Liked")}
-                    </SelectItem>
-                    <SelectItem value="COMMENTS_COUNT">
-                      {t("コメント数", "Most Comments")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-
+                  {/* sort */}
+                  <Select
+                    value={sortType ?? ""}
+                    onValueChange={(v) => {
+                      setSortType(v === "ALL" ? null : (v as any))
+                      syncParam("sortType", v === "ALL" ? null : v)
+                    }}
+                  >
+                    <SelectTrigger className="min-w-[120px]">
+                      <ArrowDownWideNarrow />
+                      <SelectValue placeholder={t("最新", "Latest")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="DATE_CREATED">
+                        {t("最新", "Latest")}
+                      </SelectItem>
+                      <SelectItem value="LIKES_COUNT">
+                        {t("最も人気", "Most Liked")}
+                      </SelectItem>
+                      <SelectItem value="COMMENTS_COUNT">
+                        {t("コメント数", "Most Comments")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 {/* time range */}
                 <Select
                   value={timeRange}

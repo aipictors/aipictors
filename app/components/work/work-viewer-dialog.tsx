@@ -3,9 +3,10 @@ import {
   useEffect,
   useRef,
   useState,
+  useMemo,
   type WheelEvent,
 } from "react"
-import { type FragmentOf, graphql } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { useQuery } from "@apollo/client/index"
 import {
@@ -42,68 +43,139 @@ export function WorkViewerDialog({
 }: Props) {
   // ────────── State / Refs ──────────
   const [index, setIndex] = useState(startIndex)
+  const [loadedWorkIds, setLoadedWorkIds] = useState<Set<string>>(new Set())
+  const [workDataCache, setWorkDataCache] = useState<Map<string, any>>(
+    new Map(),
+  )
 
-  const thumbListRef = useRef<HTMLDivElement | null>(null) // サムネ列 root
-  const sentinelRef = useRef<HTMLDivElement | null>(null) // 監視要素
+  // デバウンス用の状態
+  const [activeWorkId, setActiveWorkId] = useState<string | null>(null)
+  const [isDebouncing, setIsDebouncing] = useState(false)
 
-  /* ────────────────────────────────────────────────
-   * 追加ロード判定関数（スクロール量を直接判定）
-   * ------------------------------------------------- */
-  const mayNeedLoadMore = useCallback(() => {
-    if (!thumbListRef.current || !loadMore || !hasNextPage || isLoadingMore)
-      return
-    const el = thumbListRef.current
-    const distance = el.scrollHeight - el.scrollTop - el.clientHeight
-    if (distance < 150) {
-      loadMore()
+  const thumbListRef = useRef<HTMLDivElement | null>(null)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // ────────── 現在の作品 ──────────
+  const work = works[index]
+  const isWorkCached = workDataCache.has(work.id)
+  const shouldFetchWork = activeWorkId === work.id && !isWorkCached
+
+  // ────────── デバウンス処理 ──────────
+  const debouncedSetActiveWork = useCallback((workId: string) => {
+    setIsDebouncing(true)
+
+    // 既存のタイマーをクリア
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
     }
-  }, [loadMore, hasNextPage, isLoadingMore])
 
-  /* ────────────────────────────────────────────────
-   * IntersectionObserver — サムネ列監視
-   * ------------------------------------------------- */
+    // 新しいタイマーを設定
+    debounceTimerRef.current = setTimeout(() => {
+      setActiveWorkId(workId)
+      setIsDebouncing(false)
+      debounceTimerRef.current = null
+    }, 500) // 500ms のデバウンス
+  }, [])
+
+  // ────────── インデックス変更時の処理 ──────────
   useEffect(() => {
-    if (
-      !loadMore ||
-      !hasNextPage ||
-      !thumbListRef.current ||
-      !sentinelRef.current
-    )
-      return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isLoadingMore) loadMore()
-      },
-      { root: thumbListRef.current, rootMargin: "200px 0px 200px 0px" },
-    )
-
-    observer.observe(sentinelRef.current)
-
-    // 初期表示時に sentinel が既に可視 or バーが無い場合のフォールバック
-    mayNeedLoadMore()
-
-    return () => observer.disconnect()
-  }, [loadMore, hasNextPage, isLoadingMore, works.length, mayNeedLoadMore])
-
-  /* ────────────────────────────────────────────────
-   * scroll フォールバック
-   * ------------------------------------------------- */
-  useEffect(() => {
-    if (!thumbListRef.current || !loadMore || !hasNextPage) return
-    const el = thumbListRef.current
-
-    // 初回チェック
-    mayNeedLoadMore()
-
-    const onScroll = () => {
-      mayNeedLoadMore()
+    const currentWork = works[index]
+    if (currentWork) {
+      // キャッシュ済みの場合は即座に表示
+      if (workDataCache.has(currentWork.id)) {
+        setActiveWorkId(currentWork.id)
+        setIsDebouncing(false)
+        // タイマーをクリア
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current)
+          debounceTimerRef.current = null
+        }
+      } else {
+        // キャッシュされていない場合はデバウンス
+        debouncedSetActiveWork(currentWork.id)
+      }
     }
-    el.addEventListener("scroll", onScroll)
-    return () => el.removeEventListener("scroll", onScroll)
-  }, [loadMore, hasNextPage, isLoadingMore, mayNeedLoadMore])
+  }, [index, works, workDataCache, debouncedSetActiveWork])
 
-  /* ────────── index が末尾なら自動ロード ────────── */
+  // ────────── GraphQL Query with conditional execution ──────────
+  const { data, loading, error } = useQuery(workDialogQuery, {
+    variables: { workId: work.id },
+    skip: !shouldFetchWork, // デバウンス完了 & 未キャッシュの場合のみ実行
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
+    notifyOnNetworkStatusChange: true,
+    returnPartialData: true,
+    onCompleted: (data) => {
+      if (data?.work) {
+        // データが取得できたらキャッシュに保存
+        setWorkDataCache((prev) => new Map(prev).set(work.id, data.work))
+        setLoadedWorkIds((prev) => new Set(prev).add(work.id))
+      }
+    },
+  })
+
+  // ────────── 先読み処理（デバウンス付き） ──────────
+  const prefetchAdjacentWorks = useCallback(() => {
+    // 現在の作品が読み込み完了してから先読み開始
+    if (isDebouncing || (!isWorkCached && !data?.work)) return
+
+    const prefetchIds: string[] = []
+
+    // 前後2作品の範囲で先読み（負荷軽減のため範囲を縮小）
+    for (
+      let i = Math.max(0, index - 2);
+      i <= Math.min(works.length - 1, index + 2);
+      i++
+    ) {
+      if (i !== index && !loadedWorkIds.has(works[i].id)) {
+        prefetchIds.push(works[i].id)
+      }
+    }
+
+    // 先読み実行（さらに遅延を追加）
+    prefetchIds.forEach((workId, idx) => {
+      setTimeout(
+        () => {
+          if (!workDataCache.has(workId)) {
+            setActiveWorkId(workId)
+          }
+        },
+        1000 + idx * 500,
+      ) // 1秒後から0.5秒間隔で先読み
+    })
+  }, [
+    index,
+    works,
+    loadedWorkIds,
+    workDataCache,
+    isDebouncing,
+    isWorkCached,
+    data,
+  ])
+
+  // ────────── 先読みのトリガー（遅延実行） ──────────
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      prefetchAdjacentWorks()
+    }, 1500) // 1.5秒後に先読み開始
+
+    return () => clearTimeout(timeoutId)
+  }, [prefetchAdjacentWorks])
+
+  // ────────── 現在表示する作品データの決定 ──────────
+  const currentWork = useMemo(() => {
+    // キャッシュからデータを取得
+    const cachedData = workDataCache.get(work.id)
+    if (cachedData) {
+      return cachedData
+    }
+
+    // キャッシュにない場合はAPIからのデータまたは基本データを使用
+    return data?.work ?? work
+  }, [work, workDataCache, data])
+
+  // ────────── index が末尾なら自動ロード ──────────
   useEffect(() => {
     if (
       index === works.length - 1 &&
@@ -114,21 +186,6 @@ export function WorkViewerDialog({
       loadMore()
     }
   }, [index, works.length, hasNextPage, isLoadingMore, loadMore])
-
-  // ────────── 現在の作品 ──────────
-  const work = works[index]
-
-  // ────────── GraphQL ──────────
-  const { data, refetch } = useQuery(workDialogQuery, {
-    variables: { workId: work.id },
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
-    notifyOnNetworkStatusChange: true,
-    returnPartialData: true,
-  })
-  useEffect(() => {
-    refetch({ workId: work.id })
-  }, [work.id, refetch])
 
   // ────────── ナビゲーション ──────────
   const next = useCallback(
@@ -167,7 +224,17 @@ export function WorkViewerDialog({
     }
   }, [prev, next, onClose])
 
-  const currentWork = data?.work ?? work
+  // ────────── クリーンアップ ──────────
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [])
+
+  // ────────── ローディング状態 ──────────
+  const isCurrentWorkLoading = (!isWorkCached && loading) || isDebouncing
 
   // ───────────────── Render ─────────────────
   return (
@@ -196,26 +263,49 @@ export function WorkViewerDialog({
               </Link>
             </div>
           </DialogHeader>
-          <div className="flex flex-1 flex-col gap-y-6 overflow-y-auto overscroll-y-contain p-4">
-            <WorkArticle work={currentWork} userSetting={undefined} />
-            <WorkCommentList
-              workId={currentWork.id}
-              workOwnerIconImageURL={withIconUrlFallback(
-                currentWork.user?.iconUrl,
-              )}
-              comments={
-                Array.isArray(
-                  (currentWork as { comments?: unknown[] }).comments,
-                )
-                  ? ((currentWork as any).comments.map((c: any) => ({
-                      ...c,
-                      responses: null,
-                    })) as any)
-                  : []
-              }
-              defaultShowCommentCount={8}
-            />
-          </div>
+
+          {/* ローディング表示 */}
+          {isCurrentWorkLoading ? (
+            <div className="flex flex-1 items-center justify-center">
+              <div className="flex flex-col items-center space-y-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+                <span className="text-muted-foreground text-sm">
+                  {isDebouncing ? "待機中..." : "読み込み中..."}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-1 flex-col gap-y-6 overflow-y-auto overscroll-y-contain p-4">
+              <WorkArticle
+                work={{
+                  ...currentWork,
+                  user: currentWork.user
+                    ? { ...currentWork.user, works: [] }
+                    : null,
+                  nextWork: null,
+                  previousWork: null,
+                }}
+                userSetting={undefined}
+              />
+              <WorkCommentList
+                workId={currentWork.id}
+                workOwnerIconImageURL={withIconUrlFallback(
+                  currentWork.user?.iconUrl,
+                )}
+                comments={
+                  Array.isArray(
+                    (currentWork as { comments?: unknown[] }).comments,
+                  )
+                    ? ((currentWork as any).comments.map((c: any) => ({
+                        ...c,
+                        responses: null,
+                      })) as any)
+                    : []
+                }
+                defaultShowCommentCount={8}
+              />
+            </div>
+          )}
         </aside>
 
         {/* サムネイル列 */}
@@ -227,7 +317,9 @@ export function WorkViewerDialog({
             <button
               key={w.id}
               type="button"
-              className={`relative m-1 rounded-md ring-offset-2 focus:outline-none focus:ring-2 ${i === index ? "ring ring-primary" : ""}`}
+              className={`relative m-1 rounded-md ring-offset-2 focus:outline-none focus:ring-2 ${
+                i === index ? "ring ring-primary" : ""
+              }`}
               onClick={() => setIndex(i)}
             >
               <img
@@ -236,6 +328,14 @@ export function WorkViewerDialog({
                 className="h-20 w-full rounded-md object-cover"
                 draggable={false}
               />
+              {/* キャッシュ済みインジケーター */}
+              {loadedWorkIds.has(w.id) && (
+                <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-500" />
+              )}
+              {/* デバウンス中インジケーター */}
+              {isDebouncing && i === index && (
+                <div className="absolute top-1 left-1 h-2 w-2 animate-pulse rounded-full bg-yellow-500" />
+              )}
             </button>
           ))}
 
@@ -264,7 +364,7 @@ export function WorkViewerDialog({
   )
 }
 
-// ───────────────── GraphQL Fragments ─────────────────
+// GraphQL部分は変更なし
 export const workArticleFragment =
   graphql(`fragment WorkArticle on WorkNode @_unmask {
   id
@@ -313,34 +413,15 @@ export const workArticleFragment =
     createdLikesCount
     createdBookmarksCount
     isMuted
-    works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
-      id
-      userId
-      largeThumbnailImageURL
-      largeThumbnailImageWidth
-      largeThumbnailImageHeight
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
-      subWorksCount
-      commentsCount
-      isLiked
-    }
     promptonUser {
       id
     }
   }
-  likedUsers(offset: 0, limit: 120) {
+  likedUsers(offset: 0, limit: 8) {
     id
     name
     iconUrl
     login
-  }
-  album {
-    id
-    title
-    description
   }
   dailyTheme {
     id
@@ -355,20 +436,6 @@ export const workArticleFragment =
   subWorks {
     id
     imageUrl
-  }
-  nextWork {
-    id
-    smallThumbnailImageURL
-    smallThumbnailImageWidth
-    smallThumbnailImageHeight
-    thumbnailImagePosition
-  }
-  previousWork {
-    id
-    smallThumbnailImageURL
-    smallThumbnailImageWidth
-    smallThumbnailImageHeight
-    thumbnailImagePosition
   }
   model
   modelHash
@@ -431,7 +498,6 @@ export const WorkCommentFragment =
   }
 }`)
 
-// ───────────────── GraphQL Query ─────────────────
 const workDialogQuery = graphql(
   `query WorkDialog($workId: ID!) {
     work(id: $workId) {
