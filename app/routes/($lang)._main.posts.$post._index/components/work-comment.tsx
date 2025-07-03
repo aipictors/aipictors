@@ -93,13 +93,18 @@ export function WorkComment(props: Props) {
     return (
       <div className="flex items-center space-x-4 rounded-lg border p-2">
         <EyeOff className="size-5 text-gray-400" />
-        <div className="flex-1">
+        <div className="flex flex-1 items-center space-x-2 text-sm">
           <p className="text-sm">
             {t(
               "ミュートしているユーザのコメントです",
               "This is a comment from a muted user",
             )}
           </p>
+          <Link to="/settings/muted/users" className="w-16">
+            <p className="text-blue-500 text-sm hover:underline">
+              {t("(設定)", "(settings)")}
+            </p>
+          </Link>
         </div>
         <Button
           variant="secondary"
