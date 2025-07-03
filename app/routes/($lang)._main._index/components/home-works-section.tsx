@@ -3,6 +3,8 @@ import { WorksPaginationMode } from "./works-pagination-mode"
 import { WorksInfiniteMode } from "./works-infinite-mode"
 import type { WorkType, WorkOrderBy, ImageStyle } from "../types/works"
 import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import type { FragmentOf } from "gql.tada"
 
 interface Props {
   isCropped?: boolean
@@ -16,6 +18,7 @@ interface Props {
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
   onSelect?: (index: number) => void
+  updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
 export function HomeWorksSection(props: Props) {
@@ -30,6 +33,7 @@ export function HomeWorksSection(props: Props) {
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}
+          updateWorks={props.updateWorks}
         />
       ) : (
         <WorksInfiniteMode
@@ -37,6 +41,7 @@ export function HomeWorksSection(props: Props) {
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}
+          updateWorks={props.updateWorks}
         />
       )}
     </div>

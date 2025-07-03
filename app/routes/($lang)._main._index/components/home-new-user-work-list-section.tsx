@@ -4,8 +4,8 @@ import {
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useContext } from "react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { useContext, useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
   HomeNovelsWorkListItemFragment,
@@ -15,6 +15,7 @@ import {
   HomeVideosWorkListItemFragment,
   HomeVideosWorksSection,
 } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 type Props = {
   isCropped?: boolean
@@ -23,6 +24,7 @@ type Props = {
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
   style?: IntrospectionEnum<"ImageStyle">
   onSelect?: (index: number) => void
+  updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
 /**
@@ -34,6 +36,14 @@ export function HomeNewUsersWorkListSection(props: Props) {
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
     skip: appContext.isLoading,
   })
+
+  useEffect(() => {
+    if (props.updateWorks) {
+      props.updateWorks(
+        worksResp?.newUserWorks as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+      )
+    }
+  }, [worksResp?.newUserWorks, props.updateWorks])
 
   return (
     <div className="space-y-4">

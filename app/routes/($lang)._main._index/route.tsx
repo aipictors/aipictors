@@ -490,10 +490,6 @@ export default function Index() {
 
   // ダイアログで表示する作品データを決定
   const displayedWorks = useMemo(() => {
-    console.log("displayedWorks called with currentTab:", currentTab)
-    console.log("homeWorks", homeWorks)
-    console.log("currentWorks", currentWorks)
-
     switch (currentTab) {
       case "home":
         return homeWorks
@@ -509,20 +505,30 @@ export default function Index() {
   // 作品クリック時の処理
   const openWork = (idx: number) => {
     console.log("openWork called with idx:", idx)
-    console.log("displayedWorks", displayedWorks)
+    console.log("displayedWorks length:", displayedWorks.length)
+    console.log("isDialogMode:", isDialogMode)
 
-    if (idx < 0 || idx >= displayedWorks.length) return
+    if (idx < 0 || idx >= displayedWorks.length) {
+      console.warn(
+        "Invalid index or no works available:",
+        idx,
+        displayedWorks.length,
+      )
+      return
+    }
     const work = displayedWorks[idx]
 
     if (isDialogMode) {
+      console.log("Setting dialogIndex to:", idx)
       setDialogIndex(idx)
     } else {
+      console.log("Navigating to:", `/posts/${work.id}`)
       navigate(`/posts/${work.id}`)
     }
   }
 
   // currentWorksを更新するコールバック関数
-  const _updateCurrentWorks = (
+  const updateCurrentWorks = (
     works: FragmentOf<typeof PhotoAlbumWorkFragment>[],
   ) => {
     setCurrentWorks(works)
@@ -994,6 +1000,7 @@ export default function Index() {
                     sortType={sortType}
                     timeRange={timeRange}
                     onSelect={isDialogMode ? openWork : undefined}
+                    updateWorks={updateCurrentWorks}
                   />
                 ) : (
                   <HomeWorksSection
@@ -1006,6 +1013,7 @@ export default function Index() {
                     isPagination={false}
                     onPaginationModeChange={setInternalIsPagination}
                     onSelect={isDialogMode ? openWork : undefined}
+                    updateWorks={updateCurrentWorks}
                   />
                 )}
               </Suspense>
@@ -1098,6 +1106,7 @@ export default function Index() {
                   isPagination={internalIsPagination}
                   onPaginationModeChange={setInternalIsPagination}
                   onSelect={isDialogMode ? openWork : undefined}
+                  updateWorks={updateCurrentWorks}
                 />
               </Suspense>
             </div>
@@ -1185,6 +1194,7 @@ export default function Index() {
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
                   onSelect={isDialogMode ? openWork : undefined}
+                  updateWorks={updateCurrentWorks}
                 />
               </Suspense>
             </div>
@@ -1268,11 +1278,13 @@ export default function Index() {
           {/* コンテンツ */}
           <Suspense fallback={<AppLoadingPage />}>
             <FollowUserFeedContents
+              key={`follow-user-${followUserFeedPage}-${currentTab}`}
               page={followUserFeedPage}
               setPage={setFollowUserFeedPage}
               isPagination={internalIsPagination}
               onPaginationModeChange={setInternalIsPagination}
               onSelect={isDialogMode ? openWork : undefined}
+              updateWorks={updateCurrentWorks}
             />
           </Suspense>
         </TabsContent>
@@ -1354,10 +1366,12 @@ export default function Index() {
 
           <Suspense fallback={<AppLoadingPage />}>
             <FollowTagsFeedContents
+              key={`follow-tag-${followTagFeedPage}-${currentTab}`}
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}
               isPagination={internalIsPagination}
               onSelect={isDialogMode ? openWork : undefined}
+              updateWorks={updateCurrentWorks}
             />
           </Suspense>
         </TabsContent>
@@ -1368,7 +1382,10 @@ export default function Index() {
         <WorkViewerDialog
           works={displayedWorks}
           startIndex={dialogIndex}
-          onClose={() => setDialogIndex(null)}
+          onClose={() => {
+            console.log("Closing dialog, setting dialogIndex to null")
+            setDialogIndex(null)
+          }}
           loadMore={!internalIsPagination ? loadMore : undefined}
           hasNextPage={hasNextPage}
           isLoadingMore={isLoadingMore}

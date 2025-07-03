@@ -14,7 +14,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { MessageCircleIcon, Loader2Icon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { LikeButton } from "~/components/like-button"
-import { Link, useNavigate, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate } from "@remix-run/react"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { cn } from "~/lib/utils"
@@ -36,6 +36,7 @@ type Props = {
   isPagination?: boolean
   onPaginationModeChange?: (v: boolean) => void
   onSelect?: (index: number) => void
+  updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
 const PER_PAGE = 32
@@ -70,17 +71,6 @@ export function FollowUserFeedContents(props: Props) {
     }
   }, [props.isPagination, internalIsPagination])
 
-  const _handleModeChange = (v: boolean) => {
-    props.onPaginationModeChange?.(v) ?? setInternalIsPagination(v)
-  }
-
-  const _handlePaginationModeChange = (isPagination: boolean) => {
-    setInternalIsPagination(isPagination)
-    if (props.setPage) {
-      props.setPage(0)
-    }
-  }
-
   const key = `follow-user-${internalIsPagination}`
 
   return (
@@ -100,8 +90,8 @@ export function FollowUserFeedContents(props: Props) {
 function PaginationMode(props: Props) {
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
-  const [_searchParams] = useSearchParams()
   const t = useTranslation()
+  const [prevDataKey, setPrevDataKey] = useState<string>("")
 
   const [isTimelineView, setIsTimelineView] = useState(false)
 
@@ -148,6 +138,30 @@ function PaginationMode(props: Props) {
       },
     })
   }
+
+  // updateWorksを正しいタイミングで呼ぶ
+  useEffect(() => {
+    if (!props.updateWorks || !data?.feed?.posts || isTimelineView) return
+
+    // データの一意性を確認するためのキーを作成
+    const dataKey = `${currentPage}-${data.feed.posts.length}-${data.feed.posts.map((p) => p.id).join(",")}`
+
+    if (dataKey !== prevDataKey) {
+      // @ts-ignore
+      const works = data.feed.posts
+        .map((p) => p.work)
+        .filter((w) => !!w) as FragmentOf<typeof PhotoAlbumWorkFragment>[]
+
+      props.updateWorks(works)
+      setPrevDataKey(dataKey)
+    }
+  }, [
+    data?.feed?.posts,
+    props.updateWorks,
+    currentPage,
+    isTimelineView,
+    prevDataKey,
+  ])
 
   if (authContext.isLoading) {
     return (
@@ -223,9 +237,9 @@ function PaginationMode(props: Props) {
 }
 
 /* ===========================================================
-   Infinite Scroll Mode  (refactored)
+   Infinite Scroll Mode
    =========================================================== */
-function InfiniteMode(_props: Props) {
+function InfiniteMode(props: Props) {
   const client = useApolloClient()
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
@@ -233,10 +247,10 @@ function InfiniteMode(_props: Props) {
 
   const [isTimelineView, setIsTimelineView] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [prevFlatLength, setPrevFlatLength] = useState<number>(0)
 
   // ─── クエリ & 共通変数 ───────────────────────────────
   const QUERY = isTimelineView ? feedQuery : feedWorkListQuery
-  const PER_PAGE = 32
   const feedWhere = useMemo(
     () => ({
       userId: authContext.userId ?? "-1",
@@ -256,7 +270,7 @@ function InfiniteMode(_props: Props) {
       feedWhere,
       feedPostsWhere,
     }),
-    [PER_PAGE, feedWhere],
+    [feedWhere],
   )
 
   // ─── 初期ページをキャッシュから生成 ──────────────────
@@ -266,13 +280,7 @@ function InfiniteMode(_props: Props) {
     try {
       const cached = client.readQuery<{ feed?: { posts?: PostItem[] } }>({
         query: QUERY,
-        variables: {
-          ...queryVars,
-          feedPostsWhere: {
-            ...queryVars.feedPostsWhere,
-            ratings: [...(queryVars.feedPostsWhere.ratings ?? [])],
-          },
-        },
+        variables: queryVars,
       })
       return cached?.feed?.posts?.length
         ? chunkPosts(cached.feed.posts, PER_PAGE)
@@ -302,10 +310,6 @@ function InfiniteMode(_props: Props) {
   })
 
   // ─── usePagedInfinite (local store key 付き) ─────────────
-  /**
-   * `isTimelineView` が変わるたびに別ストアにしたいので
-   *   `timeline:<bool>|user:<id>` を JSON 化
-   */
   const keyForStore = useMemo(
     () => JSON.stringify({ tv: isTimelineView, uid: authContext.userId }),
     [isTimelineView, authContext.userId],
@@ -321,16 +325,31 @@ function InfiniteMode(_props: Props) {
     const chunked = chunkPosts(posts, PER_PAGE)
     if (chunked.length === 0) return
 
-    // 既に同じ長さならスキップして “ちらつき” を防ぐ
+    // 既に同じ長さならスキップして "ちらつき" を防ぐ
     if (pages.length === 0 || chunked[0].length !== pages[0]?.length) {
       replaceFirstPage(chunked[0])
       if (chunked.length > 1) appendPages(chunked.slice(1))
     }
-  }, [data?.feed?.posts, PER_PAGE, pages, replaceFirstPage, appendPages])
+  }, [data?.feed?.posts, pages, replaceFirstPage, appendPages])
+
+  // updateWorksを正しいタイミングで呼ぶ
+  useEffect(() => {
+    if (!props.updateWorks || isTimelineView || flat.length === 0) return
+
+    // データの長さが変わった場合のみ更新
+    if (flat.length !== prevFlatLength) {
+      const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
+        typeof PhotoAlbumWorkFragment
+      >[]
+
+      props.updateWorks(works)
+      setPrevFlatLength(flat.length)
+    }
+  }, [flat, props.updateWorks, isTimelineView, prevFlatLength])
 
   // ─── スクロール復元 ────────────────────────────────
   const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
-  useScrollRestoration("follow-user-infinite", ready /* header offset */)
+  useScrollRestoration("follow-user-infinite", ready)
 
   // ─── 追加ロード ────────────────────────────────────
   const hasNext = (pages.at(-1)?.length ?? 0) === PER_PAGE
@@ -411,6 +430,7 @@ function InfiniteMode(_props: Props) {
               t={t}
               showControls={idx === 0}
               isPagination={false}
+              onSelect={props.onSelect}
             />
           ),
       )}
@@ -484,48 +504,21 @@ function FeedContent({
   return (
     <div className="flex flex-col space-y-4">
       {showControls && (
-        <>
-          {/* 管理・タイムライン形式切り替え */}
-          <div className="mb-4 flex justify-end space-x-2">
-            <Button
-              onClick={() => {
-                navigate("/following")
-              }}
-              variant={"secondary"}
-            >
-              {t("管理", "Manage")}
-            </Button>
-            <Button onClick={() => setIsTimelineView(!isTimelineView)}>
-              {isTimelineView
-                ? t("一覧形式に切り替え", "Switch to List View")
-                : t("タイムライン形式に切り替え", "Switch to Timeline View")}
-            </Button>
-          </div>
-
-          {/* 無限スクロール・ページネーション切り替え */}
-          {/* <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant={isPagination ? "outline" : "default"}
-                size="sm"
-                onClick={() => window.location.reload()} // 簡易的な切り替え
-                className="flex items-center space-x-1"
-              >
-                <List className="h-4 w-4" />
-                <span>無限スクロール</span>
-              </Button>
-              <Button
-                variant={isPagination ? "default" : "outline"}
-                size="sm"
-                onClick={() => window.location.reload()} // 簡易的な切り替え
-                className="flex items-center space-x-1"
-              >
-                <Navigation className="h-4 w-4" />
-                <span>ページネーション</span>
-              </Button>
-            </div>
-          </div> */}
-        </>
+        <div className="mb-4 flex justify-end space-x-2">
+          <Button
+            onClick={() => {
+              navigate("/following")
+            }}
+            variant={"secondary"}
+          >
+            {t("管理", "Manage")}
+          </Button>
+          <Button onClick={() => setIsTimelineView(!isTimelineView)}>
+            {isTimelineView
+              ? t("一覧形式に切り替え", "Switch to List View")
+              : t("タイムライン形式に切り替え", "Switch to Timeline View")}
+          </Button>
+        </div>
       )}
 
       {isTimelineView ? (
@@ -566,17 +559,35 @@ function FeedContent({
                   <div className="w-full md:flex md:space-x-8">
                     <div className="space-y-2 md:w-1/2 md:max-w-[560px]">
                       <div className="relative">
-                        <Link to={`/posts/${work.id}`}>
-                          <img
-                            src={work.largeThumbnailImageURL}
-                            alt={work.title}
-                            className="w-full rounded-md"
-                          />
-                        </Link>
+                        {onSelect ? (
+                          <button
+                            type="button"
+                            className="block h-full w-full overflow-hidden rounded"
+                            onClick={() =>
+                              onSelect(
+                                posts.findIndex((p) => p.work?.id === work.id),
+                              )
+                            }
+                          >
+                            <img
+                              src={work.largeThumbnailImageURL}
+                              alt={work.title}
+                              className="w-full rounded-md"
+                            />
+                          </button>
+                        ) : (
+                          <Link to={`/posts/${work.id}`}>
+                            <img
+                              src={work.largeThumbnailImageURL}
+                              alt={work.title}
+                              className="w-full rounded-md"
+                            />
+                          </Link>
+                        )}
                         {work.subWorks?.length > 0 && (
                           <>
                             {!subWorksVisible[work.id] && (
-                              <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-88" />
+                              <div className="absolute inset-x-0 bottom-0 h-16 rounded-b-md bg-gradient-to-t from-black/80 to-transparent" />
                             )}
                             <Button
                               className="-translate-x-1/2 absolute bottom-2 left-1/2 transform rounded-full opacity-80"
@@ -647,8 +658,7 @@ function FeedContent({
                         ))}
                       </div>
                       <div className="text-sm">
-                        {work.createdAt &&
-                          toDateTimeText(Number(work.createdAt))}
+                        {work.createdAt && toDateTimeText(work.createdAt)}
                       </div>
                     </div>
                     <div

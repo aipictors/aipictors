@@ -21,6 +21,8 @@ import type {
   WorkItem,
 } from "../types/works"
 import { WorksQuery } from "~/routes/($lang)._main._index/components/works-pagination-mode"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import type { FragmentOf } from "gql.tada"
 
 interface Props {
   anchorAt: string
@@ -31,6 +33,7 @@ interface Props {
   timeRange?: string
   style?: ImageStyle
   onSelect?: (index: number) => void
+  updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
 export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
@@ -141,6 +144,13 @@ export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
     hasNext,
     loading: loadingFirst,
   })
+
+  // updateWorks
+  useEffect(() => {
+    if (rest.updateWorks) {
+      rest.updateWorks(flat as FragmentOf<typeof PhotoAlbumWorkFragment>[])
+    }
+  }, [flat, rest.updateWorks])
 
   return (
     <div className="space-y-8">
