@@ -4,8 +4,8 @@ import {
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useContext } from "react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
@@ -16,6 +16,7 @@ import {
   HomeVideosWorkListItemFragment,
   HomeVideosWorksSection,
 } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 /**
  * 期間指定による createdAt 範囲を計算するヘルパー関数
@@ -69,6 +70,7 @@ type Props = {
   timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
   onSelect?: (index: number) => void
+  updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
 /**
@@ -115,6 +117,12 @@ export function HomePaginationWorksSection(props: Props) {
       },
     },
   })
+
+  useEffect(() => {
+    if (worksResp?.works) {
+      props.updateWorks(worksResp.works)
+    }
+  }, [worksResp, props])
 
   return (
     <div className="space-y-4">

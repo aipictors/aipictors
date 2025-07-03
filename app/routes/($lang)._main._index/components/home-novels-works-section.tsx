@@ -11,6 +11,7 @@ type Props = {
   tooltip?: string
   link?: string
   isCropped?: boolean
+  onSelect?: (index: number) => void
 }
 
 /**
@@ -35,7 +36,7 @@ export function HomeNovelsWorksSection(props: Props) {
         )}
       </div>
       <CarouselWithGradation
-        items={props.works.map((work, index) => (
+        items={props.works.map((work, _index) => (
           // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
           <div className="h-full rounded border-2 border-gray border-solid">
             <div className="relative">

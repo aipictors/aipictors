@@ -8,12 +8,13 @@ import { WorksLoading } from "./works-loading"
 import type { WorkType, WorkOrderBy, ImageStyle } from "../types/works"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { HomeWorkFragment } from "./home-work-section"
 import {
   getPerPage,
   makeWhere,
 } from "~/routes/($lang)._main._index/utils/works-utils"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 interface Props {
   anchorAt: string
@@ -25,8 +26,8 @@ interface Props {
   style?: ImageStyle
   page?: number
   setPage?: (p: number) => void
-  // ★★★ 追加
   onSelect?: (index: number) => void
+  updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
 export function WorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
@@ -57,6 +58,14 @@ export function WorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
     fetchPolicy: "no-cache",
     errorPolicy: "ignore",
   })
+
+  useEffect(() => {
+    if (rest.updateWorks && data?.works) {
+      rest.updateWorks(
+        data.works as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+      )
+    }
+  }, [data?.works, rest.updateWorks])
 
   const displayedWorks = data?.works ?? []
 
