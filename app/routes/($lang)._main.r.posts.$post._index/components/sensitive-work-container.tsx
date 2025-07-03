@@ -66,16 +66,12 @@ export function SensitiveWorkContainer(props: Props) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
-  if (work === null || work.isDeleted === true) {
-    return null
-  }
-
   const tags = work?.tagNames ?? []
 
   const randomTag =
     tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
 
-  const navigate = useNavigate()
+  const _navigate = useNavigate()
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
@@ -111,6 +107,10 @@ export function SensitiveWorkContainer(props: Props) {
     passData?.type === "PREMIUM"
 
   const t = useTranslation()
+
+  if (work === null || work.isDeleted === true) {
+    return null
+  }
 
   return (
     <div
@@ -257,7 +257,7 @@ export function SensitiveWorkContainer(props: Props) {
   )
 }
 
-const workQuery = graphql(
+const _workQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       ...WorkArticle

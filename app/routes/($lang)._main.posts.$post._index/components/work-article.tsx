@@ -573,11 +573,24 @@ export const sensitiveWorkArticleFragment = graphql(
       isFollower
       isFollowee
       headerImageUrl
-      biography
       receivedLikesCount
       createdLikesCount
       createdBookmarksCount
       isMuted
+      works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
+        id
+        userId
+        largeThumbnailImageURL
+        largeThumbnailImageWidth
+        largeThumbnailImageHeight
+        smallThumbnailImageURL
+        smallThumbnailImageWidth
+        smallThumbnailImageHeight
+        thumbnailImagePosition
+        subWorksCount
+        commentsCount
+        isLiked
+      }
       promptonUser {
         id
       }
