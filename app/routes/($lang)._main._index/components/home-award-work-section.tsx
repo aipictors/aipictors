@@ -23,6 +23,7 @@ type Props = {
   title: string
   awards: FragmentOf<typeof HomeWorkAwardFragment>[]
   awardDateText: string
+  onSelect?: (index: number) => void
 }
 
 /**

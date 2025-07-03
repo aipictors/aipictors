@@ -11,6 +11,7 @@ import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/
 
 type Props = {
   works: FragmentOf<typeof HomeBannerWorkFragment>[]
+  onSelect?: (index: number) => void
 }
 
 /**
@@ -38,13 +39,27 @@ export function HomeBanners(props: Props) {
       <CarouselContent className="flex gap-x-4">
         {banners.map(({ href, src, blank }, i) => (
           <CarouselItem key={i.toString()} className="flex-none">
-            <Link to={href} target={blank ? "_blank" : undefined}>
-              <img
-                src={src}
-                alt={`home_banner_${i + 1}`}
-                className="h-40 w-auto md:h-48"
-              />
-            </Link>
+            {props.onSelect ? (
+              <button
+                type="button"
+                className="block h-full w-full overflow-hidden rounded"
+                onClick={() => props.onSelect?.(i)}
+              >
+                <img
+                  src={src}
+                  alt={`home_banner_${i + 1}`}
+                  className="h-40 w-auto md:h-48"
+                />
+              </button>
+            ) : (
+              <Link to={href} target={blank ? "_blank" : undefined}>
+                <img
+                  src={src}
+                  alt={`home_banner_${i + 1}`}
+                  className="h-40 w-auto md:h-48"
+                />
+              </Link>
+            )}
           </CarouselItem>
         ))}
       </CarouselContent>
