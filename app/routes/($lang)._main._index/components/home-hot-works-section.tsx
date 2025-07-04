@@ -1,10 +1,9 @@
 import { useMemo } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { WorksInfiniteMode } from "./works-infinite-mode"
 import { getAnchorAt } from "~/routes/($lang)._main._index/libs/anchor-manager"
-import { WorksPaginationMode } from "~/routes/($lang)._main._index/components/works-pagination-mode"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import type { FragmentOf } from "gql.tada"
+import { HotWorksPaginationMode } from "~/routes/($lang)._main._index/components/hot-works-pagination-mode"
 
 type Props = {
   isCropped?: boolean
@@ -33,21 +32,12 @@ export function HomeHotWorksSection(props: Props) {
 
   return (
     <div className="space-y-4">
-      {props.isPagination ? (
-        <WorksPaginationMode
-          key={key}
-          {...hotWorksProps}
-          anchorAt={anchorAt}
-          updateWorks={props.updateWorks}
-        />
-      ) : (
-        <WorksInfiniteMode
-          key={key}
-          {...hotWorksProps}
-          anchorAt={anchorAt}
-          updateWorks={props.updateWorks}
-        />
-      )}
+      <HotWorksPaginationMode
+        key={key}
+        {...hotWorksProps}
+        anchorAt={anchorAt}
+        updateWorks={props.updateWorks}
+      />
     </div>
   )
 }

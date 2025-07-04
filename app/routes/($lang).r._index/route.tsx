@@ -216,13 +216,13 @@ export default function Index() {
 
         {/* ---------- HOME ---------- */}
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
+          <HomeSensitiveTagList
+            themeTitle={data.dailyTheme?.title}
+            hotTags={data.hotSensitiveTags}
+          />
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             {/* left */}
             <div className="flex flex-col space-y-4 md:w-[56%] lg:w-[64%]">
-              <HomeSensitiveTagList
-                themeTitle={data.dailyTheme?.title}
-                hotTags={data.hotTags}
-              />
               <HomeSensitiveWorksUsersRecommendedSection
                 works={data.promotionWorks}
               />
@@ -570,7 +570,7 @@ const query = graphql(
       id
       title
     }
-    hotTags {
+    hotSensitiveTags {
       ...HomeTagListItem
     }
     workAwards(

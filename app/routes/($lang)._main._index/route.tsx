@@ -614,6 +614,14 @@ export default function Index() {
 
         {/* ---------------------- タブ: ホーム ---------------------- */}
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
+          {data.dailyTheme && (
+            <div>
+              <HomeTagList
+                themeTitle={data.dailyTheme.title}
+                hotTags={data.hotTags}
+              />
+            </div>
+          )}
           {data.adWorks && data.adWorks.length > 0 && (
             <HomeBanners
               works={data.adWorks}
@@ -627,14 +635,14 @@ export default function Index() {
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex flex-col space-y-4 md:w-[56%] lg:w-[64%]">
               <HomeReleaseList releaseList={data.releaseList} />
-              {data.dailyTheme && (
+              {/* {data.dailyTheme && (
                 <div>
                   <HomeTagList
                     themeTitle={data.dailyTheme.title}
                     hotTags={data.hotTags}
                   />
                 </div>
-              )}
+              )} */}
               <HomeWorksUsersRecommendedSection
                 works={data.promotionWorks}
                 onSelect={
@@ -1024,48 +1032,6 @@ export default function Index() {
             <div className="space-y-4">
               {/* 表示方式切り替え */}
               <div className="flex justify-end space-x-2 md:space-x-4">
-                <div className="flex rounded-lg bg-muted p-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setInternalIsPagination(false)
-                      const p = new URLSearchParams(searchParams)
-                      p.set("isPagination", "false")
-                      updateQueryParams(p)
-                    }}
-                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
-                      !internalIsPagination
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <List className="h-3 w-3" />
-                    <span className="hidden sm:inline">
-                      {t("フィード", "Feed")}
-                    </span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setInternalIsPagination(true)
-                      const p = new URLSearchParams(searchParams)
-                      p.set("isPagination", "true")
-                      updateQueryParams(p)
-                    }}
-                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
-                      internalIsPagination
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Navigation className="h-3 w-3" />
-                    <span className="hidden sm:inline">
-                      {t("ページ", "Pages")}
-                    </span>
-                  </Button>
-                </div>
                 <div className="flex rounded-lg bg-muted p-1">
                   <Button
                     variant="ghost"
