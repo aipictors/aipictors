@@ -304,7 +304,7 @@ function InfiniteMode(props: Props) {
   } = useQuery(QUERY, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: queryVars,
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
     errorPolicy: "ignore",
   })
@@ -331,7 +331,9 @@ function InfiniteMode(props: Props) {
     if (chunked.length === 0) return
 
     // 既に同じ長さならスキップして "ちらつき" を防ぐ
-    if (pages.length === 0 || chunked[0].length !== pages[0]?.length) {
+    const newIds = chunked[0].map((p) => p.id).join(",")
+    const curIds = pages[0]?.map((p) => p.id).join(",")
+    if (pages.length === 0 || newIds !== curIds) {
       replaceFirstPage(chunked[0])
       if (chunked.length > 1) appendPages(chunked.slice(1))
     }
