@@ -75,7 +75,7 @@ export function WorkTagsWorks({ tagName, rating }: Props) {
 
   /* hasNext 判定 */
   const lastPage = pages.at(-1) ?? []
-  const hasNext = lastPage.length === PER_PAGE
+  const hasNext = lastPage.length >= PER_PAGE - 8
 
   /* 追加ロード */
   const loadMore = useCallback(async () => {

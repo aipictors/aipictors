@@ -15,7 +15,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "@remix-run/react"
-import { graphql } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { getJstDate } from "~/utils/jst-date"
@@ -23,8 +23,14 @@ import { createMeta } from "~/utils/create-meta"
 import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import { ArrowDownWideNarrow } from "lucide-react"
-import { useState, Suspense } from "react"
+import {
+  ArrowDownWideNarrow,
+  ExternalLink,
+  List,
+  Navigation,
+  PlaySquare,
+} from "lucide-react"
+import { useState, Suspense, useMemo } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Button } from "~/components/ui/button"
@@ -57,6 +63,9 @@ import { HomeSensitiveNewCommentsSection } from "~/routes/($lang)._main._index/c
 import { HomeNewSensitiveUsersSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-users-section"
 import { HomeSensitiveWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-users-recommended-section"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
+import { HomePaginationSensitiveWorksSection } from "~/routes/($lang).r._index/components/home-pagination-sensitive-works-section"
 
 // ---------- meta ----------
 export const meta: MetaFunction = (props) =>
@@ -152,6 +161,72 @@ export default function Index() {
   const [timeRange, setTimeRange] = useState(
     searchParams.get("timeRange") ?? "ALL",
   )
+
+  const [internalIsPagination, setInternalIsPagination] = useState(true)
+
+  // 作品遷移モード（ダイアログ / 直接リンク）
+  const [isDialogMode, setIsDialogMode] = useState(false)
+
+  // ダイアログ制御
+  const [dialogIndex, setDialogIndex] = useState<number | null>(null)
+
+  // 作品データの管理用state
+  const [currentWorks, setCurrentWorks] = useState<
+    FragmentOf<typeof PhotoAlbumWorkFragment>[]
+  >([])
+
+  const [isLoadingMore, _setIsLoadingMore] = useState(false)
+
+  // ダイアログで表示する作品データを決定
+  const displayedWorks = useMemo(() => {
+    switch (currentTab) {
+      case "new":
+      case "follow-user":
+      case "follow-tag":
+        return currentWorks
+      default:
+        return []
+    }
+  }, [currentTab, currentWorks])
+
+  const [hasNextPage, _setHasNextPage] = useState(true)
+
+  // 作品クリック時の処理
+  const openWork = (idx: number) => {
+    console.log("openWork called with idx:", idx)
+    console.log("displayedWorks length:", displayedWorks.length)
+    console.log("isDialogMode:", isDialogMode)
+
+    if (idx < 0 || idx >= displayedWorks.length) {
+      console.warn(
+        "Invalid index or no works available:",
+        idx,
+        displayedWorks.length,
+      )
+      return
+    }
+    const work = displayedWorks[idx]
+
+    if (isDialogMode) {
+      console.log("Setting dialogIndex to:", idx)
+      setDialogIndex(idx)
+    } else {
+      console.log("Navigating to:", `/posts/${work.id}`)
+      navigate(`/posts/${work.id}`)
+    }
+  }
+
+  // currentWorksを更新するコールバック関数
+  const updateCurrentWorks = (
+    works: FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  ) => {
+    setCurrentWorks(works)
+  }
+
+  // 無限スクロール用のloadMore関数
+  const loadMore = async () => {
+    if (isLoadingMore || !hasNextPage || internalIsPagination) return
+  }
 
   // ------ URL sync helpers ------
   const syncParam = (key: string, value: string | null) => {
@@ -313,7 +388,7 @@ export default function Index() {
           <div className="flex space-x-4">
             {[
               { v: "new", label: t("新着", "New") },
-              { v: "popular", label: t("人気", "Popular") },
+              // { v: "popular", label: t("人気", "Popular") },
               { v: "new-user", label: t("新規ユーザ", "New Users") },
             ].map(({ v, label }) => (
               <Button
@@ -337,148 +412,251 @@ export default function Index() {
           {/* filters (only on “new”) */}
           {workView === "new" && (
             <>
-              <div className="flex flex-wrap gap-4">
-                <div className="flex w-full space-x-4">
-                  {/* type */}
-                  <Select
-                    value={workType ?? ""}
-                    onValueChange={(v) => {
-                      setWorkType(v === "ALL" ? null : (v as any))
-                      syncParam("workType", v === "ALL" ? null : v)
-                    }}
-                  >
-                    <SelectTrigger className="min-w-[120px]">
-                      <SelectValue
-                        placeholder={
-                          workType
-                            ? toWorkTypeText({ type: workType, lang: locale })
-                            : t("種類", "Type")
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["ALL", "WORK", "VIDEO", "NOVEL", "COLUMN"].map((v) => (
-                        <SelectItem key={v} value={v}>
-                          {t(
-                            v === "WORK"
-                              ? "画像"
-                              : v === "VIDEO"
-                                ? "動画"
-                                : v === "NOVEL"
-                                  ? "小説"
-                                  : v === "COLUMN"
-                                    ? "コラム"
-                                    : "種類",
-                            v,
-                          )}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {/* prompt */}
-                  <Select
-                    value={
-                      isPromptPublic === null
-                        ? "ALL"
-                        : isPromptPublic
-                          ? "prompt"
-                          : "no-prompt"
-                    }
-                    onValueChange={(v) => {
-                      setIsPromptPublic(v === "ALL" ? null : v === "prompt")
-                      syncParam(
-                        "isPromptPublic",
-                        v === "ALL" ? null : v === "prompt" ? "true" : "false",
-                      )
-                    }}
-                  >
-                    <SelectTrigger className="min-w-[120px]">
-                      <SelectValue
-                        placeholder={t("プロンプト有無", "Prompt")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">
-                        {t("プロンプト有無", "Prompt")}
-                      </SelectItem>
-                      <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
-                      <SelectItem value="no-prompt">
-                        {t("なし", "No")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {/* sort */}
-                  <Select
-                    value={sortType ?? ""}
-                    onValueChange={(v) => {
-                      setSortType(v === "ALL" ? null : (v as any))
-                      syncParam("sortType", v === "ALL" ? null : v)
-                    }}
-                  >
-                    <SelectTrigger className="min-w-[120px]">
-                      <ArrowDownWideNarrow />
-                      <SelectValue placeholder={t("最新", "Latest")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DATE_CREATED">
-                        {t("最新", "Latest")}
-                      </SelectItem>
-                      <SelectItem value="LIKES_COUNT">
-                        {t("最も人気", "Most Liked")}
-                      </SelectItem>
-                      <SelectItem value="COMMENTS_COUNT">
-                        {t("コメント数", "Most Comments")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {/* time range */}
-                <Select
-                  value={timeRange}
-                  onValueChange={(v) => {
-                    setTimeRange(v)
-                    syncParam("timeRange", v === "ALL" ? null : v)
-                  }}
-                >
-                  <SelectTrigger className="min-w-[120px]">
-                    <SelectValue placeholder={t("全期間", "All time")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {["ALL", "TODAY", "YESTERDAY", "WEEK"].map((v) => (
-                      <SelectItem key={v} value={v}>
-                        {t(
-                          v === "TODAY"
-                            ? "本日"
-                            : v === "YESTERDAY"
-                              ? "昨日"
-                              : v === "WEEK"
-                                ? "週間"
-                                : "全期間",
-                          v === "ALL"
-                            ? "All time"
-                            : v === "TODAY"
-                              ? "Today"
-                              : v === "YESTERDAY"
-                                ? "Yesterday"
-                                : "Week",
+              <div className="space-y-4">
+                {/* 絞り込み用のセレクト群 - レスポンシブレイアウト */}
+                <div className="space-y-3">
+                  {/* フィルター行1: 種類、プロンプト、ソート */}
+                  <div className="grid grid-cols-3 gap-2 md:flex md:space-x-4">
+                    {/* type */}
+                    <Select
+                      value={workType ?? ""}
+                      onValueChange={(v) => {
+                        setWorkType(v === "ALL" ? null : (v as any))
+                        syncParam("workType", v === "ALL" ? null : v)
+                      }}
+                    >
+                      <SelectTrigger className="min-w-[120px]">
+                        <SelectValue
+                          placeholder={
+                            workType
+                              ? toWorkTypeText({ type: workType, lang: locale })
+                              : t("種類", "Type")
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["ALL", "WORK", "VIDEO", "NOVEL", "COLUMN"].map(
+                          (v) => (
+                            <SelectItem key={v} value={v}>
+                              {t(
+                                v === "WORK"
+                                  ? "画像"
+                                  : v === "VIDEO"
+                                    ? "動画"
+                                    : v === "NOVEL"
+                                      ? "小説"
+                                      : v === "COLUMN"
+                                        ? "コラム"
+                                        : "種類",
+                                v,
+                              )}
+                            </SelectItem>
+                          ),
                         )}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      </SelectContent>
+                    </Select>
+
+                    {/* prompt */}
+                    <Select
+                      value={
+                        isPromptPublic === null
+                          ? "ALL"
+                          : isPromptPublic
+                            ? "prompt"
+                            : "no-prompt"
+                      }
+                      onValueChange={(v) => {
+                        setIsPromptPublic(v === "ALL" ? null : v === "prompt")
+                        syncParam(
+                          "isPromptPublic",
+                          v === "ALL"
+                            ? null
+                            : v === "prompt"
+                              ? "true"
+                              : "false",
+                        )
+                      }}
+                    >
+                      <SelectTrigger className="min-w-[120px]">
+                        <SelectValue
+                          placeholder={t("プロンプト有無", "Prompt")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ALL">
+                          {t("プロンプト有無", "Prompt")}
+                        </SelectItem>
+                        <SelectItem value="prompt">
+                          {t("あり", "Yes")}
+                        </SelectItem>
+                        <SelectItem value="no-prompt">
+                          {t("なし", "No")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* sort */}
+                    <Select
+                      value={sortType ?? ""}
+                      onValueChange={(v) => {
+                        setSortType(v === "ALL" ? null : (v as any))
+                        syncParam("sortType", v === "ALL" ? null : v)
+                      }}
+                    >
+                      <SelectTrigger className="min-w-[120px]">
+                        <ArrowDownWideNarrow />
+                        <SelectValue placeholder={t("最新", "Latest")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="DATE_CREATED">
+                          {t("最新", "Latest")}
+                        </SelectItem>
+                        <SelectItem value="LIKES_COUNT">
+                          {t("最も人気", "Most Liked")}
+                        </SelectItem>
+                        <SelectItem value="COMMENTS_COUNT">
+                          {t("コメント数", "Most Comments")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {/* time range */}
+                  <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between md:space-y-0">
+                    <Select
+                      value={timeRange}
+                      onValueChange={(v) => {
+                        setTimeRange(v)
+                        syncParam("timeRange", v === "ALL" ? null : v)
+                      }}
+                    >
+                      <SelectTrigger className="w-full text-xs md:w-auto md:min-w-[120px] md:text-sm">
+                        <SelectValue placeholder={t("全期間", "All time")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["ALL", "TODAY", "YESTERDAY", "WEEK"].map((v) => (
+                          <SelectItem key={v} value={v}>
+                            {t(
+                              v === "TODAY"
+                                ? "本日"
+                                : v === "YESTERDAY"
+                                  ? "昨日"
+                                  : v === "WEEK"
+                                    ? "週間"
+                                    : "全期間",
+                              v === "ALL"
+                                ? "All time"
+                                : v === "TODAY"
+                                  ? "Today"
+                                  : v === "YESTERDAY"
+                                    ? "Yesterday"
+                                    : "Week",
+                            )}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {/* 表示方式切り替え - よりスタイリッシュなデザイン */}
+                    <div className="flex space-x-2 md:space-x-4">
+                      <div className="flex rounded-lg bg-muted p-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setInternalIsPagination(false)
+                            const p = new URLSearchParams(searchParams)
+                            p.set("isPagination", "false")
+                            updateQueryParams(p)
+                          }}
+                          className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                            !internalIsPagination
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          } `}
+                        >
+                          <List className="h-3 w-3" />
+                          <span className="hidden sm:inline">
+                            {t("フィード", "Feed")}
+                          </span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setInternalIsPagination(true)
+                            const p = new URLSearchParams(searchParams)
+                            p.set("isPagination", "true")
+                            updateQueryParams(p)
+                          }}
+                          className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                            internalIsPagination
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          } `}
+                        >
+                          <Navigation className="h-3 w-3" />
+                          <span className="hidden sm:inline">
+                            {t("ページ", "Pages")}
+                          </span>
+                        </Button>
+                      </div>
+                      <div className="flex rounded-lg bg-muted p-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsDialogMode(false)}
+                          className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                            !isDialogMode
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          } `}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          <span>{t("リンク遷移", "Open page")}</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsDialogMode(true)}
+                          className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                            isDialogMode
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          } `}
+                        >
+                          <PlaySquare className="h-4 w-4" />
+                          <span>{t("ダイアログ", "Dialog")}</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <Suspense fallback={<AppLoadingPage />}>
-                <HomeSensitiveWorksSection
-                  page={newWorksPage}
-                  setPage={setPageWithParam(setNewWorksPage, "newPage")}
-                  workType={workType}
-                  isPromptPublic={isPromptPublic}
-                  sortType={sortType}
-                  timeRange={timeRange}
-                />
+                {internalIsPagination ? (
+                  <HomePaginationSensitiveWorksSection
+                    page={newWorksPage}
+                    setPage={setNewWorksPage}
+                    workType={workType}
+                    isPromptPublic={isPromptPublic}
+                    sortType={sortType}
+                    timeRange={timeRange}
+                    onSelect={isDialogMode ? openWork : undefined}
+                    updateWorks={updateCurrentWorks}
+                  />
+                ) : (
+                  <HomeSensitiveWorksSection
+                    page={newWorksPage}
+                    setPage={setPageWithParam(setNewWorksPage, "newPage")}
+                    workType={workType}
+                    isPromptPublic={isPromptPublic}
+                    sortType={sortType}
+                    timeRange={timeRange}
+                    isPagination={false}
+                    onSelect={isDialogMode ? openWork : undefined}
+                    updateWorks={updateCurrentWorks}
+                  />
+                )}
               </Suspense>
             </>
           )}
@@ -496,18 +674,239 @@ export default function Index() {
           )}
 
           {workView === "new-user" && (
-            <Suspense fallback={<AppLoadingPage />}>
-              <HomeNewUsersSensitiveWorkListSection
-                workType={workType}
-                isPromptPublic={isPromptPublic}
-                sortType={sortType}
-              />
-            </Suspense>
+            <>
+              <div className="space-y-4">
+                {/* 絞り込み用のセレクト群 - レスポンシブレイアウト */}
+                <div className="space-y-3">
+                  {/* フィルター行1: 種類、プロンプト、ソート */}
+                  <div className="grid grid-cols-3 gap-2 md:flex md:space-x-4">
+                    {/* type */}
+                    <Select
+                      value={workType ?? ""}
+                      onValueChange={(v) => {
+                        setWorkType(v === "ALL" ? null : (v as any))
+                        syncParam("workType", v === "ALL" ? null : v)
+                      }}
+                    >
+                      <SelectTrigger className="min-w-[120px]">
+                        <SelectValue
+                          placeholder={
+                            workType
+                              ? toWorkTypeText({ type: workType, lang: locale })
+                              : t("種類", "Type")
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["ALL", "WORK", "VIDEO", "NOVEL", "COLUMN"].map(
+                          (v) => (
+                            <SelectItem key={v} value={v}>
+                              {t(
+                                v === "WORK"
+                                  ? "画像"
+                                  : v === "VIDEO"
+                                    ? "動画"
+                                    : v === "NOVEL"
+                                      ? "小説"
+                                      : v === "COLUMN"
+                                        ? "コラム"
+                                        : "種類",
+                                v,
+                              )}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
+
+                    {/* prompt */}
+                    <Select
+                      value={
+                        isPromptPublic === null
+                          ? "ALL"
+                          : isPromptPublic
+                            ? "prompt"
+                            : "no-prompt"
+                      }
+                      onValueChange={(v) => {
+                        setIsPromptPublic(v === "ALL" ? null : v === "prompt")
+                        syncParam(
+                          "isPromptPublic",
+                          v === "ALL"
+                            ? null
+                            : v === "prompt"
+                              ? "true"
+                              : "false",
+                        )
+                      }}
+                    >
+                      <SelectTrigger className="min-w-[120px]">
+                        <SelectValue
+                          placeholder={t("プロンプト有無", "Prompt")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ALL">
+                          {t("プロンプト有無", "Prompt")}
+                        </SelectItem>
+                        <SelectItem value="prompt">
+                          {t("あり", "Yes")}
+                        </SelectItem>
+                        <SelectItem value="no-prompt">
+                          {t("なし", "No")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* sort */}
+                    <Select
+                      value={sortType ?? ""}
+                      onValueChange={(v) => {
+                        setSortType(v === "ALL" ? null : (v as any))
+                        syncParam("sortType", v === "ALL" ? null : v)
+                      }}
+                    >
+                      <SelectTrigger className="min-w-[120px]">
+                        <ArrowDownWideNarrow />
+                        <SelectValue placeholder={t("最新", "Latest")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="DATE_CREATED">
+                          {t("最新", "Latest")}
+                        </SelectItem>
+                        <SelectItem value="LIKES_COUNT">
+                          {t("最も人気", "Most Liked")}
+                        </SelectItem>
+                        <SelectItem value="COMMENTS_COUNT">
+                          {t("コメント数", "Most Comments")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {/* time range */}
+                  <div className="flex flex-col justify-end space-y-2 md:flex-row md:items-center md:space-y-0">
+                    {/* 表示方式切り替え - よりスタイリッシュなデザイン */}
+                    <div className="flex justify-end space-x-2 md:space-x-4">
+                      <div className="flex justify-end rounded-lg bg-muted p-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsDialogMode(false)}
+                          className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                            !isDialogMode
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          } `}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          <span>{t("リンク遷移", "Open page")}</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsDialogMode(true)}
+                          className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                            isDialogMode
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          } `}
+                        >
+                          <PlaySquare className="h-4 w-4" />
+                          <span>{t("ダイアログ", "Dialog")}</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <Suspense fallback={<AppLoadingPage />}>
+                <HomeNewUsersSensitiveWorkListSection
+                  workType={workType}
+                  isPromptPublic={isPromptPublic}
+                  sortType={sortType}
+                  onSelect={isDialogMode ? openWork : undefined}
+                  updateWorks={updateCurrentWorks}
+                />
+              </Suspense>
+            </>
           )}
         </TabsContent>
 
         {/* ---------- FOLLOW USER ---------- */}
-        <TabsContent value="follow-user">
+        <TabsContent value="follow-user" className="space-y-4">
+          {/* Feed / Pages 切り替えボタン */}
+          <div className="flex justify-end space-x-2 md:space-x-4">
+            <div className="flex rounded-lg bg-muted p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInternalIsPagination(false)
+                  const p = new URLSearchParams(searchParams)
+                  p.set("isPagination", "false")
+                  updateQueryParams(p)
+                }}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                  !internalIsPagination
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <List className="h-3 w-3" />
+                <span className="hidden sm:inline">
+                  {t("フィード", "Feed")}
+                </span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInternalIsPagination(true)
+                  const p = new URLSearchParams(searchParams)
+                  p.set("isPagination", "true")
+                  updateQueryParams(p)
+                }}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                  internalIsPagination
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Navigation className="h-3 w-3" />
+                <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
+              </Button>
+            </div>
+            <div className="flex rounded-lg bg-muted p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDialogMode(false)}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                  !isDialogMode
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                } `}
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>{t("リンク遷移", "Open page")}</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDialogMode(true)}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                  isDialogMode
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                } `}
+              >
+                <PlaySquare className="h-4 w-4" />
+                <span>{t("ダイアログ", "Dialog")}</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* コンテンツ */}
           <Suspense fallback={<AppLoadingPage />}>
             <FollowSensitiveUserFeedContents
               page={followUserFeedPage}
@@ -515,20 +914,115 @@ export default function Index() {
                 setFollowUserFeedPage,
                 "followUserPage",
               )}
+              isPagination={internalIsPagination}
+              onPaginationModeChange={setInternalIsPagination}
+              onSelect={isDialogMode ? openWork : undefined}
+              updateWorks={updateCurrentWorks}
             />
           </Suspense>
         </TabsContent>
 
         {/* ---------- FOLLOW TAG ---------- */}
-        <TabsContent value="follow-tag">
+        <TabsContent value="follow-tag" className="space-y-4">
+          {/* Feed / Pages 切り替えボタン */}
+          <div className="flex justify-end space-x-2 md:space-x-4">
+            <div className="flex rounded-lg bg-muted p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInternalIsPagination(false)
+                  const p = new URLSearchParams(searchParams)
+                  p.set("isPagination", "false")
+                  updateQueryParams(p)
+                }}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                  !internalIsPagination
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <List className="h-3 w-3" />
+                <span className="hidden sm:inline">
+                  {t("フィード", "Feed")}
+                </span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setInternalIsPagination(true)
+                  const p = new URLSearchParams(searchParams)
+                  p.set("isPagination", "true")
+                  updateQueryParams(p)
+                }}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                  internalIsPagination
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Navigation className="h-3 w-3" />
+                <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
+              </Button>
+            </div>
+            <div className="flex rounded-lg bg-muted p-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDialogMode(false)}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                  !isDialogMode
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                } `}
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>{t("リンク遷移", "Open page")}</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDialogMode(true)}
+                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                  isDialogMode
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                } `}
+              >
+                <PlaySquare className="h-4 w-4" />
+                <span>{t("ダイアログ", "Dialog")}</span>
+              </Button>
+            </div>
+          </div>
+
           <Suspense fallback={<AppLoadingPage />}>
             <FollowSensitiveTagsFeedContents
               page={followTagFeedPage}
               setPage={setPageWithParam(setFollowTagFeedPage, "followTagPage")}
+              isPagination={internalIsPagination}
+              onSelect={isDialogMode ? openWork : undefined}
+              updateWorks={updateCurrentWorks}
             />
           </Suspense>
         </TabsContent>
       </Tabs>
+
+      {/* ────────── 作品ダイアログ ────────── */}
+      {dialogIndex !== null && (
+        <WorkViewerDialog
+          works={displayedWorks}
+          startIndex={dialogIndex}
+          onClose={() => {
+            console.log("Closing dialog, setting dialogIndex to null")
+            setDialogIndex(null)
+          }}
+          loadMore={!internalIsPagination ? loadMore : undefined}
+          hasNextPage={hasNextPage}
+          isLoadingMore={isLoadingMore}
+        />
+      )}
     </>
   )
 }

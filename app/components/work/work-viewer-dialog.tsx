@@ -24,6 +24,9 @@ import { Link } from "@remix-run/react"
 // ───────────────── Types ─────────────────
 interface Props {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
+  /** 表示を開始したい作品 ID（優先） */
+  startWorkId?: number
+  /** ID が無い場合に使うフォールバック index */
   startIndex: number
   onClose: () => void
   /** TagWorkSection から渡される追加ロード関数 */
@@ -40,9 +43,18 @@ export function WorkViewerDialog({
   loadMore,
   hasNextPage = false,
   isLoadingMore = false,
+  startWorkId,
 }: Props) {
   // ────────── State / Refs ──────────
-  const [index, setIndex] = useState(startIndex)
+  const initialIndex = useMemo(() => {
+    if (startWorkId) {
+      const idx = works.findIndex((w) => w.id === startWorkId.toString())
+      if (idx !== -1) return idx
+    }
+    return startIndex
+  }, [startWorkId, startIndex, works])
+
+  const [index, setIndex] = useState(initialIndex)
   const [loadedWorkIds, setLoadedWorkIds] = useState<Set<string>>(new Set())
   const [workDataCache, setWorkDataCache] = useState<Map<string, any>>(
     new Map(),

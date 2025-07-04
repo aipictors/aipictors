@@ -9,20 +9,24 @@ import {
 import { useApolloClient, useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
-import { useScrollRestoration } from "../hooks/use-scroll-restoration"
-import { usePagedInfinite } from "../hooks/use-paged-infinite"
-import { makeWhere, getPerPage, chunkWorks } from "../utils/works-utils"
-import { WorksRenderer } from "./works-renderer"
-import { WorksLoading } from "./works-loading"
+import { WorksQuery } from "~/routes/($lang)._main._index/components/works-pagination-mode"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import type { FragmentOf } from "gql.tada"
+import { WorksLoading } from "~/routes/($lang)._main._index/components/works-loading"
+import { WorksRenderer } from "~/routes/($lang)._main._index/components/works-renderer"
+import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
+import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 import type {
   WorkType,
   WorkOrderBy,
   ImageStyle,
   WorkItem,
-} from "../types/works"
-import { WorksQuery } from "~/routes/($lang)._main._index/components/works-pagination-mode"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import type { FragmentOf } from "gql.tada"
+} from "~/routes/($lang)._main._index/types/works"
+import {
+  getPerPage,
+  makeWhere,
+  chunkWorks,
+} from "~/routes/($lang)._main._index/utils/works-utils"
 
 interface Props {
   anchorAt: string
@@ -36,13 +40,13 @@ interface Props {
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function WorksInfiniteMode({ anchorAt, ...rest }: Props) {
+export function SensitiveWorksInfiniteMode({ anchorAt, ...rest }: Props) {
   const client = useApolloClient()
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
 
   const where = useMemo(
-    () => makeWhere(rest, anchorAt, ["G", "R15"]),
+    () => makeWhere(rest, anchorAt, ["R18", "R18G"]),
     [rest, anchorAt],
   )
   const keyForStore = useMemo(() => JSON.stringify(where), [where])

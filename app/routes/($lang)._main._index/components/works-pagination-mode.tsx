@@ -45,7 +45,10 @@ export function WorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
     }
   }, [currentPage, rest.page, rest.setPage])
 
-  const where = useMemo(() => makeWhere(rest, anchorAt), [rest, anchorAt])
+  const where = useMemo(
+    () => makeWhere(rest, anchorAt, ["G", "R15"]),
+    [rest, anchorAt],
+  )
 
   const { data, loading } = useQuery(WorksQuery, {
     skip: authLoading,

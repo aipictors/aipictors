@@ -341,7 +341,7 @@ function InfiniteMode({
   const client = useApolloClient()
   const auth = useContext(AuthContext)
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
-  const [prevFlatLength, setPrevFlatLength] = useState<number>(0)
+  const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
   const feedWhere = useMemo(
     () => ({ userId: auth.userId ?? "-1", type: "FOLLOW_TAG" as const }),
@@ -376,43 +376,47 @@ function InfiniteMode({
   } = useQuery(QUERY, {
     skip: auth.isLoading || auth.isNotLoggedIn,
     variables: queryVars,
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
     errorPolicy: "ignore",
   })
 
-  const storeKey = JSON.stringify({ tv: isTimelineView, uid: auth.userId })
+  const storeKey = JSON.stringify({
+    tv: isTimelineView,
+    uid: auth.userId,
+    ratings: feedPostsWhere.ratings.join("-"),
+  })
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
     usePagedInfinite<PostItem>(initialPages, storeKey)
 
   useEffect(() => {
     if (!data?.feed?.posts?.length) return
     const chunked = chunkPosts(data.feed.posts, PER_PAGE)
-    if (!pages.length || chunked[0].length !== pages[0]?.length) {
+    const firstIds = chunked[0].map((p) => p.id).join(",")
+    const currentIds = pages[0]?.map((p) => p.id).join(",")
+    if (!pages.length || firstIds !== currentIds) {
       replaceFirstPage(chunked[0])
       if (chunked.length > 1) appendPages(chunked.slice(1))
     }
   }, [data?.feed?.posts, pages, replaceFirstPage, appendPages])
 
-  // updateWorksを正しいタイミングで呼ぶ
-  useEffect(() => {
-    if (!updateWorks || isTimelineView || flat.length === 0) return
-
-    // データの長さが変わった場合のみ更新
-    if (flat.length !== prevFlatLength) {
-      const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
+  const worksFromFlat = useMemo(
+    () =>
+      flat.map((p) => p.work).filter(Boolean) as FragmentOf<
         typeof PhotoAlbumWorkFragment
-      >[]
+      >[],
+    [flat],
+  )
 
-      updateWorks(works)
-      setPrevFlatLength(flat.length)
-    }
-  }, [flat, updateWorks, isTimelineView, prevFlatLength])
+  useEffect(() => {
+    if (!updateWorks || isTimelineView) return
+    updateWorks(worksFromFlat)
+  }, [updateWorks, isTimelineView, worksFromFlat])
 
   const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
   useScrollRestoration("follow-tag-infinite", ready)
 
-  const hasNext = (pages.at(-1)?.length ?? 0) === PER_PAGE
+  const hasNext = (pages.at(-1)?.length ?? 0) >= PER_PAGE - 8
   const loadMore = useCallback(async () => {
     if (!hasNext || loadingFirst || isLoadingMore) return
     setIsLoadingMore(true)

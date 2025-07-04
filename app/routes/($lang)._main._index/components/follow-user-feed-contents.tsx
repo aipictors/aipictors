@@ -311,7 +311,12 @@ function InfiniteMode(props: Props) {
 
   // ─── usePagedInfinite (local store key 付き) ─────────────
   const keyForStore = useMemo(
-    () => JSON.stringify({ tv: isTimelineView, uid: authContext.userId }),
+    () =>
+      JSON.stringify({
+        tv: isTimelineView,
+        uid: authContext.userId,
+        ratings: feedPostsWhere.ratings.join("-"),
+      }),
     [isTimelineView, authContext.userId],
   )
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
@@ -352,7 +357,7 @@ function InfiniteMode(props: Props) {
   useScrollRestoration("follow-user-infinite", ready)
 
   // ─── 追加ロード ────────────────────────────────────
-  const hasNext = (pages.at(-1)?.length ?? 0) === PER_PAGE
+  const hasNext = (pages.at(-1)?.length ?? 0) >= PER_PAGE - 8
 
   const loadMore = useCallback(async () => {
     if (!hasNext || loadingFirst || isLoadingMore) return

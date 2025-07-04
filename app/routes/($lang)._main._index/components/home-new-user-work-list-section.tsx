@@ -60,6 +60,7 @@ export function HomeNewUsersWorkListSection(props: Props) {
         <HomeNovelsWorksSection
           title={""}
           works={worksResp?.newUserWorks || []}
+          onSelect={props.onSelect}
         />
       )}
       {props.workType === "VIDEO" && (
@@ -67,6 +68,7 @@ export function HomeNewUsersWorkListSection(props: Props) {
           title={""}
           works={worksResp?.newUserWorks || []}
           isAutoPlay={true}
+          onSelect={props.onSelect}
         />
       )}
     </div>

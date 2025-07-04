@@ -62,6 +62,7 @@ function getTimeRangeDates(range: HomeWorksProps["timeRange"] = "ALL") {
 export function makeWhere(
   props: Omit<HomeWorksProps, "page" | "setPage">,
   anchorAt: string,
+  ratings: string[],
 ): WorksWhereInput {
   const { createdAtAfter, createdAtBefore, isNowCreatedAt } = getTimeRangeDates(
     props.timeRange,
@@ -71,7 +72,7 @@ export function makeWhere(
   const needAnchor = needAllMode // ← 常に anchor 付ける
 
   return {
-    ratings: ["G", "R15"],
+    ratings: ratings,
     ...(props.workType && { workType: props.workType }),
     ...(props.isPromptPublic !== null && {
       hasPrompt: props.isPromptPublic,
