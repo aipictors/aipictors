@@ -34,6 +34,8 @@ export function UserHomeSensitiveMenu(props: Props) {
 
   const isMuted = user?.isMuted ?? false
 
+  const isBlocked = user?.isBlocked ?? false
+
   const navigate = useNavigate()
 
   return (
@@ -67,7 +69,11 @@ export function UserHomeSensitiveMenu(props: Props) {
               <p className="text-sm">{t("全年齢", "G")}</p>
             </div>
           </Button>
-          <UserActionOther id={cachedUser.id} isMuted={isMuted} />
+          <UserActionOther
+            id={cachedUser.id}
+            isMuted={isMuted}
+            isBlocked={isBlocked}
+          />
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />
           <FollowButton
             targetUserId={cachedUser.id}
@@ -155,6 +161,7 @@ export const UserHomeMenuSensitiveFragment = graphql(
     isFollowee
     isFollower
     isMuted
+    isBlocked
     name
     followersCount
     receivedLikesCount

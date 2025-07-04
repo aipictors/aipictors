@@ -6,12 +6,14 @@ import {
 } from "~/components/ui/popover"
 import { EllipsisIcon } from "lucide-react"
 import { UserMuteButton } from "~/routes/($lang)._main.users.$user._index/components/user-mute-button"
+import { UserBlockButton } from "./user-block-button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext } from "react"
 
 type Props = {
   id: string
   isMuted: boolean
+  isBlocked?: boolean
 }
 
 export function UserActionOther(props: Props) {
@@ -37,6 +39,11 @@ export function UserActionOther(props: Props) {
           <UserMuteButton
             id={props.id}
             isMuted={props.isMuted}
+            variant="secondary"
+          />
+          <UserBlockButton
+            id={props.id}
+            isBlocked={props.isBlocked ?? false}
             variant="secondary"
           />
         </div>

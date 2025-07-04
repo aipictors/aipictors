@@ -90,6 +90,17 @@ export function SettingsNavigation() {
         </div>
       </SettingNavigationButton>
       <SettingNavigationButton
+        href={"/settings/blocked/users"}
+        icon={UserXIcon}
+      >
+        <div className="flex w-full items-center justify-between">
+          {t("ユーザブロック", "Blocked Users")}
+          <div className="ml-auto text-right md:hidden">
+            <ChevronRight />
+          </div>
+        </div>
+      </SettingNavigationButton>
+      <SettingNavigationButton
         href={"/settings/muted/tags"}
         icon={BookmarkXIcon}
       >

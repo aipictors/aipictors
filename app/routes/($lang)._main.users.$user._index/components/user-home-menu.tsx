@@ -35,6 +35,8 @@ export function UserHomeMenu(props: Props) {
 
   const isMuted = user?.isMuted ?? false
 
+  const isBlocked = user?.isBlocked ?? false
+
   const navigate = useNavigate()
 
   return (
@@ -68,7 +70,11 @@ export function UserHomeMenu(props: Props) {
               userLogin={cachedUser.login}
             />
           )}
-          <UserActionOther id={cachedUser.id} isMuted={isMuted} />
+          <UserActionOther
+            id={cachedUser.id}
+            isMuted={isMuted}
+            isBlocked={isBlocked}
+          />
           <UserActionShare login={cachedUser.login} name={cachedUser.name} />
           <FollowButton
             targetUserId={cachedUser.id}
@@ -156,6 +162,7 @@ export const UserHomeMenuFragment = graphql(
     isFollowee
     isFollower
     isMuted
+    isBlocked
     name
     followersCount
     receivedLikesCount

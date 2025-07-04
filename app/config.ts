@@ -761,6 +761,13 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Manage your user mute preferences",
     isIndex: false,
   },
+  SETTINGS_BLOCK_USERS: {
+    title: "ユーザブロック設定",
+    enTitle: "Block Users Settings",
+    description: "You can configure your user block settings",
+    enDescription: "Manage your user block preferences",
+    isIndex: false,
+  },
   SETTINGS_COLOR: {
     title: "カラー設定",
     enTitle: "Color Settings",
