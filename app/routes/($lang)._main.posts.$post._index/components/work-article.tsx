@@ -157,6 +157,7 @@ export function WorkArticle(props: Props) {
           targetWorkOwnerUserId={props.work.user?.id ?? ""}
           isDisabledShare={false}
           isAnonymous={props.userSetting?.isAnonymousLike ?? false}
+          isTargetUserBlocked={props.work.user?.isBlocked ?? false}
         />
         <h1 className="font-bold text-lg">
           {t(
@@ -443,6 +444,7 @@ export const workArticleFragment = graphql(
       createdLikesCount
       createdBookmarksCount
       isMuted
+      isBlocked
       works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
         id
         userId
@@ -577,6 +579,7 @@ export const sensitiveWorkArticleFragment = graphql(
       createdLikesCount
       createdBookmarksCount
       isMuted
+      isBlocked
       works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
         id
         userId

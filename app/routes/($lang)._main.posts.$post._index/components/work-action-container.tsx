@@ -15,6 +15,7 @@ type Props = {
   bookmarkFolderId: string | null
   isDisabledShare?: boolean
   isAnonymous?: boolean
+  isTargetUserBlocked?: boolean
 }
 
 /**
@@ -54,6 +55,7 @@ export function WorkActionContainer(props: Props) {
         (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"
       }
       isAnonymous={props.isAnonymous}
+      isTargetUserBlocked={props.isTargetUserBlocked}
     />
   )
 }

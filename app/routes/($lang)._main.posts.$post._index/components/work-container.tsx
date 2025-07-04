@@ -152,6 +152,7 @@ export function WorkContainer(props: Props) {
                 workId={work.id}
                 comments={comments}
                 workOwnerIconImageURL={work.user?.iconUrl}
+                isWorkOwnerBlocked={work.user?.isBlocked ?? false}
               />
             )}
             {work.user && (

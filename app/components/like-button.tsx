@@ -23,6 +23,7 @@ type Props = {
   strokeWidth?: number
   isParticle?: boolean
   isUsedShortcutKey?: boolean
+  isTargetUserBlocked?: boolean
 }
 
 export function LikeButton(props: Props) {
@@ -174,6 +175,17 @@ export function LikeButton(props: Props) {
 
   if (authContext.userId === props.targetWorkOwnerUserId) {
     return null
+  }
+
+  if (props.isTargetUserBlocked) {
+    return (
+      <div className="rounded-md bg-gray-100 p-2 text-center text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
+        {t(
+          "ブロック中のユーザーの作品にはいいねできません",
+          "Cannot like works from blocked users",
+        )}
+      </div>
+    )
   }
 
   const width = Math.floor((props.size ?? 40) * 24)

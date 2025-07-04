@@ -52,6 +52,7 @@ type Props = {
   ) => void
   onCreateCommentLike: () => void
   onDeleteCommentLike: () => void
+  isWorkOwnerBlocked?: boolean
 }
 
 /**
@@ -269,6 +270,7 @@ export function WorkComment(props: Props) {
             props.onReplyCompleted(id, text, stickerId, stickerImageURL)
           }}
           iconUrl={withIconUrlFallback(props.userIconImageURL)}
+          isWorkOwnerBlocked={props.isWorkOwnerBlocked}
         />
       )}
     </>

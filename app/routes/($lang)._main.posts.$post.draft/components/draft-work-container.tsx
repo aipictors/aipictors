@@ -72,7 +72,7 @@ export function DraftWorkContainer(props: Props) {
   const randomTag =
     tags.length > 0 ? tags[Math.floor(Math.random() * tags.length)] : null
 
-  const navigate = useNavigate()
+  const _navigate = useNavigate()
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
@@ -147,6 +147,7 @@ export function DraftWorkContainer(props: Props) {
                 workId={work.id}
                 comments={comments}
                 workOwnerIconImageURL={work.user?.iconUrl}
+                isWorkOwnerBlocked={work.user?.isBlocked ?? false}
               />
             )}
             {work.user && (
@@ -259,7 +260,7 @@ const workQuery = graphql(
   [workArticleFragment],
 )
 
-const sensitiveWorkQuery = graphql(
+const _sensitiveWorkQuery = graphql(
   `query Work($id: ID!) {
     work(id: $id) {
       ...WorkArticle

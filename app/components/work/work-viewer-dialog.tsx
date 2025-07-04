@@ -340,6 +340,7 @@ export function WorkViewerDialog({
                 workOwnerIconImageURL={withIconUrlFallback(
                   currentWork.user?.iconUrl,
                 )}
+                isWorkOwnerBlocked={currentWork.user?.isBlocked ?? false}
                 comments={
                   Array.isArray(
                     (currentWork as { comments?: unknown[] }).comments,

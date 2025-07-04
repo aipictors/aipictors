@@ -20,6 +20,7 @@ type Props = {
   isOpen: boolean
   onClose(): void
   onSend(stickerId: string, stickerImageURL: string): void
+  isTargetUserBlocked?: boolean
 }
 
 /**
@@ -107,6 +108,14 @@ export function StickerDialog(props: Props) {
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
       <DialogContent className="flex h-[80vh] min-h-[32vw] w-[80vw] min-w-[80vw] flex-col pl-2">
+        {props.isTargetUserBlocked && (
+          <div className="mb-4 rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
+            {t(
+              "ブロック中のユーザーにはスタンプを送信できません",
+              "Cannot send stickers to blocked users",
+            )}
+          </div>
+        )}
         <div className="flex items-center space-x-2">
           <Tabs value={type} defaultValue={"CREATED"}>
             <TabsList>
@@ -152,10 +161,13 @@ export function StickerDialog(props: Props) {
                 imageUrl={sticker.imageUrl ?? ""}
                 title={sticker.title}
                 onClick={() => {
-                  props.onSend(sticker.id, sticker.imageUrl ?? "")
-                  props.onClose()
+                  if (!props.isTargetUserBlocked) {
+                    props.onSend(sticker.id, sticker.imageUrl ?? "")
+                    props.onClose()
+                  }
                 }}
                 size={stickerSize}
+                disabled={props.isTargetUserBlocked}
               />
             ))}
           </div>

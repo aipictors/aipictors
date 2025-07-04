@@ -9,6 +9,7 @@ type Props = {
   onClick: () => void
   onDelete?: () => void
   size?: "2x-large" | "small" | "medium" | "large" | "x-large"
+  disabled?: boolean
 }
 
 /**
@@ -43,9 +44,13 @@ export function StickerButton(props: Props) {
         className={cn(
           "relative box-border rounded border-2 border-transparent transition duration-500 hover:border-2 hover:border-clear-bright-blue",
           sizeClasses,
+          {
+            "cursor-not-allowed opacity-50": props.disabled,
+          },
         )}
         type={"button"}
-        onClick={props.onClick}
+        onClick={props.disabled ? undefined : props.onClick}
+        disabled={props.disabled}
       >
         <img className="m-auto" src={props.imageUrl} alt={props.title} />
       </button>

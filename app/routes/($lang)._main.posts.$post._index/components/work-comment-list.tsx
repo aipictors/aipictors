@@ -27,6 +27,7 @@ type Props = {
   workOwnerIconImageURL?: string | null
   comments: FragmentOf<typeof CommentListItemFragment>[]
   defaultShowCommentCount?: number
+  isWorkOwnerBlocked?: boolean
 }
 
 // コメント
@@ -277,7 +278,15 @@ export function WorkCommentList(props: Props) {
           {t("コメント", "Comments")} (
           {showComments.length + (showNewComments?.length ?? 0)})
         </p>
-        {stickers.length > 0 && (
+        {props.isWorkOwnerBlocked && (
+          <div className="rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
+            {t(
+              "ブロック中のユーザーにはコメントできません",
+              "Cannot comment to blocked users",
+            )}
+          </div>
+        )}
+        {stickers.length > 0 && !props.isWorkOwnerBlocked && (
           <div className="flex space-x-2 overflow-x-auto">
             {stickers.map((sticker) => (
               <StickerButton
@@ -298,6 +307,7 @@ export function WorkCommentList(props: Props) {
                   }
                 }}
                 size="2x-large"
+                disabled={props.isWorkOwnerBlocked}
               />
             ))}
           </div>
@@ -314,10 +324,10 @@ export function WorkCommentList(props: Props) {
             }}
             value={comment}
             placeholder={t("コメントする", "Add a comment")}
-            disabled={!authContext.isLoggedIn}
+            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
           />
           <Button
-            disabled={!authContext.isLoggedIn}
+            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
             variant={"secondary"}
             size={"icon"}
             onClick={onOpen}
@@ -330,7 +340,7 @@ export function WorkCommentList(props: Props) {
             </Button>
           ) : (
             <Button
-              disabled={!authContext.isLoggedIn}
+              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
               variant={"secondary"}
               onClick={onWorkComment}
             >
@@ -374,6 +384,7 @@ export function WorkCommentList(props: Props) {
                     onCreateCommentLike={() => onCreateCommentLike(comment.id)}
                     onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
                     onDeleteComment={() => onDeleteComment(comment.id)}
+                    isWorkOwnerBlocked={props.isWorkOwnerBlocked}
                     onReplyCompleted={(
                       id: string,
                       text: string,
@@ -425,7 +436,7 @@ export function WorkCommentList(props: Props) {
                 isLiked={
                   comment.isLiked && !canceledCommentIds.includes(comment.id)
                 }
-                isMuted={comment.isMuted}
+                isMuted={Boolean(comment.isMuted)}
                 isNowLiked={likedCommentIds.includes(comment.id)}
                 likesCount={
                   comment.likesCount -
@@ -443,6 +454,7 @@ export function WorkCommentList(props: Props) {
                 )}
                 userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
                 onDeleteComment={() => onDeleteComment(comment.id)}
+                isWorkOwnerBlocked={props.isWorkOwnerBlocked}
                 onReplyCompleted={(
                   id: string,
                   text: string,
@@ -507,6 +519,7 @@ export function WorkCommentList(props: Props) {
                     onDeleteComment={() => {
                       onDeleteComment(newReply.id)
                     }}
+                    isWorkOwnerBlocked={props.isWorkOwnerBlocked}
                   />
                 ),
               )}
@@ -536,7 +549,7 @@ export function WorkCommentList(props: Props) {
                       isLiked={
                         reply.isLiked && !canceledCommentIds.includes(reply.id)
                       }
-                      isMuted={reply.isMuted}
+                      isMuted={Boolean(reply.isMuted)}
                       isNowLiked={likedCommentIds.includes(reply.id)}
                       likesCount={
                         reply.likesCount -
@@ -551,6 +564,7 @@ export function WorkCommentList(props: Props) {
                       onDeleteComment={() => {
                         onDeleteComment(reply.id)
                       }}
+                      isWorkOwnerBlocked={props.isWorkOwnerBlocked}
                       onReplyCompleted={(
                         id: string,
                         text: string,
@@ -619,7 +633,7 @@ export function WorkCommentList(props: Props) {
                       comment.isLiked &&
                       !canceledCommentIds.includes(comment.id)
                     }
-                    isMuted={comment.isMuted}
+                    isMuted={Boolean(comment.isMuted)}
                     isNowLiked={likedCommentIds.includes(comment.id)}
                     likesCount={
                       comment.likesCount -
@@ -635,6 +649,7 @@ export function WorkCommentList(props: Props) {
                     userName={comment.user?.name}
                     commentId={comment.id}
                     onDeleteComment={() => onDeleteComment(comment.id)}
+                    isWorkOwnerBlocked={props.isWorkOwnerBlocked}
                     onReplyCompleted={(
                       id: string,
                       text: string,
@@ -706,6 +721,7 @@ export function WorkCommentList(props: Props) {
                         onDeleteComment={() => {
                           onDeleteComment(newReply.id)
                         }}
+                        isWorkOwnerBlocked={props.isWorkOwnerBlocked}
                       />
                     ),
                   )}
@@ -736,7 +752,7 @@ export function WorkCommentList(props: Props) {
                             reply.isLiked &&
                             !canceledCommentIds.includes(reply.id)
                           }
-                          isMuted={reply.isMuted}
+                          isMuted={Boolean(reply.isMuted)}
                           likesCount={
                             reply.likesCount -
                             (canceledCommentIds.includes(reply.id) ? 1 : 0)
@@ -758,6 +774,7 @@ export function WorkCommentList(props: Props) {
                           onDeleteComment={() => {
                             onDeleteComment(reply.id)
                           }}
+                          isWorkOwnerBlocked={props.isWorkOwnerBlocked}
                           onReplyCompleted={(
                             id: string,
                             text: string,
@@ -803,6 +820,7 @@ export function WorkCommentList(props: Props) {
         onSend={async (stickerId: string, url: string) => {
           await sendComment(comment, stickerId, url, props.workId, userIcon)
         }}
+        isTargetUserBlocked={props.isWorkOwnerBlocked}
       />
     </>
   )

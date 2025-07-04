@@ -55,6 +55,7 @@ type Props = {
   ) => void
   onCreateCommentLike: () => void
   onDeleteCommentLike: () => void
+  isWorkOwnerBlocked?: boolean
 }
 
 /**
@@ -267,6 +268,7 @@ export function WorkCommentResponse(props: Props) {
             }
           }}
           iconUrl={props.iconUrl}
+          isWorkOwnerBlocked={props.isWorkOwnerBlocked}
         />
       )}
     </>

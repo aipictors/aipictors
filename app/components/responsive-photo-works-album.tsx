@@ -71,6 +71,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                     defaultLikedCount={0}
                     isBackgroundNone={true}
                     strokeWidth={2}
+                    isTargetUserBlocked={workItem.user?.isBlocked ?? false}
                   />
                 </div>
               </div>
@@ -308,6 +309,7 @@ export const PhotoAlbumWorkFragment = graphql(
       createdLikesCount
       createdBookmarksCount
       isMuted
+      isBlocked
       promptonUser {
         id
       }

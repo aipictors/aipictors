@@ -21,6 +21,7 @@ type Props = {
     stickerId: string,
     stickerImageURL: string,
   ) => void
+  isWorkOwnerBlocked?: boolean
 }
 
 /**
@@ -64,7 +65,7 @@ export function ReplyCommentInput(props: Props) {
           stickerImageURL ?? "",
         )
       }
-    } catch (e) {
+    } catch (_e) {
       // toast(
       //   t("送信に失敗しました。同じコメントを何度も送信しようとしているか、通信エラーが発生しています。", "Failed to send. Please try again or check your connection.")
       // )
@@ -102,11 +103,11 @@ export function ReplyCommentInput(props: Props) {
             setComment(event.target.value)
           }}
           placeholder={t("コメントする", "Add a comment")}
-          disabled={!authContext.isLoggedIn}
+          disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
         />
         <div>
           <Button
-            disabled={!authContext.isLoggedIn}
+            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
             variant={"secondary"}
             size={"icon"}
             onClick={onOpen}
@@ -120,7 +121,7 @@ export function ReplyCommentInput(props: Props) {
           </Button>
         ) : (
           <Button
-            disabled={!authContext.isLoggedIn}
+            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
             variant={"secondary"}
             onClick={onComment}
           >
@@ -143,6 +144,7 @@ export function ReplyCommentInput(props: Props) {
 
           onClose()
         }}
+        isTargetUserBlocked={props.isWorkOwnerBlocked}
       />
     </>
   )

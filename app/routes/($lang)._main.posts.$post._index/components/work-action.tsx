@@ -29,6 +29,7 @@ type Props = {
   isRecommended: boolean
   isDisabledShare?: boolean
   isAnonymous?: boolean
+  isTargetUserBlocked?: boolean
 }
 
 /**
@@ -80,6 +81,7 @@ export function WorkAction(props: Props) {
           isBackgroundNone={false}
           targetWorkOwnerUserId={props.targetWorkOwnerUserId}
           isUsedShortcutKey={true}
+          isTargetUserBlocked={props.isTargetUserBlocked}
         />
         <Suspense fallback={null}>
           <RecommendButton
