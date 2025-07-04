@@ -14,7 +14,7 @@ interface Props {
   workType: WorkType | null
   works: WorkItem[]
   isCropped?: boolean
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 export function WorksRenderer({ workType, works, isCropped, onSelect }: Props) {

@@ -11,7 +11,7 @@ import { HomeRecommendedWorkList } from "~/routes/($lang)._main._index/component
 type Props = {
   works: FragmentOf<typeof HomePromotionWorkFragment>[]
   style?: IntrospectionEnum<"ImageStyle">
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 /**

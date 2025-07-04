@@ -11,7 +11,7 @@ type Props = {
   link?: string
   isCropped?: boolean
   isAutoPlay?: boolean
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 /**

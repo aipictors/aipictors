@@ -149,7 +149,7 @@ export type FollowTagsFeedContentsProps = {
   page: number
   setPage: (p: number) => void
   isPagination: boolean
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
@@ -256,7 +256,7 @@ function PaginationMode({
   setPage: (n: number) => void
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }) {
   const auth = useContext(AuthContext)
@@ -344,7 +344,7 @@ function InfiniteMode({
   tab?: string
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }) {
   const client = useApolloClient()
@@ -417,7 +417,7 @@ function InfiniteMode({
     }
   }, [data?.feed?.posts, replaceFirstPage, appendPages])
 
-  const worksFromFlat = useMemo(
+  const _worksFromFlat = useMemo(
     () =>
       flat.map((p) => p.work).filter(Boolean) as FragmentOf<
         typeof PhotoAlbumWorkFragment
@@ -425,10 +425,25 @@ function InfiniteMode({
     [flat],
   )
 
+  const flatWorks = useMemo(
+    () =>
+      flat.map((p) => p.work).filter(Boolean) as FragmentOf<
+        typeof PhotoAlbumWorkFragment
+      >[],
+    [flat],
+  )
+
+  const prevIdsRef = useRef<string>("")
+
   useEffect(() => {
-    if (!updateWorks || isTimelineView) return
-    updateWorks(worksFromFlat)
-  }, [updateWorks, isTimelineView, worksFromFlat, tab])
+    if (!updateWorks || isTimelineView || flatWorks.length === 0) return
+
+    const ids = flatWorks.map((w) => w.id).join(",")
+    if (ids !== prevIdsRef.current) {
+      updateWorks(flatWorks)
+      prevIdsRef.current = ids
+    }
+  }, [updateWorks, isTimelineView, flatWorks])
 
   const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
   useScrollRestoration("follow-tag-infinite", ready)
@@ -494,7 +509,7 @@ function FeedContent({
   posts: PostItem[]
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }) {
   const t = useTranslation()
   const [hiddenComments, setHiddenComments] = useState<Record<string, boolean>>(
@@ -549,7 +564,7 @@ function TimelineView({
   subWorksVisible: Record<string, boolean>
   toggleCommentsVisibility: (id: string) => void
   toggleSubWorksVisibility: (id: string) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   index: number
 }) {
   return (
@@ -591,7 +606,7 @@ function TimelineView({
                       <button
                         type="button"
                         className="block h-full w-full overflow-hidden rounded"
-                        onClick={() => onSelect?.(index)}
+                        onClick={() => onSelect?.(work.id)}
                       >
                         <Link to={`/posts/${work.id}`}>
                           <img
@@ -712,7 +727,7 @@ function GridView({
   onSelect,
 }: {
   works: NonNullable<PostItem["work"]>[]
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }) {
   return (
     <div className="m-auto w-full space-y-4">

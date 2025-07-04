@@ -226,7 +226,7 @@ export default function Index() {
   const [isDialogMode, setIsDialogMode] = useState(false)
 
   // ダイアログ制御
-  const [dialogIndex, setDialogIndex] = useState<number | null>(null)
+  const [dialogIndex, setDialogIndex] = useState<string | null>(null)
 
   // 作品データの管理用state
   const [currentWorks, setCurrentWorks] = useState<
@@ -503,21 +503,13 @@ export default function Index() {
   }, [currentTab, homeWorks, currentWorks])
 
   // 作品クリック時の処理
-  const openWork = (idx: number) => {
-    console.log("openWork called with idx:", idx)
-    console.log("displayedWorks length:", displayedWorks.length)
-    console.log("isDialogMode:", isDialogMode)
-
-    if (idx < 0 || idx >= displayedWorks.length) {
-      console.warn(
-        "Invalid index or no works available:",
-        idx,
-        displayedWorks.length,
-      )
+  const openWork = (idx: string) => {
+    // displayedWorksのworkのid一致するもの
+    const work = displayedWorks.find((w) => w.id === idx)
+    if (!work) {
+      console.error("Work not found for ID:", idx)
       return
     }
-    const work = displayedWorks[idx]
-
     if (isDialogMode) {
       console.log("Setting dialogIndex to:", idx)
       setDialogIndex(idx)
@@ -540,7 +532,7 @@ export default function Index() {
   }
 
   // ホームタブでの作品インデックス計算
-  const getHomeWorkIndex = (sectionIndex: number, workIndex: number) => {
+  const _getHomeWorkIndex = (sectionIndex: number, workIndex: number) => {
     let totalIndex = 0
 
     // バナー作品のインデックス
@@ -625,11 +617,7 @@ export default function Index() {
           {data.adWorks && data.adWorks.length > 0 && (
             <HomeBanners
               works={data.adWorks}
-              onSelect={
-                isDialogMode
-                  ? (idx) => openWork(getHomeWorkIndex(0, idx))
-                  : undefined
-              }
+              onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
             />
           )}
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
@@ -645,29 +633,17 @@ export default function Index() {
               )} */}
               <HomeWorksUsersRecommendedSection
                 works={data.promotionWorks}
-                onSelect={
-                  isDialogMode
-                    ? (idx) => openWork(getHomeWorkIndex(1, idx))
-                    : undefined
-                }
+                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               />
               <HomeNewUsersWorksSection
                 works={data.newUserWorks}
-                onSelect={
-                  isDialogMode
-                    ? (idx) => openWork(getHomeWorkIndex(2, idx))
-                    : undefined
-                }
+                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               />
               <HomeAwardWorkSection
                 awardDateText={data.awardDateText}
                 title={t("前日ランキング", "Previous Day Ranking")}
                 awards={data.workAwards}
-                onSelect={
-                  isDialogMode
-                    ? (idx) => openWork(getHomeWorkIndex(3, idx))
-                    : undefined
-                }
+                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               />
               <HomeWorksTagSection
                 tag={data.firstTag}
@@ -675,19 +651,7 @@ export default function Index() {
                 secondTag={data.secondTag}
                 secondWorks={data.secondTagWorks}
                 isCropped={true}
-                onSelect={
-                  isDialogMode
-                    ? (idx) => {
-                        // 第1タグと第2タグの作品を区別する必要がある
-                        const firstTagLength = data.firstTagWorks?.length || 0
-                        if (idx < firstTagLength) {
-                          openWork(getHomeWorkIndex(4, idx))
-                        } else {
-                          openWork(getHomeWorkIndex(5, idx - firstTagLength))
-                        }
-                      }
-                    : undefined
-                }
+                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               />
               <HomeTagsSection
                 title={t("人気タグ", "Popular Tags")}
@@ -1349,9 +1313,8 @@ export default function Index() {
       {dialogIndex !== null && (
         <WorkViewerDialog
           works={displayedWorks}
-          startIndex={dialogIndex}
+          startWorkId={dialogIndex}
           onClose={() => {
-            console.log("Closing dialog, setting dialogIndex to null")
             setDialogIndex(null)
           }}
           loadMore={!internalIsPagination ? loadMore : undefined}

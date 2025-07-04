@@ -17,7 +17,7 @@ type Props = {
   secondTag: string
   style?: IntrospectionEnum<"ImageStyle">
   isCropped?: boolean
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 /**

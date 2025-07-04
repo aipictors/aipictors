@@ -36,7 +36,7 @@ interface Props {
   sortType: WorkOrderBy | null
   timeRange?: string
   style?: ImageStyle
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 

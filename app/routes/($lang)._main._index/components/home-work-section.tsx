@@ -25,7 +25,7 @@ type Props = {
   isCropped?: boolean
   targetRowHeight?: number
   isShowProfile?: boolean
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 export function HomeWorkSection(props: Props) {

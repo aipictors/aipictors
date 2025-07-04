@@ -11,7 +11,7 @@ type Props = {
   tooltip?: string
   link?: string
   isCropped?: boolean
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 /**

@@ -20,7 +20,7 @@ type Props = {
   size?: "small" | "medium" | "large"
   isShowProfile?: boolean
   /** 作品クリック時に index を返す。未指定なら従来通りリンク遷移 */
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 /**
@@ -88,6 +88,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
           <RowsPhotoAlbum
             photos={props.works.map((work) => ({
               key: work.id,
+              id: work.id.toString(),
               src:
                 props.size === "large"
                   ? work.largeThumbnailImageURL
@@ -117,7 +118,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                       <button
                         type="button"
                         className="block h-full w-full overflow-hidden rounded"
-                        onClick={() => props.onSelect?.(index)}
+                        onClick={() => props.onSelect?.(photo.id)}
                       >
                         <img
                           src={photo.src}
@@ -177,7 +178,9 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                         <button
                           type="button"
                           className="w-48 font-bold"
-                          onClick={() => props.onSelect?.(index)}
+                          onClick={() =>
+                            props.onSelect?.(photo.context.id.toString())
+                          }
                         >
                           <p className="overflow-hidden text-ellipsis text-nowrap text-left text-sm">
                             {photo.context.title}
@@ -245,7 +248,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
             }}
             onClick={(clickHandlerProps) => {
               console.log("clickHandlerProps", clickHandlerProps)
-              return props.onSelect?.(clickHandlerProps.index)
+              return props.onSelect?.(clickHandlerProps.photo.id.toString())
             }}
           />
         </SSR>

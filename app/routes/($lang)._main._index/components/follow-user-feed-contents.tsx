@@ -37,7 +37,7 @@ type Props = {
   setPage: (page: number) => void
   isPagination?: boolean
   onPaginationModeChange?: (v: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
@@ -250,7 +250,7 @@ function InfiniteMode(props: Props) {
 
   const [isTimelineView, setIsTimelineView] = useState(false)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [prevFlatLength, setPrevFlatLength] = useState<number>(0)
+  const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
   // ─── クエリ & 共通変数 ───────────────────────────────
   const QUERY = isTimelineView ? feedQuery : feedWorkListQuery
@@ -328,6 +328,17 @@ function InfiniteMode(props: Props) {
   // ─── 初回 / クエリ更新時のページ反映 ──────────────────
   const firstIdsRef = useRef<string>("")
 
+  const flatWorks = useMemo(
+    () =>
+      flat.map((p) => p.work).filter(Boolean) as FragmentOf<
+        typeof PhotoAlbumWorkFragment
+      >[],
+    [flat],
+  )
+
+  /* ─── ❷ updateWorks : 変化検知して一度に渡す ───────── */
+  const prevIdsRef = useRef<string>("")
+
   useEffect(() => {
     const posts = data?.feed?.posts as PostItem[] | undefined
     if (!posts?.length) return
@@ -349,26 +360,16 @@ function InfiniteMode(props: Props) {
 
   // updateWorksを正しいタイミングで呼ぶ
   useEffect(() => {
-    if (!props.updateWorks || isTimelineView || flat.length === 0) return
+    if (!props.updateWorks || isTimelineView || flatWorks.length === 0) return
 
-    // データの長さが変わった場合のみ更新
-    if (flat.length !== prevFlatLength) {
-      // const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
-      //   typeof PhotoAlbumWorkFragment
-      // >[]
+    // 先頭から順に ID を連結（順序の変化も検知）
+    const ids = flatWorks.map((w) => w.id).join(",")
 
-      // postsのworkフィールドからWorkItemを抽出
-      const posts = data?.feed?.posts as PostItem[] | undefined
-      const works = posts
-        ?.map((p) => p.work)
-        .filter((w): w is WorkItem => !!w) as unknown as FragmentOf<
-        typeof PhotoAlbumWorkFragment
-      >
-      // @ts-ignore
-      props.updateWorks(works)
-      setPrevFlatLength(flat.length)
+    if (ids !== prevIdsRef.current) {
+      props.updateWorks(flatWorks) // ← これで全件を親へ
+      prevIdsRef.current = ids
     }
-  }, [flat, props.updateWorks, isTimelineView, prevFlatLength, props.tab])
+  }, [flatWorks, props.updateWorks, isTimelineView])
 
   // ─── スクロール復元 ────────────────────────────────
   const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
@@ -482,7 +483,7 @@ type FeedContentProps = {
   t: ReturnType<typeof useTranslation>
   showControls?: boolean
   isPagination: boolean
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 function FeedContent({
@@ -586,11 +587,7 @@ function FeedContent({
                           <button
                             type="button"
                             className="block h-full w-full overflow-hidden rounded"
-                            onClick={() =>
-                              onSelect(
-                                posts.findIndex((p) => p.work?.id === work.id),
-                              )
-                            }
+                            onClick={() => onSelect(work.id)}
                           >
                             <img
                               src={work.largeThumbnailImageURL}

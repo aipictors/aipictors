@@ -11,7 +11,7 @@ import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/
 
 type Props = {
   works: FragmentOf<typeof HomeBannerWorkFragment>[]
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 /**
@@ -43,7 +43,7 @@ export function HomeBanners(props: Props) {
               <button
                 type="button"
                 className="block h-full w-full overflow-hidden rounded"
-                onClick={() => props.onSelect?.(i)}
+                onClick={() => props.onSelect?.(i.toString())}
               >
                 <img
                   src={src}

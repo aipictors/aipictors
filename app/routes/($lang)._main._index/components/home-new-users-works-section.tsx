@@ -11,7 +11,7 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof HomeNewUsersWorksFragment>[]
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }
 
 /**

@@ -25,14 +25,29 @@ import { Link } from "@remix-run/react"
 interface Props {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   /** 表示を開始したい作品 ID（優先） */
-  startWorkId?: number
+  startWorkId?: string
   /** ID が無い場合に使うフォールバック index */
-  startIndex: number
+  startIndex?: number
   onClose: () => void
   /** TagWorkSection から渡される追加ロード関数 */
   loadMore?: () => void
   hasNextPage?: boolean
   isLoadingMore?: boolean
+}
+
+/** 要素を親要素の縦方向中央にスクロールして合わせる */
+export function scrollItemIntoVerticalCenter(
+  container: HTMLElement,
+  item: HTMLElement,
+  smooth = true,
+) {
+  const containerMiddle = container.clientHeight / 2
+  const itemMiddle = item.offsetTop + item.clientHeight / 2
+  const newTop = itemMiddle - containerMiddle
+  container.scrollTo({
+    top: newTop,
+    behavior: smooth ? "smooth" : "auto",
+  })
 }
 
 // ───────────────── Component ─────────────────
@@ -48,10 +63,10 @@ export function WorkViewerDialog({
   // ────────── State / Refs ──────────
   const initialIndex = useMemo(() => {
     if (startWorkId) {
-      const idx = works.findIndex((w) => w.id === startWorkId.toString())
+      const idx = works.findIndex((w) => w.id === startWorkId)
       if (idx !== -1) return idx
     }
-    return startIndex
+    return startIndex ?? 0
   }, [startWorkId, startIndex, works])
 
   const [index, setIndex] = useState(initialIndex)
@@ -63,6 +78,7 @@ export function WorkViewerDialog({
   // デバウンス用の状態
   const [activeWorkId, setActiveWorkId] = useState<string | null>(null)
   const [isDebouncing, setIsDebouncing] = useState(false)
+  const isFirstScrollDone = useRef(false)
 
   const thumbListRef = useRef<HTMLDivElement | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
@@ -89,6 +105,26 @@ export function WorkViewerDialog({
       debounceTimerRef.current = null
     }, 500) // 500ms のデバウンス
   }, [])
+
+  useEffect(() => {
+    setTimeout(() => {
+      const listEl = thumbListRef.current
+      if (!listEl) return
+
+      const target = listEl.children[index] as HTMLElement | undefined
+      if (!target) return
+
+      // 初回だけは一瞬で位置合わせ・以後は smooth
+      scrollItemIntoVerticalCenter(
+        listEl,
+        target,
+        /* smooth = */ isFirstScrollDone.current,
+      )
+
+      // 1 回実行したらフラグを立てて smooth に切り替え
+      if (!isFirstScrollDone.current) isFirstScrollDone.current = true
+    }, 100)
+  }, [index, works.length, startWorkId, startIndex, initialIndex])
 
   // ────────── インデックス変更時の処理 ──────────
   useEffect(() => {

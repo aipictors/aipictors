@@ -15,7 +15,7 @@ type Props = {
   style?: IntrospectionEnum<"ImageStyle">
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 

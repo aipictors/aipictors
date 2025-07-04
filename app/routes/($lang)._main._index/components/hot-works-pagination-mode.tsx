@@ -21,7 +21,7 @@ interface Props {
   style?: ImageStyle
   page?: number
   setPage?: (p: number) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 

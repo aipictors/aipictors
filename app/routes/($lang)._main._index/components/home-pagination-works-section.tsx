@@ -69,7 +69,7 @@ type Props = {
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
   timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 

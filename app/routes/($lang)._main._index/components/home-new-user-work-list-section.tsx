@@ -23,7 +23,7 @@ type Props = {
   isPromptPublic: boolean | null
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
   style?: IntrospectionEnum<"ImageStyle">
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 

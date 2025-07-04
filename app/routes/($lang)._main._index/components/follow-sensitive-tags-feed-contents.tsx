@@ -153,7 +153,7 @@ export type FollowTagsFeedContentsProps = {
   page: number
   setPage: (p: number) => void
   isPagination: boolean
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
@@ -255,7 +255,7 @@ function PaginationMode({
   setPage: (n: number) => void
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }) {
   const auth = useContext(AuthContext)
@@ -341,13 +341,13 @@ function InfiniteMode({
 }: {
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }) {
   const client = useApolloClient()
   const auth = useContext(AuthContext)
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
-  const [prevFlatLength, _setPrevFlatLength] = useState<number>(0)
+  const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
   const feedWhere = useMemo(
     () => ({ userId: auth.userId ?? "-1", type: "FOLLOW_TAG" as const }),
@@ -395,9 +395,18 @@ function InfiniteMode({
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
     usePagedInfinite<PostItem>(initialPages, storeKey)
 
-  const prevIdsRef = useRef<string>("") // 初期値は空文字で十分
-
   const prevFirstIdsRef = useRef<string>("")
+
+  const flatWorks = useMemo(
+    () =>
+      flat.map((p) => p.work).filter(Boolean) as FragmentOf<
+        typeof PhotoAlbumWorkFragment
+      >[],
+    [flat],
+  )
+
+  /* ─── ❷ updateWorks : 変化検知して一度に渡す ───────── */
+  const prevIdsRef = useRef<string>("")
 
   useEffect(() => {
     const posts = data?.feed?.posts
@@ -425,29 +434,16 @@ function InfiniteMode({
 
   // updateWorksを正しいタイミングで呼ぶ
   useEffect(() => {
-    if (!updateWorks || isTimelineView || flat.length === 0) return
+    if (!updateWorks || isTimelineView || flatWorks.length === 0) return
 
-    // データの長さが変わった場合のみ更新
-    const ids = flat.map((p) => p.work?.id ?? p.id).join(",")
-    const prevIds = prevIdsRef.current
+    // 先頭から順に ID を連結（順序の変化も検知）
+    const ids = flatWorks.map((w) => w.id).join(",")
 
-    if (ids !== prevIds) {
-      // const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
-      //   typeof PhotoAlbumWorkFragment
-      // >[]
-
-      // postsのworkフィールドからWorkItemを抽出
-      const posts = data?.feed?.posts as PostItem[] | undefined
-      const works = posts
-        ?.map((p) => p.work)
-        .filter((w): w is WorkItem => !!w) as unknown as FragmentOf<
-        typeof PhotoAlbumWorkFragment
-      >
-      // @ts-ignore
-      updateWorks(works)
+    if (ids !== prevIdsRef.current) {
+      updateWorks(flatWorks) // ← これで全件を親へ
       prevIdsRef.current = ids
     }
-  }, [flat, updateWorks, isTimelineView, prevFlatLength])
+  }, [flatWorks, updateWorks, isTimelineView])
 
   const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
   useScrollRestoration("follow-tag-infinite", ready)
@@ -513,7 +509,7 @@ function FeedContent({
   posts: PostItem[]
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }) {
   const t = useTranslation()
   const [hiddenComments, setHiddenComments] = useState<Record<string, boolean>>(
@@ -568,7 +564,7 @@ function TimelineView({
   subWorksVisible: Record<string, boolean>
   toggleCommentsVisibility: (id: string) => void
   toggleSubWorksVisibility: (id: string) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   index: number
 }) {
   return (
@@ -610,7 +606,7 @@ function TimelineView({
                       <button
                         type="button"
                         className="block h-full w-full overflow-hidden rounded"
-                        onClick={() => onSelect?.(index)}
+                        onClick={() => onSelect?.(work.id)}
                       >
                         <Link to={`/posts/${work.id}`}>
                           <img
@@ -731,7 +727,7 @@ function GridView({
   onSelect,
 }: {
   works: NonNullable<PostItem["work"]>[]
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
 }) {
   return (
     <div className="m-auto w-full space-y-4">

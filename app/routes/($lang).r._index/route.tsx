@@ -168,7 +168,7 @@ export default function Index() {
   const [isDialogMode, setIsDialogMode] = useState(false)
 
   // ダイアログ制御
-  const [dialogIndex, setDialogIndex] = useState<number | null>(null)
+  const [dialogIndex, setDialogIndex] = useState<string | null>(null)
 
   // 作品データの管理用state
   const [currentWorks, setCurrentWorks] = useState<
@@ -192,21 +192,13 @@ export default function Index() {
   const [hasNextPage, _setHasNextPage] = useState(true)
 
   // 作品クリック時の処理
-  const openWork = (idx: number) => {
-    console.log("openWork called with idx:", idx)
-    console.log("displayedWorks length:", displayedWorks.length)
-    console.log("isDialogMode:", isDialogMode)
-
-    if (idx < 0 || idx >= displayedWorks.length) {
-      console.warn(
-        "Invalid index or no works available:",
-        idx,
-        displayedWorks.length,
-      )
+  const openWork = (idx: string) => {
+    // displayedWorksのworkのid一致するもの
+    const work = displayedWorks.find((w) => w.id === idx)
+    if (!work) {
+      console.error("Work not found for ID:", idx)
       return
     }
-    const work = displayedWorks[idx]
-
     if (isDialogMode) {
       console.log("Setting dialogIndex to:", idx)
       setDialogIndex(idx)
@@ -1013,9 +1005,8 @@ export default function Index() {
       {dialogIndex !== null && (
         <WorkViewerDialog
           works={displayedWorks}
-          startIndex={dialogIndex}
+          startWorkId={dialogIndex}
           onClose={() => {
-            console.log("Closing dialog, setting dialogIndex to null")
             setDialogIndex(null)
           }}
           loadMore={!internalIsPagination ? loadMore : undefined}

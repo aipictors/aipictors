@@ -17,7 +17,7 @@ interface Props {
   setPage?: (p: number) => void
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
-  onSelect?: (index: number) => void
+  onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
