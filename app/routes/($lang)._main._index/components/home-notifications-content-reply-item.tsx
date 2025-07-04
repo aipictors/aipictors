@@ -8,6 +8,7 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 type Props = {
   notification: FragmentOf<typeof WorkCommentReplyNotificationFragment>
   stickerSize?: "xl" | "lg" | "md" | "sm" | "xs"
+  onClick?: () => void
 }
 
 const stickerSizeClasses = {
@@ -31,6 +32,7 @@ export function HomeNotificationsContentReplyItem(props: Props) {
       <Link
         to={`/posts/${props.notification.work?.id}`}
         className="flex items-center border-b transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900"
+        onClick={props.onClick}
       >
         <Link to={`/users/${props.notification.user?.id}`}>
           <Avatar className="size-8">

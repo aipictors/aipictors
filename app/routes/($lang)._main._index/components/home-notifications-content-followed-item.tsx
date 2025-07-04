@@ -1,35 +1,42 @@
 import { Link } from "@remix-run/react"
 import { ArrowLeftRightIcon } from "lucide-react"
-import { type FragmentOf, graphql } from "gql.tada"
+import { graphql, type FragmentOf } from "gql.tada"
 import { toDateEnText } from "~/utils/to-date-en-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 
-type Props = {
+// ---------- 型 ----------
+
+type FollowProps = {
   notification: FragmentOf<typeof FollowNotificationFragment>
+  /**
+   * クリックされたら呼ばれる。上位の DropdownMenu を閉じるときに使用
+   */
+  onClick?: () => void
 }
 
 /**
  * ヘッダーのフォロー通知内容
  */
-export function HomeNotificationsContentFollowedItem(props: Props) {
+export function HomeNotificationsContentFollowedItem({
+  notification,
+  onClick,
+}: FollowProps) {
   const t = useTranslation()
-
-  if (props.notification.user === null) {
-    return null
-  }
+  if (notification.user === null) return null
 
   return (
     <Link
       className="flex items-center p-1 transition-all"
-      to={`/users/${props.notification.user.id}`}
+      to={`/users/${notification.user.id}`}
+      onClick={onClick}
     >
       <Avatar className="size-8">
         <AvatarImage
           className="size-8 rounded-full object-cover"
-          src={withIconUrlFallback(props.notification.user.iconUrl)}
+          src={withIconUrlFallback(notification.user.iconUrl)}
           alt="thumbnail"
         />
         <AvatarFallback />
@@ -37,18 +44,18 @@ export function HomeNotificationsContentFollowedItem(props: Props) {
       <div className="ml-2 w-full overflow-hidden">
         <p className="text-ellipsis">
           {t(
-            `${props.notification.user.name}さんにフォローされました！`,
-            `${props.notification.user.name} followed you!`,
+            `${notification.user.name}さんにフォローされました！`,
+            `${notification.user.name} followed you!`,
           )}
         </p>
         <p className="text-sm opacity-80">
           {t(
-            toDateTimeText(props.notification.createdAt),
-            toDateEnText(props.notification.createdAt),
+            toDateTimeText(notification.createdAt),
+            toDateEnText(notification.createdAt),
           )}
         </p>
       </div>
-      {props.notification.user.isFollowee && (
+      {notification.user.isFollowee && (
         <ArrowLeftRightIcon className="size-6 text-zinc-500" />
       )}
     </Link>

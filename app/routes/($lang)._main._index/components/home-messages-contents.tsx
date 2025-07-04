@@ -9,16 +9,19 @@ import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 
+type Props = { onClick?: () => void }
+
 /**
  * ヘッダーのメッセージ一覧内容
  */
-export function HomeMessagesContents() {
+export function HomeMessagesContents({ onClick }: Props) {
   const authContext = useContext(AuthContext)
 
   if (authContext.userId === null) {
     return null
   }
 
+  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   const { data: supportMessages, refetch } = useSuspenseQuery(MessagesQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
@@ -29,6 +32,7 @@ export function HomeMessagesContents() {
 
   const messages = supportMessages?.viewer?.supportMessages ?? []
 
+  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   const t = useTranslation()
 
   if (messages.length === 0) {
@@ -56,6 +60,7 @@ export function HomeMessagesContents() {
             to={"/support/chat"}
             key={message.id.toString()}
             className="flex items-center space-x-2"
+            onClick={onClick}
           >
             <Avatar>
               <AvatarImage

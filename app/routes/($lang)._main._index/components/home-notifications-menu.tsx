@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { HomeNotificationCommentsTabs } from "~/routes/($lang)._main._index/components/home-notifications-comments-tabs"
 import { HomeNotificationsContents } from "~/routes/($lang)._main._index/components/home-notifications-contents"
+import { HomeMessagesContents } from "~/routes/($lang)._main._index/components/home-messages-contents"
 import { Link } from "@remix-run/react"
 import {
   AwardIcon,
@@ -19,7 +20,6 @@ import {
   UserRoundCheck,
 } from "lucide-react"
 import { Suspense, useState } from "react"
-import { HomeMessagesContents } from "~/routes/($lang)._main._index/components/home-messages-contents"
 import type { CheckedNotificationTimesFragment } from "~/routes/($lang)._main._index/components/home-header"
 import { graphql, type FragmentOf } from "gql.tada"
 import { WorkAwardNotificationFragment } from "~/routes/($lang)._main._index/components/home-notifications-content-award-item"
@@ -33,6 +33,8 @@ import { WorkCommentNotificationFragment } from "~/routes/($lang)._main._index/c
 import { useQuery } from "@apollo/client/index"
 import { useTranslation } from "~/hooks/use-translation"
 
+// ---------- 型 ----------
+
 type Props = {
   isExistedNewNotification: boolean
   setIsExistedNewNotificationState: (isExistedNewNotification: boolean) => void
@@ -45,7 +47,7 @@ type Props = {
  * ヘッダーのお知らせメニュー
  */
 export function HomeNotificationsMenu(props: Props) {
-  // "MESSAGE"タブを追加
+  // "MESSAGE" タブを追加
   const tabValues: (IntrospectionEnum<"NotificationType"> | "MESSAGE")[] = [
     "LIKED_WORK",
     "WORK_COMMENT",
@@ -53,77 +55,46 @@ export function HomeNotificationsMenu(props: Props) {
     "FOLLOW",
     "MESSAGE",
   ]
-
   const defaultTab = tabValues[0]
 
+  // ▼ どのタブがアクティブか
   const [activeTab, setActiveTab] = useState<
     IntrospectionEnum<"NotificationType"> | "MESSAGE"
   >(defaultTab)
+
+  // ▼ ドロップダウンを制御モードに
+  const [open, setOpen] = useState(false)
 
   const handleTabClick = (value: string) => {
     setActiveTab(value as IntrospectionEnum<"NotificationType"> | "MESSAGE")
   }
 
-  // 各通知タイプごとにチェックされた通知時間を取得し、通知の新しさを判定する関数
-  const isNewNotification = (
-    notificationType: string,
-    createdAt: number,
-  ): boolean => {
+  // ---------- 新規判定ユーティリティ ----------
+  const isNewNotification = (notificationType: string, createdAt: number) => {
     const checkedTimeForType = props.checkedNotificationTimes.find(
-      (item) => item.type === notificationType,
+      (t) => t.type === notificationType,
     )?.checkedTime
 
     return createdAt > (checkedTimeForType ?? 0)
   }
 
+  // ---------- GraphQL: 最新 1 件を取得して新規判定 ----------
   const likeNotificationData = useQuery(viewerNotificationsQuery, {
-    variables: {
-      offset: 0,
-      limit: 1,
-      where: {
-        type: "LIKED_WORK",
-      },
-    },
+    variables: { offset: 0, limit: 1, where: { type: "LIKED_WORK" } },
   })
-
   const commentNotificationData = useQuery(viewerNotificationsQuery, {
-    variables: {
-      offset: 0,
-      limit: 1,
-      where: {
-        type: "WORK_COMMENT",
-      },
-    },
+    variables: { offset: 0, limit: 1, where: { type: "WORK_COMMENT" } },
   })
-
   const awardNotificationData = useQuery(viewerNotificationsQuery, {
-    variables: {
-      offset: 0,
-      limit: 1,
-      where: {
-        type: "WORK_AWARD",
-      },
-    },
+    variables: { offset: 0, limit: 1, where: { type: "WORK_AWARD" } },
   })
-
   const followNotificationData = useQuery(viewerNotificationsQuery, {
-    variables: {
-      offset: 0,
-      limit: 1,
-      where: {
-        type: "FOLLOW",
-      },
-    },
+    variables: { offset: 0, limit: 1, where: { type: "FOLLOW" } },
   })
-
   const messageNotificationData = useQuery(messagesQuery, {
-    variables: {
-      offset: 0,
-      limit: 1,
-    },
+    variables: { offset: 0, limit: 1 },
   })
 
-  // 安全にデータにアクセスする
   const likeNotification = likeNotificationData.data?.viewer
     ?.notifications?.[0] as
     | FragmentOf<typeof LikedWorkNotificationFragment>
@@ -143,7 +114,6 @@ export function HomeNotificationsMenu(props: Props) {
   const messageNotification =
     messageNotificationData.data?.viewer?.supportMessages?.[0]
 
-  // 各通知が新しいかどうかを判定する
   const isNewLikeNotification = likeNotification
     ? isNewNotification("liked", likeNotification.createdAt)
     : false
@@ -162,19 +132,18 @@ export function HomeNotificationsMenu(props: Props) {
 
   const t = useTranslation()
 
+  // ---------- JSX ----------
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          size={"icon"}
-          variant={"ghost"}
-          aria-label={"通知"}
+          size="icon"
+          variant="ghost"
+          aria-label="通知"
           className="relative"
           onClick={
             props.isExistedNewNotification
-              ? () => {
-                  props.setIsExistedNewNotificationState(false)
-                }
+              ? () => props.setIsExistedNewNotificationState(false)
               : undefined
           }
         >
@@ -184,87 +153,110 @@ export function HomeNotificationsMenu(props: Props) {
           )}
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent>
+        {/* ▼ ヘッダー部分（タブ） ▼ */}
         <div className="flex w-96 flex-col">
           <Tabs value={activeTab} onValueChange={handleTabClick}>
             <div className="border-b">
               <TabsList className="flex justify-center">
                 {tabValues.map((tabValue) => (
                   <TabsTrigger
-                    className="w-full"
                     key={tabValue}
                     value={tabValue}
+                    className="w-full"
                   >
                     {tabValue === "LIKED_WORK" && (
-                      <div className="relative">
-                        <HeartIcon className="w-4" />
-                        {isNewLikeNotification && (
-                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
-                        )}
-                      </div>
+                      <IconWithDot
+                        icon={<HeartIcon className="w-4" />}
+                        showDot={isNewLikeNotification}
+                      />
                     )}
                     {tabValue === "WORK_COMMENT" && (
-                      <div className="relative">
-                        <MessageCircle className="w-4" />
-                        {isNewCommentNotification && (
-                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
-                        )}
-                      </div>
+                      <IconWithDot
+                        icon={<MessageCircle className="w-4" />}
+                        showDot={isNewCommentNotification}
+                      />
                     )}
                     {tabValue === "WORK_AWARD" && (
-                      <div className="relative">
-                        <AwardIcon className="w-4" />
-                        {isNewAwardNotification && (
-                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
-                        )}
-                      </div>
+                      <IconWithDot
+                        icon={<AwardIcon className="w-4" />}
+                        showDot={isNewAwardNotification}
+                      />
                     )}
                     {tabValue === "FOLLOW" && (
-                      <div className="relative">
-                        <UserRoundCheck className="w-4" />
-                        {isNewFollowNotification && (
-                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
-                        )}
-                      </div>
+                      <IconWithDot
+                        icon={<UserRoundCheck className="w-4" />}
+                        showDot={isNewFollowNotification}
+                      />
                     )}
                     {tabValue === "MESSAGE" && (
-                      <div className="relative">
-                        <MailIcon className="w-4" />
-                        {isNewMessageNotification && (
-                          <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
-                        )}
-                      </div>
+                      <IconWithDot
+                        icon={<MailIcon className="w-4" />}
+                        showDot={isNewMessageNotification}
+                      />
                     )}
                   </TabsTrigger>
                 ))}
               </TabsList>
             </div>
           </Tabs>
+
+          {/* ▼ コンテンツ ▼ */}
           <div className="relative m-0 h-64 md:h-96">
             <Suspense
               fallback={
-                <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 transform">
+                <div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2">
                   <AppLoadingPage />
                 </div>
               }
             >
               {activeTab !== "WORK_COMMENT" && activeTab !== "MESSAGE" && (
-                <HomeNotificationsContents type={activeTab} />
+                <HomeNotificationsContents
+                  type={activeTab as IntrospectionEnum<"NotificationType">}
+                  onItemSelect={() => setOpen(false)}
+                />
               )}
-              {activeTab === "WORK_COMMENT" && <HomeNotificationCommentsTabs />}
-              {activeTab === "MESSAGE" && <HomeMessagesContents />}
+              {activeTab === "WORK_COMMENT" && (
+                <HomeNotificationCommentsTabs onClick={() => setOpen(false)} />
+              )}
+              {activeTab === "MESSAGE" && (
+                <HomeMessagesContents onClick={() => setOpen(false)} />
+              )}
             </Suspense>
           </div>
         </div>
-        {/* フッター部分 */}
+
+        {/* ▼ フッター ▼ */}
         <div className="border-t pt-2 pb-2 pl-4">
-          <Link to="/notifications">{t("通知履歴", "History")}</Link>
+          <Link to="/notifications" onClick={() => setOpen(false)}>
+            {t("通知履歴", "History")}
+          </Link>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
 
+// ▼ 通知ドット付きアイコンを共通化
+function IconWithDot({
+  icon,
+  showDot,
+}: {
+  icon: React.ReactNode
+  showDot: boolean
+}) {
+  return (
+    <div className="relative">
+      {icon}
+      {showDot && (
+        <div className="absolute top-0 right-0 size-2 rounded-full bg-red-500" />
+      )}
+    </div>
+  )
+}
+
+// ---------- GraphQL ----------
 const viewerNotificationsQuery = graphql(
   `query ViewerNotifications($offset: Int!, $limit: Int!, $where: NotificationsWhereInput) {
     viewer {
@@ -292,7 +284,6 @@ const viewerNotificationsQuery = graphql(
     WorkCommentNotificationFragment,
   ],
 )
-
 const messagesQuery = graphql(
   `query ViewerSupportMessages($offset: Int!, $limit: Int!) {
     viewer {

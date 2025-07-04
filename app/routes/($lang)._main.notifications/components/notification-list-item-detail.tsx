@@ -22,6 +22,7 @@ import { ReplyIcon } from "lucide-react"
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
   stickerSize?: "xl" | "lg" | "md" | "sm" | "xs"
+  onClick?: () => void
 }
 
 const stickerSizeClasses = {
@@ -54,7 +55,10 @@ export function NotificationListItemDetail(props: Props) {
           <TableRow className="bg-white dark:bg-zinc-800">
             {/* 左列: サムネイル */}
             <TableCell className="w-1/4 p-4 md:w-1/5">
-              <Link to={`/posts/${props.notification.work?.id}`}>
+              <Link
+                to={`/posts/${props.notification.work?.id}`}
+                onClick={props.onClick}
+              >
                 <img
                   src={props.notification.work?.smallThumbnailImageURL}
                   alt="thumbnail"
@@ -68,6 +72,7 @@ export function NotificationListItemDetail(props: Props) {
               <Link
                 to={`/posts/${props.notification.work?.id}`}
                 className="block rounded-md p-2 transition-colors "
+                onClick={props.onClick}
               >
                 <div className="flex items-center space-x-2">
                   <img

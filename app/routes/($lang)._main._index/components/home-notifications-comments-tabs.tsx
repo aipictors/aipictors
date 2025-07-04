@@ -5,10 +5,12 @@ import { HomeNotificationCommentsContents } from "~/routes/($lang)._main._index/
 import { useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
+type Props = { onClick?: () => void }
+
 /**
  * ヘッダーのお知らせメニューのコメントタブ
  */
-export function HomeNotificationCommentsTabs() {
+export function HomeNotificationCommentsTabs({ onClick }: Props) {
   const tabValues: IntrospectionEnum<"NotificationType">[] = [
     "WORK_COMMENT",
     "COMMENT_REPLY",
@@ -47,7 +49,7 @@ export function HomeNotificationCommentsTabs() {
             </TabsList>
           </div>
         </Tabs>
-        <HomeNotificationCommentsContents type={activeTab} />
+        <HomeNotificationCommentsContents type={activeTab} onClick={onClick} />
       </ScrollArea>
     </>
   )

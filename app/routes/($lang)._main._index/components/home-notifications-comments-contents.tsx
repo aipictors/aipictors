@@ -12,6 +12,7 @@ import { graphql } from "gql.tada"
 
 type Props = {
   type: IntrospectionEnum<"NotificationType">
+  onClick?: () => void
 }
 
 /**
@@ -42,6 +43,7 @@ export function HomeNotificationCommentsContents(props: Props) {
             <HomeNotificationsContentCommentedItem
               key={notification.id}
               notification={notification}
+              onClick={props.onClick}
             />
           )
         }
@@ -53,6 +55,7 @@ export function HomeNotificationCommentsContents(props: Props) {
             <HomeNotificationsContentReplyItem
               key={notification.id}
               notification={notification}
+              onClick={props.onClick}
             />
           )
         }

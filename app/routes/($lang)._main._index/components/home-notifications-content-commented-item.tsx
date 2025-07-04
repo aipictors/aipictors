@@ -11,6 +11,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 type Props = {
   notification: FragmentOf<typeof WorkCommentNotificationFragment>
   stickerSize?: "xl" | "lg" | "md" | "sm" | "xs"
+  onClick?: () => void
 }
 
 const stickerSizeClasses = {
@@ -41,56 +42,55 @@ export function HomeNotificationsContentCommentedItem(props: Props) {
       <Link
         to={`/posts/${props.notification.work?.id}`}
         className="flex items-center rounded-md p-2 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-900"
+        onClick={props.onClick}
       >
-        <>
-          <img
-            src={withIconUrlFallback(props.notification.user?.iconUrl)}
-            alt="thumbnail"
-            className="size-8 rounded-full object-cover"
-          />
-          <div className="ml-2 flex w-full flex-col space-y-2 overflow-hidden">
-            <p className="text-ellipsis">
+        <img
+          src={withIconUrlFallback(props.notification.user?.iconUrl)}
+          alt="thumbnail"
+          className="size-8 rounded-full object-cover"
+        />
+        <div className="ml-2 flex w-full flex-col space-y-2 overflow-hidden">
+          <p className="text-ellipsis">
+            {t(
+              `${props.notification.user?.name}さんがコメントしました`,
+              `${props.notification.user?.name} commented`,
+            )}
+            {props.notification.message && (
+              <>
+                {t("「", " '")}
+                {props.notification.message}
+                {t("」", " '")}
+              </>
+            )}
+          </p>
+          {props.notification.sticker?.imageUrl && (
+            <img
+              src={props.notification.sticker.imageUrl}
+              alt="sticker"
+              className={cn(stickerClass, "object-cover")}
+            />
+          )}
+          <div className="flex items-center space-x-2">
+            <p className="text-sm opacity-80">
               {t(
-                `${props.notification.user?.name}さんがコメントしました`,
-                `${props.notification.user?.name} commented`,
-              )}
-              {props.notification.message && (
-                <>
-                  {t("「", " '")}
-                  {props.notification.message}
-                  {t("」", " '")}
-                </>
+                toDateTimeText(props.notification.createdAt),
+                toDateEnText(props.notification.createdAt),
               )}
             </p>
-            {props.notification.sticker?.imageUrl && (
-              <img
-                src={props.notification.sticker.imageUrl}
-                alt="sticker"
-                className={cn(stickerClass, "object-cover")}
-              />
+            {isReplied ? (
+              <Badge variant="secondary">{t("返信済み", "Replied")}</Badge>
+            ) : (
+              <Badge variant="default">{t("未返信", "Not replied")}</Badge>
             )}
-            <div className="flex items-center space-x-2">
-              <p className="text-sm opacity-80">
-                {t(
-                  toDateTimeText(props.notification.createdAt),
-                  toDateEnText(props.notification.createdAt),
-                )}
-              </p>
-              {isReplied ? (
-                <Badge variant="secondary">{t("返信済み", "Replied")}</Badge>
-              ) : (
-                <Badge variant="default">{t("未返信", "Not replied")}</Badge>
-              )}
-            </div>
           </div>
-          <div className="size-12 overflow-hidden rounded-md">
-            <img
-              src={props.notification.work?.smallThumbnailImageURL}
-              alt="thumbnail"
-              className="size-16 object-cover"
-            />
-          </div>
-        </>
+        </div>
+        <div className="size-12 overflow-hidden rounded-md">
+          <img
+            src={props.notification.work?.smallThumbnailImageURL}
+            alt="thumbnail"
+            className="size-16 object-cover"
+          />
+        </div>
       </Link>
       {reply && (
         <div className="ml-12 flex items-center space-x-2">
