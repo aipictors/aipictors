@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
 import { AuthContext } from "~/contexts/auth-context"
 import {
   WorkComment,
@@ -37,6 +38,7 @@ type Comment = {
   createdAt: number
   isLiked: boolean
   isMuted: boolean
+  isSensitive?: boolean
   likesCount: number
   isWorkOwnerLiked: boolean
   user: {
@@ -59,6 +61,7 @@ type ReplyComment = {
   createdAt: number
   isLiked: boolean
   isMuted: boolean
+  isSensitive?: boolean
   likesCount: number
   isWorkOwnerLiked: boolean
   user: {
@@ -105,6 +108,8 @@ export function WorkCommentList(props: Props) {
   )
 
   const [comment, setComment] = useState("")
+
+  const [isSensitive, setIsSensitive] = useState(false)
 
   const [newComments, setNewComments] = useState<Comment[]>([])
 
@@ -160,11 +165,14 @@ export function WorkCommentList(props: Props) {
               workId: targetWorkId,
               text: text,
               stickerId: stickerId,
+              // TODO: Add isSensitive to GraphQL schema
+              // isSensitive: isSensitive ?? false,
             },
           },
         })
 
         setComment("")
+        setIsSensitive(false)
 
         setNewComments([
           {
@@ -185,6 +193,7 @@ export function WorkCommentList(props: Props) {
               },
             },
             isMuted: false,
+            isSensitive: isSensitive,
             ...newComments,
           },
         ])
@@ -313,342 +322,276 @@ export function WorkCommentList(props: Props) {
           </div>
         )}
 
-        <div className="flex w-full items-center space-x-4">
-          <Avatar>
-            <AvatarImage src={withIconUrlFallback(userIcon)} alt="" />
-            <AvatarFallback />
-          </Avatar>
-          <AutoResizeTextarea
-            onChange={(event) => {
-              setComment(event.target.value)
-            }}
-            value={comment}
-            placeholder={t("コメントする", "Add a comment")}
-            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-          />
-          <Button
-            disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-            variant={"secondary"}
-            size={"icon"}
-            onClick={onOpen}
-          >
-            <StampIcon className="w-16" />
-          </Button>
-          {isCreatingWorkComment ? (
-            <Button onClick={() => {}}>
-              <Loader2Icon className={"w-16 animate-spin"} />
-            </Button>
-          ) : (
+        <div className="space-y-2">
+          <div className="flex w-full items-center space-x-4">
+            <Avatar>
+              <AvatarImage src={withIconUrlFallback(userIcon)} alt="" />
+              <AvatarFallback />
+            </Avatar>
+            <AutoResizeTextarea
+              onChange={(event) => {
+                setComment(event.target.value)
+              }}
+              value={comment}
+              placeholder={t("コメントする", "Add a comment")}
+              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+            />
             <Button
               disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
               variant={"secondary"}
-              onClick={onWorkComment}
+              size={"icon"}
+              onClick={onOpen}
             >
-              {t("送信", "Send")}
+              <StampIcon className="w-16" />
             </Button>
-          )}
-        </div>
-        <div className="space-y-4 overflow-y-auto">
-          {showNewComments && (
-            <div className="space-y-4">
-              {showNewComments.map((comment) => (
-                <div key={`${props.workId}-${comment.id}`}>
-                  <WorkComment
-                    userId={comment.user?.id ?? ""}
-                    isMine={comment.user?.id === appContext.userId}
-                    createdAt={comment.createdAt}
-                    stickerImageURL={comment.sticker?.image?.downloadURL}
-                    text={comment.text}
-                    workOwnerIconImageURL={withIconUrlFallback(
-                      props.workOwnerIconImageURL,
-                    )}
-                    userIconImageURL={withIconUrlFallback(
-                      comment.user?.iconUrl,
-                    )}
-                    userName={comment.user?.name}
-                    commentId={comment.id}
-                    isLiked={
-                      comment.isLiked &&
-                      !canceledCommentIds.includes(comment.id)
-                    }
-                    isMuted={comment.isLiked}
-                    isNowLiked={likedCommentIds.includes(comment.id)}
-                    likesCount={
-                      comment.likesCount -
-                      (canceledCommentIds.includes(comment.id) ? 1 : 0)
-                    }
-                    isWorkOwnerLiked={comment.isWorkOwnerLiked}
-                    isLoadingCommentLike={
-                      isCreatingCommentLike || isDeletingCommentLike
-                    }
-                    onCreateCommentLike={() => onCreateCommentLike(comment.id)}
-                    onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
-                    onDeleteComment={() => onDeleteComment(comment.id)}
-                    isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-                    onReplyCompleted={(
-                      id: string,
-                      text: string,
-                      _stickerId: string,
-                      stickerImageURL: string,
-                    ) => {
-                      setNewComments([
-                        {
-                          id: id,
-                          text: text,
-                          createdAt: getJSTDate().getTime() / 1000,
-                          likesCount: 0,
-                          isWorkOwnerLiked: false,
-                          isLiked: false,
-                          user: {
-                            id: appContext.userId ?? "",
-                            name: appContext.displayName ?? "",
-                            iconUrl: withIconUrlFallback(userIcon),
-                          },
-                          sticker: {
-                            image: {
-                              downloadURL: stickerImageURL,
-                            },
-                          },
-                          isMuted: false,
-                          ...newComments,
-                        },
-                      ])
-                    }}
-                  />
-                </div>
-              ))}
+            {isCreatingWorkComment ? (
+              <Button onClick={() => {}}>
+                <Loader2Icon className={"w-16 animate-spin"} />
+              </Button>
+            ) : (
+              <Button
+                disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+                variant={"secondary"}
+                onClick={onWorkComment}
+              >
+                {t("送信", "Send")}
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center space-x-2 pl-14 opacity-30">
+            {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
+            <Checkbox
+              id="sensitive-checkbox"
+              checked={isSensitive}
+              onCheckedChange={(checked: boolean) =>
+                setIsSensitive(checked === true)
+              }
+              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+            />
+            <div className="flex items-center space-x-2">
+              <label htmlFor="sensitive-checkbox" className="text-xs">
+                {t("センシティブなコメントとして送信する", "Sensitive comment")}
+              </label>
             </div>
-          )}
-          {showCommentsBeforeMore.map((comment) => (
-            <div key={comment.id} className="space-y-4">
-              <WorkComment
-                userId={comment.user?.id ?? ""}
-                isMine={comment.user?.id === appContext.userId}
-                createdAt={comment.createdAt}
-                stickerImageURL={comment.sticker?.imageUrl ?? ""}
-                stickerTitle={comment.sticker?.title}
-                stickerId={comment.sticker?.id}
-                stickerAccessType={comment.sticker?.accessType}
-                isStickerDownloadable={comment.sticker?.isDownloaded}
-                text={comment.text}
-                userName={comment.user?.name}
-                commentId={comment.id}
-                isLiked={
-                  comment.isLiked && !canceledCommentIds.includes(comment.id)
-                }
-                isMuted={Boolean(comment.isMuted)}
-                isNowLiked={likedCommentIds.includes(comment.id)}
-                likesCount={
-                  comment.likesCount -
-                  (canceledCommentIds.includes(comment.id) ? 1 : 0)
-                }
-                isWorkOwnerLiked={comment.isWorkOwnerLiked}
-                onCreateCommentLike={() => onCreateCommentLike(comment.id)}
-                onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
-                isDisabledCommentLike={!appContext.isLoggedIn}
-                isLoadingCommentLike={
-                  isCreatingCommentLike || isDeletingCommentLike
-                }
-                workOwnerIconImageURL={withIconUrlFallback(
-                  props.workOwnerIconImageURL,
-                )}
-                userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
-                onDeleteComment={() => onDeleteComment(comment.id)}
-                isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-                onReplyCompleted={(
-                  id: string,
-                  text: string,
-                  _stickerId: string,
-                  stickerImageURL: string,
-                ) => {
-                  setNewReplyComments([
-                    ...newReplyComments,
-                    {
-                      replyTargetId: comment.id,
-                      id: id,
-                      text: text,
-                      createdAt: Date.now(),
-                      likesCount: 0,
-                      isWorkOwnerLiked: false,
-                      isLiked: false,
-                      isMuted: false,
-                      user: {
-                        id: appContext.userId ?? "",
-                        name: appContext.displayName ?? "",
-                        iconUrl: withIconUrlFallback(userIcon),
-                      },
-                      sticker: {
-                        image: {
-                          downloadURL: stickerImageURL,
+          </div>
+        </div>
+      </div>
+      <div className="space-y-4 overflow-y-auto">
+        {showNewComments && (
+          <div className="space-y-4">
+            {showNewComments.map((comment) => (
+              <div key={`${props.workId}-${comment.id}`}>
+                <WorkComment
+                  userId={comment.user?.id ?? ""}
+                  isMine={comment.user?.id === appContext.userId}
+                  createdAt={comment.createdAt}
+                  stickerImageURL={comment.sticker?.image?.downloadURL}
+                  text={comment.text}
+                  workOwnerIconImageURL={withIconUrlFallback(
+                    props.workOwnerIconImageURL,
+                  )}
+                  userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
+                  userName={comment.user?.name}
+                  commentId={comment.id}
+                  isLiked={
+                    comment.isLiked && !canceledCommentIds.includes(comment.id)
+                  }
+                  isMuted={comment.isLiked}
+                  isSensitive={comment.isSensitive}
+                  isNowLiked={likedCommentIds.includes(comment.id)}
+                  likesCount={
+                    comment.likesCount -
+                    (canceledCommentIds.includes(comment.id) ? 1 : 0)
+                  }
+                  isWorkOwnerLiked={comment.isWorkOwnerLiked}
+                  isLoadingCommentLike={
+                    isCreatingCommentLike || isDeletingCommentLike
+                  }
+                  onCreateCommentLike={() => onCreateCommentLike(comment.id)}
+                  onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
+                  onDeleteComment={() => onDeleteComment(comment.id)}
+                  isWorkOwnerBlocked={props.isWorkOwnerBlocked}
+                  onReplyCompleted={(
+                    id: string,
+                    text: string,
+                    _stickerId: string,
+                    stickerImageURL: string,
+                  ) => {
+                    setNewComments([
+                      {
+                        id: id,
+                        text: text,
+                        createdAt: getJSTDate().getTime() / 1000,
+                        likesCount: 0,
+                        isWorkOwnerLiked: false,
+                        isLiked: false,
+                        user: {
+                          id: appContext.userId ?? "",
+                          name: appContext.displayName ?? "",
+                          iconUrl: withIconUrlFallback(userIcon),
                         },
+                        sticker: {
+                          image: {
+                            downloadURL: stickerImageURL,
+                          },
+                        },
+                        isMuted: false,
+                        ...newComments,
+                      },
+                    ])
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        {showCommentsBeforeMore.map((comment) => (
+          <div key={comment.id} className="space-y-4">
+            <WorkComment
+              userId={comment.user?.id ?? ""}
+              isMine={comment.user?.id === appContext.userId}
+              createdAt={comment.createdAt}
+              stickerImageURL={comment.sticker?.imageUrl ?? ""}
+              stickerTitle={comment.sticker?.title}
+              stickerId={comment.sticker?.id}
+              stickerAccessType={comment.sticker?.accessType}
+              isStickerDownloadable={comment.sticker?.isDownloaded}
+              text={comment.text}
+              userName={comment.user?.name}
+              commentId={comment.id}
+              isLiked={
+                comment.isLiked && !canceledCommentIds.includes(comment.id)
+              }
+              isMuted={Boolean(comment.isMuted)}
+              isSensitive={Boolean(comment.isSensitive)}
+              isNowLiked={likedCommentIds.includes(comment.id)}
+              likesCount={
+                comment.likesCount -
+                (canceledCommentIds.includes(comment.id) ? 1 : 0)
+              }
+              isWorkOwnerLiked={comment.isWorkOwnerLiked}
+              onCreateCommentLike={() => onCreateCommentLike(comment.id)}
+              onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
+              isDisabledCommentLike={!appContext.isLoggedIn}
+              isLoadingCommentLike={
+                isCreatingCommentLike || isDeletingCommentLike
+              }
+              workOwnerIconImageURL={withIconUrlFallback(
+                props.workOwnerIconImageURL,
+              )}
+              userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
+              onDeleteComment={() => onDeleteComment(comment.id)}
+              isWorkOwnerBlocked={props.isWorkOwnerBlocked}
+              onReplyCompleted={(
+                id: string,
+                text: string,
+                _stickerId: string,
+                stickerImageURL: string,
+              ) => {
+                setNewReplyComments([
+                  ...newReplyComments,
+                  {
+                    replyTargetId: comment.id,
+                    id: id,
+                    text: text,
+                    createdAt: Date.now(),
+                    likesCount: 0,
+                    isWorkOwnerLiked: false,
+                    isLiked: false,
+                    isMuted: false,
+                    isSensitive: false, // TODO: Get this value from ReplyCommentInput
+                    user: {
+                      id: appContext.userId ?? "",
+                      name: appContext.displayName ?? "",
+                      iconUrl: withIconUrlFallback(userIcon),
+                    },
+                    sticker: {
+                      image: {
+                        downloadURL: stickerImageURL,
                       },
                     },
-                  ])
-                }}
-              />
-              {/* 新しく追加した返信への返信 */}
-              {showNewReplyComments?.map((newReply) =>
-                newReply.replyTargetId !== comment.id ? null : (
+                  },
+                ])
+              }}
+            />
+            {/* 新しく追加した返信への返信 */}
+            {showNewReplyComments?.map((newReply) =>
+              newReply.replyTargetId !== comment.id ? null : (
+                <WorkCommentResponse
+                  key={newReply.id}
+                  userId={newReply.user?.id ?? ""}
+                  isMine={newReply.user?.id === appContext.userId}
+                  createdAt={newReply.createdAt}
+                  stickerImageURL={newReply.sticker?.image?.downloadURL}
+                  text={newReply.text}
+                  iconUrl={withIconUrlFallback(userIcon)}
+                  userName={newReply.user?.name}
+                  replyId={newReply.id}
+                  targetCommentId={comment.id}
+                  isLiked={
+                    newReply.isLiked &&
+                    !canceledCommentIds.includes(newReply.id)
+                  }
+                  isMuted={newReply.isMuted}
+                  isSensitive={newReply.isSensitive}
+                  isNowLiked={likedCommentIds.includes(newReply.id)}
+                  likesCount={
+                    newReply.likesCount -
+                    (canceledCommentIds.includes(newReply.id) ? 1 : 0)
+                  }
+                  isWorkOwnerLiked={newReply.isWorkOwnerLiked}
+                  isLoadingCommentLike={
+                    isCreatingCommentLike || isDeletingCommentLike
+                  }
+                  onCreateCommentLike={() => onCreateCommentLike(newReply.id)}
+                  onDeleteCommentLike={() => onDeleteCommentLike(newReply.id)}
+                  onDeleteComment={() => {
+                    onDeleteComment(newReply.id)
+                  }}
+                  isWorkOwnerBlocked={props.isWorkOwnerBlocked}
+                />
+              ),
+            )}
+            {/* コメントへの返信 */}
+            {comment.responses !== null &&
+              comment.responses?.length !== 0 &&
+              comment.responses
+                // .sort((a, b) => a.createdAt - b.createdAt)
+                .filter((reply) => !hideCommentIds.includes(reply.id))
+                .map((reply) => (
                   <WorkCommentResponse
-                    key={newReply.id}
-                    userId={newReply.user?.id ?? ""}
-                    isMine={newReply.user?.id === appContext.userId}
-                    createdAt={newReply.createdAt}
-                    stickerImageURL={newReply.sticker?.image?.downloadURL}
-                    text={newReply.text}
-                    iconUrl={withIconUrlFallback(userIcon)}
-                    userName={newReply.user?.name}
-                    replyId={newReply.id}
-                    targetCommentId={comment.id}
-                    isLiked={
-                      newReply.isLiked &&
-                      !canceledCommentIds.includes(newReply.id)
-                    }
-                    isMuted={newReply.isMuted}
-                    isNowLiked={likedCommentIds.includes(newReply.id)}
-                    likesCount={
-                      newReply.likesCount -
-                      (canceledCommentIds.includes(newReply.id) ? 1 : 0)
-                    }
-                    isWorkOwnerLiked={newReply.isWorkOwnerLiked}
-                    isLoadingCommentLike={
-                      isCreatingCommentLike || isDeletingCommentLike
-                    }
-                    onCreateCommentLike={() => onCreateCommentLike(newReply.id)}
-                    onDeleteCommentLike={() => onDeleteCommentLike(newReply.id)}
-                    onDeleteComment={() => {
-                      onDeleteComment(newReply.id)
-                    }}
-                    isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-                  />
-                ),
-              )}
-              {/* コメントへの返信 */}
-              {comment.responses !== null &&
-                comment.responses?.length !== 0 &&
-                comment.responses
-                  // .sort((a, b) => a.createdAt - b.createdAt)
-                  .filter((reply) => !hideCommentIds.includes(reply.id))
-                  .map((reply) => (
-                    <WorkCommentResponse
-                      key={reply.id}
-                      userId={reply.user?.id ?? ""}
-                      isMine={reply.user?.id === appContext.userId}
-                      createdAt={reply.createdAt}
-                      stickerImageURL={reply.sticker?.imageUrl ?? ""}
-                      stickerTitle={reply.sticker?.title}
-                      stickerId={reply.sticker?.id}
-                      stickerAccessType={reply.sticker?.accessType}
-                      isStickerDownloadable={reply.sticker?.isDownloaded}
-                      isWorkOwnerLiked={reply.isWorkOwnerLiked}
-                      isDisabledCommentLike={!appContext.isLoggedIn}
-                      text={reply.text}
-                      userIconImageURL={withIconUrlFallback(
-                        reply.user?.iconUrl,
-                      )}
-                      isLiked={
-                        reply.isLiked && !canceledCommentIds.includes(reply.id)
-                      }
-                      isMuted={Boolean(reply.isMuted)}
-                      isNowLiked={likedCommentIds.includes(reply.id)}
-                      likesCount={
-                        reply.likesCount -
-                        (canceledCommentIds.includes(reply.id) ? 1 : 0)
-                      }
-                      onCreateCommentLike={() => onCreateCommentLike(reply.id)}
-                      onDeleteCommentLike={() => onDeleteCommentLike(reply.id)}
-                      userName={reply.user?.name}
-                      replyId={reply.id}
-                      targetCommentId={comment.id}
-                      iconUrl={withIconUrlFallback(userIcon)}
-                      onDeleteComment={() => {
-                        onDeleteComment(reply.id)
-                      }}
-                      isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-                      onReplyCompleted={(
-                        id: string,
-                        text: string,
-                        _stickerId: string,
-                        stickerImageURL: string,
-                      ) => {
-                        // 表示コメントを追加
-                        setNewReplyComments([
-                          ...newReplyComments,
-                          {
-                            replyTargetId: comment.id,
-                            id: id,
-                            text: text,
-                            createdAt: Date.now(),
-                            likesCount: 0,
-                            isWorkOwnerLiked: false,
-                            isLiked: false,
-                            isMuted: false,
-                            user: {
-                              id: appContext.userId ?? "",
-                              name: appContext.displayName ?? "",
-                              iconUrl: withIconUrlFallback(userIcon),
-                            },
-                            sticker: {
-                              image: {
-                                downloadURL: stickerImageURL,
-                              },
-                            },
-                          },
-                        ])
-                      }}
-                    />
-                  ))}
-            </div>
-          ))}
-          {showCommentsAfterMore.length > 0 && (
-            <ExpansionTransition
-              triggerChildren={
-                <Button className="w-full" variant={"secondary"}>
-                  {t("もっと見る", "Load more")} ({showCommentsAfterMore.length}
-                  )
-                </Button>
-              }
-              oneTimeExpand={true}
-              className="flex flex-col space-y-4"
-            >
-              {showCommentsAfterMore.map((comment) => (
-                <div key={comment.id} className="space-y-4">
-                  <WorkComment
-                    userId={comment.user?.id ?? ""}
-                    isMine={comment.user?.id === appContext.userId}
-                    createdAt={comment.createdAt}
-                    stickerImageURL={comment.sticker?.imageUrl ?? ""}
-                    stickerTitle={comment.sticker?.title}
-                    stickerId={comment.sticker?.id}
-                    stickerAccessType={comment.sticker?.accessType}
-                    isStickerDownloadable={comment.sticker?.isDownloaded}
-                    isWorkOwnerLiked={comment.isWorkOwnerLiked}
-                    workOwnerIconImageURL={withIconUrlFallback(
-                      props.workOwnerIconImageURL,
-                    )}
-                    userIconImageURL={withIconUrlFallback(
-                      comment.user?.iconUrl,
-                    )}
-                    isLiked={
-                      comment.isLiked &&
-                      !canceledCommentIds.includes(comment.id)
-                    }
-                    isMuted={Boolean(comment.isMuted)}
-                    isNowLiked={likedCommentIds.includes(comment.id)}
-                    likesCount={
-                      comment.likesCount -
-                      (canceledCommentIds.includes(comment.id) ? 1 : 0)
-                    }
-                    onCreateCommentLike={() => onCreateCommentLike(comment.id)}
-                    onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
+                    key={reply.id}
+                    userId={reply.user?.id ?? ""}
+                    isMine={reply.user?.id === appContext.userId}
+                    createdAt={reply.createdAt}
+                    stickerImageURL={reply.sticker?.imageUrl ?? ""}
+                    stickerTitle={reply.sticker?.title}
+                    stickerId={reply.sticker?.id}
+                    stickerAccessType={reply.sticker?.accessType}
+                    isStickerDownloadable={reply.sticker?.isDownloaded}
+                    isWorkOwnerLiked={reply.isWorkOwnerLiked}
                     isDisabledCommentLike={!appContext.isLoggedIn}
-                    isLoadingCommentLike={
-                      isCreatingCommentLike || isDeletingCommentLike
+                    text={reply.text}
+                    userIconImageURL={withIconUrlFallback(reply.user?.iconUrl)}
+                    isLiked={
+                      reply.isLiked && !canceledCommentIds.includes(reply.id)
                     }
-                    text={comment.text}
-                    userName={comment.user?.name}
-                    commentId={comment.id}
-                    onDeleteComment={() => onDeleteComment(comment.id)}
+                    isMuted={Boolean(reply.isMuted)}
+                    isSensitive={Boolean(reply.isSensitive)}
+                    isNowLiked={likedCommentIds.includes(reply.id)}
+                    likesCount={
+                      reply.likesCount -
+                      (canceledCommentIds.includes(reply.id) ? 1 : 0)
+                    }
+                    onCreateCommentLike={() => onCreateCommentLike(reply.id)}
+                    onDeleteCommentLike={() => onDeleteCommentLike(reply.id)}
+                    userName={reply.user?.name}
+                    replyId={reply.id}
+                    targetCommentId={comment.id}
+                    iconUrl={withIconUrlFallback(userIcon)}
+                    onDeleteComment={() => {
+                      onDeleteComment(reply.id)
+                    }}
                     isWorkOwnerBlocked={props.isWorkOwnerBlocked}
                     onReplyCompleted={(
                       id: string,
@@ -656,8 +599,9 @@ export function WorkCommentList(props: Props) {
                       _stickerId: string,
                       stickerImageURL: string,
                     ) => {
+                      // 表示コメントを追加
                       setNewReplyComments([
-                        ...(newReplyComments || []),
+                        ...newReplyComments,
                         {
                           replyTargetId: comment.id,
                           id: id,
@@ -667,6 +611,7 @@ export function WorkCommentList(props: Props) {
                           isWorkOwnerLiked: false,
                           isLiked: false,
                           isMuted: false,
+                          isSensitive: false, // TODO: Get this value from ReplyCommentInput
                           user: {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
@@ -681,138 +626,222 @@ export function WorkCommentList(props: Props) {
                       ])
                     }}
                   />
-                  {/* 新しく追加した返信への返信 */}
-                  {showNewReplyComments?.map((newReply) =>
-                    newReply.replyTargetId !== comment.id ? null : (
+                ))}
+          </div>
+        ))}
+        {showCommentsAfterMore.length > 0 && (
+          <ExpansionTransition
+            triggerChildren={
+              <Button className="w-full" variant={"secondary"}>
+                {t("もっと見る", "Load more")} ({showCommentsAfterMore.length})
+              </Button>
+            }
+            oneTimeExpand={true}
+            className="flex flex-col space-y-4"
+          >
+            {showCommentsAfterMore.map((comment) => (
+              <div key={comment.id} className="space-y-4">
+                <WorkComment
+                  userId={comment.user?.id ?? ""}
+                  isMine={comment.user?.id === appContext.userId}
+                  createdAt={comment.createdAt}
+                  stickerImageURL={comment.sticker?.imageUrl ?? ""}
+                  stickerTitle={comment.sticker?.title}
+                  stickerId={comment.sticker?.id}
+                  stickerAccessType={comment.sticker?.accessType}
+                  isStickerDownloadable={comment.sticker?.isDownloaded}
+                  isWorkOwnerLiked={comment.isWorkOwnerLiked}
+                  workOwnerIconImageURL={withIconUrlFallback(
+                    props.workOwnerIconImageURL,
+                  )}
+                  userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
+                  isLiked={
+                    comment.isLiked && !canceledCommentIds.includes(comment.id)
+                  }
+                  isMuted={Boolean(comment.isMuted)}
+                  isSensitive={Boolean(comment.isSensitive)}
+                  isNowLiked={likedCommentIds.includes(comment.id)}
+                  likesCount={
+                    comment.likesCount -
+                    (canceledCommentIds.includes(comment.id) ? 1 : 0)
+                  }
+                  onCreateCommentLike={() => onCreateCommentLike(comment.id)}
+                  onDeleteCommentLike={() => onDeleteCommentLike(comment.id)}
+                  isDisabledCommentLike={!appContext.isLoggedIn}
+                  isLoadingCommentLike={
+                    isCreatingCommentLike || isDeletingCommentLike
+                  }
+                  text={comment.text}
+                  userName={comment.user?.name}
+                  commentId={comment.id}
+                  onDeleteComment={() => onDeleteComment(comment.id)}
+                  isWorkOwnerBlocked={props.isWorkOwnerBlocked}
+                  onReplyCompleted={(
+                    id: string,
+                    text: string,
+                    _stickerId: string,
+                    stickerImageURL: string,
+                  ) => {
+                    setNewReplyComments([
+                      ...(newReplyComments || []),
+                      {
+                        replyTargetId: comment.id,
+                        id: id,
+                        text: text,
+                        createdAt: Date.now(),
+                        likesCount: 0,
+                        isWorkOwnerLiked: false,
+                        isLiked: false,
+                        isMuted: false,
+                        isSensitive: false, // TODO: Get this value from ReplyCommentInput
+                        user: {
+                          id: appContext.userId ?? "",
+                          name: appContext.displayName ?? "",
+                          iconUrl: withIconUrlFallback(userIcon),
+                        },
+                        sticker: {
+                          image: {
+                            downloadURL: stickerImageURL,
+                          },
+                        },
+                      },
+                    ])
+                  }}
+                />
+                {/* 新しく追加した返信への返信 */}
+                {showNewReplyComments?.map((newReply) =>
+                  newReply.replyTargetId !== comment.id ? null : (
+                    <WorkCommentResponse
+                      key={newReply.id}
+                      userId={newReply.user?.id ?? ""}
+                      isMine={newReply.user?.id === appContext.userId}
+                      createdAt={newReply.createdAt}
+                      stickerImageURL={newReply.sticker?.image?.downloadURL}
+                      text={newReply.text}
+                      iconUrl={withIconUrlFallback(userIcon)}
+                      isWorkOwnerLiked={newReply.isWorkOwnerLiked}
+                      isNowLiked={likedCommentIds.includes(newReply.id)}
+                      workOwnerIconImageURL={withIconUrlFallback(
+                        props.workOwnerIconImageURL,
+                      )}
+                      userIconImageURL={withIconUrlFallback(
+                        newReply.user.iconUrl,
+                      )}
+                      isLiked={
+                        newReply.isLiked &&
+                        !canceledCommentIds.includes(newReply.id)
+                      }
+                      isMuted={newReply.isMuted}
+                      isSensitive={newReply.isSensitive}
+                      likesCount={
+                        newReply.likesCount -
+                        (canceledCommentIds.includes(newReply.id) ? 1 : 0)
+                      }
+                      onCreateCommentLike={() =>
+                        onCreateCommentLike(newReply.id)
+                      }
+                      onDeleteCommentLike={() =>
+                        onDeleteCommentLike(newReply.id)
+                      }
+                      userName={newReply.user?.name}
+                      replyId={newReply.id}
+                      targetCommentId={comment.id}
+                      onDeleteComment={() => {
+                        onDeleteComment(newReply.id)
+                      }}
+                      isWorkOwnerBlocked={props.isWorkOwnerBlocked}
+                    />
+                  ),
+                )}
+                {/* コメントへの返信 */}
+                {comment.responses !== null &&
+                  comment.responses?.length !== 0 &&
+                  comment.responses
+                    // .sort((a, b) => a.createdAt - b.createdAt)
+                    .filter((reply) => !hideCommentIds.includes(reply.id))
+                    .map((reply) => (
                       <WorkCommentResponse
-                        key={newReply.id}
-                        userId={newReply.user?.id ?? ""}
-                        isMine={newReply.user?.id === appContext.userId}
-                        createdAt={newReply.createdAt}
-                        stickerImageURL={newReply.sticker?.image?.downloadURL}
-                        text={newReply.text}
-                        iconUrl={withIconUrlFallback(userIcon)}
-                        isWorkOwnerLiked={newReply.isWorkOwnerLiked}
-                        isNowLiked={likedCommentIds.includes(newReply.id)}
+                        key={reply.id}
+                        userId={reply.user?.id ?? ""}
+                        isMine={reply.user?.id === appContext.userId}
+                        createdAt={reply.createdAt}
+                        stickerImageURL={reply.sticker?.imageUrl ?? ""}
+                        stickerTitle={reply.sticker?.title}
+                        stickerId={reply.sticker?.id}
+                        stickerAccessType={reply.sticker?.accessType}
+                        isStickerDownloadable={reply.sticker?.isDownloaded}
+                        isDisabledCommentLike={!appContext.isLoggedIn}
+                        isWorkOwnerLiked={reply.isWorkOwnerLiked}
                         workOwnerIconImageURL={withIconUrlFallback(
                           props.workOwnerIconImageURL,
                         )}
-                        userIconImageURL={withIconUrlFallback(
-                          newReply.user.iconUrl,
-                        )}
+                        isNowLiked={likedCommentIds.includes(reply.id)}
                         isLiked={
-                          newReply.isLiked &&
-                          !canceledCommentIds.includes(newReply.id)
+                          reply.isLiked &&
+                          !canceledCommentIds.includes(reply.id)
                         }
-                        isMuted={newReply.isMuted}
+                        isMuted={Boolean(reply.isMuted)}
+                        isSensitive={Boolean(reply.isSensitive)}
                         likesCount={
-                          newReply.likesCount -
-                          (canceledCommentIds.includes(newReply.id) ? 1 : 0)
+                          reply.likesCount -
+                          (canceledCommentIds.includes(reply.id) ? 1 : 0)
                         }
                         onCreateCommentLike={() =>
-                          onCreateCommentLike(newReply.id)
+                          onCreateCommentLike(reply.id)
                         }
                         onDeleteCommentLike={() =>
-                          onDeleteCommentLike(newReply.id)
+                          onDeleteCommentLike(reply.id)
                         }
-                        userName={newReply.user?.name}
-                        replyId={newReply.id}
+                        text={reply.text}
+                        userIconImageURL={withIconUrlFallback(
+                          reply.user?.iconUrl,
+                        )}
+                        userName={reply.user?.name}
+                        replyId={reply.id}
                         targetCommentId={comment.id}
+                        iconUrl={withIconUrlFallback(userIcon)}
                         onDeleteComment={() => {
-                          onDeleteComment(newReply.id)
+                          onDeleteComment(reply.id)
                         }}
                         isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-                      />
-                    ),
-                  )}
-                  {/* コメントへの返信 */}
-                  {comment.responses !== null &&
-                    comment.responses?.length !== 0 &&
-                    comment.responses
-                      // .sort((a, b) => a.createdAt - b.createdAt)
-                      .filter((reply) => !hideCommentIds.includes(reply.id))
-                      .map((reply) => (
-                        <WorkCommentResponse
-                          key={reply.id}
-                          userId={reply.user?.id ?? ""}
-                          isMine={reply.user?.id === appContext.userId}
-                          createdAt={reply.createdAt}
-                          stickerImageURL={reply.sticker?.imageUrl ?? ""}
-                          stickerTitle={reply.sticker?.title}
-                          stickerId={reply.sticker?.id}
-                          stickerAccessType={reply.sticker?.accessType}
-                          isStickerDownloadable={reply.sticker?.isDownloaded}
-                          isDisabledCommentLike={!appContext.isLoggedIn}
-                          isWorkOwnerLiked={reply.isWorkOwnerLiked}
-                          workOwnerIconImageURL={withIconUrlFallback(
-                            props.workOwnerIconImageURL,
-                          )}
-                          isNowLiked={likedCommentIds.includes(reply.id)}
-                          isLiked={
-                            reply.isLiked &&
-                            !canceledCommentIds.includes(reply.id)
-                          }
-                          isMuted={Boolean(reply.isMuted)}
-                          likesCount={
-                            reply.likesCount -
-                            (canceledCommentIds.includes(reply.id) ? 1 : 0)
-                          }
-                          onCreateCommentLike={() =>
-                            onCreateCommentLike(reply.id)
-                          }
-                          onDeleteCommentLike={() =>
-                            onDeleteCommentLike(reply.id)
-                          }
-                          text={reply.text}
-                          userIconImageURL={withIconUrlFallback(
-                            reply.user?.iconUrl,
-                          )}
-                          userName={reply.user?.name}
-                          replyId={reply.id}
-                          targetCommentId={comment.id}
-                          iconUrl={withIconUrlFallback(userIcon)}
-                          onDeleteComment={() => {
-                            onDeleteComment(reply.id)
-                          }}
-                          isWorkOwnerBlocked={props.isWorkOwnerBlocked}
-                          onReplyCompleted={(
-                            id: string,
-                            text: string,
-                            _stickerId: string,
-                            stickerImageURL: string,
-                          ) => {
-                            // 表示コメントを追加
-                            setNewReplyComments([
-                              ...newReplyComments,
-                              {
-                                replyTargetId: comment.id,
-                                id: id,
-                                text: text,
-                                createdAt: Date.now(),
-                                likesCount: 0,
-                                isWorkOwnerLiked: false,
-                                isLiked: false,
-                                isMuted: false,
-                                user: {
-                                  id: appContext.userId ?? "",
-                                  name: appContext.displayName ?? "",
-                                  iconUrl: withIconUrlFallback(userIcon),
-                                },
-                                sticker: {
-                                  image: {
-                                    downloadURL: stickerImageURL,
-                                  },
+                        onReplyCompleted={(
+                          id: string,
+                          text: string,
+                          _stickerId: string,
+                          stickerImageURL: string,
+                        ) => {
+                          // 表示コメントを追加
+                          setNewReplyComments([
+                            ...newReplyComments,
+                            {
+                              replyTargetId: comment.id,
+                              id: id,
+                              text: text,
+                              createdAt: Date.now(),
+                              likesCount: 0,
+                              isWorkOwnerLiked: false,
+                              isLiked: false,
+                              isMuted: false,
+                              isSensitive: false, // TODO: Get this value from ReplyCommentInput
+                              user: {
+                                id: appContext.userId ?? "",
+                                name: appContext.displayName ?? "",
+                                iconUrl: withIconUrlFallback(userIcon),
+                              },
+                              sticker: {
+                                image: {
+                                  downloadURL: stickerImageURL,
                                 },
                               },
-                            ])
-                          }}
-                        />
-                      ))}
-                </div>
-              ))}
-            </ExpansionTransition>
-          )}
-        </div>
+                            },
+                          ])
+                        }}
+                      />
+                    ))}
+              </div>
+            ))}
+          </ExpansionTransition>
+        )}
       </div>
       <StickerDialog
         isOpen={isOpen}

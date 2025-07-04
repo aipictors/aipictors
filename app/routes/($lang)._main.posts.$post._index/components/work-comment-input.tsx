@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useState } from "react"
 import { useMutation, useQuery } from "@apollo/client/index"
@@ -38,6 +39,8 @@ export function ReplyCommentInput(props: Props) {
 
   const [comment, setComment] = useState("")
 
+  const [isSensitive, setIsSensitive] = useState(false)
+
   const sendComment = async (
     text: string,
     targetCommentId: string,
@@ -57,6 +60,7 @@ export function ReplyCommentInput(props: Props) {
         })
 
         setComment("")
+        setIsSensitive(false)
 
         props.onReplyCompleted(
           commentRes.data?.createResponseComment.id ?? "",
@@ -93,41 +97,59 @@ export function ReplyCommentInput(props: Props) {
 
   return (
     <>
-      <div className="flex w-full items-center space-x-4 pl-16">
-        <Avatar>
-          <AvatarImage src={withIconUrlFallback(iconUrl)} alt="" />
-          <AvatarFallback />
-        </Avatar>
-        <AutoResizeTextarea
-          onChange={(event) => {
-            setComment(event.target.value)
-          }}
-          placeholder={t("コメントする", "Add a comment")}
-          disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-        />
-        <div>
-          <Button
+      <div className="space-y-2 pl-16">
+        <div className="flex w-full items-center space-x-4">
+          <Avatar>
+            <AvatarImage src={withIconUrlFallback(iconUrl)} alt="" />
+            <AvatarFallback />
+          </Avatar>
+          <AutoResizeTextarea
+            onChange={(event) => {
+              setComment(event.target.value)
+            }}
+            placeholder={t("コメントする", "Add a comment")}
             disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-            variant={"secondary"}
-            size={"icon"}
-            onClick={onOpen}
-          >
-            <StampIcon className="w-16" />
-          </Button>
+          />
+          <div>
+            <Button
+              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+              variant={"secondary"}
+              size={"icon"}
+              onClick={onOpen}
+            >
+              <StampIcon className="w-16" />
+            </Button>
+          </div>
+          {isCreatingReplyComment ? (
+            <Button onClick={() => {}}>
+              <Loader2Icon className={"w-16 animate-spin"} />
+            </Button>
+          ) : (
+            <Button
+              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+              variant={"secondary"}
+              onClick={onComment}
+            >
+              {t("送信", "Send")}
+            </Button>
+          )}
         </div>
-        {isCreatingReplyComment ? (
-          <Button onClick={() => {}}>
-            <Loader2Icon className={"w-16 animate-spin"} />
-          </Button>
-        ) : (
-          <Button
+        <div className="flex items-center space-x-2 pl-14 opacity-80">
+          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
+          <Checkbox
+            id="reply-sensitive-checkbox"
+            checked={isSensitive}
+            onCheckedChange={(checked: boolean) =>
+              setIsSensitive(checked === true)
+            }
             disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-            variant={"secondary"}
-            onClick={onComment}
-          >
-            {t("送信", "Send")}
-          </Button>
-        )}
+          />
+          <div className="flex items-center space-x-2">
+            <label htmlFor="reply-sensitive-checkbox" className="text-xs">
+              {t("センシティブなコメントとして送信する", "Sensitive comment")}
+            </label>
+          </div>
+        </div>
       </div>
       <StickerDialog
         isOpen={isOpen}

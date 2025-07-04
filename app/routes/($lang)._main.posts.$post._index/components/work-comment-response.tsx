@@ -34,6 +34,7 @@ type Props = {
   iconUrl: string
   isLiked: boolean
   isMuted: boolean
+  isSensitive?: boolean
   likesCount: number
   workOwnerIconImageURL?: string
   isWorkOwnerLiked: boolean
@@ -70,6 +71,7 @@ export function WorkCommentResponse(props: Props) {
 
   const [openReplyInput, setOpenReplyInput] = React.useState(false)
   const [showMutedComment, setShowMutedComment] = React.useState(false)
+  const [showSensitiveComment, setShowSensitiveComment] = React.useState(false)
 
   const onDeleteComment = async () => {
     props.onDeleteComment()
@@ -109,6 +111,28 @@ export function WorkCommentResponse(props: Props) {
           variant="secondary"
           size="sm"
           onClick={() => setShowMutedComment(true)}
+        >
+          <Eye className="mr-2 size-4" />
+          {t("表示", "Show")}
+        </Button>
+      </div>
+    )
+  }
+
+  // センシティブなコメントの表示
+  if (props.isSensitive && !showSensitiveComment) {
+    return (
+      <div className="flex items-center space-x-4 rounded-lg border p-2 pl-16">
+        <EyeOff className="size-5 text-gray-400" />
+        <div className="flex-1">
+          <p className="text-sm">
+            {t("センシティブな返信です", "This is a sensitive reply")}
+          </p>
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setShowSensitiveComment(true)}
         >
           <Eye className="mr-2 size-4" />
           {t("表示", "Show")}
@@ -224,7 +248,7 @@ export function WorkCommentResponse(props: Props) {
               )
             ) : (
               <>
-                {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
+                {/* biome-ignore lint/a11y/useButtonType: Reply button doesn't need explicit type */}
                 <button onClick={() => setOpenReplyInput(!openReplyInput)}>
                   <p className="cursor-pointer text-xs">{t("返信", "Reply")}</p>
                 </button>
@@ -246,6 +270,16 @@ export function WorkCommentResponse(props: Props) {
                 variant="secondary"
                 size="sm"
                 onClick={() => setShowMutedComment(false)}
+              >
+                <EyeOff className="mr-1 size-3" />
+                {t("非表示", "Hide")}
+              </Button>
+            )}
+            {props.isSensitive && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowSensitiveComment(false)}
               >
                 <EyeOff className="mr-1 size-3" />
                 {t("非表示", "Hide")}
