@@ -10,6 +10,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react"
 import { Link, useNavigate } from "@remix-run/react"
@@ -50,6 +51,11 @@ function chunkPosts<T>(arr: T[], size: number): T[][] {
   for (let i = 0; i < arr.length; i += size) res.push(arr.slice(i, i + size))
   return res
 }
+
+type WorkItem = FragmentOf<typeof workFieldsFragment> & {
+  comments?: CommentItem[] | null
+}
+type CommentItem = FragmentOf<typeof CommentListItemFragment>
 
 /* -----------------------------------------------------------------
  * GraphQL
@@ -341,7 +347,7 @@ function InfiniteMode({
   const client = useApolloClient()
   const auth = useContext(AuthContext)
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
-  const [prevFlatLength, setPrevFlatLength] = useState<number>(0)
+  const [prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
   const feedWhere = useMemo(
     () => ({ userId: auth.userId ?? "-1", type: "FOLLOW_TAG" as const }),
@@ -376,7 +382,7 @@ function InfiniteMode({
   } = useQuery(QUERY, {
     skip: auth.isLoading || auth.isNotLoggedIn,
     variables: queryVars,
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
     errorPolicy: "ignore",
   })
@@ -389,27 +395,57 @@ function InfiniteMode({
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
     usePagedInfinite<PostItem>(initialPages, storeKey)
 
+  const prevIdsRef = useRef<string>("") // 初期値は空文字で十分
+
+  const prevFirstIdsRef = useRef<string>("")
+
   useEffect(() => {
-    if (!data?.feed?.posts?.length) return
-    const chunked = chunkPosts(data.feed.posts, PER_PAGE)
-    if (!pages.length || chunked[0].length !== pages[0]?.length) {
+    const posts = data?.feed?.posts
+    if (!posts?.length) return
+
+    /* 1ページ＝32件ごとに分割 */
+    const chunked = chunkPosts(posts, PER_PAGE)
+    if (!chunked.length) return
+
+    /* 1ページ目の ID 配列を文字列化して比較 */
+    const newFirstIds = chunked[0].map((p) => p.id).join(",")
+
+    if (!pages.length || newFirstIds !== prevFirstIdsRef.current) {
+      /* 並びが変わっていれば先頭ページを差し替え */
       replaceFirstPage(chunked[0])
+
+      /* 2ページ目以降をまとめて反映 */
       if (chunked.length > 1) appendPages(chunked.slice(1))
+
+      /* 現在の ID を保存して次回比較に使う */
+      prevFirstIdsRef.current = newFirstIds
     }
-  }, [data?.feed?.posts, pages, replaceFirstPage, appendPages])
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [data?.feed?.posts, pages.length, replaceFirstPage, appendPages])
 
   // updateWorksを正しいタイミングで呼ぶ
   useEffect(() => {
     if (!updateWorks || isTimelineView || flat.length === 0) return
 
     // データの長さが変わった場合のみ更新
-    if (flat.length !== prevFlatLength) {
-      const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
-        typeof PhotoAlbumWorkFragment
-      >[]
+    const ids = flat.map((p) => p.work?.id ?? p.id).join(",")
+    const prevIds = prevIdsRef.current
 
+    if (ids !== prevIds) {
+      // const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
+      //   typeof PhotoAlbumWorkFragment
+      // >[]
+
+      // postsのworkフィールドからWorkItemを抽出
+      const posts = data?.feed?.posts as PostItem[] | undefined
+      const works = posts
+        ?.map((p) => p.work)
+        .filter((w): w is WorkItem => !!w) as unknown as FragmentOf<
+        typeof PhotoAlbumWorkFragment
+      >
+      // @ts-ignore
       updateWorks(works)
-      setPrevFlatLength(flat.length)
+      prevIdsRef.current = ids
     }
   }, [flat, updateWorks, isTimelineView, prevFlatLength])
 

@@ -10,6 +10,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react"
 import { Link, useNavigate } from "@remix-run/react"
@@ -144,6 +145,7 @@ export type PostItem = {
 }
 
 export type FollowTagsFeedContentsProps = {
+  tab?: string
   page: number
   setPage: (p: number) => void
   isPagination: boolean
@@ -155,6 +157,7 @@ export type FollowTagsFeedContentsProps = {
  * Root component
  * -----------------------------------------------------------------*/
 export function FollowTagsFeedContents({
+  tab,
   page,
   setPage,
   isPagination,
@@ -214,6 +217,7 @@ export function FollowTagsFeedContents({
       {isPagination ? (
         <PaginationMode
           key={key}
+          tab={tab}
           page={page}
           setPage={setPage}
           isTimelineView={isTimelineView}
@@ -224,6 +228,7 @@ export function FollowTagsFeedContents({
       ) : (
         <InfiniteMode
           key={key}
+          tab={tab}
           isTimelineView={isTimelineView}
           setIsTimelineView={setIsTimelineView}
           onSelect={onSelect}
@@ -238,6 +243,7 @@ export function FollowTagsFeedContents({
  * Pagination Mode
  * ===============================================================*/
 function PaginationMode({
+  tab,
   page,
   setPage,
   isTimelineView,
@@ -245,6 +251,7 @@ function PaginationMode({
   onSelect,
   updateWorks,
 }: {
+  tab?: string
   page: number
   setPage: (n: number) => void
   isTimelineView: boolean
@@ -296,7 +303,7 @@ function PaginationMode({
       updateWorks(works)
       setPrevDataKey(dataKey)
     }
-  }, [data?.feed?.posts, updateWorks, page, isTimelineView, prevDataKey])
+  }, [data?.feed?.posts, updateWorks, page, isTimelineView, prevDataKey, tab])
 
   if (auth.isLoading) return <Loader />
   if (auth.isNotLoggedIn || !auth.userId) return <NeedLoginMessage />
@@ -328,11 +335,13 @@ function PaginationMode({
  * Infinite Scroll Mode
  * ===============================================================*/
 function InfiniteMode({
+  tab,
   isTimelineView,
   setIsTimelineView,
   onSelect,
   updateWorks,
 }: {
+  tab?: string
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
   onSelect?: (index: number) => void
@@ -389,16 +398,24 @@ function InfiniteMode({
   const { pages, appendPage, appendPages, replaceFirstPage, flat } =
     usePagedInfinite<PostItem>(initialPages, storeKey)
 
+  /* useRef で “前回の先頭ページ ID 群” を保持 */
+  const firstIdsRef = useRef<string>("")
+
   useEffect(() => {
-    if (!data?.feed?.posts?.length) return
-    const chunked = chunkPosts(data.feed.posts, PER_PAGE)
-    const firstIds = chunked[0].map((p) => p.id).join(",")
-    const currentIds = pages[0]?.map((p) => p.id).join(",")
-    if (!pages.length || firstIds !== currentIds) {
+    const posts = data?.feed?.posts
+    if (!posts?.length) return // データなしなら終了
+
+    /* 32件ごとに分割して先頭ページを取得 */
+    const chunked = chunkPosts(posts, PER_PAGE)
+    const newFirstIds = chunked[0].map((p) => p.id).join(",")
+
+    /* 並びが変わっていればページ差し替え */
+    if (newFirstIds !== firstIdsRef.current) {
       replaceFirstPage(chunked[0])
       if (chunked.length > 1) appendPages(chunked.slice(1))
+      firstIdsRef.current = newFirstIds // 現在の ID を保存
     }
-  }, [data?.feed?.posts, pages, replaceFirstPage, appendPages])
+  }, [data?.feed?.posts, replaceFirstPage, appendPages])
 
   const worksFromFlat = useMemo(
     () =>
@@ -411,7 +428,7 @@ function InfiniteMode({
   useEffect(() => {
     if (!updateWorks || isTimelineView) return
     updateWorks(worksFromFlat)
-  }, [updateWorks, isTimelineView, worksFromFlat])
+  }, [updateWorks, isTimelineView, worksFromFlat, tab])
 
   const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
   useScrollRestoration("follow-tag-infinite", ready)

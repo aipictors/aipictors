@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useCallback,
+  useRef,
 } from "react"
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
@@ -304,7 +305,7 @@ function InfiniteMode(props: Props) {
   } = useQuery(QUERY, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: queryVars,
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
     errorPolicy: "ignore",
   })
@@ -323,19 +324,26 @@ function InfiniteMode(props: Props) {
     usePagedInfinite<PostItem>(initialPages, keyForStore)
 
   // ─── 初回 / クエリ更新時のページ反映 ──────────────────
+  const firstIdsRef = useRef<string>("")
+
   useEffect(() => {
-    if (!data?.feed?.posts?.length) return
+    const posts = data?.feed?.posts as PostItem[] | undefined
+    if (!posts?.length) return
 
-    const posts = data.feed.posts as PostItem[]
+    // 32 件ごとに分割
     const chunked = chunkPosts(posts, PER_PAGE)
-    if (chunked.length === 0) return
+    if (!chunked.length) return
 
-    // 既に同じ長さならスキップして "ちらつき" を防ぐ
-    if (pages.length === 0 || chunked[0].length !== pages[0]?.length) {
+    // 先頭ページの ID 群
+    const newIds = chunked[0].map((p) => p.id).join(",")
+
+    // 並び・内容が変わった時だけ差し替え
+    if (newIds !== firstIdsRef.current) {
       replaceFirstPage(chunked[0])
       if (chunked.length > 1) appendPages(chunked.slice(1))
+      firstIdsRef.current = newIds // ← 現在の ID を保存
     }
-  }, [data?.feed?.posts, pages, replaceFirstPage, appendPages])
+  }, [data?.feed?.posts, replaceFirstPage, appendPages])
 
   // updateWorksを正しいタイミングで呼ぶ
   useEffect(() => {
@@ -343,10 +351,17 @@ function InfiniteMode(props: Props) {
 
     // データの長さが変わった場合のみ更新
     if (flat.length !== prevFlatLength) {
-      const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
-        typeof PhotoAlbumWorkFragment
-      >[]
+      // const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
+      //   typeof PhotoAlbumWorkFragment
+      // >[]
 
+      const posts = data?.feed?.posts as PostItem[] | undefined
+      const works = posts
+        ?.map((p) => p.work)
+        .filter((w): w is WorkItem => !!w) as unknown as FragmentOf<
+        typeof PhotoAlbumWorkFragment
+      >
+      // @ts-ignore
       props.updateWorks(works)
       setPrevFlatLength(flat.length)
     }

@@ -1244,6 +1244,7 @@ export default function Index() {
           {/* コンテンツ */}
           <Suspense fallback={<AppLoadingPage />}>
             <FollowUserFeedContents
+              tab={currentTab}
               key={`follow-user-${followUserFeedPage}-${currentTab}`}
               page={followUserFeedPage}
               setPage={setFollowUserFeedPage}
@@ -1332,6 +1333,7 @@ export default function Index() {
 
           <Suspense fallback={<AppLoadingPage />}>
             <FollowTagsFeedContents
+              tab={currentTab}
               key={`follow-tag-${followTagFeedPage}-${currentTab}`}
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}

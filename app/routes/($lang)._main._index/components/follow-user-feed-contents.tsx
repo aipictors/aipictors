@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useCallback,
+  useRef,
 } from "react"
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
@@ -31,6 +32,7 @@ import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-
 import { ResponsivePagination } from "~/components/responsive-pagination"
 
 type Props = {
+  tab: string
   page: number
   setPage: (page: number) => void
   isPagination?: boolean
@@ -161,6 +163,7 @@ function PaginationMode(props: Props) {
     currentPage,
     isTimelineView,
     prevDataKey,
+    props.tab,
   ])
 
   if (authContext.isLoading) {
@@ -323,21 +326,26 @@ function InfiniteMode(props: Props) {
     usePagedInfinite<PostItem>(initialPages, keyForStore)
 
   // ─── 初回 / クエリ更新時のページ反映 ──────────────────
+  const firstIdsRef = useRef<string>("")
+
   useEffect(() => {
-    if (!data?.feed?.posts?.length) return
+    const posts = data?.feed?.posts as PostItem[] | undefined
+    if (!posts?.length) return
 
-    const posts = data.feed.posts as PostItem[]
+    /* 投稿を 32 件ごとに分割 */
     const chunked = chunkPosts(posts, PER_PAGE)
-    if (chunked.length === 0) return
+    if (!chunked.length) return
 
-    // 既に同じ長さならスキップして "ちらつき" を防ぐ
+    /* 1 ページ目の ID 配列を文字列化して比較 */
     const newIds = chunked[0].map((p) => p.id).join(",")
-    const curIds = pages[0]?.map((p) => p.id).join(",")
-    if (pages.length === 0 || newIds !== curIds) {
+
+    /* 並びが変わった場合のみページを差し替え */
+    if (newIds !== firstIdsRef.current) {
       replaceFirstPage(chunked[0])
       if (chunked.length > 1) appendPages(chunked.slice(1))
+      firstIdsRef.current = newIds // 現在の ID 群を保存
     }
-  }, [data?.feed?.posts, pages, replaceFirstPage, appendPages])
+  }, [data?.feed?.posts, replaceFirstPage, appendPages])
 
   // updateWorksを正しいタイミングで呼ぶ
   useEffect(() => {
@@ -345,14 +353,22 @@ function InfiniteMode(props: Props) {
 
     // データの長さが変わった場合のみ更新
     if (flat.length !== prevFlatLength) {
-      const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
-        typeof PhotoAlbumWorkFragment
-      >[]
+      // const works = flat.map((p) => p.work).filter((w) => !!w) as FragmentOf<
+      //   typeof PhotoAlbumWorkFragment
+      // >[]
 
+      // postsのworkフィールドからWorkItemを抽出
+      const posts = data?.feed?.posts as PostItem[] | undefined
+      const works = posts
+        ?.map((p) => p.work)
+        .filter((w): w is WorkItem => !!w) as unknown as FragmentOf<
+        typeof PhotoAlbumWorkFragment
+      >
+      // @ts-ignore
       props.updateWorks(works)
       setPrevFlatLength(flat.length)
     }
-  }, [flat, props.updateWorks, isTimelineView, prevFlatLength])
+  }, [flat, props.updateWorks, isTimelineView, prevFlatLength, props.tab])
 
   // ─── スクロール復元 ────────────────────────────────
   const ready = initialPages.length > 0 || !!data?.feed?.posts?.length
