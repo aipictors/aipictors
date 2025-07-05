@@ -708,7 +708,7 @@ export function TagWorkSection(props: Props) {
       {dialogIndex !== null && (
         <WorkViewerDialog
           works={displayedWorks}
-          startIndex={dialogIndex}
+          startWorkId={dialogIndex.toString()}
           onClose={() => setDialogIndex(null)}
           loadMore={!isPagination ? loadMore : undefined}
           hasNextPage={hasNextPage}

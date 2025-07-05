@@ -12,6 +12,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 
 type Props = {
   targetCommentId: string
@@ -148,6 +149,12 @@ export function ReplyCommentInput(props: Props) {
             <label htmlFor="reply-sensitive-checkbox" className="text-xs">
               {t("隠し付き", "Sensitive comment")}
             </label>
+            <CrossPlatformTooltip
+              text={t(
+                "初期表示は非表示になります。クリックで表示されます。",
+                "You can check new works with this tag in your timeline",
+              )}
+            />
           </div>
         </div>
       </div>
