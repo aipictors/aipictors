@@ -1,5 +1,6 @@
 import { loaderClient } from "~/lib/loader-client"
 import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
+import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
 import {
   WorkList,
   WorkListItemFragment,
@@ -16,6 +17,7 @@ import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { useTranslation } from "~/hooks/use-translation"
 import { Separator } from "~/components/ui/separator"
+import { useSearchParams } from "@remix-run/react"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -41,8 +43,22 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  // AIモデル一覧を取得
+  const modelsResp = await loaderClient.query({
+    query: aiModelsQuery,
+    variables: {},
+  })
+
   return {
-    workResp: worksResp.data.works,
+    workResp: worksResp.data?.works ?? [],
+    models:
+      modelsResp.data?.aiModels
+        ?.map((model) => ({
+          id: model.workModelId || model.id,
+          name: model.name,
+          displayName: model.name,
+        }))
+        .filter((model) => model.id) || [],
   }
 }
 
@@ -52,32 +68,33 @@ export const headers: HeadersFunction = () => ({
 
 export default function Search() {
   const data = useLoaderData<typeof loader>()
-
+  const [searchParams] = useSearchParams()
   const t = useTranslation()
 
   if (data === null) {
     return null
   }
 
-  if (!data || !data.workResp || data.workResp.length === 0) {
-    return null
-  }
+  const searchQuery = searchParams.get("q")
 
   return (
     <>
       <div className="m-auto md:max-w-96">
         <SearchHeader />
       </div>
-      {/* Googleカスタム検索エンジンのスクリプトを非同期で読み込み */}
       <Separator />
-      {/* <div className="m-auto md:max-w-96">
-        {t("その他の検索", "Other Search")}
-        <GoogleCustomSearch />
-      </div> */}
-      <h2 className="font-bold">{t("モデル一覧", "Model List")}</h2>
-      <ModelList />
-      <h2 className="font-bold">{t("人気作品", "Popular Works")}</h2>
-      <WorkList works={data.workResp ?? []} />
+
+      {/* 検索結果 */}
+      {searchQuery ? (
+        <SearchResults models={data.models} />
+      ) : (
+        <>
+          <h2 className="font-bold">{t("モデル一覧", "Model List")}</h2>
+          <ModelList />
+          <h2 className="font-bold">{t("人気作品", "Popular Works")}</h2>
+          <WorkList works={data.workResp ?? []} />
+        </>
+      )}
     </>
   )
 }
@@ -93,4 +110,17 @@ const worksQuery = graphql(
     }
   }`,
   [WorkListItemFragment],
+)
+
+const aiModelsQuery = graphql(
+  `query AiModels {
+    aiModels(offset: 0, limit: 124, where: {}) {
+      id
+      name
+      type
+      generationModelId
+      workModelId
+      thumbnailImageURL
+    }
+  }`,
 )

@@ -6,7 +6,7 @@ import {
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { useContext, useState, useCallback } from "react"
 import { tagWorksQuery } from "~/routes/($lang)._main.tags.$tag._index/route"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
@@ -16,6 +16,7 @@ import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
 import { SensitiveTagActionOther } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-action-other"
 import { Switch } from "~/components/ui/switch"
+import { CompactFilter } from "~/components/compact-filter"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -44,16 +45,31 @@ type Props = {
 
 export function SensitiveTagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
+  const t = useTranslation()
 
-  const { data = null, refetch } = useQuery(viewerFollowedTagsQuery, {
+  // フィルタ状態
+  const [filters, setFilters] = useState({
+    ageRestrictions: [] as string[],
+    aiUsage: "all",
+    promptPublic: "all",
+    dateFrom: undefined as Date | undefined,
+    dateTo: undefined as Date | undefined,
+  })
+
+  // フィルタ適用時の処理
+  const handleFiltersApply = useCallback(() => {
+    props.setPage(0) // ページをリセット
+  }, [props])
+
+  const { data = null } = useQuery(viewerFollowedTagsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: { offset: 0, limit: 32 },
   })
 
   const {
     data: resp,
-    loading,
-    error,
+    loading: _loading,
+    error: _error,
   } = useQuery(tagWorksQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
@@ -81,8 +97,6 @@ export function SensitiveTagWorkSection(props: Props) {
       },
     },
   })
-
-  const t = useTranslation()
 
   const works = resp?.tagWorks ?? props.works
 
@@ -160,6 +174,11 @@ export function SensitiveTagWorkSection(props: Props) {
               onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
             />
           </div>
+          <CompactFilter
+            filters={filters}
+            onFiltersChange={setFilters}
+            onApplyFilters={handleFiltersApply}
+          />
           <div className="min-w-32">
             <div className="flex items-center space-x-2">
               <Switch
@@ -201,6 +220,11 @@ export function SensitiveTagWorkSection(props: Props) {
             onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
           />
         </div>
+        <CompactFilter
+          filters={filters}
+          onFiltersChange={setFilters}
+          onApplyFilters={handleFiltersApply}
+        />
         <div className="min-w-32">
           <div className="flex items-center space-x-2">
             <Switch

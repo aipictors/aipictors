@@ -25,6 +25,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Switch } from "~/components/ui/switch"
 import { Button } from "~/components/ui/button"
 import { Grid, List, PlaySquare, ExternalLink } from "lucide-react"
+import { CompactFilter } from "~/components/compact-filter"
 
 import { useNavigate } from "@remix-run/react"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
@@ -89,6 +90,15 @@ export function TagWorkSection(props: Props) {
   // ダイアログ制御
   const [dialogIndex, setDialogIndex] = useState<number | null>(null)
 
+  // フィルタ状態
+  const [filters, setFilters] = useState({
+    ageRestrictions: [] as string[],
+    aiUsage: "all",
+    promptPublic: "all",
+    dateFrom: undefined as Date | undefined,
+    dateTo: undefined as Date | undefined,
+  })
+
   // 無限スクロール用の状態
   const [infinitePages, setInfinitePages] = useState<
     FragmentOf<typeof PhotoAlbumWorkFragment>[][]
@@ -107,6 +117,84 @@ export function TagWorkSection(props: Props) {
   const stateKey = `tag-works-${props.tag}-${props.orderBy}-${props.sort}-${props.hasPrompt}`
 
   const t = useTranslation()
+
+  // フィルタ適用時の where 条件を生成
+  const getFilteredWhereCondition = useCallback(() => {
+    const baseWhere = {
+      tagNames: [
+        decodeURIComponent(props.tag),
+        decodeURIComponent(props.tag).toLowerCase(),
+        decodeURIComponent(props.tag).toUpperCase(),
+        decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+          String.fromCharCode(m.charCodeAt(0) - 96),
+        ),
+        decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
+          String.fromCharCode(m.charCodeAt(0) + 96),
+        ),
+      ],
+      orderBy: props.orderBy,
+      sort: props.sort,
+      ratings: ["G", "R15"] as ("G" | "R15" | "R18" | "R18G")[],
+      hasPrompt: props.hasPrompt === 1 ? true : undefined,
+      isPromptPublic: props.hasPrompt === 1 ? true : undefined,
+      isNowCreatedAt: true,
+    }
+
+    // 年齢制限フィルタ
+    if (filters.ageRestrictions.length > 0) {
+      baseWhere.ratings = filters.ageRestrictions as (
+        | "G"
+        | "R15"
+        | "R18"
+        | "R18G"
+      )[]
+    }
+
+    // AI使用フィルタ
+    if (filters.aiUsage === "ai") {
+      baseWhere.hasPrompt = true
+    } else if (filters.aiUsage === "no-ai") {
+      baseWhere.hasPrompt = false
+    }
+
+    // プロンプト公開フィルタ
+    if (filters.promptPublic === "public") {
+      baseWhere.hasPrompt = true
+      baseWhere.isPromptPublic = true
+    } else if (filters.promptPublic === "private") {
+      baseWhere.hasPrompt = true
+      baseWhere.isPromptPublic = false
+    }
+
+    // 期間フィルタ
+    const extendedWhere = { ...baseWhere } as typeof baseWhere & {
+      createdAtAfter?: string
+      beforeCreatedAt?: string
+    }
+
+    if (filters.dateFrom) {
+      extendedWhere.createdAtAfter = filters.dateFrom.toISOString()
+    }
+    if (filters.dateTo) {
+      const endDate = new Date(filters.dateTo)
+      endDate.setHours(23, 59, 59, 999)
+      extendedWhere.beforeCreatedAt = endDate.toISOString()
+    }
+
+    return extendedWhere
+  }, [props.tag, props.orderBy, props.sort, props.hasPrompt, filters])
+
+  // フィルタ適用時の処理
+  const handleFiltersApply = useCallback(() => {
+    // フィルタが適用されたときの処理
+    setIsInitialDataSet(false)
+    setIsInitialized(false)
+    setInfinitePages([])
+    setHasNextPage(true)
+    if (isPagination) {
+      props.setPage(0)
+    }
+  }, [isPagination, props])
 
   // props.mode の変更を監視して内部状態を同期
   useEffect(() => {
@@ -131,25 +219,7 @@ export function TagWorkSection(props: Props) {
       variables: {
         offset: props.page * 32,
         limit: 32,
-        where: {
-          tagNames: [
-            decodeURIComponent(props.tag),
-            decodeURIComponent(props.tag).toLowerCase(),
-            decodeURIComponent(props.tag).toUpperCase(),
-            decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
-              String.fromCharCode(m.charCodeAt(0) - 96),
-            ),
-            decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
-              String.fromCharCode(m.charCodeAt(0) + 96),
-            ),
-          ],
-          orderBy: props.orderBy,
-          sort: props.sort,
-          ratings: ["G", "R15"],
-          hasPrompt: props.hasPrompt === 1 ? true : undefined,
-          isPromptPublic: props.hasPrompt === 1 ? true : undefined,
-          isNowCreatedAt: true,
-        },
+        where: getFilteredWhereCondition(),
       },
       fetchPolicy: "cache-first",
       nextFetchPolicy: "cache-first",
@@ -158,7 +228,7 @@ export function TagWorkSection(props: Props) {
 
   // ────────────────────　無限スクロール用クエリ ────────────────────
   const {
-    data: infiniteResp,
+    data: _infiniteResp,
     loading: infiniteLoading,
     fetchMore,
   } = useQuery(tagWorksQuery, {
@@ -170,25 +240,7 @@ export function TagWorkSection(props: Props) {
     variables: {
       offset: 0,
       limit: 32,
-      where: {
-        tagNames: [
-          decodeURIComponent(props.tag),
-          decodeURIComponent(props.tag).toLowerCase(),
-          decodeURIComponent(props.tag).toUpperCase(),
-          decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
-            String.fromCharCode(m.charCodeAt(0) - 96),
-          ),
-          decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
-            String.fromCharCode(m.charCodeAt(0) + 96),
-          ),
-        ],
-        orderBy: props.orderBy,
-        sort: props.sort,
-        ratings: ["G", "R15"],
-        hasPrompt: props.hasPrompt === 1 ? true : undefined,
-        isPromptPublic: props.hasPrompt === 1 ? true : undefined,
-        isNowCreatedAt: true,
-      },
+      where: getFilteredWhereCondition(),
     },
     fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",
@@ -273,7 +325,7 @@ export function TagWorkSection(props: Props) {
     }
   }, [isPagination, stateKey, isInitialized])
 
-  // ソート・タグ変更時リセット
+  // ソート・タグ・フィルタ変更時リセット
   useEffect(() => {
     if (isInitialized) {
       setIsInitialDataSet(false)
@@ -289,6 +341,7 @@ export function TagWorkSection(props: Props) {
     props.orderBy,
     props.sort,
     props.hasPrompt,
+    filters, // フィルタの変更も監視
     isPagination,
     stateKey,
   ])
@@ -304,25 +357,7 @@ export function TagWorkSection(props: Props) {
         variables: {
           offset: flatWorks.length,
           limit: 32,
-          where: {
-            tagNames: [
-              decodeURIComponent(props.tag),
-              decodeURIComponent(props.tag).toLowerCase(),
-              decodeURIComponent(props.tag).toUpperCase(),
-              decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
-                String.fromCharCode(m.charCodeAt(0) - 96),
-              ),
-              decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
-                String.fromCharCode(m.charCodeAt(0) + 96),
-              ),
-            ],
-            orderBy: props.orderBy,
-            sort: props.sort,
-            ratings: ["G", "R15"],
-            hasPrompt: props.hasPrompt === 1 ? true : undefined,
-            isPromptPublic: props.hasPrompt === 1 ? true : undefined,
-            isNowCreatedAt: true,
-          },
+          where: getFilteredWhereCondition(),
         },
       })
       if (result.data?.tagWorks) {
@@ -345,6 +380,8 @@ export function TagWorkSection(props: Props) {
     props.orderBy,
     props.sort,
     props.hasPrompt,
+    filters, // フィルタも依存関係に追加
+    getFilteredWhereCondition, // 条件生成関数も追加
     isInitialized,
   ])
 
@@ -440,12 +477,13 @@ export function TagWorkSection(props: Props) {
   }
 
   // ───────────────────────── 作品クリック ─────────────────────────
-  const openWork = (idx: number) => {
-    console.log("Open work at index:", idx)
+  const openWork = (idx: string) => {
+    const index = Number.parseInt(idx, 10)
+    console.log("Open work at index:", index)
     if (isDialogMode) {
-      setDialogIndex(idx)
+      setDialogIndex(index)
     } else {
-      navigate(`/posts/${displayedWorks[idx].id}`)
+      navigate(`/posts/${displayedWorks[index].id}`)
     }
   }
 
@@ -516,6 +554,11 @@ export function TagWorkSection(props: Props) {
             onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
             onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
           />
+          <CompactFilter
+            filters={filters}
+            onFiltersChange={setFilters}
+            onApplyFilters={handleFiltersApply}
+          />
           <div className="flex items-center space-x-2">
             <Switch
               onClick={() => props.setHasPrompt(props.hasPrompt === 1 ? 0 : 1)}
@@ -550,6 +593,11 @@ export function TagWorkSection(props: Props) {
           onClickDateSortButton={props.onClickDateSortButton}
           onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
           onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+        />
+        <CompactFilter
+          filters={filters}
+          onFiltersChange={setFilters}
+          onApplyFilters={handleFiltersApply}
         />
         <div className="flex items-center space-x-2">
           <Switch

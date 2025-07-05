@@ -146,7 +146,7 @@ export function ReplyCommentInput(props: Props) {
           />
           <div className="flex items-center space-x-2">
             <label htmlFor="reply-sensitive-checkbox" className="text-xs">
-              {t("センシティブなコメントとして送信する", "Sensitive comment")}
+              {t("隠し付き", "Sensitive comment")}
             </label>
           </div>
         </div>

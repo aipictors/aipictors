@@ -126,7 +126,10 @@ export function WorkCommentResponse(props: Props) {
         <EyeOff className="size-5 text-gray-400" />
         <div className="flex-1">
           <p className="text-sm">
-            {t("センシティブな返信です", "This is a sensitive reply")}
+            {t(
+              "隠し付き（もしくはセンシティブ）な返信です",
+              "This is a sensitive reply",
+            )}
           </p>
         </div>
         <Button
