@@ -81,6 +81,7 @@ export const FollowerListItemFragment = graphql(
     iconUrl
     biography
     isFollowee
+    finalPostedAt
   }`,
 )
 

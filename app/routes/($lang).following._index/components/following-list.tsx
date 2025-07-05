@@ -47,14 +47,11 @@ export function FollowingList() {
 
   const authContext = useContext(AuthContext)
 
-  if (authContext.userId === undefined || !authContext.userId) {
-    return null
-  }
-
   const { data, refetch } = useSuspenseQuery(userQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
-      userId: authContext.userId,
+      userId: authContext.userId ?? "",
       followeesOffset: perPage * page,
       followeesLimit: perPage,
       followeesWorksOffset: 0,
@@ -117,6 +114,10 @@ export function FollowingList() {
 
   const t = useTranslation()
 
+  if (authContext.userId === undefined || !authContext.userId) {
+    return null
+  }
+
   return (
     <div className="container">
       {/* フォロー数と操作ボタン */}
@@ -166,6 +167,9 @@ export function FollowingList() {
                 </SelectItem>
                 <SelectItem value={"DATE_CREATED"}>
                   {t("登録日", "Date Created")}
+                </SelectItem>
+                <SelectItem value={"DATE_POSTED"}>
+                  {t("作品投稿日", "Date Posted")}
                 </SelectItem>
               </SelectContent>
             </Select>

@@ -327,7 +327,7 @@ export function ImagesPreview(props: Props) {
     <div className="flex flex-col space-y-4">
       {" "}
       <div className="relative">
-        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card bg-zinc-100 object-contain dark:bg-zinc-900 ">
+        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-zinc-100 object-contain dark:bg-zinc-900 ">
           <div className="inline-block overflow-hidden text-center">
             <img
               className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain dark:bg-zinc-900"
@@ -342,7 +342,7 @@ export function ImagesPreview(props: Props) {
               style={{ userSelect: "none" }}
             />
             {props.imageURLs.map((url, index) => (
-              // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+              // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
               <img
                 key={index.toString()}
                 className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain md:max-h-[72vh] dark:bg-zinc-900"
@@ -397,8 +397,8 @@ export function ImagesPreview(props: Props) {
         )}
         {/* Display full-screen preview */}
         {isOpen && (
-          // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-          // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
+          // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
+          // biome-ignore lint/a11y/noStaticElementInteractions: keyboard navigation required
           <div
             className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80"
             onClick={handleBackgroundClick}

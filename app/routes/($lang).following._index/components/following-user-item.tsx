@@ -18,6 +18,7 @@ export function FollowingUserItem(props: Props) {
     }
     return text
   }
+  console.log("(props.user)", props.user)
 
   return (
     <div className="flex flex-col space-y-2 md:flex-row">
@@ -39,6 +40,12 @@ export function FollowingUserItem(props: Props) {
             targetUserId={props.user.id}
             isFollow={props.user.isFollowee}
           />
+        </div>
+        <div className="text-sm opacity-50">
+          {props.user.finalPostedAt &&
+          props.user.finalPostedAt * 1000 <= Date.now()
+            ? new Date(props.user.finalPostedAt * 1000).toLocaleString()
+            : ""}
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-x-2 gap-y-2 md:justify-start">
@@ -81,6 +88,7 @@ export const FolloweeListItemFragment = graphql(
     iconUrl
     biography
     isFollowee
+    finalPostedAt
   }`,
 )
 
