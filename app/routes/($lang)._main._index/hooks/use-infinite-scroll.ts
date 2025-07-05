@@ -14,34 +14,16 @@ export function useInfiniteScroll(
 ): RefObject<HTMLDivElement> {
   const ref = useRef<HTMLDivElement>(null)
 
-  // 依存が変わるたびにログ
-  useEffect(() => {
-    console.debug("[useInfiniteScroll] deps", { hasNext, loading })
-  }, [hasNext, loading])
-
   useEffect(() => {
     const el = ref.current
     if (!el) {
-      console.debug("[useInfiniteScroll] sentinel is null → skip observe")
       return
     }
-
-    console.debug("[useInfiniteScroll] create observer", {
-      rootMargin: "300px",
-    })
 
     const ob = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          console.debug("[useInfiniteScroll] entry", {
-            isIntersecting: e.isIntersecting,
-            intersectionRatio: e.intersectionRatio.toFixed(2),
-            hasNext,
-            loading,
-          })
-
           if (e.isIntersecting && hasNext && !loading) {
-            console.debug("[useInfiniteScroll] → onReachEnd fired")
             onReachEnd()
           }
         })
@@ -52,7 +34,6 @@ export function useInfiniteScroll(
     ob.observe(el)
 
     return () => {
-      console.debug("[useInfiniteScroll] disconnect observer")
       ob.disconnect()
     }
   }, [onReachEnd, hasNext, loading])

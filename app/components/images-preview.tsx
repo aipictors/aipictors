@@ -1,5 +1,5 @@
 import { Button } from "~/components/ui/button"
-import { ChevronLeft, ChevronRight, XIcon } from "lucide-react"
+import { ChevronLeft, ChevronRight, XIcon, Keyboard } from "lucide-react"
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 
@@ -8,13 +8,16 @@ type Props = {
   thumbnailUrl: string
   currentIndex: number
   setCurrentIndex: (index: number) => void
+  mode?: "dialog" | "page" // ダイアログモードかページモードかを指定
 }
 
 export function ImagesPreview(props: Props) {
+  const { mode = "page" } = props
   const [isOpen, setIsOpen] = useState(false)
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
+  const [showKeyboardHint, setShowKeyboardHint] = useState(true)
   const imgRef = useRef<HTMLImageElement>(null)
   const startCoord = useRef({ x: 0, y: 0 })
   const prevTranslate = useRef({ x: 0, y: 0 })
@@ -24,35 +27,66 @@ export function ImagesPreview(props: Props) {
     setIsOpen(true)
     setTranslate({ x: 0, y: 0 })
     setScale(1)
+    setShowKeyboardHint(true)
     props.setCurrentIndex(props.imageURLs.indexOf(props.thumbnailUrl))
   }
 
   const closePreview = () => setIsOpen(false)
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    // 入力欄にフォーカスしている場合はショートカットキーを無効化
+    const activeElement = document.activeElement
+    const tagName = activeElement?.tagName.toLowerCase()
+    const isInputFocused =
+      tagName === "input" ||
+      tagName === "textarea" ||
+      activeElement?.getAttribute("contenteditable") === "true" ||
+      activeElement?.getAttribute("role") === "textbox"
+
+    // モードに応じて対応するキーを決定
+    const supportedKeys =
+      mode === "dialog"
+        ? ["a", "d"] // ダイアログモードはADキーのみ
+        : ["ArrowLeft", "ArrowRight", "a", "d"] // ページモードは矢印キー + ADキー
+
     if (!isOpen) {
-      const tagName = document.activeElement?.tagName.toLowerCase()
-      if (
-        ["ArrowLeft", "ArrowRight"].includes(e.key) &&
-        tagName !== "input" &&
-        tagName !== "textarea"
-      ) {
+      if (supportedKeys.includes(e.key.toLowerCase()) && !isInputFocused) {
         e.preventDefault()
       } else {
         return
       }
     }
-    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
+
+    // 入力欄にフォーカスしている場合は処理を停止
+    if (isInputFocused) {
+      return
+    }
+
+    if (
+      ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "a", "d"].includes(
+        e.key.toLowerCase(),
+      )
+    ) {
       e.preventDefault()
     }
+
     if (e.key === "Escape") closePreview()
-    if (e.key === "ArrowLeft") prevImage()
-    if (e.key === "ArrowRight") nextImage()
+
+    // ダイアログモードの場合はADキーのみ、ページモードは矢印キー + ADキー
+    if (mode === "dialog") {
+      if (e.key.toLowerCase() === "a") prevImage()
+      if (e.key.toLowerCase() === "d") nextImage()
+    } else {
+      if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") prevImage()
+      if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") nextImage()
+    }
+
     if (e.key === "ArrowUp") increaseScale()
     if (e.key === "ArrowDown") decreaseScale()
   }
 
   const nextImage = () => {
+    setShowKeyboardHint(false)
     if (props.currentIndex < props.imageURLs.length - 1) {
       props.setCurrentIndex(props.currentIndex + 1)
     } else {
@@ -62,6 +96,7 @@ export function ImagesPreview(props: Props) {
   }
 
   const prevImage = () => {
+    setShowKeyboardHint(false)
     if (props.currentIndex > 0) {
       props.setCurrentIndex(props.currentIndex - 1)
     } else {
@@ -84,7 +119,7 @@ export function ImagesPreview(props: Props) {
   }
 
   const handleDoubleTap = (e: React.TouchEvent<HTMLImageElement>) => {
-    const currentTime = new Date().getTime()
+    const currentTime = Date.now()
     const tapLength = currentTime - lastTap.current
 
     // ダブルタップの間隔を少し広げ、誤検知を防ぐ
@@ -248,7 +283,7 @@ export function ImagesPreview(props: Props) {
 
   const handleMainTouchEnd: React.TouchEventHandler<HTMLDivElement> = (e) => {
     const deltaX = e.changedTouches[0].clientX - startCoord.current.x
-    const deltaY = e.changedTouches[0].clientY - startCoord.current.y
+    const _deltaY = e.changedTouches[0].clientY - startCoord.current.y
     const swipeDistance = Math.abs(deltaX)
 
     if (swipeDistance > 50) {
@@ -290,6 +325,7 @@ export function ImagesPreview(props: Props) {
 
   return (
     <div className="flex flex-col space-y-4">
+      {" "}
       <div className="relative">
         <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-card bg-zinc-100 object-contain dark:bg-zinc-900 ">
           <div className="inline-block overflow-hidden text-center">
@@ -319,9 +355,50 @@ export function ImagesPreview(props: Props) {
             ))}
           </div>
         </div>
+
+        {/* キーボードショートカットヒント */}
+        {props.imageURLs.length > 1 && showKeyboardHint && (
+          <div className="absolute top-3 left-3 hidden items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm md:flex">
+            <Keyboard className="h-4 w-4" />
+            <div className="flex items-center gap-1 text-xs">
+              {mode === "dialog" ? (
+                // ダイアログモード: ADキーのみ
+                <>
+                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                    A
+                  </kbd>
+                  <span className="mx-1">•</span>
+                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                    D
+                  </kbd>
+                </>
+              ) : (
+                // ページモード: ADキー + 矢印キー
+                <>
+                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                    A
+                  </kbd>
+                  <span>/</span>
+                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                    ←
+                  </kbd>
+                  <span className="mx-1">•</span>
+                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                    D
+                  </kbd>
+                  <span>/</span>
+                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                    →
+                  </kbd>
+                </>
+              )}
+            </div>
+          </div>
+        )}
         {/* Display full-screen preview */}
         {isOpen && (
           // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+          // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
           <div
             className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80"
             onClick={handleBackgroundClick}
@@ -355,6 +432,46 @@ export function ImagesPreview(props: Props) {
             />
             {props.imageURLs.length > 1 && (
               <>
+                {/* キーボードショートカットヒント（フルスクリーン） */}
+                {showKeyboardHint && (
+                  <div className="absolute top-6 left-6 hidden items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm md:flex">
+                    <Keyboard className="h-4 w-4" />
+                    <div className="flex items-center gap-1 text-xs">
+                      {mode === "dialog" ? (
+                        // ダイアログモード: ADキーのみ
+                        <>
+                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                            A
+                          </kbd>
+                          <span className="mx-1">•</span>
+                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                            D
+                          </kbd>
+                        </>
+                      ) : (
+                        // ページモード: ADキー + 矢印キー
+                        <>
+                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                            A
+                          </kbd>
+                          <span>/</span>
+                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                            ←
+                          </kbd>
+                          <span className="mx-1">•</span>
+                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                            D
+                          </kbd>
+                          <span>/</span>
+                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                            →
+                          </kbd>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="absolute bottom-4 flex w-full items-center justify-center">
                   <Button
                     className="mr-4 transform rounded-full"

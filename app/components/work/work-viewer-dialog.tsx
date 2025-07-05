@@ -248,6 +248,19 @@ export function WorkViewerDialog({
   // ────────── キー / ホイール ──────────
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const activeElement = document.activeElement
+      const tagName = activeElement?.tagName.toLowerCase()
+      const isInputFocused =
+        tagName === "input" ||
+        tagName === "textarea" ||
+        activeElement?.getAttribute("contenteditable") === "true" ||
+        activeElement?.getAttribute("role") === "textbox"
+
+      // 入力欄にフォーカスしている場合は処理を停止
+      if (isInputFocused) {
+        return
+      }
+
       if (e.key === "ArrowLeft") prev()
       if (e.key === "ArrowRight") next()
       if (e.key === "Escape") onClose()
@@ -334,6 +347,7 @@ export function WorkViewerDialog({
                   previousWork: null,
                 }}
                 userSetting={undefined}
+                mode={"dialog"}
               />
               <WorkCommentList
                 workId={currentWork.id}

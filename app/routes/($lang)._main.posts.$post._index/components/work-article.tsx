@@ -30,6 +30,7 @@ import { Separator } from "~/components/ui/separator"
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
   userSetting?: FragmentOf<typeof userSettingFragment>
+  mode?: "dialog" | "page"
 }
 
 /**
@@ -112,6 +113,7 @@ export function WorkArticle(props: Props) {
               return subWork.imageUrl ?? ""
             })}
           onSelectedImage={setSelectedImageUrl}
+          mode={props.mode}
         />
       )}
       {props.work.type === "VIDEO" && (

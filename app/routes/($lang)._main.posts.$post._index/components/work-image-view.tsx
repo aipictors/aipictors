@@ -6,6 +6,7 @@ type Props = {
   workImageURL?: string
   subWorkImageURLs: string[]
   onSelectedImage?: (imageURL: string) => void
+  mode?: "dialog" | "page"
 }
 
 export function WorkImageView(props: Props) {
@@ -38,6 +39,7 @@ export function WorkImageView(props: Props) {
           imageURLs={allImageURLs}
           currentIndex={currentIndex}
           setCurrentIndex={setCurrentIndex}
+          mode={props.mode}
         />
         <WorkImageThumbnailCarousel
           allImageURLs={allImageURLs}
@@ -57,6 +59,7 @@ export function WorkImageView(props: Props) {
           setCurrentIndex={() => {}}
           thumbnailUrl={props.workImageURL}
           imageURLs={[props.workImageURL]}
+          mode={props.mode}
         />
       </div>
     )
