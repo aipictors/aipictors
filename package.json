@@ -122,7 +122,7 @@
     "vaul": "^1.1.1",
     "vite-bundle-analyzer": "^0.22.3",
     "xstate": "^5.17.4",
-    "zenn-content-css": "^0.1.155"
+    "zenn-content-css": "^0.2.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
