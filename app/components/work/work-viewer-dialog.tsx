@@ -300,7 +300,7 @@ export function WorkViewerDialog({
   // ───────────────── Render ─────────────────
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="flex h-[90vh] w-[100vw] max-w-[100vw] overflow-hidden p-0">
+      <DialogContent className="flex h-[90vh] w-[100vw] max-w-[88vw] overflow-hidden p-0">
         {/* 詳細パネル (Desktop) */}
         <aside className="hidden w-full flex-col bg-background/80 backdrop-blur-sm md:flex">
           <DialogHeader className="border-b p-4 pb-2">

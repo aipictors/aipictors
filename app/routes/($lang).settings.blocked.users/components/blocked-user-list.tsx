@@ -19,7 +19,7 @@ export function BlockedUserList() {
     variables: { offset: 0, limit: 128 },
   })
 
-  const [mutation] = useMutation(blockUserMutation)
+  const [mutation] = useMutation(unblockUserMutation)
 
   const handleUnblock = async (userID: string) => {
     await mutation({
@@ -33,7 +33,6 @@ export function BlockedUserList() {
     console.log("Unblocking user:", userID)
   }
 
-  // 仮のデータ（GraphQL実装までの暫定対応）
   const blockedUsers: BlockedUserType[] = data?.viewer?.blockedUsers ?? []
 
   return (
@@ -77,9 +76,9 @@ const viewerBlockedUsersQuery = graphql(
   }`,
 )
 
-const blockUserMutation = graphql(
-  `mutation BlockUser($input: BlockUserInput!) {
-    blockUser(input: $input) {
+const unblockUserMutation = graphql(
+  `mutation BlockUser($input: UnblockUserInput!) {
+    unblockUser(input: $input) {
       id
       isBlocked
     }
