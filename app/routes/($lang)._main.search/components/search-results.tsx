@@ -52,7 +52,7 @@ export const SearchResults = ({ initialWorks = [], models = [] }: Props) => {
     dateFrom: urlDateFrom ? new Date(urlDateFrom) : undefined,
     dateTo: urlDateTo ? new Date(urlDateTo) : undefined,
     myWorksOnly: urlMyWorksOnly,
-    selectedModelIds: urlModelIds,
+    selectedModelId: urlModelIds.length > 0 ? urlModelIds[0] : undefined,
     modelSearch: "",
   }))
 
@@ -65,7 +65,7 @@ export const SearchResults = ({ initialWorks = [], models = [] }: Props) => {
       dateFrom: urlDateFrom ? new Date(urlDateFrom) : undefined,
       dateTo: urlDateTo ? new Date(urlDateTo) : undefined,
       myWorksOnly: urlMyWorksOnly,
-      selectedModelIds: urlModelIds,
+      selectedModelId: urlModelIds.length > 0 ? urlModelIds[0] : undefined,
       modelSearch: "",
     })
   }, [
@@ -138,11 +138,8 @@ export const SearchResults = ({ initialWorks = [], models = [] }: Props) => {
           newParams.delete("myWorksOnly")
         }
 
-        if (
-          newFilters.selectedModelIds &&
-          newFilters.selectedModelIds.length > 0
-        ) {
-          newParams.set("modelIds", newFilters.selectedModelIds.join(","))
+        if (newFilters.selectedModelId) {
+          newParams.set("modelIds", newFilters.selectedModelId)
         } else {
           newParams.delete("modelIds")
         }
@@ -220,8 +217,8 @@ export const SearchResults = ({ initialWorks = [], models = [] }: Props) => {
     }
 
     // AIモデルフィルタ
-    if (filters.selectedModelIds && filters.selectedModelIds.length > 0) {
-      where.workModelIds = filters.selectedModelIds
+    if (filters.selectedModelId) {
+      where.workModelIds = [filters.selectedModelId]
     }
 
     return where
@@ -299,17 +296,11 @@ export const SearchResults = ({ initialWorks = [], models = [] }: Props) => {
       badges.push(t("自分の作品のみ", "My works only"))
     }
 
-    if (filters.selectedModelIds && filters.selectedModelIds.length > 0) {
-      if (filters.selectedModelIds.length === 1) {
-        const firstModelId = filters.selectedModelIds[0]
-        const modelName =
-          models.find((m) => m.id === firstModelId)?.displayName ||
-          models.find((m) => m.id === firstModelId)?.name ||
-          firstModelId
-        badges.push(`${t("AIモデル", "AI Model")}: ${modelName}`)
-      } else {
+    if (filters.selectedModelId) {
+      const selectedModel = models.find((m) => m.id === filters.selectedModelId)
+      if (selectedModel) {
         badges.push(
-          `${t("AIモデル", "AI Model")}: ${filters.selectedModelIds.length}${t("個選択", " selected")}`,
+          `${t("AIモデル", "AI Model")}: ${selectedModel.displayName || selectedModel.name}`,
         )
       }
     }
@@ -349,8 +340,7 @@ export const SearchResults = ({ initialWorks = [], models = [] }: Props) => {
           filters={filters}
           onFiltersChange={handleFilterChange}
           onApplyFilters={() => {}}
-          models={models}
-          showMyWorksOnly={true}
+          isLoading={isSearching}
         />
         {isSearching && (
           <div className="flex items-center gap-2 text-muted-foreground text-sm">

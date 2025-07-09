@@ -85,6 +85,7 @@ type LocalFilterValues = {
   dateTo: Date | undefined
   orderBy: string
   workModelId: string | undefined
+  myWorksOnly?: boolean
 }
 
 export function TagWorkSection(props: Props) {
@@ -109,6 +110,7 @@ export function TagWorkSection(props: Props) {
     dateTo: undefined,
     orderBy: "LIKES_COUNT",
     workModelId: undefined, // 単体として初期化
+    myWorksOnly: false,
   })
 
   // CompactFilterとの互換性のため、型変換を行う関数
@@ -122,6 +124,7 @@ export function TagWorkSection(props: Props) {
       dateTo: newFilters.dateTo,
       orderBy: newFilters.orderBy || "LIKES_COUNT",
       workModelId: newFilters.workModelId, // 単体として設定
+      myWorksOnly: newFilters.myWorksOnly || false,
     })
   }, [])
 
@@ -159,6 +162,7 @@ export function TagWorkSection(props: Props) {
       beforeCreatedAt?: string
       isSensitive?: boolean
       modelPostedIds?: string[]
+      userId?: string
     } = {
       tagNames: [
         decodeURIComponent(props.tag),
@@ -177,6 +181,11 @@ export function TagWorkSection(props: Props) {
       hasPrompt: props.hasPrompt === 1 ? true : undefined,
       isPromptPublic: props.hasPrompt === 1 ? true : undefined,
       isNowCreatedAt: true,
+    }
+
+    // 自分の作品のみフィルタ
+    if (filters.myWorksOnly && authContext.userId) {
+      baseWhere.userId = authContext.userId
     }
 
     // AIモデルフィルタ - modelPostedIdsを使用
@@ -216,7 +225,14 @@ export function TagWorkSection(props: Props) {
     }
 
     return baseWhere
-  }, [props.tag, props.orderBy, props.sort, props.hasPrompt, filters])
+  }, [
+    props.tag,
+    props.orderBy,
+    props.sort,
+    props.hasPrompt,
+    filters,
+    authContext.userId,
+  ])
 
   console.log("Current filters:", getFilteredWhereCondition())
 
@@ -229,6 +245,7 @@ export function TagWorkSection(props: Props) {
       dateTo: filters.dateTo,
       orderBy: filters.orderBy,
       workModelId: filters.workModelId,
+      myWorksOnly: filters.myWorksOnly,
     }),
     [filters],
   )
@@ -270,8 +287,6 @@ export function TagWorkSection(props: Props) {
         limit: 32,
         where: getFilteredWhereCondition(),
       },
-      fetchPolicy: "cache-and-network",
-      nextFetchPolicy: "cache-first",
     },
   )
 
@@ -291,8 +306,6 @@ export function TagWorkSection(props: Props) {
       limit: 32,
       where: getFilteredWhereCondition(),
     },
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
     // notifyOnNetworkStatusChange: true,
   })
 

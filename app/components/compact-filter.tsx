@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { useState, useId, useCallback } from "react"
+import { useState, useId, useCallback, useEffect, useContext } from "react"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Input } from "~/components/ui/input"
@@ -23,7 +23,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { Calendar } from "~/components/ui/calendar"
-import { FilterIcon, CalendarIcon, XIcon, Search } from "lucide-react"
+import { FilterIcon, CalendarIcon, XIcon, Search, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "~/lib/utils"
 import { useTranslation } from "~/hooks/use-translation"
@@ -35,12 +35,14 @@ import {
   SelectItem,
 } from "~/components/ui/select"
 import { graphql } from "gql.tada"
+import { useSearchParams } from "@remix-run/react"
+import { AuthContext } from "~/contexts/auth-context"
 
 export type AiModel = {
   id: string
   name: string
   displayName?: string
-  workModelId: string
+  workModelId: string | null
 }
 
 export type FilterValues = {
@@ -60,165 +62,45 @@ type Props = {
   filters: FilterValues
   onFiltersChange: (filters: FilterValues) => void
   onApplyFilters: () => void
+  isLoading?: boolean
 }
 
 // モデル名キャッシュ
 let cachedModels: AiModel[] | null = null
 
-export function CompactFilter(props: Props) {
-  const { filters, onFiltersChange, onApplyFilters } = props
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const [localModelSearch, setLocalModelSearch] = useState("")
-  const [showAllModels, setShowAllModels] = useState(false)
-
-  // ローカル状態でフィルタを管理（適用ボタンが押されるまで親に反映しない）
-  const [localFilters, setLocalFilters] = useState<FilterValues>(() => ({
-    ...filters,
-    selectedModelId: undefined,
-  }))
-
-  const uniqueId = useId()
-  const t = useTranslation()
-
-  // モデル一覧を取得
-  const { data: modelsData, loading: modelsLoading } = useQuery(AiModelsQuery, {
-    skip: cachedModels !== null,
-    onCompleted: (data) => {
-      if (data.aiModels) {
-        cachedModels = data.aiModels.map((model) => ({
-          id: model.id,
-          name: model.name,
-          displayName: model.name,
-          workModelId: model.workModelId ?? "",
-        }))
-      }
-    },
-  })
-
-  // 現在のモデル一覧を取得
-  const models =
-    cachedModels ||
-    modelsData?.aiModels?.map((model) => ({
-      id: model.id,
-      name: model.name,
-      displayName: model.name,
-      workModelId: model.workModelId,
-    })) ||
-    []
-
-  // フィルタの初期化関数
-  const initializeLocalFilters = useCallback(() => {
-    const initialized: FilterValues = {
-      ...filters,
-      selectedModelId: undefined,
-    }
-
-    // workModelIdから選択されたモデルIDを復元
-    if (filters.workModelId && models.length > 0) {
-      const selectedModel = models.find(
-        (model) => model.workModelId === filters.workModelId,
-      )
-      if (selectedModel) {
-        initialized.selectedModelId = selectedModel.id
-      }
-    }
-
-    return initialized
-  }, [filters, models])
-
-  // PC版モーダルが開かれた時の処理
-  const handleDialogOpenChange = (open: boolean) => {
-    setIsDialogOpen(open)
-    if (open) {
-      const initializedFilters = initializeLocalFilters()
-      setLocalFilters(initializedFilters)
-    }
-  }
-
-  // スマホ版シートが開かれた時の処理
-  const handleSheetOpenChange = (open: boolean) => {
-    setIsSheetOpen(open)
-    if (open) {
-      const initializedFilters = initializeLocalFilters()
-      setLocalFilters(initializedFilters)
-    }
-  }
-
-  // ローカルフィルタを更新する関数
-  const updateLocalFilter = (
+// フィルタコンテンツのコンポーネント
+function FilterContent({
+  inSheet = false,
+  localFilters,
+  updateLocalFilter,
+  uniqueId,
+  ageRestrictions,
+  t,
+  localModelSearch,
+  setLocalModelSearch,
+  modelsLoading,
+  models,
+  showAllModels,
+  setShowAllModels,
+  authContext,
+}: {
+  inSheet?: boolean
+  localFilters: FilterValues
+  updateLocalFilter: (
     key: keyof FilterValues,
     value: string | string[] | Date | undefined | boolean,
-  ) => {
-    setLocalFilters((prev) => ({ ...prev, [key]: value }))
-  }
-
-  // 適用ボタンが押された時の処理
-  const handleApplyFilters = () => {
-    // 選択されたモデルのworkModelIdを取得
-    const selectedWorkModelId = localFilters.selectedModelId
-      ? models.find((model) => model.id === localFilters.selectedModelId)
-          ?.workModelId
-      : undefined
-
-    const updatedFilters = {
-      ...localFilters,
-      workModelId: selectedWorkModelId ?? undefined,
-    }
-
-    console.log(
-      "Applying filters with workModelId:",
-      updatedFilters.workModelId,
-    )
-    onFiltersChange(updatedFilters)
-    onApplyFilters()
-    setIsDialogOpen(false)
-    setIsSheetOpen(false)
-  }
-
-  const ageRestrictions = [
-    { value: "G", label: t("全年齢", "All Ages") },
-    { value: "R15", label: "R-15" },
-    { value: "R18", label: "R-18" },
-    { value: "R18G", label: "R-18G" },
-  ]
-
-  const clearLocalFilters = () => {
-    const clearedFilters = {
-      ageRestrictions: [],
-      aiUsage: "all",
-      promptPublic: "all",
-      dateFrom: undefined,
-      dateTo: undefined,
-      myWorksOnly: false,
-      selectedModelId: undefined,
-      modelSearch: "",
-      workModelId: undefined,
-      orderBy: "LIKES_COUNT",
-    }
-    setLocalFilters(clearedFilters)
-    setLocalModelSearch("")
-  }
-
-  const hasActiveFilters =
-    filters.ageRestrictions.length > 0 ||
-    filters.promptPublic !== "all" ||
-    filters.dateFrom ||
-    filters.dateTo ||
-    filters.myWorksOnly ||
-    filters.workModelId ||
-    (filters.orderBy && filters.orderBy !== "LIKES_COUNT")
-
-  const hasLocalActiveFilters =
-    localFilters.ageRestrictions.length > 0 ||
-    localFilters.aiUsage !== "all" ||
-    localFilters.promptPublic !== "all" ||
-    localFilters.dateFrom ||
-    localFilters.dateTo ||
-    localFilters.myWorksOnly ||
-    localFilters.selectedModelId ||
-    (localFilters.orderBy && localFilters.orderBy !== "LIKES_COUNT")
-
+  ) => void
+  uniqueId: string
+  ageRestrictions: { value: string; label: string }[]
+  t: (jaText: string, enText: string) => string
+  localModelSearch: string
+  setLocalModelSearch: (value: string) => void
+  modelsLoading: boolean
+  models: AiModel[]
+  showAllModels: boolean
+  setShowAllModels: (value: boolean) => void
+  authContext: { isNotLoggedIn: boolean }
+}) {
   // モデル検索の絞り込み
   const filteredModels = models.filter(
     (model) =>
@@ -237,9 +119,7 @@ export function CompactFilter(props: Props) {
     (model) => model.id !== localFilters.selectedModelId,
   )
 
-  // フィルタコンテンツのコンポーネント
-  // biome-ignore lint/nursery/noNestedComponentDefinitions: <explanation>
-  const FilterContent = ({ inSheet = false }: { inSheet?: boolean }) => (
+  return (
     <div
       className={cn(
         "space-y-4 overflow-y-auto",
@@ -303,21 +183,23 @@ export function CompactFilter(props: Props) {
       </div>
 
       {/* 自分の作品のみ */}
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id={`${uniqueId}-my-works-only-${inSheet ? "sheet" : "dialog"}`}
-          checked={localFilters.myWorksOnly || false}
-          onCheckedChange={(checked) => {
-            updateLocalFilter("myWorksOnly", checked === true)
-          }}
-        />
-        <label
-          htmlFor={`${uniqueId}-my-works-only-${inSheet ? "sheet" : "dialog"}`}
-          className="cursor-pointer font-medium text-sm"
-        >
-          {t("自分の作品のみ", "My works only")}
-        </label>
-      </div>
+      {!authContext.isNotLoggedIn && (
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={`${uniqueId}-my-works-only-${inSheet ? "sheet" : "dialog"}`}
+            checked={localFilters.myWorksOnly || false}
+            onCheckedChange={(checked) => {
+              updateLocalFilter("myWorksOnly", checked === true)
+            }}
+          />
+          <label
+            htmlFor={`${uniqueId}-my-works-only-${inSheet ? "sheet" : "dialog"}`}
+            className="cursor-pointer font-medium text-sm"
+          >
+            {t("自分の作品のみ", "My works only")}
+          </label>
+        </div>
+      )}
 
       {/* AIモデル選択 */}
       <div className="space-y-2">
@@ -498,6 +380,261 @@ export function CompactFilter(props: Props) {
       </div>
     </div>
   )
+}
+
+export function CompactFilter(props: Props) {
+  const { filters, onFiltersChange, onApplyFilters, isLoading = false } = props
+  const authContext = useContext(AuthContext)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const [localModelSearch, setLocalModelSearch] = useState("")
+  const [showAllModels, setShowAllModels] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // URLパラメータからフィルタ条件を初期化
+  useEffect(() => {
+    const urlFilters: FilterValues = {
+      ageRestrictions: searchParams.get("ageRestrictions")?.split(",") || [],
+      aiUsage: searchParams.get("aiUsage") || "all",
+      promptPublic: searchParams.get("promptPublic") || "all",
+      dateFrom: searchParams.get("dateFrom")
+        ? new Date(searchParams.get("dateFrom") as string)
+        : undefined,
+      dateTo: searchParams.get("dateTo")
+        ? new Date(searchParams.get("dateTo") as string)
+        : undefined,
+      myWorksOnly:
+        searchParams.get("myWorksOnly") === "true" &&
+        !authContext.isNotLoggedIn,
+      modelSearch: searchParams.get("modelSearch") || "",
+      workModelId: searchParams.get("workModelId") || undefined,
+      orderBy: searchParams.get("orderBy") || "LIKES_COUNT",
+    }
+
+    // URLパラメータの値が現在のフィルタと異なる場合のみ更新
+    if (JSON.stringify(urlFilters) !== JSON.stringify(filters)) {
+      onFiltersChange(urlFilters)
+    }
+  }, [authContext.isNotLoggedIn])
+
+  // フィルタ条件をURLパラメータに保存
+  const updateUrlParams = useCallback(
+    (newFilters: FilterValues) => {
+      const newParams = new URLSearchParams(searchParams)
+
+      // フィルタ条件をURLパラメータに設定
+      if (newFilters.ageRestrictions.length > 0) {
+        newParams.set("ageRestrictions", newFilters.ageRestrictions.join(","))
+      } else {
+        newParams.delete("ageRestrictions")
+      }
+
+      if (newFilters.aiUsage !== "all") {
+        newParams.set("aiUsage", newFilters.aiUsage)
+      } else {
+        newParams.delete("aiUsage")
+      }
+
+      if (newFilters.promptPublic !== "all") {
+        newParams.set("promptPublic", newFilters.promptPublic)
+      } else {
+        newParams.delete("promptPublic")
+      }
+
+      if (newFilters.dateFrom) {
+        newParams.set(
+          "dateFrom",
+          newFilters.dateFrom.toISOString().split("T")[0],
+        )
+      } else {
+        newParams.delete("dateFrom")
+      }
+
+      if (newFilters.dateTo) {
+        newParams.set("dateTo", newFilters.dateTo.toISOString().split("T")[0])
+      } else {
+        newParams.delete("dateTo")
+      }
+
+      if (newFilters.myWorksOnly && !authContext.isNotLoggedIn) {
+        newParams.set("myWorksOnly", "true")
+      } else {
+        newParams.delete("myWorksOnly")
+      }
+
+      if (newFilters.modelSearch) {
+        newParams.set("modelSearch", newFilters.modelSearch)
+      } else {
+        newParams.delete("modelSearch")
+      }
+
+      if (newFilters.workModelId) {
+        newParams.set("workModelId", newFilters.workModelId)
+      } else {
+        newParams.delete("workModelId")
+      }
+
+      if (newFilters.orderBy && newFilters.orderBy !== "LIKES_COUNT") {
+        newParams.set("orderBy", newFilters.orderBy)
+      } else {
+        newParams.delete("orderBy")
+      }
+
+      setSearchParams(newParams, { replace: true })
+    },
+    [searchParams, setSearchParams],
+  )
+
+  // ローカル状態でフィルタを管理（適用ボタンが押されるまで親に反映しない）
+  const [localFilters, setLocalFilters] = useState<FilterValues>(() => ({
+    ...filters,
+    selectedModelId: undefined,
+  }))
+
+  const uniqueId = useId()
+  const t = useTranslation()
+
+  // モデル一覧を取得
+  const { data: modelsData, loading: modelsLoading } = useQuery(AiModelsQuery, {
+    skip: cachedModels !== null,
+    onCompleted: (data) => {
+      if (data.aiModels) {
+        cachedModels = data.aiModels.map((model) => ({
+          id: model.id,
+          name: model.name,
+          displayName: model.name,
+          workModelId: model.workModelId,
+        }))
+      }
+    },
+  })
+
+  // 現在のモデル一覧を取得
+  const models =
+    cachedModels ||
+    modelsData?.aiModels?.map((model) => ({
+      id: model.id,
+      name: model.name,
+      displayName: model.name,
+      workModelId: model.workModelId,
+    })) ||
+    []
+
+  // フィルタの初期化関数
+  const initializeLocalFilters = useCallback(() => {
+    const initialized: FilterValues = {
+      ...filters,
+      selectedModelId: undefined,
+      myWorksOnly: authContext.isNotLoggedIn ? false : filters.myWorksOnly,
+    }
+
+    // workModelIdから選択されたモデルIDを復元
+    if (filters.workModelId && models.length > 0) {
+      const selectedModel = models.find(
+        (model) => model.workModelId === filters.workModelId,
+      )
+      if (selectedModel) {
+        initialized.selectedModelId = selectedModel.id
+      }
+    }
+
+    return initialized
+  }, [filters, models, authContext.isNotLoggedIn])
+
+  // PC版モーダルが開かれた時の処理
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsDialogOpen(open)
+    if (open) {
+      const initializedFilters = initializeLocalFilters()
+      setLocalFilters(initializedFilters)
+    }
+  }
+
+  // スマホ版シートが開かれた時の処理
+  const handleSheetOpenChange = (open: boolean) => {
+    setIsSheetOpen(open)
+    if (open) {
+      const initializedFilters = initializeLocalFilters()
+      setLocalFilters(initializedFilters)
+    }
+  }
+
+  // ローカルフィルタを更新する関数
+  const updateLocalFilter = (
+    key: keyof FilterValues,
+    value: string | string[] | Date | undefined | boolean,
+  ) => {
+    setLocalFilters((prev) => ({ ...prev, [key]: value }))
+  }
+
+  // 適用ボタンが押された時の処理
+  const handleApplyFilters = () => {
+    // 選択されたモデルのworkModelIdを取得
+    const selectedWorkModelId = localFilters.selectedModelId
+      ? models.find((model) => model.id === localFilters.selectedModelId)
+          ?.workModelId
+      : undefined
+
+    const updatedFilters = {
+      ...localFilters,
+      workModelId: selectedWorkModelId ?? undefined,
+    }
+
+    // URLパラメータを更新
+    updateUrlParams(updatedFilters)
+
+    console.log(
+      "Applying filters with workModelId:",
+      updatedFilters.workModelId,
+    )
+    onFiltersChange(updatedFilters)
+    onApplyFilters()
+    setIsDialogOpen(false)
+    setIsSheetOpen(false)
+  }
+
+  const ageRestrictions = [
+    { value: "G", label: t("全年齢", "All Ages") },
+    { value: "R15", label: "R-15" },
+    { value: "R18", label: "R-18" },
+    { value: "R18G", label: "R-18G" },
+  ]
+
+  const clearLocalFilters = () => {
+    const clearedFilters = {
+      ageRestrictions: [],
+      aiUsage: "all",
+      promptPublic: "all",
+      dateFrom: undefined,
+      dateTo: undefined,
+      myWorksOnly: false,
+      selectedModelId: undefined,
+      modelSearch: "",
+      workModelId: undefined,
+      orderBy: "LIKES_COUNT",
+    }
+    setLocalFilters(clearedFilters)
+    setLocalModelSearch("")
+  }
+
+  const hasActiveFilters =
+    filters.ageRestrictions.length > 0 ||
+    filters.promptPublic !== "all" ||
+    filters.dateFrom ||
+    filters.dateTo ||
+    filters.myWorksOnly ||
+    filters.workModelId ||
+    (filters.orderBy && filters.orderBy !== "LIKES_COUNT")
+
+  const hasLocalActiveFilters =
+    localFilters.ageRestrictions.length > 0 ||
+    localFilters.aiUsage !== "all" ||
+    localFilters.promptPublic !== "all" ||
+    localFilters.dateFrom ||
+    localFilters.dateTo ||
+    localFilters.myWorksOnly ||
+    localFilters.selectedModelId ||
+    (localFilters.orderBy && localFilters.orderBy !== "LIKES_COUNT")
 
   return (
     <div className="flex items-center gap-2">
@@ -512,7 +649,11 @@ export function CompactFilter(props: Props) {
               hasActiveFilters && "border-primary text-primary",
             )}
           >
-            <FilterIcon className="mr-2 h-4 w-4" />
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FilterIcon className="mr-2 h-4 w-4" />
+            )}
             {t("フィルタ", "Filter")}
             {hasActiveFilters && (
               <span className="ml-1 flex h-2 w-2 rounded-full bg-primary" />
@@ -537,7 +678,21 @@ export function CompactFilter(props: Props) {
             </DialogTitle>
           </DialogHeader>
 
-          <FilterContent inSheet={false} />
+          <FilterContent
+            inSheet={false}
+            localFilters={localFilters}
+            updateLocalFilter={updateLocalFilter}
+            uniqueId={uniqueId}
+            ageRestrictions={ageRestrictions}
+            t={t}
+            localModelSearch={localModelSearch}
+            setLocalModelSearch={setLocalModelSearch}
+            modelsLoading={modelsLoading}
+            models={models}
+            showAllModels={showAllModels}
+            setShowAllModels={setShowAllModels}
+            authContext={authContext}
+          />
 
           {/* 適用ボタン */}
           <div className="pt-4">
@@ -564,7 +719,11 @@ export function CompactFilter(props: Props) {
               hasActiveFilters && "border-primary text-primary",
             )}
           >
-            <FilterIcon className="mr-2 h-4 w-4" />
+            {isLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FilterIcon className="mr-2 h-4 w-4" />
+            )}
             {t("フィルタ", "Filter")}
             {hasActiveFilters && (
               <span className="ml-1 flex h-2 w-2 rounded-full bg-primary" />
@@ -590,7 +749,21 @@ export function CompactFilter(props: Props) {
           </SheetHeader>
 
           <div className="mt-4">
-            <FilterContent inSheet={true} />
+            <FilterContent
+              inSheet={true}
+              localFilters={localFilters}
+              updateLocalFilter={updateLocalFilter}
+              uniqueId={uniqueId}
+              ageRestrictions={ageRestrictions}
+              t={t}
+              localModelSearch={localModelSearch}
+              setLocalModelSearch={setLocalModelSearch}
+              modelsLoading={modelsLoading}
+              models={models}
+              showAllModels={showAllModels}
+              setShowAllModels={setShowAllModels}
+              authContext={authContext}
+            />
           </div>
 
           {/* 適用ボタン */}
