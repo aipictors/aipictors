@@ -49,7 +49,9 @@ export function GenerationConfigVae(props: Props) {
       <Select
         value={props.value}
         onValueChange={(value) => {
-          value === "" ? props.onChange("ClearVAE_V2.3") : props.onChange(value)
+          value === ""
+            ? props.onChange("vae-ft-mse-840000-ema-pruned")
+            : props.onChange(value)
         }}
       >
         <SelectTrigger>

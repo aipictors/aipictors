@@ -1075,7 +1075,7 @@ export class GenerationConfigAction {
     if (modelType === "FLUX") {
       return "sdxl_vae"
     }
-    return "clearvae_v23"
+    return "vae-ft-mse-840000-ema-pruned"
   }
 
   getPromptLoraModelNames() {

@@ -16,7 +16,7 @@ import type { SortType } from "~/types/sort-type"
 import { useTranslation } from "~/hooks/use-translation"
 import { SensitiveTagActionOther } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-action-other"
 import { Switch } from "~/components/ui/switch"
-import { CompactFilter } from "~/components/compact-filter"
+import { CompactFilter, type FilterValues } from "~/components/compact-filter"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -47,14 +47,29 @@ export function SensitiveTagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 
-  // フィルタ状態
+  // フィルタ状態と更新関数
   const [filters, setFilters] = useState({
     ageRestrictions: [] as string[],
     aiUsage: "all",
     promptPublic: "all",
     dateFrom: undefined as Date | undefined,
     dateTo: undefined as Date | undefined,
+    orderBy: "LIKES_COUNT",
+    aiName: "", // AIモデル名検索用
   })
+
+  // CompactFilterとの互換性のため、型変換を行う関数
+  const handleFiltersChange = useCallback((newFilters: FilterValues) => {
+    setFilters({
+      ageRestrictions: newFilters.ageRestrictions,
+      aiUsage: newFilters.aiUsage,
+      promptPublic: newFilters.promptPublic,
+      dateFrom: newFilters.dateFrom,
+      dateTo: newFilters.dateTo,
+      orderBy: newFilters.orderBy || "LIKES_COUNT",
+      aiName: newFilters.aiUsage || "",
+    })
+  }, [])
 
   // フィルタ適用時の処理
   const handleFiltersApply = useCallback(() => {
@@ -176,7 +191,7 @@ export function SensitiveTagWorkSection(props: Props) {
           </div>
           <CompactFilter
             filters={filters}
-            onFiltersChange={setFilters}
+            onFiltersChange={handleFiltersChange}
             onApplyFilters={handleFiltersApply}
           />
           <div className="min-w-32">
@@ -222,7 +237,7 @@ export function SensitiveTagWorkSection(props: Props) {
         </div>
         <CompactFilter
           filters={filters}
-          onFiltersChange={setFilters}
+          onFiltersChange={handleFiltersChange}
           onApplyFilters={handleFiltersApply}
         />
         <div className="min-w-32">

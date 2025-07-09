@@ -25,7 +25,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { Switch } from "~/components/ui/switch"
 import { Button } from "~/components/ui/button"
 import { Grid, List, PlaySquare, ExternalLink } from "lucide-react"
-import { CompactFilter } from "~/components/compact-filter"
+import { CompactFilter, type FilterValues } from "~/components/compact-filter"
 
 import { useNavigate } from "@remix-run/react"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
@@ -77,6 +77,16 @@ type Props = {
   onClickIsPromotionSortButton: () => void
 }
 
+type LocalFilterValues = {
+  ageRestrictions: string[]
+  aiUsage: string
+  promptPublic: string
+  dateFrom: Date | undefined
+  dateTo: Date | undefined
+  orderBy: string
+  workModelId: string | undefined
+}
+
 export function TagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
   const _client = useApolloClient()
@@ -90,14 +100,30 @@ export function TagWorkSection(props: Props) {
   // ダイアログ制御
   const [dialogIndex, setDialogIndex] = useState<number | null>(null)
 
-  // フィルタ状態
-  const [filters, setFilters] = useState({
-    ageRestrictions: [] as string[],
+  // フィルタ状態と更新関数
+  const [filters, setFilters] = useState<LocalFilterValues>({
+    ageRestrictions: [],
     aiUsage: "all",
     promptPublic: "all",
-    dateFrom: undefined as Date | undefined,
-    dateTo: undefined as Date | undefined,
+    dateFrom: undefined,
+    dateTo: undefined,
+    orderBy: "LIKES_COUNT",
+    workModelId: undefined, // 単体として初期化
   })
+
+  // CompactFilterとの互換性のため、型変換を行う関数
+  const handleFiltersChange = useCallback((newFilters: FilterValues) => {
+    console.log("Received filters:", newFilters)
+    setFilters({
+      ageRestrictions: newFilters.ageRestrictions,
+      aiUsage: newFilters.aiUsage,
+      promptPublic: newFilters.promptPublic,
+      dateFrom: newFilters.dateFrom,
+      dateTo: newFilters.dateTo,
+      orderBy: newFilters.orderBy || "LIKES_COUNT",
+      workModelId: newFilters.workModelId, // 単体として設定
+    })
+  }, [])
 
   // 無限スクロール用の状態
   const [infinitePages, setInfinitePages] = useState<
@@ -120,7 +146,20 @@ export function TagWorkSection(props: Props) {
 
   // フィルタ適用時の where 条件を生成
   const getFilteredWhereCondition = useCallback(() => {
-    const baseWhere = {
+    const baseWhere: {
+      tagNames: string[]
+      orderBy: IntrospectionEnum<"WorkOrderBy">
+      sort: SortType
+      ratings: ("G" | "R15" | "R18" | "R18G")[]
+      hasPrompt?: boolean
+      isPromptPublic?: boolean
+      isNowCreatedAt: boolean
+      modelNames?: string[]
+      createdAtAfter?: string
+      beforeCreatedAt?: string
+      isSensitive?: boolean
+      modelPostedIds?: string[]
+    } = {
       tagNames: [
         decodeURIComponent(props.tag),
         decodeURIComponent(props.tag).toLowerCase(),
@@ -140,6 +179,13 @@ export function TagWorkSection(props: Props) {
       isNowCreatedAt: true,
     }
 
+    // AIモデルフィルタ - modelPostedIdsを使用
+    if (filters.workModelId) {
+      baseWhere.modelPostedIds = [filters.workModelId]
+    }
+
+    console.log("Applied modelPostedIds:", baseWhere.modelPostedIds)
+
     // 年齢制限フィルタ
     if (filters.ageRestrictions.length > 0) {
       baseWhere.ratings = filters.ageRestrictions as (
@@ -150,39 +196,42 @@ export function TagWorkSection(props: Props) {
       )[]
     }
 
-    // AI使用フィルタ
-    if (filters.aiUsage === "ai") {
-      baseWhere.hasPrompt = true
-    } else if (filters.aiUsage === "no-ai") {
-      baseWhere.hasPrompt = false
-    }
-
     // プロンプト公開フィルタ
     if (filters.promptPublic === "public") {
       baseWhere.hasPrompt = true
       baseWhere.isPromptPublic = true
     } else if (filters.promptPublic === "private") {
-      baseWhere.hasPrompt = true
+      baseWhere.hasPrompt = false
       baseWhere.isPromptPublic = false
     }
 
     // 期間フィルタ
-    const extendedWhere = { ...baseWhere } as typeof baseWhere & {
-      createdAtAfter?: string
-      beforeCreatedAt?: string
-    }
-
     if (filters.dateFrom) {
-      extendedWhere.createdAtAfter = filters.dateFrom.toISOString()
+      baseWhere.createdAtAfter = filters.dateFrom.toISOString()
     }
     if (filters.dateTo) {
       const endDate = new Date(filters.dateTo)
       endDate.setHours(23, 59, 59, 999)
-      extendedWhere.beforeCreatedAt = endDate.toISOString()
+      baseWhere.beforeCreatedAt = endDate.toISOString()
     }
 
-    return extendedWhere
+    return baseWhere
   }, [props.tag, props.orderBy, props.sort, props.hasPrompt, filters])
+
+  console.log("Current filters:", getFilteredWhereCondition())
+
+  const compactFilterValues: FilterValues = useMemo(
+    () => ({
+      ageRestrictions: filters.ageRestrictions,
+      aiUsage: filters.aiUsage,
+      promptPublic: filters.promptPublic,
+      dateFrom: filters.dateFrom,
+      dateTo: filters.dateTo,
+      orderBy: filters.orderBy,
+      workModelId: filters.workModelId,
+    }),
+    [filters],
+  )
 
   // フィルタ適用時の処理
   const handleFiltersApply = useCallback(() => {
@@ -207,7 +256,7 @@ export function TagWorkSection(props: Props) {
     variables: { offset: 0, limit: 32 },
   })
 
-  // ────────────────────　ページネーション用クエリ ────────────────────
+  // co ────────────────────
   const { data: paginationResp, loading: paginationLoading } = useQuery(
     tagWorksQuery,
     {
@@ -221,7 +270,7 @@ export function TagWorkSection(props: Props) {
         limit: 32,
         where: getFilteredWhereCondition(),
       },
-      fetchPolicy: "cache-first",
+      fetchPolicy: "cache-and-network",
       nextFetchPolicy: "cache-first",
     },
   )
@@ -242,9 +291,9 @@ export function TagWorkSection(props: Props) {
       limit: 32,
       where: getFilteredWhereCondition(),
     },
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
-    notifyOnNetworkStatusChange: true,
+    // notifyOnNetworkStatusChange: true,
   })
 
   // 初期化: props.worksを必ず使用
@@ -555,8 +604,8 @@ export function TagWorkSection(props: Props) {
             onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
           />
           <CompactFilter
-            filters={filters}
-            onFiltersChange={setFilters}
+            filters={compactFilterValues}
+            onFiltersChange={handleFiltersChange}
             onApplyFilters={handleFiltersApply}
           />
           <div className="flex items-center space-x-2">
@@ -595,8 +644,8 @@ export function TagWorkSection(props: Props) {
           onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
         />
         <CompactFilter
-          filters={filters}
-          onFiltersChange={setFilters}
+          filters={compactFilterValues}
+          onFiltersChange={handleFiltersChange}
           onApplyFilters={handleFiltersApply}
         />
         <div className="flex items-center space-x-2">
