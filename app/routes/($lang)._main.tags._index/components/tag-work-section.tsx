@@ -260,6 +260,11 @@ export function TagWorkSection(props: Props) {
     if (isPagination) {
       props.setPage(0)
     }
+
+    // フィルタ適用後に初期化を再実行
+    setTimeout(() => {
+      setIsInitialized(true)
+    }, 0)
   }, [isPagination, props])
 
   // props.mode の変更を監視して内部状態を同期
@@ -287,6 +292,7 @@ export function TagWorkSection(props: Props) {
         limit: 32,
         where: getFilteredWhereCondition(),
       },
+      notifyOnNetworkStatusChange: true,
     },
   )
 
@@ -306,7 +312,7 @@ export function TagWorkSection(props: Props) {
       limit: 32,
       where: getFilteredWhereCondition(),
     },
-    // notifyOnNetworkStatusChange: true,
+    notifyOnNetworkStatusChange: true,
   })
 
   // 初期化: props.worksを必ず使用
@@ -550,11 +556,38 @@ export function TagWorkSection(props: Props) {
   }
 
   // ───────────────────────── ローディング判定 ─────────────────────────
-  const isLoading =
-    !isInitialized ||
-    (isPagination
-      ? paginationLoading && !paginationResp && props.page > 0
-      : infiniteLoading && infinitePages.length === 0 && isInitialDataSet)
+  const isLoading = useMemo(() => {
+    // 認証コンテキストがロード中の場合
+    if (authContext.isLoading) {
+      return true
+    }
+
+    // 未ログインの場合はローディングを表示しない
+    if (authContext.isNotLoggedIn) {
+      return false
+    }
+
+    // 初期化が完了していない場合
+    if (!isInitialized) {
+      return true
+    }
+
+    if (isPagination) {
+      // ページネーションモード: クエリがローディング中の場合
+      return paginationLoading
+    }
+
+    // フィードモード: クエリがローディング中で無限ページが空の場合
+    return infiniteLoading && infinitePages.length === 0
+  }, [
+    authContext.isLoading,
+    authContext.isNotLoggedIn,
+    isInitialized,
+    isPagination,
+    paginationLoading,
+    infiniteLoading,
+    infinitePages.length,
+  ])
 
   // ───────────────────────── JSX ─────────────────────────
   return (
@@ -620,6 +653,7 @@ export function TagWorkSection(props: Props) {
             filters={compactFilterValues}
             onFiltersChange={handleFiltersChange}
             onApplyFilters={handleFiltersApply}
+            isLoading={isLoading}
           />
           <div className="flex items-center space-x-2">
             <Switch
@@ -660,6 +694,7 @@ export function TagWorkSection(props: Props) {
           filters={compactFilterValues}
           onFiltersChange={handleFiltersChange}
           onApplyFilters={handleFiltersApply}
+          isLoading={isLoading}
         />
         <div className="flex items-center space-x-2">
           <Switch
