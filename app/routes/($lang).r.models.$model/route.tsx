@@ -11,7 +11,6 @@ import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
-import {} from "~/routes/($lang)._main.models.$model/components/ai-model-article"
 import {
   AiModelSensitiveArticle,
   ModelSensitiveItemFragment,

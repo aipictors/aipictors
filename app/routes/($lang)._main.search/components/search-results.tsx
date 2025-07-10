@@ -73,7 +73,7 @@ export const SearchResults = ({
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   // Read URL parameters
-  const currentPage = Number(searchParams.get("page") || "1")
+  const currentPage = Math.max(0, Number(searchParams.get("page") || "0"))
   const searchWordsParam = searchParams.get("q") || ""
   const searchWords = searchWordsParam.split(",").filter(Boolean)
   const ratingParam = searchParams.get("rating") || ""
@@ -115,7 +115,7 @@ export const SearchResults = ({
     const newParams = new URLSearchParams(searchParams)
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
-    newParams.set("page", "1")
+    newParams.set("page", "0")
     setSearchParams(newParams)
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
@@ -129,7 +129,7 @@ export const SearchResults = ({
     const newParams = new URLSearchParams(searchParams)
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
-    newParams.set("page", "1")
+    newParams.set("page", "0")
     setSearchParams(newParams)
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
@@ -143,7 +143,7 @@ export const SearchResults = ({
     const newParams = new URLSearchParams(searchParams)
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
-    newParams.set("page", "1")
+    newParams.set("page", "0")
     setSearchParams(newParams)
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
@@ -157,7 +157,7 @@ export const SearchResults = ({
     const newParams = new URLSearchParams(searchParams)
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
-    newParams.set("page", "1")
+    newParams.set("page", "0")
     setSearchParams(newParams)
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
@@ -171,7 +171,7 @@ export const SearchResults = ({
     const newParams = new URLSearchParams(searchParams)
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
-    newParams.set("page", "1")
+    newParams.set("page", "0")
     setSearchParams(newParams)
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
@@ -185,7 +185,7 @@ export const SearchResults = ({
     const newParams = new URLSearchParams(searchParams)
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
-    newParams.set("page", "1")
+    newParams.set("page", "0")
     setSearchParams(newParams)
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
@@ -268,8 +268,8 @@ export const SearchResults = ({
     }
 
     // AI model
-    if (filterValues.selectedModelId) {
-      conditions.generationModelId = filterValues.selectedModelId
+    if (filterValues.workModelId) {
+      conditions.modelPostedIds = [filterValues.workModelId]
     }
 
     // Sort condition
@@ -292,10 +292,12 @@ export const SearchResults = ({
 
   console.log("where", where)
 
+  console.log("viewMode", viewMode)
+
   // Pagination query - unified for both pagination and infinite scroll
   const { data, loading, fetchMore } = useQuery(SearchWorksQuery, {
     variables: {
-      offset: viewMode === "pagination" ? (currentPage - 1) * PER_PAGE : 0,
+      offset: viewMode === "pagination" ? currentPage * PER_PAGE : 0,
       limit: PER_PAGE,
       where,
     },
@@ -455,7 +457,7 @@ export const SearchResults = ({
 
       // Reset page for pagination mode
       if (viewMode === "pagination") {
-        newParams.set("page", "1")
+        newParams.set("page", "0")
       }
 
       setSearchParams(newParams)
@@ -504,7 +506,7 @@ export const SearchResults = ({
       if (mode === "infinite") {
         newParams.delete("page")
       } else {
-        newParams.set("page", "1")
+        newParams.set("page", "0")
       }
 
       setSearchParams(newParams)
@@ -532,8 +534,9 @@ export const SearchResults = ({
   // Handle page change for pagination
   const handlePageChange = useCallback(
     (page: number) => {
+      const safePage = Math.max(0, page)
       const newParams = new URLSearchParams(searchParams)
-      newParams.set("page", page.toString())
+      newParams.set("page", safePage.toString())
       setSearchParams(newParams)
     },
     [searchParams, setSearchParams],
@@ -597,14 +600,26 @@ export const SearchResults = ({
     return filters
   }, [filterValues, models, t, searchWords])
 
+  // Track previous where condition to detect changes
+  const [previousWhere, setPreviousWhere] = useState<string>("")
+
   // Reset pagination when filters, sort, or search change
   useEffect(() => {
-    if (viewMode === "pagination" && currentPage > 1) {
+    const currentWhereString = JSON.stringify(where)
+
+    if (
+      viewMode === "pagination" &&
+      currentPage > 0 &&
+      previousWhere !== "" &&
+      previousWhere !== currentWhereString
+    ) {
       const newParams = new URLSearchParams(searchParams)
-      newParams.set("page", "1")
+      newParams.set("page", "0")
       setSearchParams(newParams, { replace: true })
     }
-  }, [where, viewMode, currentPage, searchParams, setSearchParams])
+
+    setPreviousWhere(currentWhereString)
+  }, [where, viewMode, setSearchParams])
 
   return (
     <div className="space-y-6">
@@ -742,8 +757,8 @@ export const SearchResults = ({
               <ResponsivePagination
                 maxCount={totalCount}
                 perPage={PER_PAGE}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
+                currentPage={Math.max(0, currentPage) + 1}
+                onPageChange={(page) => handlePageChange(Math.max(0, page - 1))}
               />
             </div>
           )}
