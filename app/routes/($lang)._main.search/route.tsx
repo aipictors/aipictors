@@ -1,10 +1,6 @@
 import { loaderClient } from "~/lib/loader-client"
 import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
 import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
-import {
-  WorkList,
-  WorkListItemFragment,
-} from "~/routes/($lang)._main.posts._index/components/work-list"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import type {
@@ -12,12 +8,9 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { ModelList } from "~/routes/($lang)._main.posts._index/components/model-list"
-import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
-import { useTranslation } from "~/hooks/use-translation"
-import { Separator } from "~/components/ui/separator"
+import { config } from "~/config"
 import { useSearchParams } from "@remix-run/react"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -57,6 +50,7 @@ export async function loader(props: LoaderFunctionArgs) {
           id: model.workModelId || model.id,
           name: model.name,
           displayName: model.name,
+          workModelId: model.workModelId || model.id,
         }))
         .filter((model) => model.id) || [],
   }
@@ -69,7 +63,6 @@ export const headers: HeadersFunction = () => ({
 export default function Search() {
   const data = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
-  const t = useTranslation()
 
   if (data === null) {
     return null
@@ -82,34 +75,55 @@ export default function Search() {
       <div className="m-auto md:max-w-96">
         <SearchHeader />
       </div>
-      <Separator />
-
-      {/* 検索結果 */}
+      {/* 検索結果または新着作品一覧 */}
       {searchQuery ? (
         <SearchResults models={data.models} />
       ) : (
-        <>
-          <h2 className="font-bold">{t("モデル一覧", "Model List")}</h2>
-          <ModelList />
-          <h2 className="font-bold">{t("人気作品", "Popular Works")}</h2>
-          <WorkList works={data.workResp ?? []} />
-        </>
+        <SearchResults
+          models={data.models}
+          initialWorks={data.workResp}
+          showLatestWorks={true}
+        />
       )}
     </>
   )
 }
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.SEARCH, undefined, props.params.lang)
+  const searchQuery = props.params?.q || ""
+
+  let title = "検索 - Aipictors"
+  let description =
+    "AI生成イラストを検索できます。様々なタグやフィルターを使って、お気に入りの作品を見つけましょう。"
+
+  if (searchQuery) {
+    title = `「${searchQuery}」の検索結果 - Aipictors`
+    description = `「${searchQuery}」に関するAI生成イラストの検索結果を表示しています。`
+  }
+
+  return [
+    { title },
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: title },
+    { name: "twitter:description", content: description },
+    {
+      name: "robots",
+      content: searchQuery ? "noindex, follow" : "index, follow",
+    },
+  ]
 }
 
 const worksQuery = graphql(
   `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
-      ...WorkListItem
+      ...PhotoAlbumWork
     }
   }`,
-  [WorkListItemFragment],
+  [PhotoAlbumWorkFragment],
 )
 
 const aiModelsQuery = graphql(
