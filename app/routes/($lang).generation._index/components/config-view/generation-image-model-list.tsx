@@ -59,12 +59,8 @@ export function ImageModelsList(props: Props) {
       FIGURE: 999,
       ILLUSTRATION_BOY: 999,
     }
-    const orderA = Object.prototype.hasOwnProperty.call(categoryOrder, a)
-      ? categoryOrder[a]
-      : 999
-    const orderB = Object.prototype.hasOwnProperty.call(categoryOrder, b)
-      ? categoryOrder[b]
-      : 999
+    const orderA = Object.hasOwn(categoryOrder, a) ? categoryOrder[a] : 999
+    const orderB = Object.hasOwn(categoryOrder, b) ? categoryOrder[b] : 999
     if (orderA !== orderB) {
       return orderA - orderB
     }
@@ -226,7 +222,7 @@ export function ImageModelsList(props: Props) {
                       }}
                     />
                     {model.isNew && (
-                      <span className="absolute bottom-8 left-2 rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs">
+                      <span className="absolute left-2 rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs md:top-36 xl:top-40 2xl:top-24">
                         {"New"}
                       </span>
                     )}
