@@ -56,7 +56,6 @@ export type FilterValues = {
   modelSearch?: string
   workModelId?: string // 単体のworkModelId
   orderBy?: string // 並び順
-  navigateToTagPage?: boolean // タグ検索ページへ移動するかどうか
 }
 
 type Props = {
@@ -201,23 +200,6 @@ function FilterContent({
           </label>
         </div>
       )}
-
-      {/* タグ検索ページへ移動 */}
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id={`${uniqueId}-navigate-to-tag-page-${inSheet ? "sheet" : "dialog"}`}
-          checked={localFilters.navigateToTagPage || false}
-          onCheckedChange={(checked) => {
-            updateLocalFilter("navigateToTagPage", checked === true)
-          }}
-        />
-        <label
-          htmlFor={`${uniqueId}-navigate-to-tag-page-${inSheet ? "sheet" : "dialog"}`}
-          className="cursor-pointer font-medium text-sm"
-        >
-          {t("タグ検索ページへ移動", "Navigate to tag search page")}
-        </label>
-      </div>
 
       {/* AIモデル選択 */}
       <div className="space-y-2">
@@ -427,7 +409,6 @@ export function CompactFilter(props: Props) {
       modelSearch: searchParams.get("modelSearch") || "",
       workModelId: searchParams.get("workModelId") || undefined,
       orderBy: searchParams.get("orderBy") || "LIKES_COUNT",
-      navigateToTagPage: searchParams.get("navigateToTagPage") === "true",
     }
 
     // URLパラメータの値が現在のフィルタと異なる場合のみ更新
@@ -497,12 +478,6 @@ export function CompactFilter(props: Props) {
         newParams.set("orderBy", newFilters.orderBy)
       } else {
         newParams.delete("orderBy")
-      }
-
-      if (newFilters.navigateToTagPage) {
-        newParams.set("navigateToTagPage", "true")
-      } else {
-        newParams.delete("navigateToTagPage")
       }
 
       setSearchParams(newParams, { replace: true })
