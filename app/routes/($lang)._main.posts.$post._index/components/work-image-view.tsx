@@ -26,6 +26,48 @@ export function WorkImageView(props: Props) {
     }
   }
 
+  // 左右キーでの画像切り替え（ダイアログモード以外）
+  useEffect(() => {
+    // ダイアログモードの場合は左右キー操作を無効にする
+    if (props.mode === "dialog" || !shouldRenderCarousel) {
+      return
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault()
+        const newIndex =
+          currentIndex > 0 ? currentIndex - 1 : allImageURLs.length - 1
+        setCurrentIndex(newIndex)
+        if (props.onSelectedImage) {
+          props.onSelectedImage(allImageURLs[newIndex])
+        }
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault()
+        const newIndex =
+          currentIndex < allImageURLs.length - 1 ? currentIndex + 1 : 0
+        setCurrentIndex(newIndex)
+        if (props.onSelectedImage) {
+          props.onSelectedImage(allImageURLs[newIndex])
+        }
+      }
+    }
+
+    // イベントリスナーを追加
+    window.addEventListener("keydown", handleKeyDown)
+
+    // クリーンアップでイベントリスナーを削除
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [
+    currentIndex,
+    allImageURLs,
+    shouldRenderCarousel,
+    props.mode,
+    props.onSelectedImage,
+  ])
+
   useEffect(() => {
     setCurrentIndex(0)
   }, [props.workImageURL])
