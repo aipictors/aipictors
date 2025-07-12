@@ -8,6 +8,7 @@ import {
   GenerationQueryContextQuery,
   GenerationQueryProvider,
 } from "~/routes/($lang).generation._index/components/generation-query-provider"
+import { SidebarProvider } from "~/components/sidebar-provider"
 import { ApolloError } from "@apollo/client/index"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
@@ -60,9 +61,10 @@ export default function GenerationLayout() {
   }
 
   return (
-    <>
+    <SidebarProvider>
       <HomeHeader
         alwaysShowTitle={true}
+        showPcSheetMenu={true}
         title={t("Aipictors画像生成", "Aipictors Generator")}
       />
       <Suspense fallback={<AppLoadingPage />}>
@@ -74,6 +76,6 @@ export default function GenerationLayout() {
           </GenerationConfigProvider>
         </GenerationQueryProvider>
       </Suspense>
-    </>
+    </SidebarProvider>
   )
 }

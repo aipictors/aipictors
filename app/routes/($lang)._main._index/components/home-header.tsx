@@ -32,11 +32,13 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { cn } from "~/lib/utils"
 import { HomeMenuRouteList } from "~/routes/($lang)._main._index/components/home-menu-route-list"
+import { useSidebar } from "~/contexts/sidebar-context"
 
 type Props = {
   title?: string
   onToggleSideMenu?: () => void
   alwaysShowTitle?: boolean
+  showPcSheetMenu?: boolean // PC版でもシートメニューを表示するかどうか
 }
 
 function HomeHeader(props: Props) {
@@ -45,6 +47,7 @@ function HomeHeader(props: Props) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const authContext = useContext(AuthContext)
+  const { sidebarState } = useSidebar()
   const [searchText, setSearchText] = useState("")
   const timeoutRef = useRef<NodeJS.Timeout>()
   const previousLocationRef = useRef(location.pathname)
@@ -238,6 +241,12 @@ function HomeHeader(props: Props) {
 
   const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors")
 
+  // 画像生成画面など、特別なページではサイドバーのマージンを適用しない
+  const isSpecialPage =
+    location.pathname.includes("/generation") ||
+    location.pathname.includes("/new/") ||
+    props.alwaysShowTitle
+
   const isExistedNewNotificationData = useQuery(
     viewerIsExistedNewNotificationQuery,
     {},
@@ -357,9 +366,18 @@ function HomeHeader(props: Props) {
             props.alwaysShowTitle ? "" : "lg:hidden",
           )}
         >
+          {/* Mobile menu - show on mobile, and on PC only if showPcSheetMenu is true */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={
+                  props.showPcSheetMenu
+                    ? "block" // PC版でも表示
+                    : "md:hidden" // PC版では非表示
+                }
+              >
                 <MenuIcon />
               </Button>
             </SheetTrigger>
@@ -370,10 +388,11 @@ function HomeHeader(props: Props) {
             </SheetContent>
           </Sheet>
           <div className="flex items-center">
-            {props.alwaysShowTitle ? (
+            {/* 画像生成画面ではロゴを表示、その他の画面では余白のみ表示 */}
+            {isSpecialPage && (
               <Button
                 variant="ghost"
-                className="hidden items-center space-x-2 md:flex"
+                className="hidden shrink-0 items-center space-x-2 pl-4 md:flex"
                 onClick={() => handleNavigate("/")}
               >
                 {navigation.state === "loading" && (
@@ -384,20 +403,25 @@ function HomeHeader(props: Props) {
                 {navigation.state !== "loading" && (
                   <img
                     src="/icon.svg"
-                    className="size-8 rounded-full"
+                    className="size-8 shrink-0 rounded-full"
                     alt="Avatar"
                     width={40}
                     height={40}
                   />
                 )}
-                <div className="flex grow flex-row items-center">
-                  <span className="font-bold text-xl">{title}</span>
+                <div className="flex items-center">
+                  <span className="whitespace-nowrap font-bold text-xl">
+                    {title}
+                  </span>
                 </div>
               </Button>
-            ) : (
+            )}
+
+            {/* サイドバーが最小化されている場合のみロゴを表示 */}
+            {!isSpecialPage && sidebarState === "minimal" && (
               <Button
                 variant="ghost"
-                className="hidden items-center space-x-2 md:flex"
+                className="hidden shrink-0 items-center space-x-2 pl-28 md:flex"
                 onClick={() => handleNavigate("/")}
               >
                 {navigation.state === "loading" && (
@@ -408,14 +432,16 @@ function HomeHeader(props: Props) {
                 {navigation.state !== "loading" && (
                   <img
                     src="/icon.svg"
-                    className="size-8 rounded-full"
+                    className="size-8 shrink-0 rounded-full"
                     alt="Avatar"
                     width={40}
                     height={40}
                   />
                 )}
-                <div className="hidden grow flex-row items-center md:flex">
-                  <span className="font-bold text-xl">{title}</span>
+                <div className="flex items-center">
+                  <span className="whitespace-nowrap font-bold text-xl">
+                    {title}
+                  </span>
                 </div>
               </Button>
             )}
@@ -433,7 +459,19 @@ function HomeHeader(props: Props) {
         </div>
         <div className="flex w-full justify-end gap-x-2">
           <div className="hidden w-full items-center space-x-2 md:flex">
-            <div className="flex w-full justify-start space-x-2 font-semibold">
+            <div
+              className={`flex w-full justify-start space-x-2 font-semibold ${
+                !isSpecialPage
+                  ? sidebarState === "expanded"
+                    ? "pl-[248px]" // サイドバー幅216px + 余白32px
+                    : sidebarState === "collapsed"
+                      ? "pl-[96px]" // サイドバー幅64px + 余白32px
+                      : sidebarState === "minimal"
+                        ? "pl-16" // 三角ボタン分の余白
+                        : "pl-[248px]"
+                  : ""
+              }`}
+            >
               <div className="relative flex w-full flex-1 shrink-0 flex-col rounded-xl border border-light-100 bg-light-input shadow-[0px_7px_21px_0px_rgba(51,_51,_51,_0.05)] dark:border-dark-750 dark:bg-dark-input dark:shadow-[0px_7px_21px_0px_rgba(0,_0,_0,_0.25)]">
                 <Input
                   value={searchText}
