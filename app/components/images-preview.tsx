@@ -44,10 +44,7 @@ export function ImagesPreview(props: Props) {
       activeElement?.getAttribute("role") === "textbox"
 
     // モードに応じて対応するキーを決定
-    const supportedKeys =
-      mode === "dialog"
-        ? ["a", "d"] // ダイアログモードはADキーのみ
-        : ["ArrowLeft", "ArrowRight", "a", "d"] // ページモードは矢印キー + ADキー
+    const supportedKeys = ["arrowleft", "arrowright", "a", "d"]
 
     if (!isOpen) {
       if (supportedKeys.includes(e.key.toLowerCase()) && !isInputFocused) {
@@ -63,9 +60,8 @@ export function ImagesPreview(props: Props) {
     }
 
     if (
-      ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "a", "d"].includes(
-        e.key.toLowerCase(),
-      )
+      ["a", "d"].includes(e.key.toLowerCase()) ||
+      ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)
     ) {
       e.preventDefault()
     }
@@ -73,13 +69,8 @@ export function ImagesPreview(props: Props) {
     if (e.key === "Escape") closePreview()
 
     // ダイアログモードの場合はADキーのみ、ページモードは矢印キー + ADキー
-    if (mode === "dialog") {
-      if (e.key.toLowerCase() === "a") prevImage()
-      if (e.key.toLowerCase() === "d") nextImage()
-    } else {
-      if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") prevImage()
-      if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") nextImage()
-    }
+    if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") prevImage()
+    if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") nextImage()
 
     if (e.key === "ArrowUp") increaseScale()
     if (e.key === "ArrowDown") decreaseScale()
@@ -361,37 +352,21 @@ export function ImagesPreview(props: Props) {
           <div className="absolute top-3 left-3 hidden items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm md:flex">
             <Keyboard className="h-4 w-4" />
             <div className="flex items-center gap-1 text-xs">
-              {mode === "dialog" ? (
-                // ダイアログモード: ADキーのみ
-                <>
-                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                    A
-                  </kbd>
-                  <span className="mx-1">•</span>
-                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                    D
-                  </kbd>
-                </>
-              ) : (
-                // ページモード: ADキー + 矢印キー
-                <>
-                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                    A
-                  </kbd>
-                  <span>/</span>
-                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                    ←
-                  </kbd>
-                  <span className="mx-1">•</span>
-                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                    D
-                  </kbd>
-                  <span>/</span>
-                  <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                    →
-                  </kbd>
-                </>
-              )}
+              <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                A
+              </kbd>
+              <span>/</span>
+              <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                ←
+              </kbd>
+              <span className="mx-1">•</span>
+              <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                D
+              </kbd>
+              <span>/</span>
+              <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                →
+              </kbd>
             </div>
           </div>
         )}

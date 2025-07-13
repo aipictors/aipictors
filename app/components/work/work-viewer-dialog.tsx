@@ -261,8 +261,8 @@ export function WorkViewerDialog({
         return
       }
 
-      if (e.key === "ArrowLeft") prev()
-      if (e.key === "ArrowRight") next()
+      if (e.key === "ArrowUp") prev()
+      if (e.key === "ArrowDown") next()
       if (e.key === "Escape") onClose()
     }
 
