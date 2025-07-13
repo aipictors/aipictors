@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  type WheelEvent,
-} from "react"
+import { useCallback, useEffect, useRef, useState, useMemo } from "react"
 import { graphql, type FragmentOf } from "gql.tada"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { useQuery } from "@apollo/client/index"
@@ -147,7 +140,7 @@ export function WorkViewerDialog({
   }, [index, works, workDataCache, debouncedSetActiveWork])
 
   // ────────── GraphQL Query with conditional execution ──────────
-  const { data, loading, error } = useQuery(workDialogQuery, {
+  const { data, loading } = useQuery(workDialogQuery, {
     variables: { workId: work.id },
     skip: !shouldFetchWork, // デバウンス完了 & 未キャッシュの場合のみ実行
     fetchPolicy: "cache-and-network",
@@ -261,27 +254,23 @@ export function WorkViewerDialog({
         return
       }
 
-      if (e.key === "ArrowUp") prev()
-      if (e.key === "ArrowDown") next()
+      if (e.key === "ArrowUp") {
+        e.preventDefault() // 背景のスクロールを防ぐ
+        e.stopPropagation() // イベントの伝播を停止
+        prev()
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault() // 背景のスクロールを防ぐ
+        e.stopPropagation() // イベントの伝播を停止
+        next()
+      }
       if (e.key === "Escape") onClose()
     }
 
-    const wheel = (e: WheelEvent) => {
-      if (!thumbListRef.current) return
-      const el = thumbListRef.current
-      const atBottom =
-        el.scrollHeight - Math.ceil(el.scrollTop + el.clientHeight) <= 0 &&
-        e.deltaY > 0
-      if (atBottom) next()
-    }
-
     window.addEventListener("keydown", onKey)
-    thumbListRef.current?.addEventListener("wheel", wheel as any, {
-      passive: true,
-    })
+    // ホイールイベントリスナーを削除（サムネイル一覧のスクロールによる自動切り替えを防ぐ）
     return () => {
       window.removeEventListener("keydown", onKey)
-      thumbListRef.current?.removeEventListener("wheel", wheel as any)
     }
   }, [prev, next, onClose])
 
