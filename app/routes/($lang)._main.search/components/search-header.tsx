@@ -8,7 +8,19 @@ import { Input } from "~/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { useTranslation } from "~/hooks/use-translation"
 
-export function SearchHeader() {
+type AiModel = {
+  id: string
+  name: string
+  displayName: string
+  workModelId: string
+  thumbnailImageURL?: string | null
+}
+
+type Props = {
+  models?: AiModel[]
+}
+
+export function SearchHeader(_props: Props) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const t = useTranslation()
@@ -28,6 +40,11 @@ export function SearchHeader() {
     setSearchText(searchParams.get("q") || "")
     setSearchType(searchParams.get("type") || "works")
     setIsR18(searchParams.get("rating") === "R18")
+
+    // modelパラメータがある場合は検索テキストを空にする
+    if (searchParams.get("model")) {
+      setSearchText("")
+    }
   }, [searchParams])
 
   // 検索実行

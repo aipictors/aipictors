@@ -56,6 +56,7 @@ export type FilterValues = {
   modelSearch?: string
   workModelId?: string // 単体のworkModelId
   orderBy?: string // 並び順
+  navigateToTagPage?: boolean // タグページへ遷移するかどうか
 }
 
 type Props = {

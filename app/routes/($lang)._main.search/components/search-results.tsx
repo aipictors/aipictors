@@ -16,7 +16,7 @@ import {
 } from "~/components/compact-filter"
 import { format } from "date-fns"
 import { Badge } from "~/components/ui/badge"
-import { Loader2, Eye, List } from "lucide-react"
+import { Loader2, Eye, List, X } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import type { SortType } from "~/types/sort-type"
@@ -79,7 +79,8 @@ export const SearchResults = ({
   const ratingParam = searchParams.get("rating") || ""
   const ratings = ratingParam.split(",").filter(Boolean)
   const periodParam = searchParams.get("period") || ""
-  const modelParam = searchParams.get("model") || ""
+  const modelParam =
+    searchParams.get("workModelId") || searchParams.get("model") || ""
   const periodRange = periodParam.split(",").filter(Boolean)
   const navigateToTagPage = searchParams.get("navigateToTagPage") === "true"
   const dialogModeParam = searchParams.get("dialogMode") === "true"
@@ -210,7 +211,7 @@ export const SearchResults = ({
     myWorksOnly: myWorksOnlyParam,
     selectedModelId: modelParam,
     modelSearch: "",
-    workModelId: modelParam,
+    workModelId: modelParam, // modelパラメータをworkModelIdとして使用
     navigateToTagPage,
   })
 
@@ -222,6 +223,8 @@ export const SearchResults = ({
     if (searchWords.length > 0) {
       conditions.search = searchWords.join(" ")
     }
+
+    console.log("filterValues", filterValues)
 
     // Age restrictions
     if (filterValues.ageRestrictions.length > 0) {
@@ -442,10 +445,10 @@ export const SearchResults = ({
       }
 
       // Update model
-      if (values.selectedModelId) {
-        newParams.set("model", values.selectedModelId)
+      if (values.workModelId) {
+        newParams.set("workModelId", values.workModelId)
       } else {
-        newParams.delete("model")
+        newParams.delete("workModelId")
       }
 
       // Update navigateToTagPage
@@ -547,6 +550,15 @@ export const SearchResults = ({
   const totalCount = countData?.worksCount || 0
   const totalPages = Math.ceil(totalCount / PER_PAGE)
 
+  // Handle model tag removal
+  const handleModelTagRemove = useCallback(() => {
+    const newParams = new URLSearchParams(searchParams)
+    newParams.delete("model")
+    newParams.delete("workModelId")
+
+    setSearchParams(newParams, { replace: true })
+  }, [searchParams, setSearchParams])
+
   // Active filters summary
   const activeFilters = useMemo(() => {
     const filters: string[] = []
@@ -590,12 +602,7 @@ export const SearchResults = ({
       )
     }
 
-    if (filterValues.selectedModelId) {
-      const modelName =
-        models.find((m) => m.id === filterValues.selectedModelId)?.name ||
-        filterValues.selectedModelId
-      filters.push(`${t("モデル", "Model")}: ${modelName}`)
-    }
+    // モデル検索は専用のタグ表示で行うため、ここでは除外
 
     return filters
   }, [filterValues, models, t, searchWords])
@@ -623,6 +630,30 @@ export const SearchResults = ({
 
   return (
     <div className="space-y-6">
+      {/* モデル検索時の専用タグ表示 */}
+      {filterValues.workModelId && (
+        <div className="flex flex-wrap gap-2">
+          <Badge
+            variant="secondary"
+            className="flex items-center gap-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+          >
+            <span>
+              {t("モデル", "Model")}:{" "}
+              {models.find((m) => m.workModelId === filterValues.workModelId)
+                ?.displayName || filterValues.workModelId}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-4 w-4 p-0 hover:bg-blue-200 dark:hover:bg-blue-800"
+              onClick={handleModelTagRemove}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </Badge>
+        </div>
+      )}
+
       {/* Filter Section */}
       <CompactFilter
         filters={filterValues}
