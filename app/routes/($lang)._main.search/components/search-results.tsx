@@ -788,8 +788,8 @@ export const SearchResults = ({
               <ResponsivePagination
                 maxCount={totalCount}
                 perPage={PER_PAGE}
-                currentPage={Math.max(0, currentPage) + 1}
-                onPageChange={(page) => handlePageChange(Math.max(0, page - 1))}
+                currentPage={Math.max(0, currentPage)}
+                onPageChange={(page) => handlePageChange(page)}
               />
             </div>
           )}

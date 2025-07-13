@@ -234,7 +234,7 @@ export function WorkViewerDialog({
     [works.length],
   )
   const prev = useCallback(
-    () => setIndex((i) => (i ? i - 1 : works.length - 1)),
+    () => setIndex((i) => (i > 0 ? i - 1 : i)),
     [works.length],
   )
 

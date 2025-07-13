@@ -367,6 +367,8 @@ function HomeHeader(props: Props) {
           )}
         >
           {/* Mobile menu - show on mobile, and on PC only if showPcSheetMenu is true */}
+          <div className="hidden w-8 md:block" />
+
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
               <Button
