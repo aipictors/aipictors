@@ -150,7 +150,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/react": "18.3.0",
     "@types/react-dom": "18.2.25",
-    "@types/web": "^0.0.243",
+    "@types/web": "^0.0.248",
     "lefthook": "^1.7.14",
     "schema-dts": "^1.1.2",
     "storybook": "^8.2.9",
