@@ -71,7 +71,9 @@ export function GenerationConfigControlNet() {
   return (
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
-        <span className="text-nowrap font-bold">{"ControlNet"}</span>
+        <span className="text-nowrap font-bold">
+          {"ControlNet（SDXL以外）"}
+        </span>
         <CrossPlatformTooltip
           text={t(
             "参考画像からより厳密な画像生成ができます。",

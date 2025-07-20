@@ -8,7 +8,7 @@ import { createRandomString } from "~/routes/($lang).generation._index/utils/cre
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
-import { useBoolean } from "usehooks-ts"
+import { useBoolean, useMediaQuery } from "usehooks-ts"
 import { VerificationDialog } from "~/components/verification-dialog"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
@@ -40,7 +40,12 @@ export function GenerationSubmissionView(props: Props) {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        toast.error(error.message, { position: "top-center" })
+        // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
+        if (useMediaQuery("(min-width: 768px)")) {
+          toast.error(error.message)
+        } else {
+          toast.error(error.message, { position: "top-center" })
+        }
       },
     },
   )
@@ -51,7 +56,12 @@ export function GenerationSubmissionView(props: Props) {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        toast.error(error.message, { position: "top-center" })
+        // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
+        if (useMediaQuery("(min-width: 768px)")) {
+          toast.error(error.message)
+        } else {
+          toast.error(error.message, { position: "top-center" })
+        }
       },
     },
   )
@@ -62,7 +72,12 @@ export function GenerationSubmissionView(props: Props) {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        toast.error(error.message, { position: "top-center" })
+        // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
+        if (useMediaQuery("(min-width: 768px)")) {
+          toast.error(error.message)
+        } else {
+          toast.error(error.message, { position: "top-center" })
+        }
       },
     },
   )
@@ -246,56 +261,59 @@ export function GenerationSubmissionView(props: Props) {
       return
     }
 
-    // if (
-    //   (context.config.modelType === "SDXL" ||
-    //     context.config.modelType === "FLUX") &&
-    //   context.config.controlNetImageBase64 !== null
-    // ) {
-    //   if (useMediaQuery("(min-width: 768px)")) {
-    //     toast("SDXLモデルはControlNetを使用できません。")
-    //     return
-    //   }
-    //   toast("SDXLモデルはControlNetを使用できません。", {
-    //     position: "top-center",
-    //   })
-    //   return
-    // }
+    if (
+      (context.config.modelType === "SDXL" ||
+        context.config.modelType === "FLUX") &&
+      context.config.controlNetImageBase64 !== null
+    ) {
+      // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
+      if (useMediaQuery("(min-width: 768px)")) {
+        toast("SDXLモデルはControlNetを使用できません。")
+        return
+      }
+      toast("SDXLモデルはControlNetを使用できません。", {
+        position: "top-center",
+      })
+      return
+    }
 
-    // if (
-    //   (context.config.modelType === "SDXL" ||
-    //     context.config.modelType === "FLUX") &&
-    //   context.config.i2iImageBase64
-    // ) {
-    //   if (useMediaQuery("(min-width: 768px)")) {
-    //     toast(
-    //       "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
-    //     )
-    //     return
-    //   }
-    //   toast(
-    //     "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
-    //     {
-    //       position: "top-center",
-    //     },
-    //   )
-    //   return
-    // }
+    if (
+      (context.config.modelType === "SDXL" ||
+        context.config.modelType === "FLUX") &&
+      context.config.i2iImageBase64
+    ) {
+      // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
+      if (useMediaQuery("(min-width: 768px)")) {
+        toast(
+          "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+        )
+        return
+      }
+      toast(
+        "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+        {
+          position: "top-center",
+        },
+      )
+      return
+    }
 
-    // if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
-    //   if (useMediaQuery("(min-width: 768px)")) {
-    //     toast(
-    //       "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
-    //     )
-    //     return
-    //   }
-    //   toast(
-    //     "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
-    //     {
-    //       position: "top-center",
-    //     },
-    //   )
-    //   return
-    // }
+    if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
+      // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
+      if (useMediaQuery("(min-width: 768px)")) {
+        toast(
+          "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
+        )
+        return
+      }
+      toast(
+        "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
+        {
+          position: "top-center",
+        },
+      )
+      return
+    }
 
     if (
       context.config.controlNetImageBase64 !== null &&
