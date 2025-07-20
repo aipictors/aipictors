@@ -84,37 +84,37 @@ export function GenerationConfigControlNetDialogContents(props: Props) {
     props.setModel("")
   }
 
-  // https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp
+  // https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp
   const getSampleImageUrl = () => {
     if (props.module === "dw_openpose_full") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp"
     }
     if (props.module === "openpose_full") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/dw_openpose_full.webp"
     }
     if (props.module === "openpose") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/openpose.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/openpose.webp"
     }
     if (props.module === "canny") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/canny.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/canny.webp"
     }
     if (props.module === "depth_midas") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/depth_midas.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/depth_midas.webp"
     }
     if (props.module === "softedge_pidinet") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/softedge_pidinet.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/softedge_pidinet.webp"
     }
     if (props.module === "mlsd") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/mlsd.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/mlsd.webp"
     }
     if (props.module === "scribble_pidinet") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/scribble_pidinet.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/scribble_pidinet.webp"
     }
     if (props.module === "seg_ofade20k") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/segmentation.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/segmentation.webp"
     }
     if (props.module === "reference_only") {
-      return "https://www.aipictors.com/wp-content/themes/AISite/images/controlnet/reference_only.webp"
+      return "https://legacy.aipictors.com/wp-content/themes/AISite/images/controlnet/reference_only.webp"
     }
     return null
   }
@@ -183,7 +183,7 @@ export function GenerationConfigControlNetDialogContents(props: Props) {
               className="color-pink w-full"
               aria-label="slider-ex-2"
               min={0.1}
-              max={1.0}
+              max={2.0}
               step={0.1}
               defaultValue={[1]}
               value={[props.weight]}
