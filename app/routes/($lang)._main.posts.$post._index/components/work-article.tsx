@@ -465,7 +465,7 @@ export const workArticleFragment = graphql(
         id
       }
     }
-    likedUsers(offset: 0, limit: 8) {
+    likedUsers(offset: 0, limit: 48) {
       id
       name
       iconUrl
