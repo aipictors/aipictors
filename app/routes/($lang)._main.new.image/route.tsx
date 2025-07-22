@@ -200,8 +200,25 @@ export default function NewImage() {
     processImages()
   }, [viewerData?.viewer?.imageGenerationResults, dispatch])
 
-  const [createWork, { loading: isCreatedLoading }] =
-    useMutation(CreateWorkMutation)
+  // クエリパラメータからイベント参加情報とタグを処理
+  useEffect(() => {
+    const eventParam = searchParams.get("event")
+    const tagParam = searchParams.get("tag")
+
+    if (eventParam === "wakiaiai4-halloween" && tagParam) {
+      // ハロウィン企画参加タグを自動設定
+      const decodedTag = decodeURIComponent(tagParam)
+      dispatchInput({
+        type: "ADD_TAG",
+        payload: {
+          id: Math.random().toString(),
+          text: decodedTag,
+        },
+      })
+    }
+  }, [searchParams])
+
+  const [createWork] = useMutation(CreateWorkMutation)
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
@@ -496,9 +513,7 @@ export default function NewImage() {
     // dispatch({ type: "OPEN_LOADING_AI", payload: false })
   }
 
-  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   useBeforeUnload(
-    // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
     React.useCallback(
       (event) => {
         if (state) {

@@ -20,6 +20,10 @@ type Props = {
 export function HomeBanners(props: Props) {
   const banners = [
     {
+      href: "/events/wakiaiai4",
+      src: "https://assets.aipictors.com/cc52625d-887c-46f4-afbc-757b7655797f.webp",
+    },
+    {
       href: "https://www.aipictors.com/events/2025-event-rainbow",
       src: "https://assets.aipictors.com/rainbow-banner-2025.webp",
     },

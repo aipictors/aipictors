@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react"
-import { useState } from "react"
+import { useState, useId } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
@@ -20,6 +20,7 @@ import {
 
 export function WakiAiAiEventPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const participationMethodsId = useId()
 
   const eventInfo = {
     title: "和気あいAI4",
@@ -84,7 +85,7 @@ export function WakiAiAiEventPage() {
     {
       question: "クリエイターとして参加するにはどうすれば？",
       answer:
-        "リアル出展、AIイラストA0展示、生成AIなんでも宣伝の3つの参加方法があります。それぞれ専用の申込フォームからお申し込みください。",
+        "リアル出展、AIイラストA0展示、生成AIなんでも宣伝の3つの参加方法があります。それぞれ申込フォームからお申し込みください。",
     },
     {
       question: "どんな作品が展示されますか？",
@@ -98,21 +99,34 @@ export function WakiAiAiEventPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* ヒーローセクション */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="absolute inset-0 bg-black opacity-20" />
-        <div className="relative px-4 py-16 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden bg-gradient-to-r from-orange-600 to-purple-600 text-white">
+        <div
+          className="absolute inset-0 bg-center bg-cover bg-no-repeat"
+          style={{
+            backgroundImage:
+              "url('https://assets.aipictors.com/cc52625d-887c-46f4-afbc-757b7655797f.webp')",
+          }}
+        />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="relative px-4 py-20 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
-            <div className="mb-4">
+            <div className="mb-4 flex flex-col items-center gap-2">
+              <Badge
+                variant="secondary"
+                className="bg-orange-500 px-4 py-2 text-lg text-white"
+              >
+                🎃 ハロウィン企画開催中！
+              </Badge>
               <Badge variant="secondary" className="bg-yellow-500 text-black">
                 {eventInfo.deadline}
               </Badge>
             </div>
-            <h1 className="mb-4 font-bold text-4xl sm:text-5xl lg:text-6xl">
+            <h1 className="mb-4 font-bold text-4xl drop-shadow-lg sm:text-5xl lg:text-6xl">
               {eventInfo.title}
             </h1>
-            <p className="mb-8 text-lg opacity-90 sm:text-xl">
+            <p className="mb-8 text-lg opacity-90 drop-shadow-lg sm:text-xl">
               {eventInfo.subtitle}
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -132,17 +146,23 @@ export function WakiAiAiEventPage() {
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Button
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100"
+                className="transform border-2 border-orange-300 bg-gradient-to-r from-orange-500 to-orange-600 px-8 py-4 font-bold text-lg text-white shadow-xl transition-all duration-200 hover:scale-105 hover:from-orange-600 hover:to-orange-700"
+                onClick={() => {
+                  document
+                    .getElementById(participationMethodsId)
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }}
               >
-                参加方法を見る
+                🎯 参加方法を見る
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600"
-              >
-                作品を投稿する
-              </Button>
+              <Link to="/new/image">
+                <Button
+                  size="lg"
+                  className="transform border-2 border-purple-300 bg-gradient-to-r from-purple-600 to-purple-700 px-8 py-4 font-bold text-lg text-white shadow-xl transition-all duration-200 hover:scale-105 hover:from-purple-700 hover:to-purple-800"
+                >
+                  🎨 作品を投稿する
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -187,28 +207,138 @@ export function WakiAiAiEventPage() {
           </div>
         </section>
 
+        {/* ハロウィン企画セクション */}
+        <section className="mb-16">
+          <div className="relative overflow-hidden rounded-lg border-4 border-orange-300 bg-gradient-to-r from-orange-500 to-purple-600 text-white shadow-2xl">
+            <div
+              className="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-30"
+              style={{
+                backgroundImage:
+                  "url('https://assets.aipictors.com/cc52625d-887c-46f4-afbc-757b7655797f.webp')",
+              }}
+            />
+            <div className="relative p-8">
+              <div className="text-center">
+                <Badge
+                  variant="secondary"
+                  className="mb-4 animate-pulse bg-yellow-400 px-6 py-2 font-bold text-black text-lg"
+                >
+                  🔥 特別企画開催中！
+                </Badge>
+                <h2 className="mb-4 font-bold text-3xl drop-shadow-lg md:text-4xl">
+                  🎃 和気あいAI2025ハロウィン企画 🎃
+                </h2>
+                <p className="mb-6 text-lg drop-shadow-lg md:text-xl">
+                  愛知県のリアルイベント「和気あいAI」にてハロウィン企画を実施いたします！
+                </p>
+                <div className="mb-6">
+                  <a
+                    href="https://www.aipictors.com/events/halloween-2025"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/20 px-4 py-2 text-white backdrop-blur-sm transition-colors hover:bg-white/30"
+                  >
+                    <ExternalLinkIcon className="h-4 w-4" />
+                    詳細ページを見る
+                  </a>
+                </div>
+              </div>
+
+              <Card className="bg-white/90 text-gray-800">
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <h3 className="mb-3 font-bold text-orange-600 text-xl">
+                        参加方法
+                      </h3>
+                      <div className="rounded-lg bg-orange-100 p-4">
+                        <p className="font-bold text-lg text-orange-800">
+                          「!和気あいAI2025ハロウィン企画」
+                        </p>
+                        <p className="text-orange-700">
+                          このタグをつけて作品を投稿するとイベントに参加できます！
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div className="rounded-lg bg-purple-50 p-4">
+                        <h4 className="mb-2 font-semibold text-purple-800">
+                          📋 ポスター掲載
+                        </h4>
+                        <p className="text-purple-700 text-sm">
+                          応募いただいた作品はポスターにて掲載させていただきます！
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg bg-orange-50 p-4">
+                        <h4 className="mb-2 font-semibold text-orange-800">
+                          📖 冊子作成
+                        </h4>
+                        <p className="text-orange-700 text-sm">
+                          人気作品は冊子にまとめ、当日ご購入・ご閲覧いただけるようにいたします！
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <Button
+                        size="lg"
+                        className="mr-4 mb-4 transform border-3 border-white/30 bg-gradient-to-r from-orange-600 to-red-600 px-8 py-4 font-bold text-lg text-white shadow-xl transition-all duration-200 hover:scale-105 hover:from-orange-700 hover:to-red-700"
+                        onClick={() => {
+                          const url = `/new/image?event=wakiaiai4-halloween&tag=${encodeURIComponent("!和気あいAI2025ハロウィン企画")}`
+                          window.open(url, "_blank")
+                        }}
+                      >
+                        🎃 ハロウィン作品を投稿する
+                      </Button>
+                      <a
+                        href="https://www.aipictors.com/events/halloween-2025"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="mb-4 transform border-3 border-orange-300 bg-white/90 px-8 py-4 font-bold text-lg text-orange-600 shadow-xl transition-all duration-200 hover:scale-105 hover:bg-white hover:text-orange-700"
+                        >
+                          <ExternalLinkIcon className="mr-2 h-5 w-5" />
+                          応募作品を見る
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* 作品投稿セクション */}
         <section className="mb-16">
-          <Card className="bg-gradient-to-r from-purple-100 to-blue-100">
+          <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 shadow-lg">
             <CardHeader className="text-center">
-              <CardTitle className="flex items-center justify-center gap-2 font-bold text-2xl">
+              <CardTitle className="flex items-center justify-center gap-2 font-bold text-2xl text-purple-800">
                 <PaletteIcon className="h-6 w-6" />
                 和気あいAI4に作品を投稿しよう！
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-center">
+            <CardContent className="space-y-6">
+              <p className="text-center text-gray-700 text-lg">
                 和気あいAI4に関連する作品をAipictorsに投稿して、イベントを盛り上げましょう！
                 <br />
-                「#和気あいAI4」「#wakiaiai4」タグを付けて投稿してください。
+                <span className="font-semibold text-purple-700">
+                  「#和気あいAI4」「#wakiaiai4」
+                </span>
+                タグを付けて投稿してください。
               </p>
               <div className="flex justify-center">
                 <Link to="/new/image">
                   <Button
                     size="lg"
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="border-2 border-purple-400 bg-gradient-to-r from-purple-600 to-purple-700 px-8 py-4 font-bold text-lg text-white shadow-lg hover:from-purple-700 hover:to-purple-800"
                   >
-                    作品を投稿する
+                    🎨 作品を投稿する
                   </Button>
                 </Link>
               </div>
@@ -217,7 +347,7 @@ export function WakiAiAiEventPage() {
         </section>
 
         {/* 参加方法 */}
-        <section className="mb-16">
+        <section id={participationMethodsId} className="mb-16">
           <h2 className="mb-8 text-center font-bold text-3xl">
             クリエイターとして参加する方法
           </h2>
@@ -336,7 +466,7 @@ export function WakiAiAiEventPage() {
         </section>
 
         {/* お問い合わせ・SNS */}
-        <section className="text-center">
+        <section className="mb-16 text-center">
           <Card>
             <CardContent className="p-8">
               <h3 className="mb-4 font-bold text-xl">お問い合わせ・最新情報</h3>
@@ -363,6 +493,52 @@ export function WakiAiAiEventPage() {
                     Discord
                   </Button>
                 </a>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
+        {/* 関連イベント */}
+        <section className="text-center">
+          <h3 className="mb-6 font-bold text-2xl">関連イベント</h3>
+          <Card className="border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-purple-50 dark:border-orange-700 dark:from-orange-900/20 dark:to-purple-900/20">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center gap-6 md:flex-row">
+                <div className="flex-1">
+                  <h4 className="mb-2 font-bold text-orange-600 text-xl dark:text-orange-400">
+                    🎃 ハロウィン2025企画
+                  </h4>
+                  <p className="mb-4 text-gray-700 dark:text-gray-300">
+                    和気あいAI4のハロウィン特別企画！作品投稿でポスター掲載のチャンス
+                  </p>
+                  <Badge className="mb-4 bg-orange-500 text-white">
+                    応募期間：2025年7月21日〜8月31日
+                  </Badge>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <a
+                    href="https://www.aipictors.com/events/halloween-2025"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button
+                      variant="outline"
+                      className="w-full border-orange-300 text-orange-600 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-400 dark:hover:bg-orange-900/20"
+                    >
+                      <ExternalLinkIcon className="mr-2 h-4 w-4" />
+                      ハロウィン企画詳細
+                    </Button>
+                  </a>
+                  <Button
+                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+                    onClick={() => {
+                      const url = `/new/image?event=wakiaiai4-halloween&tag=${encodeURIComponent("!和気あいAI2025ハロウィン企画")}`
+                      window.open(url, "_blank")
+                    }}
+                  >
+                    🎃 ハロウィン作品投稿
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
