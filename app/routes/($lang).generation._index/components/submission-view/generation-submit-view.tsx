@@ -27,6 +27,8 @@ export function GenerationSubmissionView(props: Props) {
 
   const navigate = useNavigate()
 
+  const isDesktop = useMediaQuery("(min-width: 768px)")
+
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
   const { data: pass, refetch: refetchPass } = useQuery(
@@ -40,8 +42,7 @@ export function GenerationSubmissionView(props: Props) {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
-        if (useMediaQuery("(min-width: 768px)")) {
+        if (isDesktop) {
           toast.error(error.message)
         } else {
           toast.error(error.message, { position: "top-center" })
@@ -50,30 +51,25 @@ export function GenerationSubmissionView(props: Props) {
     },
   )
 
-  const [createFluxTask, { loading: isCreatingFluxTask }] = useMutation(
-    createFluxImageGenerationTaskMutation,
-    {
-      refetchQueries: [viewerCurrentPassQuery],
-      awaitRefetchQueries: true,
-      onError(error) {
-        // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
-        if (useMediaQuery("(min-width: 768px)")) {
-          toast.error(error.message)
-        } else {
-          toast.error(error.message, { position: "top-center" })
-        }
-      },
+  const [createFluxTask] = useMutation(createFluxImageGenerationTaskMutation, {
+    refetchQueries: [viewerCurrentPassQuery],
+    awaitRefetchQueries: true,
+    onError(error) {
+      if (isDesktop) {
+        toast.error(error.message)
+      } else {
+        toast.error(error.message, { position: "top-center" })
+      }
     },
-  )
+  })
 
-  const [createReservedTask, { loading: isCreatingReservedTask }] = useMutation(
+  const [createReservedTask] = useMutation(
     createImageGenerationTaskReservedMutation,
     {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
-        if (useMediaQuery("(min-width: 768px)")) {
+        if (isDesktop) {
           toast.error(error.message)
         } else {
           toast.error(error.message, { position: "top-center" })
@@ -84,7 +80,7 @@ export function GenerationSubmissionView(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const { data: lineUserId, refetch } = useQuery(viewerLineUserIdQuery, {
+  const { data: lineUserId } = useQuery(viewerLineUserIdQuery, {
     skip: authContext.isNotLoggedIn,
   })
 
@@ -262,35 +258,28 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (
-      (context.config.modelType === "SDXL" ||
-        context.config.modelType === "FLUX") &&
+      context.config.modelType === "FLUX" &&
       context.config.controlNetImageBase64 !== null
     ) {
-      // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
-      if (useMediaQuery("(min-width: 768px)")) {
-        toast("SDXLモデルはControlNetを使用できません。")
+      if (isDesktop) {
+        toast("FLUXモデルはControlNetを使用できません。")
         return
       }
-      toast("SDXLモデルはControlNetを使用できません。", {
+      toast("FLUXモデルはControlNetを使用できません。", {
         position: "top-center",
       })
       return
     }
 
-    if (
-      (context.config.modelType === "SDXL" ||
-        context.config.modelType === "FLUX") &&
-      context.config.i2iImageBase64
-    ) {
-      // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
-      if (useMediaQuery("(min-width: 768px)")) {
+    if (context.config.modelType === "FLUX" && context.config.i2iImageBase64) {
+      if (isDesktop) {
         toast(
-          "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+          "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
         )
         return
       }
       toast(
-        "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+        "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
         {
           position: "top-center",
         },
@@ -299,8 +288,7 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
-      // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
-      if (useMediaQuery("(min-width: 768px)")) {
+      if (isDesktop) {
         toast(
           "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
         )

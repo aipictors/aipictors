@@ -27,6 +27,8 @@ export function GenerationDemoSubmissionView(props: Props) {
 
   const navigate = useNavigate()
 
+  const isDesktop = useMediaQuery("(min-width: 768px)")
+
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
   const { data: pass, refetch: refetchPass } = useQuery(
@@ -40,7 +42,7 @@ export function GenerationDemoSubmissionView(props: Props) {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        if (useMediaQuery("(min-width: 768px)")) {
+        if (isDesktop) {
           toast.error(error.message)
         } else {
           toast.error(error.message, { position: "top-center" })
@@ -49,28 +51,25 @@ export function GenerationDemoSubmissionView(props: Props) {
     },
   )
 
-  const [createFluxTask, { loading: isCreatingFluxTask }] = useMutation(
-    createFluxImageGenerationTaskMutation,
-    {
-      refetchQueries: [viewerCurrentPassQuery],
-      awaitRefetchQueries: true,
-      onError(error) {
-        if (useMediaQuery("(min-width: 768px)")) {
-          toast.error(error.message)
-        } else {
-          toast.error(error.message, { position: "top-center" })
-        }
-      },
+  const [createFluxTask] = useMutation(createFluxImageGenerationTaskMutation, {
+    refetchQueries: [viewerCurrentPassQuery],
+    awaitRefetchQueries: true,
+    onError(error) {
+      if (isDesktop) {
+        toast.error(error.message)
+      } else {
+        toast.error(error.message, { position: "top-center" })
+      }
     },
-  )
+  })
 
-  const [createReservedTask, { loading: isCreatingReservedTask }] = useMutation(
+  const [createReservedTask] = useMutation(
     createImageGenerationTaskReservedMutation,
     {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
       onError(error) {
-        if (useMediaQuery("(min-width: 768px)")) {
+        if (isDesktop) {
           toast.error(error.message)
         } else {
           toast.error(error.message, { position: "top-center" })
@@ -81,7 +80,7 @@ export function GenerationDemoSubmissionView(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const { data: lineUserId, refetch } = useQuery(viewerLineUserIdQuery, {
+  const { data: lineUserId } = useQuery(viewerLineUserIdQuery, {
     skip: authContext.isNotLoggedIn,
   })
 
@@ -259,33 +258,28 @@ export function GenerationDemoSubmissionView(props: Props) {
     }
 
     if (
-      (context.config.modelType === "SDXL" ||
-        context.config.modelType === "FLUX") &&
+      context.config.modelType === "FLUX" &&
       context.config.controlNetImageBase64 !== null
     ) {
-      if (useMediaQuery("(min-width: 768px)")) {
-        toast("SDXLモデルはControlNetを使用できません。")
+      if (isDesktop) {
+        toast("FLUXモデルはControlNetを使用できません。")
         return
       }
-      toast("SDXLモデルはControlNetを使用できません。", {
+      toast("FLUXモデルはControlNetを使用できません。", {
         position: "top-center",
       })
       return
     }
 
-    if (
-      (context.config.modelType === "SDXL" ||
-        context.config.modelType === "FLUX") &&
-      context.config.i2iImageBase64
-    ) {
-      if (useMediaQuery("(min-width: 768px)")) {
+    if (context.config.modelType === "FLUX" && context.config.i2iImageBase64) {
+      if (isDesktop) {
         toast(
-          "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+          "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
         )
         return
       }
       toast(
-        "SDXLモデルは画像から生成を一時的に停止しています、申し訳ございません",
+        "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
         {
           position: "top-center",
         },
@@ -294,7 +288,7 @@ export function GenerationDemoSubmissionView(props: Props) {
     }
 
     if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
-      if (useMediaQuery("(min-width: 768px)")) {
+      if (isDesktop) {
         toast(
           "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
         )
@@ -417,7 +411,7 @@ export function GenerationDemoSubmissionView(props: Props) {
   const createTaskCore = async (
     taskCount: number,
     modelName: string,
-    generationType: string,
+    _generationType: string,
     i2iFileUrl: string,
   ) => {
     const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
@@ -425,7 +419,7 @@ export function GenerationDemoSubmissionView(props: Props) {
     // シードを設定する、連続生成のときはSeedは連番にする
     const seeds: number[] = []
 
-    taskCounts.map((i) => {
+    taskCounts.forEach((i) => {
       if (context.config.seed === -1) {
         seeds.push(-1)
       } else {
@@ -436,7 +430,7 @@ export function GenerationDemoSubmissionView(props: Props) {
     // プロンプトが設定されていない場合はランダムなプロンプトを使用する
     const promptsTexts: string[] = []
 
-    taskCounts.map((i) => {
+    taskCounts.forEach(() => {
       if (context.config.promptText) {
         promptsTexts.push(context.config.promptText)
       } else {
@@ -499,28 +493,64 @@ export function GenerationDemoSubmissionView(props: Props) {
           },
         })
       } else {
-        createFluxTask({
-          variables: {
-            input: {
-              count: 1,
-              prompt: promptsTexts[i],
-              isPromptGenerationEnabled:
-                context.config.languageUsedForPrompt === "jp",
-              negativePrompt: context.config.negativePromptText,
-              seed: seeds[i],
-              steps:
-                context.config.steps >
-                  config.generationFeature.imageGenerationMaxSteps ||
-                context.config.steps < 9
-                  ? config.generationFeature.imageGenerationMaxSteps
-                  : context.config.steps,
-              scale: context.config.scale,
-              sizeType: context.config
-                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-              modelName: "flux.1 schnell",
+        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
+          createFluxTask({
+            variables: {
+              input: {
+                count: 1,
+                prompt: promptsTexts[i],
+                isPromptGenerationEnabled:
+                  context.config.languageUsedForPrompt === "jp",
+                negativePrompt: context.config.negativePromptText,
+                seed: seeds[i],
+                steps:
+                  context.config.steps >
+                    config.generationFeature.imageGenerationMaxSteps ||
+                  context.config.steps < 9
+                    ? config.generationFeature.imageGenerationMaxSteps
+                    : context.config.steps,
+                scale: context.config.scale,
+                sizeType: context.config
+                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+                modelName: "flux.1 schnell",
+              },
             },
-          },
-        })
+          })
+        } else {
+          createTask({
+            variables: {
+              input: {
+                count: 1,
+                model: modelName,
+                vae: context.config.vae ?? "",
+                prompt: promptsTexts[i],
+                isPromptGenerationEnabled:
+                  context.config.languageUsedForPrompt === "jp",
+                negativePrompt: context.config.negativePromptText,
+                seed: seeds[i],
+                steps:
+                  context.config.steps >
+                    config.generationFeature.imageGenerationMaxSteps ||
+                  context.config.steps < 9
+                    ? config.generationFeature.imageGenerationMaxSteps
+                    : context.config.steps,
+                scale: context.config.scale,
+                sampler: context.config.sampler,
+                clipSkip: context.config.clipSkip,
+                sizeType: context.config
+                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+                type: "TEXT_TO_IMAGE",
+                controlNetImageUrl: controlNetImageUrl,
+                controlNetWeight: context.config.controlNetWeight
+                  ? Number(context.config.controlNetWeight)
+                  : null,
+                controlNetModel: context.config.controlNetModel,
+                controlNetModule: context.config.controlNetModule,
+                upscaleSize: context.config.upscaleSize,
+              },
+            },
+          })
+        }
       }
     })
     // タスクの作成後も呼び出す必要がある

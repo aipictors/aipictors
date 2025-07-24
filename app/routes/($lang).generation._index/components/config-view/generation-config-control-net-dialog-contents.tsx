@@ -15,6 +15,7 @@ type Props = {
   module: string
   weight: number
   isSelectorOpen: boolean
+  modelType: string
   setModule: (module: string) => void
   setModel: (model: string) => void
   setWeight: (weight: number) => void
@@ -28,58 +29,108 @@ export function GenerationConfigControlNetDialogContents(props: Props) {
   const isShowWeight = () => {
     return (
       props.module === "dw_openpose_full" ||
-      "openpose_full" ||
-      "openpose" ||
-      "canny" ||
-      "depth_midas" ||
-      "mlsd" ||
-      "softedge_pidinet" ||
-      "scribble_pidinet" ||
-      "reference_only"
+      props.module === "openpose_full" ||
+      props.module === "openpose" ||
+      props.module === "canny" ||
+      props.module === "depth_midas" ||
+      props.module === "mlsd" ||
+      props.module === "softedge_pidinet" ||
+      props.module === "scribble_pidinet" ||
+      props.module === "reference_only"
     )
   }
 
   const onChangeModule = (module: string) => {
     props.setModule(module)
-    if (module === "dw_openpose_full") {
-      props.setModel("control_openpose-fp16 [9ca67cc5]")
-      return
-    }
-    if (module === "openpose_full") {
-      props.setModel("control_openpose-fp16 [9ca67cc5]")
-      return
-    }
-    if (module === "openpose") {
-      props.setModel("control_openpose-fp16 [9ca67cc5]")
-      return
-    }
-    if (module === "canny") {
-      props.setModel("control_v11p_sd15_canny [d14c016b]")
-      return
-    }
-    if (module === "depth_midas") {
-      props.setModel("control_v11f1p_sd15_depth [cfd03158]")
-      return
-    }
-    if (module === "softedge_pidinet") {
-      props.setModel("")
-      return
-    }
-    if (module === "mlsd") {
-      props.setModel("control_v11p_sd15_mlsd [aca30ff0]")
-      return
-    }
-    if (module === "scribble_pidinet") {
-      props.setModel("control_v11p_sd15_scribble [d4ba51ff]")
-      return
-    }
-    if (module === "seg_ofade20k") {
-      props.setModel("control_v11p_sd15_seg [e1f51eb9]")
-      return
-    }
-    if (module === "reference_only") {
-      props.setModel("")
-      return
+
+    console.log("ControlNet modelType:", props.modelType, "module:", module)
+
+    // SDXLモデルの場合
+    if (props.modelType === "SDXL") {
+      if (module === "dw_openpose_full") {
+        props.setModel("diffusion_pytorch_model_twins [590eff90]")
+        return
+      }
+      if (module === "openpose_full") {
+        props.setModel("diffusion_pytorch_model_twins [590eff90]")
+        return
+      }
+      if (module === "openpose") {
+        props.setModel("diffusion_pytorch_model_twins [590eff90]")
+        return
+      }
+      if (module === "canny") {
+        props.setModel("diffusers_xl_canny_mid [112a778d]")
+        return
+      }
+      if (module === "depth_midas") {
+        props.setModel("diffusers_xl_depth_mid [39c49e13]")
+        return
+      }
+      if (module === "softedge_pidinet") {
+        props.setModel("sargezt_xl_softedge [b6f7415b]")
+        return
+      }
+      if (module === "mlsd") {
+        props.setModel("bdsqlsz_controlllite_xl_mlsd_V2 [9fb65e46]")
+        return
+      }
+      if (module === "scribble_pidinet") {
+        props.setModel("kohya_controllllite_xl_scribble_anime [d39b679a]")
+        return
+      }
+      if (module === "seg_ofade20k") {
+        props.setModel(
+          "bdsqlsz_controlllite_xl_segment_animeface_V2 [bb3b9e5e]",
+        )
+        return
+      }
+      if (module === "reference_only") {
+        props.setModel("")
+        return
+      }
+    } else {
+      // SD1/SD2モデルの場合（既存の処理）
+      if (module === "dw_openpose_full") {
+        props.setModel("control_openpose-fp16 [9ca67cc5]")
+        return
+      }
+      if (module === "openpose_full") {
+        props.setModel("control_openpose-fp16 [9ca67cc5]")
+        return
+      }
+      if (module === "openpose") {
+        props.setModel("control_openpose-fp16 [9ca67cc5]")
+        return
+      }
+      if (module === "canny") {
+        props.setModel("control_v11p_sd15_canny [d14c016b]")
+        return
+      }
+      if (module === "depth_midas") {
+        props.setModel("control_v11f1p_sd15_depth [cfd03158]")
+        return
+      }
+      if (module === "softedge_pidinet") {
+        props.setModel("")
+        return
+      }
+      if (module === "mlsd") {
+        props.setModel("control_v11p_sd15_mlsd [aca30ff0]")
+        return
+      }
+      if (module === "scribble_pidinet") {
+        props.setModel("control_v11p_sd15_scribble [d4ba51ff]")
+        return
+      }
+      if (module === "seg_ofade20k") {
+        props.setModel("control_v11p_sd15_seg [e1f51eb9]")
+        return
+      }
+      if (module === "reference_only") {
+        props.setModel("")
+        return
+      }
     }
     props.setModel("")
   }
@@ -123,7 +174,15 @@ export function GenerationConfigControlNetDialogContents(props: Props) {
 
   useEffect(() => {
     props.setWeight(1)
+    console.log(
+      "ControlNet Dialog initialized with modelType:",
+      props.modelType,
+    )
   }, [])
+
+  useEffect(() => {
+    console.log("ControlNet modelType changed to:", props.modelType)
+  }, [props.modelType])
 
   return (
     <>

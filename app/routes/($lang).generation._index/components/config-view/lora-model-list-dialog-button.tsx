@@ -37,12 +37,7 @@ export function LoraModelListDialogButton(props: Props) {
       }}
     >
       <DialogTrigger asChild className="w-full">
-        <Button
-          size={"sm"}
-          className="w-full"
-          variant={"secondary"}
-          onClick={setTrue}
-        >
+        <Button className="w-full" variant={"secondary"} onClick={setTrue}>
           {t("LoRA（エフェクト）を追加", "Add LoRA (Effect)")}
         </Button>
       </DialogTrigger>

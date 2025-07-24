@@ -289,7 +289,7 @@ export default function Index() {
           />
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             {/* left */}
-            <div className="flex flex-col space-y-4 md:w-[56%] lg:w-[64%]">
+            <div className="flex w-full flex-col space-y-4 ">
               <HomeSensitiveWorksUsersRecommendedSection
                 works={data.promotionWorks}
               />
@@ -317,7 +317,7 @@ export default function Index() {
               orientation="vertical"
               className="hidden h-[100vh] w-[1px] md:block"
             />
-            <div className="flex w-full flex-col space-y-4">
+            <div className="flex w-full max-w-80 flex-col space-y-4">
               <Button
                 onClick={() => navigate("/")}
                 variant="secondary"

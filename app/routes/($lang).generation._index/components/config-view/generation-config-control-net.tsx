@@ -72,7 +72,7 @@ export function GenerationConfigControlNet() {
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
         <span className="text-nowrap font-bold">
-          {"ControlNet（SDXL以外）"}
+          {t("ControlNet", "ControlNet")}
         </span>
         <CrossPlatformTooltip
           text={t(
@@ -128,6 +128,7 @@ export function GenerationConfigControlNet() {
               module={module}
               weight={weight}
               isSelectorOpen={isSelectorOpen}
+              modelType={context.config.modelType}
               setModule={setModule}
               setModel={setModel}
               setWeight={setWeight}
