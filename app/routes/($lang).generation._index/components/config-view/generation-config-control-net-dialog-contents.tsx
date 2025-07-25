@@ -28,7 +28,7 @@ type Props = {
 export function GenerationConfigControlNetDialogContents(props: Props) {
   const isShowWeight = () => {
     return (
-      props.module === "dw_openpose_full" ||
+      (props.module === "dw_openpose_full" && props.modelType !== "SDXL") ||
       props.module === "openpose_full" ||
       props.module === "openpose" ||
       props.module === "canny" ||
@@ -43,14 +43,8 @@ export function GenerationConfigControlNetDialogContents(props: Props) {
   const onChangeModule = (module: string) => {
     props.setModule(module)
 
-    console.log("ControlNet modelType:", props.modelType, "module:", module)
-
     // SDXLモデルの場合
     if (props.modelType === "SDXL") {
-      if (module === "dw_openpose_full") {
-        props.setModel("diffusion_pytorch_model_twins [590eff90]")
-        return
-      }
       if (module === "openpose_full") {
         props.setModel("diffusion_pytorch_model_twins [590eff90]")
         return
@@ -174,15 +168,7 @@ export function GenerationConfigControlNetDialogContents(props: Props) {
 
   useEffect(() => {
     props.setWeight(1)
-    console.log(
-      "ControlNet Dialog initialized with modelType:",
-      props.modelType,
-    )
   }, [])
-
-  useEffect(() => {
-    console.log("ControlNet modelType changed to:", props.modelType)
-  }, [props.modelType])
 
   return (
     <>
@@ -204,9 +190,11 @@ export function GenerationConfigControlNetDialogContents(props: Props) {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="dw_openpose_full">
-              {"DWポーズ(全身、顔、手を同じポーズで生成)"}
-            </SelectItem>
+            {props.modelType !== "SDXL" && (
+              <SelectItem value="dw_openpose_full">
+                {"DWポーズ(全身、顔、手を同じポーズで生成)"}
+              </SelectItem>
+            )}
             <SelectItem value="canny">{"Canny(線画抽出)を元に生成"}</SelectItem>
             <SelectItem value="depth_midas">
               {"Depth(深度情報付き)を元に生成"}
