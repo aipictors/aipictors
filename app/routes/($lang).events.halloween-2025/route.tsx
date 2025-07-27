@@ -78,69 +78,74 @@ export default function EventHalloween2025() {
   const eventInfo = {
     title: "ハロウィン2025企画",
     subtitle:
-      "和気あいAI4と連動したハロウィン特別企画！生成AIで素敵なハロウィン作品を作ろう",
+      "Aipictorsサイト内企画：和気あいAI4会場での展示・冊子掲載を目指してハロウィン作品を投稿しよう！",
     date: "2025年10月25日(土)",
     time: "10:00〜16:00",
     location: "名古屋鉄道 太田川駅前 大屋根広場",
     address: "愛知県東海市大田町下浜田137",
     access: "太田川駅から徒歩1分",
     admission: "無料",
-    deadline: "8月31日〆切！",
+    deadline: "作品投稿期間：2025年7月21日〜8月31日",
     tag: "!和気あいAI2025ハロウィン企画",
   }
 
   const features = [
     {
-      icon: <UsersIcon className="h-6 w-6" />,
-      title: "一般参加無料",
-      description:
-        "屋外開催！どなたでも無料でハロウィン作品を見ることができます",
-    },
-    {
       icon: <PaletteIcon className="h-6 w-6" />,
-      title: "ハロウィンテーマ",
-      description: "ハロウィンをテーマにした生成AI作品で盛り上がろう",
+      title: "Aipictorsサイト内企画",
+      description:
+        "当企画はAipictorsサイト内での作品投稿企画です。優秀作品がリアルイベントで展示されます",
     },
     {
       icon: <ImageIcon className="h-6 w-6" />,
-      title: "作品展示",
-      description: "和気あいAI4イベントでハロウィン作品が展示されます",
+      title: "和気あいAI4会場での展示",
+      description:
+        "投稿作品の中から優秀作品が愛知県の実際のイベント会場で展示されます",
+    },
+    {
+      icon: <UsersIcon className="h-6 w-6" />,
+      title: "冊子掲載のチャンス",
+      description:
+        "Aipictors運営が作成する冊子への掲載機会があり、イベント会場で配布・販売されます",
     },
   ]
 
   const participationMethods = [
     {
-      title: "リアル出展",
-      description:
-        "当日会場で実際にブースを出展し、ハロウィン作品販売やグッズ展示を行いたい方向けの参加形式です。",
-      icon: <StoreIcon className="h-6 w-6" />,
-      link: "https://forms.gle/r7CAmK9vri1NEKWj9",
-    },
-    {
-      title: "AIイラストA0展示",
-      description:
-        "A0サイズ（841×1189mm）の大型パネルにハロウィン作品を印刷して展示できます。",
-      icon: <ImageIcon className="h-6 w-6" />,
-      link: "https://forms.gle/r7CAmK9vri1NEKWj9",
-    },
-    {
       title: "オンライン投稿",
       description:
-        "Aipictorsに作品を投稿してハロウィン企画に参加。必須タグ付きで投稿してください。",
+        "Aipictorsに「!和気あいAI2025ハロウィン企画」タグ付きでハロウィン作品を投稿してください。優秀作品が和気あいAI4会場で展示されます。",
       icon: <BadgeIcon className="h-6 w-6" />,
       link: `/new/image?event=wakiaiai4-halloween&tag=${encodeURIComponent(eventInfo.tag)}`,
+    },
+    {
+      title: "リアル出展（別申込）",
+      description:
+        "和気あいAI4イベントにクリエイターとして直接出展したい場合は、別途和気あいAI4の出展申込が必要です。",
+      icon: <StoreIcon className="h-6 w-6" />,
+      link: "/events/wakiaiai4",
     },
   ]
 
   const faqItems = [
     {
-      question: "ハロウィン企画は誰でも参加できますか？",
+      question: "この企画は何ですか？",
       answer:
-        "はい、どなたでも参加できます。Aipictorsに作品投稿する方法と、和気あいAI4イベント会場での展示参加があります。",
+        "Aipictorsが主催するサイト内作品投稿企画です。投稿された作品の中から優秀作品を選定し、愛知県で開催されるリアルイベント「和気あいAI4」の会場で展示・冊子掲載を行います。",
     },
     {
-      question: "必須タグは何ですか？",
-      answer: `投稿時に「${eventInfo.tag}」タグを必ず付けてください。このタグがないとハロウィン企画の対象になりません。`,
+      question: "誰が作品を選定・展示するのですか？",
+      answer:
+        "Aipictors運営が作品を選定し、和気あいAI4イベントにAipictorsとして出展する際の展示内容・冊子収録作品として使用させていただきます。",
+    },
+    {
+      question: "参加方法を教えてください",
+      answer: `Aipictorsサイトにハロウィン作品を投稿する際、必ず「${eventInfo.tag}」タグを付けてください。この企画への参加はサイト内投稿のみとなります。`,
+    },
+    {
+      question: "直接イベント会場に出展したい場合は？",
+      answer:
+        "クリエイター個人として和気あいAI4に出展したい場合は、この企画とは別に和気あいAI4の出展申込が必要です。詳細は和気あいAI4メインページをご確認ください。",
     },
     {
       question: "どんなハロウィン作品を作れば良いですか？",
@@ -214,6 +219,47 @@ export default function EventHalloween2025() {
       </div>
 
       <div className="container mx-auto space-y-12 px-4 py-12">
+        {/* 企画概要セクション */}
+        <section>
+          <h2 className="mb-8 text-center font-bold text-2xl">企画概要</h2>
+          <Card className="border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-purple-50">
+            <CardContent className="p-8">
+              <div className="space-y-6 text-center">
+                <h3 className="font-bold text-orange-700 text-xl">
+                  これは何の企画ですか？
+                </h3>
+                <div className="mx-auto max-w-4xl space-y-4 text-left">
+                  <p className="text-lg">
+                    この企画は
+                    <strong>Aipictorsが主催するサイト内作品投稿企画</strong>
+                    です。
+                  </p>
+                  <p>
+                    投稿されたハロウィン作品の中から、Aipictors運営が優秀作品を選定し、
+                    愛知県で開催される生成AIイベント「和気あいAI4」において
+                    <strong>
+                      Aipictorsとして出展する際の展示作品・冊子収録作品
+                    </strong>
+                    として使用させていただきます。
+                  </p>
+                  <div className="rounded-lg border border-orange-200 bg-white/70 p-4">
+                    <h4 className="mb-2 font-semibold text-orange-800">
+                      参加の流れ
+                    </h4>
+                    <ol className="list-inside list-decimal space-y-1 text-sm">
+                      <li>Aipictorsにハロウィン作品を指定タグ付きで投稿</li>
+                      <li>Aipictors運営が優秀作品を選定</li>
+                      <li>
+                        選定作品が和気あいAI4会場でAipictorsブースに展示・冊子掲載
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
+
         {/* Main Event Banner */}
         <section className="text-center">
           <div className="mx-auto max-w-3xl">
@@ -227,7 +273,7 @@ export default function EventHalloween2025() {
 
         {/* Features */}
         <section>
-          <h2 className="mb-8 text-center font-bold text-2xl">イベント特徴</h2>
+          <h2 className="mb-8 text-center font-bold text-2xl">企画の特徴</h2>
           <div className="grid gap-6 md:grid-cols-3">
             {features.map((feature, index) => (
               <Card key={index.toString()} className="text-center">
@@ -247,8 +293,18 @@ export default function EventHalloween2025() {
 
         {/* Event Details */}
         <section>
-          <h2 className="mb-8 text-center font-bold text-2xl">開催情報</h2>
-          <Card>
+          <h2 className="mb-8 text-center font-bold text-2xl">
+            展示予定会場（和気あいAI4）
+          </h2>
+          <Card className="border-2 border-blue-200">
+            <CardHeader className="bg-blue-50">
+              <CardTitle className="text-center text-blue-800">
+                選定作品の展示会場について
+              </CardTitle>
+              <p className="mt-2 text-center text-blue-600 text-sm">
+                この企画で投稿された作品の優秀作品は、以下の会場でAipictorsとして展示される予定です
+              </p>
+            </CardHeader>
             <CardContent className="p-8">
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
@@ -300,23 +356,27 @@ export default function EventHalloween2025() {
 
         {/* Participation Methods */}
         <section id={participationMethodsId}>
-          <h2 className="mb-8 text-center font-bold text-2xl">参加方法</h2>
+          <h2 className="mb-8 text-center font-bold text-2xl">
+            企画への参加方法
+          </h2>
           <div className="mb-6">
             <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
               <CardContent className="p-6">
                 <div className="text-center">
-                  <h3 className="mb-2 font-bold text-lg">必須タグ</h3>
+                  <h3 className="mb-2 font-bold text-lg">
+                    Aipictors投稿時の必須タグ
+                  </h3>
                   <Badge className="bg-orange-600 px-4 py-2 font-mono text-lg text-white">
                     {eventInfo.tag}
                   </Badge>
                   <p className="mt-2 text-muted-foreground text-sm">
-                    作品投稿時にこのタグを必ず付けてください
+                    この企画に参加するには、Aipictorsに作品投稿時にこのタグを必ず付けてください
                   </p>
                 </div>
               </CardContent>
             </Card>
           </div>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
             {participationMethods.map((method, index) => (
               <Card key={index.toString()}>
                 <CardHeader>
@@ -521,19 +581,19 @@ export default function EventHalloween2025() {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-lg border-2 border-purple-300 bg-purple-100 p-6 dark:bg-purple-900/30">
           <h4 className="mb-3 font-bold text-purple-700 text-xl dark:text-purple-300">
-            ポスター掲載
+            Aipictorsとしてのポスター展示
           </h4>
           <p className="text-purple-600 dark:text-purple-200">
-            優秀作品は和気あいAI4のポスターに掲載されます
+            優秀作品はAipictors運営が作成する和気あいAI4のポスターに掲載されます
           </p>
         </div>
 
         <div className="rounded-lg border-2 border-yellow-300 bg-yellow-100 p-6 dark:bg-yellow-900/30">
           <h4 className="mb-3 font-bold text-xl text-yellow-700 dark:text-yellow-300">
-            冊子掲載
+            Aipictors冊子への掲載
           </h4>
           <p className="text-yellow-600 dark:text-yellow-200">
-            イベント冊子にも作品掲載のチャンスがあります
+            Aipictors運営が作成する冊子にも作品掲載のチャンスがあり、イベント会場で配布・販売されます
           </p>
         </div>
       </div>
