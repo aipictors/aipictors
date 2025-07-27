@@ -19,6 +19,8 @@ type Props = {
   month: number
   day: number | null
   weekIndex: number | null
+  rankingType?: "works" | "users"
+  onRankingTypeChange?: (type: "works" | "users") => void
 }
 
 export function RankingSensitiveHeader(props: Props) {
@@ -84,20 +86,30 @@ export function RankingSensitiveHeader(props: Props) {
     setViewType("デイリー") // 日間に切り替え
   }
 
+  // URLパラメータを保持してナビゲートするヘルパー関数
+  const navigateWithParams = (path: string) => {
+    const currentSearchParams = new URLSearchParams(location.search)
+    const searchString = currentSearchParams.toString()
+    const fullPath = searchString ? `${path}?${searchString}` : path
+    navigate(fullPath)
+  }
+
   const handleViewChange = (
     view: "マンスリー" | "デイリー" | "ウィークリー",
   ) => {
     setViewType(view)
     if (view === "ウィークリー") {
-      setWeekIndex(1)
+      navigateWithParams(`/r/rankings/${year}/${month}/weeks/1`)
     } else if (view === "デイリー") {
       // 日間に切り替え時に最新の日付に移動
       const today = new Date()
       const previousDay = new Date(today)
       previousDay.setDate(today.getDate() - 1)
-      setYear(previousDay.getFullYear())
-      setMonth(previousDay.getMonth() + 1)
-      setDay(previousDay.getDate())
+      navigateWithParams(
+        `/r/rankings/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+      )
+    } else {
+      navigateWithParams(`/r/rankings/${year}/${month}`)
     }
   }
 
@@ -114,8 +126,12 @@ export function RankingSensitiveHeader(props: Props) {
           ? `/r/rankings/${newYear}/${newMonth}/weeks/${weekIndex}`
           : `/r/rankings/${newYear}/${newMonth}`
 
+    const currentSearchParams = new URLSearchParams(location.search)
+    const searchString = currentSearchParams.toString()
+    const fullPath = searchString ? `${newPath}?${searchString}` : newPath
+
     if (location.pathname !== newPath) {
-      navigate(newPath)
+      navigate(fullPath)
     }
   }
 
@@ -171,10 +187,21 @@ export function RankingSensitiveHeader(props: Props) {
     }
   }
 
+  // ランキングタイプの変更ハンドラ
+  const handleRankingTypeChange = (type: "works" | "users") => {
+    if (props.onRankingTypeChange) {
+      props.onRankingTypeChange(type)
+    }
+  }
+
   const generateCarouselItems = () => {
     const today = new Date()
     today.setDate(today.getDate() - 1) // ランキングは前日まで
     const items: { link: string; name: string; border: boolean }[] = []
+
+    // 現在のURLパラメータを取得
+    const currentSearchParams = new URLSearchParams(location.search)
+    const searchString = currentSearchParams.toString()
 
     if (viewType === "デイリー") {
       for (let index = 0; index < 7; index++) {
@@ -184,25 +211,34 @@ export function RankingSensitiveHeader(props: Props) {
           .toString()
           .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`
 
+        const basePath = `/r/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+        const linkWithParams = searchString
+          ? `${basePath}?${searchString}`
+          : basePath
+
         items.push({
-          link: `/r/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
+          link: linkWithParams,
           name: formattedDate,
           border:
-            formattedDate ===
+            `${props.year}/${props.month}/${props.day}` ===
             `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
         })
       }
     }
 
     if (viewType === "マンスリー") {
-      for (let index = 0; index < 3; index++) {
+      for (let index = 3; index >= 1; index--) {
         const date = new Date(today)
-        date.setMonth(today.getMonth() + index)
-        const formattedMonth = `${date.getFullYear()}/${(date.getMonth() - 2)
+        date.setMonth(today.getMonth() - index)
+        const formattedMonth = `${date.getFullYear()}/${(date.getMonth() + 1)
           .toString()
           .padStart(2, "0")}`
+        const basePath = `/r/rankings/${date.getFullYear()}/${date.getMonth() + 1}`
+        const linkWithParams = searchString
+          ? `${basePath}?${searchString}`
+          : basePath
         items.push({
-          link: `/r/rankings/${date.getFullYear()}/${date.getMonth() - 2}`,
+          link: linkWithParams,
           name: formattedMonth,
           border: formattedMonth === `${year}/${month}`,
         })
@@ -212,8 +248,12 @@ export function RankingSensitiveHeader(props: Props) {
     if (viewType === "ウィークリー") {
       for (let index = 0; index < 4; index++) {
         const weekNumber = index + 1 // 1週目から4週目を順に追加
+        const basePath = `/r/rankings/${year}/${month}/weeks/${weekNumber}`
+        const linkWithParams = searchString
+          ? `${basePath}?${searchString}`
+          : basePath
         items.push({
-          link: `/r/rankings/${year}/${month}/weeks/${weekNumber}`,
+          link: linkWithParams,
           name: `${weekNumber}${t("週目", "th week")}`,
           border: weekIndex === weekNumber,
         })
@@ -223,12 +263,29 @@ export function RankingSensitiveHeader(props: Props) {
     return items
   }
 
-  const maxDay = new Date(year, month, 0).getDate()
-  const maxYear = new Date().getFullYear()
   const carouselItems = generateCarouselItems()
 
   return (
     <Card className="flex flex-col items-center space-y-4 p-4">
+      {/* ランキングタイプ切り替え */}
+      {props.day !== null && props.onRankingTypeChange && (
+        <div className="flex w-full max-w-72 justify-center space-x-2">
+          <Button
+            variant={props.rankingType === "works" ? "default" : "outline"}
+            onClick={() => handleRankingTypeChange("works")}
+            className="flex-1"
+          >
+            {t("作品ランキング", "Work Rankings")}
+          </Button>
+          <Button
+            variant={props.rankingType === "users" ? "default" : "outline"}
+            onClick={() => handleRankingTypeChange("users")}
+            className="flex-1"
+          >
+            {t("ユーザランキング", "User Rankings")}
+          </Button>
+        </div>
+      )}
       {viewType === "マンスリー" && (
         <p className="text-center font-bold text-md">
           {t("マンスリー", "Monthly")}

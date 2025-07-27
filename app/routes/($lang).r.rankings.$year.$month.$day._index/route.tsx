@@ -5,13 +5,14 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useParams } from "@remix-run/react"
+import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
+import { RankingSensitiveUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
@@ -65,8 +66,25 @@ export const headers: HeadersFunction = () => ({
 
 export default function SensitiveAwardsPage() {
   const data = useLoaderData<typeof loader>()
-
   const params = useParams<"year" | "month" | "day">()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // URL パラメータから直接状態を取得（useState は使わない）
+  const typeParam = searchParams.get("type")
+  const rankingType: "works" | "users" =
+    typeParam === "users" ? "users" : "works"
+
+  // ランキングタイプが変更された時のハンドラー
+  const handleRankingTypeChange = (type: "works" | "users") => {
+    // URLパラメータを更新
+    const newSearchParams = new URLSearchParams(searchParams)
+    if (type === "users") {
+      newSearchParams.set("type", "users")
+    } else {
+      newSearchParams.delete("type")
+    }
+    setSearchParams(newSearchParams, { replace: true })
+  }
 
   if (
     params.year === undefined ||
@@ -93,14 +111,26 @@ export default function SensitiveAwardsPage() {
         month={month}
         day={day}
         weekIndex={null}
+        rankingType={rankingType}
+        onRankingTypeChange={handleRankingTypeChange}
       />
-      <RankingSensitiveWorkList
-        year={year}
-        month={month}
-        day={day}
-        awards={data.workAwards}
-        weekIndex={null}
-      />
+      {rankingType === "users" ? (
+        <RankingSensitiveUserList
+          year={year}
+          month={month}
+          day={day}
+          awards={[]}
+          weekIndex={null}
+        />
+      ) : (
+        <RankingSensitiveWorkList
+          year={year}
+          month={month}
+          day={day}
+          awards={data.workAwards}
+          weekIndex={null}
+        />
+      )}
     </>
   )
 }

@@ -1,5 +1,5 @@
 import type React from "react"
-import { useEffect, useState, useRef } from "react"
+import { useState } from "react"
 import { useNavigate, useLocation } from "@remix-run/react"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
@@ -20,18 +20,18 @@ type Props = {
   month: number
   day: number | null
   weekIndex: number | null
+  rankingType?: "works" | "users"
+  onRankingTypeChange?: (type: "works" | "users") => void
 }
 
 export function RankingHeader(props: Props) {
   const t = useTranslation()
 
-  const [year, setYear] = useState(props.year)
-
-  const [month, setMonth] = useState(props.month)
-
-  const [day, setDay] = useState(props.day)
-
-  const [weekIndex, setWeekIndex] = useState(props.weekIndex ?? 1)
+  // props から直接値を取得（ローカル状態を削除）
+  const year = props.year
+  const month = props.month
+  const day = props.day
+  const weekIndex = props.weekIndex ?? 1
 
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
@@ -43,47 +43,33 @@ export function RankingHeader(props: Props) {
 
   const location = useLocation()
 
-  const isFirstRender = useRef(true)
-
-  useEffect(() => {
-    if (!isFirstRender.current) {
-      handleNavigate(year, month, day)
-      const jstDate = new Date(year, month - 1, day || 1)
-      jstDate.setHours(jstDate.getHours() + 9) // 日本時間に合わせる
-      setDate(jstDate.toISOString().split("T")[0])
-    }
-  }, [year, month, day, weekIndex])
-
-  useEffect(() => {
-    setYear(props.year)
-    setMonth(props.month)
-    setDay(props.day)
-    setWeekIndex(props.weekIndex ?? 1)
-  }, [props.year, props.month, props.day, props.weekIndex])
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-    }
-  }, [])
-
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value)
     const selectedDate = new Date(e.target.value)
-    setYear(selectedDate.getFullYear())
-    setMonth(selectedDate.getMonth() + 1)
-    setDay(selectedDate.getDate())
+    const newYear = selectedDate.getFullYear()
+    const newMonth = selectedDate.getMonth() + 1
+    const newDay = selectedDate.getDate()
+    handleNavigate(newYear, newMonth, newDay)
   }
 
   const handleTodayClick = () => {
     const today = new Date()
     const previousDay = new Date(today)
     previousDay.setDate(today.getDate() - 1)
-    setYear(previousDay.getFullYear())
-    setMonth(previousDay.getMonth() + 1)
-    setDay(previousDay.getDate())
+    const newYear = previousDay.getFullYear()
+    const newMonth = previousDay.getMonth() + 1
+    const newDay = previousDay.getDate()
     setDate(previousDay.toISOString().split("T")[0])
     setViewType("デイリー")
+    handleNavigate(newYear, newMonth, newDay)
+  }
+
+  // URLパラメータを保持してナビゲートするヘルパー関数
+  const navigateWithParams = (path: string) => {
+    const currentSearchParams = new URLSearchParams(location.search)
+    const searchString = currentSearchParams.toString()
+    const fullPath = searchString ? `${path}?${searchString}` : path
+    navigate(fullPath)
   }
 
   const handleViewChange = (
@@ -91,14 +77,16 @@ export function RankingHeader(props: Props) {
   ) => {
     setViewType(view)
     if (view === "ウィークリー") {
-      setWeekIndex(1)
+      navigateWithParams(`/rankings/${year}/${month}/weeks/1`)
     } else if (view === "デイリー") {
       const today = new Date()
       const previousDay = new Date(today)
       previousDay.setDate(today.getDate() - 1)
-      setYear(previousDay.getFullYear())
-      setMonth(previousDay.getMonth() + 1)
-      setDay(previousDay.getDate())
+      navigateWithParams(
+        `/rankings/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+      )
+    } else {
+      navigateWithParams(`/rankings/${year}/${month}`)
     }
   }
 
@@ -115,33 +103,39 @@ export function RankingHeader(props: Props) {
           ? `/rankings/${newYear}/${newMonth}/weeks/${weekIndex}`
           : `/rankings/${newYear}/${newMonth}`
 
+    const currentSearchParams = new URLSearchParams(location.search)
+    const searchString = currentSearchParams.toString()
+    const fullPath = searchString ? `${newPath}?${searchString}` : newPath
+
     if (location.pathname !== newPath) {
-      navigate(newPath)
+      navigate(fullPath)
     }
   }
 
   const handlePrevious = () => {
     if (viewType === "デイリー" && day) {
       const newDate = new Date(year, month - 1, day - 1)
-      setYear(newDate.getFullYear())
-      setMonth(newDate.getMonth() + 1)
-      setDay(newDate.getDate())
+      navigateWithParams(
+        `/rankings/${newDate.getFullYear()}/${newDate.getMonth() + 1}/${newDate.getDate()}`,
+      )
     }
 
     if (viewType === "マンスリー") {
-      setMonth((prevMonth) => (prevMonth === 1 ? 12 : prevMonth - 1))
-      if (month === 1) {
-        setYear((prevYear) => prevYear - 1)
-      }
+      const newMonth = month === 1 ? 12 : month - 1
+      const newYear = month === 1 ? year - 1 : year
+      navigateWithParams(`/rankings/${newYear}/${newMonth}`)
     }
 
     if (viewType === "ウィークリー") {
-      setWeekIndex((prevIndex) => (prevIndex > 1 ? prevIndex - 1 : 4))
+      const newWeekIndex = weekIndex > 1 ? weekIndex - 1 : 4
       if (weekIndex === 1) {
         const newDate = new Date(year, month - 1, 1)
         newDate.setDate(newDate.getDate() - 1)
-        setYear(newDate.getFullYear())
-        setMonth(newDate.getMonth() + 1)
+        navigateWithParams(
+          `/rankings/${newDate.getFullYear()}/${newDate.getMonth() + 1}/weeks/${newWeekIndex}`,
+        )
+      } else {
+        navigateWithParams(`/rankings/${year}/${month}/weeks/${newWeekIndex}`)
       }
     }
   }
@@ -149,25 +143,27 @@ export function RankingHeader(props: Props) {
   const handleNext = () => {
     if (viewType === "デイリー" && day) {
       const newDate = new Date(year, month - 1, day + 1)
-      setYear(newDate.getFullYear())
-      setMonth(newDate.getMonth() + 1)
-      setDay(newDate.getDate())
+      navigateWithParams(
+        `/rankings/${newDate.getFullYear()}/${newDate.getMonth() + 1}/${newDate.getDate()}`,
+      )
     }
 
     if (viewType === "マンスリー") {
-      setMonth((prevMonth) => (prevMonth === 12 ? 1 : prevMonth + 1))
-      if (month === 12) {
-        setYear((prevYear) => prevYear + 1)
-      }
+      const newMonth = month === 12 ? 1 : month + 1
+      const newYear = month === 12 ? year + 1 : year
+      navigateWithParams(`/rankings/${newYear}/${newMonth}`)
     }
 
     if (viewType === "ウィークリー") {
-      setWeekIndex((prevIndex) => (prevIndex < 4 ? prevIndex + 1 : 1))
+      const newWeekIndex = weekIndex < 4 ? weekIndex + 1 : 1
       if (weekIndex === 4) {
         const newDate = new Date(year, month, 1)
         newDate.setDate(newDate.getDate() + 30)
-        setYear(newDate.getFullYear())
-        setMonth(newDate.getMonth() + 1)
+        navigateWithParams(
+          `/rankings/${newDate.getFullYear()}/${newDate.getMonth() + 1}/weeks/${newWeekIndex}`,
+        )
+      } else {
+        navigateWithParams(`/rankings/${year}/${month}/weeks/${newWeekIndex}`)
       }
     }
   }
@@ -177,6 +173,10 @@ export function RankingHeader(props: Props) {
     today.setDate(today.getDate() - 1)
     const items: { link: string; name: string; border: boolean }[] = []
 
+    // 現在のURLパラメータを取得
+    const currentSearchParams = new URLSearchParams(location.search)
+    const searchString = currentSearchParams.toString()
+
     if (viewType === "デイリー") {
       for (let index = 0; index < 7; index++) {
         const date = new Date(today)
@@ -184,8 +184,12 @@ export function RankingHeader(props: Props) {
         const formattedDate = `${date.getFullYear()}/${(date.getMonth() + 1)
           .toString()
           .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`
+        const basePath = `/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+        const linkWithParams = searchString
+          ? `${basePath}?${searchString}`
+          : basePath
         items.push({
-          link: `/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`,
+          link: linkWithParams,
           name: formattedDate,
           border:
             `${props.year}/${props.month}/${props.day}` ===
@@ -201,8 +205,12 @@ export function RankingHeader(props: Props) {
         const formattedMonth = `${date.getFullYear()}/${(date.getMonth() + 1)
           .toString()
           .padStart(2, "0")}`
+        const basePath = `/rankings/${date.getFullYear()}/${date.getMonth() + 1}`
+        const linkWithParams = searchString
+          ? `${basePath}?${searchString}`
+          : basePath
         items.push({
-          link: `/rankings/${date.getFullYear()}/${date.getMonth() + 1}`,
+          link: linkWithParams,
           name: formattedMonth,
           border: formattedMonth === `${year}/${month}`,
         })
@@ -212,8 +220,12 @@ export function RankingHeader(props: Props) {
     if (viewType === "ウィークリー") {
       for (let index = 0; index < 4; index++) {
         const weekNumber = index + 1
+        const basePath = `/rankings/${year}/${month}/weeks/${weekNumber}`
+        const linkWithParams = searchString
+          ? `${basePath}?${searchString}`
+          : basePath
         items.push({
-          link: `/rankings/${year}/${month}/weeks/${weekNumber}`,
+          link: linkWithParams,
           name: `${t(`${weekNumber}週目`, `${weekNumber}th Week`)}`,
           border: weekIndex === weekNumber,
         })
@@ -223,12 +235,45 @@ export function RankingHeader(props: Props) {
     return items
   }
 
-  const maxDay = new Date(year, month, 0).getDate()
-  const maxYear = new Date().getFullYear()
   const carouselItems = generateCarouselItems()
+
+  // ランキングタイプの変更ハンドラ
+  const handleRankingTypeChange = (type: "works" | "users") => {
+    if (props.onRankingTypeChange) {
+      props.onRankingTypeChange(type)
+    }
+  }
+
+  // デバッグ用ログ
+  console.log("RankingHeader props:", {
+    day: props.day,
+    rankingType: props.rankingType,
+    hasOnRankingTypeChange: !!props.onRankingTypeChange,
+    viewType,
+  })
 
   return (
     <Card className="flex flex-col items-center space-y-4 p-4">
+      {/* ランキングタイプ切り替え */}
+      {props.day !== null && props.onRankingTypeChange && (
+        <div className="flex w-full max-w-72 justify-center space-x-2">
+          <Button
+            variant={props.rankingType === "works" ? "default" : "outline"}
+            onClick={() => handleRankingTypeChange("works")}
+            className="flex-1"
+          >
+            {t("作品ランキング", "Work Rankings")}
+          </Button>
+          <Button
+            variant={props.rankingType === "users" ? "default" : "outline"}
+            onClick={() => handleRankingTypeChange("users")}
+            className="flex-1"
+          >
+            {t("ユーザランキング", "User Rankings")}
+          </Button>
+        </div>
+      )}
+
       {viewType === "マンスリー" && (
         <p className="text-center font-bold text-md">
           {t("マンスリー", "Monthly")}

@@ -1,5 +1,5 @@
 // Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { loaderClient } from "~/lib/loader-client"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
@@ -7,6 +7,7 @@ import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
+import { RankingSensitiveUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 import { config } from "~/config"
 
@@ -58,6 +59,27 @@ export const headers: HeadersFunction = () => ({
  */
 export default function Rankings() {
   const data = useLoaderData<typeof loader>()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // URL パラメータから直接状態を取得（useState は使わない）
+  const typeParam = searchParams.get("type")
+  const rankingType: "works" | "users" =
+    typeParam === "users" ? "users" : "works"
+
+  // ランキングタイプが変更された時のハンドラー
+  const handleRankingTypeChange = (type: "works" | "users") => {
+    // URLパラメータを更新
+    const newSearchParams = new URLSearchParams(searchParams)
+    if (type === "users") {
+      newSearchParams.set("type", "users")
+    } else {
+      newSearchParams.delete("type")
+    }
+    setSearchParams(newSearchParams, { replace: true })
+  }
+
+  // デイリーランキングかどうかを判定
+  const isDaily = data.day !== null && data.day !== undefined
 
   return (
     <>
@@ -66,14 +88,26 @@ export default function Rankings() {
         month={data.month}
         day={data.day}
         weekIndex={null}
+        rankingType={isDaily ? rankingType : undefined}
+        onRankingTypeChange={isDaily ? handleRankingTypeChange : undefined}
       />
-      <RankingSensitiveWorkList
-        year={data.year}
-        month={data.month}
-        day={data.day}
-        awards={data.workAwards.data.workAwards}
-        weekIndex={null}
-      />
+      {rankingType === "users" && isDaily ? (
+        <RankingSensitiveUserList
+          year={data.year}
+          month={data.month}
+          day={data.day}
+          awards={[]}
+          weekIndex={null}
+        />
+      ) : (
+        <RankingSensitiveWorkList
+          year={data.year}
+          month={data.month}
+          day={data.day}
+          awards={data.workAwards.data.workAwards}
+          weekIndex={null}
+        />
+      )}
     </>
   )
 }

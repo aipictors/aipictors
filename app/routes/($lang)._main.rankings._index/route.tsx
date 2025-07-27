@@ -1,5 +1,4 @@
-// Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { loaderClient } from "~/lib/loader-client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import type {
@@ -12,6 +11,7 @@ import {
   RankingWorkList,
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
+import { RankingUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-user-list"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 
@@ -47,7 +47,7 @@ export async function loader(props: LoaderFunctionArgs) {
     where: {
       year: year,
       month: month,
-      ...(day !== null && { day: day }),
+      day: day,
     },
   }
 
@@ -77,6 +77,29 @@ export const meta: MetaFunction = (props) => {
  */
 export default function Rankings() {
   const data = useLoaderData<typeof loader>()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // URL パラメータから直接状態を取得（useState は使わない）
+  const typeParam = searchParams.get("type")
+  const rankingType: "works" | "users" =
+    typeParam === "users" ? "users" : "works"
+
+  // ランキングタイプが変更された時のハンドラー
+  const handleRankingTypeChange = (type: "works" | "users") => {
+    // URLパラメータを更新
+    const newSearchParams = new URLSearchParams(searchParams)
+    if (type === "users") {
+      newSearchParams.set("type", "users")
+    } else {
+      newSearchParams.delete("type")
+    }
+    setSearchParams(newSearchParams, { replace: true }) // replace: true で履歴を置き換え
+  }
+
+  // デイリーランキングかどうかを判定
+  const isDaily = data.day !== null && data.day !== undefined
+
+  console.log("isDaily:", isDaily, "data.day:", data.day)
 
   return (
     <>
@@ -87,14 +110,24 @@ export default function Rankings() {
             month={data.month}
             day={data.day}
             weekIndex={null}
+            rankingType={isDaily ? rankingType : undefined}
+            onRankingTypeChange={isDaily ? handleRankingTypeChange : undefined}
           />
-          <RankingWorkList
-            year={data.year}
-            month={data.month}
-            day={data.day}
-            awards={data.workAwards.data.workAwards}
-            weekIndex={null}
-          />
+          {rankingType === "users" && isDaily ? (
+            <RankingUserList
+              year={data.year}
+              month={data.month}
+              day={data.day}
+            />
+          ) : (
+            <RankingWorkList
+              year={data.year}
+              month={data.month}
+              day={data.day}
+              awards={data.workAwards.data.workAwards}
+              weekIndex={null}
+            />
+          )}
         </>
       )}
     </>
