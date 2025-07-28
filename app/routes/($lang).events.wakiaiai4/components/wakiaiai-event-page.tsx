@@ -92,6 +92,11 @@ export function WakiAiAiEventPage() {
       answer:
         "生成AIを使って作られたイラスト、アート作品、グッズなど様々な作品が展示されます。大型A0サイズの迫力ある作品もご覧いただけます。",
     },
+    {
+      question: "作品の年齢制限はありますか？",
+      answer:
+        "はい、和気あいAIはリアルイベントのため、全年齢向けの作品のみ募集・展示させていただきます。R15、R18等の年齢制限のある作品はご出展いただけませんのでご了承ください。",
+    },
   ]
 
   const toggleFaq = (index: number) => {
@@ -185,6 +190,19 @@ export function WakiAiAiEventPage() {
               <p className="leading-relaxed">
                 第4回となる今回も、大型展示作品やイラスト集、グッズ販売など、多彩なコンテンツをご用意しています。
               </p>
+              <div className="mt-6 rounded-lg border-2 border-yellow-200 bg-yellow-50 p-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <BadgeIcon className="h-5 w-5 text-yellow-600" />
+                  <h4 className="font-semibold text-yellow-800">
+                    重要なお知らせ
+                  </h4>
+                </div>
+                <p className="text-yellow-700">
+                  和気あいAIイベントはリアルイベントのため、
+                  <strong>全年齢向けの作品のみ</strong>
+                  の募集・展示とさせていただきます。
+                </p>
+              </div>
             </CardContent>
           </Card>
 
