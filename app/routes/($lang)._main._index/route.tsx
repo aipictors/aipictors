@@ -629,16 +629,8 @@ export default function Index() {
             />
           )}
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-            <div className="flex w-full flex-col space-y-4">
+            <div className="flex w-full flex-col space-y-4 overflow-hidden md:max-w-[calc(100vw_-_262px)]">
               <HomeReleaseList releaseList={data.releaseList} />
-              {/* {data.dailyTheme && (
-                <div>
-                  <HomeTagList
-                    themeTitle={data.dailyTheme.title}
-                    hotTags={data.hotTags}
-                  />
-                </div>
-              )} */}
               <HomeWorksUsersRecommendedSection
                 works={data.promotionWorks}
                 onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
