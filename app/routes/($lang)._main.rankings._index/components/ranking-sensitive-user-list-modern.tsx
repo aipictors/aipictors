@@ -1,4 +1,7 @@
 import { Badge } from "~/components/ui/badge"
+import { Card } from "~/components/ui/card"
+import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
@@ -6,10 +9,7 @@ import { useContext } from "react"
 import { useQuery } from "@apollo/client/index"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
-import { Card } from "~/components/ui/card"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { Link } from "@remix-run/react"
-import { Loader2, Trophy, Heart, TrendingUp } from "lucide-react"
+import { Trophy, Heart, TrendingUp } from "lucide-react"
 
 type Props = {
   awards: FragmentOf<typeof SensitiveUserRankingListItemFragment>[]
@@ -19,13 +19,13 @@ type Props = {
   weekIndex: number | null
 }
 
-export function RankingSensitiveUserList(props: Props) {
+export function RankingSensitiveUserListModern(props: Props) {
   const appContext = useContext(AuthContext)
   const t = useTranslation()
 
   const users = props.awards
 
-  const { data: rankingUsers, loading } = useQuery(userRankingsQuery, {
+  const { data: rankingUsers } = useQuery(userRankingsQuery, {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -53,15 +53,6 @@ export function RankingSensitiveUserList(props: Props) {
   }
 
   const userRankings = rankingUsers?.sensitiveUserRankings ?? users
-
-  // ローディング状態の処理
-  if (loading) {
-    return (
-      <div className="flex justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    )
-  }
 
   // データが空の場合の処理
   if (!Array.isArray(userRankings) || userRankings.length === 0) {
@@ -96,8 +87,8 @@ export function RankingSensitiveUserList(props: Props) {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {userRankings.map((userRanking) => {
-          const isTopThree = userRanking.rank <= 3
+        {userRankings.map((user, index) => {
+          const isTopThree = index < 3
           const getRankColor = (rank: number) => {
             if (rank === 1) return "from-yellow-400 to-yellow-600"
             if (rank === 2) return "from-gray-300 to-gray-500"
@@ -107,20 +98,18 @@ export function RankingSensitiveUserList(props: Props) {
 
           return (
             <Card
-              key={userRanking.id}
-              className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg ${isTopThree ? `border-2 border-gradient-to-r ${getRankColor(userRanking.rank)}` : ""}`}
+              key={index.toString()}
+              className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg ${isTopThree ? `border-2 border-gradient-to-r ${getRankColor(index + 1)}` : ""}`}
             >
               {/* 順位バッジ */}
               <div className="absolute top-0 right-0 z-10">
                 <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-bl-2xl bg-gradient-to-br text-white ${getRankColor(userRanking.rank)}`}
+                  className={`flex h-12 w-12 items-center justify-center rounded-bl-2xl bg-gradient-to-br text-white ${getRankColor(index + 1)}`}
                 >
-                  {userRanking.rank <= 3 ? (
+                  {index < 3 ? (
                     <Trophy className="h-5 w-5" />
                   ) : (
-                    <span className="font-bold text-sm">
-                      #{userRanking.rank}
-                    </span>
+                    <span className="font-bold text-sm">#{index + 1}</span>
                   )}
                 </div>
               </div>
@@ -131,7 +120,7 @@ export function RankingSensitiveUserList(props: Props) {
                   <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-3 py-1 text-white">
                     <Heart className="h-4 w-4 fill-current" />
                     <span className="font-bold text-lg">
-                      {userRanking.avgLikes.toFixed(1)}
+                      {user.averageLikesCount || 0}
                     </span>
                   </div>
                   <p className="font-medium text-muted-foreground text-xs">
@@ -139,30 +128,23 @@ export function RankingSensitiveUserList(props: Props) {
                   </p>
                 </div>
 
-                <Link
-                  to={`/users/${userRanking.user?.login}`}
-                  className="block"
-                >
+                <Link to={`/users/${user.user?.login ?? ""}`} className="block">
                   <div className="mb-4 flex flex-col items-center space-y-2">
                     <Avatar className="h-16 w-16 ring-2 ring-purple-200 ring-offset-2 transition-all duration-300 hover:ring-purple-400">
                       <AvatarImage
-                        src={withIconUrlFallback(userRanking.user?.iconUrl)}
-                        alt={userRanking.user?.name || userRanking.user?.login}
+                        src={withIconUrlFallback(user.user?.iconUrl ?? "")}
+                        alt={user.user?.name ?? ""}
                       />
                       <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 font-bold text-white">
-                        {(
-                          userRanking.user?.name ||
-                          userRanking.user?.login ||
-                          ""
-                        ).charAt(0)}
+                        {(user.user?.name ?? "").charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="text-center">
                       <div className="font-semibold text-base">
-                        {userRanking.user?.name || userRanking.user?.login}
+                        {user.user?.name ?? ""}
                       </div>
                       <div className="text-muted-foreground text-sm">
-                        @{userRanking.user?.login}
+                        @{user.user?.login ?? ""}
                       </div>
                     </div>
                   </div>
@@ -172,7 +154,7 @@ export function RankingSensitiveUserList(props: Props) {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-3 text-center dark:from-blue-900/20 dark:to-blue-800/20">
                     <div className="font-bold text-blue-600 text-lg dark:text-blue-400">
-                      {userRanking.worksCount}
+                      {user.worksCount || 0}
                     </div>
                     <div className="text-blue-500 text-xs dark:text-blue-300">
                       {t("作品数", "Works")}
@@ -180,7 +162,7 @@ export function RankingSensitiveUserList(props: Props) {
                   </div>
                   <div className="rounded-lg bg-gradient-to-br from-green-50 to-green-100 p-3 text-center dark:from-green-900/20 dark:to-green-800/20">
                     <div className="font-bold text-green-600 text-lg dark:text-green-400">
-                      {userRanking.likesCount}
+                      {user.totalLikesCount || 0}
                     </div>
                     <div className="text-green-500 text-xs dark:text-green-300">
                       {t("総いいね", "Total Likes")}
@@ -193,12 +175,12 @@ export function RankingSensitiveUserList(props: Props) {
                   <div className="mt-3 text-center">
                     <Badge
                       variant="secondary"
-                      className={`border-none bg-gradient-to-r text-white ${getRankColor(userRanking.rank)}`}
+                      className={`border-none bg-gradient-to-r text-white ${getRankColor(index + 1)}`}
                     >
                       🏆{" "}
-                      {userRanking.rank === 1
+                      {index === 0
                         ? t("1位", "1st Place")
-                        : userRanking.rank === 2
+                        : index === 1
                           ? t("2位", "2nd Place")
                           : t("3位", "3rd Place")}
                     </Badge>

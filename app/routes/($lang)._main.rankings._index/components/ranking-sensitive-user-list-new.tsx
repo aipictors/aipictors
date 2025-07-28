@@ -26,7 +26,7 @@ export function RankingSensitiveUserList(props: Props) {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
     variables: {
       offset: 0,
-      limit: 100,
+      limit: 50,
       where: {
         date: `${props.year}-${String(props.month).padStart(2, "0")}-${String(props.day).padStart(2, "0")}`,
         orderBy: "RANK",
@@ -156,16 +156,20 @@ export function RankingSensitiveUserList(props: Props) {
 export const SensitiveUserRankingListItemFragment = graphql(
   `fragment SensitiveUserRankingListItem on UserRankingNode @_unmask {
     id
-    index
+    date
+    rank
+    avgLikes
+    worksCount
+    likesCount
+    createdAt
     user {
       id
+      login
       name
       iconUrl
-      login
+      followersCount
+      worksCount
     }
-    averageLikesCount
-    worksCount
-    totalLikesCount
   }`,
 )
 

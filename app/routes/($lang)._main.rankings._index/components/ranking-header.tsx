@@ -274,6 +274,21 @@ export function RankingHeader(props: Props) {
         </div>
       )}
 
+      {/* ユーザーランキングの説明 */}
+      {props.day !== null && props.rankingType === "users" && (
+        <div className="w-full max-w-md rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 p-3 text-center dark:from-purple-900/20 dark:to-pink-900/20">
+          <p className="font-semibold text-purple-700 text-sm dark:text-purple-300">
+            📊 {t("平均いいね数でランキング", "Ranked by Average Likes")}
+          </p>
+          <p className="text-purple-600 text-xs dark:text-purple-400">
+            {t(
+              "投稿作品の平均いいね数で順位付けされています",
+              "Ranked by average likes per work",
+            )}
+          </p>
+        </div>
+      )}
+
       {viewType === "マンスリー" && (
         <p className="text-center font-bold text-md">
           {t("マンスリー", "Monthly")}

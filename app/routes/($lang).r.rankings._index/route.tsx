@@ -1,4 +1,3 @@
-// Assume this file is located at `routes/rankings/$year/$month/($day).tsx`
 import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { loaderClient } from "~/lib/loader-client"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -7,7 +6,7 @@ import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
-import { RankingSensitiveUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list"
+import { RankingSensitiveUserListModern } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list-modern"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 import { config } from "~/config"
 
@@ -92,7 +91,7 @@ export default function Rankings() {
         onRankingTypeChange={isDaily ? handleRankingTypeChange : undefined}
       />
       {rankingType === "users" && isDaily ? (
-        <RankingSensitiveUserList
+        <RankingSensitiveUserListModern
           year={data.year}
           month={data.month}
           day={data.day}
