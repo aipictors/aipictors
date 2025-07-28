@@ -11,7 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
 import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "@remix-run/react"
+import { Link, useLocation } from "@remix-run/react"
 import type { RecommendedTag } from "~/routes/($lang)._main.tags._index/types/tag"
 
 type Props = {
@@ -93,6 +93,8 @@ const categories = [
 
 export function TagCategoriesSection({ tags }: Props) {
   const t = useTranslation()
+  const location = useLocation()
+  const isR18Mode = location.pathname.includes("/r/tags")
 
   // カテゴリごとにタグを分類
   const categorizedTags = categories
@@ -172,7 +174,11 @@ export function TagCategoriesSection({ tags }: Props) {
                     {category.tags.map((tag, index) => (
                       <Link
                         key={`${tag.tagName}-${index}`}
-                        to={`/r/tags/${tag.tagName}`}
+                        to={
+                          isR18Mode
+                            ? `/r/tags/${tag.tagName}`
+                            : `/tags/${tag.tagName}`
+                        }
                       >
                         <Badge
                           variant="secondary"

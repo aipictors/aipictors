@@ -7,6 +7,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useState } from "react"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 
 export function TagsHeader() {
   const t = useTranslation()
@@ -61,15 +62,27 @@ export function TagsHeader() {
         )}
       </p>
 
-      {/* 統計情報 */}
-      <div className="flex items-center justify-center gap-8 text-muted-foreground text-sm">
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-green-500" />
-          <span>{t("トレンド更新中", "Trending Now")}</span>
+      {/* 統計情報とR18ボタン */}
+      <div className="flex flex-col items-center gap-4">
+        {/* 統計情報 */}
+        <div className="flex items-center justify-center gap-8 text-muted-foreground text-sm">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-green-500" />
+            <span>{t("トレンド更新中", "Trending Now")}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Hash className="h-4 w-4 text-blue-500" />
+            <span>{t("10,000+ タグ", "10,000+ Tags")}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Hash className="h-4 w-4 text-blue-500" />
-          <span>{t("10,000+ タグ", "10,000+ Tags")}</span>
+
+        {/* R18モード切り替えボタン */}
+        <div className="flex items-center justify-center">
+          <SensitiveToggle
+            variant="compact"
+            className="transition-transform hover:scale-105"
+            showStatus={true}
+          />
         </div>
       </div>
 

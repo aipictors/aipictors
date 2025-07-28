@@ -1,6 +1,6 @@
 import { Cloud } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "@remix-run/react"
+import { Link, useLocation } from "@remix-run/react"
 import { useMemo } from "react"
 import type { RecommendedTag } from "~/routes/($lang)._main.tags._index/types/tag"
 
@@ -10,6 +10,8 @@ type Props = {
 
 export function TagCloudSection({ tags }: Props) {
   const t = useTranslation()
+  const location = useLocation()
+  const isR18Mode = location.pathname.includes("/r/tags")
 
   // タグクラウド用のタグを厳選（12個に減らして整理された見た目に）
   const cloudTags = tags.slice(0, 12)
@@ -106,7 +108,14 @@ export function TagCloudSection({ tags }: Props) {
                   animationDelay: `${element.animationDelay}s`,
                 }}
               >
-                <Link to={`/r/tags/${element.tag.tagName}`} className="block">
+                <Link
+                  to={
+                    isR18Mode
+                      ? `/r/tags/${element.tag.tagName}`
+                      : `/tags/${element.tag.tagName}`
+                  }
+                  className="block"
+                >
                   <div
                     className={`group relative flex cursor-pointer items-center justify-center rounded-full shadow-sm backdrop-blur-sm transition-colors duration-200 hover:shadow-md ${element.color}`}
                     style={{
