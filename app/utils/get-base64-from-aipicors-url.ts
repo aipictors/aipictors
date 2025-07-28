@@ -22,7 +22,7 @@ export const getBase64FromAipictorsUrl = async (
       return ""
     }
     throw new Error()
-  } catch (error) {
+  } catch (_error) {
     // captureException(error)
     throw new Error()
   }

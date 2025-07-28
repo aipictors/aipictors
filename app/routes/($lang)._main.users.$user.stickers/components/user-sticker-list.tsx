@@ -9,7 +9,7 @@ type Props = {
 }
 
 export function UserStickerList(props: Props) {
-  const t = useTranslation()
+  const _t = useTranslation()
 
   return (
     <div className="flex flex-col space-y-4">

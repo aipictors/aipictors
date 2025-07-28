@@ -98,7 +98,7 @@ export default function BlendAi() {
   )
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {

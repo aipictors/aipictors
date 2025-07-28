@@ -12,7 +12,7 @@ type Props = {
 export function FoldersSpList(props: Props) {
   return (
     <>
-      {props.folders.map((folder, index) => (
+      {props.folders.map((folder, _index) => (
         <div key={folder.id}>
           <FoldersSpListItem folder={folder} />
         </div>

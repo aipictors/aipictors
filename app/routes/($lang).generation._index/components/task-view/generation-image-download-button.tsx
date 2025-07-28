@@ -16,7 +16,7 @@ type Props = {
  * 生成画像のZip形式のダウンロードボタン
  */
 export function GenerationImageDownloadButton(props: Props) {
-  const context = useGenerationContext()
+  const _context = useGenerationContext()
 
   const { status, mutateAsync } = useMutation({
     mutationFn: downloadGeneratedImageFiles,

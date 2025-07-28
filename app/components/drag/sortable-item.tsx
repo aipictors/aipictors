@@ -28,7 +28,7 @@ export function SortableItem({ item, ...props }: Props) {
     return null
   }
 
-  const [isDeleted, setIsDeleted] = useState(false)
+  const [isDeleted, _setIsDeleted] = useState(false)
 
   if (isDeleted) {
     return null

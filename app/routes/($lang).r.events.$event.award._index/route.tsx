@@ -167,7 +167,7 @@ export default function FollowingLayout() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
-  const [worksMaxCount, setWorksMaxCount] = React.useState(0)
+  const [worksMaxCount, _setWorksMaxCount] = React.useState(0)
 
   return (
     <div className="flex flex-col space-y-4">

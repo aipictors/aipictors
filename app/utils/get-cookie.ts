@@ -18,7 +18,7 @@ export function getCookie(id: string) {
     }
 
     return value
-  } catch (error) {
+  } catch (_error) {
     return null
   }
 }

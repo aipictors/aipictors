@@ -11,7 +11,7 @@ type Props = {
 }
 
 export function GenerationDemoSubmitButton(props: Props) {
-  const maxGeneratingCount =
+  const _maxGeneratingCount =
     props.maxGeneratingCount <= 0 ? 0 : props.maxGeneratingCount
 
   return (

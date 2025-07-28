@@ -44,8 +44,8 @@ type Props = {
  */
 export function WorksSetting(props: Props) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [maxHeight, setMaxHeight] = useState("0px")
-  const [opacity, setOpacity] = useState(0)
+  const [_maxHeight, setMaxHeight] = useState("0px")
+  const [_opacity, setOpacity] = useState(0)
   const t = useTranslation()
 
   const allSortType = [
@@ -57,7 +57,7 @@ export function WorksSetting(props: Props) {
     "NAME",
   ] as IntrospectionEnum<"WorkOrderBy">[]
 
-  const onToggleFilterButton = () => {
+  const _onToggleFilterButton = () => {
     if (isFilterOpen) {
       setMaxHeight("0px")
       setOpacity(0)

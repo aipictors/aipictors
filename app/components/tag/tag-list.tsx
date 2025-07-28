@@ -10,7 +10,7 @@ export type TagListProps = {
   onSortEnd: (oldIndex: number, newIndex: number) => void
 } & Omit<TagProps, "tagObj">
 
-const DropTarget: React.FC = () => {
+const _DropTarget: React.FC = () => {
   return <div className={cn("h-full rounded-md bg-secondary/50")} />
 }
 

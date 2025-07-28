@@ -1,4 +1,3 @@
-import {} from "~/components/ui/accordion"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { AuthContext } from "~/contexts/auth-context"
 import { GenerationConfigSize } from "~/routes/($lang).generation._index/components/config-view/generation-config-size"
@@ -26,7 +25,7 @@ export function GenerationDemoConfigView() {
 
   const authContext = useContext(AuthContext)
 
-  const [showMemoSetting, setShowMemoSetting] = useState(false)
+  const [_showMemoSetting, _setShowMemoSetting] = useState(false)
 
   /**
    * 選択中のモデル
@@ -74,13 +73,13 @@ export function GenerationDemoConfigView() {
   /**
    * 最大生成枚数
    */
-  const availableImageGenerationMaxTasksCount =
+  const _availableImageGenerationMaxTasksCount =
     queryData.userStatus?.availableImageGenerationMaxTasksCount ?? 10
 
-  const inProgressImageGenerationTasksCost =
+  const _inProgressImageGenerationTasksCost =
     queryData.userStatus?.inProgressImageGenerationTasksCost ?? 0
 
-  const remainingImageGenerationTasksCount =
+  const _remainingImageGenerationTasksCount =
     queryData.userStatus?.remainingImageGenerationTasksCount ?? 0
 
   useEffect(() => {
@@ -99,10 +98,10 @@ export function GenerationDemoConfigView() {
     context.resetForInit()
   }, [])
 
-  const t = useTranslation()
+  const _t = useTranslation()
 
   // modelsについてfluxという名前のモデルで絞る
-  const fluxModels = context.imageModels.filter((model) => {
+  const _fluxModels = context.imageModels.filter((model) => {
     // model.nameがfluxを含むかどうか
     return model.name.includes("flux.1 schnell")
   })

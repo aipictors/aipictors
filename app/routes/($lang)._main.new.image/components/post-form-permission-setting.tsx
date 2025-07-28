@@ -37,7 +37,7 @@ export function PostFormPermissionSetting(props: Props) {
         </p>
         <div className="flex items-center space-x-2">
           <Checkbox
-            onCheckedChange={(value: boolean) => {
+            onCheckedChange={(_value: boolean) => {
               setIsTagEditableChecked(!isTagEditableChecked)
               props.onTagEditableChange(!isCommentsEditableChecked)
             }}
@@ -50,7 +50,7 @@ export function PostFormPermissionSetting(props: Props) {
         </div>
         <div className="flex items-center space-x-2">
           <Checkbox
-            onCheckedChange={(value: boolean) => {
+            onCheckedChange={(_value: boolean) => {
               setIsCommentsEditableChecked(!isCommentsEditableChecked)
               props.onCommentsEditableChange(!isCommentsEditableChecked)
             }}

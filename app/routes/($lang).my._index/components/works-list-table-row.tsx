@@ -64,7 +64,7 @@ export function WorksListTableRow(props: Props) {
 
   const postUrl = () => {
     if (
-      new Date(props.work.createdAt * 1000).getTime() > new Date().getTime() ||
+      new Date(props.work.createdAt * 1000).getTime() > Date.now() ||
       props.work.accessType === "PRIVATE" ||
       props.work.accessType === "DRAFT"
     ) {
@@ -88,8 +88,7 @@ export function WorksListTableRow(props: Props) {
           }}
         >
           <TableCell className="font-medium">
-            {new Date(props.work.createdAt * 1000).getTime() >
-            new Date().getTime() ? (
+            {new Date(props.work.createdAt * 1000).getTime() > Date.now() ? (
               <div className="w-32 overflow-hidden text-ellipsis">
                 {props.work.title}
               </div>

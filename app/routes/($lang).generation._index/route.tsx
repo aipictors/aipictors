@@ -52,11 +52,7 @@ export default function GenerationPage() {
     if (localStorageUserToken !== null) {
       const decoded = jwtDecode(localStorageUserToken)
       // 期限が切れてたら、新しいトークンをセット
-      if (
-        decoded.exp &&
-        decoded.exp < new Date().getTime() / 1000 &&
-        viewerUserToken
-      ) {
+      if (decoded.exp && decoded.exp < Date.now() / 1000 && viewerUserToken) {
         context.changeCurrentUserToken(viewerUserToken)
         setUserToken(viewerUserToken)
       } else {

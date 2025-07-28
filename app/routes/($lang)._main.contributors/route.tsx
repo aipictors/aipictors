@@ -11,7 +11,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.CONTRIBUTORS, undefined, props.params.lang)
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {

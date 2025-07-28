@@ -49,7 +49,7 @@ export function FoldersListContainer(props: Props) {
 
   const Folders = FoldersResp?.viewer?.folders ?? []
 
-  const refetchFolders = () => {
+  const _refetchFolders = () => {
     refetch()
   }
 

@@ -15,6 +15,7 @@ type Props = {
   icon: LucideIcon
   children: ReactNode
   onClick?: () => void
+  className?: string
 }
 
 export function SidebarNavigationButton({
@@ -22,6 +23,7 @@ export function SidebarNavigationButton({
   icon: Icon,
   children,
   onClick,
+  className,
 }: Props) {
   const { pathname } = useLocation()
   const { sidebarState } = useSidebar()
@@ -43,6 +45,7 @@ export function SidebarNavigationButton({
                 : "text-muted-foreground hover:bg-muted/20 hover:text-foreground",
               // サイドバー状態に応じて配置を変更
               sidebarState === "expanded" ? "justify-start" : "justify-center",
+              className, // カスタムクラス名を追加
             )}
           >
             <Icon className="size-5 shrink-0" />

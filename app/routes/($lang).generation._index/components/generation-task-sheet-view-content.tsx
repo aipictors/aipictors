@@ -166,64 +166,60 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 </Button>
               )}
               {props.task.status !== "RESERVED" ? (
-                <>
-                  <ErrorBoundary fallback={<GenerationTaskError />}>
-                    <Suspense
-                      fallback={
-                        <GenerationTaskContentImagePlaceHolder
-                          className={"m-auto max-h-96 max-w-['50vw']"}
-                        />
-                      }
-                    >
-                      {props.task.imageUrl &&
-                      props.task.thumbnailUrl &&
-                      userToken ? (
-                        <GenerationImageDialogButton
-                          taskId={props.task.id}
-                          userToken={userToken}
-                          imageUrl={props.task.imageUrl}
-                          thumbnailUrl={props.task.thumbnailUrl}
-                        >
-                          <img
-                            className={"m-auto max-h-96"}
-                            src={
-                              context.config.taskListThumbnailType === "light"
-                                ? props.task.thumbnailUrl
-                                : props.task.imageUrl
-                            }
-                            alt={"-"}
-                          />
-                        </GenerationImageDialogButton>
-                      ) : (
-                        <></>
-                      )}
-                    </Suspense>
-                    {/* ダウンロード用（非表示） */}
-                    <Suspense
-                      fallback={
-                        <GenerationTaskContentImagePlaceHolder
-                          className={
-                            "m-auto hidden h-72 max-h-96 max-w-['50vw']"
+                <ErrorBoundary fallback={<GenerationTaskError />}>
+                  <Suspense
+                    fallback={
+                      <GenerationTaskContentImagePlaceHolder
+                        className={"m-auto max-h-96 max-w-['50vw']"}
+                      />
+                    }
+                  >
+                    {props.task.imageUrl &&
+                    props.task.thumbnailUrl &&
+                    userToken ? (
+                      <GenerationImageDialogButton
+                        taskId={props.task.id}
+                        userToken={userToken}
+                        imageUrl={props.task.imageUrl}
+                        thumbnailUrl={props.task.thumbnailUrl}
+                      >
+                        <img
+                          className={"m-auto max-h-96"}
+                          src={
+                            context.config.taskListThumbnailType === "light"
+                              ? props.task.thumbnailUrl
+                              : props.task.imageUrl
                           }
+                          alt={"-"}
                         />
-                      }
-                    >
-                      {userToken &&
-                        props.task.imageUrl &&
-                        props.task.thumbnailUrl && (
-                          <img
-                            className={cn(
-                              "m-auto hidden h-72 max-h-96",
-                              `generation-image-${props.task.id}`,
-                            )}
-                            alt={"-"}
-                            src={props.task.imageUrl}
-                            data-original={props.task.imageUrl}
-                          />
-                        )}
-                    </Suspense>
-                  </ErrorBoundary>
-                </>
+                      </GenerationImageDialogButton>
+                    ) : (
+                      <></>
+                    )}
+                  </Suspense>
+                  {/* ダウンロード用（非表示） */}
+                  <Suspense
+                    fallback={
+                      <GenerationTaskContentImagePlaceHolder
+                        className={"m-auto hidden h-72 max-h-96 max-w-['50vw']"}
+                      />
+                    }
+                  >
+                    {userToken &&
+                      props.task.imageUrl &&
+                      props.task.thumbnailUrl && (
+                        <img
+                          className={cn(
+                            "m-auto hidden h-72 max-h-96",
+                            `generation-image-${props.task.id}`,
+                          )}
+                          alt={"-"}
+                          src={props.task.imageUrl}
+                          data-original={props.task.imageUrl}
+                        />
+                      )}
+                  </Suspense>
+                </ErrorBoundary>
               ) : (
                 <>
                   <p className="text-center">

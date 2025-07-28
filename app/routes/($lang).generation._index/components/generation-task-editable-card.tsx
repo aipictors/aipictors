@@ -49,7 +49,7 @@ export function GenerationTaskEditableCard(props: Props) {
 
   const [rating, setRating] = useState(props.rating)
 
-  const [isProtected, setIsProtected] = useState(props.isProtected)
+  const [_isProtected, _setIsProtected] = useState(props.isProtected)
 
   const [cancelTask, { loading: isCanceling }] = useMutation(
     cancelImageGenerationTaskMutation,
@@ -105,7 +105,7 @@ export function GenerationTaskEditableCard(props: Props) {
       if (props.onDelete) {
         props.onDelete(props.taskNanoid)
       }
-    } catch (e) {
+    } catch (_e) {
       toast("削除に失敗しました。")
     }
   }

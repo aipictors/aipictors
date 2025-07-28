@@ -33,7 +33,7 @@ export function GenerationConfigMemoSavingContent(props: Props) {
 
   const [description, setDescription] = useState("")
 
-  const [modelId, setModelId] = useState(context.config.modelId)
+  const [modelId, _setModelId] = useState(context.config.modelId)
 
   const [prompts, setPrompts] = useState(context.config.promptText)
 
@@ -59,11 +59,11 @@ export function GenerationConfigMemoSavingContent(props: Props) {
 
   const [clipSkip, setClipSkip] = useState(context.config.clipSkip)
 
-  const size = parseGenerationSize(context.config.sizeType)
+  const _size = parseGenerationSize(context.config.sizeType)
 
-  const [width, setWidth] = useState(0)
+  const [width, _setWidth] = useState(0)
 
-  const [height, setHeight] = useState(0)
+  const [height, _setHeight] = useState(0)
 
   const [createMemo, { loading: isCreatingMemo }] = useMutation(
     createImageGenerationMemoMutation,
@@ -100,17 +100,16 @@ export function GenerationConfigMemoSavingContent(props: Props) {
 
   return (
     <>
-      <>
-        {t("*タイトル", "*Title")}
-        <Input
-          onChange={(event) => {
-            setTitle(event.target.value)
-          }}
-          type="text"
-          value={title}
-          placeholder={t("タイトル", "Title")}
-        />
-      </>
+      {t("*タイトル", "*Title")}
+      <Input
+        onChange={(event) => {
+          setTitle(event.target.value)
+        }}
+        type="text"
+        value={title}
+        placeholder={t("タイトル", "Title")}
+      />
+
       {t("説明（省略可）", "Description (optional)")}
       <Input
         onChange={(event) => {

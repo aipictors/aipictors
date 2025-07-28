@@ -13,6 +13,8 @@ import {
   RocketIcon,
   StampIcon,
   StarIcon,
+  TagIcon,
+  RefreshCcwIcon,
 } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
@@ -50,13 +52,6 @@ export function HomeMenuRouteList({
   const createLink = (path: string) =>
     isSensitive && !["/about", "/terms"].includes(path) ? `/r${path}` : path
 
-  const toggleSensitive = () => {
-    // biome-ignore lint/suspicious/noDocumentCookie: <explanation>
-    document.cookie = "sensitive=1; max-age=0; path=/"
-    const newUrl = location.pathname.replace("/r", "")
-    navigate(newUrl === "" ? "/" : newUrl, { replace: true })
-  }
-
   const closeHeaderMenu = () => onClickMenuItem?.()
 
   return (
@@ -93,13 +88,15 @@ export function HomeMenuRouteList({
         {isSensitive && " - R18"}
       </HomeMenuNavigationButton>
 
+      {/* R18モード時の全年齢戻るボタン */}
       {isSensitive && (
         <HomeMenuNavigationButton
-          onClick={toggleSensitive}
           href={"/"}
-          icon={HomeIcon}
+          onClick={closeHeaderMenu}
+          icon={RefreshCcwIcon}
+          className="border-2 border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:bg-orange-950 dark:text-orange-300 dark:hover:bg-orange-900"
         >
-          {t("ホーム - 全年齢", "Home - G")}
+          {t("全年齢に戻る", "Back to All Ages")}
         </HomeMenuNavigationButton>
       )}
 
@@ -109,6 +106,14 @@ export function HomeMenuRouteList({
         onClick={closeHeaderMenu}
       >
         {t("お題", "Themes")}
+      </HomeMenuNavigationButton>
+
+      <HomeMenuNavigationButton
+        href={createLink("/tags")}
+        icon={TagIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("タグ", "Tags")}
       </HomeMenuNavigationButton>
 
       <HomeMenuNavigationButton

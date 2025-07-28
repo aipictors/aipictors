@@ -117,7 +117,7 @@ export function EventWorksListSortableSetting(props: Props) {
     }
   }
 
-  const onClickIsPromotionSortButton = () => {
+  const _onClickIsPromotionSortButton = () => {
     if (props.nowOrderBy === "IS_PROMOTION") {
       props.setSort(props.nowSort === "ASC" ? "DESC" : "ASC")
     } else {

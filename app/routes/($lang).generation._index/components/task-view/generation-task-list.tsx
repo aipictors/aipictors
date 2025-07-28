@@ -46,7 +46,7 @@ export function GenerationTaskList(props: Props) {
 
   const queryData = useGenerationQuery()
 
-  const isTimeout = useFocusTimeout()
+  const _isTimeout = useFocusTimeout()
 
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value

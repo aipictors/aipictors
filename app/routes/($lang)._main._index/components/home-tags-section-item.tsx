@@ -1,4 +1,3 @@
-import {} from "~/components/ui/carousel"
 import { Link } from "@remix-run/react"
 
 type Props = {

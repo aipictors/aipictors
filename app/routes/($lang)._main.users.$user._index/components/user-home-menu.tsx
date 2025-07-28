@@ -11,7 +11,7 @@ import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/compo
 import { useNavigate } from "@remix-run/react"
 import { toOmissionNumberText } from "~/utils/to-omission-number-text"
 import { useTranslation } from "~/hooks/use-translation"
-import { SensitiveConfirmDialog } from "~/routes/($lang)._main.users.$user._index/components/sensitive-confirm-dialog"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { Heart } from "lucide-react"
 
 type Props = {
@@ -63,11 +63,9 @@ export function UserHomeMenu(props: Props) {
       <div className="absolute top-2 right-0 hidden md:block">
         <div className="flex w-full items-center justify-end space-x-4">
           {cachedUser.receivedSensitiveLikesCount > 0 && (
-            <SensitiveConfirmDialog
-              receivedSensitiveLikesCount={
-                cachedUser.receivedSensitiveLikesCount
-              }
-              userLogin={cachedUser.login}
+            <SensitiveToggle
+              variant="compact"
+              targetUrl={`/r/users/${cachedUser.login}`}
             />
           )}
           <UserActionOther

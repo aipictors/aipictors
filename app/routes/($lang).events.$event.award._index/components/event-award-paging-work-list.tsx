@@ -19,7 +19,7 @@ type Props = {
  * イベント作品一覧
  */
 export function EventAwardPagingWorkList(props: Props) {
-  const navigate = useNavigate()
+  const _navigate = useNavigate()
   const authContext = useContext(AuthContext)
 
   const { data: resp } = useQuery(query, {

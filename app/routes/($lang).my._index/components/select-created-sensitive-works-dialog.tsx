@@ -172,48 +172,44 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
       >
         <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
           {t("作品選択", "Select Works")}
-          <>
-            <Tabs
-              className="mt-2 mb-8"
-              value={tab}
-              defaultValue={"NO_SELECTED"}
-            >
-              <TabsList>
-                <TabsTrigger
-                  onClick={() => setTab("NO_SELECTED")}
-                  className="w-full"
-                  value="NO_SELECTED"
-                >
-                  {t("未選択", "Not Selected")}
-                </TabsTrigger>
-                <TabsTrigger
-                  onClick={() => setTab("SELECTED")}
-                  className="w-full"
-                  value="SELECTED"
-                >
-                  {t("選択中", "Selected")}
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <ScrollArea className="max-h-80 overflow-y-auto md:max-h-[100%]">
-              {tab === "NO_SELECTED" && (
-                <div className="flex flex-wrap">{renderWorks(works)}</div>
-              )}
-              {tab === "SELECTED" && (
-                <div className="flex flex-wrap">
-                  {renderWorks(props.selectedWorks)}
-                </div>
-              )}
-            </ScrollArea>
+
+          <Tabs className="mt-2 mb-8" value={tab} defaultValue={"NO_SELECTED"}>
+            <TabsList>
+              <TabsTrigger
+                onClick={() => setTab("NO_SELECTED")}
+                className="w-full"
+                value="NO_SELECTED"
+              >
+                {t("未選択", "Not Selected")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => setTab("SELECTED")}
+                className="w-full"
+                value="SELECTED"
+              >
+                {t("選択中", "Selected")}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <ScrollArea className="max-h-80 overflow-y-auto md:max-h-[100%]">
             {tab === "NO_SELECTED" && (
-              <ResponsivePagination
-                perPage={32}
-                maxCount={worksMaxCount}
-                currentPage={page}
-                onPageChange={(page: number) => setPage(page)}
-              />
+              <div className="flex flex-wrap">{renderWorks(works)}</div>
             )}
-          </>
+            {tab === "SELECTED" && (
+              <div className="flex flex-wrap">
+                {renderWorks(props.selectedWorks)}
+              </div>
+            )}
+          </ScrollArea>
+          {tab === "NO_SELECTED" && (
+            <ResponsivePagination
+              perPage={32}
+              maxCount={worksMaxCount}
+              currentPage={page}
+              onPageChange={(page: number) => setPage(page)}
+            />
+          )}
+
           <div className="space-y-4">{""}</div>
           <Button onClick={() => setIsOpen(false)}>
             {t("決定", "Confirm")}

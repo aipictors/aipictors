@@ -61,7 +61,7 @@ export function ModerationStyleReportDialog(props: Props) {
             imageStyle: rating as IntrospectionEnum<"ImageStyle">,
           },
         },
-      }).then(async (result) => {
+      }).then(async (_result) => {
         toast("報告いたしました、ご協力ありがとうございます。")
       })
     } catch (error) {

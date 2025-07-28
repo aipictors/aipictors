@@ -65,6 +65,12 @@ export function PostAnimationFormInput(props: Props) {
       isSensitive:
         props.state.ratingRestriction !== "R18" &&
         props.state.ratingRestriction !== "R18G",
+      limit: 10,
+      where: {
+        isSensitive:
+          props.state.ratingRestriction !== "R18" &&
+          props.state.ratingRestriction !== "R18G",
+      },
     },
   })
 
@@ -123,6 +129,20 @@ export function PostAnimationFormInput(props: Props) {
     return props.recentlyUsedTags.map((tag) => ({
       id: tag.id,
       text: tag.name,
+    }))
+  }
+
+  const recommendedTagOptions = () => {
+    if (data === undefined) {
+      return []
+    }
+    const tags = data.recommendedTags.filter((tag) => {
+      return !props.state.tags.map((t) => t.text).includes(tag.tagName)
+    })
+
+    return tags.map((tag) => ({
+      id: tag.tagName, // Using tagName as id since we don't have separate id field
+      text: tag.tagName,
     }))
   }
 
@@ -258,7 +278,7 @@ export function PostAnimationFormInput(props: Props) {
       <PostFormItemTags
         whiteListTags={tagOptions()}
         tags={props.state.tags}
-        recommendedTags={[]}
+        recommendedTags={recommendedTagOptions()}
         recentlyUsedTags={recentlyUsedTags()}
         onAddTag={(tag) => {
           props.dispatch({ type: "ADD_TAG", payload: tag })
@@ -330,6 +350,8 @@ export const PostAnimationFormPassFragment = graphql(
 const pageQuery = graphql(
   `query PageQuery(
     $isSensitive: Boolean!
+    $limit: Int!
+    $where: RecommendedTagsWhereInput!
   ) {
     whiteListTags(
       where: {
@@ -338,6 +360,10 @@ const pageQuery = graphql(
     ) {
       id
       name
+    }
+    recommendedTags(limit: $limit, where: $where) {
+      tagName
+      thumbnailUrl
     }
   }`,
 )

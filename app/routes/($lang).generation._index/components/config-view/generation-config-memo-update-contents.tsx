@@ -35,7 +35,7 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
 
   const [description, setDescription] = useState(props.memo.explanation)
 
-  const [modelId, setModelId] = useState(props.memo.model.id)
+  const [modelId, _setModelId] = useState(props.memo.model.id)
 
   const [prompts, setPrompts] = useState(props.memo.prompts)
 
@@ -59,9 +59,9 @@ export function GenerationConfigMemoUpdateContent(props: Props) {
 
   const [clipSkip, setClipSkip] = useState(props.memo.clipSkip)
 
-  const [width, setWidth] = useState(0)
+  const [width, _setWidth] = useState(0)
 
-  const [height, setHeight] = useState(0)
+  const [height, _setHeight] = useState(0)
 
   const [updateMemo, { loading: isUpdatingMemo }] = useMutation(
     updateImageGenerationMemoMutation,

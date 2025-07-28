@@ -92,7 +92,7 @@ export function HydrateFallback() {
 }
 
 export default function GenerationLayout() {
-  const data = useLoaderData<typeof loader>()
+  const _data = useLoaderData<typeof loader>()
 
   const authContext = useContext(AuthContext)
 

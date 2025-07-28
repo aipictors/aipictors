@@ -250,7 +250,7 @@ export const StickerAccessTypeDialogFragment = graphql(
   }`,
 )
 
-const updateStickerMutation = graphql(
+const _updateStickerMutation = graphql(
   `mutation updateSticker($input: UpdateStickerInput!) {
     updateSticker(input: $input) {
       id

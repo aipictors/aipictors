@@ -10,7 +10,7 @@ import { UserSettingsForm } from "~/routes/($lang)._main.new.settings._index/com
 /**
  * ユーザ設定新規作成ページ
  */
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {

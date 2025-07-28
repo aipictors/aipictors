@@ -13,7 +13,7 @@ import {
   CarouselPrevious,
 } from "~/components/ui/carousel"
 import { useTranslation } from "~/hooks/use-translation"
-import { RankingHeaderSensitiveConfirmDialog } from "~/routes/($lang)._main.rankings._index/components/ranking-header-sensitive-confirm-dialog"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 
 type Props = {
   year: number
@@ -377,7 +377,7 @@ export function RankingHeader(props: Props) {
             {t("最新", "Latest")}
           </Button>
         </div>
-        <RankingHeaderSensitiveConfirmDialog />
+        <SensitiveToggle variant="compact" />
       </div>
       <div className="mt-4 flex max-w-72 space-x-4 md:max-w-full">
         <Carousel

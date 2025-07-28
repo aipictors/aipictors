@@ -18,7 +18,7 @@ export function getCookieLoginToken() {
     }
 
     return idToken
-  } catch (error) {
+  } catch (_error) {
     return null
   }
 }

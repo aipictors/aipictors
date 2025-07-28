@@ -61,7 +61,7 @@ export function ModerationRatingReportDialog(props: Props) {
             rating: rating as IntrospectionEnum<"Rating">,
           },
         },
-      }).then(async (result) => {
+      }).then(async (_result) => {
         toast("報告いたしました、ご協力ありがとうございます。")
       })
     } catch (error) {

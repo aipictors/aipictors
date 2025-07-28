@@ -32,7 +32,7 @@ export const uploadImage = async (
       return responseData.url
     }
     throw new Error()
-  } catch (error) {
+  } catch (_error) {
     // captureException(error)
     throw new Error()
   }

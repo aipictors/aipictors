@@ -35,7 +35,7 @@ export function NavigationLogoutDialogButton(props: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <HomeNavigationButton icon={LogOutIcon}>
+        <HomeNavigationButton icon={LogOutIcon} href={""} children={undefined}>
           {props.text ?? t("ログアウト", "Logout")}
         </HomeNavigationButton>
       </AlertDialogTrigger>

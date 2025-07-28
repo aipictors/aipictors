@@ -24,7 +24,7 @@ export function PostFormItemTags(props: Props) {
     return Math.floor(Math.random() * 10000)
   }, [])
 
-  const formattedTags = useMemo(
+  const _formattedTags = useMemo(
     () =>
       props.tags.map((tag) => ({
         id: tag.id,

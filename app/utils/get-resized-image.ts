@@ -40,7 +40,7 @@ export default async function getResizedImg(
     try {
       const base64 = canvas.toDataURL(`image/${fileExtension ?? "png"}`)
       resolve(base64)
-    } catch (error) {
+    } catch (_error) {
       reject(new Error("Failed to convert canvas to Base64"))
     }
   })

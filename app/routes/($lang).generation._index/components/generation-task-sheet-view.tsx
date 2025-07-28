@@ -83,7 +83,7 @@ export function GenerationTaskSheetView(props: Props) {
    * 生成履歴の画像を保存する
    * @param token
    */
-  const saveGenerationImage = async (fileName: string) => {
+  const saveGenerationImage = async (_fileName: string) => {
     if (!props.task.imageUrl) {
       toast("画像が存在しません")
       return

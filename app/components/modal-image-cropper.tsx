@@ -40,7 +40,7 @@ export function ImageCropperModal(props: Props) {
    * @param croppedArea
    * @param croppedAreaPixels
    */
-  const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
+  const onCropComplete = (_croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels)
   }
 

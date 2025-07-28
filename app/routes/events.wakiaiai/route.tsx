@@ -133,7 +133,7 @@ export default function Route() {
           referrerPolicy="no-referrer-when-downgrade"
         />
         <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
-          {aUsers.map((user, index) => (
+          {aUsers.map((user, _index) => (
             <EventWakiaiaiCreatorCard key={user.name} user={user} />
           ))}
         </div>
@@ -146,7 +146,7 @@ export default function Route() {
           linkTitle={"Aipictors"}
         />
         <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
-          {bUsers.map((user, index) => (
+          {bUsers.map((user, _index) => (
             <EventWakiaiaiCreatorCard key={user.name} user={user} />
           ))}
         </div>
@@ -161,7 +161,7 @@ export default function Route() {
           allowFullScreen={true}
         />
         <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
-          {cUsers.map((user, index) => (
+          {cUsers.map((user, _index) => (
             <EventWakiaiaiCreatorCard key={user.name} user={user} />
           ))}
         </div>
@@ -202,7 +202,7 @@ export const headers: HeadersFunction = () => ({
 })
 
 export const meta: MetaFunction = (props) => {
-  const lang = props.params.lang
+  const _lang = props.params.lang
 
   return [
     { title: "和気あいAI - 愛知県AIイラスト展示即売会" },

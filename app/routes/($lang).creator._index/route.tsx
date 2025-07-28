@@ -30,7 +30,7 @@ export default function Route() {
   )
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   const result = await loaderClient.query({
     query: LoaderQuery,
   })

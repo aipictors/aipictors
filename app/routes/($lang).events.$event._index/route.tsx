@@ -19,7 +19,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { SensitiveEventConfirmDialog } from "~/routes/($lang).events.$event._index/components/sensitive-event-confirm-dialog"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
@@ -119,7 +119,7 @@ export default function FollowingLayout() {
 
   const data = useLoaderData<typeof loader>()
 
-  const navigate = useNavigate()
+  const _navigate = useNavigate()
 
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -208,7 +208,7 @@ export default function FollowingLayout() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
-  const [worksMaxCount, setWorksMaxCount] = React.useState(0)
+  const [worksMaxCount, _setWorksMaxCount] = React.useState(0)
 
   if (data === null) {
     return null
@@ -257,7 +257,10 @@ export default function FollowingLayout() {
                 </span>
               </div>
               {data.appEvent.slug !== null && (
-                <SensitiveEventConfirmDialog slug={data.appEvent.slug} />
+                <SensitiveToggle
+                  variant="compact"
+                  targetUrl={`/r/events/${data.appEvent.slug}`}
+                />
               )}
             </div>
           </CardContent>

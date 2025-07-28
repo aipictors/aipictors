@@ -28,7 +28,7 @@ export function AlbumWorkDescription(props: Props) {
         },
   )
 
-  const isFollow =
+  const _isFollow =
     data?.user?.followees?.some(
       (followee) => followee.id === props.album.user.id,
     ) ?? false

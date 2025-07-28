@@ -88,7 +88,7 @@ export function AddStickerDialog(props: Props) {
       return
     }
 
-    const imageFileName = `${createRandomString(30)}.webp`
+    const _imageFileName = `${createRandomString(30)}.webp`
 
     const uploadedImageUrl = await uploadPublicImage(
       imageBase64,

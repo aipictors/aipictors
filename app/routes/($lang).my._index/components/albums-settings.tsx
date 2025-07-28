@@ -37,7 +37,7 @@ export function AlbumsSetting(props: Props) {
     "NAME",
   ] as IntrospectionEnum<"AlbumOrderBy">[]
 
-  const onToggleFilterButton = () => {
+  const _onToggleFilterButton = () => {
     if (isFilterOpen) {
       setMaxHeight("0px")
       setOpacity(0)

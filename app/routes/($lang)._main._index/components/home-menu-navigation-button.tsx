@@ -14,6 +14,7 @@ type Props = {
   icon: LucideIcon
   children: ReactNode
   onClick?: () => void
+  className?: string
 }
 
 /**
@@ -28,6 +29,7 @@ export function HomeMenuNavigationButton({
   icon: Icon,
   children,
   onClick,
+  className,
 }: Props) {
   const { pathname } = useLocation()
   const active = pathname === href || pathname.startsWith(`${href}/`)
@@ -47,6 +49,7 @@ export function HomeMenuNavigationButton({
                 : "text-muted-foreground hover:bg-muted/20 hover:text-foreground",
               // xs-sm 左寄せ → md 中央寄せ → lg- 左寄せ
               "justify-start lg:justify-start",
+              className, // カスタムクラス名を追加
             )}
           >
             <Icon className="size-5 shrink-0" />

@@ -33,7 +33,7 @@ export const checkInGenerationProgressStatus = async (
       return false
     }
     throw new Error()
-  } catch (error) {
+  } catch (_error) {
     // captureException(error)
     throw new Error()
   }

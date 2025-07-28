@@ -112,7 +112,7 @@ export default function EventAiIdolProject() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
-  const [worksMaxCount, setWorksMaxCount] = React.useState(0)
+  const [worksMaxCount, _setWorksMaxCount] = React.useState(0)
 
   // 画像スライダーに使う画像URL（差し替え自由）
   const imageUrls = [

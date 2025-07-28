@@ -173,7 +173,7 @@ export default function FollowingLayout() {
     setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
   }
 
-  const [worksMaxCount, setWorksMaxCount] = React.useState(0)
+  const [worksMaxCount, _setWorksMaxCount] = React.useState(0)
 
   return (
     <div className="flex flex-col space-y-4">
@@ -197,7 +197,7 @@ export default function FollowingLayout() {
               className="mb-2 text-left text-sm"
               // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
               dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
-            ></div>
+            />
             <div className="mr-auto text-sm">
               {toEventDateTimeText(data.appEvent.startAt)}～
               {toEventDateTimeText(data.appEvent.endAt)}

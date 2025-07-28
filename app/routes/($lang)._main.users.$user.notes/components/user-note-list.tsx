@@ -52,7 +52,7 @@ export function UserNoteList(props: Props) {
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
           <CarouselWithGradation
-            items={works.map((work, index) => (
+            items={works.map((work, _index) => (
               // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
               <div className="h-full rounded border-2 border-gray border-solid">
                 <div className="relative">

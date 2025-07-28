@@ -47,7 +47,7 @@ export function PostAccessTypeBanner(props: Props) {
   }
 
   const getFuturePost = () => {
-    if (props.createdAt * 1000 > new Date().getTime()) {
+    if (props.createdAt * 1000 > Date.now()) {
       return t("予約投稿", "Scheduled Post")
     }
     return ""

@@ -12,7 +12,7 @@ export function AccountPasswordForm() {
 
   const [newPassword, setNewPassword] = useState("")
 
-  const [currentPassword, setCurrentPassword] = useState("")
+  const [_currentPassword, setCurrentPassword] = useState("")
 
   // const [showPassword, setShowPassword] = useState(false)
 

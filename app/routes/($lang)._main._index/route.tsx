@@ -19,6 +19,7 @@ import {
   HomePromotionWorkFragment,
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -85,7 +86,6 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
 import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
-import { SensitiveChangeConfirmDialog } from "~/routes/($lang)._main._index/components/sensitive-change-confirm-dialog"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import type { FragmentOf } from "gql.tada"
@@ -582,28 +582,36 @@ export default function Index() {
       <Tabs
         value={currentTab}
         onValueChange={handleTabChange}
-        className="space-y-4"
+        className="space-y-6"
       >
-        <div className="flex items-center sm:gap-x-2 md:gap-x-4">
-          <AppAnimatedTabs
-            tabs={[
-              { label: "ホーム", value: "home" },
-              { label: "新着・人気", value: "new" },
-              { label: "フォロー新着", value: "follow-user" },
-              { label: "お気に入りタグ新着", value: "follow-tag" },
-            ]}
-            value={currentTab}
-            onChange={setCurrentTab}
-          />
-          <Button
-            variant={"secondary"}
-            size="sm"
-            onClick={() => navigate("/r")}
-          >
-            {"R-18"}
-          </Button>
+        {/* ヘッダー部分: タブとR18ボタン */}
+        <div className="-mx-1 sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
+            <div className="min-w-0 flex-1">
+              <AppAnimatedTabs
+                tabs={[
+                  { label: "ホーム", value: "home" },
+                  { label: "新着・人気", value: "new" },
+                  { label: "フォロー新着", value: "follow-user" },
+                  { label: "お気に入りタグ新着", value: "follow-tag" },
+                ]}
+                value={currentTab}
+                onChange={setCurrentTab}
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              {/\/r($|\/)/.test(location.pathname) && (
+                <div className="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-red-100 to-pink-100 px-3 py-1.5 sm:flex dark:from-red-900/50 dark:to-pink-900/50">
+                  <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+                  <span className="font-semibold text-red-700 text-sm dark:text-red-300">
+                    {t("R18モード", "R18 Mode")}
+                  </span>
+                </div>
+              )}
+              <SensitiveToggle variant="compact" showStatus />
+            </div>
+          </div>
         </div>
-
         {/* ---------------------- タブ: ホーム ---------------------- */}
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
           {data.dailyTheme && (
@@ -664,7 +672,6 @@ export default function Index() {
             />
             <div className="flex w-full max-w-80 flex-col space-y-4">
               <div className="flex w-full flex-col space-y-4">
-                <SensitiveChangeConfirmDialog />
                 {!isSubscriptionUser &&
                   advertisements &&
                   advertisements.randomCustomerAdvertisement && (
@@ -712,7 +719,6 @@ export default function Index() {
             </div>
           </div>
         </TabsContent>
-
         {/* ---------------------- タブ: 新着・人気 ---------------------- */}
         <TabsContent value="new" className="flex flex-col space-y-4">
           {/* 新着 or 人気 or 新規ユーザの切り替えボタン */}
@@ -1130,7 +1136,6 @@ export default function Index() {
             </div>
           )}
         </TabsContent>
-
         {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
         <TabsContent value="follow-user" className="space-y-4">
           {/* Feed / Pages 切り替えボタン */}
@@ -1219,7 +1224,6 @@ export default function Index() {
             />
           </Suspense>
         </TabsContent>
-
         {/* ---------------------- タブ: お気に入りタグ ---------------------- */}
         <TabsContent value="follow-tag" className="space-y-4">
           {/* Feed / Pages 切り替えボタン */}

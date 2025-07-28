@@ -76,48 +76,48 @@ export function AlbumArticleEditorDialog(props: Props) {
         <DialogHeader>
           <DialogTitle>{t("シリーズ更新", "Update Album")}</DialogTitle>
         </DialogHeader>
-        <>
-          <div className="flex flex-col justify-between space-y-2">
-            <label
-              htmlFor="nickname"
-              className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {t("タイトル", "Title")}
-            </label>
-            <input
-              type="text"
-              id="title"
-              maxLength={32}
-              minLength={1}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="rounded-md border px-2 py-1"
-              defaultValue="Aipictors/AIイラスト投稿サイト・AI小説投稿サイト・AI絵"
-            />
-          </div>
-          <div className="flex flex-col justify-between space-y-2">
-            <label
-              htmlFor="enProfile"
-              className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {t("説明", "Description")}
-            </label>
-            <AutoResizeTextarea
-              id="enProfile"
-              className="rounded-md border px-2 py-1"
-              maxLength={640}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <p className="font-medium text-sm ">
-            {t("選択中の作品", "Selected works")}（{selectedWorks.length}）
-          </p>
-          <SelectCreatedWorksDialogWithIds
-            selectedWorkIds={selectedWorks}
-            setSelectedWorkIds={setSelectedWorks}
+
+        <div className="flex flex-col justify-between space-y-2">
+          <label
+            htmlFor="nickname"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {t("タイトル", "Title")}
+          </label>
+          <input
+            type="text"
+            id="title"
+            maxLength={32}
+            minLength={1}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="rounded-md border px-2 py-1"
+            defaultValue="Aipictors/AIイラスト投稿サイト・AI小説投稿サイト・AI絵"
           />
-        </>
+        </div>
+        <div className="flex flex-col justify-between space-y-2">
+          <label
+            htmlFor="enProfile"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {t("説明", "Description")}
+          </label>
+          <AutoResizeTextarea
+            id="enProfile"
+            className="rounded-md border px-2 py-1"
+            maxLength={640}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <p className="font-medium text-sm ">
+          {t("選択中の作品", "Selected works")}（{selectedWorks.length}）
+        </p>
+        <SelectCreatedWorksDialogWithIds
+          selectedWorkIds={selectedWorks}
+          setSelectedWorkIds={setSelectedWorks}
+        />
+
         <DialogFooter>
           <Button disabled={isUpdating} className="w-full" onClick={onSubmit}>
             {isUpdating ? (

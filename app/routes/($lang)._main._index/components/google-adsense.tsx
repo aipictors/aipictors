@@ -32,7 +32,7 @@ export function GoogleAdsense(props: Props) {
         window.adsbygoogle = []
       }
       window.adsbygoogle.push({})
-    } catch (error) {
+    } catch (_error) {
       // captureException(error)
     }
   }, [pathname])

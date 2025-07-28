@@ -69,7 +69,7 @@ export interface TagInputProps
 }
 
 const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
-  (props, ref) => {
+  (props, _ref) => {
     const {
       id,
       placeholder,

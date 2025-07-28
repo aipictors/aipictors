@@ -30,12 +30,10 @@ export function SortListSelector(props: Props) {
             {props.nowSortType === item.sortType && (
               <div className="flex items-center">
                 {props.nowSort === "ASC" ? (
-                  <>
-                    <div>
-                      <ChevronUp className="size-4" />
-                      <ChevronDown className="size-4 opacity-40" />
-                    </div>
-                  </>
+                  <div>
+                    <ChevronUp className="size-4" />
+                    <ChevronDown className="size-4 opacity-40" />
+                  </div>
                 ) : (
                   <div>
                     <ChevronUp className="size-4 opacity-40" />

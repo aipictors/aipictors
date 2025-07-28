@@ -14,7 +14,7 @@ type Props = {
 export function AlbumsSpList(props: Props) {
   return (
     <>
-      {props.albums.map((album, index) => (
+      {props.albums.map((album, _index) => (
         <div key={album.id}>
           <AlbumsSpListItem album={album} />
         </div>

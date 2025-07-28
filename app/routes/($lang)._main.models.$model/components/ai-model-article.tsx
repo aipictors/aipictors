@@ -35,7 +35,7 @@ export function AiModelArticle(props: Props) {
 
   const [page, setPage] = useState(props.page)
 
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [_searchParams, setSearchParams] = useSearchParams()
 
   const { data } = useQuery(aiModelQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,

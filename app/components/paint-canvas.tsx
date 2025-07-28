@@ -69,7 +69,7 @@ export function PaintCanvas(props: Props) {
 
   const [scale, setScale] = useState<number>(1)
   const [translateX, setTranslateX] = useState<number>(0)
-  const [translateY, setTranslateY] = useState<number>(0)
+  const [translateY, _setTranslateY] = useState<number>(0)
 
   const [points, setPoints] = useState<{ x: number; y: number }[]>([]) // 状態としてポイントを保存
 

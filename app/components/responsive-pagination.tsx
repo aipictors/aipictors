@@ -141,10 +141,10 @@ export function ResponsivePagination({
   }
 
   // 左側に...を表示するか: middleStartがfirstPageIndex+1より大きければ...
-  const showLeftEllipsis = middleStart > firstPageIndex + 1
+  const _showLeftEllipsis = middleStart > firstPageIndex + 1
 
   // 右側に...を表示するか: middleEndがlastPageIndex-1より小ければ...
-  const showRightEllipsis = middleEnd < lastPageIndex - 1
+  const _showRightEllipsis = middleEnd < lastPageIndex - 1
 
   return (
     <Pagination>

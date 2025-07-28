@@ -38,7 +38,7 @@ const MosaicCanvas = ({
       canvas.height = !height ? image.height : height
 
       // 長辺の1/100をモザイクサイズとする
-      const longestSide = Math.max(image.width, image.height)
+      const _longestSide = Math.max(image.width, image.height)
       const effectiveMosaicSize = Math.ceil(
         Math.max(image.width, image.height) / 100,
       )

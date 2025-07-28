@@ -15,7 +15,7 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
-import { SensitiveChangeModelConfirmDialog } from "~/routes/($lang)._main.models.$model/components/sensitive-change-model-confirm-dialog"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 
 type Props = {
   name: string
@@ -95,7 +95,10 @@ export function AiModelHeader(props: Props) {
             </PopoverTrigger>
             <PopoverContent className="w-80">
               <div className="relative grid gap-4">
-                <SensitiveChangeModelConfirmDialog name={props.name} />
+                <SensitiveToggle
+                  variant="compact"
+                  targetUrl={`/r/models/${props.name}`}
+                />
               </div>
             </PopoverContent>
           </Popover>

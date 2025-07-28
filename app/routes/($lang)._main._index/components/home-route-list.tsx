@@ -16,11 +16,13 @@ import {
   StarIcon,
   MenuIcon,
   ChevronLeftIcon,
+  TagIcon,
+  RefreshCcwIcon,
 } from "lucide-react"
 import { useContext } from "react"
-import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
 import { useSidebar } from "~/contexts/sidebar-context"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title?: string
@@ -44,13 +46,6 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
 
   const createLink = (path: string) =>
     isSensitive && !["/about", "/terms"].includes(path) ? `/r${path}` : path
-
-  const toggleSensitive = () => {
-    // biome-ignore lint/suspicious/noDocumentCookie: required for cookie management
-    document.cookie = "sensitive=1; max-age=0; path=/"
-    const newUrl = location.pathname.replace("/r", "")
-    navigate(newUrl === "" ? "/" : newUrl, { replace: true })
-  }
 
   const closeHeaderMenu = () => onClickMenuItem?.()
 
@@ -144,13 +139,14 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         {isSensitive && " - R18"}
       </SidebarNavigationButton>
 
+      {/* R18モード時の全年齢戻るボタン */}
       {isSensitive && (
         <SidebarNavigationButton
-          onClick={toggleSensitive}
           href={"/"}
-          icon={HomeIcon}
+          icon={RefreshCcwIcon}
+          className="border-2 border-orange-200 bg-orange-50 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:bg-orange-950 dark:text-orange-300 dark:hover:bg-orange-900"
         >
-          {t("ホーム - 全年齢", "Home - G")}
+          {t("全年齢に戻る", "Back to All Ages")}
         </SidebarNavigationButton>
       )}
 
@@ -160,6 +156,14 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         onClick={closeHeaderMenu}
       >
         {t("お題", "Themes")}
+      </SidebarNavigationButton>
+
+      <SidebarNavigationButton
+        href={createLink("/tags")}
+        icon={TagIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("タグ", "Tags")}
       </SidebarNavigationButton>
 
       <SidebarNavigationButton

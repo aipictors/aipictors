@@ -171,7 +171,7 @@ export default function MonthThemes() {
 
   const data = useLoaderData<typeof loader>()
 
-  const handleTabChange = (tab: string) => {
+  const _handleTabChange = (tab: string) => {
     searchParams.set("tab", tab)
     updateQueryParams(searchParams)
   }

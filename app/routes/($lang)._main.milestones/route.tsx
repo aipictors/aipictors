@@ -27,7 +27,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.MILESTONES, undefined, props.params.lang)
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {
@@ -107,7 +107,7 @@ export default function Milestone() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data.milestones.map((milestone, index) => {
+                  {data.milestones.map((milestone, _index) => {
                     return (
                       <TableRow
                         key={milestone.id}

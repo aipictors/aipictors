@@ -3,10 +3,10 @@ import { MemoryRouter } from "react-router-dom"
 import { AppNotFoundPage } from "../app-not-found-page"
 
 describe("AppNotFoundPage", () => {
-  let view: ReturnType<typeof render> | null = null
+  let _view: ReturnType<typeof render> | null = null
 
   beforeEach(() => {
-    view = render(
+    _view = render(
       <MemoryRouter>
         <AppNotFoundPage />
       </MemoryRouter>,

@@ -33,11 +33,11 @@ import { useTheme } from "next-themes"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { Link, useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { ScrollArea } from "~/components/ui/scroll-area"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 
 type Props = {
   onLogout(): void
@@ -104,7 +104,7 @@ export function HomeUserNavigationMenu(props: Props) {
       return
     }
     // テーマ適用中→"light-blue"、"dark-blue"等同色でのダーク、ライト切り替え
-    const suffix = theme?.replace(/(light|dark)\-/, "-")
+    const suffix = theme?.replace(/(light|dark)-/, "-")
     const colorSuffix = suffix ?? ""
     setTheme(newMode + colorSuffix)
   }
@@ -117,7 +117,9 @@ export function HomeUserNavigationMenu(props: Props) {
     const basePath = location.pathname.replace(/^\/(ja|en)(\/|$)/, "/")
 
     // クッキーにロケールを保存
-    document.cookie = `locale=${locale}; path=/;`
+    if (typeof document !== "undefined") {
+      document.cookie = `locale=${locale}; path=/; SameSite=Lax`
+    }
 
     // 新しいURLを条件に応じて設定
     const newUrl =
@@ -335,8 +337,8 @@ export function HomeUserNavigationMenu(props: Props) {
             (userSetting?.userSetting.preferenceRating === "R18" ||
               userSetting?.userSetting.preferenceRating === "R18G") &&
             isSensitiveToggleVisible && (
-              <DropdownMenuItem>
-                <ToggleSensitive />
+              <DropdownMenuItem asChild>
+                <SensitiveToggle variant="full" className="w-full" />
               </DropdownMenuItem>
             )}
           <DropdownMenuItem onClick={props.onLogout}>

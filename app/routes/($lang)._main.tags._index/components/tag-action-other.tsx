@@ -5,28 +5,39 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { EllipsisIcon } from "lucide-react"
-import { useNavigate } from "@remix-run/react"
-import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
-import { SensitiveTagConfirmDialog } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-confirm-dialog"
+import { useLocation } from "@remix-run/react"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 
 type Props = {
   tag: string
 }
 
 export function TagActionOther(props: Props) {
-  const navigate = useNavigate()
-  const t = useTranslation()
+  const location = useLocation()
+
+  // センシティブページかどうかを判定
+  const isSensitivePage = location.pathname.includes("/r/")
+
+  // 適切なタグページURLを生成
+  const generateTagUrl = (isSensitive: boolean) => {
+    return isSensitive
+      ? `/r/tags/${encodeURIComponent(props.tag)}`
+      : `/tags/${encodeURIComponent(props.tag)}`
+  }
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button size={"icon"} variant="secondary">
-          <EllipsisIcon className="w-16" />
+          <EllipsisIcon className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <div className="relative grid gap-4">
-          <SensitiveTagConfirmDialog tag={props.tag} />
+        <div className="grid gap-4">
+          <SensitiveToggle
+            variant="compact"
+            targetUrl={generateTagUrl(!isSensitivePage)}
+          />
         </div>
       </PopoverContent>
     </Popover>

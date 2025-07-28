@@ -56,7 +56,7 @@ export function SettingFcmForm() {
         setWebFcmToken(token)
         setIsLoadingNotifySetting(false)
       })
-    } catch (error) {
+    } catch (_error) {
       setIsLoadingNotifySetting(false)
     }
   }
@@ -82,7 +82,7 @@ export function SettingFcmForm() {
         setWebFcmToken(null)
         setIsLoadingNotifySetting(false)
       })
-    } catch (error) {
+    } catch (_error) {
       setIsLoadingNotifySetting(false)
     }
   }

@@ -12,7 +12,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { config } from "~/config"
 import type { HeadersFunction } from "@remix-run/cloudflare"
-import { SensitiveEventConfirmDialog } from "~/routes/($lang).events.$event._index/components/sensitive-event-confirm-dialog"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -93,7 +93,7 @@ export default function FollowingLayout() {
               className="mb-2 text-left text-sm"
               // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
               dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
-            ></div>
+            />
             <div className="mr-auto text-sm">
               {toEventDateTimeText(data.appEvent.startAt)}～
               {toEventDateTimeText(data.appEvent.endAt)}
@@ -105,7 +105,10 @@ export default function FollowingLayout() {
               <span>参加タグ: {data.appEvent.tag}</span>
             </div>
             {data.appEvent.slug !== null && (
-              <SensitiveEventConfirmDialog slug={data.appEvent.slug} />
+              <SensitiveToggle
+                variant="compact"
+                targetUrl={`/r/events/${data.appEvent.slug}/award`}
+              />
             )}
           </div>
         </CardContent>

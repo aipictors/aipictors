@@ -29,11 +29,11 @@ type Props = {
 export function WorkActionMenu(props: Props) {
   const [deleteWork, { loading: isLoadingDeleteAlbum }] =
     useMutation(DeleteWorkMutation)
-  const [isDeleted, setIsDeleted] = useState(false)
+  const [_isDeleted, setIsDeleted] = useState(false)
 
   const t = useTranslation()
 
-  const onDeleteWork = async (workId: string) => {
+  const _onDeleteWork = async (workId: string) => {
     await deleteWork({
       variables: {
         input: {

@@ -35,7 +35,7 @@ export function TagFollowButton(props: Props) {
 
   const onFollow = async () => {
     try {
-      const res = await follow({
+      const _res = await follow({
         variables: {
           input: {
             tagName: props.tag,
@@ -51,7 +51,7 @@ export function TagFollowButton(props: Props) {
 
   const onUnFollow = async () => {
     try {
-      const res = await unFollow({
+      const _res = await unFollow({
         variables: {
           input: {
             tagName: props.tag,

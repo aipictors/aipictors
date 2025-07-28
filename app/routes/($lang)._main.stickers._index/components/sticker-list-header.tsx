@@ -21,7 +21,7 @@ export function StickerListHeader(props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const [stickerStatus, setStickerStatue] = useState<
+  const [stickerStatus, _setStickerStatue] = useState<
     "PRIVATE_CREATED" | "DOWNLOADED" | "PUBLIC_CREATED"
   >("DOWNLOADED")
 
@@ -36,7 +36,7 @@ export function StickerListHeader(props: Props) {
       },
     })
 
-  const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
+  const [createdSortStickerPage, _setCreatedSortStickerPage] = useState(0)
 
   const maxStickersPage = 120
 

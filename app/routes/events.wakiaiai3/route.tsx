@@ -104,19 +104,19 @@ export default function Route() {
           referrerPolicy="no-referrer-when-downgrade"
         />
         <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
-          {aUsers.map((user, index) => (
+          {aUsers.map((user, _index) => (
             <EventWakiaiaiCreatorCard key={user.name} user={user} />
           ))}
         </div>
 
         <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
-          {bUsers.map((user, index) => (
+          {bUsers.map((user, _index) => (
             <EventWakiaiaiCreatorCard key={user.name} user={user} />
           ))}
         </div>
 
         <div className={"grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3"}>
-          {cUsers.map((user, index) => (
+          {cUsers.map((user, _index) => (
             <EventWakiaiaiCreatorCard key={user.name} user={user} />
           ))}
         </div>

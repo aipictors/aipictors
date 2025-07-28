@@ -5,7 +5,7 @@ type Props = {
   passType: IntrospectionEnum<"PassType">
 }
 
-export function PassBenefitList(props: Props) {
+export function PassBenefitList(_props: Props) {
   const t = useTranslation()
 
   return (

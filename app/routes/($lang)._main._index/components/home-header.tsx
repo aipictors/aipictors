@@ -489,6 +489,7 @@ function HomeHeader(props: Props) {
               </div>
             </div>
             <Separator orientation="vertical" />
+            {/* <R18ModeIndicator /> */}
           </div>
           {isSearchFormOpen ? (
             <div className="flex w-full space-x-2 md:hidden">

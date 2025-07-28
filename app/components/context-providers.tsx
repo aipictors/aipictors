@@ -33,7 +33,7 @@ if (typeof document !== "undefined" && getApps().length === 0) {
     onMessage(getMessaging(), (payload) => {
       getToken(getMessaging(), {
         vapidKey: config.fcm.vapidKey,
-      }).then((token) => {
+      }).then((_token) => {
         navigator.serviceWorker.ready.then((registration) => {
           if (payload.data === undefined) return
           registration.showNotification(payload.data.title, {

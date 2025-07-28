@@ -17,7 +17,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_POSTS, undefined, props.params.lang)
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {
@@ -37,7 +37,7 @@ export default function MyPosts() {
 
   const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
 
-  const [albumOrderDeskAsc, setAlbumOrderDeskAsc] = React.useState<SortType>(
+  const [albumOrderDeskAsc, _setAlbumOrderDeskAsc] = React.useState<SortType>(
     (searchParams.get("albumOrderDeskAsc") as SortType) || "DESC",
   )
 
@@ -159,58 +159,56 @@ export default function MyPosts() {
   return (
     <>
       <Suspense fallback={<AppLoadingPage />}>
-        <>
-          <WorksSetting
-            sort={worksOrderDeskAsc}
-            orderBy={WorkOrderby}
-            sumWorksCount={worksMaxCount}
+        <WorksSetting
+          sort={worksOrderDeskAsc}
+          orderBy={WorkOrderby}
+          sumWorksCount={worksMaxCount}
+          accessType={accessType}
+          workType={workType}
+          rating={rating}
+          perPage={perPage}
+          onClickTitleSortButton={onClickTitleSortButton}
+          onClickLikeSortButton={onClickLikeSortButton}
+          onClickBookmarkSortButton={onClickBookmarkSortButton}
+          onClickCommentSortButton={onClickCommentSortButton}
+          onClickViewSortButton={onClickViewSortButton}
+          onClickAccessTypeSortButton={onClickAccessTypeSortButton}
+          onClickDateSortButton={onClickDateSortButton}
+          onClickWorkTypeSortButton={onClickWorkTypeSortButton}
+          onClickIsPromotionSortButton={onClickIsPromotionSortButton}
+          setAccessType={setAccessType}
+          setWorkType={setWorkType}
+          setRating={setRating}
+          setSort={setWorksOrderDeskAsc}
+          onClickPerPageChange={onClickPerPageChange}
+        />
+        <Suspense fallback={<AppLoadingPage />}>
+          <WorksListContainer
+            page={page}
             accessType={accessType}
             workType={workType}
             rating={rating}
+            sort={worksOrderDeskAsc}
+            orderBy={WorkOrderby}
+            isFixedPagination={true}
             perPage={perPage}
+            setWorksMaxCount={setWorksMaxCount}
+            setAccessType={setAccessType}
+            setRating={setRating}
+            setSort={setWorksOrderDeskAsc}
+            setPage={setPage}
             onClickTitleSortButton={onClickTitleSortButton}
             onClickLikeSortButton={onClickLikeSortButton}
             onClickBookmarkSortButton={onClickBookmarkSortButton}
             onClickCommentSortButton={onClickCommentSortButton}
             onClickViewSortButton={onClickViewSortButton}
+            onClickAgeTypeSortButton={onClickAgeTypeSortButton}
             onClickAccessTypeSortButton={onClickAccessTypeSortButton}
             onClickDateSortButton={onClickDateSortButton}
             onClickWorkTypeSortButton={onClickWorkTypeSortButton}
             onClickIsPromotionSortButton={onClickIsPromotionSortButton}
-            setAccessType={setAccessType}
-            setWorkType={setWorkType}
-            setRating={setRating}
-            setSort={setWorksOrderDeskAsc}
-            onClickPerPageChange={onClickPerPageChange}
           />
-          <Suspense fallback={<AppLoadingPage />}>
-            <WorksListContainer
-              page={page}
-              accessType={accessType}
-              workType={workType}
-              rating={rating}
-              sort={worksOrderDeskAsc}
-              orderBy={WorkOrderby}
-              isFixedPagination={true}
-              perPage={perPage}
-              setWorksMaxCount={setWorksMaxCount}
-              setAccessType={setAccessType}
-              setRating={setRating}
-              setSort={setWorksOrderDeskAsc}
-              setPage={setPage}
-              onClickTitleSortButton={onClickTitleSortButton}
-              onClickLikeSortButton={onClickLikeSortButton}
-              onClickBookmarkSortButton={onClickBookmarkSortButton}
-              onClickCommentSortButton={onClickCommentSortButton}
-              onClickViewSortButton={onClickViewSortButton}
-              onClickAgeTypeSortButton={onClickAgeTypeSortButton}
-              onClickAccessTypeSortButton={onClickAccessTypeSortButton}
-              onClickDateSortButton={onClickDateSortButton}
-              onClickWorkTypeSortButton={onClickWorkTypeSortButton}
-              onClickIsPromotionSortButton={onClickIsPromotionSortButton}
-            />
-          </Suspense>
-        </>
+        </Suspense>
       </Suspense>
     </>
   )

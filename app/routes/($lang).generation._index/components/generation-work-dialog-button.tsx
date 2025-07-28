@@ -13,7 +13,7 @@ type Props = {
  * 生成作品のダイアログのボタン
  */
 export function GenerationWorkDialogButton(props: Props) {
-  const context = useGenerationContext()
+  const _context = useGenerationContext()
 
   return (
     <Dialog>

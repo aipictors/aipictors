@@ -18,7 +18,7 @@ type Props = {
   setPage: (page: number) => void
 }
 
-export function ModerationReportsContainer(props: Props) {
+export function ModerationReportsContainer(_props: Props) {
   const t = useTranslation()
   const [page, setPage] = useState(0)
   const [statusFilter, setStatusFilter] = useState<
@@ -46,7 +46,7 @@ export function ModerationReportsContainer(props: Props) {
 
   const reportList = reports?.moderationReports ?? []
 
-  const handlePageChange = (newPage: number) => {
+  const _handlePageChange = (newPage: number) => {
     setPage(newPage)
     refetch()
   }

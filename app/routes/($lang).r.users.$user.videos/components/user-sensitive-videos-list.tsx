@@ -33,7 +33,7 @@ export function UserSensitiveVideoList(props: Props) {
     },
   })
 
-  const videos = videosWorks?.works ?? props.works
+  const _videos = videosWorks?.works ?? props.works
 
   const navigate = useNavigate()
 

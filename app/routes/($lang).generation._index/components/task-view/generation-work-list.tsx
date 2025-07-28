@@ -46,11 +46,7 @@ export function GenerationWorkList(props: Props) {
             "grid-cols-10": props.thumbnailSize === 10,
           })}
         >
-          {props.loading ? (
-            <>
-              <Skeleton className="h-40 w-32" />
-            </>
-          ) : null}
+          {props.loading ? <Skeleton className="h-40 w-32" /> : null}
           {props.works.map(
             (work) =>
               work && (

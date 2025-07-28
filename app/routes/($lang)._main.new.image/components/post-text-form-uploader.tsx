@@ -44,7 +44,7 @@ export function PostTextFormUploader(props: Props) {
     return `イラスト${imageCount}枚`
   }
 
-  const onInputPngInfo = () => {
+  const _onInputPngInfo = () => {
     const input = document.createElement("input")
     input.type = "file"
     input.accept = "image/png"

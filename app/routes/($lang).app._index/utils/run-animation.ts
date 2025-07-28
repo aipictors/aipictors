@@ -71,7 +71,7 @@ export function runAnimation(canvas: HTMLCanvasElement) {
 
   context.clearColor(0, 0, 0, 0)
 
-  const startTime = new Date().getTime()
+  const startTime = Date.now()
 
   const render = () => {
     if (!isRunning) return
@@ -86,7 +86,7 @@ export function runAnimation(canvas: HTMLCanvasElement) {
 
     context.viewport(0, 0, viewportWidth, viewportHeight)
 
-    const elapsedTime = (new Date().getTime() - startTime) * 0.001
+    const elapsedTime = (Date.now() - startTime) * 0.001
 
     context.clear(context.COLOR_BUFFER_BIT)
 

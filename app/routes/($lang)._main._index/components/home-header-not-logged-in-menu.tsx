@@ -23,7 +23,7 @@ import { useContext } from "react"
 import { useTheme } from "next-themes"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
-import { ToggleSensitive } from "~/routes/($lang)._main._index/components/toggle-sensitive"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
@@ -47,7 +47,7 @@ export const HomeHeaderNotLoggedInMenu = () => {
       return
     }
     // テーマ適用中→"light-blue"、"dark-blue"等同色でのダーク、ライト切り替え
-    const suffix = theme?.replace(/(light|dark)\-/, "-")
+    const suffix = theme?.replace(/(light|dark)-/, "-")
     const colorSuffix = suffix ?? ""
     setTheme(newMode + colorSuffix)
   }
@@ -82,6 +82,9 @@ export const HomeHeaderNotLoggedInMenu = () => {
   const location = useLocation()
 
   const isSensitiveToggleVisible = location.pathname !== "/generation"
+
+  // R18モードの状態を検出
+  const _isR18Mode = /\/r($|\/)/.test(location.pathname)
 
   const setLocale = (locale: string) => {
     // URLの先頭にある /ja または /en を正しく検出
@@ -182,10 +185,11 @@ export const HomeHeaderNotLoggedInMenu = () => {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
+        {isSensitiveToggleVisible && <DropdownMenuSeparator />}
         {isSensitiveToggleVisible && (
-          <DropdownMenuSub>
-            <ToggleSensitive />
-          </DropdownMenuSub>
+          <div className="px-2 py-1.5">
+            <SensitiveToggle variant="compact" className="w-full" />
+          </div>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

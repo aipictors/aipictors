@@ -140,7 +140,7 @@ export function WorksListTable(props: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {props.works.map((work, index) => (
+            {props.works.map((work, _index) => (
               <WorksListTableRow work={work} key={work.id} />
             ))}
           </TableBody>

@@ -21,7 +21,7 @@ export function FollowedTagList() {
 
   const [text, setText] = useState("")
 
-  const [tags, setTags] = useState<Tag[]>()
+  const [_tags, setTags] = useState<Tag[]>()
 
   useEffect(() => {
     if (data?.viewer?.followingTags) {

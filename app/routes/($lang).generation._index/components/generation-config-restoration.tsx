@@ -77,7 +77,7 @@ export function GenerationConfigRestoration(props: Props) {
         toast("タスクを復元しました。", { position: "top-center" })
         return
       }
-    } catch (error) {
+    } catch (_error) {
       // captureException(error)
       toast("タスクの復元に失敗しました。")
       return
@@ -114,7 +114,7 @@ export function GenerationConfigRestoration(props: Props) {
           return
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // captureException(error)
       toast("タスクの復元に失敗しました。")
       return
@@ -130,7 +130,7 @@ export function GenerationConfigRestoration(props: Props) {
         context.updatePrompt(promptText)
       }
       toast("プロンプトを復元しました。", { position: "top-center" })
-    } catch (error) {
+    } catch (_error) {
       // captureException(error)
       toast("プロンプトの復元に失敗しました。")
     }

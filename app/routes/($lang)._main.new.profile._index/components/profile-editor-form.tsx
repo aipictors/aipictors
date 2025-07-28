@@ -57,11 +57,11 @@ export function ProfileEditorForm() {
 
   const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
 
-  const [selectedPickupWorks, setSelectedPickupWorks] = useState(
+  const [selectedPickupWorks, _setSelectedPickupWorks] = useState(
     userInfo?.featuredWorks ?? [],
   )
 
-  const [selectedPickupSensitiveWorks, setSelectedPickupSensitiveWorks] =
+  const [selectedPickupSensitiveWorks, _setSelectedPickupSensitiveWorks] =
     useState(userInfo?.featuredSensitiveWorks ?? [])
 
   const [updateProfile, { loading: isUpdating }] = useMutation(

@@ -108,7 +108,7 @@ export function CreateAlbumDialog(props: Props) {
     try {
       if (thumbnailImageBase64) {
         // サムネイル画像が存在するならアップロードする
-        const imageFileName = `${createRandomString(32)}.webp`
+        const _imageFileName = `${createRandomString(32)}.webp`
 
         const thumbnailUrl = await uploadPublicImage(
           thumbnailImageBase64,
@@ -147,7 +147,7 @@ export function CreateAlbumDialog(props: Props) {
       setIsOpen(false)
       toast("シリーズを追加しました")
       props.refetch()
-    } catch (error) {
+    } catch (_error) {
       setIsCreating(false)
       setIsOpen(false)
       toast("シリーズ追加に失敗しました")

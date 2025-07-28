@@ -54,7 +54,7 @@ const postUrl = (work: {
   uuid: string | null
 }) => {
   if (
-    new Date(work.createdAt * 1000).getTime() > new Date().getTime() ||
+    new Date(work.createdAt * 1000).getTime() > Date.now() ||
     work.accessType === "PRIVATE" ||
     work.accessType === "DRAFT"
   ) {

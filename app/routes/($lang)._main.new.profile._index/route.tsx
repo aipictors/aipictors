@@ -10,7 +10,7 @@ import { ProfileEditorForm } from "~/routes/($lang)._main.new.profile._index/com
 /**
  * プロフィール新規作成ページ
  */
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {

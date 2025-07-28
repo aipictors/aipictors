@@ -90,7 +90,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
   return (
     <SSR breakpoints={[300, 600, 900, 1200]}>
       <RowsPhotoAlbum
-        photos={props.works.map((work, index) => ({
+        photos={props.works.map((work, _index) => ({
           key: work.id,
           src: work.smallThumbnailImageURL,
           url: work.url,

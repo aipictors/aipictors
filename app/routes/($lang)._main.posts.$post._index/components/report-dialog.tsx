@@ -68,7 +68,7 @@ export function ReportDialog(props: Props) {
             comment,
           },
         },
-      }).then(async (result) => {
+      }).then(async (_result) => {
         toast(
           t(
             "報告いたしました、ご協力ありがとうございます。",

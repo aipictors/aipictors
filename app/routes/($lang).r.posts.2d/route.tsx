@@ -42,7 +42,7 @@ const getUtcDateString = (date: Date) => {
   return `${year}/${month}/${day}`
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {
@@ -138,7 +138,7 @@ export default function Index() {
 
   const updateQueryParams = useUpdateQueryParams()
 
-  const [isMounted, setIsMounted] = useState(false)
+  const [_isMounted, setIsMounted] = useState(false)
 
   const [newWorksPage, setNewWorksPage] = useState(0)
 

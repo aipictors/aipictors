@@ -36,7 +36,7 @@ export function FollowButton(props: Props) {
 
   const [isFollow, setIsFollow] = useState(props.isFollow)
   const [isOpen, setIsOpen] = useState(false)
-  const [isDeleted, setIsDeleted] = useState(false)
+  const [_isDeleted, _setIsDeleted] = useState(false)
 
   const t = useTranslation()
 

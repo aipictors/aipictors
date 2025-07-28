@@ -21,7 +21,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.SETTINGS_COLOR, undefined, props.params.lang)
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {
@@ -196,14 +196,14 @@ export default function SettingColor() {
             className="mx-2 w-80"
             id="sampleText1"
             placeholder={t("プレースホルダー", "Placeholder")}
-            onChange={(e) => {}}
+            onChange={(_e) => {}}
           />
           <Input
             className="mx-2 w-80"
             id="sampleText2"
             placeholder=""
             value={t("入力済み", "Filled")}
-            onChange={(e) => {}}
+            onChange={(_e) => {}}
           />
         </div>
         <Tabs>

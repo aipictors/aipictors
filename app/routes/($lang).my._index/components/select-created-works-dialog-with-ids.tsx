@@ -206,7 +206,9 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   // ソート可能アイテム
   function SortableItem({
     work,
-  }: { work: FragmentOf<typeof DialogWorkFragment> }) {
+  }: {
+    work: FragmentOf<typeof DialogWorkFragment>
+  }) {
     // drag/drop の動作管理
     const { attributes, listeners, setNodeRef, transform, transition } =
       useSortable({ id: work.id })

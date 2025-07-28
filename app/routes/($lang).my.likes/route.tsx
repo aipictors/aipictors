@@ -17,7 +17,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_LIKES, undefined, props.params.lang)
 }
 
-export async function loader(props: LoaderFunctionArgs) {
+export async function loader(_props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
 
   // if (redirectResponse) {
