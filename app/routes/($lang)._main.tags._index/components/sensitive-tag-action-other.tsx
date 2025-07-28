@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { EllipsisIcon, RefreshCcwIcon } from "lucide-react"
-import { useNavigate } from "@remix-run/react"
+import { useNavigate, useLocation } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
 
 type Props = {
@@ -14,7 +14,18 @@ type Props = {
 
 export function SensitiveTagActionOther(props: Props) {
   const navigate = useNavigate()
+  const location = useLocation()
   const t = useTranslation()
+
+  // センシティブページかどうかを判定
+  const isSensitivePage = location.pathname.includes("/r/")
+
+  // 適切なタグページURLを生成
+  const generateTagUrl = () => {
+    return isSensitivePage
+      ? `/tags/${encodeURIComponent(props.tag)}`
+      : `/r/tags/${encodeURIComponent(props.tag)}`
+  }
 
   return (
     <Popover>
@@ -27,7 +38,7 @@ export function SensitiveTagActionOther(props: Props) {
         <div className="relative grid gap-4">
           <Button
             onClick={() => {
-              navigate(`/tags/${props.tag}`)
+              navigate(generateTagUrl())
             }}
             variant={"secondary"}
             className="flex w-full transform cursor-pointer items-center"

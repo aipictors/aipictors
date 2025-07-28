@@ -16,6 +16,7 @@ import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
 import { useTranslation } from "~/hooks/use-translation"
+import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
 import { Input } from "~/components/ui/input"
@@ -105,79 +106,7 @@ function HomeHeader(props: Props) {
   }, [location.pathname, searchParams])
 
   const isSensitiveTag = (tag: string): boolean => {
-    const keyword = tag.toLowerCase()
-    const SENSITIVE_PATTERNS: RegExp[] = [
-      /r18$/i,
-      /18禁$/i,
-      /エロ$/i,
-      /ero$/i,
-      /nsfw$/i,
-      /porn$/i,
-      /nude$/i,
-      /nudity$/i,
-      /fetish$/i,
-      /hentai$/i,
-      /sex$/i,
-      /裸$/i,
-      /陵辱$/i,
-      /アダルト$/i,
-      /adult$/i,
-      /セクシー$/i,
-      /sexiness$/i,
-      /性行為$/i,
-      /レイプ$/i,
-      /れいぷ$/i,
-      /rape$/i,
-      /強姦$/i,
-      /強制わいせつ$/i,
-      /強制猥褻$/i,
-      /脱糞$/i,
-      /defecation$/i,
-      /排泄$/i,
-      /セックス$/i,
-      /せっくす$/i,
-      /おっぱい/i,
-      /パイズリ/i,
-      /乳首/i,
-      /乳輪/i,
-      /乳首責め/i,
-      /精子$/i,
-      /射精$/i,
-      /精液$/i,
-      /フェラ/i,
-      /フェラチオ/i,
-      /クンニ/i,
-      /クンニリングス/i,
-      /アナル/i,
-      /アナルセックス/i,
-      /肛門/i,
-      /肛門セックス/i,
-      /オナニー/i,
-      /自慰/i,
-      /自慰行為/i,
-      /無修正/i,
-      /裏ビデオ/i,
-      /\bAV\b/i,
-      /ロリ(コン)?/i,
-      /巨乳/i,
-      /痴女/i,
-      /痴漢/i,
-      /中出し/i,
-      /パイパン/i,
-      /顔射/i,
-      /69|シックスナイン/i,
-      /3P/i,
-      /\bSM\b/i,
-      /ハードコア/i,
-      /緊縛/i,
-      /拘束/i,
-      /レズ/i,
-      /同性愛/i,
-      /痴態/i,
-      /コスプレSEX|コスプレセックス/i,
-    ]
-
-    return SENSITIVE_PATTERNS.some((re) => re.test(keyword))
+    return isSensitiveKeyword(tag)
   }
 
   // 検索テキスト変更時のリアルタイム検索（デバウンス付き）

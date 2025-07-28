@@ -106,7 +106,7 @@ export function TagCloudSection({ tags }: Props) {
                   animationDelay: `${element.animationDelay}s`,
                 }}
               >
-                <Link to={`/tags/${element.tag.tagName}`} className="block">
+                <Link to={`/r/tags/${element.tag.tagName}`} className="block">
                   <div
                     className={`group relative flex cursor-pointer items-center justify-center rounded-full shadow-sm backdrop-blur-sm transition-colors duration-200 hover:shadow-md ${element.color}`}
                     style={{

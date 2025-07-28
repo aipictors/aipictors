@@ -1,6 +1,6 @@
 import { TrendingUp, Eye } from "lucide-react"
 import { Card, CardContent } from "~/components/ui/card"
-import { Link } from "@remix-run/react"
+import { Link, useLocation } from "@remix-run/react"
 import type { RecommendedTag } from "~/routes/($lang)._main.tags._index/types/tag"
 
 type Props = {
@@ -8,6 +8,10 @@ type Props = {
 }
 
 export function TrendingTagsSection({ tags }: Props) {
+  const location = useLocation()
+  // 現在のページが/r/tagsかどうかを判定
+  const isR18Mode = location.pathname.includes("/r/tags")
+
   const sparkles = Array.from({ length: 20 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -47,7 +51,7 @@ export function TrendingTagsSection({ tags }: Props) {
               key={`${tag.tagName}-${index}`}
               className="animate-fade-in transition-all duration-500"
             >
-              <Link to={`/tags/${tag.tagName}`}>
+              <Link to={`${isR18Mode ? "/r" : ""}/tags/${tag.tagName}`}>
                 <Card className="group relative cursor-pointer border-2 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-orange-300 hover:shadow-xl">
                   <CardContent className="p-4">
                     <div className="space-y-2">

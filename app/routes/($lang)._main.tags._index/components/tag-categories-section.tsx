@@ -172,7 +172,7 @@ export function TagCategoriesSection({ tags }: Props) {
                     {category.tags.map((tag, index) => (
                       <Link
                         key={`${tag.tagName}-${index}`}
-                        to={`/tags/${tag.tagName}`}
+                        to={`/r/tags/${tag.tagName}`}
                       >
                         <Badge
                           variant="secondary"

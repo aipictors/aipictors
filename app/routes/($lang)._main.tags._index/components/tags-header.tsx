@@ -6,6 +6,7 @@ import { Label } from "~/components/ui/label"
 import { useTranslation } from "~/hooks/use-translation"
 import { useState } from "react"
 import { useNavigate, useSearchParams } from "@remix-run/react"
+import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 
 export function TagsHeader() {
   const t = useTranslation()
@@ -17,13 +18,20 @@ export function TagsHeader() {
   const handleSearch = () => {
     if (!searchQuery.trim()) return
 
+    const trimmedQuery = searchQuery.trim()
+
     if (isTagMode) {
       // タグページに遷移
-      navigate(`/tags/${encodeURIComponent(searchQuery.trim())}`)
+      if (isSensitiveKeyword(trimmedQuery)) {
+        // タグページモードでセンシティブなワードの場合は/rに強制リダイレクト
+        navigate(`/r/tags/${encodeURIComponent(trimmedQuery)}`)
+      } else {
+        navigate(`/tags/${encodeURIComponent(trimmedQuery)}`)
+      }
     } else {
-      // 作品検索
+      // 作品検索（センシティブワードでも現在のページで検索結果を表示）
       const params = new URLSearchParams(searchParams)
-      params.set("search", searchQuery.trim())
+      params.set("search", trimmedQuery)
       setSearchParams(params)
     }
   }
@@ -74,7 +82,7 @@ export function TagsHeader() {
             <Label htmlFor="search-mode" className="text-sm">
               {t("作品検索", "Search Works")}
             </Label>
-            {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
+            {/** biome-ignore lint/nursery/useUniqueElementIds: 複数のSwitchが同じIDを使用している */}
             <Switch
               id="search-mode"
               checked={isTagMode}

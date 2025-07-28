@@ -3,7 +3,7 @@ import { Card, CardContent } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "@remix-run/react"
+import { Link, useLocation } from "@remix-run/react"
 import { useState } from "react"
 import type { RecommendedTag } from "~/routes/($lang)._main.tags._index/types/tag"
 
@@ -13,7 +13,11 @@ type Props = {
 
 export function PopularTagsSection({ tags }: Props) {
   const t = useTranslation()
+  const location = useLocation()
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+
+  // 現在のページが/r/tagsかどうかを判定
+  const isR18Mode = location.pathname.includes("/r/tags")
 
   // 人気タグ（先頭20個を使用）
   const popularTags = tags.slice(0, 20)
@@ -98,7 +102,7 @@ export function PopularTagsSection({ tags }: Props) {
                   className="animate-fade-in-up bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <Link to={`/tags/${tag.tagName}`}>
+                  <Link to={`${isR18Mode ? "/r" : ""}/tags/${tag.tagName}`}>
                     <Card className="relative cursor-pointer border-2 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-yellow-300 hover:shadow-lg">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
@@ -159,7 +163,7 @@ export function PopularTagsSection({ tags }: Props) {
                   className="animate-fade-in-up transition-all duration-200"
                   style={{ animationDelay: `${index * 30}ms` }}
                 >
-                  <Link to={`/tags/${tag.tagName}`}>
+                  <Link to={`${isR18Mode ? "/r" : ""}/tags/${tag.tagName}`}>
                     <Card className="cursor-pointer border bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-yellow-300 hover:shadow-md">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
