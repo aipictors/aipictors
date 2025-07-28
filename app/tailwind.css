@@ -3,6 +3,8 @@
 @plugin "@tailwindcss/typography";
 @plugin 'tailwindcss-animate';
 
+@config "../tailwind.config.ts";
+
 :root {
   --background: hsl(0 0% 100%);
   --foreground: hsl(240 10% 3.9%);
