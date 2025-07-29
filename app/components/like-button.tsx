@@ -84,6 +84,7 @@ export function LikeButton(props: Props) {
   const [likedCount, setLikedCount] = useState(
     () => getInitialState().likedCount,
   )
+  const [clicked, setClicked] = useState(false)
 
   const handleFavoritedKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -139,6 +140,9 @@ export function LikeButton(props: Props) {
     const newIsLiked = !isLiked
     const newLikedCount = newIsLiked ? likedCount + 1 : likedCount - 1
 
+    // クリック状態を設定（初回クリック時のみ）
+    if (!clicked) setClicked(true)
+
     setIsLiked(newIsLiked)
     setLikedCount(newLikedCount)
 
@@ -188,7 +192,7 @@ export function LikeButton(props: Props) {
     )
   }
 
-  const width = Math.floor((props.size ?? 40) * 24)
+  const width = Math.floor((props.size ?? 40) * 25)
   const size = props.size ?? 40
 
   if (authContext.isLoading || authContext.isNotLoggedIn) {
@@ -205,7 +209,7 @@ export function LikeButton(props: Props) {
           <button
             className={cn(
               props.isParticle && "like-button",
-              "relative flex items-center justify-center rounded-md",
+              "relative flex items-center justify-center",
               {
                 "bg-secondary text-secondary-foreground hover:bg-secondary/80":
                   !props.isBackgroundNone,
@@ -213,16 +217,17 @@ export function LikeButton(props: Props) {
               },
             )}
             style={{
-              width: props.text
-                ? "auto"
-                : `${size - (props.isBackgroundNone ? 8 : 0)}px`,
-              height: `${size - (props.isBackgroundNone ? 8 : 0)}px`,
+              width: props.text ? "auto" : `${size}px`,
+              height: `${size}px`,
+              paddingLeft: props.text ? `${size}px` : "0",
+              paddingRight: props.text ? "12px" : "0",
             }}
             type="button"
           >
             <div
               className={cn(
-                "top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+                "like-base-64 absolute inset-0 flex items-center justify-center rounded-full",
+                isLiked ? "hover:bg-pink-50" : "hover:bg-gray-50",
               )}
               style={{
                 width: `${size}px`,
@@ -235,30 +240,20 @@ export function LikeButton(props: Props) {
             >
               <Heart
                 className={cn(
-                  isLiked
-                    ? "fill-rose-500 text-rose-500"
-                    : props.isBackgroundNone
-                      ? "fill-white"
-                      : "fill-transparent",
-                  isLiked ? "like-animation" : "like-animation-end",
-                  "stroke-2",
+                  clicked
+                    ? isLiked
+                      ? "like-animation"
+                      : "like-animation-end"
+                    : "",
                 )}
                 size={Math.floor(size / 2)}
-                strokeWidth={props.strokeWidth}
-                stroke={
-                  props.isBackgroundNone
-                    ? isLiked
-                      ? "none"
-                      : "gray"
-                    : "currentColor"
-                }
+                strokeWidth={1.5}
+                fill={isLiked ? "#E2264D" : "white"}
+                stroke={isLiked ? "#E2264D" : "#9CA3AF"}
               />
             </div>
             {props.text && (
-              <div className={cn("flex space-x-1 pr-3 font-bold text-sm")}>
-                <p>{props.text}</p>
-                <p>{likedCount}</p>
-              </div>
+              <span className="font-bold text-black text-sm">{props.text}</span>
             )}
           </button>
         }
@@ -270,7 +265,7 @@ export function LikeButton(props: Props) {
     <button
       className={cn(
         props.isParticle && "like-button",
-        "relative flex items-center justify-center rounded-md",
+        "relative flex items-center justify-center",
         {
           "bg-secondary text-secondary-foreground hover:bg-secondary/80":
             !props.isBackgroundNone,
@@ -278,17 +273,18 @@ export function LikeButton(props: Props) {
         },
       )}
       style={{
-        width: props.text
-          ? "auto"
-          : `${size - (props.isBackgroundNone ? 8 : 0)}px`,
-        height: `${size - (props.isBackgroundNone ? 8 : 0)}px`,
+        width: props.text ? "auto" : `${size}px`,
+        height: `${size}px`,
+        paddingLeft: props.text ? `${size}px` : "0",
+        paddingRight: props.text ? "12px" : "0",
       }}
       onClick={handleOnClick}
       type="button"
     >
       <div
         className={cn(
-          "top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full",
+          "like-base-64 absolute inset-0 flex items-center justify-center rounded-full",
+          isLiked ? "hover:bg-pink-50" : "hover:bg-gray-50",
         )}
         style={{
           width: `${size}px`,
@@ -301,39 +297,16 @@ export function LikeButton(props: Props) {
       >
         <Heart
           className={cn(
-            isLiked
-              ? "fill-rose-500 text-rose-500"
-              : props.isBackgroundNone
-                ? "fill-white"
-                : "fill-transparent",
-            isLiked ? "like-animation" : "like-animation-end",
-            "stroke-2",
+            clicked ? (isLiked ? "like-animation" : "like-animation-end") : "",
           )}
           size={Math.floor(size / 2)}
-          strokeWidth={props.strokeWidth}
-          stroke={
-            props.isBackgroundNone
-              ? isLiked
-                ? "none"
-                : "gray"
-              : "currentColor"
-          }
+          strokeWidth={1.5}
+          fill={isLiked ? "#E2264D" : "white"}
+          stroke={isLiked ? "#E2264D" : "#9CA3AF"}
         />
       </div>
-      {props.text !== undefined && (
-        <div
-          className={cn(
-            "flex space-x-1 pr-3 font-bold text-sm",
-            props.textColor
-              ? props.textColor === "black"
-                ? "text-black"
-                : "text-white"
-              : "",
-          )}
-        >
-          <p>{props.text}</p>
-          <p>{likedCount}</p>
-        </div>
+      {props.text && (
+        <span className="font-bold text-black text-sm">{props.text}</span>
       )}
     </button>
   )

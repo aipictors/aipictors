@@ -33,14 +33,34 @@ html {
 }
 
 @keyframes heart-beat {
+  0% {
+    transform: scale(1);
+  }
   50% {
     transform: scale(0.75);
   }
+  100% {
+    transform: scale(1);
+  }
 }
 @keyframes heart-beat-end {
+  0% {
+    transform: scale(1);
+  }
   50% {
     transform: scale(0.8);
   }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/**
+ * いいねボタンのスプライトアニメーション用のベース64背景
+ * アップロードされたスプライトシート画像を使用
+ */
+.like-base-64 {
+  background: url("https://assets.aipictors.com/liked-animation.webp") no-repeat;
 }
 
 /**
@@ -49,12 +69,9 @@ html {
  */
 .like-animation {
   animation: heart-beat 0.4s ease forwards;
-  animation-play-state: paused;
 }
-
 .like-animation-end {
   animation: heart-beat-end 0.2s linear forwards;
-  animation-play-state: paused;
 }
 
 .like-image {
