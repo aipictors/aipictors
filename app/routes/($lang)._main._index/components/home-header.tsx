@@ -340,13 +340,16 @@ function HomeHeader(props: Props) {
                     height={40}
                   />
                 )}
-                <div className="flex items-center">
-                  <span className="whitespace-nowrap font-bold text-xl">
-                    {title}
-                  </span>
-                </div>
+                {sidebarState === "minimal" && (
+                  <div className="flex items-center">
+                    <span className="whitespace-nowrap font-bold text-xl">
+                      {title}
+                    </span>
+                  </div>
+                )}
               </Button>
             )}
+            {sidebarState !== "minimal" && <div className="mr-16" />}
 
             {/* サイドバーが最小化されている場合のみロゴを表示 */}
             {!isSpecialPage && sidebarState === "minimal" && (
