@@ -7,6 +7,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useQuery } from "@apollo/client/index"
 import { Loader2, Trophy, Heart, TrendingUp } from "lucide-react"
 import { Badge } from "~/components/ui/badge"
+import { useMemo } from "react"
 
 export const UserRankingListItemFragment = graphql(
   `fragment UserRankingListItem on UserRankingNode {
@@ -113,11 +114,11 @@ export function RankingUserList(_props: Props) {
       <div className="mb-6 text-center">
         <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-white">
           <TrendingUp className="h-4 w-4" />
-          <span className="font-semibold text-sm">
+          <span className="text-sm font-semibold">
             {t("平均いいね数でランキング", "Ranked by Average Likes")}
           </span>
         </div>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           {t(
             "投稿作品の平均いいね数によってランキングされています",
             "Ranked by average number of likes per work",
@@ -141,14 +142,14 @@ export function RankingUserList(_props: Props) {
               className={`relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg ${isTopThree ? `border-2 border-gradient-to-r ${getRankColor(userRanking.rank)}` : ""}`}
             >
               {/* 順位バッジ */}
-              <div className="absolute top-0 right-0 z-10">
+              <div className="absolute right-0 top-0 z-10">
                 <div
                   className={`flex h-12 w-12 items-center justify-center rounded-bl-2xl bg-gradient-to-br text-white ${getRankColor(userRanking.rank)}`}
                 >
                   {userRanking.rank <= 3 ? (
                     <Trophy className="h-5 w-5" />
                   ) : (
-                    <span className="font-bold text-sm">
+                    <span className="text-sm font-bold">
                       #{userRanking.rank}
                     </span>
                   )}
@@ -158,13 +159,13 @@ export function RankingUserList(_props: Props) {
               <div className="p-6">
                 {/* 平均いいね数を最も目立つ位置に配置 */}
                 <div className="mb-4 text-center">
-                  <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-3 py-1 text-white">
+                  <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-3 py-1 text-white shadow-lg">
                     <Heart className="h-4 w-4 fill-current" />
-                    <span className="font-bold text-lg">
+                    <span className="text-lg font-bold">
                       {userRanking.avgLikes.toFixed(1)}
                     </span>
                   </div>
-                  <p className="font-medium text-muted-foreground text-xs">
+                  <p className="text-xs font-medium text-muted-foreground">
                     {t("平均いいね数", "Average Likes")}
                   </p>
                 </div>
@@ -176,17 +177,19 @@ export function RankingUserList(_props: Props) {
                         src={withIconUrlFallback(userRanking.user.iconUrl)}
                         alt={userRanking.user.name || userRanking.user.login}
                       />
-                      <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 font-bold text-white">
+                      <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white font-bold">
                         {(
-                          userRanking.user.name || userRanking.user.login
+                          userRanking.user.name ||
+                          userRanking.user.login ||
+                          ""
                         ).charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="text-center">
-                      <div className="font-semibold text-base">
+                      <div className="text-base font-semibold">
                         {userRanking.user.name || userRanking.user.login}
                       </div>
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-sm text-muted-foreground">
                         @{userRanking.user.login}
                       </div>
                     </div>
@@ -196,18 +199,18 @@ export function RankingUserList(_props: Props) {
                 {/* 統計情報をモダンなデザインで表示 */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-3 text-center dark:from-blue-900/20 dark:to-blue-800/20">
-                    <div className="font-bold text-blue-600 text-lg dark:text-blue-400">
+                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
                       {userRanking.worksCount}
                     </div>
-                    <div className="text-blue-500 text-xs dark:text-blue-300">
+                    <div className="text-xs text-blue-500 dark:text-blue-300">
                       {t("作品数", "Works")}
                     </div>
                   </div>
                   <div className="rounded-lg bg-gradient-to-br from-green-50 to-green-100 p-3 text-center dark:from-green-900/20 dark:to-green-800/20">
-                    <div className="font-bold text-green-600 text-lg dark:text-green-400">
+                    <div className="text-lg font-bold text-green-600 dark:text-green-400">
                       {userRanking.likesCount}
                     </div>
-                    <div className="text-green-500 text-xs dark:text-green-300">
+                    <div className="text-xs text-green-500 dark:text-green-300">
                       {t("総いいね", "Total Likes")}
                     </div>
                   </div>

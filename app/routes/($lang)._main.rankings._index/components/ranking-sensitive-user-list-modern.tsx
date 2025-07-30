@@ -70,18 +70,18 @@ export function RankingSensitiveUserListModern(props: Props) {
 
   return (
     <div className="space-y-6">
-      {/* 平均いいねでランキング化されていることを強調するヘッダー */}
+      {/* 最高いいねでランキング化されていることを強調するヘッダー */}
       <div className="mb-6 text-center">
         <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-white">
           <TrendingUp className="h-4 w-4" />
           <span className="font-semibold text-sm">
-            {t("平均いいね数でランキング", "Ranked by Average Likes")}
+            {t("最高いいね数でランキング", "Ranked by Highest Likes")}
           </span>
         </div>
         <p className="text-muted-foreground text-sm">
           {t(
-            "投稿作品の平均いいね数によってランキングされています",
-            "Ranked by average number of likes per work",
+            "期間中の投稿作品で最もいいね数の多い作品によってランキングされています",
+            "Ranked by the work with the highest number of likes in the period",
           )}
         </p>
       </div>
