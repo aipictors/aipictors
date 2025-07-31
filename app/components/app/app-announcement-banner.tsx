@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
 import { graphql } from "gql.tada"
@@ -13,6 +13,43 @@ const emergencyAnnouncementsQuery = graphql(`
   }
 `)
 
+// お知らせ内容をハッシュ化する簡易関数
+const hashString = (str: string): string => {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // 32bit整数に変換
+  }
+  return hash.toString()
+}
+
+// 閉じたお知らせのハッシュを保存/取得
+const DISMISSED_ANNOUNCEMENTS_KEY = "dismissed-announcements"
+
+const getDismissedAnnouncements = (): string[] => {
+  if (typeof window === "undefined") return []
+  try {
+    const stored = localStorage.getItem(DISMISSED_ANNOUNCEMENTS_KEY)
+    return stored ? JSON.parse(stored) : []
+  } catch {
+    return []
+  }
+}
+
+const addDismissedAnnouncement = (contentHash: string): void => {
+  if (typeof window === "undefined") return
+  try {
+    const dismissed = getDismissedAnnouncements()
+    if (!dismissed.includes(contentHash)) {
+      dismissed.push(contentHash)
+      localStorage.setItem(DISMISSED_ANNOUNCEMENTS_KEY, JSON.stringify(dismissed))
+    }
+  } catch {
+    // localStorage が使えない場合は何もしない
+  }
+}
+
 /**
  * 緊急お知らせバナー
  */
@@ -24,6 +61,17 @@ export function AppAnnouncementBanner() {
 
   // 表示対象のパスを判定（トップ画面専用）
   const isAnnouncementPath = location.pathname === "/"
+
+  // お知らせが読み込まれたら、過去に閉じたものかチェック
+  useEffect(() => {
+    if (announcementData?.emergencyAnnouncements?.content) {
+      const contentHash = hashString(announcementData.emergencyAnnouncements.content)
+      const dismissed = getDismissedAnnouncements()
+      if (dismissed.includes(contentHash)) {
+        setIsAnnouncementVisible(false)
+      }
+    }
+  }, [announcementData])
 
   // デバッグ用ログ
   console.log("AppAnnouncementBanner Debug:", {
@@ -41,6 +89,14 @@ export function AppAnnouncementBanner() {
 
   const handleNavigate = (url: string) => {
     window.location.href = url
+  }
+
+  const handleClose = () => {
+    if (announcementData?.emergencyAnnouncements?.content) {
+      const contentHash = hashString(announcementData.emergencyAnnouncements.content)
+      addDismissedAnnouncement(contentHash)
+    }
+    setIsAnnouncementVisible(false)
   }
 
   // 表示条件をチェック
@@ -61,7 +117,7 @@ export function AppAnnouncementBanner() {
         <div className="flex items-center gap-3 pr-10">
           {/* Close button */}
           <button
-            onClick={() => setIsAnnouncementVisible(false)}
+            onClick={handleClose}
             className="absolute right-4 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
             aria-label="お知らせを閉じる"
           >
