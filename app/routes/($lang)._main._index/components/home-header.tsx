@@ -221,14 +221,6 @@ function HomeHeader(props: Props) {
   }
   const t = useTranslation()
 
-  const isAnnouncementPath =
-    location.pathname === "/" || location.pathname === "/generation"
-  const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
-
-  // ヘルパー関数：外部リンクの場合は新規タブで開く
-  const navigateToExternal = (url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer")
-  }
 
   const onSubmitSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -260,34 +252,6 @@ function HomeHeader(props: Props) {
     <Suspense fallback={<AppLoadingPage />}>
       <AppHeader
         isSmallLeftPadding={props.alwaysShowTitle}
-        announcement={
-          isAnnouncementPath &&
-          announcementData?.emergencyAnnouncements &&
-          announcementData.emergencyAnnouncements.content.length > 0 &&
-          (announcementData.emergencyAnnouncements.url.length > 0 ? (
-            <Button
-              variant="ghost"
-              className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur-sm supports-backdrop-filter:bg-background/80 md:px-2"
-              onClick={() =>
-                announcementData.emergencyAnnouncements.url.startsWith("http")
-                  ? navigateToExternal(
-                      announcementData.emergencyAnnouncements.url,
-                    )
-                  : handleNavigate(announcementData.emergencyAnnouncements.url)
-              }
-            >
-              <div className="opacity-80">
-                {announcementData.emergencyAnnouncements.content}
-              </div>
-            </Button>
-          ) : (
-            <div className="fixed z-50 m-auto block w-full max-w-none items-center justify-between gap-x-4 border-border/40 bg-background/80 px-2 py-1 text-center font-semibold text-sm backdrop-blur-sm supports-backdrop-filter:bg-background/80 md:px-2">
-              <div className="opacity-80">
-                {announcementData.emergencyAnnouncements.content}
-              </div>
-            </div>
-          ))
-        }
       >
         <div
           className={cn(
@@ -569,13 +533,5 @@ const viewerIsExistedNewNotificationQuery = graphql(
   [CheckedNotificationTimesFragment],
 )
 
-const emergencyAnnouncementsQuery = graphql(`
-  query emergencyAnnouncements {
-    emergencyAnnouncements {
-      url
-      content
-    }
-  }
-`)
 
 export default HomeHeader
