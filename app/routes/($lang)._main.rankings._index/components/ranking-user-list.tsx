@@ -68,7 +68,7 @@ export function RankingUserList(_props: Props) {
     },
   })
 
-  // データを順位の昇順でソート（1位、2位、3位...の順）
+  // データを50位以下でフィルタリングしてから順位の昇順でソート（1位、2位、3位...の順）
   const userRankings = (
     (data?.userRankings || []) as Array<{
       id: string
@@ -84,6 +84,7 @@ export function RankingUserList(_props: Props) {
       }
     }>
   )
+    .filter((ranking) => ranking.rank <= 50)
     .slice()
     .sort((a, b) => a.rank - b.rank)
 

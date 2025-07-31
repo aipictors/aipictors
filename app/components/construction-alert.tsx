@@ -30,7 +30,7 @@ export function ConstructionAlert(props: Props) {
   }
 
   return (
-    <Alert className="space-y-2 border bg-primary text-white dark:text-black">
+    <Alert className="relative top-0 right-0 left-0 z-40 mx-4 mt-4 space-y-2 border bg-muted/80 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <AlertTitle>{alertTitle()}</AlertTitle>
       </div>
