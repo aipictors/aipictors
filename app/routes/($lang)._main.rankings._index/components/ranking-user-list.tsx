@@ -111,17 +111,17 @@ export function RankingUserList(_props: Props) {
 
   return (
     <div className="space-y-6">
-      {/* 平均いいねでランキング化されていることを強調するヘッダー */}
+      {/* 最大いいねでランキング化されていることを強調するヘッダー */}
       <div className="mb-6 text-center">
         <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-white">
           <TrendingUp className="h-4 w-4" />
           <span className="text-sm font-semibold">
-            {t("平均いいね数でランキング", "Ranked by Average Likes")}
+            {t("最大いいね数でランキング", "Ranked by Average Likes")}
           </span>
         </div>
         <p className="text-sm text-muted-foreground">
           {t(
-            "投稿作品の平均いいね数によってランキングされています",
+            "投稿作品の最大いいね数によってランキングされています",
             "Ranked by average number of likes per work",
           )}
         </p>
@@ -158,7 +158,7 @@ export function RankingUserList(_props: Props) {
               </div>
 
               <div className="p-6">
-                {/* 平均いいね数を最も目立つ位置に配置 */}
+                {/* 最大いいね数を最も目立つ位置に配置 */}
                 <div className="mb-4 text-center">
                   <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-3 py-1 text-white shadow-lg">
                     <Heart className="h-4 w-4 fill-current" />
@@ -167,7 +167,7 @@ export function RankingUserList(_props: Props) {
                     </span>
                   </div>
                   <p className="text-xs font-medium text-muted-foreground">
-                    {t("平均いいね数", "Average Likes")}
+                    {t("最大いいね数", "Average Likes")}
                   </p>
                 </div>
 

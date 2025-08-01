@@ -94,7 +94,7 @@ export function RankingSensitiveUserList(props: Props) {
                 </div>
                 <div className="flex flex-col items-center space-y-1 text-center">
                   <p className="font-bold text-sm">
-                    {t("平均いいね", "Average Likes")}:{" "}
+                    {t("最大いいね", "Average Likes")}:{" "}
                     {user.averageLikesCount || 0}
                   </p>
                   <p className="text-gray-600 text-xs">
@@ -137,7 +137,7 @@ export function RankingSensitiveUserList(props: Props) {
                 </div>
                 <div className="flex flex-col items-center space-y-1 text-center">
                   <p className="font-bold text-sm">
-                    {t("平均いいね", "Average Likes")}:{" "}
+                    {t("最大いいね", "Average Likes")}:{" "}
                     {user.averageLikesCount || 0}
                   </p>
                   <p className="text-gray-600 text-xs">

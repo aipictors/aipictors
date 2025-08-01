@@ -115,7 +115,7 @@ export function RankingSensitiveUserListModern(props: Props) {
               </div>
 
               <div className="p-6">
-                {/* 平均いいね数を最も目立つ位置に配置 */}
+                {/* 最大いいね数を最も目立つ位置に配置 */}
                 <div className="mb-4 text-center">
                   <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-3 py-1 text-white">
                     <Heart className="h-4 w-4 fill-current" />
@@ -124,7 +124,7 @@ export function RankingSensitiveUserListModern(props: Props) {
                     </span>
                   </div>
                   <p className="font-medium text-muted-foreground text-xs">
-                    {t("平均いいね数", "Average Likes")}
+                    {t("最大いいね数", "Average Likes")}
                   </p>
                 </div>
 
