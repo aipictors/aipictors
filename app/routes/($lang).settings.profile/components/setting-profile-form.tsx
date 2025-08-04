@@ -35,21 +35,24 @@ export function SettingProfileForm() {
 
   const userInfo = user?.user
 
-  const [userName, setUserName] = useState("")
-  const [profile, setProfile] = useState("")
-  const [enProfile, setEnProfile] = useState("")
-  const [website, setWebsite] = useState("")
-  const [instagram, setInstagram] = useState("")
-  const [twitter, setTwitter] = useState("")
-  const [github, setGithub] = useState("")
-  const [mail, setMail] = useState("")
+  // AuthContextのフォールバック機能を活用してuseStateの初期値を設定
+  const [userName, setUserName] = useState(
+    userInfo?.name || authContext.displayName || "",
+  )
+  const [profile, setProfile] = useState(userInfo?.biography ?? "")
+  const [enProfile, setEnProfile] = useState(userInfo?.enBiography ?? "")
+  const [website, setWebsite] = useState(userInfo?.siteURL ?? "")
+  const [instagram, setInstagram] = useState(userInfo?.instagramAccountId ?? "")
+  const [twitter, setTwitter] = useState(userInfo?.twitterAccountId ?? "")
+  const [github, setGithub] = useState(userInfo?.githubAccountId ?? "")
+  const [mail, setMail] = useState(userInfo?.mailAddress ?? "")
   const [profileImage, setProfileImage] = useState("")
   const [headerImage, setHeaderImage] = useState("")
 
-  // userInfoが取得されたらstateを初期化
+  // userInfoが取得されたらstateを初期化（AuthContextとの統合）
   useEffect(() => {
     if (userInfo) {
-      setUserName(userInfo.name ?? "")
+      setUserName(userInfo.name || authContext.displayName || "")
       setProfile(userInfo.biography ?? "")
       setEnProfile(userInfo.enBiography ?? "")
       setWebsite(userInfo.siteURL ?? "")
@@ -58,10 +61,11 @@ export function SettingProfileForm() {
       setGithub(userInfo.githubAccountId ?? "")
       setMail(userInfo.mailAddress ?? "")
     }
-  }, [userInfo])
+  }, [userInfo, authContext.displayName])
 
   const { data: token } = useQuery(viewerTokenQuery)
 
+  // ピックアップ作品のstate初期化をuserInfoの状態に基づいて行う
   const [selectedPickupWorks, setSelectedPickupWorks] = useState(
     userInfo?.featuredWorks ?? [],
   )

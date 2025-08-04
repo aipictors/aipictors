@@ -367,10 +367,10 @@ export function UserNavigationMenuContent(props: Props) {
         {" "}
         {/* パディングを削減 */}
         <h3 className={userNavigationStyles.userName}>
-          {data?.viewer?.user?.name}
+          {data?.viewer?.user?.name || authContext.displayName}
         </h3>
         <p className={userNavigationStyles.userLogin}>
-          @{data?.viewer?.user?.login}
+          @{data?.viewer?.user?.login || authContext.login}
         </p>
         {/* フォロー・フォロワー情報 */}
         <div className="mt-3 flex items-center gap-x-4">
