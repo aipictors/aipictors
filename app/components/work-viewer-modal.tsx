@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react"
-import { Dialog, DialogContent } from "~/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { cn } from "~/lib/utils"
 import type { FragmentOf } from "gql.tada"
@@ -32,6 +37,9 @@ export function WorkViewerModal({ works, startIndex, onClose }: Props) {
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="flex max-h-[90vh] max-w-[90vw] p-0">
+        <DialogHeader>
+          <DialogTitle className="sr-only">{work.title}</DialogTitle>
+        </DialogHeader>
         <div className="relative flex flex-1 items-center justify-center bg-black">
           <img
             src={work.largeThumbnailImageURL}

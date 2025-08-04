@@ -502,7 +502,7 @@ function HomeHeader(props: Props) {
             />
           </Suspense>
         )}
-        {isSearchFormOpen && authContext.isLoggedIn && (
+        {authContext.isLoggedIn && (
           <div className="hidden md:block">
             <Suspense fallback={null}>
               <HomeNotificationsMenu

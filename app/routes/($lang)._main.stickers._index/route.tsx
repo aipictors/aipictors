@@ -84,18 +84,18 @@ export default function StickersPage() {
 
   const appContext = useContext(AuthContext)
 
-  if (data === null) {
-    return null
-  }
-
   const { data: stickers } = useQuery(stickersQuery, {
-    skip: appContext.isLoading || appContext.isNotLoggedIn,
+    skip: appContext.isLoading,
     variables: {
       offset: 0,
       limit: 40,
       where: {},
     },
   })
+
+  if (data === null) {
+    return null
+  }
 
   const newStickers = data.stickers ?? stickers?.stickers
 

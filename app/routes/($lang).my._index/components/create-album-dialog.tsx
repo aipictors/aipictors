@@ -1,6 +1,12 @@
 import { PlusIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
-import { Dialog, DialogTrigger, DialogContent } from "~/components/ui/dialog"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { CropImageField } from "~/components/crop-image-field"
 import { Input } from "~/components/ui/input"
@@ -164,6 +170,9 @@ export function CreateAlbumDialog(props: Props) {
       >
         <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
+          <DialogHeader>
+            <DialogTitle>シリーズ作成</DialogTitle>
+          </DialogHeader>
           <ScrollArea className="overflow-y-auto">
             <div className="max-h-[80vh] space-y-4 md:max-h-[100%]">
               <div className="space-y-1">

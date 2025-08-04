@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
 } from "~/components/ui/dialog"
 import { GenerationConfigMemoList } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-list"
 import { GenerationConfigMemoOperationParts } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-operation-parts"
@@ -11,7 +12,7 @@ import { GenerationConfigMemoOperationParts } from "~/routes/($lang).generation.
 type Props = {
   isOpen: boolean
   onClose: () => void
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  // biome-ignore lint/suspicious/noExplicitAny: legacy code needs refactoring
   memos: any[] | undefined
   refetch: () => void
 }
@@ -28,7 +29,9 @@ export function GenerationConfigMemoSettingDialog(props: Props) {
       }}
     >
       <DialogContent>
-        <DialogHeader />
+        <DialogHeader>
+          <DialogTitle>履歴メモ設定</DialogTitle>
+        </DialogHeader>
         <GenerationConfigMemoList
           memos={props.memos}
           refetchMemos={props.refetch}

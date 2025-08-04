@@ -27,7 +27,7 @@ import {
   UserCircleIcon,
   UserIcon,
 } from "lucide-react"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { useContext, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
@@ -49,7 +49,7 @@ type Props = {
 export function HomeUserNavigationMenu(props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data, refetch } = useSuspenseQuery(viewerUserQuery, {
+  const { data, refetch } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     // 基本情報のみ先に取得
     errorPolicy: "all",
@@ -57,13 +57,13 @@ export function HomeUserNavigationMenu(props: Props) {
     fetchPolicy: "cache-first", // キャッシュを優先
   })
 
-  const { data: userSetting } = useSuspenseQuery(userSettingQuery, {
+  const { data: userSetting } = useQuery(userSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     errorPolicy: "all",
     fetchPolicy: "cache-first", // キャッシュを優先
   })
 
-  const { data: tokenData } = useSuspenseQuery(viewerTokenQuery, {
+  const { data: tokenData } = useQuery(viewerTokenQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     errorPolicy: "all",
     fetchPolicy: "cache-first", // キャッシュを優先
@@ -85,6 +85,12 @@ export function HomeUserNavigationMenu(props: Props) {
   const followerCount = data?.viewer?.user?.followersCount ?? 0
 
   const followCount = data?.viewer?.user?.followCount ?? 0
+
+  // デバッグ用ログ
+  console.log("HomeUserNavigationMenu - data:", data)
+  console.log("HomeUserNavigationMenu - user:", data?.viewer?.user)
+  console.log("HomeUserNavigationMenu - followersCount:", followerCount)
+  console.log("HomeUserNavigationMenu - followCount:", followCount)
 
   const headerImageUrl = data?.viewer?.user.headerImageUrl ?? ""
 
@@ -185,6 +191,11 @@ export function HomeUserNavigationMenu(props: Props) {
     return path
   }
 
+  // データが読み込まれていない場合は何も表示しない
+  if (!data?.viewer?.user) {
+    return null
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -196,45 +207,57 @@ export function HomeUserNavigationMenu(props: Props) {
       <DropdownMenuContent>
         <div>
           <div
-            className="relative mb-4 h-16 w-full rounded-md bg-gray-100 p-2 dark:bg-gray-800"
+            className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800"
             style={{
-              backgroundImage: `url(${headerImageUrl})`,
+              backgroundImage: headerImageUrl
+                ? `url(${headerImageUrl})`
+                : undefined,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           >
             <Link
-              to={getSensitiveLink(`/users/${authContext.login}`)}
-              className="absolute bottom-[-16px]"
+              to={getSensitiveLink(`/users/${data?.viewer?.user?.login}`)}
+              className="absolute bottom-[-24px] left-3"
             >
-              <Avatar className="cursor-pointer ">
+              <Avatar className="h-12 w-12 cursor-pointer border-2 border-white">
                 <AvatarImage src={withIconUrlFallback(iconUrl)} />
                 <AvatarFallback />
               </Avatar>
             </Link>
           </div>
+
+          {/* ユーザー情報セクション */}
+          <div className="px-3 pb-2">
+            <h3 className="font-bold text-lg">{data?.viewer?.user?.name}</h3>
+            <p className="text-muted-foreground text-sm">
+              @{data?.viewer?.user?.login}
+            </p>
+
+            {/* フォロー・フォロワー情報 */}
+            <div className="mt-3 flex items-center gap-x-8">
+              <div className="text-center">
+                <div className="font-bold text-lg">{followCount}</div>
+                <Link
+                  to={getSensitiveLink("/following")}
+                  className="cursor-pointer text-muted-foreground text-sm hover:underline"
+                >
+                  {t("フォロー中", "Following")}
+                </Link>
+              </div>
+              <div className="text-center">
+                <div className="font-bold text-lg">{followerCount}</div>
+                <Link
+                  to={getSensitiveLink("/followers")}
+                  className="cursor-pointer text-muted-foreground text-sm hover:underline"
+                >
+                  {t("フォロワー", "Followers")}
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
         <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
-          <div className="flex items-center gap-x-2 p-2">
-            <Link
-              to={getSensitiveLink("/following")}
-              className="w-16 hover:underline"
-            >
-              <p>{followCount}</p>
-              <p className="text-xs opacity-80">
-                {t("フォロー中", "Following")}
-              </p>
-            </Link>
-            <Link
-              to={getSensitiveLink("/followers")}
-              className="w-16 hover:underline"
-            >
-              <p>{followerCount}</p>
-              <p className="text-xs opacity-80">
-                {t("フォロワー", "Followers")}
-              </p>
-            </Link>
-          </div>
           <MenuItemLink
             href={getSensitiveLink(`/users/${authContext.login}`)}
             icon={<UserCircleIcon className="mr-2 inline-block w-4" />}

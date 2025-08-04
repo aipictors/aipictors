@@ -1,5 +1,10 @@
 import { useContext, useState } from "react"
-import { Dialog, DialogContent } from "~/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import { Button } from "~/components/ui/button"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
@@ -171,7 +176,9 @@ export function SelectCreatedWorksDialog(props: Props) {
         }}
       >
         <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
-          {t("作品選択", "Select Works")}
+          <DialogHeader>
+            <DialogTitle>{t("作品選択", "Select Works")}</DialogTitle>
+          </DialogHeader>
 
           <Tabs className="mt-2 mb-8" value={tab} defaultValue={"NO_SELECTED"}>
             <TabsList>

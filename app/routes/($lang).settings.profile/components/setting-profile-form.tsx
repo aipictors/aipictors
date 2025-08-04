@@ -11,7 +11,7 @@ import {
 import { useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
-import { Suspense, useContext, useState } from "react"
+import { Suspense, useContext, useState, useEffect } from "react"
 import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
@@ -35,18 +35,32 @@ export function SettingProfileForm() {
 
   const userInfo = user?.user
 
-  const [userName, setUserName] = useState(userInfo?.name ?? "")
-  const [profile, setProfile] = useState(userInfo?.biography ?? "")
-  const [enProfile, setEnProfile] = useState(userInfo?.enBiography ?? "")
-  const [website, setWebsite] = useState(userInfo?.siteURL ?? "")
-  const [instagram, setInstagram] = useState(userInfo?.instagramAccountId ?? "")
-  const [twitter, setTwitter] = useState(userInfo?.twitterAccountId ?? "")
-  const [github, setGithub] = useState(userInfo?.githubAccountId ?? "")
-  const [mail, setMail] = useState(userInfo?.mailAddress ?? "")
+  const [userName, setUserName] = useState("")
+  const [profile, setProfile] = useState("")
+  const [enProfile, setEnProfile] = useState("")
+  const [website, setWebsite] = useState("")
+  const [instagram, setInstagram] = useState("")
+  const [twitter, setTwitter] = useState("")
+  const [github, setGithub] = useState("")
+  const [mail, setMail] = useState("")
   const [profileImage, setProfileImage] = useState("")
   const [headerImage, setHeaderImage] = useState("")
 
-  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+  // userInfoが取得されたらstateを初期化
+  useEffect(() => {
+    if (userInfo) {
+      setUserName(userInfo.name ?? "")
+      setProfile(userInfo.biography ?? "")
+      setEnProfile(userInfo.enBiography ?? "")
+      setWebsite(userInfo.siteURL ?? "")
+      setInstagram(userInfo.instagramAccountId ?? "")
+      setTwitter(userInfo.twitterAccountId ?? "")
+      setGithub(userInfo.githubAccountId ?? "")
+      setMail(userInfo.mailAddress ?? "")
+    }
+  }, [userInfo])
+
+  const { data: token } = useQuery(viewerTokenQuery)
 
   const [selectedPickupWorks, setSelectedPickupWorks] = useState(
     userInfo?.featuredWorks ?? [],
@@ -54,6 +68,16 @@ export function SettingProfileForm() {
 
   const [selectedPickupSensitiveWorks, setSelectedPickupSensitiveWorks] =
     useState(userInfo?.featuredSensitiveWorks ?? [])
+
+  // featuredWorksが取得されたらstateを初期化
+  useEffect(() => {
+    if (userInfo?.featuredWorks) {
+      setSelectedPickupWorks(userInfo.featuredWorks)
+    }
+    if (userInfo?.featuredSensitiveWorks) {
+      setSelectedPickupSensitiveWorks(userInfo.featuredSensitiveWorks)
+    }
+  }, [userInfo?.featuredWorks, userInfo?.featuredSensitiveWorks])
 
   const [updateProfile, { loading: isUpdating }] = useMutation(
     updateUserProfileMutation,

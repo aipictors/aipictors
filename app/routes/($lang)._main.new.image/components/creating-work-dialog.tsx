@@ -1,4 +1,9 @@
-import { Dialog, DialogContent } from "~/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import { Progress } from "~/components/ui/progress"
 
 type Props = {
@@ -12,6 +17,11 @@ export function CreatingWorkDialog(props: Props) {
     <>
       <Dialog open={props.isOpen}>
         <DialogContent className="w-64 space-y-8">
+          <DialogHeader>
+            <DialogTitle className="sr-only">
+              {props.text ? props.text : "アップロード中"}
+            </DialogTitle>
+          </DialogHeader>
           {props.text ? (
             <p className="text-center text-sm opacity-50">{props.text}</p>
           ) : (

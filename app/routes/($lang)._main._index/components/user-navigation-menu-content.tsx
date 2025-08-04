@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import {
-  DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -8,6 +7,8 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "~/components/ui/dropdown-menu"
 import { AuthContext } from "~/contexts/auth-context"
 import {
@@ -24,10 +25,10 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
-import { useLocation, useNavigate } from "@remix-run/react"
+import { useLocation, useNavigate, Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -41,169 +42,332 @@ type Props = {
 
 /**
  * ヘッダーのナビゲーションメニューの内容部分（アイコン部分を除く）
+ * HomeUserNavigationMenuから分離された最新の実装
  */
 export function UserNavigationMenuContent(props: Props) {
   const authContext = useContext(AuthContext)
+
+  const { data, refetch } = useQuery(viewerUserQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    errorPolicy: "all",
+    fetchPolicy: "cache-first",
+  })
+
+  const { data: userSetting } = useQuery(userSettingQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    errorPolicy: "all",
+    fetchPolicy: "cache-first",
+  })
+
+  const { data: tokenData } = useQuery(viewerTokenQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    errorPolicy: "all",
+    fetchPolicy: "cache-first",
+  })
+
+  useEffect(() => {
+    if (authContext.login) {
+      refetch()
+    }
+  }, [authContext.login, refetch])
+
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
   const t = useTranslation()
   const locale = useLocale()
 
-  const { data } = useQuery(viewerUserQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-    errorPolicy: "all",
-    notifyOnNetworkStatusChange: false,
-  })
+  const promptonUser = data?.viewer?.user?.promptonUser?.id ?? ""
+  const followerCount = data?.viewer?.user?.followersCount ?? 0
+  const followCount = data?.viewer?.user?.followCount ?? 0
+  const headerImageUrl = data?.viewer?.user.headerImageUrl ?? ""
+  const iconUrl = data?.viewer?.user?.iconUrl ?? ""
+  const featurePromptonRequest =
+    userSetting?.userSetting?.featurePromptonRequest ?? false
+  const viewerUserToken = tokenData?.viewer?.token
+  const isSensitiveToggleVisible = location.pathname !== "/generation"
 
-  if (authContext.isNotLoggedIn) {
+  const setColorTheme = (newMode: string) => {
+    if (newMode === "system") {
+      setTheme(newMode)
+      return
+    }
+    if ((theme === "system" || theme === "dark") && newMode === "light") {
+      setTheme(newMode)
+      return
+    }
+    if ((theme === "system" || theme === "light") && newMode === "dark") {
+      setTheme(newMode)
+      return
+    }
+    const suffix = theme?.replace(/(light|dark)-/, "-")
+    const colorSuffix = suffix ?? ""
+    setTheme(newMode + colorSuffix)
+  }
+
+  const setLocale = (locale: string) => {
+    const currentLocale = location.pathname.match(/^\/(ja|en)(\/|$)/)?.[1] || ""
+    const basePath = location.pathname.replace(/^\/(ja|en)(\/|$)/, "/")
+
+    if (typeof document !== "undefined") {
+      // @ts-ignore - クッキーの設定のため必要
+      document.cookie = `locale=${locale}; path=/; SameSite=Lax`
+    }
+
+    const newUrl =
+      locale === "ja" && currentLocale
+        ? basePath
+        : locale !== "ja" && currentLocale
+          ? location.pathname.replace(`/${currentLocale}`, `/${locale}`)
+          : `/${locale}${basePath}`
+
+    if (location.pathname !== newUrl) {
+      navigate(newUrl)
+    }
+  }
+
+  const setMode = (theme: string) => {
+    if (theme === "system" || theme === "light" || theme === "dark") {
+      return theme
+    }
+    if (theme.startsWith("light-")) {
+      return "light"
+    }
+    if (theme.startsWith("dark-")) {
+      return "dark"
+    }
+    return "system"
+  }
+
+  const mode = setMode(theme ? theme?.toString() : "system")
+
+  const getThemeIcon = () => {
+    return theme?.endsWith("dark") ? (
+      <MoonIcon className="mr-2 inline-block w-4" />
+    ) : (
+      <SunIcon className="mr-2 inline-block w-4" />
+    )
+  }
+
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
+
+  const getSensitiveLink = (path: string) => {
+    if (/^\/r($|\s)/.test(path)) {
+      return ""
+    }
+    if (sensitivePath) {
+      return `/r${path}`
+    }
+    return path
+  }
+
+  if (authContext.isNotLoggedIn || !data?.viewer?.user) {
     return null
   }
 
-  const user = data?.viewer?.user
-
-  // アイコンの優先順位: AipictorsのDBアイコン → Firebaseアイコン → フォールバック
-  const iconUrl = user?.iconUrl || authContext.avatarPhotoURL || ""
-
   return (
-    <ScrollArea className="h-96">
-      <div className="space-y-1 p-1">
-        {/* ユーザー情報セクション */}
-        <DropdownMenuLabel className="p-2">
-          <div className="flex items-center space-x-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage
-                src={withIconUrlFallback(iconUrl)}
-                alt={user?.name ?? authContext.displayName ?? "User"}
-              />
-              <AvatarFallback>
-                {(user?.name ?? authContext.displayName ?? "U").charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium">
-                {user?.name ?? authContext.displayName}
-              </p>
-              {user && (
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <div className="flex space-x-2">
-                    <span>フォロワー: {user.followersCount}</span>
-                    <span>フォロー: {user.followCount}</span>
-                  </div>
-                  <div className="flex space-x-2">
-                    <span>作品: {user.generatedCount}</span>
-                    <span>いいね: {user.receivedLikesCount}</span>
-                  </div>
-                </div>
-              )}
-            </div>
+    <div>
+      <div
+        className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800"
+        style={{
+          backgroundImage: headerImageUrl
+            ? `url(${headerImageUrl})`
+            : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <Link
+          to={getSensitiveLink(`/users/${data?.viewer?.user?.login}`)}
+          className="absolute bottom-[-24px] left-3"
+        >
+          <Avatar className="h-12 w-12 cursor-pointer border-2 border-white">
+            <AvatarImage src={withIconUrlFallback(iconUrl)} />
+            <AvatarFallback />
+          </Avatar>
+        </Link>
+      </div>
+
+      {/* ユーザー情報セクション */}
+      <div className="px-3 pb-2">
+        <h3 className="font-bold text-lg">{data?.viewer?.user?.name}</h3>
+        <p className="text-muted-foreground text-sm">
+          @{data?.viewer?.user?.login}
+        </p>
+
+        {/* フォロー・フォロワー情報 */}
+        <div className="mt-3 flex items-center gap-x-8">
+          <div className="text-center">
+            <div className="font-bold text-lg">{followCount}</div>
+            <Link
+              to={getSensitiveLink("/following")}
+              className="cursor-pointer text-muted-foreground text-sm hover:underline"
+            >
+              {t("フォロー中", "Following")}
+            </Link>
           </div>
-        </DropdownMenuLabel>
+          <div className="text-center">
+            <div className="font-bold text-lg">{followerCount}</div>
+            <Link
+              to={getSensitiveLink("/followers")}
+              className="cursor-pointer text-muted-foreground text-sm hover:underline"
+            >
+              {t("フォロワー", "Followers")}
+            </Link>
+          </div>
+        </div>
+      </div>
 
-        {/* メニュー項目 */}
+      <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
         <MenuItemLink
-          href={`/users/${authContext.userId}`}
-          icon={<UserIcon className="mr-2 w-4 h-4" />}
-          label={t("マイページ", "My Page")}
+          href={getSensitiveLink(`/users/${authContext.login}`)}
+          icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
+          label={t("マイページ", "My page")}
         />
-
         <MenuItemLink
-          href="/dashboard"
-          icon={<SquareKanbanIcon className="mr-2 w-4 h-4" />}
+          href={getSensitiveLink("/my")}
+          icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
           label={t("ダッシュボード", "Dashboard")}
         />
-
         <MenuItemLink
-          href="/messages"
-          icon={<MessageCircleIcon className="mr-2 w-4 h-4" />}
-          label={t("メッセージ", "Messages")}
+          href={getSensitiveLink("/my/posts")}
+          icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
+          label={t("自分の作品", "My posts")}
         />
-
+        {featurePromptonRequest &&
+          (promptonUser === "" && viewerUserToken ? (
+            <MenuItemLink
+              href={`https://prompton.io/integration?token=${viewerUserToken}`}
+              icon={<CoffeeIcon className="mr-2 inline-block w-4" />}
+              label={t("支援管理", "Support management")}
+            />
+          ) : (
+            <MenuItemLink
+              href={"https://prompton.io/viewer/requests"}
+              icon={<CoffeeIcon className="mr-2 inline-block w-4" />}
+              label={t("支援管理", "Support management")}
+            />
+          ))}
         <MenuItemLink
-          href="/settings"
-          icon={<SettingsIcon className="mr-2 w-4 h-4" />}
+          href={getSensitiveLink("/settings/account/login")}
+          icon={<UserIcon className="mr-2 inline-block w-4" />}
+          label={t("アカウント", "Account")}
+        />
+        <MenuItemLink
+          href={getSensitiveLink("/support/chat")}
+          icon={<MessageCircleIcon className="mr-2 inline-block w-4" />}
+          label={t("お問い合わせ", "Contact")}
+        />
+        <MenuItemLink
+          href={getSensitiveLink("/plus")}
+          icon={<GemIcon className="mr-2 inline-block w-4" />}
+          label="Aipictors+"
+        />
+        <MenuItemLink
+          href={getSensitiveLink("/settings")}
+          icon={<SettingsIcon className="mr-2 inline-block w-4" />}
           label={t("設定", "Settings")}
         />
-
-        <MenuItemLink
-          href="/support/chat"
-          icon={<CoffeeIcon className="mr-2 w-4 h-4" />}
-          label={t("サポート", "Support")}
-        />
-
-        <MenuItemLink
-          href="/plus"
-          icon={<GemIcon className="mr-2 w-4 h-4" />}
-          label={t("Aipictors+", "Aipictors+")}
-        />
-
-        {/* テーマ設定 */}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <SunIcon className="mr-2 w-4 h-4 dark:hidden" />
-            <MoonIcon className="mr-2 w-4 h-4 hidden dark:block" />
-            <span>{t("テーマ", "Theme")}</span>
+            {getThemeIcon()}
+            {t("テーマ", "Theme")}
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
+              <DropdownMenuLabel>
+                {t("テーマ変更", "Change Theme")}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
               <DropdownMenuRadioGroup
-                value={theme ?? "system"}
-                onValueChange={setTheme}
-              >
-                <DropdownMenuRadioItem value="light">
-                  <SunIcon className="mr-2 w-4 h-4" />
-                  <span>{t("ライトモード", "Light Mode")}</span>
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="dark">
-                  <MoonIcon className="mr-2 w-4 h-4" />
-                  <span>{t("ダークモード", "Dark Mode")}</span>
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="system">
-                  <UserCircleIcon className="mr-2 w-4 h-4" />
-                  <span>{t("システム", "System")}</span>
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
-
-        {/* 言語設定 */}
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <Languages className="mr-2 w-4 h-4" />
-            <span>{t("言語", "Language")}</span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup
-                value={locale}
-                onValueChange={(value) => {
-                  navigate(`/${value}${location.pathname.slice(3)}`)
+                value={mode}
+                onValueChange={(newMode) => {
+                  setColorTheme(newMode)
                 }}
               >
-                <DropdownMenuRadioItem value="">
-                  <span>日本語</span>
+                <DropdownMenuRadioItem value="system">
+                  {t("デバイスモード使用", "Use device mode")}
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="light">
+                  {t("ライト", "Light")}
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="dark">
+                  {t("ダーク", "Dark")}
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+              <MenuItemLink
+                href={getSensitiveLink("/settings/color")}
+                icon={<SettingsIcon className="mr-2 inline-block w-4" />}
+                label={t("その他のカラー", "Other colors")}
+              />
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <Languages className="mr-2 inline-block w-4" />
+            {t("言語/Language", "言語/Language")}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuLabel>
+                {t("言語変更", "Change Language")}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={locale}
+                onValueChange={(newLocale) => {
+                  setLocale(newLocale)
+                }}
+              >
+                <DropdownMenuRadioItem value="ja">
+                  {t("日本語", "日本語")}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="en">
-                  <span>English</span>
+                  {t("English", "English")}
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-
-        {/* センシティブ設定 */}
-        <SensitiveToggle />
-
-        {/* ログアウト */}
+        {userSetting?.userSetting &&
+          (userSetting?.userSetting.preferenceRating === "R18" ||
+            userSetting?.userSetting.preferenceRating === "R18G") &&
+          isSensitiveToggleVisible && (
+            <DropdownMenuItem asChild>
+              <SensitiveToggle variant="full" className="w-full" />
+            </DropdownMenuItem>
+          )}
         <DropdownMenuItem onClick={props.onLogout}>
-          <LogOutIcon className="mr-2 w-4 h-4" />
-          <span>{t("ログアウト", "Logout")}</span>
+          <LogOutIcon className="mr-2 inline-block w-4" />
+          <p>{t("ログアウト", "Logout")}</p>
         </DropdownMenuItem>
-      </div>
-    </ScrollArea>
+      </ScrollArea>
+    </div>
   )
 }
+
+const userSettingQuery = graphql(
+  `query UserSetting {
+    userSetting {
+      id
+      userId
+      favoritedImageGenerationModelIds
+      preferenceRating
+      featurePromptonRequest
+      isNotifyComment
+    }
+  }`,
+)
+
+const viewerTokenQuery = graphql(
+  `query ViewerToken {
+    viewer {
+      id
+      token
+    }
+  }`,
+)
 
 const viewerUserQuery = graphql(
   `query ViewerUser {

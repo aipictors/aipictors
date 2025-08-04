@@ -1,5 +1,11 @@
 import { Button } from "~/components/ui/button"
-import { Dialog, DialogContent, DialogFooter } from "~/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
@@ -108,6 +114,9 @@ export function StickerDialog(props: Props) {
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
       <DialogContent className="flex h-[80vh] min-h-[32vw] w-[80vw] min-w-[80vw] flex-col pl-2">
+        <DialogHeader>
+          <DialogTitle>{t("スタンプ", "Stickers")}</DialogTitle>
+        </DialogHeader>
         {props.isTargetUserBlocked && (
           <div className="mb-4 rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
             {t(
