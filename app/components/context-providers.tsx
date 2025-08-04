@@ -7,7 +7,6 @@ import { initializeAnalytics } from "firebase/analytics"
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { getMessaging, onMessage, getToken } from "firebase/messaging"
 import { apolloClient } from "~/lib/client"
-import { useEffect, useState } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -15,65 +14,61 @@ type Props = {
 
 const queryClient = new QueryClient()
 
-export function ContextProviders(props: Props) {
-  const [isClientMounted, setIsClientMounted] = useState(false)
+// Firebase設定の遅延初期化
+let firebaseInitialized = false
 
-  // クライアントサイドでのみマウント状態を管理
-  useEffect(() => {
-    setIsClientMounted(true)
+function initializeFirebaseIfNeeded() {
+  if (typeof document === "undefined" || firebaseInitialized) return
 
-    // Firebase初期化はクライアントサイドでのみ実行
-    if (typeof window !== "undefined" && getApps().length === 0) {
-      try {
-        initializeApp(config.firebaseConfig)
+  try {
+    if (getApps().length === 0) {
+      initializeApp(config.firebaseConfig)
 
-        // Analyticsの初期化は更に遅延させる
-        setTimeout(() => {
-          try {
-            initializeAnalytics(getApp())
-          } catch (error) {
-            console.warn("Analytics initialization failed:", error)
-          }
-        }, 1000)
+      // Analyticsは遅延初期化
+      requestIdleCallback(() => {
+        try {
+          initializeAnalytics(getApp())
+        } catch (error) {
+          console.warn("Analytics initialization failed:", error)
+        }
+      })
 
-        // Messagingの初期化も遅延させる
-        setTimeout(() => {
-          try {
-            const messaging = getMessaging(getApp())
-            onMessage(messaging, (payload) => {
-              getToken(messaging, {
-                vapidKey: config.fcm.vapidKey,
-              }).then((_token) => {
-                navigator.serviceWorker.ready.then((registration) => {
-                  if (payload.data === undefined) return
-                  registration.showNotification(payload.data.title, {
-                    body: payload.data.body,
-                    icon: payload.data.icon,
-                    data: payload.data,
-                    // @ts-ignore
-                    image: payload.data.imageUrl,
-                    tag: payload.data.tag,
-                  })
+      // Messagingは遅延初期化
+      requestIdleCallback(() => {
+        try {
+          const messaging = getMessaging(getApp())
+          onMessage(messaging, (payload) => {
+            getToken(messaging, {
+              vapidKey: config.fcm.vapidKey,
+            }).then((_token) => {
+              navigator.serviceWorker.ready.then((registration) => {
+                if (payload.data === undefined) return
+                registration.showNotification(payload.data.title, {
+                  body: payload.data.body,
+                  icon: payload.data.icon,
+                  data: payload.data,
+                  // @ts-ignore https://developer.mozilla.org/ja/docs/Web/API/ServiceWorkerRegistration/showNotification#image
+                  image: payload.data.imageUrl,
+                  tag: payload.data.tag,
                 })
               })
             })
-          } catch (error) {
-            console.warn("Messaging initialization failed:", error)
-          }
-        }, 2000)
-      } catch (error) {
-        console.error("Firebase initialization failed:", error)
-      }
+          })
+        } catch (error) {
+          console.warn("Messaging initialization failed:", error)
+        }
+      })
     }
-  }, [])
+    firebaseInitialized = true
+  } catch (error) {
+    console.error("Firebase initialization failed:", error)
+  }
+}
 
-  // SSR時は最小限の構成でレンダリング
-  if (!isClientMounted) {
-    return (
-      <QueryClientProvider client={queryClient}>
-        <ApolloProvider client={apolloClient}>{props.children}</ApolloProvider>
-      </QueryClientProvider>
-    )
+export function ContextProviders(props: Props) {
+  // Firebase初期化を遅延実行
+  if (typeof document !== "undefined") {
+    initializeFirebaseIfNeeded()
   }
 
   return (
