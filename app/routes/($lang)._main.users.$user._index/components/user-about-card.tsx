@@ -11,6 +11,13 @@ type Props = {
 export function UserAboutCard(props: Props) {
   const t = useTranslation()
 
+  // デバッグ用ログ
+  console.log("UserAboutCard Debug:", {
+    propsUser: props.user,
+    userId: props.user.id,
+    biography: props.user.biography,
+  })
+
   return (
     <Card className="flex flex-col gap-y-4 p-4">
       <p className="flex items-center space-x-2 text-sm opacity-80">
@@ -21,6 +28,17 @@ export function UserAboutCard(props: Props) {
         })}
         {t("開始", "Started around")}
       </p>
+
+      {/* ユーザIDを表示 */}
+      <div className="flex items-center gap-2">
+        <span className="text-muted-foreground text-xs">
+          {t("ユーザーID", "User ID")}:
+        </span>
+        <code className="inline-flex items-center rounded-md border bg-muted px-2 py-1 font-mono text-muted-foreground text-xs">
+          {props.user.id}
+        </code>
+      </div>
+
       {props.user.biography && (
         <p className="text-sm">
           <UserBiography

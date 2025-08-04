@@ -100,9 +100,11 @@ export function UserNavigationMenuContent(props: Props) {
       setTheme(newMode)
       return
     }
+    // テーマ適用中→"light-blue"、"dark-blue"等同色でのダーク、ライト切り替え
     const suffix = theme?.replace(/(light|dark)-/, "-")
     const colorSuffix = suffix ?? ""
-    setTheme(newMode + colorSuffix)
+    const newTheme = newMode + colorSuffix
+    setTheme(newTheme)
   }
 
   const setLocale = (locale: string) => {

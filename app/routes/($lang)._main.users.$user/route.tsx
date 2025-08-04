@@ -102,6 +102,18 @@ export default function UserLayout() {
   // フォロワーなどの最新情報をログインしている場合は取得する
   const user = userRet?.user ?? data.user
 
+  // デバッグ用ログ
+  console.log("UserLayout Debug:", {
+    params: params.user,
+    decodedUserId: decodeURIComponent(params.user),
+    userRetData: userRet?.user,
+    loaderData: data.user,
+    finalUser: user,
+    authLoading: authContext.isLoading,
+    authNotLoggedIn: authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  })
+
   return (
     <div className="flex w-full flex-col justify-center">
       <div className="relative">

@@ -18,10 +18,19 @@ export function UserProfileNameIcon(props: Props) {
 
   const t = useTranslation()
 
+  // デバッグ用ログ
+  console.log("UserProfileNameIcon Debug:", {
+    propsUser: props.user,
+    user: user,
+    userId: user.id,
+    userName: user.name,
+    userLogin: user.login,
+  })
+
   return (
     <header className="relative">
       <div
-        // biome-ignore lint/nursery/useSortedClasses: <explanation>
+        // biome-ignore lint/nursery/useSortedClasses: レガシーコード
         className={"absolute z-10 top-[128px] md:top-[228px]"}
       >
         <div className="relative mr-auto flex items-center gap-4 p-0 pb-4 md:p-8">
@@ -44,6 +53,12 @@ export function UserProfileNameIcon(props: Props) {
                 ? `${user.login.slice(0, 16)}...`
                 : user.login}
             </h2>
+            {/* ユーザIDをモダンなデザインで表示 */}
+            <div className="mt-1 flex items-center gap-2">
+              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 font-mono text-white/80 text-xs backdrop-blur-sm">
+                ID: {user.id}
+              </span>
+            </div>
             <div className="flex">
               <div className="w-32">
                 <div className="white mt-4 font-bold text-xl">
@@ -94,6 +109,12 @@ export function UserProfileNameIcon(props: Props) {
               ? `${user.login.slice(0, 8)}...`
               : user.login}
           </h2>
+          {/* モバイル版ユーザID表示 */}
+          <div className="mt-1 flex items-center gap-2">
+            <span className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 font-mono text-white/80 text-xs backdrop-blur-sm">
+              ID: {user.id}
+            </span>
+          </div>
         </div>
       </div>
     </header>
@@ -102,6 +123,7 @@ export function UserProfileNameIcon(props: Props) {
 
 export const UserProfileIconFragment = graphql(
   `fragment UserProfileIconFragment on UserNode {
+    id
     name
     isModerator
     login

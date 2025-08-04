@@ -60,7 +60,7 @@ export function StickerDialog(props: Props) {
   const maxStickersPage = 120
 
   const { data: stickers = null, refetch } = useQuery(viewerUserStickersQuery, {
-    skip: appContext.isLoading,
+    skip: !props.isOpen || appContext.isNotLoggedIn,
     variables: {
       limit: maxStickersPage,
       offset: createdSortStickerPage * maxStickersPage,
@@ -71,13 +71,20 @@ export function StickerDialog(props: Props) {
   const { data: stickersCount = null } = useQuery(
     viewerUserStickersCountQuery,
     {
-      skip: appContext.isLoading,
+      skip: !props.isOpen || appContext.isNotLoggedIn,
     },
   )
 
   const maxCount = stickersCount?.viewer?.userStickersCount ?? 0
 
   const t = useTranslation()
+
+  // ダイアログが開かれた時やログイン状態が変化した時にリフェッチ
+  useEffect(() => {
+    if (props.isOpen && appContext.login && !appContext.isLoading) {
+      refetch()
+    }
+  }, [props.isOpen, appContext.login, appContext.isLoading, refetch])
 
   // サイズ設定
   const sizeOptions: Array<80 | 100 | 120> = [80, 100, 120]

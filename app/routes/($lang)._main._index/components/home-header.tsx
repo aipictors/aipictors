@@ -488,7 +488,7 @@ function HomeHeader(props: Props) {
           </div>
         )}
         {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
-        {!isSearchFormOpen && authContext.isLoggedIn && (
+        {authContext.isLoggedIn && (
           <Suspense fallback={null}>
             <HomeNotificationsMenu
               isExistedNewNotification={isExistedNewNotificationState}
@@ -501,22 +501,6 @@ function HomeHeader(props: Props) {
               }
             />
           </Suspense>
-        )}
-        {authContext.isLoggedIn && (
-          <div className="hidden md:block">
-            <Suspense fallback={null}>
-              <HomeNotificationsMenu
-                isExistedNewNotification={isExistedNewNotificationState}
-                setIsExistedNewNotificationState={
-                  setIsExistedNewNotificationState
-                }
-                checkedNotificationTimes={
-                  isExistedNewNotificationData.data?.viewer
-                    ?.checkedNotificationTimes ?? []
-                }
-              />
-            </Suspense>
-          </div>
         )}
         {isSearchFormOpen && (
           <Button
