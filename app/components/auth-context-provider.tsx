@@ -127,12 +127,29 @@ export function AuthContextProvider(props: Props) {
           navigator.userAgent,
         )
 
-      // モバイル端末では短いタイムアウトでより早くフォールバック
-      const tokenTimeout = isMobileDevice ? 1500 : 2000
+      // モバイル端末では更に短いタイムアウトで早期フォールバック
+      const tokenTimeout = isMobileDevice ? 1000 : 1500
 
+      // UIブロックを防ぐため、ユーザー情報を先に設定
+      const basicUserInfo = {
+        userId: user.uid,
+        login: user.displayName || user.email?.split("@")[0] || user.uid,
+        name: user.displayName || "User",
+        picture: user.photoURL || null,
+      } as ParsedToken
+
+      // 即座にUIを更新（詳細トークンは後から更新）
+      setCurrentUser(user)
+      setClaims(basicUserInfo)
+      setLoadingState(false)
+
+      // モバイル軽量ログ
+      debugLog.mobileLite(`Auth: UI updated with basic info for ${user.uid}`)
+
+      // トークン詳細情報を非同期で取得（UIをブロックしない）
       Promise.race([
         getIdTokenResult(user, true),
-        // モバイル端末では1.5秒、その他は2秒でタイムアウトし、基本情報のみで進む
+        // モバイルは1秒、その他は1.5秒でタイムアウト
         new Promise((_, reject) =>
           setTimeout(() => reject(new Error("Token timeout")), tokenTimeout),
         ),
@@ -141,6 +158,10 @@ export function AuthContextProvider(props: Props) {
           const tokenResult = result as Awaited<
             ReturnType<typeof getIdTokenResult>
           >
+
+          // 詳細トークン情報でクレームを更新
+          setClaims({ ...tokenResult.claims })
+          debugLog.auth("Token details updated successfully")
 
           // Analytics のユーザープロパティ設定も遅延実行（モバイル最適化）
           if (typeof requestIdleCallback !== "undefined") {
@@ -175,29 +196,16 @@ export function AuthContextProvider(props: Props) {
               }
             }, 200)
           }
-
-          setCurrentUser(user)
-          setClaims({ ...tokenResult.claims })
-          setLoadingState(false)
         })
         .catch((error) => {
-          debugLog.auth("Failed to get token result, using basic user info:", {
+          debugLog.auth("Token details fetch failed (using basic info):", {
             error: error.message,
             isMobile: isMobileDevice,
           })
-          // トークン取得に失敗した場合でも基本的なユーザー情報でUIを表示
-          setCurrentUser(user)
-          // 最低限のクレーム情報を構築
-          setClaims({
-            userId: user.uid,
-            login: user.displayName || user.email?.split("@")[0] || user.uid,
-            name: user.displayName || "User",
-            picture: user.photoURL || null,
-          } as ParsedToken)
-          setLoadingState(false)
+          // トークン詳細取得に失敗した場合でも、基本情報はすでに設定済み
 
           // バックグラウンドで再試行（モバイル端末では少し遅延）
-          const retryDelay = isMobileDevice ? 2000 : 1000
+          const retryDelay = isMobileDevice ? 3000 : 2000
           setTimeout(() => {
             getIdTokenResult(user, true)
               .then((result) => {

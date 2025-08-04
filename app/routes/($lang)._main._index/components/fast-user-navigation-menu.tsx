@@ -36,16 +36,17 @@ export function FastUserNavigationMenu(props: Props) {
     skip: authContext.isNotLoggedIn,
     errorPolicy: "ignore",
     fetchPolicy: "cache-first",
-    // モバイル端末では短いタイムアウト
+    // モバイル端末では更に短いタイムアウト
     context: {
       timeout:
         typeof navigator !== "undefined" &&
         /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
           navigator.userAgent,
         )
-          ? 3000
-          : 5000,
+          ? 2000 // モバイルは2秒
+          : 4000, // デスクトップは4秒
     },
+    notifyOnNetworkStatusChange: false, // ネットワーク状態変更通知を無効化（パフォーマンス向上）
   })
 
   // 認証情報から最低限の表示
@@ -81,6 +82,9 @@ export function FastUserNavigationMenu(props: Props) {
     },
   })
 
+  // モバイル用軽量ログ
+  debugLog.mobileLite(`FastUserNav: ${authContext.isLoggedIn ? "logged-in" : "loading"}`)
+
   if (authContext.isNotLoggedIn) {
     return null
   }
@@ -88,7 +92,7 @@ export function FastUserNavigationMenu(props: Props) {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Avatar className="cursor-pointer">
+        <Avatar className="h-10 w-10 cursor-pointer">
           <AvatarImage src={withIconUrlFallback(iconUrl)} />
           <AvatarFallback>
             {displayName ? displayName.charAt(0).toUpperCase() : "U"}
@@ -97,7 +101,13 @@ export function FastUserNavigationMenu(props: Props) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {/* UserNavigationMenuContentが自分でローディング状態を管理 */}
-        <Suspense fallback={<div className="p-4">読み込み中...</div>}>
+        <Suspense
+          fallback={
+            <div className="p-4 text-center text-muted-foreground text-sm">
+              読み込み中...
+            </div>
+          }
+        >
           <UserNavigationMenuContent onLogout={props.onLogout} />
         </Suspense>
       </DropdownMenuContent>

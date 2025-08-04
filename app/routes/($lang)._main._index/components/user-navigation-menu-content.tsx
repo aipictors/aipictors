@@ -191,25 +191,21 @@ export function UserNavigationMenuContent(props: Props) {
           </Link>
         </div>
 
-        {/* ユーザー情報セクション */}
+        {/* ユーザー情報セクション（スケルトン）*/}
         <div className="px-3 pb-2">
-          <h3 className="font-bold text-lg">
-            {fallbackDisplayName || "読み込み中..."}
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            @{fallbackLogin || "..."}
-          </p>
+          <div className="h-7 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="mt-1 h-5 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
 
           {/* フォロー・フォロワー情報（スケルトン） */}
           <div className="mt-3 flex items-center gap-x-8">
             <div className="text-center">
-              <div className="h-6 w-12 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+              <div className="h-7 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
               <div className="mt-1 text-muted-foreground text-sm">
                 {t("フォロー中", "Following")}
               </div>
             </div>
             <div className="text-center">
-              <div className="h-6 w-12 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+              <div className="h-7 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
               <div className="mt-1 text-muted-foreground text-sm">
                 {t("フォロワー", "Followers")}
               </div>
@@ -218,25 +214,23 @@ export function UserNavigationMenuContent(props: Props) {
         </div>
 
         <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
-          <MenuItemLink
-            href={getSensitiveLink(`/users/${fallbackLogin}`)}
-            icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
-            label={t("マイページ", "My page")}
-          />
-          <MenuItemLink
-            href={getSensitiveLink("/my")}
-            icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
-            label={t("ダッシュボード", "Dashboard")}
-          />
-          <MenuItemLink
-            href={getSensitiveLink("/settings")}
-            icon={<SettingsIcon className="mr-2 inline-block w-4" />}
-            label={t("設定", "Settings")}
-          />
-          <DropdownMenuItem onClick={props.onLogout}>
-            <LogOutIcon className="mr-2 inline-block w-4" />
-            <p>{t("ログアウト", "Logout")}</p>
-          </DropdownMenuItem>
+          {/* スケルトンメニュー項目（簡略化） */}
+          <div className="flex items-center rounded-sm px-2 py-1.5">
+            <div className="mr-2 h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          </div>
+          <div className="flex items-center rounded-sm px-2 py-1.5">
+            <div className="mr-2 h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          </div>
+          <div className="flex items-center rounded-sm px-2 py-1.5">
+            <div className="mr-2 h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="h-4 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          </div>
+          <div className="flex items-center rounded-sm px-2 py-1.5">
+            <div className="mr-2 h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+            <div className="h-4 w-18 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          </div>
         </ScrollArea>
       </div>
     )

@@ -545,27 +545,39 @@ function HomeHeader(props: Props) {
             </Button>
           </div>
         )}
-        {/* お知らせアイコン - 常に表示（ログイン時） */}
-        {authContext.isLoggedIn && (
-          <Suspense fallback={null}>
-            <HomeNotificationsMenu
-              isExistedNewNotification={isExistedNewNotificationState}
-              setIsExistedNewNotificationState={
-                setIsExistedNewNotificationState
-              }
-              checkedNotificationTimes={
-                isExistedNewNotificationData.data?.viewer
-                  ?.checkedNotificationTimes ?? []
-              }
-            />
-          </Suspense>
+        {/* お知らせアイコンとプロフィールアイコン */}
+        {authContext.isLoading ? (
+          // ログイン判定中のダミーUI（モバイル最適化済み）
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+          </div>
+        ) : authContext.isLoggedIn ? (
+          // ログイン時のUI（Suspenseでスムーズなローディング）
+          <div className="flex items-center gap-2">
+            <Suspense fallback={<div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />}>
+              <HomeNotificationsMenu
+                isExistedNewNotification={isExistedNewNotificationState}
+                setIsExistedNewNotificationState={
+                  setIsExistedNewNotificationState
+                }
+                checkedNotificationTimes={
+                  isExistedNewNotificationData.data?.viewer
+                    ?.checkedNotificationTimes ?? []
+                }
+              />
+            </Suspense>
+            <Suspense fallback={<div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />}>
+              <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
+            </Suspense>
+          </div>
+        ) : (
+          // 未ログイン時のUI
+          <div className="flex items-center gap-2">
+            <HomeHeaderNotLoggedInMenu />
+            <LoginDialogButton />
+          </div>
         )}
-        {/* プロフィールアイコン - 常に表示（ログイン時） */}
-        <Suspense fallback={null}>
-          {authContext.isLoggedIn && (
-            <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
-          )}
-        </Suspense>
         {/* 検索フォーム時の検索ボタン（スマホのみ） */}
         {isSearchFormOpen && (
           <Button
@@ -577,9 +589,6 @@ function HomeHeader(props: Props) {
             <Search className="w-16" />
           </Button>
         )}
-        {/* 未ログイン時のメニュー */}
-        {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
-        {authContext.isNotLoggedIn && <LoginDialogButton />}
         <LogoutDialogLegacy
           isOpen={isOpenLogoutDialog}
           onClose={onCloseLogoutDialog}
