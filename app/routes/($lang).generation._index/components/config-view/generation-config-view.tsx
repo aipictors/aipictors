@@ -262,8 +262,6 @@ const userSettingQuery = graphql(
       favoritedImageGenerationModelIds
       preferenceRating
       featurePromptonRequest
-      isAnonymousLike
-      isAnonymousSensitiveLike
       isNotifyComment
     }
   }`,

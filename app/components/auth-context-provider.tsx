@@ -37,10 +37,16 @@ export function AuthContextProvider(props: Props) {
       setClaims(null)
       return
     }
-    getIdTokenResult(currentUser, true).then((result) => {
+    try {
+      const result = await getIdTokenResult(currentUser, true)
       setCurrentUser(currentUser)
       setClaims({ ...result.claims })
-    })
+    } catch (error) {
+      console.warn("Failed to get ID token result:", error)
+      // エラーの場合でも基本的なユーザー情報は設定
+      setCurrentUser(currentUser)
+      setClaims(null)
+    }
   }
 
   useEffect(() => {
@@ -66,24 +72,63 @@ export function AuthContextProvider(props: Props) {
         }
       })
 
-      getIdTokenResult(user, true).then((result) => {
-        // Analytics のユーザープロパティ設定も遅延実行
-        requestIdleCallback(() => {
-          try {
-            setUserProperties(getAnalytics(), {
-              display_name: user.displayName,
-              provider_id: user.providerId,
-              username: result.claims.username,
-            })
-          } catch (error) {
-            console.warn("Analytics user properties error:", error)
-          }
-        })
+      // トークン取得を並行して実行し、UIの表示を優先
+      Promise.race([
+        getIdTokenResult(user, true),
+        // 2秒でタイムアウトし、基本情報のみで進む
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Token timeout")), 2000),
+        ),
+      ])
+        .then((result) => {
+          const tokenResult = result as Awaited<
+            ReturnType<typeof getIdTokenResult>
+          >
 
-        setCurrentUser(user)
-        setClaims({ ...result.claims })
-        setLoadingState(false)
-      })
+          // Analytics のユーザープロパティ設定も遅延実行
+          requestIdleCallback(() => {
+            try {
+              setUserProperties(getAnalytics(), {
+                display_name: user.displayName,
+                provider_id: user.providerId,
+                username: tokenResult.claims.username,
+              })
+            } catch (error) {
+              console.warn("Analytics user properties error:", error)
+            }
+          })
+
+          setCurrentUser(user)
+          setClaims({ ...tokenResult.claims })
+          setLoadingState(false)
+        })
+        .catch((error) => {
+          console.warn(
+            "Failed to get token result, using basic user info:",
+            error,
+          )
+          // トークン取得に失敗した場合でも基本的なユーザー情報でUIを表示
+          setCurrentUser(user)
+          // 最低限のクレーム情報を構築
+          setClaims({
+            userId: user.uid,
+            login: user.displayName || user.email?.split("@")[0] || user.uid,
+            name: user.displayName || "User",
+            picture: user.photoURL || null,
+          } as ParsedToken)
+          setLoadingState(false)
+
+          // バックグラウンドで再試行
+          setTimeout(() => {
+            getIdTokenResult(user, true)
+              .then((result) => {
+                setClaims({ ...result.claims })
+              })
+              .catch(() => {
+                // 再試行も失敗した場合は何もしない
+              })
+          }, 1000)
+        })
     })
 
     return () => unsubscribe()
@@ -113,7 +158,7 @@ export function AuthContextProvider(props: Props) {
   if (
     currentUser === null ||
     claims === null ||
-    typeof claims.userId !== "string"
+    (typeof claims.userId !== "string" && typeof claims.sub !== "string")
   ) {
     const value = {
       isLoading: false,
@@ -133,15 +178,22 @@ export function AuthContextProvider(props: Props) {
     )
   }
 
+  const userId = (claims.userId || claims.sub) as string
+  const login = (claims.login ||
+    (claims.email as string)?.split("@")[0] ||
+    userId) as string
+  const displayName = (claims.name || claims.display_name || login) as string
+  const avatarPhotoURL = (claims.picture || claims.avatar_url) as string
+
   const value = {
     isLoading: false,
     isNotLoading: true,
     isLoggedIn: true,
     isNotLoggedIn: false,
-    userId: claims.userId,
-    login: claims.login as string,
-    displayName: claims.name as string,
-    avatarPhotoURL: claims.picture as string,
+    userId: userId as string,
+    login: login as string,
+    displayName: displayName as string,
+    avatarPhotoURL: avatarPhotoURL as string,
     refresh: refresh,
   } as const
 

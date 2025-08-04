@@ -28,24 +28,11 @@ export function SettingNotificationForm() {
     updateUserSettingMutation,
   )
 
-  const [isAnonymousLike, setIsAnonymousLike] = useState<boolean>(
-    userSetting?.userSetting?.isAnonymousLike ?? false,
-  )
-
-  const [isAnonymousSensitiveLike, setIsAnonymousSensitiveLike] =
-    useState<boolean>(
-      userSetting?.userSetting?.isAnonymousSensitiveLike ?? false,
-    )
-
   const [isNotifyComment, setIsNotifyComment] = useState<boolean>(
     userSetting?.userSetting?.isNotifyComment ?? false,
   )
 
   useEffect(() => {
-    setIsAnonymousLike(userSetting?.userSetting?.isAnonymousLike ?? false)
-    setIsAnonymousSensitiveLike(
-      userSetting?.userSetting?.isAnonymousSensitiveLike ?? false,
-    )
     setIsNotifyComment(userSetting?.userSetting?.isNotifyComment ?? false)
   }, [userSetting])
 
@@ -53,8 +40,6 @@ export function SettingNotificationForm() {
     await updateUserSetting({
       variables: {
         input: {
-          isAnonymousLike: isAnonymousLike,
-          isAnonymousSensitiveLike: isAnonymousSensitiveLike,
           isNotifyComment: isNotifyComment,
         },
       },
@@ -64,45 +49,6 @@ export function SettingNotificationForm() {
 
   return (
     <>
-      <div className="space-y-4">
-        <p className="font-bold">{t("匿名いいね", "Anonymous Likes")}</p>
-        <div className="flex justify-between">
-          <label
-            htmlFor="1"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t(
-              "全年齢作品を匿名でいいねする",
-              "Like general content anonymously",
-            )}
-          </label>
-          <Checkbox
-            onCheckedChange={(value: boolean) => {
-              setIsAnonymousLike(value)
-            }}
-            checked={isAnonymousLike}
-            id="terms"
-          />
-        </div>
-        <div className="flex justify-between">
-          <label
-            htmlFor="2"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t(
-              "センシティブ作品を匿名でいいねする",
-              "Like sensitive content anonymously",
-            )}
-          </label>
-          <Checkbox
-            onCheckedChange={(value: boolean) => {
-              setIsAnonymousSensitiveLike(value)
-            }}
-            checked={isAnonymousSensitiveLike}
-            id="terms"
-          />
-        </div>
-      </div>
       <div className="space-y-4">
         <p className="font-bold">{t("通知", "Notifications")}</p>
         <div className="flex justify-between">
@@ -199,8 +145,6 @@ const userSettingQuery = graphql(
       favoritedImageGenerationModelIds
       preferenceRating
       featurePromptonRequest
-      isAnonymousLike
-      isAnonymousSensitiveLike
       isNotifyComment
     }
   }`,

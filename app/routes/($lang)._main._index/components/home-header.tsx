@@ -39,11 +39,12 @@ const HomeNotificationsMenu = lazy(() =>
     default: module.HomeNotificationsMenu,
   })),
 )
-const HomeUserNavigationMenu = lazy(() =>
+// ファストローディング用のナビゲーションメニュー
+const FastUserNavigationMenu = lazy(() =>
   import(
-    "~/routes/($lang)._main._index/components/home-user-navigation-menu"
+    "~/routes/($lang)._main._index/components/fast-user-navigation-menu"
   ).then((module) => ({
-    default: module.HomeUserNavigationMenu,
+    default: module.FastUserNavigationMenu,
   })),
 )
 const HomeMenuRouteList = lazy(() =>
@@ -529,7 +530,7 @@ function HomeHeader(props: Props) {
         )}
         <Suspense fallback={null}>
           {authContext.isLoggedIn && (
-            <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
+            <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
           )}
         </Suspense>
         {authContext.isNotLoggedIn && <LoginDialogButton />}

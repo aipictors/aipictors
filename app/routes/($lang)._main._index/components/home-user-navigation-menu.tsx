@@ -51,15 +51,30 @@ export function HomeUserNavigationMenu(props: Props) {
 
   const { data, refetch } = useSuspenseQuery(viewerUserQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
+    // 基本情報のみ先に取得
+    errorPolicy: "all",
+    notifyOnNetworkStatusChange: false,
+    fetchPolicy: "cache-first", // キャッシュを優先
   })
 
   const { data: userSetting } = useSuspenseQuery(userSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
+    errorPolicy: "all",
+    fetchPolicy: "cache-first", // キャッシュを優先
+  })
+
+  const { data: tokenData } = useSuspenseQuery(viewerTokenQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    errorPolicy: "all",
+    fetchPolicy: "cache-first", // キャッシュを優先
   })
 
   useEffect(() => {
-    refetch()
-  }, [authContext.login])
+    // authContext.login が変更された時のみリフェッチ
+    if (authContext.login) {
+      refetch()
+    }
+  }, [authContext.login, refetch])
 
   const t = useTranslation()
 
@@ -78,9 +93,7 @@ export function HomeUserNavigationMenu(props: Props) {
   const featurePromptonRequest =
     userSetting?.userSetting?.featurePromptonRequest ?? false
 
-  const { data: token } = useSuspenseQuery(viewerTokenQuery)
-
-  const viewerUserToken = token?.viewer?.token
+  const viewerUserToken = tokenData?.viewer?.token
 
   const { theme, setTheme } = useTheme()
 
@@ -359,8 +372,6 @@ const userSettingQuery = graphql(
       favoritedImageGenerationModelIds
       preferenceRating
       featurePromptonRequest
-      isAnonymousLike
-      isAnonymousSensitiveLike
       isNotifyComment
     }
   }`,

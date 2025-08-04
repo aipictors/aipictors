@@ -324,7 +324,7 @@ const randomCustomerAdvertisementQuery = graphql(
 
 export const userSensitiveSettingFragment = graphql(
   `fragment UserSensitiveSetting on UserSettingNode @_unmask {
-      isAnonymousSensitiveLike
+      id
   }`,
 )
 

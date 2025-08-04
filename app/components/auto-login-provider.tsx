@@ -15,16 +15,21 @@ export function AutoLoginProvider(props: Props) {
     // 未ログイン時のみ自動ログインを試行
     if (typeof document === "undefined") return
 
-    // パフォーマンス改善：遅延実行で自動ログインを処理
-    const timeoutId = setTimeout(() => {
+    // より高速化：requestIdleCallbackで優先度を下げて実行
+    const callback = () => {
       const currentUser = getAuth().currentUser
 
       if (currentUser === null) {
         autoLogin()
       }
-    }, 100) // 100ms遅延で実行
+    }
 
-    return () => clearTimeout(timeoutId)
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(callback)
+    } else {
+      // fallback for browsers without requestIdleCallback
+      setTimeout(callback, 50)
+    }
   }, [])
 
   const autoLogin = async () => {

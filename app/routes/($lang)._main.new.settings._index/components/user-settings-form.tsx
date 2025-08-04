@@ -41,11 +41,6 @@ export function UserSettingsForm() {
   const [isAdult, setIsAdult] = useState<string | null>(null)
 
   // その他の設定用の状態変数
-  const [isAnonymousLike, setIsAnonymousLike] = useState(false)
-
-  const [isAnonymousSensitiveLike, setIsAnonymousSensitiveLike] =
-    useState(false)
-
   const [isNotifyComment, setIsNotifyComment] = useState(false)
 
   useEffect(() => {
@@ -82,8 +77,6 @@ export function UserSettingsForm() {
       )
 
       // その他の設定を初期化
-      setIsAnonymousLike(userSetting.isAnonymousLike ?? false)
-      setIsAnonymousSensitiveLike(userSetting.isAnonymousSensitiveLike ?? false)
       setIsNotifyComment(userSetting.isNotifyComment ?? false)
     }
   }, [userSettingData])
@@ -119,8 +112,6 @@ export function UserSettingsForm() {
     await updateUserSetting({
       variables: {
         input: {
-          isAnonymousLike,
-          isAnonymousSensitiveLike,
           isNotifyComment,
           preferenceRating,
         },
@@ -243,38 +234,6 @@ export function UserSettingsForm() {
           "Regardless of anonymous likes, only the poster can see who liked their content.",
         )}
       </p>
-      <div className="flex justify-between">
-        <label
-          htmlFor="anonymous-like"
-          className="font-medium text-sm leading-none"
-        >
-          {t(
-            "全年齢作品を匿名でいいねする",
-            "Like all-age content anonymously",
-          )}
-        </label>
-        <Switch
-          onCheckedChange={setIsAnonymousLike}
-          checked={isAnonymousLike}
-          id="anonymous-like"
-        />
-      </div>
-      <div className="flex justify-between">
-        <label
-          htmlFor="anonymous-sensitive-like"
-          className="font-medium text-sm leading-none"
-        >
-          {t(
-            "センシティブ作品を匿名でいいねする",
-            "Like sensitive content anonymously",
-          )}
-        </label>
-        <Switch
-          onCheckedChange={setIsAnonymousSensitiveLike}
-          checked={isAnonymousSensitiveLike}
-          id="anonymous-sensitive-like"
-        />
-      </div>
       <Separator />
 
       {/* 保存ボタン */}
@@ -299,8 +258,6 @@ const userSettingQuery = graphql(`
       id
       userId
       preferenceRating
-      isAnonymousLike
-      isAnonymousSensitiveLike
       isNotifyComment
     }
   }

@@ -158,7 +158,7 @@ export function WorkArticle(props: Props) {
           bookmarkFolderId={bookmarkFolderId}
           targetWorkOwnerUserId={props.work.user?.id ?? ""}
           isDisabledShare={false}
-          isAnonymous={props.userSetting?.isAnonymousLike ?? false}
+          isAnonymous={true}
           isTargetUserBlocked={props.work.user?.isBlocked ?? false}
         />
         <h1 className="font-bold text-lg">
@@ -677,6 +677,6 @@ export const sensitiveWorkArticleFragment = graphql(
 
 export const userSettingFragment = graphql(
   `fragment UserSetting on UserSettingNode @_unmask {
-      isAnonymousLike
+      id
   }`,
 )
