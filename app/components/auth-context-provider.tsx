@@ -22,11 +22,13 @@ type Props = {
 type Claims = ParsedToken
 
 export function AuthContextProvider(props: Props) {
-  // SSR対応：初期状態を安定させる
-  const [isLoading, setLoadingState] = useState(true)
+  const [isLoading, setLoadingState] = useState(() => {
+    return true
+  })
+
   const [currentUser, setCurrentUser] = useState<User | null>(null)
+
   const [claims, setClaims] = useState<Claims | null>(null)
-  const [isClientMounted, setIsClientMounted] = useState(false)
 
   const refresh = async () => {
     const currentUser = getAuth().currentUser
@@ -41,14 +43,8 @@ export function AuthContextProvider(props: Props) {
     })
   }
 
-  // クライアントマウント検出
   useEffect(() => {
-    setIsClientMounted(true)
-  }, [])
-
-  useEffect(() => {
-    // クライアントサイドでのみ認証状態を監視
-    if (!isClientMounted || typeof document === "undefined") return
+    if (typeof document === "undefined") return
 
     const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
       if (user === null) {
@@ -91,10 +87,10 @@ export function AuthContextProvider(props: Props) {
     })
 
     return () => unsubscribe()
-  }, [isClientMounted])
+  }, [])
 
-  // SSR時またはクライアントマウント前は読み込み中状態を返す
-  if (!isClientMounted || isLoading) {
+  // 読み込み中
+  if (isLoading) {
     const value = {
       isLoading: true,
       isNotLoading: false,

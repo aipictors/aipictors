@@ -2,7 +2,7 @@ import { getCookieLoginToken } from "~/utils/get-cookie-login-token"
 import { useMutation } from "@apollo/client/index"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { graphql } from "gql.tada"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -10,31 +10,22 @@ type Props = {
 
 export function AutoLoginProvider(props: Props) {
   const [mutation] = useMutation(loginWithWordPressTokenMutation)
-  const [isClientMounted, setIsClientMounted] = useState(false)
-
-  // クライアントマウント検出
-  useEffect(() => {
-    setIsClientMounted(true)
-  }, [])
 
   useEffect(() => {
-    // クライアントサイドでのみ自動ログインを実行
-    if (!isClientMounted || typeof document === "undefined") return
+    // 未ログイン時のみ自動ログインを試行
+    if (typeof document === "undefined") return
 
-    // 遅延実行で自動ログインを処理
+    // パフォーマンス改善：遅延実行で自動ログインを処理
     const timeoutId = setTimeout(() => {
-      try {
-        const currentUser = getAuth().currentUser
-        if (currentUser === null) {
-          autoLogin()
-        }
-      } catch (error) {
-        console.warn("Auto login check failed:", error)
+      const currentUser = getAuth().currentUser
+
+      if (currentUser === null) {
+        autoLogin()
       }
-    }, 500) // より長い遅延で確実性を高める
+    }, 100) // 100ms遅延で実行
 
     return () => clearTimeout(timeoutId)
-  }, [isClientMounted])
+  }, [])
 
   const autoLogin = async () => {
     try {
