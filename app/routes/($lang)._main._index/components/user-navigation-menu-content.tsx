@@ -35,6 +35,11 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { graphql } from "gql.tada"
+import {
+  userNavigationStyles,
+  getSkeletonClass,
+  getMenuSkeletonClass,
+} from "./user-navigation-styles"
 
 type Props = {
   onLogout(): void
@@ -145,9 +150,9 @@ export function UserNavigationMenuContent(props: Props) {
 
   const getThemeIcon = () => {
     return theme?.endsWith("dark") ? (
-      <MoonIcon className="mr-2 inline-block w-4" />
+      <MoonIcon className={userNavigationStyles.menuIcon} />
     ) : (
-      <SunIcon className="mr-2 inline-block w-4" />
+      <SunIcon className={userNavigationStyles.menuIcon} />
     )
   }
 
@@ -174,7 +179,7 @@ export function UserNavigationMenuContent(props: Props) {
     const fallbackLogin = authContext.login || ""
 
     return (
-      <div className="min-w-[280px]">
+      <div className={userNavigationStyles.container}>
         <div className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800">
           <Link
             to={getSensitiveLink(`/users/${fallbackLogin}`)}
@@ -192,21 +197,51 @@ export function UserNavigationMenuContent(props: Props) {
         </div>
 
         {/* ユーザー情報セクション（スケルトン）*/}
-        <div className="px-3 pb-2">
-          <div className="h-7 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-          <div className="mt-1 h-5 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+        <div className="px-2 pb-2">
+          {/* ユーザー名部分 - フォールバック名があれば表示、なければスケルトン */}
+          {fallbackDisplayName ? (
+            <h3 className={userNavigationStyles.userName}>
+              {fallbackDisplayName}
+            </h3>
+          ) : (
+            <div
+              className={getSkeletonClass(
+                userNavigationStyles.skeleton.userName,
+              )}
+            />
+          )}
+          {/* ログイン名部分 - フォールバックログイン名があれば表示、なければスケルトン */}
+          {fallbackLogin ? (
+            <p className={userNavigationStyles.userLogin}>@{fallbackLogin}</p>
+          ) : (
+            <div
+              className={`mt-1 ${getSkeletonClass(userNavigationStyles.skeleton.userLogin)}`}
+            />
+          )}
 
           {/* フォロー・フォロワー情報（スケルトン） */}
-          <div className="mt-3 flex items-center gap-x-8">
+          <div className="mt-3 flex items-center gap-x-4">
             <div className="text-center">
-              <div className="h-7 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-              <div className="mt-1 text-muted-foreground text-sm">
+              {/* 数字部分 */}
+              <div
+                className={getSkeletonClass(
+                  userNavigationStyles.skeleton.followCount,
+                )}
+              />
+              {/* ラベル部分は実際のテキストを表示 */}
+              <div className={`mt-1 ${userNavigationStyles.followLabel}`}>
                 {t("フォロー中", "Following")}
               </div>
             </div>
             <div className="text-center">
-              <div className="h-7 w-8 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-              <div className="mt-1 text-muted-foreground text-sm">
+              {/* 数字部分 */}
+              <div
+                className={getSkeletonClass(
+                  userNavigationStyles.skeleton.followCount,
+                )}
+              />
+              {/* ラベル部分は実際のテキストを表示 */}
+              <div className={`mt-1 ${userNavigationStyles.followLabel}`}>
                 {t("フォロワー", "Followers")}
               </div>
             </div>
@@ -214,22 +249,90 @@ export function UserNavigationMenuContent(props: Props) {
         </div>
 
         <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
-          {/* スケルトンメニュー項目（簡略化） */}
-          <div className="flex items-center rounded-sm px-2 py-1.5">
-            <div className="mr-2 h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-            <div className="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          {/* スケルトンメニュー項目（実際の項目数に合わせる） */}
+          {/* マイページ */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("myPage")} />
           </div>
-          <div className="flex items-center rounded-sm px-2 py-1.5">
-            <div className="mr-2 h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-            <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          {/* ダッシュボード */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("dashboard")} />
           </div>
-          <div className="flex items-center rounded-sm px-2 py-1.5">
-            <div className="mr-2 h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-            <div className="h-4 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          {/* 自分の作品 */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("myPosts")} />
           </div>
-          <div className="flex items-center rounded-sm px-2 py-1.5">
-            <div className="mr-2 h-4 w-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
-            <div className="h-4 w-18 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          {/* 支援管理（条件付きで表示されるが、スケルトンでは表示しておく） */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("support")} />
+          </div>
+          {/* アカウント */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("account")} />
+          </div>
+          {/* お問い合わせ */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("contact")} />
+          </div>
+          {/* Aipictors+ */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("plus")} />
+          </div>
+          {/* 設定 */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("settings")} />
+          </div>
+          {/* テーマ */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("theme")} />
+          </div>
+          {/* 言語 */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("language")} />
+          </div>
+          {/* SensitiveToggle（条件付きで表示されるが、スケルトンでは表示しておく） */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("settings")} />
+          </div>
+          {/* ログアウト */}
+          <div className={userNavigationStyles.menuItem}>
+            <div
+              className={`${userNavigationStyles.menuIcon} ${userNavigationStyles.skeleton.base}`}
+            />
+            <div className={getMenuSkeletonClass("logout")} />
           </div>
         </ScrollArea>
       </div>
@@ -237,7 +340,7 @@ export function UserNavigationMenuContent(props: Props) {
   }
 
   return (
-    <div className="min-w-[280px]">
+    <div className={userNavigationStyles.container}>
       <div
         className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800"
         style={{
@@ -260,28 +363,37 @@ export function UserNavigationMenuContent(props: Props) {
       </div>
 
       {/* ユーザー情報セクション */}
-      <div className="px-3 pb-2">
-        <h3 className="font-bold text-lg">{data?.viewer?.user?.name}</h3>
-        <p className="text-muted-foreground text-sm">
+      <div className="px-2 pb-2">
+        {" "}
+        {/* パディングを削減 */}
+        <h3 className={userNavigationStyles.userName}>
+          {data?.viewer?.user?.name}
+        </h3>
+        <p className={userNavigationStyles.userLogin}>
           @{data?.viewer?.user?.login}
         </p>
-
         {/* フォロー・フォロワー情報 */}
-        <div className="mt-3 flex items-center gap-x-8">
+        <div className="mt-3 flex items-center gap-x-4">
+          {" "}
+          {/* gap を削減 */}
           <div className="text-center">
-            <div className="font-bold text-lg">{followCount}</div>
+            <div className={userNavigationStyles.followCount}>
+              {followCount}
+            </div>
             <Link
               to={getSensitiveLink("/following")}
-              className="cursor-pointer text-muted-foreground text-sm hover:underline"
+              className={`cursor-pointer hover:underline ${userNavigationStyles.followLabel}`}
             >
               {t("フォロー中", "Following")}
             </Link>
           </div>
           <div className="text-center">
-            <div className="font-bold text-lg">{followerCount}</div>
+            <div className={userNavigationStyles.followCount}>
+              {followerCount}
+            </div>
             <Link
               to={getSensitiveLink("/followers")}
-              className="cursor-pointer text-muted-foreground text-sm hover:underline"
+              className={`cursor-pointer hover:underline ${userNavigationStyles.followLabel}`}
             >
               {t("フォロワー", "Followers")}
             </Link>
@@ -292,60 +404,64 @@ export function UserNavigationMenuContent(props: Props) {
       <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
         <MenuItemLink
           href={getSensitiveLink(`/users/${authContext.login}`)}
-          icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
+          icon={<UserCircleIcon className={userNavigationStyles.menuIcon} />}
           label={t("マイページ", "My page")}
         />
         <MenuItemLink
           href={getSensitiveLink("/my")}
-          icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
+          icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
           label={t("ダッシュボード", "Dashboard")}
         />
         <MenuItemLink
           href={getSensitiveLink("/my/posts")}
-          icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
+          icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
           label={t("自分の作品", "My posts")}
         />
         {featurePromptonRequest &&
           (promptonUser === "" && viewerUserToken ? (
             <MenuItemLink
               href={`https://prompton.io/integration?token=${viewerUserToken}`}
-              icon={<CoffeeIcon className="mr-2 inline-block w-4" />}
+              icon={<CoffeeIcon className={userNavigationStyles.menuIcon} />}
               label={t("支援管理", "Support management")}
             />
           ) : (
             <MenuItemLink
               href={"https://prompton.io/viewer/requests"}
-              icon={<CoffeeIcon className="mr-2 inline-block w-4" />}
+              icon={<CoffeeIcon className={userNavigationStyles.menuIcon} />}
               label={t("支援管理", "Support management")}
             />
           ))}
         <MenuItemLink
           href={getSensitiveLink("/settings/account/login")}
-          icon={<UserIcon className="mr-2 inline-block w-4" />}
+          icon={<UserIcon className={userNavigationStyles.menuIcon} />}
           label={t("アカウント", "Account")}
         />
         <MenuItemLink
           href={getSensitiveLink("/support/chat")}
-          icon={<MessageCircleIcon className="mr-2 inline-block w-4" />}
+          icon={<MessageCircleIcon className={userNavigationStyles.menuIcon} />}
           label={t("お問い合わせ", "Contact")}
         />
         <MenuItemLink
           href={getSensitiveLink("/plus")}
-          icon={<GemIcon className="mr-2 inline-block w-4" />}
+          icon={<GemIcon className={userNavigationStyles.menuIcon} />}
           label="Aipictors+"
         />
         <MenuItemLink
           href={getSensitiveLink("/settings")}
-          icon={<SettingsIcon className="mr-2 inline-block w-4" />}
+          icon={<SettingsIcon className={userNavigationStyles.menuIcon} />}
           label={t("設定", "Settings")}
         />
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
+          <DropdownMenuSubTrigger className={userNavigationStyles.menuItem}>
             {getThemeIcon()}
-            {t("テーマ", "Theme")}
+            <span
+              className={`${userNavigationStyles.menuText} ${userNavigationStyles.menuItemText}`}
+            >
+              {t("テーマ", "Theme")}
+            </span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
-            <DropdownMenuSubContent>
+            <DropdownMenuSubContent className="max-w-[180px] sm:max-w-[200px]">
               <DropdownMenuLabel>
                 {t("テーマ変更", "Change Theme")}
               </DropdownMenuLabel>
@@ -368,19 +484,25 @@ export function UserNavigationMenuContent(props: Props) {
               </DropdownMenuRadioGroup>
               <MenuItemLink
                 href={getSensitiveLink("/settings/color")}
-                icon={<SettingsIcon className="mr-2 inline-block w-4" />}
+                icon={
+                  <SettingsIcon className={userNavigationStyles.menuIcon} />
+                }
                 label={t("その他のカラー", "Other colors")}
               />
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <Languages className="mr-2 inline-block w-4" />
-            {t("言語/Language", "言語/Language")}
+          <DropdownMenuSubTrigger className={userNavigationStyles.menuItem}>
+            <Languages className={userNavigationStyles.menuIcon} />
+            <span
+              className={`${userNavigationStyles.menuText} ${userNavigationStyles.menuItemText}`}
+            >
+              {t("言語/Language", "言語/Language")}
+            </span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
-            <DropdownMenuSubContent>
+            <DropdownMenuSubContent className="max-w-[160px] sm:max-w-[180px]">
               <DropdownMenuLabel>
                 {t("言語変更", "Change Language")}
               </DropdownMenuLabel>
@@ -409,9 +531,16 @@ export function UserNavigationMenuContent(props: Props) {
               <SensitiveToggle variant="full" className="w-full" />
             </DropdownMenuItem>
           )}
-        <DropdownMenuItem onClick={props.onLogout}>
-          <LogOutIcon className="mr-2 inline-block w-4" />
-          <p>{t("ログアウト", "Logout")}</p>
+        <DropdownMenuItem
+          onClick={props.onLogout}
+          className={userNavigationStyles.menuItem}
+        >
+          <LogOutIcon className={userNavigationStyles.menuIcon} />
+          <span
+            className={`${userNavigationStyles.menuText} ${userNavigationStyles.menuItemText}`}
+          >
+            {t("ログアウト", "Logout")}
+          </span>
         </DropdownMenuItem>
       </ScrollArea>
     </div>

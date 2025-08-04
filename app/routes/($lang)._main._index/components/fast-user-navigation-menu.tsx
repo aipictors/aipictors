@@ -83,7 +83,9 @@ export function FastUserNavigationMenu(props: Props) {
   })
 
   // モバイル用軽量ログ
-  debugLog.mobileLite(`FastUserNav: ${authContext.isLoggedIn ? "logged-in" : "loading"}`)
+  debugLog.mobileLite(
+    `FastUserNav: ${authContext.isLoggedIn ? "logged-in" : "loading"}`,
+  )
 
   if (authContext.isNotLoggedIn) {
     return null

@@ -555,7 +555,11 @@ function HomeHeader(props: Props) {
         ) : authContext.isLoggedIn ? (
           // ログイン時のUI（Suspenseでスムーズなローディング）
           <div className="flex items-center gap-2">
-            <Suspense fallback={<div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />}>
+            <Suspense
+              fallback={
+                <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+              }
+            >
               <HomeNotificationsMenu
                 isExistedNewNotification={isExistedNewNotificationState}
                 setIsExistedNewNotificationState={
@@ -567,7 +571,11 @@ function HomeHeader(props: Props) {
                 }
               />
             </Suspense>
-            <Suspense fallback={<div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />}>
+            <Suspense
+              fallback={
+                <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+              }
+            >
               <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
             </Suspense>
           </div>

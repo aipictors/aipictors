@@ -16,12 +16,12 @@ const isMobileDevice = (): boolean => {
 // モバイル端末でのログを制限（パフォーマンス向上）
 const shouldLog = (category: string): boolean => {
   if (!isDevelopment) return false
-  
+
   // モバイル端末では重要なログのみ出力
   if (isMobileDevice()) {
     return ["auth", "mobile"].includes(category)
   }
-  
+
   return true
 }
 
