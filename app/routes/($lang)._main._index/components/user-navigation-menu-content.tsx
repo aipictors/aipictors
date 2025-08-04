@@ -50,19 +50,19 @@ export function UserNavigationMenuContent(props: Props) {
   const { data, refetch } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     errorPolicy: "all",
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network", // キャッシュがある場合は即座に表示、バックグラウンドで更新
   })
 
   const { data: userSetting } = useQuery(userSettingQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     errorPolicy: "all",
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
   })
 
   const { data: tokenData } = useQuery(viewerTokenQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     errorPolicy: "all",
-    fetchPolicy: "cache-first",
+    fetchPolicy: "cache-and-network",
   })
 
   useEffect(() => {
@@ -161,12 +161,87 @@ export function UserNavigationMenuContent(props: Props) {
     return path
   }
 
-  if (authContext.isNotLoggedIn || !data?.viewer?.user) {
+  if (authContext.isNotLoggedIn) {
     return null
   }
 
+  // データが読み込み中の場合は認証情報を使用してスケルトンを表示
+  if (!data?.viewer?.user) {
+    const fallbackIconUrl = authContext.avatarPhotoURL || ""
+    const fallbackDisplayName = authContext.displayName || ""
+    const fallbackLogin = authContext.login || ""
+
+    return (
+      <div className="min-w-[280px]">
+        <div className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800">
+          <Link
+            to={getSensitiveLink(`/users/${fallbackLogin}`)}
+            className="absolute bottom-[-24px] left-3"
+          >
+            <Avatar className="h-12 w-12 cursor-pointer border-2 border-white">
+              <AvatarImage src={withIconUrlFallback(fallbackIconUrl)} />
+              <AvatarFallback>
+                {fallbackDisplayName
+                  ? fallbackDisplayName.charAt(0).toUpperCase()
+                  : "U"}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        </div>
+
+        {/* ユーザー情報セクション */}
+        <div className="px-3 pb-2">
+          <h3 className="font-bold text-lg">
+            {fallbackDisplayName || "読み込み中..."}
+          </h3>
+          <p className="text-muted-foreground text-sm">
+            @{fallbackLogin || "..."}
+          </p>
+
+          {/* フォロー・フォロワー情報（スケルトン） */}
+          <div className="mt-3 flex items-center gap-x-8">
+            <div className="text-center">
+              <div className="h-6 w-12 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+              <div className="mt-1 text-muted-foreground text-sm">
+                {t("フォロー中", "Following")}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="h-6 w-12 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+              <div className="mt-1 text-muted-foreground text-sm">
+                {t("フォロワー", "Followers")}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
+          <MenuItemLink
+            href={getSensitiveLink(`/users/${fallbackLogin}`)}
+            icon={<UserCircleIcon className="mr-2 inline-block w-4" />}
+            label={t("マイページ", "My page")}
+          />
+          <MenuItemLink
+            href={getSensitiveLink("/my")}
+            icon={<SquareKanbanIcon className="mr-2 inline-block w-4" />}
+            label={t("ダッシュボード", "Dashboard")}
+          />
+          <MenuItemLink
+            href={getSensitiveLink("/settings")}
+            icon={<SettingsIcon className="mr-2 inline-block w-4" />}
+            label={t("設定", "Settings")}
+          />
+          <DropdownMenuItem onClick={props.onLogout}>
+            <LogOutIcon className="mr-2 inline-block w-4" />
+            <p>{t("ログアウト", "Logout")}</p>
+          </DropdownMenuItem>
+        </ScrollArea>
+      </div>
+    )
+  }
+
   return (
-    <div>
+    <div className="min-w-[280px]">
       <div
         className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800"
         style={{

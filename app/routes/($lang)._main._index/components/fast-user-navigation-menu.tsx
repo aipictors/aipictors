@@ -57,29 +57,8 @@ export function FastUserNavigationMenu(props: Props) {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {/* Suspenseでスムーズに表示 - チカチカを防ぐ */}
-        <Suspense
-          fallback={
-            <div className="min-w-[280px] p-4">
-              <div className="animate-pulse space-y-3">
-                {/* ヘッダー部分のスケルトン */}
-                <div className="mb-4 h-16 w-full rounded-md bg-gray-200" />
-                {/* フォロー/フォロワー部分のスケルトン */}
-                <div className="flex gap-x-2">
-                  <div className="h-8 w-16 rounded bg-gray-200" />
-                  <div className="h-8 w-16 rounded bg-gray-200" />
-                </div>
-                {/* メニューアイテムのスケルトン */}
-                <div className="h-6 w-full rounded bg-gray-200" />
-                <div className="h-6 w-full rounded bg-gray-200" />
-                <div className="h-6 w-full rounded bg-gray-200" />
-                <div className="h-6 w-full rounded bg-gray-200" />
-                <div className="h-6 w-full rounded bg-gray-200" />
-                <div className="h-6 w-full rounded bg-gray-200" />
-              </div>
-            </div>
-          }
-        >
+        {/* UserNavigationMenuContentが自分でローディング状態を管理 */}
+        <Suspense fallback={<div className="p-4">読み込み中...</div>}>
           <UserNavigationMenuContent onLogout={props.onLogout} />
         </Suspense>
       </DropdownMenuContent>
