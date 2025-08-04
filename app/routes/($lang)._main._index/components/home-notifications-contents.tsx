@@ -15,6 +15,8 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
+import { AuthContext } from "~/contexts/auth-context"
+import { useContext } from "react"
 
 type Props = {
   type: IntrospectionEnum<"NotificationType">
@@ -32,6 +34,18 @@ export function HomeNotificationsContents({ type, onItemSelect }: Props) {
 
   const notifications = data.viewer?.notifications ?? []
   const t = useTranslation()
+
+  // デバッグ用ログ
+  console.log("📋 HomeNotificationsContents render:", {
+    type,
+    notificationsCount: notifications.length,
+    hasViewer: !!data.viewer,
+    notifications: notifications.map((n) => ({
+      typename: n.__typename,
+      hasId: "id" in n,
+      hasCreatedAt: "createdAt" in n,
+    })),
+  })
 
   if (notifications.length === 0) {
     return (

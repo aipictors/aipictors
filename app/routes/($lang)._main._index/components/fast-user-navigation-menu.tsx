@@ -42,6 +42,21 @@ export function FastUserNavigationMenu(props: Props) {
     data?.viewer?.user?.iconUrl ?? authContext.avatarPhotoURL ?? ""
   const displayName = data?.viewer?.user?.name ?? authContext.displayName ?? ""
 
+  // デバッグ用ログ
+  console.log("👤 FastUserNavigationMenu render:", {
+    isOpen,
+    authContext: {
+      isLoggedIn: authContext.isLoggedIn,
+      isNotLoggedIn: authContext.isNotLoggedIn,
+      isLoading: authContext.isLoading,
+      userId: authContext.userId,
+    },
+    queryData: {
+      hasData: !!data,
+      loading: false, // このクエリのloadingを確認したい場合は追加
+    },
+  })
+
   if (authContext.isNotLoggedIn) {
     return null
   }

@@ -198,7 +198,11 @@ function HomeHeader(props: Props) {
 
   const isExistedNewNotificationData = useQuery(
     viewerIsExistedNewNotificationQuery,
-    {},
+    {
+      skip: !authContext.isLoggedIn || authContext.isLoading, // ログイン確定かつloading終了している場合のみ実行
+      errorPolicy: "all",
+      fetchPolicy: "cache-and-network", // キャッシュがあれば使い、バックグラウンドで更新
+    },
   )
   const isExistedNewNotification =
     isExistedNewNotificationData.data?.viewer?.isExistedNewNotification
@@ -206,6 +210,35 @@ function HomeHeader(props: Props) {
   const [isSearchFormOpen, setIsSearchFormOpen] = useState(false)
   const [isExistedNewNotificationState, setIsExistedNewNotificationState] =
     useState(isExistedNewNotification ?? false)
+
+  // isExistedNewNotification の値が変更された時に状態を同期
+  useEffect(() => {
+    console.log("🔔 Notification state changed:", {
+      isExistedNewNotification,
+      queryData: isExistedNewNotificationData.data,
+      queryLoading: isExistedNewNotificationData.loading,
+      queryError: !!isExistedNewNotificationData.error,
+      authContext: {
+        isLoggedIn: authContext.isLoggedIn,
+        isNotLoggedIn: authContext.isNotLoggedIn,
+        isLoading: authContext.isLoading,
+        userId: authContext.userId,
+        login: authContext.login,
+      },
+    })
+    setIsExistedNewNotificationState(isExistedNewNotification ?? false)
+  }, [isExistedNewNotification, isExistedNewNotificationData])
+
+  // ログイン状態が変更された時に通知状態をリセット
+  useEffect(() => {
+    console.log("👤 Auth state changed:", {
+      isNotLoggedIn: authContext.isNotLoggedIn,
+      resetting: authContext.isNotLoggedIn,
+    })
+    if (authContext.isNotLoggedIn) {
+      setIsExistedNewNotificationState(false)
+    }
+  }, [authContext.isNotLoggedIn])
 
   const _handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
@@ -487,7 +520,7 @@ function HomeHeader(props: Props) {
             </Button>
           </div>
         )}
-        {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
+        {/* お知らせアイコン - 常に表示（ログイン時） */}
         {authContext.isLoggedIn && (
           <Suspense fallback={null}>
             <HomeNotificationsMenu
@@ -502,6 +535,13 @@ function HomeHeader(props: Props) {
             />
           </Suspense>
         )}
+        {/* プロフィールアイコン - 常に表示（ログイン時） */}
+        <Suspense fallback={null}>
+          {authContext.isLoggedIn && (
+            <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
+          )}
+        </Suspense>
+        {/* 検索フォーム時の検索ボタン（スマホのみ） */}
         {isSearchFormOpen && (
           <Button
             className="md:hidden"
@@ -512,11 +552,8 @@ function HomeHeader(props: Props) {
             <Search className="w-16" />
           </Button>
         )}
-        <Suspense fallback={null}>
-          {authContext.isLoggedIn && (
-            <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
-          )}
-        </Suspense>
+        {/* 未ログイン時のメニュー */}
+        {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
         {authContext.isNotLoggedIn && <LoginDialogButton />}
         <LogoutDialogLegacy
           isOpen={isOpenLogoutDialog}

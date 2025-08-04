@@ -19,7 +19,8 @@ import {
   MessageCircle,
   UserRoundCheck,
 } from "lucide-react"
-import { Suspense, useState } from "react"
+import { Suspense, useState, useContext } from "react"
+import { AuthContext } from "~/contexts/auth-context"
 import type { CheckedNotificationTimesFragment } from "~/routes/($lang)._main._index/components/home-header"
 import { graphql, type FragmentOf } from "gql.tada"
 import { WorkAwardNotificationFragment } from "~/routes/($lang)._main._index/components/home-notifications-content-award-item"
@@ -47,6 +48,8 @@ type Props = {
  * ヘッダーのお知らせメニュー
  */
 export function HomeNotificationsMenu(props: Props) {
+  const authContext = useContext(AuthContext)
+
   // "MESSAGE" タブを追加
   const tabValues: (IntrospectionEnum<"NotificationType"> | "MESSAGE")[] = [
     "LIKED_WORK",
@@ -81,18 +84,33 @@ export function HomeNotificationsMenu(props: Props) {
   // ---------- GraphQL: 最新 1 件を取得して新規判定 ----------
   const likeNotificationData = useQuery(viewerNotificationsQuery, {
     variables: { offset: 0, limit: 1, where: { type: "LIKED_WORK" } },
+    skip: !authContext.isLoggedIn || authContext.isLoading, // ログイン確定かつloading終了している場合のみ実行
+    errorPolicy: "all",
+    fetchPolicy: "cache-first",
   })
   const commentNotificationData = useQuery(viewerNotificationsQuery, {
     variables: { offset: 0, limit: 1, where: { type: "WORK_COMMENT" } },
+    skip: !authContext.isLoggedIn || authContext.isLoading, // ログイン確定かつloading終了している場合のみ実行
+    errorPolicy: "all",
+    fetchPolicy: "cache-first",
   })
   const awardNotificationData = useQuery(viewerNotificationsQuery, {
     variables: { offset: 0, limit: 1, where: { type: "WORK_AWARD" } },
+    skip: !authContext.isLoggedIn || authContext.isLoading, // ログイン確定かつloading終了している場合のみ実行
+    errorPolicy: "all",
+    fetchPolicy: "cache-first",
   })
   const followNotificationData = useQuery(viewerNotificationsQuery, {
     variables: { offset: 0, limit: 1, where: { type: "FOLLOW" } },
+    skip: !authContext.isLoggedIn || authContext.isLoading, // ログイン確定かつloading終了している場合のみ実行
+    errorPolicy: "all",
+    fetchPolicy: "cache-first",
   })
   const messageNotificationData = useQuery(messagesQuery, {
     variables: { offset: 0, limit: 1 },
+    skip: !authContext.isLoggedIn || authContext.isLoading, // ログイン確定かつloading終了している場合のみ実行
+    errorPolicy: "all",
+    fetchPolicy: "cache-first",
   })
 
   const likeNotification = likeNotificationData.data?.viewer
@@ -131,6 +149,49 @@ export function HomeNotificationsMenu(props: Props) {
     : false
 
   const t = useTranslation()
+
+  // デバッグ用ログ
+  console.log("🔔 HomeNotificationsMenu render:", {
+    isExistedNewNotification: props.isExistedNewNotification,
+    authContext: {
+      isLoggedIn: authContext.isLoggedIn,
+      isNotLoggedIn: authContext.isNotLoggedIn,
+      isLoading: authContext.isLoading,
+    },
+    queries: {
+      likeData: !!likeNotificationData.data,
+      likeLoading: likeNotificationData.loading,
+      likeError: !!likeNotificationData.error,
+      commentData: !!commentNotificationData.data,
+      commentLoading: commentNotificationData.loading,
+      commentError: !!commentNotificationData.error,
+      awardData: !!awardNotificationData.data,
+      awardLoading: awardNotificationData.loading,
+      followData: !!followNotificationData.data,
+      followLoading: followNotificationData.loading,
+      messageData: !!messageNotificationData.data,
+      messageLoading: messageNotificationData.loading,
+    },
+    notifications: {
+      like: !!likeNotification,
+      comment: !!commentNotification,
+      award: !!awardNotification,
+      follow: !!followNotification,
+      message: !!messageNotification,
+    },
+    newNotifications: {
+      isNewLike: isNewLikeNotification,
+      isNewComment: isNewCommentNotification,
+      isNewAward: isNewAwardNotification,
+      isNewFollow: isNewFollowNotification,
+      isNewMessage: isNewMessageNotification,
+    },
+  })
+
+  // ログインしていない場合またはまだ認証状態が確定していない場合は何も表示しない
+  if (!authContext.isLoggedIn) {
+    return null
+  }
 
   // ---------- JSX ----------
   return (
