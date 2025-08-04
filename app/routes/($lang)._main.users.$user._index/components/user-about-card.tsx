@@ -11,13 +11,6 @@ type Props = {
 export function UserAboutCard(props: Props) {
   const t = useTranslation()
 
-  // デバッグ用ログ
-  console.log("UserAboutCard Debug:", {
-    propsUser: props.user,
-    userId: props.user.id,
-    biography: props.user.biography,
-  })
-
   return (
     <Card className="flex flex-col gap-y-4 p-4">
       <p className="flex items-center space-x-2 text-sm opacity-80">

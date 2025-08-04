@@ -1,5 +1,6 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { config } from "~/config"
+import { debugLog } from "~/utils/debug-logger"
 import {
   getAnalytics,
   logEvent,
@@ -52,32 +53,88 @@ export function AuthContextProvider(props: Props) {
   useEffect(() => {
     if (typeof document === "undefined") return
 
+    // モバイル端末の検出
+    const isMobile =
+      typeof navigator !== "undefined" &&
+      /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      )
+
+    debugLog.auth("AuthContextProvider: Setting up auth listener", {
+      isMobile,
+      userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "SSR",
+      viewport:
+        typeof window !== "undefined"
+          ? { width: window.innerWidth, height: window.innerHeight }
+          : "SSR",
+    })
+
     const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
+      debugLog.auth("AuthStateChanged:", {
+        hasUser: !!user,
+        userId: user?.uid,
+        displayName: user?.displayName,
+        email: user?.email,
+        isMobile,
+        timestamp: new Date().toISOString(),
+      })
+
       if (user === null) {
         setCurrentUser(null)
         setClaims(null)
         setLoadingState(false)
+        debugLog.auth("User logged out - state cleared")
         return
       }
 
-      // Analytics は遅延で設定
-      requestIdleCallback(() => {
-        try {
-          setUserId(getAnalytics(), user?.uid ?? null)
-          logEvent(getAnalytics(), config.logEvent.login, {
-            method: user.providerId,
-          })
-        } catch (error) {
-          console.warn("Analytics error:", error)
-        }
-      })
+      // Analytics は遅延で設定（モバイル端末のパフォーマンス最適化）
+      if (typeof requestIdleCallback !== "undefined") {
+        requestIdleCallback(
+          () => {
+            try {
+              if (typeof window !== "undefined") {
+                setUserId(getAnalytics(), user?.uid ?? null)
+                logEvent(getAnalytics(), config.logEvent.login, {
+                  method: user.providerId,
+                })
+              }
+            } catch (error) {
+              console.warn("Analytics error:", error)
+            }
+          },
+          { timeout: 5000 }, // 5秒でタイムアウト
+        )
+      } else {
+        // requestIdleCallbackが使用できない場合は即座にバックグラウンドで実行
+        setTimeout(() => {
+          try {
+            if (typeof window !== "undefined") {
+              setUserId(getAnalytics(), user?.uid ?? null)
+              logEvent(getAnalytics(), config.logEvent.login, {
+                method: user.providerId,
+              })
+            }
+          } catch (error) {
+            console.warn("Analytics error:", error)
+          }
+        }, 100)
+      }
 
-      // トークン取得を並行して実行し、UIの表示を優先
+      // トークン取得を並行して実行し、UIの表示を優先（モバイル最適化）
+      const isMobileDevice =
+        typeof navigator !== "undefined" &&
+        /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        )
+
+      // モバイル端末では短いタイムアウトでより早くフォールバック
+      const tokenTimeout = isMobileDevice ? 1500 : 2000
+
       Promise.race([
         getIdTokenResult(user, true),
-        // 2秒でタイムアウトし、基本情報のみで進む
+        // モバイル端末では1.5秒、その他は2秒でタイムアウトし、基本情報のみで進む
         new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Token timeout")), 2000),
+          setTimeout(() => reject(new Error("Token timeout")), tokenTimeout),
         ),
       ])
         .then((result) => {
@@ -85,28 +142,49 @@ export function AuthContextProvider(props: Props) {
             ReturnType<typeof getIdTokenResult>
           >
 
-          // Analytics のユーザープロパティ設定も遅延実行
-          requestIdleCallback(() => {
-            try {
-              setUserProperties(getAnalytics(), {
-                display_name: user.displayName,
-                provider_id: user.providerId,
-                username: tokenResult.claims.username,
-              })
-            } catch (error) {
-              console.warn("Analytics user properties error:", error)
-            }
-          })
+          // Analytics のユーザープロパティ設定も遅延実行（モバイル最適化）
+          if (typeof requestIdleCallback !== "undefined") {
+            requestIdleCallback(
+              () => {
+                try {
+                  if (typeof window !== "undefined") {
+                    setUserProperties(getAnalytics(), {
+                      display_name: user.displayName,
+                      provider_id: user.providerId,
+                      username: tokenResult.claims.username,
+                    })
+                  }
+                } catch (error) {
+                  console.warn("Analytics user properties error:", error)
+                }
+              },
+              { timeout: 5000 }, // 5秒でタイムアウト
+            )
+          } else {
+            setTimeout(() => {
+              try {
+                if (typeof window !== "undefined") {
+                  setUserProperties(getAnalytics(), {
+                    display_name: user.displayName,
+                    provider_id: user.providerId,
+                    username: tokenResult.claims.username,
+                  })
+                }
+              } catch (error) {
+                console.warn("Analytics user properties error:", error)
+              }
+            }, 200)
+          }
 
           setCurrentUser(user)
           setClaims({ ...tokenResult.claims })
           setLoadingState(false)
         })
         .catch((error) => {
-          console.warn(
-            "Failed to get token result, using basic user info:",
-            error,
-          )
+          debugLog.auth("Failed to get token result, using basic user info:", {
+            error: error.message,
+            isMobile: isMobileDevice,
+          })
           // トークン取得に失敗した場合でも基本的なユーザー情報でUIを表示
           setCurrentUser(user)
           // 最低限のクレーム情報を構築
@@ -118,16 +196,18 @@ export function AuthContextProvider(props: Props) {
           } as ParsedToken)
           setLoadingState(false)
 
-          // バックグラウンドで再試行
+          // バックグラウンドで再試行（モバイル端末では少し遅延）
+          const retryDelay = isMobileDevice ? 2000 : 1000
           setTimeout(() => {
             getIdTokenResult(user, true)
               .then((result) => {
                 setClaims({ ...result.claims })
+                debugLog.auth("Token retry succeeded")
               })
               .catch(() => {
-                // 再試行も失敗した場合は何もしない
+                debugLog.auth("Token retry also failed")
               })
-          }, 1000)
+          }, retryDelay)
         })
     })
 
@@ -136,6 +216,7 @@ export function AuthContextProvider(props: Props) {
 
   // 読み込み中
   if (isLoading) {
+    debugLog.auth("AuthContext: Loading state")
     const value = {
       isLoading: true,
       isNotLoading: false,
@@ -160,6 +241,12 @@ export function AuthContextProvider(props: Props) {
     claims === null ||
     (typeof claims.userId !== "string" && typeof claims.sub !== "string")
   ) {
+    debugLog.auth("AuthContext: Not logged in", {
+      hasCurrentUser: !!currentUser,
+      hasClaims: !!claims,
+      claimsUserId: claims?.userId,
+      claimsSub: claims?.sub,
+    })
     const value = {
       isLoading: false,
       isNotLoading: true,
@@ -184,6 +271,18 @@ export function AuthContextProvider(props: Props) {
     userId) as string
   const displayName = (claims.name || claims.display_name || login) as string
   const avatarPhotoURL = (claims.picture || claims.avatar_url) as string
+
+  debugLog.auth("AuthContext: Logged in", {
+    userId,
+    login,
+    displayName,
+    avatarPhotoURL: !!avatarPhotoURL,
+    isMobile:
+      typeof navigator !== "undefined" &&
+      /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent,
+      ),
+  })
 
   const value = {
     isLoading: false,

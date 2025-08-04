@@ -9,6 +9,7 @@ import { useContext, useState, lazy, Suspense } from "react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useQuery } from "@apollo/client/index"
 import { viewerBasicUserQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
+import { debugLog } from "~/utils/debug-logger"
 
 // 詳細なメニューコンテンツを遅延読み込み
 const UserNavigationMenuContent = lazy(
@@ -30,11 +31,21 @@ export function FastUserNavigationMenu(props: Props) {
   const authContext = useContext(AuthContext)
   const [isOpen, setIsOpen] = useState(false)
 
-  // 基本情報のみ先に取得（キャッシュ優先）
+  // 基本情報のみ先に取得（キャッシュ優先、モバイル最適化）
   const { data } = useQuery(viewerBasicUserQuery, {
     skip: authContext.isNotLoggedIn,
     errorPolicy: "ignore",
     fetchPolicy: "cache-first",
+    // モバイル端末では短いタイムアウト
+    context: {
+      timeout:
+        typeof navigator !== "undefined" &&
+        /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        )
+          ? 3000
+          : 5000,
+    },
   })
 
   // 認証情報から最低限の表示
@@ -42,18 +53,31 @@ export function FastUserNavigationMenu(props: Props) {
     data?.viewer?.user?.iconUrl ?? authContext.avatarPhotoURL ?? ""
   const displayName = data?.viewer?.user?.name ?? authContext.displayName ?? ""
 
-  // デバッグ用ログ
-  console.log("👤 FastUserNavigationMenu render:", {
+  // デバッグ用ログ（モバイル含む詳細情報）
+  debugLog.user("FastUserNavigationMenu render:", {
     isOpen,
+    userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "SSR",
+    viewport:
+      typeof window !== "undefined"
+        ? { width: window.innerWidth, height: window.innerHeight }
+        : "SSR",
     authContext: {
       isLoggedIn: authContext.isLoggedIn,
       isNotLoggedIn: authContext.isNotLoggedIn,
       isLoading: authContext.isLoading,
       userId: authContext.userId,
+      login: authContext.login,
+      displayName: authContext.displayName,
+      avatarPhotoURL: authContext.avatarPhotoURL,
     },
     queryData: {
       hasData: !!data,
-      loading: false, // このクエリのloadingを確認したい場合は追加
+      iconUrl: data?.viewer?.user?.iconUrl,
+      login: data?.viewer?.user?.login,
+    },
+    fallbackData: {
+      iconUrl,
+      displayName,
     },
   })
 

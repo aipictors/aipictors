@@ -30,6 +30,7 @@ import {
 } from "~/components/ui/dropdown-menu"
 import { cn } from "~/lib/utils"
 import { useSidebar } from "~/contexts/sidebar-context"
+import { debugLog } from "~/utils/debug-logger"
 
 // 重いコンポーネントを遅延読み込み
 const HomeNotificationsMenu = lazy(() =>
@@ -213,7 +214,7 @@ function HomeHeader(props: Props) {
 
   // isExistedNewNotification の値が変更された時に状態を同期
   useEffect(() => {
-    console.log("🔔 Notification state changed:", {
+    debugLog.notification("Notification state changed:", {
       isExistedNewNotification,
       queryData: isExistedNewNotificationData.data,
       queryLoading: isExistedNewNotificationData.loading,
@@ -231,7 +232,7 @@ function HomeHeader(props: Props) {
 
   // ログイン状態が変更された時に通知状態をリセット
   useEffect(() => {
-    console.log("👤 Auth state changed:", {
+    debugLog.auth("Auth state changed:", {
       isNotLoggedIn: authContext.isNotLoggedIn,
       resetting: authContext.isNotLoggedIn,
     })
@@ -309,6 +310,30 @@ function HomeHeader(props: Props) {
 
     navigate(getSensitiveLink(path))
   }
+
+  // モバイル端末でのログイン状態デバッグ用ログ
+  const isMobile =
+    typeof navigator !== "undefined" &&
+    /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    )
+
+  debugLog.mobile("HomeHeader render:", {
+    isMobile,
+    viewport:
+      typeof window !== "undefined"
+        ? { width: window.innerWidth, height: window.innerHeight }
+        : "SSR",
+    authState: {
+      isLoggedIn: authContext.isLoggedIn,
+      isNotLoggedIn: authContext.isNotLoggedIn,
+      isLoading: authContext.isLoading,
+      userId: authContext.userId,
+      hasDisplayName: !!authContext.displayName,
+      hasAvatarURL: !!authContext.avatarPhotoURL,
+    },
+    timestamp: new Date().toISOString(),
+  })
 
   return (
     <AppHeader isSmallLeftPadding={props.alwaysShowTitle}>
