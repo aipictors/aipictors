@@ -10,6 +10,11 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useQuery } from "@apollo/client/index"
 import { viewerBasicUserQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
 import { debugLog } from "~/utils/debug-logger"
+import {
+  userNavigationStyles,
+  getSkeletonClass,
+  getMenuSkeletonClass,
+} from "~/routes/($lang)._main._index/components/user-navigation-styles"
 
 // 詳細なメニューコンテンツを遅延読み込み
 const UserNavigationMenuContent = lazy(
@@ -105,8 +110,85 @@ export function FastUserNavigationMenu(props: Props) {
         {/* UserNavigationMenuContentが自分でローディング状態を管理 */}
         <Suspense
           fallback={
-            <div className="p-4 text-center text-muted-foreground text-sm">
-              読み込み中...
+            <div className={userNavigationStyles.container}>
+              <div className="space-y-3 p-4">
+                {/* ユーザー情報セクション */}
+                <div className="space-y-2">
+                  <div
+                    className={getSkeletonClass(
+                      userNavigationStyles.skeleton.userName,
+                    )}
+                  />
+                  <div
+                    className={getSkeletonClass(
+                      userNavigationStyles.skeleton.userLogin,
+                    )}
+                  />
+                </div>
+
+                {/* フォロー・フォロワー情報 */}
+                <div className="flex justify-between">
+                  <div className="flex flex-col items-center text-center">
+                    <div
+                      className={`${getSkeletonClass(
+                        userNavigationStyles.skeleton.followCount,
+                      )} mx-auto`}
+                    />
+                    <div
+                      className={`${getSkeletonClass("h-4 w-12")} mx-auto`}
+                    />
+                  </div>
+                  <div className="flex flex-col items-center text-center">
+                    <div
+                      className={`${getSkeletonClass(
+                        userNavigationStyles.skeleton.followCount,
+                      )} mx-auto`}
+                    />
+                    <div
+                      className={`${getSkeletonClass("h-4 w-16")} mx-auto`}
+                    />
+                  </div>
+                </div>
+
+                {/* メニュー項目スケルトン（12項目） */}
+                <div className="space-y-1">
+                  {Array.from({ length: 12 }).map((_, index) => {
+                    const menuTypes = [
+                      "myPage",
+                      "dashboard",
+                      "myPosts",
+                      "support",
+                      "account",
+                      "contact",
+                      "plus",
+                      "settings",
+                      "theme",
+                      "language",
+                      "logout",
+                      "extra",
+                    ] as const
+                    const menuType = menuTypes[index] || "myPage"
+
+                    return (
+                      <div
+                        key={`skeleton-menu-${menuType}`}
+                        className={userNavigationStyles.menuItem}
+                      >
+                        <div
+                          className={getSkeletonClass(
+                            userNavigationStyles.skeleton.menuIcon,
+                          )}
+                        />
+                        <div
+                          className={getMenuSkeletonClass(
+                            menuType === "extra" ? "myPage" : menuType,
+                          )}
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
           }
         >

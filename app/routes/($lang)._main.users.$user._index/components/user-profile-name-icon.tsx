@@ -109,12 +109,6 @@ export function UserProfileNameIcon(props: Props) {
               ? `${user.login.slice(0, 8)}...`
               : user.login}
           </h2>
-          {/* モバイル版ユーザID表示 */}
-          <div className="mt-1 flex items-center gap-2">
-            <span className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 font-mono text-white/80 text-xs backdrop-blur-sm">
-              ID: {user.id}
-            </span>
-          </div>
         </div>
       </div>
     </header>
