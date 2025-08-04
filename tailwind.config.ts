@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss"
 
 const config: Config = {
   content: ["./app/**/*.{js,ts,jsx,tsx}"],
-  darkMode: ["selector", '[data-theme="dark"]'], // カスタムテーマシステムに対応
+  darkMode: ["selector", '[data-theme^="dark"]'], // dark で始まるすべてのテーマに対応
   theme: {
     extend: {
       // 既存のCSSカスタムプロパティを使用

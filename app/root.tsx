@@ -122,7 +122,7 @@ export function Layout(props: Props) {
           enableSystem
           enableColorScheme
           disableTransitionOnChange
-          attribute="class"
+          attribute="data-theme"
           storageKey="aipictors-theme"
         >
           {" "}

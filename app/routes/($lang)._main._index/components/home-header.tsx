@@ -398,7 +398,7 @@ function HomeHeader(props: Props) {
                 : ""
             }`}
           >
-            <div className="relative flex w-full flex-1 shrink-0 flex-col rounded-xl border border-light-100 bg-light-input shadow-[0px_7px_21px_0px_rgba(51,_51,_51,_0.05)] dark:border-dark-750 dark:bg-dark-input dark:shadow-[0px_7px_21px_0px_rgba(0,_0,_0,_0.25)]">
+            <div className="relative flex w-full flex-1 shrink-0 flex-col rounded-xl border border-border bg-input shadow-[0px_7px_21px_0px_rgba(51,_51,_51,_0.05)] dark:shadow-[0px_7px_21px_0px_rgba(0,_0,_0,_0.25)]">
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
