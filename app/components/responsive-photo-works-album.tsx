@@ -108,8 +108,8 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
               props.targetRowHeight !== undefined
                 ? props.targetRowHeight
                 : props.direction === "rows"
-                  ? 240
-                  : 400
+                  ? 160
+                  : 220
             }
             sizes={{
               size: "calc(100vw - 240px)",

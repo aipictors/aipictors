@@ -62,6 +62,9 @@ export function UserNavigationMenuContent(props: Props) {
 
   const user = data?.viewer?.user
 
+  // アイコンの優先順位: AipictorsのDBアイコン → Firebaseアイコン → フォールバック
+  const iconUrl = user?.iconUrl || authContext.avatarPhotoURL || ""
+
   return (
     <ScrollArea className="h-96">
       <div className="space-y-1 p-1">
@@ -70,7 +73,7 @@ export function UserNavigationMenuContent(props: Props) {
           <div className="flex items-center space-x-3">
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src={withIconUrlFallback(user?.iconUrl ?? "")}
+                src={withIconUrlFallback(iconUrl)}
                 alt={user?.name ?? authContext.displayName ?? "User"}
               />
               <AvatarFallback>
