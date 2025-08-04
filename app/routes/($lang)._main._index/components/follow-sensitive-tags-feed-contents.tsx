@@ -27,6 +27,7 @@ import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
+import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
 import { LikeButton } from "~/components/like-button"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
@@ -729,6 +730,33 @@ function GridView({
   works: NonNullable<PostItem["work"]>[]
   onSelect?: (index: string) => void
 }) {
+  // モバイル最適化: 小さい画面では最適化グリッドを使用
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768
+
+  if (isMobile) {
+    const optimizedWorks = works.map((work) => ({
+      id: work.id,
+      title: work.title,
+      imageUrl: work.smallThumbnailImageURL,
+      width: work.smallThumbnailImageWidth,
+      height: work.smallThumbnailImageHeight,
+      userId: work.user?.id,
+      userName: work.user?.name,
+      userIcon: work.user?.iconUrl,
+    }))
+
+    return (
+      <div className="m-auto w-full space-y-4">
+        <OptimizedWorkGrid
+          works={optimizedWorks}
+          onWorkClick={onSelect}
+          gridCols={3}
+          itemHeight={180}
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="m-auto w-full space-y-4">
       <ResponsivePhotoWorksAlbum

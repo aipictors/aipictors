@@ -3,6 +3,7 @@ import { Link } from "@remix-run/react"
 import type { RenderPhotoProps } from "react-photo-album"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { OptimizedImage } from "~/components/optimized-image"
 
 type Props = RenderPhotoProps & {
   src: string
@@ -24,10 +25,13 @@ export function HomeWorkAlbum(props: Props) {
       style={{ position: "relative" }}
     >
       <Link to={`/posts/${props.workId}`} className="group">
-        <img
+        <OptimizedImage
           src={props.src}
           alt={props.workTitle}
           className="rounded transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+          width={300}
+          height={200}
         />
       </Link>
       <div className="absolute right-0 bottom-0 left-0 box-border flex h-16 max-h-full flex-col justify-end space-y-2 rounded bg-linear-to-t from-black to-transparent p-4 pb-3 opacity-88">

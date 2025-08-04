@@ -65,25 +65,18 @@ export function LikeButton(props: Props) {
     [localStorageKey],
   )
 
-  // 初期状態の設定
-  const getInitialState = useCallback(() => {
+  // SSR安全な初期状態設定
+  const [isLiked, setIsLiked] = useState(props.defaultLiked ?? false)
+  const [likedCount, setLikedCount] = useState(props.defaultLikedCount)
+
+  // クライアントサイドでのみローカルストレージから状態を復元
+  useEffect(() => {
     const localState = getLocalLikeState()
     if (localState !== null) {
-      return {
-        isLiked: localState.liked,
-        likedCount: localState.count,
-      }
+      setIsLiked(localState.liked)
+      setLikedCount(localState.count)
     }
-    return {
-      isLiked: props.defaultLiked,
-      likedCount: props.defaultLikedCount,
-    }
-  }, [getLocalLikeState, props.defaultLiked, props.defaultLikedCount])
-
-  const [isLiked, setIsLiked] = useState(() => getInitialState().isLiked)
-  const [likedCount, setLikedCount] = useState(
-    () => getInitialState().likedCount,
-  )
+  }, [])
   const [clicked, setClicked] = useState(false)
 
   const handleFavoritedKeyDown = useCallback(
@@ -115,16 +108,26 @@ export function LikeButton(props: Props) {
 
   // targetWorkIdが変更されたときの処理
   useEffect(() => {
-    const initialState = getInitialState()
-    setIsLiked(initialState.isLiked)
-    setLikedCount(initialState.likedCount)
-  }, [props.targetWorkId, getInitialState])
+    const localState = getLocalLikeState()
+    if (localState !== null) {
+      setIsLiked(localState.liked)
+      setLikedCount(localState.count)
+    } else {
+      setIsLiked(props.defaultLiked ?? false)
+      setLikedCount(props.defaultLikedCount)
+    }
+  }, [
+    props.targetWorkId,
+    getLocalLikeState,
+    props.defaultLiked,
+    props.defaultLikedCount,
+  ])
 
   // propsが変更されたときにローカルストレージの状態がない場合のみ更新
   useEffect(() => {
     const localState = getLocalLikeState()
     if (localState === null) {
-      setIsLiked(props.defaultLiked)
+      setIsLiked(props.defaultLiked ?? false)
       setLikedCount(props.defaultLikedCount)
     }
   }, [props.defaultLiked, props.defaultLikedCount, getLocalLikeState])
@@ -206,10 +209,10 @@ export function LikeButton(props: Props) {
           "Log in and try liking it!",
         )}
         triggerChildren={
-          <button
+          <div
             className={cn(
               props.isParticle && "like-button",
-              "relative flex items-center justify-center",
+              "relative flex cursor-pointer items-center justify-center",
               {
                 "bg-secondary text-secondary-foreground hover:bg-secondary/80":
                   !props.isBackgroundNone,
@@ -222,7 +225,6 @@ export function LikeButton(props: Props) {
               paddingLeft: props.text ? `${size}px` : "0",
               paddingRight: props.text ? "12px" : "0",
             }}
-            type="button"
           >
             <div
               className={cn(
@@ -255,7 +257,7 @@ export function LikeButton(props: Props) {
             {props.text && (
               <span className="font-bold text-black text-sm">{props.text}</span>
             )}
-          </button>
+          </div>
         }
       />
     )

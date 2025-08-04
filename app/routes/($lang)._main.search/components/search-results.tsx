@@ -373,7 +373,7 @@ export const SearchResults = ({
     appendPage,
   ])
 
-  // Infinite scroll ref
+  // Infinite scroll ref - using optimized version with mobile enhancements
   const sentinelRef = useInfiniteScroll(loadMore, {
     hasNext,
     loading: loading || isLoadingMore,

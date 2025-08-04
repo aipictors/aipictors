@@ -72,6 +72,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                     defaultLikedCount={0}
                     isBackgroundNone={true}
                     strokeWidth={2}
+                    isTargetUserBlocked={workItem.user?.isBlocked ?? false}
                   />
                 </div>
               </div>
@@ -119,52 +120,37 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
               image: { loading: "lazy" },
             }}
             render={{
-              image: (imageProps, { photo }) => (
+              photo: ({ photo, imageProps }) => (
                 <div className="relative h-full w-full overflow-hidden rounded">
                   {props.onSelect ? (
-                    <button
-                      type="button"
+                    <div
                       className="block h-full w-full cursor-pointer overflow-hidden rounded"
                       onClick={() => props.onSelect?.(photo.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault()
+                          props.onSelect?.(photo.id)
+                        }
+                      }}
+                      tabIndex={0}
+                      role="button"
                       aria-label={`Open ${photo.context.title}`}
                     >
                       <OptimizedImage
-                        src={imageProps.src}
+                        {...imageProps}
                         alt={photo.context.title}
                         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                        width={
-                          typeof imageProps.width === "string"
-                            ? Number.parseInt(imageProps.width)
-                            : imageProps.width
-                        }
-                        height={
-                          typeof imageProps.height === "string"
-                            ? Number.parseInt(imageProps.height)
-                            : imageProps.height
-                        }
-                        loading={imageProps.loading as "lazy" | "eager"}
                       />
-                    </button>
+                    </div>
                   ) : (
                     <Link
                       className="block h-full w-full overflow-hidden rounded"
                       to={`/posts/${photo.context.id}`}
                     >
                       <OptimizedImage
-                        src={imageProps.src}
+                        {...imageProps}
                         alt={photo.context.title}
                         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                        width={
-                          typeof imageProps.width === "string"
-                            ? Number.parseInt(imageProps.width)
-                            : imageProps.width
-                        }
-                        height={
-                          typeof imageProps.height === "string"
-                            ? Number.parseInt(imageProps.height)
-                            : imageProps.height
-                        }
-                        loading={imageProps.loading as "lazy" | "eager"}
                       />
                     </Link>
                   )}
@@ -208,19 +194,26 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   {props.isShowProfile && (
                     <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
                       {props.onSelect ? (
-                        <button
-                          type="button"
+                        <div
                           className="w-48 cursor-pointer font-bold"
                           onClick={(e) => {
                             e.stopPropagation()
                             props.onSelect?.(photo.context.id.toString())
                           }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault()
+                              props.onSelect?.(photo.context.id.toString())
+                            }
+                          }}
+                          tabIndex={0}
+                          role="button"
                           aria-label={`Open ${photo.context.title}`}
                         >
                           <p className="overflow-hidden text-ellipsis text-nowrap text-left text-sm">
                             {photo.context.title}
                           </p>
-                        </button>
+                        </div>
                       ) : (
                         <Link
                           className="w-48 font-bold"

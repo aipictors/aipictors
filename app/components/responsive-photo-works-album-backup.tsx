@@ -72,6 +72,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                     defaultLikedCount={0}
                     isBackgroundNone={true}
                     strokeWidth={2}
+                    isTargetUserBlocked={workItem.user?.isBlocked ?? false}
                   />
                 </div>
               </div>
@@ -104,13 +105,6 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   : work.smallThumbnailImageHeight,
               context: work,
             }))}
-            targetRowHeight={
-              props.targetRowHeight !== undefined
-                ? props.targetRowHeight
-                : props.direction === "rows"
-                  ? 240
-                  : 400
-            }
             sizes={{
               size: "calc(100vw - 240px)",
               sizes: [{ viewport: "(max-width: 960px)", size: "100vw" }],
@@ -119,64 +113,45 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
               image: { loading: "lazy" },
             }}
             render={{
-              image: (imageProps, { photo }) => (
-                <div className="relative h-full w-full overflow-hidden rounded">
-                  {props.onSelect ? (
-                    <button
-                      type="button"
-                      className="block h-full w-full cursor-pointer overflow-hidden rounded"
-                      onClick={() => props.onSelect?.(photo.id)}
-                      aria-label={`Open ${photo.context.title}`}
-                    >
-                      <OptimizedImage
-                        src={imageProps.src}
-                        alt={photo.context.title}
-                        className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                        width={
-                          typeof imageProps.width === "string"
-                            ? Number.parseInt(imageProps.width)
-                            : imageProps.width
-                        }
-                        height={
-                          typeof imageProps.height === "string"
-                            ? Number.parseInt(imageProps.height)
-                            : imageProps.height
-                        }
-                        loading={imageProps.loading as "lazy" | "eager"}
-                      />
-                    </button>
-                  ) : (
-                    <Link
-                      className="block h-full w-full overflow-hidden rounded"
-                      to={`/posts/${photo.context.id}`}
-                    >
-                      <OptimizedImage
-                        src={imageProps.src}
-                        alt={photo.context.title}
-                        className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                        width={
-                          typeof imageProps.width === "string"
-                            ? Number.parseInt(imageProps.width)
-                            : imageProps.width
-                        }
-                        height={
-                          typeof imageProps.height === "string"
-                            ? Number.parseInt(imageProps.height)
-                            : imageProps.height
-                        }
-                        loading={imageProps.loading as "lazy" | "eager"}
-                      />
-                    </Link>
-                  )}
+              extras: (_, { photo, index }) => (
+                <div key={index}>
+                  <div className="absolute top-0 z-10 w-full rounded-md">
+                    {props.onSelect ? (
+                      <button
+                        type="button"
+                        className="block h-full w-full overflow-hidden rounded"
+                        onClick={() => props.onSelect?.(photo.id)}
+                      >
+                        <OptimizedImage
+                          src={photo.src}
+                          alt={photo.context.title}
+                          className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+                          loading="lazy"
+                          width={photo.width}
+                          height={photo.height}
+                        />
+                      </button>
+                    ) : (
+                      <Link
+                        className="block h-full w-full overflow-hidden rounded"
+                        to={`/posts/${photo.context.id}`}
+                      >
+                        <OptimizedImage
+                          src={photo.src}
+                          alt={photo.context.title}
+                          className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+                          loading="lazy"
+                          width={photo.width}
+                          height={photo.height}
+                        />
+                      </Link>
+                    )}
+                  </div>
                   <div
                     className={cn(
                       "absolute right-0 z-10",
                       props.isShowProfile ? "bottom-14" : "bottom-0",
                     )}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      e.preventDefault()
-                    }}
                   >
                     <LikeButton
                       size={56}
@@ -210,12 +185,10 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                       {props.onSelect ? (
                         <button
                           type="button"
-                          className="w-48 cursor-pointer font-bold"
-                          onClick={(e) => {
-                            e.stopPropagation()
+                          className="w-48 font-bold"
+                          onClick={() =>
                             props.onSelect?.(photo.context.id.toString())
-                          }}
-                          aria-label={`Open ${photo.context.title}`}
+                          }
                         >
                           <p className="overflow-hidden text-ellipsis text-nowrap text-left text-sm">
                             {photo.context.title}
@@ -261,6 +234,29 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   )}
                 </div>
               ),
+              // ),
+              // ),
+              // link: (props, context) => (
+              //   <Link to={`/posts/${context.photo.context.id}`} {...props} />
+              // ),
+              // image(props, context) {
+              //   return (
+              //     <Link
+              //       className="block overflow-hidden rounded"
+              //       to={`/posts/${context.photo.context.id}`}
+              //     >
+              //       <img
+              //         {...props}
+              //         alt={props.alt}
+              //         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+              //       />
+              //     </Link>
+              //   )
+              // },
+            }}
+            onClick={(clickHandlerProps) => {
+              console.log("clickHandlerProps", clickHandlerProps)
+              return props.onSelect?.(clickHandlerProps.photo.id.toString())
             }}
           />
         </SSR>

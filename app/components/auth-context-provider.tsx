@@ -22,13 +22,11 @@ type Props = {
 type Claims = ParsedToken
 
 export function AuthContextProvider(props: Props) {
-  const [isLoading, setLoadingState] = useState(() => {
-    return true
-  })
-
+  // SSR対応：初期状態を安定させる
+  const [isLoading, setLoadingState] = useState(true)
   const [currentUser, setCurrentUser] = useState<User | null>(null)
-
   const [claims, setClaims] = useState<Claims | null>(null)
+  const [isClientMounted, setIsClientMounted] = useState(false)
 
   const refresh = async () => {
     const currentUser = getAuth().currentUser
@@ -43,41 +41,60 @@ export function AuthContextProvider(props: Props) {
     })
   }
 
+  // クライアントマウント検出
   useEffect(() => {
-    if (typeof document === "undefined") return
-    onAuthStateChanged(getAuth(), (user) => {
-      setUserId(getAnalytics(), user?.uid ?? null)
+    setIsClientMounted(true)
+  }, [])
+
+  useEffect(() => {
+    // クライアントサイドでのみ認証状態を監視
+    if (!isClientMounted || typeof document === "undefined") return
+
+    const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
       if (user === null) {
         setCurrentUser(null)
         setClaims(null)
         setLoadingState(false)
         return
       }
-      logEvent(getAnalytics(), config.logEvent.login, {
-        method: user.providerId,
+
+      // Analytics は遅延で設定
+      requestIdleCallback(() => {
+        try {
+          setUserId(getAnalytics(), user?.uid ?? null)
+          logEvent(getAnalytics(), config.logEvent.login, {
+            method: user.providerId,
+          })
+        } catch (error) {
+          console.warn("Analytics error:", error)
+        }
       })
+
       getIdTokenResult(user, true).then((result) => {
-        // setUser({
-        //   id: user.uid,
-        //   username: user.uid,
-        //   email: user.email ?? undefined,
-        //   display_name: user.displayName,
-        //   provider_id: user.providerId,
-        // })
-        setUserProperties(getAnalytics(), {
-          display_name: user.displayName,
-          provider_id: user.providerId,
-          username: result.claims.username,
+        // Analytics のユーザープロパティ設定も遅延実行
+        requestIdleCallback(() => {
+          try {
+            setUserProperties(getAnalytics(), {
+              display_name: user.displayName,
+              provider_id: user.providerId,
+              username: result.claims.username,
+            })
+          } catch (error) {
+            console.warn("Analytics user properties error:", error)
+          }
         })
+
         setCurrentUser(user)
         setClaims({ ...result.claims })
         setLoadingState(false)
       })
     })
-  }, [])
 
-  // 読み込み中
-  if (isLoading) {
+    return () => unsubscribe()
+  }, [isClientMounted])
+
+  // SSR時またはクライアントマウント前は読み込み中状態を返す
+  if (!isClientMounted || isLoading) {
     const value = {
       isLoading: true,
       isNotLoading: false,

@@ -2,7 +2,6 @@ import "react-photo-view/dist/react-photo-view.css"
 import "@fontsource-variable/m-plus-2"
 
 import { AppAnalytics } from "~/components/app/app-analytics"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import { ContextProviders } from "~/components/context-providers"
 import { cn } from "~/lib/utils"
@@ -19,12 +18,19 @@ import {
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
 import { ThemeProvider } from "next-themes"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useState, lazy } from "react"
 import { Toaster } from "~/components/app/app-sonner"
 import { PhotoProvider } from "react-photo-view"
 import styles from "~/tailwind.css?url"
 import { AppErrorPage } from "~/components/app/app-error-page"
 import { ProgressBar } from "~/components/progress-bar"
+
+// パフォーマンス監視コンポーネントを遅延読み込み
+const PerformanceMonitor = lazy(() =>
+  import("~/components/performance-monitor").then((mod) => ({
+    default: mod.PerformanceMonitor,
+  })),
+)
 
 export const links: LinksFunction = () => {
   return [
@@ -116,13 +122,12 @@ export function Layout(props: Props) {
           enableSystem
           enableColorScheme
           disableTransitionOnChange
+          attribute="class"
+          storageKey="aipictors-theme"
         >
+          {" "}
           <ContextProviders>
-            <PhotoProvider maskOpacity={0.7}>
-              <Suspense fallback={<AppLoadingPage />}>
-                {props.children}
-              </Suspense>
-            </PhotoProvider>
+            <PhotoProvider maskOpacity={0.7}>{props.children}</PhotoProvider>
           </ContextProviders>
         </ThemeProvider>
         <Toaster />
@@ -134,12 +139,27 @@ export function Layout(props: Props) {
 }
 
 export default function App() {
+  const [isMounted, setIsMounted] = useState(false)
+
+  // クライアントサイドのみでパフォーマンス監視を有効にする
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   return (
     <>
       <Outlet />
-      <Suspense fallback={null}>
-        <AppAnalytics />
-      </Suspense>
+      {/* SSR時は非表示、クライアントサイドでのみ表示 */}
+      {isMounted && (
+        <>
+          <Suspense fallback={null}>
+            <AppAnalytics />
+          </Suspense>
+          <Suspense fallback={null}>
+            <PerformanceMonitor />
+          </Suspense>
+        </>
+      )}
       <ProgressBar />
     </>
   )

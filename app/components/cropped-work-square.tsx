@@ -2,6 +2,7 @@ import { Link } from "@remix-run/react"
 import { Images, MessageCircleIcon } from "lucide-react"
 import { useState } from "react"
 import { cn } from "~/lib/utils"
+import { OptimizedImage } from "~/components/optimized-image"
 
 type Props = {
   workId: string
@@ -62,36 +63,44 @@ export function CroppedWorkSquare(props: Props) {
             "size-40": props.size === "lg",
           })}
         >
-          <img
-            src={props.imageUrl}
-            alt=""
-            key={props.imageUrl}
-            className={cn(
-              "max-w-none rounded transition-transform duration-300 ease-in-out",
-              {
-                "h-auto w-full": props.size === "auto",
-                "h-20 w-auto":
-                  props.size === "sm" && props.imageWidth > props.imageHeight,
-                "h-auto w-20":
-                  props.size === "sm" && props.imageWidth <= props.imageHeight,
-                "h-32 w-auto":
-                  props.size === "md" && props.imageWidth > props.imageHeight,
-                "h-auto w-32":
-                  props.size === "md" && props.imageWidth <= props.imageHeight,
-                "h-40 w-auto":
-                  props.size !== "sm" &&
-                  props.size !== "md" &&
-                  props.imageWidth > props.imageHeight,
-                "h-auto w-40":
-                  props.size !== "sm" &&
-                  props.size !== "md" &&
-                  props.imageWidth <= props.imageHeight,
-              },
-            )}
+          <div
             style={{
               transform: `${transform} ${isHovered ? "scale(1.05)" : "scale(1)"}`,
             }}
-          />
+          >
+            <OptimizedImage
+              src={props.imageUrl}
+              alt=""
+              key={props.imageUrl}
+              loading="lazy"
+              width={props.imageWidth}
+              height={props.imageHeight}
+              className={cn(
+                "max-w-none rounded transition-transform duration-300 ease-in-out",
+                {
+                  "h-auto w-full": props.size === "auto",
+                  "h-20 w-auto":
+                    props.size === "sm" && props.imageWidth > props.imageHeight,
+                  "h-auto w-20":
+                    props.size === "sm" &&
+                    props.imageWidth <= props.imageHeight,
+                  "h-32 w-auto":
+                    props.size === "md" && props.imageWidth > props.imageHeight,
+                  "h-auto w-32":
+                    props.size === "md" &&
+                    props.imageWidth <= props.imageHeight,
+                  "h-40 w-auto":
+                    props.size !== "sm" &&
+                    props.size !== "md" &&
+                    props.imageWidth > props.imageHeight,
+                  "h-auto w-40":
+                    props.size !== "sm" &&
+                    props.size !== "md" &&
+                    props.imageWidth <= props.imageHeight,
+                },
+              )}
+            />
+          </div>
         </div>
         {props.ranking && (
           <div

@@ -1,5 +1,4 @@
 import { AppHeader } from "~/components/app/app-header"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { Button } from "~/components/ui/button"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
@@ -11,7 +10,7 @@ import {
   useSearchParams,
 } from "@remix-run/react"
 import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search } from "lucide-react"
-import { Suspense, useContext, useState, useEffect, useRef } from "react"
+import { Suspense, useContext, useState, useEffect, useRef, lazy } from "react"
 import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
@@ -22,8 +21,6 @@ import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
 import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
-import { HomeNotificationsMenu } from "~/routes/($lang)._main._index/components/home-notifications-menu"
-import { HomeUserNavigationMenu } from "~/routes/($lang)._main._index/components/home-user-navigation-menu"
 import { toast } from "sonner"
 import {
   DropdownMenu,
@@ -32,8 +29,30 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
 import { cn } from "~/lib/utils"
-import { HomeMenuRouteList } from "~/routes/($lang)._main._index/components/home-menu-route-list"
 import { useSidebar } from "~/contexts/sidebar-context"
+
+// 重いコンポーネントを遅延読み込み
+const HomeNotificationsMenu = lazy(() =>
+  import(
+    "~/routes/($lang)._main._index/components/home-notifications-menu"
+  ).then((module) => ({
+    default: module.HomeNotificationsMenu,
+  })),
+)
+const HomeUserNavigationMenu = lazy(() =>
+  import(
+    "~/routes/($lang)._main._index/components/home-user-navigation-menu"
+  ).then((module) => ({
+    default: module.HomeUserNavigationMenu,
+  })),
+)
+const HomeMenuRouteList = lazy(() =>
+  import("~/routes/($lang)._main._index/components/home-menu-route-list").then(
+    (module) => ({
+      default: module.HomeMenuRouteList,
+    }),
+  ),
+)
 
 type Props = {
   title?: string
@@ -196,6 +215,16 @@ function HomeHeader(props: Props) {
   const onChangeSearchText = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newText = event.target.value
     setSearchText(newText)
+
+    // debounce 処理でパフォーマンス最適化
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    // 500ms 後に実行予約（現在は手動検索のみなので実際の処理は不要）
+    timeoutRef.current = setTimeout(() => {
+      // 自動検索をしたい場合は、ここに処理を追加
+    }, 500)
   }
 
   // クリーンアップ
@@ -220,7 +249,6 @@ function HomeHeader(props: Props) {
     setIsOpen(false)
   }
   const t = useTranslation()
-
 
   const onSubmitSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -249,218 +277,218 @@ function HomeHeader(props: Props) {
   }
 
   return (
-    <Suspense fallback={<AppLoadingPage />}>
-      <AppHeader
-        isSmallLeftPadding={props.alwaysShowTitle}
+    <AppHeader isSmallLeftPadding={props.alwaysShowTitle}>
+      <div
+        className={cn(
+          "flex min-w-fit items-center gap-x-2",
+          props.alwaysShowTitle ? "" : "lg:hidden",
+        )}
       >
-        <div
-          className={cn(
-            "flex min-w-fit items-center gap-x-2",
-            props.alwaysShowTitle ? "" : "lg:hidden",
-          )}
-        >
-          {/* Mobile menu - show on mobile, and on PC only if showPcSheetMenu is true */}
-          <div className="hidden w-8 md:block" />
+        {/* Mobile menu - show on mobile, and on PC only if showPcSheetMenu is true */}
+        <div className="hidden w-8 md:block" />
 
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={
-                  props.showPcSheetMenu
-                    ? "block" // PC版でも表示
-                    : "md:hidden" // PC版では非表示
-                }
-              >
-                <MenuIcon />
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="p-0" side="left">
-              <ScrollArea className="h-full p-4">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={
+                props.showPcSheetMenu
+                  ? "block" // PC版でも表示
+                  : "md:hidden" // PC版では非表示
+              }
+            >
+              <MenuIcon />
+            </Button>
+          </SheetTrigger>
+          <SheetContent className="p-0" side="left">
+            <ScrollArea className="h-full p-4">
+              <Suspense fallback={null}>
                 <HomeMenuRouteList onClickMenuItem={close} />
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
-          <div className="flex items-center">
-            {/* 画像生成画面ではロゴを表示、その他の画面では余白のみ表示 */}
-            {isSpecialPage && (
-              <Button
-                variant="ghost"
-                className="hidden shrink-0 items-center space-x-2 pl-4 md:flex"
-                onClick={() => handleNavigate("/")}
-              >
-                {navigation.state === "loading" && (
-                  <div className="flex size-8 items-center justify-center">
-                    <Loader2Icon className="size-8 animate-spin" />
-                  </div>
-                )}
-                {navigation.state !== "loading" && (
-                  <img
-                    src="/icon.svg"
-                    className="size-8 shrink-0 rounded-full"
-                    alt="Avatar"
-                    width={40}
-                    height={40}
-                  />
-                )}
-                {sidebarState === "minimal" && (
-                  <div className="flex items-center">
-                    <span className="whitespace-nowrap font-bold text-xl">
-                      {title}
-                    </span>
-                  </div>
-                )}
-              </Button>
-            )}
-            {sidebarState !== "minimal" && <div className="mr-16" />}
-
-            {/* サイドバーが最小化されている場合のみロゴを表示 */}
-            {!isSpecialPage && sidebarState === "minimal" && (
-              <Button
-                variant="ghost"
-                className="hidden shrink-0 items-center space-x-2 pl-28 md:flex"
-                onClick={() => handleNavigate("/")}
-              >
-                {navigation.state === "loading" && (
-                  <div className="flex size-8 items-center justify-center">
-                    <Loader2Icon className="size-8 animate-spin" />
-                  </div>
-                )}
-                {navigation.state !== "loading" && (
-                  <img
-                    src="/icon.svg"
-                    className="size-8 shrink-0 rounded-full"
-                    alt="Avatar"
-                    width={40}
-                    height={40}
-                  />
-                )}
+              </Suspense>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+        <div className="flex items-center">
+          {/* 画像生成画面ではロゴを表示、その他の画面では余白のみ表示 */}
+          {isSpecialPage && (
+            <Button
+              variant="ghost"
+              className="hidden shrink-0 items-center space-x-2 pl-4 md:flex"
+              onClick={() => handleNavigate("/")}
+            >
+              {navigation.state === "loading" && (
+                <div className="flex size-8 items-center justify-center">
+                  <Loader2Icon className="size-8 animate-spin" />
+                </div>
+              )}
+              {navigation.state !== "loading" && (
+                <img
+                  src="/icon.svg"
+                  className="size-8 shrink-0 rounded-full"
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                />
+              )}
+              {sidebarState === "minimal" && (
                 <div className="flex items-center">
                   <span className="whitespace-nowrap font-bold text-xl">
                     {title}
                   </span>
                 </div>
-              </Button>
-            )}
+              )}
+            </Button>
+          )}
+          {sidebarState !== "minimal" && <div className="mr-16" />}
+
+          {/* サイドバーが最小化されている場合のみロゴを表示 */}
+          {!isSpecialPage && sidebarState === "minimal" && (
+            <Button
+              variant="ghost"
+              className="hidden shrink-0 items-center space-x-2 pl-28 md:flex"
+              onClick={() => handleNavigate("/")}
+            >
+              {navigation.state === "loading" && (
+                <div className="flex size-8 items-center justify-center">
+                  <Loader2Icon className="size-8 animate-spin" />
+                </div>
+              )}
+              {navigation.state !== "loading" && (
+                <img
+                  src="/icon.svg"
+                  className="size-8 shrink-0 rounded-full"
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                />
+              )}
+              <div className="flex items-center">
+                <span className="whitespace-nowrap font-bold text-xl">
+                  {title}
+                </span>
+              </div>
+            </Button>
+          )}
+        </div>
+        {!isSearchFormOpen && (
+          <Button
+            className="block md:hidden"
+            onClick={onToggleSearchForm}
+            variant="ghost"
+            size="icon"
+          >
+            <Search className="m-auto w-auto" />
+          </Button>
+        )}
+      </div>
+      <div className="flex w-full justify-end gap-x-2">
+        <div className="hidden w-full items-center space-x-2 md:flex">
+          <div
+            className={`flex w-full justify-start space-x-2 font-semibold ${
+              !isSpecialPage
+                ? sidebarState === "expanded"
+                  ? "pl-[248px]" // サイドバー幅216px + 余白32px
+                  : sidebarState === "collapsed"
+                    ? "pl-[96px]" // サイドバー幅64px + 余白32px
+                    : sidebarState === "minimal"
+                      ? "pl-16" // 三角ボタン分の余白
+                      : "pl-[248px]"
+                : ""
+            }`}
+          >
+            <div className="relative flex w-full flex-1 shrink-0 flex-col rounded-xl border border-light-100 bg-light-input shadow-[0px_7px_21px_0px_rgba(51,_51,_51,_0.05)] dark:border-dark-750 dark:bg-dark-input dark:shadow-[0px_7px_21px_0px_rgba(0,_0,_0,_0.25)]">
+              <Input
+                value={searchText}
+                onChange={onChangeSearchText}
+                onKeyDown={onSubmitSearch}
+                placeholder={t("作品を検索", "Search for posts")}
+              />
+              <div className="absolute right-4">
+                <Button onClick={onSearch} variant="ghost" size="icon">
+                  <Search className="w-16" />
+                </Button>
+              </div>
+            </div>
           </div>
-          {!isSearchFormOpen && (
+          <Separator orientation="vertical" />
+          {/* <R18ModeIndicator /> */}
+        </div>
+        {isSearchFormOpen ? (
+          <div className="flex w-full space-x-2 md:hidden">
             <Button
               className="block md:hidden"
               onClick={onToggleSearchForm}
               variant="ghost"
               size="icon"
             >
-              <Search className="m-auto w-auto" />
+              <MoveLeft className="w-8" />
             </Button>
-          )}
-        </div>
-        <div className="flex w-full justify-end gap-x-2">
-          <div className="hidden w-full items-center space-x-2 md:flex">
-            <div
-              className={`flex w-full justify-start space-x-2 font-semibold ${
-                !isSpecialPage
-                  ? sidebarState === "expanded"
-                    ? "pl-[248px]" // サイドバー幅216px + 余白32px
-                    : sidebarState === "collapsed"
-                      ? "pl-[96px]" // サイドバー幅64px + 余白32px
-                      : sidebarState === "minimal"
-                        ? "pl-16" // 三角ボタン分の余白
-                        : "pl-[248px]"
-                  : ""
-              }`}
-            >
-              <div className="relative flex w-full flex-1 shrink-0 flex-col rounded-xl border border-light-100 bg-light-input shadow-[0px_7px_21px_0px_rgba(51,_51,_51,_0.05)] dark:border-dark-750 dark:bg-dark-input dark:shadow-[0px_7px_21px_0px_rgba(0,_0,_0,_0.25)]">
-                <Input
-                  value={searchText}
-                  onChange={onChangeSearchText}
-                  onKeyDown={onSubmitSearch}
-                  placeholder={t("作品を検索", "Search for posts")}
-                />
-                <div className="absolute right-4">
-                  <Button onClick={onSearch} variant="ghost" size="icon">
-                    <Search className="w-16" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-            <Separator orientation="vertical" />
-            {/* <R18ModeIndicator /> */}
+            <Input
+              value={searchText}
+              onChange={onChangeSearchText}
+              onKeyUp={onSubmitSearch}
+              placeholder={t("作品を検索", "Search for posts")}
+            />
           </div>
-          {isSearchFormOpen ? (
-            <div className="flex w-full space-x-2 md:hidden">
-              <Button
-                className="block md:hidden"
-                onClick={onToggleSearchForm}
-                variant="ghost"
-                size="icon"
-              >
-                <MoveLeft className="w-8" />
-              </Button>
-              <Input
-                value={searchText}
-                onChange={onChangeSearchText}
-                onKeyUp={onSubmitSearch}
-                placeholder={t("作品を検索", "Search for posts")}
-              />
-            </div>
-          ) : (
-            <>
-              <div className="hidden space-x-2 md:flex">
-                <Button
-                  variant="secondary"
-                  onClick={() => handleNavigate("/generation")}
-                >
-                  {t("生成", "Generate")}
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => handleNavigate("/new/image")}
-                >
-                  {t("投稿", "Post")}
-                </Button>
-              </div>
-              <div className="flex space-x-2 md:hidden">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <Plus />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                      onClick={() => handleNavigate("/generation")}
-                    >
-                      {t("生成", "Generate")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleNavigate("/new/image")}
-                    >
-                      {t("投稿", "Post")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </>
-          )}
-          {isSearchFormOpen && (
+        ) : (
+          <>
             <div className="hidden space-x-2 md:flex">
               <Button
-                variant="ghost"
+                variant="secondary"
                 onClick={() => handleNavigate("/generation")}
               >
                 {t("生成", "Generate")}
               </Button>
               <Button
-                variant="ghost"
+                variant="secondary"
                 onClick={() => handleNavigate("/new/image")}
               >
                 {t("投稿", "Post")}
               </Button>
             </div>
-          )}
-          {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
-          {!isSearchFormOpen && authContext.isLoggedIn && (
+            <div className="flex space-x-2 md:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Plus />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onClick={() => handleNavigate("/generation")}
+                  >
+                    {t("生成", "Generate")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleNavigate("/new/image")}
+                  >
+                    {t("投稿", "Post")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </>
+        )}
+        {isSearchFormOpen && (
+          <div className="hidden space-x-2 md:flex">
+            <Button
+              variant="ghost"
+              onClick={() => handleNavigate("/generation")}
+            >
+              {t("生成", "Generate")}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => handleNavigate("/new/image")}
+            >
+              {t("投稿", "Post")}
+            </Button>
+          </div>
+        )}
+        {authContext.isNotLoggedIn && <HomeHeaderNotLoggedInMenu />}
+        {!isSearchFormOpen && authContext.isLoggedIn && (
+          <Suspense fallback={null}>
             <HomeNotificationsMenu
               isExistedNewNotification={isExistedNewNotificationState}
               setIsExistedNewNotificationState={
@@ -471,9 +499,11 @@ function HomeHeader(props: Props) {
                   ?.checkedNotificationTimes ?? []
               }
             />
-          )}
-          {isSearchFormOpen && authContext.isLoggedIn && (
-            <div className="hidden md:block">
+          </Suspense>
+        )}
+        {isSearchFormOpen && authContext.isLoggedIn && (
+          <div className="hidden md:block">
+            <Suspense fallback={null}>
               <HomeNotificationsMenu
                 isExistedNewNotification={isExistedNewNotificationState}
                 setIsExistedNewNotificationState={
@@ -484,32 +514,32 @@ function HomeHeader(props: Props) {
                     ?.checkedNotificationTimes ?? []
                 }
               />
-            </div>
+            </Suspense>
+          </div>
+        )}
+        {isSearchFormOpen && (
+          <Button
+            className="md:hidden"
+            onClick={onSearch}
+            variant="ghost"
+            size="icon"
+          >
+            <Search className="w-16" />
+          </Button>
+        )}
+        <Suspense fallback={null}>
+          {authContext.isLoggedIn && (
+            <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
           )}
-          {isSearchFormOpen && (
-            <Button
-              className="md:hidden"
-              onClick={onSearch}
-              variant="ghost"
-              size="icon"
-            >
-              <Search className="w-16" />
-            </Button>
-          )}
-          <Suspense>
-            {authContext.isLoggedIn && (
-              <HomeUserNavigationMenu onLogout={onOpenLogoutDialog} />
-            )}
-          </Suspense>
-          {authContext.isNotLoggedIn && <LoginDialogButton />}
-          <LogoutDialogLegacy
-            isOpen={isOpenLogoutDialog}
-            onClose={onCloseLogoutDialog}
-            onOpen={onOpenLogoutDialog}
-          />
-        </div>
-      </AppHeader>
-    </Suspense>
+        </Suspense>
+        {authContext.isNotLoggedIn && <LoginDialogButton />}
+        <LogoutDialogLegacy
+          isOpen={isOpenLogoutDialog}
+          onClose={onCloseLogoutDialog}
+          onOpen={onOpenLogoutDialog}
+        />
+      </div>
+    </AppHeader>
   )
 }
 
@@ -532,6 +562,5 @@ const viewerIsExistedNewNotificationQuery = graphql(
   }`,
   [CheckedNotificationTimesFragment],
 )
-
 
 export default HomeHeader
