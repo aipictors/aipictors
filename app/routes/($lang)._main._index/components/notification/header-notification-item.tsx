@@ -12,7 +12,7 @@ type Props = {
 export function HeaderNotificationItem(props: Props) {
   return (
     <Link to={`${props.link}`}>
-      <Button variant={"link"}>#{props.text}</Button>
+      <Button variant={"link"}>{props.text}</Button>
     </Link>
   )
 }

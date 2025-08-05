@@ -184,7 +184,7 @@ export function TagCategoriesSection({ tags }: Props) {
                           variant="secondary"
                           className="cursor-pointer bg-white/60 transition-colors hover:bg-white/80"
                         >
-                          #{tag.tagName}
+                          {tag.tagName}
                         </Badge>
                       </Link>
                     ))}

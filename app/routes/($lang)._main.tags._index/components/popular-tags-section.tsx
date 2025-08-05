@@ -44,7 +44,7 @@ export function PopularTagsSection({ tags }: Props) {
           <div className="flex items-center gap-3">
             <Crown className="h-8 w-8 text-yellow-500" />
             <h2 className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text font-bold text-4xl text-transparent">
-              {t("人気タグランキング", "Popular Tags Ranking")}
+              {t("人気タグ", "Popular Tags")}
             </h2>
           </div>
           <p className="text-muted-foreground">
@@ -118,7 +118,7 @@ export function PopularTagsSection({ tags }: Props) {
                           {/* タグ情報 */}
                           <div className="min-w-0 flex-1">
                             <h3 className="truncate font-bold text-gray-800 dark:text-gray-200">
-                              #{tag.tagName}
+                              {tag.tagName}
                             </h3>
                             <div className="flex items-center gap-2 text-muted-foreground text-sm">
                               <Eye className="h-3 w-3" />
@@ -177,7 +177,7 @@ export function PopularTagsSection({ tags }: Props) {
 
                             {/* タグ名 */}
                             <h3 className="font-bold text-gray-800 text-lg dark:text-gray-200">
-                              #{tag.tagName}
+                              {tag.tagName}
                             </h3>
 
                             {/* バッジ */}

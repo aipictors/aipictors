@@ -1,13 +1,15 @@
-import { TrendingUp, Eye } from "lucide-react"
+import { TrendingUp } from "lucide-react"
 import { Card, CardContent } from "~/components/ui/card"
 import { Link, useLocation } from "@remix-run/react"
 import type { RecommendedTag } from "~/routes/($lang)._main.tags._index/types/tag"
+import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   tags: RecommendedTag[]
 }
 
 export function TrendingTagsSection({ tags }: Props) {
+  const t = useTranslation()
   const location = useLocation()
   // 現在のページが/r/tagsかどうかを判定
   const isR18Mode = location.pathname.includes("/r/tags")
@@ -57,17 +59,13 @@ export function TrendingTagsSection({ tags }: Props) {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-lg">{tag.tagName}</h3>
-                        <div className="rounded-full bg-orange-100 px-2 py-1 font-medium text-orange-600 text-xs">
-                          #{index + 1}
+                        <div className="rounded-full bg-gradient-to-r from-orange-100 to-red-100 px-3 py-1 font-medium text-orange-600 text-xs">
+                          {t("人気", "Popular")} {index + 1}
                         </div>
                       </div>
                       <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">
-                        <Eye className="h-4 w-4" />
-                        <span>人気タグ</span>
-                        <div className="flex items-center text-orange-500">
-                          <TrendingUp className="mr-1 h-3 w-3" />
-                          おすすめ
-                        </div>
+                        <TrendingUp className="h-4 w-4 text-orange-500" />
+                        <span>{t("トレンド", "Trending")}</span>
                       </div>
                     </div>
                   </CardContent>

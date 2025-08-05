@@ -44,23 +44,21 @@ export function TagsHeader() {
   }
 
   return (
-    <div className="space-y-6 text-center">
-      {/* アニメーション付きタイトル */}
-      <div className="relative">
-        <h1 className="animate-pulse bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text font-bold text-6xl text-transparent">
-          <Hash className="mr-4 inline-block h-12 w-12 text-blue-500" />
-          {t("タグ", "Tags")}
+    <div className="space-y-8 text-center">
+      {/* モダンなタイトル - シャープ記号を削除 */}
+      <div className="space-y-4">
+        <h1 className="bg-gradient-to-r from-slate-800 via-slate-600 to-slate-800 bg-clip-text font-semibold text-4xl text-transparent tracking-tight dark:from-white dark:via-gray-300 dark:to-white">
+          {t("作品とタグを検索", "Search Works & Tags")}
         </h1>
-        <div className="-inset-1 absolute animate-pulse rounded-lg bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 blur-xl" />
-      </div>
 
-      {/* サブタイトル */}
-      <p className="mx-auto max-w-2xl text-muted-foreground text-xl">
-        {t(
-          "人気のタグを発見して、お気に入りの作品を見つけよう",
-          "Discover popular tags and find your favorite artworks",
-        )}
-      </p>
+        {/* クリーンなサブタイトル */}
+        <p className="mx-auto max-w-2xl leading-relaxed text-lg text-muted-foreground">
+          {t(
+            "キーワードやタグで作品を見つけよう",
+            "Discover artworks by keywords and tags",
+          )}
+        </p>
+      </div>
 
       {/* 統計情報とR18ボタン */}
       <div className="flex flex-col items-center gap-4">
@@ -108,9 +106,9 @@ export function TagsHeader() {
           </div>
         </div>
 
-        {/* 検索入力欄 */}
+        {/* 検索入力欄 - モダンでクリーンなデザイン */}
         <div className="group relative">
-          <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-muted-foreground transition-colors group-focus-within:text-blue-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-blue-500" />
           <Input
             type="text"
             placeholder={
@@ -124,9 +122,9 @@ export function TagsHeader() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="rounded-xl border-2 border-gray-200 bg-white/70 py-3 pr-20 pl-10 backdrop-blur-sm transition-all duration-300 hover:bg-white/90 focus:border-blue-500 focus:bg-white"
+            className="rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-20 transition-all duration-200 hover:border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           />
-          <div className="-translate-y-1/2 absolute top-1/2 right-2 flex transform items-center gap-1">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
             {searchQuery && (
               <Button
                 variant="ghost"

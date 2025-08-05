@@ -29,11 +29,7 @@ export function TagButton(props: Props) {
       {props.title && (
         <div className="text-center font-bold text-md">{props.title}</div>
       )}
-      {props.isTagName ? (
-        <div className="text-center font-bold">#{props.name}</div>
-      ) : (
-        <div className="text-center font-bold">{props.name}</div>
-      )}
+      <div className="text-center font-bold">{props.name}</div>
     </div>
   ) : (
     <Link to={`${props.link}`}>
@@ -49,11 +45,7 @@ export function TagButton(props: Props) {
         {props.title && (
           <div className="text-center font-bold text-md">{props.title}</div>
         )}
-        {props.isTagName ? (
-          <div className="text-center font-bold">#{props.name}</div>
-        ) : (
-          <div className="text-center font-bold">{props.name}</div>
-        )}
+        <div className="text-center font-bold">{props.name}</div>
       </div>
     </Link>
   )

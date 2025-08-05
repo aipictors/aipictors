@@ -617,14 +617,14 @@ export function TagWorkSection(props: Props) {
                 />
               )}
             </div>
-            <div className="mt-auto font-bold text-md">
-              <p>
-                #{props.tag}
-                {t("の作品", "")}
-              </p>
-              <p>
+            <div className="mt-auto space-y-1">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                {props.tag}
+                {t("の作品", " works")}
+              </h2>
+              <p className="text-muted-foreground text-sm">
                 {props.worksCount}
-                {t("件", " posts")}
+                {t("件の作品が見つかりました", " works found")}
               </p>
             </div>
           </div>

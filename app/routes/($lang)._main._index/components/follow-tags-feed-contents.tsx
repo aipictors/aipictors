@@ -206,7 +206,7 @@ export function FollowTagsFeedContents({
                 variant="secondary"
                 className="rounded-full px-3"
               >
-                #{tag.name}
+                {tag.name}
               </Button>
             </Link>
           ))}
@@ -689,7 +689,7 @@ function TimelineView({
                     {work.tagNames?.map((tag) => (
                       <Link key={tag} to={`/tags/${tag}`} className="p-0">
                         <Button variant="link" className="p-0">
-                          #{tag}
+                          {tag}
                         </Button>
                       </Link>
                     ))}

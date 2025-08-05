@@ -30,7 +30,9 @@ export function WorkSensitiveArticleTags(props: Props) {
       <div className="flex flex-row flex-wrap items-center gap-x-4">
         {props.tagNames.map((tagName) => (
           <Link to={`/r/tags/${tagName}`} key={tagName} className="p-0">
-            <Button className="p-0" variant={"link"}>{`#${tagName}`}</Button>
+            <Button className="p-0" variant={"link"}>
+              {tagName}
+            </Button>
           </Link>
         ))}
         {props.isEditable && (
