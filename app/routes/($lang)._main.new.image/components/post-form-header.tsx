@@ -2,7 +2,6 @@ import { Image, Film, FileText as TextIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { cn } from "~/lib/utils"
 import { useTranslation } from "~/hooks/use-translation"
-import { useLocation } from "@remix-run/react"
 
 type Props = {
   type: "image" | "animation" | "text"
@@ -10,10 +9,8 @@ type Props = {
 
 export function PostFormHeader(props: Props) {
   const t = useTranslation()
-  const location = useLocation()
 
-  const sensitivePath =
-    typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
 
   const getSensitiveLink = (path: string) => {
     // Determine if the path starts with /r

@@ -72,10 +72,13 @@ function HomeHeader(props: Props) {
   const { sidebarState } = useSidebar()
   const [searchText, setSearchText] = useState("")
   const timeoutRef = useRef<NodeJS.Timeout>()
-  const previousLocationRef = useRef(location.pathname)
+  const previousLocationRef = useRef(
+    typeof window !== "undefined" ? location.pathname : "/",
+  )
   const isNavigatingRef = useRef(false)
   const isManualNavigationRef = useRef(false) // 手動ナビゲーションフラグを追加
-  const sensitivePath = /\/r($|\/)/.test(location.pathname)
+  const sensitivePath =
+    typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
   const getSensitiveLink = (path: string, forceSensitive = false) => {
     // すでに /r 付与済みならそのまま返す
     if (path.startsWith("/r/") || path === "/r") return path
