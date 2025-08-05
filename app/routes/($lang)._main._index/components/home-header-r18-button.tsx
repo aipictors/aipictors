@@ -161,7 +161,6 @@ export function HomeHeaderR18Button() {
         {/* R18ボタン本体 */}
         <Button
           variant="outline"
-          size="sm"
           onClick={handleR18ButtonClick}
           className="rounded-r-none border border-gray-300"
         >
@@ -173,7 +172,6 @@ export function HomeHeaderR18Button() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              size="sm"
               className="rounded-l-none border border-gray-300 border-l-0 px-2"
             >
               <ChevronDown className="h-3 w-3" />

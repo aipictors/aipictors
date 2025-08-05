@@ -458,7 +458,7 @@ function HomeHeader(props: Props) {
       <div className="flex w-full justify-end gap-x-2">
         <div className="hidden w-full items-center space-x-2 md:flex">
           <div
-            className={`flex w-full justify-start space-x-2 font-semibold ${
+            className={`flex w-full items-center justify-start space-x-2 font-semibold ${
               !isSpecialPage
                 ? sidebarState === "expanded"
                   ? "pl-[248px]" // サイドバー幅216px + 余白32px
@@ -538,7 +538,7 @@ function HomeHeader(props: Props) {
         ) : (
           <>
             <div className="hidden space-x-2 md:flex">
-              {/* R18ボタン - ログイン中のみ表示 */}
+              {/* R18ボタン - 生成・投稿ボタンと同じエリアに配置 */}
               {authContext.isLoading ? (
                 <HomeHeaderR18ButtonSkeleton />
               ) : (
