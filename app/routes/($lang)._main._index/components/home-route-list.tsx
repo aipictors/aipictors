@@ -5,7 +5,6 @@ import { Link, useNavigate, useLocation, useNavigation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
-  BoxIcon,
   HomeIcon,
   Image,
   ImageIcon,
@@ -18,6 +17,7 @@ import {
   ChevronLeftIcon,
   TagIcon,
   RefreshCcwIcon,
+  SearchIcon,
 } from "lucide-react"
 import { useContext } from "react"
 import { Button } from "~/components/ui/button"
@@ -89,7 +89,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
       className={`fixed top-0 hidden h-screen flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 sm:z-30 md:z-40 md:flex lg:flex ${sidebarWidth()}`}
     >
       {/* Logo with Toggle Button */}
-      <div className="mb-10 flex items-center justify-start">
+      <div className="mb-4 flex items-center justify-start">
         {/* 三本線ボタン（ロゴの左に表示） - PC版で常に表示 */}
         <Button
           variant="ghost"
@@ -139,6 +139,14 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
       <SidebarNavigationButton href={isSensitive ? "/r" : "/"} icon={HomeIcon}>
         {t("ホーム", "Home")}
         {isSensitive && " - R18"}
+      </SidebarNavigationButton>
+
+      <SidebarNavigationButton
+        href={createLink("/search")}
+        icon={SearchIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("検索", "Search")}
       </SidebarNavigationButton>
 
       {/* R18モード時の全年齢戻るボタン */}
@@ -210,7 +218,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
 
       {/* Separator */}
       {sidebarState === "expanded" && (
-        <div className="px-3 py-2">
+        <div className="px-3 py-1">
           <Separator />
         </div>
       )}
@@ -234,7 +242,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
 
       {/* Separator (auth) */}
       {authContext.isNotLoading && sidebarState === "expanded" && (
-        <div className="px-3 py-2">
+        <div className="px-3 py-1">
           <Separator />
         </div>
       )}

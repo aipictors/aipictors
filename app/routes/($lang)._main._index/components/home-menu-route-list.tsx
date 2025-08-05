@@ -14,6 +14,7 @@ import {
   StarIcon,
   TagIcon,
   RefreshCcwIcon,
+  SearchIcon,
 } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
@@ -87,6 +88,14 @@ export function HomeMenuRouteList({
       >
         {t("ホーム", "Home")}
         {isSensitive && " - R18"}
+      </HomeMenuNavigationButton>
+
+      <HomeMenuNavigationButton
+        href={createLink("/search")}
+        onClick={closeHeaderMenu}
+        icon={SearchIcon}
+      >
+        {t("検索", "Search")}
       </HomeMenuNavigationButton>
 
       {/* R18モード時の全年齢戻るボタン */}
