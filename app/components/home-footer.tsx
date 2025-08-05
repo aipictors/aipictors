@@ -1,5 +1,6 @@
 import { cn } from "~/lib/utils"
 import { Link } from "@remix-run/react"
+import { SnsIconLink } from "~/components/sns-icon"
 
 /**
  * フッター
@@ -50,7 +51,18 @@ export function HomeFooter() {
           "AipictorsはAIイラスト・AIフォト・AIグラビア・AI小説投稿サイトです。10万以上の沢山のAIコンテンツが投稿されています！無料AIイラスト、グラビア生成機も搭載されています！"
         }
       </p>
-      <div>
+
+      {/* SNSアイコンとコピーライト */}
+      <div className="flex flex-col gap-y-3 md:flex-row md:justify-between md:gap-y-0">
+        {/* SNSアイコン */}
+        <div className="flex items-center gap-x-3">
+          <span className="font-medium text-sm">Follow us:</span>
+          <SnsIconLink url="https://x.com/AIPICTORS" />
+          <SnsIconLink url="https://discord.gg/aipictors" />
+          <SnsIconLink url="https://github.com/aipictors" />
+        </div>
+
+        {/* コピーライト */}
         <Link
           to={"https://www.aipictors.com"}
           className="font-bold text-sm"

@@ -23,6 +23,7 @@ import { useContext } from "react"
 import { Button } from "~/components/ui/button"
 import { useSidebar } from "~/contexts/sidebar-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { SnsIconLink } from "~/components/sns-icon"
 
 type Props = {
   title?: string
@@ -37,7 +38,8 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const t = useTranslation()
   const { sidebarState, toggleSidebar, minimizeSidebar } = useSidebar()
 
-  const sensitivePath = /\/r($|\/)/.test(location.pathname)
+  const sensitivePath =
+    typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
   const isSensitive = sensitivePath
   const title = isSensitive ? "Aipictors R18" : (propTitle ?? "Aipictors")
 
@@ -230,14 +232,6 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         {t("フォト", "Photo")}
       </SidebarNavigationButton>
 
-      <SidebarNavigationButton
-        href={createLink("/r")}
-        icon={BoxIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("センシティブ", "BoxIcon")}
-      </SidebarNavigationButton>
-
       {/* Separator (auth) */}
       {authContext.isNotLoading && sidebarState === "expanded" && (
         <div className="px-3 py-2">
@@ -272,6 +266,13 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
                   className="h-10"
                 />
               </Link>
+            </div>
+
+            {/* SNSアイコン */}
+            <div className="flex items-center gap-x-2">
+              <SnsIconLink url="https://x.com/AIPICTORS" />
+              <SnsIconLink url="https://discord.gg/aipictors" />
+              <SnsIconLink url="https://github.com/aipictors" />
             </div>
 
             <Link className="text-xs opacity-80" to="/about">

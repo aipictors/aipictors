@@ -90,7 +90,8 @@ export function UserNavigationMenuContent(props: Props) {
   const featurePromptonRequest =
     userSetting?.userSetting?.featurePromptonRequest ?? false
   const viewerUserToken = tokenData?.viewer?.token
-  const isSensitiveToggleVisible = location.pathname !== "/generation"
+  const isSensitiveToggleVisible =
+    typeof window !== "undefined" ? location.pathname !== "/generation" : true
 
   const setColorTheme = (newMode: string) => {
     if (newMode === "system") {
@@ -248,7 +249,7 @@ export function UserNavigationMenuContent(props: Props) {
           </div>
         </div>
 
-        <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
+        <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
           {/* スケルトンメニュー項目（実際の項目数に合わせる） */}
           {/* マイページ */}
           <div className={userNavigationStyles.menuItem}>
@@ -401,7 +402,7 @@ export function UserNavigationMenuContent(props: Props) {
         </div>
       </div>
 
-      <ScrollArea className="max-h-[320px] overflow-y-auto p-1 md:max-h-none">
+      <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
         <MenuItemLink
           href={getSensitiveLink(`/users/${authContext.login}`)}
           icon={<UserCircleIcon className={userNavigationStyles.menuIcon} />}

@@ -4,7 +4,6 @@ import { Link, useNavigate, useLocation, useNavigation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
-  BoxIcon,
   HomeIcon,
   Image,
   ImageIcon,
@@ -20,6 +19,7 @@ import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
 import { HomeMenuNavigationButton } from "~/routes/($lang)._main._index/components/home-menu-navigation-button"
+import { SnsIconLink } from "~/components/sns-icon"
 
 type Props = {
   title?: string
@@ -40,7 +40,8 @@ export function HomeMenuRouteList({
 
   const t = useTranslation()
 
-  const sensitivePath = /\/r($|\/)/.test(location.pathname)
+  const sensitivePath =
+    typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
 
   const isSensitive = sensitivePath
 
@@ -178,14 +179,6 @@ export function HomeMenuRouteList({
         {t("フォト", "Photo")}
       </HomeMenuNavigationButton>
 
-      <HomeMenuNavigationButton
-        href={createLink("/r")}
-        icon={BoxIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("センシティブ", "BoxIcon")}
-      </HomeMenuNavigationButton>
-
       {/* Separator (auth) ---------------------------------------- */}
       {authContext.isNotLoading && (
         <div className="hidden px-3 py-2 lg:block">
@@ -221,13 +214,35 @@ export function HomeMenuRouteList({
             </Link>
           </div>
 
-          <Link className="text-xs opacity-80" to="/about">
-            {t("概要", "About")}
-          </Link>
-          <Link className="text-xs opacity-80" to="/terms">
-            {t("利用規約", "Terms")}
-          </Link>
-          <p className="text-xs opacity-80">©2025 Aipictors Co.,Ltd.</p>
+          {/* フッターコンテンツ */}
+          <div className="space-y-3 pt-2">
+            {/* ナビゲーションリンク */}
+            <div className="flex items-center gap-x-4 text-xs">
+              <Link
+                className="opacity-80 transition-opacity hover:opacity-100"
+                to="/about"
+              >
+                {t("概要", "About")}
+              </Link>
+              <span className="opacity-50">•</span>
+              <Link
+                className="opacity-80 transition-opacity hover:opacity-100"
+                to="/terms"
+              >
+                {t("利用規約", "Terms")}
+              </Link>
+            </div>
+
+            {/* SNSアイコン */}
+            <div className="flex items-center gap-x-2">
+              <SnsIconLink url="https://x.com/AIPICTORS" />
+              <SnsIconLink url="https://discord.gg/aipictors" />
+              <SnsIconLink url="https://github.com/aipictors" />
+            </div>
+
+            {/* コピーライト */}
+            <p className="text-xs opacity-70">©2025 Aipictors Co.,Ltd.</p>
+          </div>
         </div>
       </footer>
     </div>

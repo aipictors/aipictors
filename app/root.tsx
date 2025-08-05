@@ -66,10 +66,14 @@ type Props = Readonly<{
  */
 export function Layout(props: Props) {
   const location = useLocation()
-  const [_key, setKey] = useState(location.pathname)
+  const [_key, setKey] = useState(
+    typeof window !== "undefined" ? location.pathname : "/",
+  )
 
   useEffect(() => {
-    setKey(location.pathname)
+    if (typeof window !== "undefined") {
+      setKey(location.pathname)
+    }
   }, [location.pathname])
 
   if (

@@ -63,7 +63,7 @@ export function UserNavigationMenuContent(props: Props) {
   const user = data?.viewer?.user
 
   return (
-    <ScrollArea className="h-96">
+    <ScrollArea className="max-h-[40vh]">
       <div className="space-y-1 p-1">
         {/* ユーザー情報セクション */}
         <DropdownMenuLabel className="p-2">
