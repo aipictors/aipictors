@@ -107,7 +107,7 @@ export function GenerationTaskDialogButton(props: Props) {
             <GenerationTaskSheetView
               isScroll={true}
               task={props.task}
-              isReferenceLink={true}
+              isReferenceLink={false}
               setShowInPaintDialog={(value) => {
                 setShowInPaintDialog(value)
                 if (value) {
