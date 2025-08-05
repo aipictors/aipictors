@@ -42,11 +42,17 @@ export function HomeHeaderR18Button() {
 
   // ローカルストレージからの初期設定を読み込み
   const [isR18Hidden, setIsR18Hidden] = useState(false)
+  // 年齢確認の記憶状態
+  const [isAgeConfirmed, setIsAgeConfirmed] = useState(false)
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const isHidden = localStorage.getItem("hideR18Button") === "true"
       setIsR18Hidden(isHidden)
+
+      // 年齢確認の記憶をチェック（期限なしで永続的に記憶）
+      const ageConfirmed = localStorage.getItem("ageConfirmed") === "true"
+      setIsAgeConfirmed(ageConfirmed)
     }
   }, [])
 
@@ -62,10 +68,10 @@ export function HomeHeaderR18Button() {
       return true
     }
 
-    // ログイン済みの場合はローカルストレージを無視し、ユーザー設定のみを使用
-    // ユーザー設定が読み込み中は表示しない（ダミー状態は親で処理）
+    // ログイン済みの場合
+    // ユーザー設定が読み込み中の場合は表示する（スケルトンは親で処理）
     if (loading || !userSetting?.userSetting) {
-      return false
+      return true
     }
 
     // preferenceRatingがR18またはR18Gの場合のみ表示
@@ -91,8 +97,15 @@ export function HomeHeaderR18Button() {
     } else {
       // 現在全年齢ページ → R18ページに遷移（/rを追加）
       if (authContext.isNotLoggedIn) {
-        // 未ログイン時は年齢確認ダイアログを表示
-        setShowAgeConfirmDialog(true)
+        // 年齢確認の記憶をチェック
+        if (isAgeConfirmed) {
+          // 年齢確認済みの場合は直接R18ページに遷移
+          const currentPath = location.pathname
+          navigate(currentPath === "/" ? "/r" : `/r${currentPath}`)
+        } else {
+          // 未確認の場合は年齢確認ダイアログを表示
+          setShowAgeConfirmDialog(true)
+        }
       } else {
         // ログイン済みの場合は直接R18ページに遷移
         const currentPath = location.pathname
@@ -103,12 +116,10 @@ export function HomeHeaderR18Button() {
 
   // 年齢確認ダイアログの確認処理
   const handleAgeConfirm = () => {
-    // 選択を記憶する場合はローカルストレージに保存（30日間）
+    // 選択を記憶する場合はローカルストレージに永続的に保存
     if (rememberChoice && typeof window !== "undefined") {
-      const expiryDate = new Date()
-      expiryDate.setDate(expiryDate.getDate() + 30)
       localStorage.setItem("ageConfirmed", "true")
-      localStorage.setItem("ageConfirmedExpiry", expiryDate.toISOString())
+      setIsAgeConfirmed(true)
     }
 
     setShowAgeConfirmDialog(false)
@@ -153,6 +164,13 @@ export function HomeHeaderR18Button() {
   // R18ボタンを表示するかどうかを判定
   if (!shouldShowR18Button()) {
     return null
+  }
+
+  // ログイン済みでユーザー設定読み込み中の場合はスケルトンを表示
+  if (authContext.isLoggedIn && loading) {
+    return (
+      <div className="h-10 w-12 animate-pulse rounded border-2 bg-gray-200 dark:bg-gray-700" />
+    )
   }
 
   return (
@@ -240,7 +258,7 @@ export function HomeHeaderR18Button() {
                       htmlFor={rememberChoiceId}
                       className="text-gray-600 text-sm"
                     >
-                      この選択を30日間記憶する
+                      この選択を記憶する
                     </label>
                   </div>
                 </div>

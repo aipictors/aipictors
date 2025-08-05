@@ -31,7 +31,6 @@ import {
 import { cn } from "~/lib/utils"
 import { useSidebar } from "~/contexts/sidebar-context"
 import { debugLog } from "~/utils/debug-logger"
-import { HomeHeaderR18ButtonSkeleton } from "~/routes/($lang)._main._index/components/home-header-r18-button-skeleton"
 import { HomeHeaderR18Button } from "~/routes/($lang)._main._index/components/home-header-r18-button"
 
 // 重いコンポーネントを遅延読み込み
@@ -539,11 +538,7 @@ function HomeHeader(props: Props) {
           <>
             <div className="hidden space-x-2 md:flex">
               {/* R18ボタン - 生成・投稿ボタンと同じエリアに配置 */}
-              {authContext.isLoading ? (
-                <HomeHeaderR18ButtonSkeleton />
-              ) : (
-                <HomeHeaderR18Button />
-              )}
+              <HomeHeaderR18Button />
               <Button
                 variant="secondary"
                 onClick={() => handleNavigate("/generation")}
@@ -569,11 +564,7 @@ function HomeHeader(props: Props) {
             )}
             <div className="flex space-x-2 md:hidden">
               {/* R18ボタン - モバイル版 */}
-              {authContext.isLoading ? (
-                <HomeHeaderR18ButtonSkeleton />
-              ) : (
-                <HomeHeaderR18Button />
-              )}
+              <HomeHeaderR18Button />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon">
