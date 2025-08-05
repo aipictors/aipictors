@@ -7,7 +7,6 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useState } from "react"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 
 export function TagsHeader() {
   const t = useTranslation()
@@ -52,7 +51,7 @@ export function TagsHeader() {
         </h1>
 
         {/* クリーンなサブタイトル */}
-        <p className="mx-auto max-w-2xl leading-relaxed text-lg text-muted-foreground">
+        <p className="mx-auto max-w-2xl text-lg text-muted-foreground leading-relaxed">
           {t(
             "キーワードやタグで作品を見つけよう",
             "Discover artworks by keywords and tags",
@@ -73,19 +72,10 @@ export function TagsHeader() {
             <span>{t("10,000+ タグ", "10,000+ Tags")}</span>
           </div>
         </div>
-
-        {/* R18モード切り替えボタン */}
-        <div className="flex items-center justify-center">
-          <SensitiveToggle
-            variant="compact"
-            className="transition-transform hover:scale-105"
-            showStatus={true}
-          />
-        </div>
       </div>
 
       {/* 検索バー */}
-      <div className="mx-auto max-w-lg space-y-4">
+      <div className="mx-auto w-full max-w-lg space-y-4">
         {/* 検索モード切り替え */}
         <div className="flex items-center justify-center gap-4">
           <div className="flex items-center space-x-2">
@@ -93,22 +83,22 @@ export function TagsHeader() {
             <Label htmlFor="search-mode" className="text-sm">
               {t("作品検索", "Search Works")}
             </Label>
-            {/** biome-ignore lint/nursery/useUniqueElementIds: 複数のSwitchが同じIDを使用している */}
+            {/* biome-ignore lint/nursery/useUniqueElementIds: 複数のSwitchが同じIDを使用している */}
             <Switch
               id="search-mode"
               checked={isTagMode}
               onCheckedChange={setIsTagMode}
             />
             <Label htmlFor="search-mode" className="text-sm">
-              {t("タグページ", "Tag Page")}
+              {t("個別ページ", "Tag Page")}
             </Label>
             <Tag className="h-4 w-4 text-purple-500" />
           </div>
         </div>
 
         {/* 検索入力欄 - モダンでクリーンなデザイン */}
-        <div className="group relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-blue-500" />
+        <div className="group relative w-full">
+          <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-blue-500" />
           <Input
             type="text"
             placeholder={
@@ -122,15 +112,16 @@ export function TagsHeader() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-20 transition-all duration-200 hover:border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="w-full rounded-lg border border-gray-200 bg-white py-3 pr-20 pl-10 transition-all duration-200 hover:border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+          <div className="-translate-y-1/2 absolute top-1/2 right-2 flex items-center gap-1">
             {searchQuery && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSearchQuery("")}
                 className="h-6 w-6 rounded-full p-0 hover:bg-gray-200"
+                aria-label={t("クリア", "Clear")}
               >
                 ×
               </Button>

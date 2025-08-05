@@ -9,7 +9,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "@remix-run/react"
-import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search } from "lucide-react"
+import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search, X } from "lucide-react"
 import { Suspense, useContext, useState, useEffect, useRef, lazy } from "react"
 import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
@@ -347,7 +347,7 @@ function HomeHeader(props: Props) {
         )}
       >
         {/* Mobile menu - show on mobile, and on PC only if showPcSheetMenu is true */}
-        <div className="hidden w-8 md:block" />
+        <div className="hidden w-8 md:hidden" />
 
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
@@ -371,7 +371,7 @@ function HomeHeader(props: Props) {
             </ScrollArea>
           </SheetContent>
         </Sheet>
-        <div className="flex items-center">
+        <div className="hidden items-center md:flex">
           {/* 画像生成画面ではロゴを表示、その他の画面では余白のみ表示 */}
           {isSpecialPage && (
             <Button
@@ -384,7 +384,7 @@ function HomeHeader(props: Props) {
                   <Loader2Icon className="size-8 animate-spin" />
                 </div>
               )}
-              {navigation.state !== "loading" && (
+              {sidebarState === "minimal" && navigation.state !== "loading" && (
                 <img
                   src="/icon.svg"
                   className="size-8 shrink-0 rounded-full"
@@ -400,10 +400,29 @@ function HomeHeader(props: Props) {
                   </span>
                 </div>
               )}
+              {navigation.state === "loading" && (
+                <div className="flex size-8 items-center justify-center">
+                  <Loader2Icon className="size-8 animate-spin" />
+                </div>
+              )}
+              {sidebarState !== "minimal" && navigation.state !== "loading" && (
+                <img
+                  src="/icon.svg"
+                  className="ml-8 size-8 shrink-0 rounded-full"
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                />
+              )}
+              {sidebarState !== "minimal" && (
+                <div className="flex items-center">
+                  <span className="whitespace-nowrap font-bold text-xl">
+                    {title}
+                  </span>
+                </div>
+              )}
             </Button>
           )}
-          {sidebarState !== "minimal" && <div className="mr-16" />}
-
           {/* サイドバーが最小化されている場合のみロゴを表示 */}
           {!isSpecialPage && sidebarState === "minimal" && (
             <Button
@@ -433,16 +452,6 @@ function HomeHeader(props: Props) {
             </Button>
           )}
         </div>
-        {!isSearchFormOpen && (
-          <Button
-            className="block md:hidden"
-            onClick={onToggleSearchForm}
-            variant="ghost"
-            size="icon"
-          >
-            <Search className="m-auto w-auto" />
-          </Button>
-        )}
       </div>
       <div className="flex w-full justify-end gap-x-2">
         <div className="hidden w-full items-center space-x-2 md:flex">
@@ -465,10 +474,27 @@ function HomeHeader(props: Props) {
                 onChange={onChangeSearchText}
                 onKeyDown={onSubmitSearch}
                 placeholder={t("作品を検索", "Search for posts")}
+                className="pr-20"
               />
-              <div className="absolute right-4">
-                <Button onClick={onSearch} variant="ghost" size="icon">
-                  <Search className="w-16" />
+              <div className="-translate-y-1/2 absolute top-1/2 right-1 flex gap-1">
+                {searchText && (
+                  <Button
+                    onClick={() => setSearchText("")}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    aria-label={t("検索をクリア", "Clear search")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+                <Button
+                  onClick={onSearch}
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                >
+                  <Search className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -486,12 +512,26 @@ function HomeHeader(props: Props) {
             >
               <MoveLeft className="w-8" />
             </Button>
-            <Input
-              value={searchText}
-              onChange={onChangeSearchText}
-              onKeyUp={onSubmitSearch}
-              placeholder={t("作品を検索", "Search for posts")}
-            />
+            <div className="relative flex-1">
+              <Input
+                value={searchText}
+                onChange={onChangeSearchText}
+                onKeyUp={onSubmitSearch}
+                placeholder={t("作品を検索", "Search for posts")}
+                className="w-full pr-10"
+              />
+              {searchText && (
+                <Button
+                  onClick={() => setSearchText("")}
+                  variant="ghost"
+                  size="icon"
+                  className="-translate-y-1/2 absolute top-1/2 right-1 h-8 w-8"
+                  aria-label={t("検索をクリア", "Clear search")}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         ) : (
           <>
@@ -509,6 +549,16 @@ function HomeHeader(props: Props) {
                 {t("投稿", "Post")}
               </Button>
             </div>
+            {!isSearchFormOpen && (
+              <Button
+                className="block md:hidden"
+                onClick={onToggleSearchForm}
+                variant="ghost"
+                size="icon"
+              >
+                <Search className="m-auto w-auto" />
+              </Button>
+            )}
             <div className="flex space-x-2 md:hidden">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -549,46 +599,48 @@ function HomeHeader(props: Props) {
           </div>
         )}
         {/* お知らせアイコンとプロフィールアイコン */}
-        {authContext.isLoading ? (
-          // ログイン判定中のダミーUI（モバイル最適化済み）
-          <div className="flex items-center gap-2">
-            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-            <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-          </div>
-        ) : authContext.isLoggedIn ? (
-          // ログイン時のUI（Suspenseでスムーズなローディング）
-          <div className="flex items-center gap-2">
-            <Suspense
-              fallback={
-                <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-              }
-            >
-              <HomeNotificationsMenu
-                isExistedNewNotification={isExistedNewNotificationState}
-                setIsExistedNewNotificationState={
-                  setIsExistedNewNotificationState
+        {!isSearchFormOpen &&
+          (authContext.isLoading ? (
+            // ログイン判定中のダミーUI（モバイル最適化済み）
+            <div className="flex items-center gap-2">
+              <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+              <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
+            </div>
+          ) : authContext.isLoggedIn ? (
+            // ログイン時のUI（Suspenseでスムーズなローディング）
+            <div className="flex items-center gap-2">
+              <Suspense
+                fallback={
+                  <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
                 }
-                checkedNotificationTimes={
-                  isExistedNewNotificationData.data?.viewer
-                    ?.checkedNotificationTimes ?? []
+              >
+                <HomeNotificationsMenu
+                  isExistedNewNotification={isExistedNewNotificationState}
+                  setIsExistedNewNotificationState={
+                    setIsExistedNewNotificationState
+                  }
+                  checkedNotificationTimes={
+                    isExistedNewNotificationData.data?.viewer
+                      ?.checkedNotificationTimes ?? []
+                  }
+                />
+              </Suspense>
+              <Suspense
+                fallback={
+                  <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
                 }
-              />
-            </Suspense>
-            <Suspense
-              fallback={
-                <div className="h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-gray-700" />
-              }
-            >
-              <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
-            </Suspense>
-          </div>
-        ) : (
-          // 未ログイン時のUI
-          <div className="flex items-center gap-2">
-            <HomeHeaderNotLoggedInMenu />
-            <LoginDialogButton />
-          </div>
-        )}
+              >
+                <FastUserNavigationMenu onLogout={onOpenLogoutDialog} />
+              </Suspense>
+            </div>
+          ) : (
+            // 未ログイン時のUI
+            <div className="flex items-center gap-2">
+              <HomeHeaderNotLoggedInMenu />
+              <LoginDialogButton />
+            </div>
+          ))}
+
         {/* 検索フォーム時の検索ボタン（スマホのみ） */}
         {isSearchFormOpen && (
           <Button
