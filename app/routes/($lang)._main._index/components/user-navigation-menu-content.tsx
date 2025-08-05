@@ -524,14 +524,14 @@ export function UserNavigationMenuContent(props: Props) {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-        {userSetting?.userSetting &&
+        {/* {userSetting?.userSetting &&
           (userSetting?.userSetting.preferenceRating === "R18" ||
             userSetting?.userSetting.preferenceRating === "R18G") &&
           isSensitiveToggleVisible && (
             <DropdownMenuItem asChild>
               <SensitiveToggle variant="full" className="w-full" />
             </DropdownMenuItem>
-          )}
+          )} */}
         <DropdownMenuItem
           onClick={props.onLogout}
           className={userNavigationStyles.menuItem}

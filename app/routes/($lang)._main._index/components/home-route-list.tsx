@@ -16,7 +16,6 @@ import {
   MenuIcon,
   ChevronLeftIcon,
   TagIcon,
-  RefreshCcwIcon,
   SearchIcon,
 } from "lucide-react"
 import { useContext } from "react"
@@ -150,7 +149,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
       </SidebarNavigationButton>
 
       {/* R18モード時の全年齢戻るボタン */}
-      {isSensitive && (
+      {/* {isSensitive && (
         <SidebarNavigationButton
           href={"/"}
           icon={RefreshCcwIcon}
@@ -158,7 +157,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         >
           {t("全年齢に戻る", "Back to All Ages")}
         </SidebarNavigationButton>
-      )}
+      )} */}
 
       <SidebarNavigationButton
         href={createLink("/themes")}

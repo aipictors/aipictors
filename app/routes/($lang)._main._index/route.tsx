@@ -599,7 +599,7 @@ export default function Index() {
                 onChange={setCurrentTab}
               />
             </div>
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               {/\/r($|\/)/.test(location.pathname) && (
                 <div className="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-red-100 to-pink-100 px-3 py-1.5 sm:flex dark:from-red-900/50 dark:to-pink-900/50">
                   <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
@@ -609,7 +609,7 @@ export default function Index() {
                 </div>
               )}
               <SensitiveToggle variant="compact" showStatus />
-            </div>
+            </div> */}
           </div>
         </div>
         {/* ---------------------- タブ: ホーム ---------------------- */}

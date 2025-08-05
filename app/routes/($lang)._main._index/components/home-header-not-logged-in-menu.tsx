@@ -23,15 +23,16 @@ import { useContext } from "react"
 import { useTheme } from "next-themes"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
-import { useNavigate, useLocation } from "react-router-dom"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
+import { useNavigate } from "@remix-run/react"
 
 export const HomeHeaderNotLoggedInMenu = () => {
   const authContext = useContext(AuthContext)
 
   const { theme, setTheme } = useTheme()
+
+  const navigate = useNavigate()
 
   const setColorTheme = (newMode: string) => {
     if (newMode === "system") {
@@ -77,11 +78,7 @@ export const HomeHeaderNotLoggedInMenu = () => {
 
   const locale = useLocale()
 
-  const navigate = useNavigate()
-
-  const location = useLocation()
-
-  const isSensitiveToggleVisible = location.pathname !== "/generation"
+  // const isSensitiveToggleVisible = location.pathname !== "/generation"
 
   // R18モードの状態を検出
   const _isR18Mode = /\/r($|\/)/.test(location.pathname)
@@ -185,12 +182,12 @@ export const HomeHeaderNotLoggedInMenu = () => {
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
-        {isSensitiveToggleVisible && <DropdownMenuSeparator />}
+        {/* {isSensitiveToggleVisible && <DropdownMenuSeparator />}
         {isSensitiveToggleVisible && (
           <div className="px-2 py-1.5">
             <SensitiveToggle variant="compact" className="w-full" />
           </div>
-        )}
+        )} */}
       </DropdownMenuContent>
     </DropdownMenu>
   )

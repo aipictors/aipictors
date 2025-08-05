@@ -180,7 +180,7 @@ export function UserSettingsForm() {
               <div className="flex w-full items-center justify-between">
                 <Label htmlFor="show-sensitive-toggle">
                   {t(
-                    "センシティブモード切り替えボタンをメニューに表示する",
+                    "R18切り替えボタンを表示する",
                     "Show sensitive mode toggle button in the menu",
                   )}
                 </Label>
