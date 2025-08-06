@@ -8,7 +8,7 @@ import {
   DialogWorkFragment,
   SelectCreatedWorksDialog,
 } from "~/routes/($lang).my._index/components/select-created-works-dialog"
-import { useQuery, useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { Suspense, useContext, useState, useEffect } from "react"
@@ -25,7 +25,7 @@ export function SettingProfileForm() {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 
-  const { data: user } = useSuspenseQuery(userQuery, {
+  const { data: user, loading } = useQuery(userQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: authContext.userId?.toString() ?? "",
@@ -35,21 +35,39 @@ export function SettingProfileForm() {
 
   const userInfo = user?.user
 
-  // AuthContextのフォールバック機能を活用してuseStateの初期値を設定
-  const [userName, setUserName] = useState(
-    userInfo?.name || authContext.displayName || "",
-  )
-  const [profile, setProfile] = useState(userInfo?.biography ?? "")
-  const [enProfile, setEnProfile] = useState(userInfo?.enBiography ?? "")
-  const [website, setWebsite] = useState(userInfo?.siteURL ?? "")
-  const [instagram, setInstagram] = useState(userInfo?.instagramAccountId ?? "")
-  const [twitter, setTwitter] = useState(userInfo?.twitterAccountId ?? "")
-  const [github, setGithub] = useState(userInfo?.githubAccountId ?? "")
-  const [mail, setMail] = useState(userInfo?.mailAddress ?? "")
+  // すべてのフックを条件なしで呼び出す
+  const [userName, setUserName] = useState("")
+  const [profile, setProfile] = useState("")
+  const [enProfile, setEnProfile] = useState("")
+  const [website, setWebsite] = useState("")
+  const [instagram, setInstagram] = useState("")
+  const [twitter, setTwitter] = useState("")
+  const [github, setGithub] = useState("")
+  const [mail, setMail] = useState("")
   const [profileImage, setProfileImage] = useState("")
   const [headerImage, setHeaderImage] = useState("")
+  const [selectedPickupWorks, setSelectedPickupWorks] = useState<
+    Array<{
+      id: string
+      title: string
+      smallThumbnailImageURL: string
+    }>
+  >([])
+  const [selectedPickupSensitiveWorks, setSelectedPickupSensitiveWorks] = useState<
+    Array<{
+      id: string
+      title: string
+      smallThumbnailImageURL: string
+    }>
+  >([])
 
-  // userInfoが取得されたらstateを初期化（AuthContextとの統合）
+  const { data: token } = useQuery(viewerTokenQuery)
+
+  const [updateProfile, { loading: isUpdating }] = useMutation(
+    updateUserProfileMutation,
+  )
+
+  // userInfoが取得されたらstateを初期化
   useEffect(() => {
     if (userInfo) {
       setUserName(userInfo.name || authContext.displayName || "")
@@ -60,32 +78,27 @@ export function SettingProfileForm() {
       setTwitter(userInfo.twitterAccountId ?? "")
       setGithub(userInfo.githubAccountId ?? "")
       setMail(userInfo.mailAddress ?? "")
+      setSelectedPickupWorks(
+        userInfo.featuredWorks?.map((work) => ({
+          id: work.id,
+          title: work.title,
+          smallThumbnailImageURL: work.smallThumbnailImageURL,
+        })) ?? [],
+      )
+      setSelectedPickupSensitiveWorks(
+        userInfo.featuredSensitiveWorks?.map((work) => ({
+          id: work.id,
+          title: work.title,
+          smallThumbnailImageURL: work.smallThumbnailImageURL,
+        })) ?? [],
+      )
     }
   }, [userInfo, authContext.displayName])
 
-  const { data: token } = useQuery(viewerTokenQuery)
-
-  // ピックアップ作品のstate初期化をuserInfoの状態に基づいて行う
-  const [selectedPickupWorks, setSelectedPickupWorks] = useState(
-    userInfo?.featuredWorks ?? [],
-  )
-
-  const [selectedPickupSensitiveWorks, setSelectedPickupSensitiveWorks] =
-    useState(userInfo?.featuredSensitiveWorks ?? [])
-
-  // featuredWorksが取得されたらstateを初期化
-  useEffect(() => {
-    if (userInfo?.featuredWorks) {
-      setSelectedPickupWorks(userInfo.featuredWorks)
-    }
-    if (userInfo?.featuredSensitiveWorks) {
-      setSelectedPickupSensitiveWorks(userInfo.featuredSensitiveWorks)
-    }
-  }, [userInfo?.featuredWorks, userInfo?.featuredSensitiveWorks])
-
-  const [updateProfile, { loading: isUpdating }] = useMutation(
-    updateUserProfileMutation,
-  )
+  // ローディング状態をフック呼び出し後に確認
+  if (loading || authContext.isLoading) {
+    return <AppLoadingPage />
+  }
 
   const onSubmit = async () => {
     if (isUpdating || authContext.userId === null) {
