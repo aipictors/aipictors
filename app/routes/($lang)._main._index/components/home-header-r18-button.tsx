@@ -182,7 +182,7 @@ export function HomeHeaderR18Button() {
           onClick={handleR18ButtonClick}
           className="rounded-r-none border border-gray-300"
         >
-          {isCurrentlyR18 ? "全年齢" : "R18"}
+          {isCurrentlyR18 ? "R18" : "全年齢"}
         </Button>
 
         {/* ドロップダウンメニュー */}
