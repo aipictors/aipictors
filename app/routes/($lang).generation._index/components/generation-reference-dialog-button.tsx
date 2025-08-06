@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { useTranslation } from "~/hooks/use-translation"
+import { useState } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -22,25 +23,32 @@ type Props = {
  */
 export function GenerationReferenceDialog(props: Props) {
   const t = useTranslation()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleReference = () => {
+    props.onReference()
+    setIsOpen(false)
+  }
+
+  const handleReferenceWithSeed = () => {
+    props.onReferenceWithSeed()
+    setIsOpen(false)
+  }
 
   return (
     <>
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("復元", "Restore")}</DialogTitle>
           </DialogHeader>
           <div className="flex items-center gap-2">
-            <Button
-              onClick={props.onReference}
-              variant={"secondary"}
-              size={"sm"}
-            >
+            <Button onClick={handleReference} variant={"secondary"} size={"sm"}>
               {t("再利用", "Reuse")}
             </Button>
             <Button
-              onClick={props.onReferenceWithSeed}
+              onClick={handleReferenceWithSeed}
               variant={"secondary"}
               size={"sm"}
             >

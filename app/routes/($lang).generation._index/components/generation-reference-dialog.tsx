@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
+import { useState } from "react"
 
 type Props = {
   onReference(): void
@@ -19,16 +20,23 @@ type Props = {
  * 参照生成ダイアログボタン
  */
 export function GenerationReferenceDialogButton(props: Props) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const handleReference = () => {
+    props.onReference()
+    setIsOpen(false)
+  }
+
   return (
     <>
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>{props.children}</DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>復元</DialogTitle>
           </DialogHeader>
-          <Button>復元</Button>
-          <Button>復元（Seed込み）</Button>
+          <Button onClick={handleReference}>復元</Button>
+          <Button onClick={handleReference}>復元（Seed込み）</Button>
           {props.isShowControlNetCaption && (
             <div className="mt-2">
               <p className="text-gray-500 text-sm">
