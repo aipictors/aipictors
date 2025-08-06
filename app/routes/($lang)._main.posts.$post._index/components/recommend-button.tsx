@@ -106,7 +106,7 @@ export function RecommendButton(props: Props) {
           {isDeleting ? (
             <Loader2Icon className="size-4 animate-spin" />
           ) : (
-            <p>{t("推薦済み", "Recommended")}</p>
+            <p className="font-bold">{t("推薦済み", "Recommended")}</p>
           )}
         </Button>
       ) : (
@@ -118,7 +118,7 @@ export function RecommendButton(props: Props) {
           {isCreating ? (
             <Loader2Icon className="size-4 animate-spin" />
           ) : (
-            <p>{t("推薦", "Recommend")}</p>
+            <p className="font-bold">{t("推薦", "Recommend")}</p>
           )}
         </Button>
       )}

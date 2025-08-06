@@ -9,7 +9,6 @@ import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post._index/co
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { RecommendButton } from "~/routes/($lang)._main.posts.$post._index/components/recommend-button"
-import { useTranslation } from "~/hooks/use-translation"
 import { downloadZipFile } from "~/routes/($lang).generation._index/utils/download-zip-file"
 
 type Props = {
@@ -28,7 +27,6 @@ type Props = {
   isHideEditButton: boolean
   isRecommended: boolean
   isDisabledShare?: boolean
-  isAnonymous?: boolean
   isTargetUserBlocked?: boolean
 }
 
@@ -36,8 +34,6 @@ type Props = {
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー、ZIPダウンロード）
  */
 export function WorkAction(props: Props) {
-  const t = useTranslation()
-
   const appContext = useContext(AuthContext)
 
   const onDownload = async () => {
@@ -74,7 +70,7 @@ export function WorkAction(props: Props) {
       <div className="flex space-x-2">
         <LikeButton
           size={40}
-          text={t(props.isAnonymous ? "匿名いいね" : "いいね", " ")}
+          text={`いいね ${props.workLikesCount}`}
           defaultLiked={props.defaultLiked}
           defaultLikedCount={props.workLikesCount}
           targetWorkId={props.targetWorkId}

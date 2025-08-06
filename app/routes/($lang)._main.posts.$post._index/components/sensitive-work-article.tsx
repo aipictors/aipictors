@@ -157,7 +157,6 @@ export function SensitiveWorkArticle(props: Props) {
           bookmarkFolderId={bookmarkFolderId}
           targetWorkOwnerUserId={props.work.user?.id ?? ""}
           isDisabledShare={false}
-          isAnonymous={true}
         />
         <h1 className="font-bold text-lg">
           {t(

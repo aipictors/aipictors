@@ -220,22 +220,6 @@ export function UserSettingsForm() {
         </>
       )}
 
-      {/* 匿名いいね設定 */}
-      <p className="font-bold">{t("匿名いいね", "Anonymous Like")}</p>
-      <p className="text-sm">
-        {t(
-          "いいねしたときに、投稿者へ自身がいいねしたことを通知するかどうか変更できます",
-          "You can change whether to notify the poster that you liked their content.",
-        )}
-      </p>
-      <p className="text-sm">
-        {t(
-          "匿名いいねに関わらず、いいねした作品は投稿者以外、閲覧することはできません",
-          "Regardless of anonymous likes, only the poster can see who liked their content.",
-        )}
-      </p>
-      <Separator />
-
       {/* 保存ボタン */}
       <Button
         onClick={onSave}

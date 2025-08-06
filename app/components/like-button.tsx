@@ -212,7 +212,7 @@ export function LikeButton(props: Props) {
           <div
             className={cn(
               props.isParticle && "like-button",
-              "relative flex cursor-pointer items-center justify-center",
+              "relative flex cursor-pointer items-center justify-center rounded-md",
               {
                 "bg-secondary text-secondary-foreground hover:bg-secondary/80":
                   !props.isBackgroundNone,
@@ -220,15 +220,15 @@ export function LikeButton(props: Props) {
               },
             )}
             style={{
-              width: props.text ? "auto" : `${size}px`,
               height: `${size}px`,
-              paddingLeft: props.text ? `${size}px` : "0",
+              minWidth: props.text ? "auto" : `${size}px`,
+              paddingLeft: props.text ? "0" : "0",
               paddingRight: props.text ? "12px" : "0",
             }}
           >
             <div
               className={cn(
-                "like-base-64 absolute inset-0 flex items-center justify-center rounded-full",
+                "like-base-64 flex items-center justify-center rounded-full",
                 isLiked ? "hover:bg-pink-50" : "hover:bg-gray-50",
               )}
               style={{
@@ -238,6 +238,9 @@ export function LikeButton(props: Props) {
                 transition: "background-position steps(25)",
                 transitionDuration: isLiked ? "1s" : "0s",
                 backgroundPosition: isLiked ? `-${width}px 0` : "0 0",
+                flexShrink: 0,
+                marginLeft: props.text ? "0" : "0",
+                marginRight: props.text ? "0" : "0",
               }}
             >
               <Heart
@@ -255,7 +258,9 @@ export function LikeButton(props: Props) {
               />
             </div>
             {props.text && (
-              <span className="font-bold text-black text-sm">{props.text}</span>
+              <span className="whitespace-nowrap font-bold text-gray-700 text-sm dark:text-gray-300">
+                {props.text}
+              </span>
             )}
           </div>
         }
@@ -267,7 +272,7 @@ export function LikeButton(props: Props) {
     <button
       className={cn(
         props.isParticle && "like-button",
-        "relative flex items-center justify-center",
+        "relative flex items-center justify-center rounded-md",
         {
           "bg-secondary text-secondary-foreground hover:bg-secondary/80":
             !props.isBackgroundNone,
@@ -275,9 +280,9 @@ export function LikeButton(props: Props) {
         },
       )}
       style={{
-        width: props.text ? "auto" : `${size}px`,
         height: `${size}px`,
-        paddingLeft: props.text ? `${size}px` : "0",
+        minWidth: props.text ? "auto" : `${size}px`,
+        paddingLeft: props.text ? "0" : "0",
         paddingRight: props.text ? "12px" : "0",
       }}
       onClick={handleOnClick}
@@ -285,7 +290,7 @@ export function LikeButton(props: Props) {
     >
       <div
         className={cn(
-          "like-base-64 absolute inset-0 flex items-center justify-center rounded-full",
+          "like-base-64 flex items-center justify-center rounded-full",
           isLiked ? "hover:bg-pink-50" : "hover:bg-gray-50",
         )}
         style={{
@@ -295,6 +300,9 @@ export function LikeButton(props: Props) {
           transition: "background-position steps(25)",
           transitionDuration: isLiked ? "1s" : "0s",
           backgroundPosition: isLiked ? `-${width}px 0` : "0 0",
+          flexShrink: 0,
+          marginLeft: props.text ? "0" : "0",
+          marginRight: props.text ? "0" : "0",
         }}
       >
         <Heart
@@ -308,7 +316,9 @@ export function LikeButton(props: Props) {
         />
       </div>
       {props.text && (
-        <span className="font-bold text-black text-sm">{props.text}</span>
+        <span className="whitespace-nowrap font-bold text-gray-700 text-sm dark:text-gray-300">
+          {props.text}
+        </span>
       )}
     </button>
   )

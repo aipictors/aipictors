@@ -158,8 +158,7 @@ export function WorkArticle(props: Props) {
           bookmarkFolderId={bookmarkFolderId}
           targetWorkOwnerUserId={props.work.user?.id ?? ""}
           isDisabledShare={false}
-          isAnonymous={true}
-          isTargetUserBlocked={props.work.user?.isBlocked ?? false}
+          isTargetUserBlocked={Boolean(props.work.user?.isBlocked)}
         />
         <h1 className="font-bold text-lg">
           {t(
