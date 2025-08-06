@@ -17,7 +17,15 @@ import {
 } from "~/components/ui/alert-dialog"
 import { useNavigate, useLocation } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
-import { ChevronDown, Settings, AlertTriangle, X, Check } from "lucide-react"
+import {
+  ChevronDown,
+  Settings,
+  AlertTriangle,
+  X,
+  Check,
+  EyeOff,
+  Eye,
+} from "lucide-react"
 import { useState, useContext, useEffect, useId } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { userBasicSettingQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
@@ -180,9 +188,19 @@ export function HomeHeaderR18Button() {
         <Button
           variant="outline"
           onClick={handleR18ButtonClick}
-          className="rounded-r-none border border-gray-300"
+          className="flex items-center gap-1 rounded-r-none border border-gray-300"
         >
-          {isCurrentlyR18 ? "R18" : "全年齢"}
+          {isCurrentlyR18 ? (
+            <>
+              <EyeOff className="h-3 w-3" />
+              R18
+            </>
+          ) : (
+            <>
+              <Eye className="h-3 w-3" />
+              全年齢
+            </>
+          )}
         </Button>
 
         {/* ドロップダウンメニュー */}
@@ -204,7 +222,7 @@ export function HomeHeaderR18Button() {
               >
                 <Settings className="h-4 w-4" />
                 {authContext.isNotLoggedIn
-                  ? "R18ボタンを非表示にする"
+                  ? "対象年齢変更ボタンを非表示にする"
                   : "表示設定"}
               </button>
             </DropdownMenuItem>
@@ -225,6 +243,15 @@ export function HomeHeaderR18Button() {
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-4">
+                <div className="rounded border border-blue-200 bg-blue-50 p-3">
+                  <p className="font-medium text-blue-800 text-sm">
+                    📄 対象年齢をR18に変更します
+                  </p>
+                  <p className="mt-1 text-blue-700 text-xs">
+                    現在は全年齢向けのコンテンツを表示中です
+                  </p>
+                </div>
+
                 <div className="rounded border border-red-200 bg-red-50 p-3">
                   <p className="font-medium text-red-800 text-sm">
                     ⚠️ 18歳未満の方は閲覧できません
@@ -293,13 +320,13 @@ export function HomeHeaderR18Button() {
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-orange-500" />
-              R18ボタンを非表示にしますか？
+              対象年齢変更ボタンを非表示にしますか？
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-4">
                 <div className="rounded border border-orange-200 bg-orange-50 p-3">
                   <p className="text-orange-800 text-sm">
-                    R18ボタンが一時的に非表示になります
+                    対象年齢変更ボタンが一時的に非表示になります
                   </p>
                 </div>
 
