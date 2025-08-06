@@ -19,7 +19,7 @@ export function DashboardHomeContents() {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {
-    skip: appContext.isLoading,
+    skip: appContext.isLoading || appContext.isNotLoggedIn,
   })
 
   const truncateTitle = (title: string, maxLength: number) => {
@@ -31,12 +31,13 @@ export function DashboardHomeContents() {
   }
 
   const worksResult = useSuspenseQuery(worksQuery, {
-    skip: appContext.isLoading,
+    skip:
+      appContext.isLoading || appContext.isNotLoggedIn || !appContext.userId,
     variables: {
       offset: 0,
       limit: 3,
       where: {
-        userId: appContext.userId,
+        userId: appContext.userId || "",
         orderBy: "LIKES_COUNT",
         sort: "DESC",
       },
@@ -147,15 +148,15 @@ export function DashboardHomeContents() {
                             alt={work.title}
                             className="h-auto w-full rounded-md object-cover"
                           />
-                          {/* biome-ignore lint/nursery/useSortedClasses: <explanation> */}
-                          {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
+                          {/* biome-ignore lint/nursery/useSortedClasses: false positive */}
+                          {/* biome-ignore lint/style/useSelfClosingElements: false positive */}
                           <div className="absolute inset-0 bg-linear-to-b from-transparent to-black opacity-30 rounded-md"></div>
                           <div className="absolute bottom-0 left-0 p-4">
-                            {/* biome-ignore lint/nursery/useSortedClasses: <explanation> */}
+                            {/* biome-ignore lint/nursery/useSortedClasses: false positive */}
                             <div className="bg-yellow-500 rounded-full text-white w-8 text-center font-bold px-2 py-1">
                               1
                             </div>
-                            {/* biome-ignore lint/nursery/useSortedClasses: <explanation> */}
+                            {/* biome-ignore lint/nursery/useSortedClasses: false positive */}
                             <p className="font-bold text-white mt-2">
                               {work.title}
                             </p>

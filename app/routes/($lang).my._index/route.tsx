@@ -1,6 +1,8 @@
 import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { LoginPage } from "~/components/page/login-page"
 import { DashboardHomeContents } from "~/routes/($lang).my._index/components/my-home-contents"
-import { Suspense } from "react"
+import { AuthContext } from "~/contexts/auth-context"
+import { Suspense, useContext } from "react"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -29,6 +31,18 @@ export const headers: HeadersFunction = () => ({
 })
 
 export default function MyHome() {
+  const authContext = useContext(AuthContext)
+
+  // ローディング中は専用ページを表示
+  if (authContext.isLoading) {
+    return <AppLoadingPage />
+  }
+
+  // 未ログインの場合はログインページを表示
+  if (authContext.isNotLoggedIn) {
+    return <LoginPage />
+  }
+
   return (
     <>
       <Suspense fallback={<AppLoadingPage />}>
