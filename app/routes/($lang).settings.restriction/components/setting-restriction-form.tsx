@@ -119,7 +119,7 @@ export function SettingRestrictionForm() {
         <div className="flex w-full items-center justify-between">
           <Label htmlFor="show-sensitive-toggle">
             {t(
-              "R18切り替えボタンを表示する",
+              "R18切り替えボタン（対象年齢変更ボタン）を表示する",
               "Display sensitive mode toggle in the menu",
             )}
           </Label>
