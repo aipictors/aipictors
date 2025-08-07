@@ -96,6 +96,10 @@ export function ImageModelsList(props: Props) {
         return showNewModels ? model.isNew : true
       })
       .filter((model) => {
+        // SD2モデルを非表示にする
+        return model.type !== "SD2"
+      })
+      .filter((model) => {
         // 検索テキストが空の場合は全てのモデルを表示
         if (!searchText) return true
         // モデル名に検索テキストが含まれる場合のみ表示（大文字小文字を無視）
