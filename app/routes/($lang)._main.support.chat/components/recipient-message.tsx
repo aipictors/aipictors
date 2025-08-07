@@ -16,7 +16,8 @@ export function RecipientMessage(props: Props) {
   const t = useTranslation()
 
   const parseTextWithLinks = (text: string) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g
+    const urlRegex =
+      /(https?:\/\/[^\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF）】」』】》）)\]}]+)/g
     const parts = text.split(urlRegex)
 
     return parts.map((part, index) => {
