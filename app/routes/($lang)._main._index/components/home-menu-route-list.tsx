@@ -245,7 +245,7 @@ export function HomeMenuRouteList({
             {/* SNSアイコン */}
             <div className="flex items-center gap-x-2">
               <SnsIconLink url="https://x.com/AIPICTORS" />
-              <SnsIconLink url="https://discord.gg/aipictors" />
+              <SnsIconLink url="https://discord.gg/hcQggQEYfn" />
               <SnsIconLink url="https://github.com/aipictors" />
             </div>
 

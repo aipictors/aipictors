@@ -58,7 +58,7 @@ export function HomeFooter() {
         <div className="flex items-center gap-x-3">
           <span className="font-medium text-sm">Follow us:</span>
           <SnsIconLink url="https://x.com/AIPICTORS" />
-          <SnsIconLink url="https://discord.gg/aipictors" />
+          <SnsIconLink url="https://discord.gg/hcQggQEYfn" />
           <SnsIconLink url="https://github.com/aipictors" />
         </div>
 

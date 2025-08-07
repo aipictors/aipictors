@@ -27,7 +27,7 @@ export function AppFooter() {
         <div className="mt-2 flex items-center gap-x-3 md:mt-0">
           <span className="font-medium text-sm">Follow us:</span>
           <SnsIconLink url="https://x.com/AIPICTORS" />
-          <SnsIconLink url="https://discord.gg/aipictors" />
+          <SnsIconLink url="https://discord.gg/hcQggQEYfn" />
           <SnsIconLink url="https://github.com/aipictors" />
         </div>
       </div>
