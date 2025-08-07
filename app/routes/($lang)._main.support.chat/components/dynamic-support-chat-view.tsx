@@ -5,13 +5,15 @@ import {
 } from "~/routes/($lang)._main.support.chat/components/support-message-list"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { startTransition, useContext } from "react"
+import { startTransition, useContext, useState } from "react"
 import { toast } from "sonner"
 import { useInterval } from "usehooks-ts"
 import { AuthContext } from "~/contexts/auth-context"
+import { TypingIndicator } from "~/routes/($lang)._main.support.chat/components/typing-indicator"
 
 export function SupportChatView() {
   const authContext = useContext(AuthContext)
+  const [isWaitingForAiResponse, setIsWaitingForAiResponse] = useState(false)
 
   const { data: supportMessages, refetch } = useQuery(MessagesQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -25,6 +27,8 @@ export function SupportChatView() {
     createMessageMutation,
   )
 
+  const [createAiMessageResponse] = useMutation(createAiMessageResponseMutation)
+
   useInterval(() => {
     startTransition(() => {
       refetch()
@@ -33,16 +37,40 @@ export function SupportChatView() {
 
   const onSubmit = async (message: string) => {
     try {
-      await createMessage({
+      // ユーザーメッセージを送信
+      const messageResult = await createMessage({
         variables: { input: { text: message, recipientId: "1" } },
       })
+
+      // メッセージ送信後にリストを更新
       startTransition(() => {
         refetch()
       })
+
+      // AI返答待ち状態を開始
+      setIsWaitingForAiResponse(true)
+
+      try {
+        // AI返答を取得
+        await createAiMessageResponse()
+
+        // AI返答後にメッセージリストを更新
+        startTransition(() => {
+          refetch()
+        })
+      } catch (aiError) {
+        console.error("AI返答エラー:", aiError)
+        if (aiError instanceof Error) {
+          toast(`AI返答エラー: ${aiError.message}`)
+        }
+      } finally {
+        setIsWaitingForAiResponse(false)
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
       }
+      setIsWaitingForAiResponse(false)
     }
   }
 
@@ -57,7 +85,11 @@ export function SupportChatView() {
         messages={messages}
         recipientIconImageURL={adminAvatarURL}
       />
-      <MessageInput onSubmit={onSubmit} isLoading={isLoading} />
+      {isWaitingForAiResponse && <TypingIndicator />}
+      <MessageInput
+        onSubmit={onSubmit}
+        isLoading={isLoading || isWaitingForAiResponse}
+      />
     </div>
   )
 }
@@ -78,6 +110,17 @@ const MessagesQuery = graphql(
 const createMessageMutation = graphql(
   `mutation CreateMessage($input: CreateMessageInput!) {
     createMessage(input: $input) {
+      ...MessageListItem
+    }
+  }`,
+  [MessageListItemFragment],
+)
+
+const createAiMessageResponseMutation = graphql(
+  `mutation CreateAiMessageResponse {
+    createAiMessageResponse {
+      id
+      text
       ...MessageListItem
     }
   }`,
