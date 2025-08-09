@@ -1,9 +1,6 @@
-import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
-import { useContext } from "react"
 import { Link } from "@remix-run/react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
@@ -21,21 +18,14 @@ type Props = {
 export function HomeNewCommentsSection(props: Props) {
   const t = useTranslation()
 
-  const authContext = useContext(AuthContext)
-
   const comments = readFragment(HomeNewCommentsFragment, props.comments)
 
-  const { data: newCommentsRet } = useQuery(homeNewCommentsQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-  })
-
-  const newComments = newCommentsRet?.newComments
-    ? readFragment(HomeNewCommentsFragment, newCommentsRet?.newComments)
-    : comments
+  const newComments = comments
 
   // テキストのみのコメントを絞り込み（GraphQLでフィルタが効かない場合のフォールバック）
-  const textOnlyComments = newComments.filter(comment => 
-    comment.comment?.text && comment.comment.text.trim().length > 0
+  const textOnlyComments = newComments.filter(
+    (comment) =>
+      comment.comment?.text && comment.comment.text.trim().length > 0,
   )
 
   return (
@@ -55,11 +45,14 @@ export function HomeNewCommentsSection(props: Props) {
           </Button>
         </Link>
       </div>
-      
+
       <p className="text-muted-foreground text-xs">
-        {t("テキストが入力されているコメントのみを表示しています", "Showing only comments with text content")}
+        {t(
+          "テキストが入力されているコメントのみを表示しています",
+          "Showing only comments with text content",
+        )}
       </p>
-      
+
       {textOnlyComments.map((comment) => (
         <div
           key={comment.comment?.id}
