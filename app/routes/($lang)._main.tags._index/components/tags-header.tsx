@@ -98,7 +98,7 @@ export function TagsHeader() {
 
         {/* 検索入力欄 - モダンでクリーンなデザイン */}
         <div className="group relative w-full">
-          <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-blue-500" />
+          <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400" />
           <Input
             type="text"
             placeholder={
@@ -112,7 +112,7 @@ export function TagsHeader() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="w-full rounded-lg border border-gray-200 bg-white py-3 pr-20 pl-10 transition-all duration-200 hover:border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="w-full rounded-lg border border-gray-200 bg-white py-3 pr-20 pl-10 transition-all duration-200 hover:border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-blue-400 dark:hover:border-gray-600"
           />
           <div className="-translate-y-1/2 absolute top-1/2 right-2 flex items-center gap-1">
             {searchQuery && (
@@ -120,7 +120,7 @@ export function TagsHeader() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setSearchQuery("")}
-                className="h-6 w-6 rounded-full p-0 hover:bg-gray-200"
+                className="h-6 w-6 rounded-full p-0 hover:bg-gray-200 dark:hover:bg-gray-600"
                 aria-label={t("クリア", "Clear")}
               >
                 ×

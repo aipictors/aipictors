@@ -20,7 +20,7 @@ export function TagSearchSection({ searchWorks, searchTerm }: Props) {
     <section className="space-y-6">
       {/* 検索結果ヘッダー */}
       <div className="text-center">
-        <h2 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text font-semibold text-2xl text-transparent">
+        <h2 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text font-semibold text-2xl text-transparent dark:from-purple-400 dark:to-pink-400">
           {t("検索結果", "Search Results")}
         </h2>
         <p className="mt-2 text-muted-foreground text-sm">

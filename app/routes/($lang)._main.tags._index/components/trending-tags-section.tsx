@@ -27,7 +27,7 @@ export function TrendingTagsSection({ tags }: Props) {
         <div className="flex items-center justify-center">
           <TrendingUp className="h-8 w-8 animate-bounce text-orange-500" />
         </div>
-        <h2 className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text font-bold text-4xl text-transparent">
+        <h2 className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text font-bold text-4xl text-transparent dark:from-orange-400 dark:to-red-400">
           トレンドタグ
         </h2>
         <p className="text-muted-foreground">今注目を集めているタグをお届け</p>
@@ -54,12 +54,14 @@ export function TrendingTagsSection({ tags }: Props) {
               className="animate-fade-in transition-all duration-500"
             >
               <Link to={`${isR18Mode ? "/r" : ""}/tags/${tag.tagName}`}>
-                <Card className="group relative cursor-pointer border-2 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-orange-300 hover:shadow-xl">
+                <Card className="group relative cursor-pointer border-2 bg-white/90 backdrop-blur-sm transition-all duration-300 hover:border-orange-300 hover:shadow-xl dark:border-gray-600 dark:bg-gray-800/95 dark:hover:border-orange-500">
                   <CardContent className="p-4">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-bold text-lg">{tag.tagName}</h3>
-                        <div className="rounded-full bg-gradient-to-r from-orange-100 to-red-100 px-3 py-1 font-medium text-orange-600 text-xs">
+                        <h3 className="font-bold text-lg dark:text-white">
+                          {tag.tagName}
+                        </h3>
+                        <div className="rounded-full bg-gradient-to-r from-orange-100 to-red-100 px-3 py-1 font-medium text-orange-600 text-xs dark:from-orange-900/50 dark:to-red-900/50 dark:text-orange-300">
                           {t("人気", "Popular")} {index + 1}
                         </div>
                       </div>

@@ -26,13 +26,29 @@ export function PopularTagsSection({ tags }: Props) {
   const getRankDecoration = (index: number) => {
     switch (index) {
       case 0:
-        return { icon: Crown, color: "text-yellow-500", bg: "bg-yellow-100" }
+        return {
+          icon: Crown,
+          color: "text-yellow-500",
+          bg: "bg-yellow-100 dark:bg-yellow-900/30",
+        }
       case 1:
-        return { icon: Crown, color: "text-gray-400", bg: "bg-gray-100" }
+        return {
+          icon: Crown,
+          color: "text-gray-400 dark:text-gray-300",
+          bg: "bg-gray-100 dark:bg-gray-700/30",
+        }
       case 2:
-        return { icon: Crown, color: "text-orange-500", bg: "bg-orange-100" }
+        return {
+          icon: Crown,
+          color: "text-orange-500",
+          bg: "bg-orange-100 dark:bg-orange-900/30",
+        }
       default:
-        return { icon: TrendingUp, color: "text-blue-500", bg: "bg-blue-100" }
+        return {
+          icon: TrendingUp,
+          color: "text-blue-500",
+          bg: "bg-blue-100 dark:bg-blue-900/30",
+        }
     }
   }
 
@@ -43,7 +59,7 @@ export function PopularTagsSection({ tags }: Props) {
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <Crown className="h-8 w-8 text-yellow-500" />
-            <h2 className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text font-bold text-4xl text-transparent">
+            <h2 className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text font-bold text-4xl text-transparent dark:from-yellow-400 dark:to-orange-400">
               {t("人気タグ", "Popular Tags")}
             </h2>
           </div>
@@ -99,18 +115,18 @@ export function PopularTagsSection({ tags }: Props) {
               return (
                 <div
                   key={`${tag.tagName}-${index}`}
-                  className="animate-fade-in-up bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg"
+                  className="animate-fade-in-up transition-all duration-300 hover:shadow-lg"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <Link to={`${isR18Mode ? "/r" : ""}/tags/${tag.tagName}`}>
-                    <Card className="relative cursor-pointer border-2 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-yellow-300 hover:shadow-lg">
+                    <Card className="relative cursor-pointer border-2 bg-white/90 backdrop-blur-sm transition-all duration-300 hover:border-yellow-300 hover:shadow-lg dark:border-gray-600 dark:bg-gray-800/95 dark:hover:border-yellow-500">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           {/* ランキング */}
                           <div
                             className={`flex h-8 w-8 items-center justify-center rounded-full ${decoration.bg}`}
                           >
-                            <span className="font-bold text-sm">
+                            <span className="font-bold text-gray-900 text-sm dark:text-white">
                               {index + 1}
                             </span>
                           </div>
@@ -164,7 +180,7 @@ export function PopularTagsSection({ tags }: Props) {
                   style={{ animationDelay: `${index * 30}ms` }}
                 >
                   <Link to={`${isR18Mode ? "/r" : ""}/tags/${tag.tagName}`}>
-                    <Card className="cursor-pointer border bg-white/80 backdrop-blur-sm transition-all duration-200 hover:border-yellow-300 hover:shadow-md">
+                    <Card className="cursor-pointer border bg-white/90 backdrop-blur-sm transition-all duration-200 hover:border-yellow-300 hover:shadow-md dark:border-gray-600 dark:bg-gray-800/95 dark:hover:border-yellow-500">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
@@ -172,7 +188,9 @@ export function PopularTagsSection({ tags }: Props) {
                             <div
                               className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${decoration.bg}`}
                             >
-                              {index + 1}
+                              <span className="text-gray-900 dark:text-white">
+                                {index + 1}
+                              </span>
                             </div>
 
                             {/* タグ名 */}

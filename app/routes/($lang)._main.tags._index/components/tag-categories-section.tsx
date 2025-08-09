@@ -122,7 +122,7 @@ export function TagCategoriesSection({ tags }: Props) {
       <div className="space-y-2 text-center">
         <div className="flex items-center justify-center gap-3">
           <Star className="h-8 w-8 text-yellow-500" />
-          <h2 className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text font-bold text-4xl text-transparent">
+          <h2 className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text font-bold text-4xl text-transparent dark:from-indigo-400 dark:to-purple-400">
             {t("カテゴリ別タグ", "Tags by Category")}
           </h2>
         </div>
@@ -145,7 +145,7 @@ export function TagCategoriesSection({ tags }: Props) {
               style={{ animationDelay: `${categoryIndex * 100}ms` }}
             >
               <Card
-                className={`relative overflow-hidden border-2 bg-gradient-to-br transition-all duration-300 hover:border-opacity-60 hover:shadow-xl ${category.bgColor}`}
+                className={`relative overflow-hidden border-2 bg-gradient-to-br transition-all duration-300 hover:border-opacity-60 hover:shadow-xl dark:border-gray-600 ${category.bgColor}`}
               >
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-3">
@@ -182,7 +182,7 @@ export function TagCategoriesSection({ tags }: Props) {
                       >
                         <Badge
                           variant="secondary"
-                          className="cursor-pointer bg-white/60 transition-colors hover:bg-white/80"
+                          className="cursor-pointer bg-white/60 transition-colors hover:bg-white/80 dark:bg-gray-700/60 dark:text-gray-200 dark:hover:bg-gray-700/80"
                         >
                           {tag.tagName}
                         </Badge>
