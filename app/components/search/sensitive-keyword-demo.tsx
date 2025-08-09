@@ -87,7 +87,7 @@ export function SensitiveKeywordDemo() {
               placeholder="検索キーワードを入力..."
               className="pr-20"
             />
-            <div className="absolute top-1/2 right-2 flex items-center gap-1 -translate-y-1/2">
+            <div className="-translate-y-1/2 absolute top-1/2 right-2 flex items-center gap-1">
               <CompactSensitiveIndicator searchText={searchText} />
               <Button onClick={handleSearch} size="sm">
                 検索
@@ -100,7 +100,7 @@ export function SensitiveKeywordDemo() {
 
           {/* テストキーワード */}
           <div className="space-y-2">
-            <p className="text-sm font-medium">テストキーワード:</p>
+            <p className="font-medium text-sm">テストキーワード:</p>
             <div className="flex flex-wrap gap-2">
               {testKeywords.map((keyword) => (
                 <Button

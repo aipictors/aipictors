@@ -60,7 +60,7 @@ export function CompactSensitiveIndicator({
   return (
     <div className="flex items-center gap-1 rounded-md bg-orange-100 px-2 py-1 dark:bg-orange-900/50">
       <Shield className="h-3 w-3 text-orange-600 dark:text-orange-400" />
-      <span className="text-xs font-medium text-orange-700 dark:text-orange-300">
+      <span className="font-medium text-orange-700 text-xs dark:text-orange-300">
         18+
       </span>
     </div>

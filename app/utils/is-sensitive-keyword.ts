@@ -57,7 +57,6 @@ export function isSensitiveKeyword(keyword: string): boolean {
     /無修正/i,
     /裏ビデオ/i,
     /\bAV\b/i,
-    /ロリ(コン)?/i,
     /巨乳/i,
     /痴女/i,
     /痴漢/i,
