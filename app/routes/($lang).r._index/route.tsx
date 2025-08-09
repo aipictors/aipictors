@@ -1127,6 +1127,7 @@ const query = graphql(
       limit: 8,
       where: {
         isSensitive: true,
+        isTextOnly: true,
         ratings: [R18, R18G],
       }
     ) {

@@ -223,6 +223,7 @@ const newCommentsQuery = graphql(
       limit: 8,
       where: {
         isSensitive: false,
+        isTextOnly: true,
         ratings: [G],
       }
     ) {

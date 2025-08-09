@@ -1,12 +1,17 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useState, useContext } from "react"
+import { useState } from "react"
 import { Button } from "~/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Badge } from "~/components/ui/badge"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
@@ -44,11 +49,14 @@ type Props = {
 
 export function NewCommentsPageContent(props: Props) {
   const t = useTranslation()
-  const authContext = useContext(AuthContext)
-  
-  const [filter, setFilter] = useState<"all" | "text-only" | "sticker-only">("all")
+
+  const [filter, setFilter] = useState<"all" | "text-only" | "sticker-only">(
+    "all",
+  )
   const [offset, setOffset] = useState(24)
-  const [allComments, setAllComments] = useState<Comment[]>(props.initialComments || [])
+  const [allComments, setAllComments] = useState<Comment[]>(
+    props.initialComments || [],
+  )
   const [isLoading, setIsLoading] = useState(false)
 
   // フィルタリング済みのコメント一覧
@@ -57,12 +65,15 @@ export function NewCommentsPageContent(props: Props) {
       return comment.comment?.text && comment.comment.text.trim().length > 0
     }
     if (filter === "sticker-only") {
-      return comment.sticker?.imageUrl && (!comment.comment?.text || comment.comment.text.trim().length === 0)
+      return (
+        comment.sticker?.imageUrl &&
+        (!comment.comment?.text || comment.comment.text.trim().length === 0)
+      )
     }
     return true
   })
 
-  const { data: moreCommentsData, refetch } = useQuery(newCommentsQuery, {
+  const { refetch } = useQuery(newCommentsQuery, {
     skip: true,
     variables: {
       offset,
@@ -87,10 +98,10 @@ export function NewCommentsPageContent(props: Props) {
           ...(filter === "sticker-only" && { isStickerOnly: true }),
         },
       })
-      
+
       if (result.data?.newComments) {
-        setAllComments(prev => [...prev, ...result.data.newComments])
-        setOffset(prev => prev + 24)
+        setAllComments((prev) => [...prev, ...result.data.newComments])
+        setOffset((prev) => prev + 24)
       }
     } catch (error) {
       console.error("Failed to load more comments:", error)
@@ -99,11 +110,13 @@ export function NewCommentsPageContent(props: Props) {
     }
   }
 
-  const handleFilterChange = async (value: "all" | "text-only" | "sticker-only") => {
+  const handleFilterChange = async (
+    value: "all" | "text-only" | "sticker-only",
+  ) => {
     setFilter(value)
     setOffset(24)
     setIsLoading(true)
-    
+
     try {
       const result = await refetch({
         offset: 0,
@@ -114,7 +127,7 @@ export function NewCommentsPageContent(props: Props) {
           ...(value === "sticker-only" && { isStickerOnly: true }),
         },
       })
-      
+
       if (result.data?.newComments) {
         setAllComments(result.data.newComments)
       }
@@ -126,14 +139,16 @@ export function NewCommentsPageContent(props: Props) {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="mx-auto w-full max-w-4xl space-y-6">
       {/* ヘッダー */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
           <MessageCircleIcon className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">{t("新規コメント一覧", "New Comments")}</h1>
+          <h1 className="font-bold text-2xl">
+            {t("新規コメント一覧", "New Comments")}
+          </h1>
         </div>
-        
+
         {/* フィルタ */}
         <Card className="border-none bg-muted/50">
           <CardHeader className="pb-4">
@@ -170,29 +185,37 @@ export function NewCommentsPageContent(props: Props) {
                     </SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 {filter === "text-only" && (
                   <Badge variant="secondary" className="ml-2">
-                    <Type className="h-3 w-3 mr-1" />
+                    <Type className="mr-1 h-3 w-3" />
                     {t("テキストのみ表示中", "Showing text only")}
                   </Badge>
                 )}
-                
+
                 {filter === "sticker-only" && (
                   <Badge variant="secondary" className="ml-2">
-                    <Sticker className="h-3 w-3 mr-1" />
+                    <Sticker className="mr-1 h-3 w-3" />
                     {t("スタンプのみ表示中", "Showing stickers only")}
                   </Badge>
                 )}
               </div>
-              
-              <p className="text-sm text-muted-foreground">
-                {filter === "text-only" 
-                  ? t("テキストが入力されているコメントのみを表示しています", "Showing only comments with text content")
+
+              <p className="text-muted-foreground text-sm">
+                {filter === "text-only"
+                  ? t(
+                      "テキストが入力されているコメントのみを表示しています",
+                      "Showing only comments with text content",
+                    )
                   : filter === "sticker-only"
-                  ? t("スタンプのみのコメントを表示しています", "Showing only sticker comments")
-                  : t("すべてのコメントを表示しています", "Showing all comments")
-                }
+                    ? t(
+                        "スタンプのみのコメントを表示しています",
+                        "Showing only sticker comments",
+                      )
+                    : t(
+                        "すべてのコメントを表示しています",
+                        "Showing all comments",
+                      )}
               </p>
             </div>
           </CardContent>
@@ -210,19 +233,27 @@ export function NewCommentsPageContent(props: Props) {
                   {t("コメントが見つかりません", "No comments found")}
                 </h3>
                 <p className="text-muted-foreground">
-                  {filter === "text-only" 
-                    ? t("テキストコメントがまだありません", "No text comments yet")
+                  {filter === "text-only"
+                    ? t(
+                        "テキストコメントがまだありません",
+                        "No text comments yet",
+                      )
                     : filter === "sticker-only"
-                    ? t("スタンプコメントがまだありません", "No sticker comments yet")
-                    : t("コメントがまだありません", "No comments yet")
-                  }
+                      ? t(
+                          "スタンプコメントがまだありません",
+                          "No sticker comments yet",
+                        )
+                      : t("コメントがまだありません", "No comments yet")}
                 </p>
               </div>
             </div>
           </Card>
         ) : (
           filteredComments.map((comment) => (
-            <Card key={`${comment.comment?.id}-${comment.createdAt}`} className="hover:bg-muted/30 transition-colors">
+            <Card
+              key={`${comment.comment?.id}-${comment.createdAt}`}
+              className="transition-colors hover:bg-muted/30"
+            >
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   {/* 作品サムネイル */}
@@ -231,12 +262,14 @@ export function NewCommentsPageContent(props: Props) {
                       workId={comment.work.id}
                       imageUrl={comment.work.smallThumbnailImageURL}
                       size="sm"
-                      thumbnailImagePosition={comment.work.thumbnailImagePosition ?? 0}
-                      imageWidth={comment.work.smallThumbnailImageWidth}
-                      imageHeight={comment.work.smallThumbnailImageHeight}
+                      thumbnailImagePosition={
+                        comment.work.thumbnailImagePosition ?? 0
+                      }
+                      imageWidth={comment.work.smallThumbnailImageWidth ?? 0}
+                      imageHeight={comment.work.smallThumbnailImageHeight ?? 0}
                     />
                   )}
-                  
+
                   {/* コメント内容 */}
                   <div className="flex-1 space-y-2">
                     {/* ユーザー名 */}
@@ -244,23 +277,24 @@ export function NewCommentsPageContent(props: Props) {
                       <span className="font-medium text-sm">
                         {comment.user?.name || t("匿名", "Anonymous")}
                       </span>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-muted-foreground text-xs">
                         {t(
                           toElapsedTimeText(comment.createdAt),
                           toElapsedTimeEnText(comment.createdAt),
                         )}
                       </span>
                     </div>
-                    
+
                     {/* テキストコメント */}
-                    {comment.comment?.text && comment.comment.text.trim().length > 0 && (
-                      <div className="bg-background rounded-lg p-3 border">
-                        <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                          {comment.comment.text}
-                        </p>
-                      </div>
-                    )}
-                    
+                    {comment.comment?.text &&
+                      comment.comment.text.trim().length > 0 && (
+                        <div className="rounded-lg border bg-background p-3">
+                          <p className="break-words text-sm leading-relaxed whitespace-pre-wrap">
+                            {comment.comment.text}
+                          </p>
+                        </div>
+                      )}
+
                     {/* スタンプ */}
                     {comment.sticker?.imageUrl && (
                       <div className="flex items-center gap-2">
@@ -270,20 +304,22 @@ export function NewCommentsPageContent(props: Props) {
                           className="h-12 w-12 rounded-md object-cover"
                         />
                         {comment.sticker.title && (
-                          <span className="text-xs text-muted-foreground">
-                            {t("スタンプ：", "Sticker: ")}{comment.sticker.title}
+                          <span className="text-muted-foreground text-xs">
+                            {t("スタンプ：", "Sticker: ")}
+                            {comment.sticker.title}
                           </span>
                         )}
                       </div>
                     )}
-                    
+
                     {/* テキストもスタンプもない場合 */}
-                    {(!comment.comment?.text || comment.comment.text.trim().length === 0) && 
-                     !comment.sticker?.imageUrl && (
-                      <div className="text-xs text-muted-foreground italic">
-                        {t("(コメント内容なし)", "(No comment content)")}
-                      </div>
-                    )}
+                    {(!comment.comment?.text ||
+                      comment.comment.text.trim().length === 0) &&
+                      !comment.sticker?.imageUrl && (
+                        <div className="italic text-xs text-muted-foreground">
+                          {t("(コメント内容なし)", "(No comment content)")}
+                        </div>
+                      )}
                   </div>
                 </div>
               </CardContent>
@@ -301,7 +337,9 @@ export function NewCommentsPageContent(props: Props) {
             variant="outline"
             className="min-w-32"
           >
-            {isLoading ? t("読み込み中...", "Loading...") : t("もっと見る", "Load More")}
+            {isLoading
+              ? t("読み込み中...", "Loading...")
+              : t("もっと見る", "Load More")}
           </Button>
         </div>
       )}

@@ -20,14 +20,6 @@ export function HomeNewCommentsSection(props: Props) {
 
   const comments = readFragment(HomeNewCommentsFragment, props.comments)
 
-  const newComments = comments
-
-  // テキストのみのコメントを絞り込み（GraphQLでフィルタが効かない場合のフォールバック）
-  const textOnlyComments = newComments.filter(
-    (comment) =>
-      comment.comment?.text && comment.comment.text.trim().length > 0,
-  )
-
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex items-center justify-between">
@@ -53,7 +45,7 @@ export function HomeNewCommentsSection(props: Props) {
         )}
       </p>
 
-      {textOnlyComments.map((comment) => (
+      {comments.map((comment) => (
         <div
           key={comment.comment?.id}
           className="flex items-center space-x-2 opacity-80"
@@ -121,7 +113,7 @@ export const HomeNewCommentsFragment = graphql(
   }`,
 )
 
-const homeNewCommentsQuery = graphql(
+export const homeNewCommentsQuery = graphql(
   `query HomeNewComments {
     newComments: newComments(
       offset: 0,

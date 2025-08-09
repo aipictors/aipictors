@@ -44,6 +44,7 @@ const newCommentsPageQuery = graphql(
       limit: 24,
       where: {
         isSensitive: false,
+        isTextOnly: true,
         ratings: [G, R15]
       }
     ) {
