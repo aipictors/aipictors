@@ -14,6 +14,7 @@ type Props = {
   currentPage: number
   onPageChange: (page: number) => void
   isActiveButtonStyle?: boolean
+  disableScrollToTop?: boolean // ページ変更時のスクロールを無効化
 }
 
 /**
@@ -37,6 +38,7 @@ export function ResponsivePagination({
   currentPage,
   onPageChange,
   isActiveButtonStyle,
+  disableScrollToTop = false,
 }: Props) {
   const authContext = useContext(AuthContext)
 
@@ -51,7 +53,9 @@ export function ResponsivePagination({
   const handlePageChange = (newPage: number) => {
     if (newPage >= 0 && newPage < pageCount) {
       onPageChange(newPage)
-      window.scrollTo(0, 0)
+      if (!disableScrollToTop) {
+        window.scrollTo(0, 0)
+      }
     }
   }
 

@@ -9,7 +9,7 @@ import {
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import { useContext, useState, useEffect } from "react"
+import { useContext, useState, useEffect, useRef } from "react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import {
   StickerButton,
@@ -20,6 +20,7 @@ import { ResponsivePagination } from "~/components/responsive-pagination"
 import { graphql } from "gql.tada"
 import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
 import { useTranslation } from "~/hooks/use-translation"
+import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import { MinusIcon, PlusIcon } from "lucide-react"
 
 type Props = {
@@ -43,8 +44,17 @@ function getCookie(name: string) {
  * クッキーに値を設定する関数
  */
 function setCookie(name: string, value: string, days: number) {
+  if (typeof document === "undefined") return
+
   const expires = new Date(Date.now() + days * 864e5).toUTCString()
-  document.cookie = `${name}=${value}; expires=${expires}; path=/`
+  const cookieString = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`
+
+  try {
+    // biome-ignore lint/complexity/useLiteralKeys: Legacy cookie API required for compatibility
+    document["cookie"] = cookieString
+  } catch (error) {
+    console.warn("Failed to set cookie:", error)
+  }
 }
 
 /**
@@ -57,6 +67,12 @@ export function StickerDialog(props: Props) {
 
   const [type, setType] = useState("CREATED")
 
+  // スクロール位置を保持するためのref
+  const scrollAreaRef = useRef<React.ElementRef<typeof ScrollArea>>(null)
+  const [savedScrollPositions, setSavedScrollPositions] = useState<
+    Record<number, number>
+  >({})
+
   const maxStickersPage = 120
 
   const { data: stickers = null, refetch } = useQuery(viewerUserStickersQuery, {
@@ -66,6 +82,7 @@ export function StickerDialog(props: Props) {
       offset: createdSortStickerPage * maxStickersPage,
       orderBy: "DATE_CREATED",
     },
+    notifyOnNetworkStatusChange: true,
   })
 
   const { data: stickersCount = null } = useQuery(
@@ -79,12 +96,25 @@ export function StickerDialog(props: Props) {
 
   const t = useTranslation()
 
+  // フォーカスタイムアウト検知
+  const isTimeout = useFocusTimeout()
+
   // ダイアログが開かれた時やログイン状態が変化した時にリフェッチ
   useEffect(() => {
     if (props.isOpen && appContext.login && !appContext.isLoading) {
       refetch()
     }
   }, [props.isOpen, appContext.login, appContext.isLoading, refetch])
+
+  // フォーカスタイムアウト時の自動リフレッシュ
+  useEffect(() => {
+    if (isTimeout && props.isOpen && appContext.login) {
+      console.log("Focus timeout detected, refreshing stickers...")
+      refetch().catch((error) => {
+        console.warn("Failed to refresh stickers after timeout:", error)
+      })
+    }
+  }, [isTimeout, props.isOpen, appContext.login, refetch])
 
   // サイズ設定
   const sizeOptions: Array<80 | 100 | 120> = [80, 100, 120]
@@ -110,6 +140,56 @@ export function StickerDialog(props: Props) {
   const increaseSize = () => {
     setSizeIndex((prevIndex) => Math.min(prevIndex + 1, sizeOptions.length - 1))
   }
+
+  // スクロール位置の保存
+  const saveScrollPosition = () => {
+    if (scrollAreaRef.current) {
+      const scrollElement = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]",
+      )
+      if (scrollElement) {
+        setSavedScrollPositions((prev) => ({
+          ...prev,
+          [createdSortStickerPage]: scrollElement.scrollTop,
+        }))
+      }
+    }
+  }
+
+  // スクロール位置の復元
+  const restoreScrollPosition = () => {
+    if (
+      scrollAreaRef.current &&
+      savedScrollPositions[createdSortStickerPage] !== undefined
+    ) {
+      const scrollElement = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]",
+      )
+      if (scrollElement) {
+        setTimeout(() => {
+          scrollElement.scrollTop = savedScrollPositions[createdSortStickerPage]
+        }, 50) // DOMの更新を待つ
+      }
+    }
+  }
+
+  // ページ変更時にスクロール位置を保存
+  const handlePageChange = (page: number) => {
+    saveScrollPosition()
+    setCreatedSortStickerPage(page)
+  }
+
+  // ページ変更後にスクロール位置を復元
+  useEffect(() => {
+    restoreScrollPosition()
+  }, [createdSortStickerPage, stickers])
+
+  // ダイアログが閉じられる時にスクロール位置をリセット
+  useEffect(() => {
+    if (!props.isOpen) {
+      setSavedScrollPositions({})
+    }
+  }, [props.isOpen])
 
   const sizeMap = {
     80: "large",
@@ -164,7 +244,10 @@ export function StickerDialog(props: Props) {
             </Button>
           </div>
         </div>
-        <ScrollArea className="flex h-[80vh] w-[80vw] flex-wrap overflow-y-auto">
+        <ScrollArea
+          ref={scrollAreaRef}
+          className="flex h-[80vh] w-[80vw] flex-wrap overflow-y-auto"
+        >
           <div className="flex h-[80vh] w-[80vw] flex-wrap overflow-y-auto">
             <AddStickerButton
               onAddedSicker={() => {
@@ -194,9 +277,8 @@ export function StickerDialog(props: Props) {
               perPage={maxStickersPage}
               maxCount={maxCount}
               currentPage={createdSortStickerPage}
-              onPageChange={(page: number) => {
-                setCreatedSortStickerPage(page)
-              }}
+              onPageChange={handlePageChange}
+              disableScrollToTop={true}
             />
           </div>
         )}

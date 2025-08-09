@@ -6,10 +6,11 @@ import { StickerButton } from "~/routes/($lang)._main.posts.$post._index/compone
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { useState, useContext } from "react"
+import { useState, useContext, useRef, useEffect } from "react"
 import { toast } from "sonner"
 import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳フックをインポート
+import { useFocusTimeout } from "~/hooks/use-focus-timeout"
 import {
   Dialog,
   DialogTrigger,
@@ -25,7 +26,16 @@ export function MyStickersList() {
   const authContext = useContext(AuthContext)
   const t = useTranslation() // 翻訳フックの使用
 
+  // フォーカスタイムアウト検知
+  const isTimeout = useFocusTimeout()
+
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
+
+  // スクロール位置保持用
+  const listContainerRef = useRef<HTMLDivElement>(null)
+  const [savedScrollPositions, setSavedScrollPositions] = useState<
+    Record<string, number>
+  >({})
 
   const [stickerStatus, setStickerStatue] = useState<
     "PRIVATE_CREATED" | "DOWNLOADED" | "PUBLIC_CREATED"
@@ -56,6 +66,65 @@ export function MyStickersList() {
         },
       },
     })
+
+  // フォーカスタイムアウト時の自動リフレッシュ
+  useEffect(() => {
+    if (isTimeout && authContext.login) {
+      console.log("Focus timeout detected, refreshing stickers...")
+      reactStickers().catch((error) => {
+        console.warn("Failed to refresh stickers after timeout:", error)
+      })
+      reactStickersCount().catch((error) => {
+        console.warn("Failed to refresh sticker count after timeout:", error)
+      })
+    }
+  }, [isTimeout, authContext.login, reactStickers, reactStickersCount])
+
+  // スクロール位置の保存
+  const saveScrollPosition = () => {
+    if (listContainerRef.current) {
+      const scrollKey = `${stickerStatus}-${createdSortStickerPage}`
+      setSavedScrollPositions((prev) => ({
+        ...prev,
+        [scrollKey]: listContainerRef.current?.scrollTop ?? 0,
+      }))
+    }
+  }
+
+  // スクロール位置の復元
+  const restoreScrollPosition = () => {
+    if (listContainerRef.current) {
+      const scrollKey = `${stickerStatus}-${createdSortStickerPage}`
+      const savedPosition = savedScrollPositions[scrollKey]
+      if (savedPosition !== undefined) {
+        setTimeout(() => {
+          if (listContainerRef.current) {
+            listContainerRef.current.scrollTop = savedPosition
+          }
+        }, 50)
+      }
+    }
+  }
+
+  // ページ変更時の処理
+  const handlePageChange = (page: number) => {
+    saveScrollPosition()
+    setCreatedSortStickerPage(page)
+  }
+
+  // タブ変更時の処理
+  const handleStatusChange = (
+    status: "PRIVATE_CREATED" | "DOWNLOADED" | "PUBLIC_CREATED",
+  ) => {
+    saveScrollPosition()
+    setStickerStatue(status)
+    setCreatedSortStickerPage(0)
+  }
+
+  // データ変更後のスクロール位置復元
+  useEffect(() => {
+    restoreScrollPosition()
+  }, [stickerStatus, createdSortStickerPage, stickers])
 
   const maxCount = stickersCount?.viewer?.userStickersCount ?? 0
 
@@ -122,8 +191,7 @@ export function MyStickersList() {
       <div className="flex space-x-2">
         <RoundedLightButton
           onClick={() => {
-            setStickerStatue("DOWNLOADED")
-            setCreatedSortStickerPage(0)
+            handleStatusChange("DOWNLOADED")
           }}
           isActive={stickerStatus === "DOWNLOADED"}
         >
@@ -131,8 +199,7 @@ export function MyStickersList() {
         </RoundedLightButton>
         <RoundedLightButton
           onClick={() => {
-            setStickerStatue("PRIVATE_CREATED")
-            setCreatedSortStickerPage(0)
+            handleStatusChange("PRIVATE_CREATED")
           }}
           isActive={stickerStatus === "PRIVATE_CREATED"}
         >
@@ -140,15 +207,17 @@ export function MyStickersList() {
         </RoundedLightButton>
         <RoundedLightButton
           onClick={() => {
-            setStickerStatue("PUBLIC_CREATED")
-            setCreatedSortStickerPage(0)
+            handleStatusChange("PUBLIC_CREATED")
           }}
           isActive={stickerStatus === "PUBLIC_CREATED"}
         >
           {t("作成(公開)", "Created (Public)")}
         </RoundedLightButton>
       </div>
-      <div className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center">
+      <div
+        ref={listContainerRef}
+        className="m-auto flex max-h-[64vh] max-w-[88vw] flex-wrap items-center overflow-y-auto"
+      >
         {stickers?.viewer?.userStickers?.map((sticker) =>
           stickerStatus !== "DOWNLOADED" ? (
             <Dialog key={sticker.id}>
@@ -224,9 +293,8 @@ export function MyStickersList() {
           perPage={maxStickersPage}
           maxCount={maxCount}
           currentPage={createdSortStickerPage}
-          onPageChange={(page: number) => {
-            setCreatedSortStickerPage(page)
-          }}
+          onPageChange={handlePageChange}
+          disableScrollToTop={true}
         />
       </div>
     </div>
