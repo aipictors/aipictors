@@ -16,6 +16,12 @@ import { graphql } from "gql.tada"
 import { useQuery } from "@apollo/client/index"
 import { useTranslation } from "~/hooks/use-translation"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
+import {
+  analyzeSensitiveSearch,
+  generateSensitiveUrl,
+} from "~/utils/sensitive-keyword-helpers"
+import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
+
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
 import { Input } from "~/components/ui/input"
@@ -72,6 +78,11 @@ function HomeHeader(props: Props) {
   const authContext = useContext(AuthContext)
   const { sidebarState } = useSidebar()
   const [searchText, setSearchText] = useState("")
+  const [showSensitiveWarning, setShowSensitiveWarning] = useState(false)
+  const [pendingSearchData, setPendingSearchData] = useState<{
+    sanitizedText: string
+    targetUrl: string
+  } | null>(null)
   const timeoutRef = useRef<NodeJS.Timeout>()
   const previousLocationRef = useRef(
     typeof window !== "undefined" ? location.pathname : "/",
@@ -171,26 +182,52 @@ function HomeHeader(props: Props) {
 
   const onSearch = () => {
     const trimmedText = searchText.trim()
-    // '#' を除去
-    const sanitizedText = trimmedText.replace(/#/g, "")
+
+    if (trimmedText === "") {
+      navigate(getSensitiveLink("/search"))
+      return
+    }
+
+    // Analyze if this is a sensitive search
+    const { isSensitive, shouldShowWarning, sanitizedText } =
+      analyzeSensitiveSearch(trimmedText)
+
     // 禁止文字チェック
     const invalidChars = ["%", "/", "¥"]
     const hasInvalidChar = invalidChars.some((char) =>
       sanitizedText.includes(char),
     )
-    if (sanitizedText === "") {
-      navigate(getSensitiveLink("/search"))
-      return
-    }
+
     if (hasInvalidChar) {
       toast("入力された検索文字列には使用できない文字が含まれています。")
       return
     }
+
     const encodedText = encodeURIComponent(sanitizedText)
     const baseUrl = `/tags/${encodedText}`
-    navigate(getSensitiveLink(baseUrl, isSensitiveTag(sanitizedText)), {
-      replace: true,
-    })
+    const targetUrl = generateSensitiveUrl(baseUrl, isSensitive)
+
+    if (shouldShowWarning) {
+      // Show warning dialog
+      setPendingSearchData({ sanitizedText, targetUrl })
+      setShowSensitiveWarning(true)
+    } else {
+      // Navigate directly
+      navigate(targetUrl, { replace: true })
+    }
+  }
+
+  const handleSensitiveConfirm = () => {
+    if (pendingSearchData) {
+      navigate(pendingSearchData.targetUrl, { replace: true })
+    }
+    setShowSensitiveWarning(false)
+    setPendingSearchData(null)
+  }
+
+  const handleSensitiveCancel = () => {
+    setShowSensitiveWarning(false)
+    setPendingSearchData(null)
   }
 
   const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors")
@@ -339,6 +376,32 @@ function HomeHeader(props: Props) {
     timestamp: new Date().toISOString(),
   })
 
+  // コンポーネント内
+  const composingRef = useRef(false)
+
+  const onCompStart = () => {
+    composingRef.current = true
+  }
+  const onCompEnd = () => {
+    composingRef.current = false
+  }
+
+  const onEnterKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // 変換中は無視（isComposing or keyCode 229 で保険）
+    // Safari/Android 向けに ref と nativeEvent の両方で判定
+    if (
+      composingRef.current ||
+      (e.nativeEvent as any).isComposing ||
+      (e as any).keyCode === 229
+    )
+      return
+
+    if (e.key === "Enter") {
+      e.preventDefault()
+      onSearch()
+    }
+  }
+
   return (
     <AppHeader isSmallLeftPadding={props.alwaysShowTitle}>
       <div
@@ -473,11 +536,13 @@ function HomeHeader(props: Props) {
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
-                onKeyDown={onSubmitSearch}
+                onKeyDown={onEnterKey}
+                onCompositionStart={onCompStart}
+                onCompositionEnd={onCompEnd}
                 placeholder={t("作品を検索", "Search for posts")}
                 className="pr-20"
               />
-              <div className="-translate-y-1/2 absolute top-1/2 right-1 flex gap-1">
+              <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
                 {searchText && (
                   <Button
                     onClick={() => setSearchText("")}
@@ -517,21 +582,25 @@ function HomeHeader(props: Props) {
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
-                onKeyUp={onSubmitSearch}
+                onKeyDown={onEnterKey}
+                onCompositionStart={onCompStart}
+                onCompositionEnd={onCompEnd}
                 placeholder={t("作品を検索", "Search for posts")}
                 className="w-full pr-10"
               />
-              {searchText && (
-                <Button
-                  onClick={() => setSearchText("")}
-                  variant="ghost"
-                  size="icon"
-                  className="-translate-y-1/2 absolute top-1/2 right-1 h-8 w-8"
-                  aria-label={t("検索をクリア", "Clear search")}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
+              <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
+                {searchText && (
+                  <Button
+                    onClick={() => setSearchText("")}
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    aria-label={t("検索をクリア", "Clear search")}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         ) : (
@@ -661,6 +730,15 @@ function HomeHeader(props: Props) {
           isOpen={isOpenLogoutDialog}
           onClose={onCloseLogoutDialog}
           onOpen={onOpenLogoutDialog}
+        />
+
+        {/* Sensitive keyword warning dialog */}
+        <SensitiveKeywordWarning
+          isOpen={showSensitiveWarning}
+          onConfirm={handleSensitiveConfirm}
+          onCancel={handleSensitiveCancel}
+          keyword={pendingSearchData?.sanitizedText || ""}
+          targetUrl={pendingSearchData?.targetUrl || ""}
         />
       </div>
     </AppHeader>

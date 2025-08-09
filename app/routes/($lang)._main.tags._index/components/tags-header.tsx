@@ -6,7 +6,11 @@ import { Label } from "~/components/ui/label"
 import { useTranslation } from "~/hooks/use-translation"
 import { useState } from "react"
 import { useNavigate, useSearchParams } from "@remix-run/react"
-import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
+import {
+  analyzeSensitiveSearch,
+  generateSensitiveUrl,
+} from "~/utils/sensitive-keyword-helpers"
+import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
 
 export function TagsHeader() {
   const t = useTranslation()
@@ -14,6 +18,11 @@ export function TagsHeader() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchQuery, setSearchQuery] = useState("")
   const [isTagMode, setIsTagMode] = useState(false) // false: 作品検索, true: タグページ遷移
+  const [showSensitiveWarning, setShowSensitiveWarning] = useState(false)
+  const [pendingSearchData, setPendingSearchData] = useState<{
+    sanitizedText: string
+    targetUrl: string
+  } | null>(null)
 
   const handleSearch = () => {
     if (!searchQuery.trim()) return
@@ -22,11 +31,18 @@ export function TagsHeader() {
 
     if (isTagMode) {
       // タグページに遷移
-      if (isSensitiveKeyword(trimmedQuery)) {
-        // タグページモードでセンシティブなワードの場合は/rに強制リダイレクト
-        navigate(`/r/tags/${encodeURIComponent(trimmedQuery)}`)
+      const { isSensitive, shouldShowWarning, sanitizedText } =
+        analyzeSensitiveSearch(trimmedQuery)
+      const baseUrl = `/tags/${encodeURIComponent(sanitizedText)}`
+      const targetUrl = generateSensitiveUrl(baseUrl, isSensitive)
+
+      if (shouldShowWarning) {
+        // Show warning dialog
+        setPendingSearchData({ sanitizedText, targetUrl })
+        setShowSensitiveWarning(true)
       } else {
-        navigate(`/tags/${encodeURIComponent(trimmedQuery)}`)
+        // Navigate directly
+        navigate(targetUrl)
       }
     } else {
       // 作品検索（センシティブワードでも現在のページで検索結果を表示）
@@ -34,6 +50,19 @@ export function TagsHeader() {
       params.set("search", trimmedQuery)
       setSearchParams(params)
     }
+  }
+
+  const handleSensitiveConfirm = () => {
+    if (pendingSearchData) {
+      navigate(pendingSearchData.targetUrl)
+    }
+    setShowSensitiveWarning(false)
+    setPendingSearchData(null)
+  }
+
+  const handleSensitiveCancel = () => {
+    setShowSensitiveWarning(false)
+    setPendingSearchData(null)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -144,6 +173,15 @@ export function TagsHeader() {
             : t("このページで作品を検索します", "Search works on this page")}
         </p>
       </div>
+
+      {/* Sensitive keyword warning dialog */}
+      <SensitiveKeywordWarning
+        isOpen={showSensitiveWarning}
+        onConfirm={handleSensitiveConfirm}
+        onCancel={handleSensitiveCancel}
+        keyword={pendingSearchData?.sanitizedText || ""}
+        targetUrl={pendingSearchData?.targetUrl || ""}
+      />
     </div>
   )
 }
