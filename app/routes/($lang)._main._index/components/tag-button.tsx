@@ -17,7 +17,7 @@ export function TagButton(props: Props) {
   const buttonContent = (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-xl px-4 py-3 text-center transition-all duration-300",
+        "group relative overflow-hidden rounded-full px-6 py-3 text-center transition-all duration-300",
         isSelected
           ? "ring-2 ring-blue-500 ring-offset-2 ring-offset-background"
           : "hover:scale-105",
