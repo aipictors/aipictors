@@ -1,8 +1,6 @@
 import { AuthContext } from "~/contexts/auth-context"
-import {
-  HomeWorkFragment,
-  HomeWorkSection,
-} from "~/routes/($lang)._main._index/components/home-work-section"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
+import { HomeGenerationWorkSection } from "~/routes/($lang)._main._index/components/home-generation-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
@@ -11,6 +9,7 @@ import { config } from "~/config"
 type Props = {
   works: FragmentOf<typeof HomeGenerationWorkFragment>[]
   dateText: string
+  onSelect?: (index: string) => void
 }
 
 /**
@@ -38,12 +37,12 @@ export function HomeWorksGeneratedSection(props: Props) {
 
   return (
     <>
-      <HomeWorkSection
+      <HomeGenerationWorkSection
         title={"作品を選んで無料生成"}
         works={workDisplayed}
-        link="/generation"
         isCropped={false}
         isShowProfile={true}
+        onSelect={props.onSelect}
       />
     </>
   )

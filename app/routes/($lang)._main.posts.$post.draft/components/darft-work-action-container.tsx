@@ -49,6 +49,8 @@ export function DraftWorkActionContainer(props: Props) {
       workType={
         (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"
       }
+      prompt={data?.work?.prompt}
+      negativePrompt={data?.work?.negativePrompt}
     />
   )
 }

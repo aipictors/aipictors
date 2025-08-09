@@ -19,7 +19,8 @@ import {
   HomePromotionWorkFragment,
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
+import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
+
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -633,6 +634,11 @@ export default function Index() {
               <HomeReleaseList releaseList={data.releaseList} />
               <HomeWorksUsersRecommendedSection
                 works={data.promotionWorks}
+                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+              />
+              <HomeWorksGeneratedSection
+                works={[]}
+                dateText={data.awardDateText}
                 onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               />
               <HomeNewUsersWorksSection

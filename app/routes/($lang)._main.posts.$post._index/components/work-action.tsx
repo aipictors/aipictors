@@ -10,6 +10,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { RecommendButton } from "~/routes/($lang)._main.posts.$post._index/components/recommend-button"
 import { downloadZipFile } from "~/routes/($lang).generation._index/utils/download-zip-file"
+import { WorkGenerationButton } from "~/routes/($lang)._main.posts.$post._index/components/work-generation-button"
 
 type Props = {
   id: string
@@ -28,6 +29,8 @@ type Props = {
   isRecommended: boolean
   isDisabledShare?: boolean
   isTargetUserBlocked?: boolean
+  prompt?: string | null
+  negativePrompt?: string | null
 }
 
 /**
@@ -93,6 +96,11 @@ export function WorkAction(props: Props) {
             type={props.workType}
           />
         )}
+        <WorkGenerationButton
+          workId={props.targetWorkId}
+          prompt={props.prompt}
+          negativePrompt={props.negativePrompt}
+        />
         {props.targetWorkOwnerUserId !== appContext.userId && (
           <WorkActionBookmark
             targetWorkId={props.targetWorkId}

@@ -54,6 +54,8 @@ export function WorkActionContainer(props: Props) {
         (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"
       }
       isTargetUserBlocked={props.isTargetUserBlocked}
+      prompt={data?.work?.prompt}
+      negativePrompt={data?.work?.negativePrompt}
     />
   )
 }
