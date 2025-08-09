@@ -1,18 +1,22 @@
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { useContext } from "react"
+import { Link } from "@remix-run/react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
+import { Button } from "~/components/ui/button"
+import { ExternalLink, Type } from "lucide-react"
+import { Badge } from "~/components/ui/badge"
 
 type Props = {
   comments: FragmentOf<typeof HomeNewCommentsFragment>[]
 }
 
 /**
- * 新規コメント一覧
+ * 新規コメント一覧（テキストのみに絞り込み）
  */
 export function HomeSensitiveNewCommentsSection(props: Props) {
   const t = useTranslation()
@@ -29,10 +33,34 @@ export function HomeSensitiveNewCommentsSection(props: Props) {
     ? readFragment(HomeNewCommentsFragment, newCommentsRet?.newComments)
     : comments
 
+  // テキストのみのコメントを絞り込み（GraphQLでフィルタが効かない場合のフォールバック）
+  const textOnlyComments = newComments.filter(comment => 
+    comment.comment?.text && comment.comment.text.trim().length > 0
+  )
+
   return (
     <div className="flex flex-col space-y-4">
-      <h2 className="font-semibold">{t("新規コメント", "New Comments")}</h2>
-      {newComments.map((comment) => (
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h2 className="font-semibold">{t("新規コメント", "New Comments")}</h2>
+          <Badge variant="secondary" className="text-xs">
+            <Type className="h-3 w-3 mr-1" />
+            {t("テキストのみ", "Text Only")}
+          </Badge>
+        </div>
+        <Link to="/r/comments/new">
+          <Button variant="ghost" size="sm" className="gap-1 text-xs">
+            {t("もっと見る", "View More")}
+            <ExternalLink className="h-3 w-3" />
+          </Button>
+        </Link>
+      </div>
+      
+      <p className="text-xs text-muted-foreground">
+        {t("テキストが入力されているコメントのみを表示しています", "Showing only comments with text content")}
+      </p>
+      
+      {textOnlyComments.map((comment) => (
         <div
           key={comment.comment?.id}
           className="flex items-center space-x-2 opacity-80"
@@ -51,33 +79,11 @@ export function HomeSensitiveNewCommentsSection(props: Props) {
               />
               <div className="flex flex-col space-y-2">
                 {comment.comment && comment.comment.text.length > 0 && (
-                  <>
-                    {comment.comment.text.length > 0 && (
-                      <p>
-                        <span className="line-clamp-2 font-semibold text-md">
-                          {comment.comment.text}
-                        </span>
-                      </p>
-                    )}
-                    {comment.comment.text.length === 0 &&
-                      comment.sticker?.imageUrl && (
-                        <p>
-                          <span className="line-clamp-2 font-semibold text-md">
-                            {t(
-                              `スタンプ：「${comment.sticker.title.length > 0 ? comment.sticker.title : ""}」`,
-                              `Sticker: "${comment.sticker.title.length > 0 ? comment.sticker.title : ""}"`,
-                            )}
-                          </span>
-                        </p>
-                      )}
-                  </>
-                )}
-                {comment.sticker?.imageUrl && (
-                  <img
-                    src={comment.sticker.imageUrl}
-                    alt="sticker"
-                    className="size-8 rounded-md md:h-12 md:w-12"
-                  />
+                  <p>
+                    <span className="line-clamp-2 text-md font-semibold">
+                      {comment.comment.text}
+                    </span>
+                  </p>
                 )}
                 <div className="text-sm">
                   {t(
@@ -129,7 +135,8 @@ const homeNewCommentsQuery = graphql(
       limit: 8,
       where: {
         isSensitive: true,
-        ratings: [R18, R18G]
+        ratings: [R18, R18G],
+        isTextOnly: true
       }
     ) {
       ...HomeNewComments
