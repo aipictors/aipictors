@@ -392,14 +392,12 @@ const userQuery = graphql(
       iconUrl
       headerImageUrl
       webFcmToken
-      headerImageUrl
       featuredSensitiveWorks {
         ...DialogWork
       }
       featuredWorks {
         ...DialogWork
       }
-      biography
       enBiography
       instagramAccountId
       twitterAccountId

@@ -53,13 +53,14 @@ export function SettingProfileForm() {
       smallThumbnailImageURL: string
     }>
   >([])
-  const [selectedPickupSensitiveWorks, setSelectedPickupSensitiveWorks] = useState<
-    Array<{
-      id: string
-      title: string
-      smallThumbnailImageURL: string
-    }>
-  >([])
+  const [selectedPickupSensitiveWorks, setSelectedPickupSensitiveWorks] =
+    useState<
+      Array<{
+        id: string
+        title: string
+        smallThumbnailImageURL: string
+      }>
+    >([])
 
   const { data: token } = useQuery(viewerTokenQuery)
 
@@ -443,14 +444,12 @@ const userQuery = graphql(
       iconUrl
       headerImageUrl
       webFcmToken
-      headerImageUrl
       featuredSensitiveWorks {
         ...DialogWork
       }
       featuredWorks {
         ...DialogWork
       }
-      biography
       enBiography
       instagramAccountId
       twitterAccountId

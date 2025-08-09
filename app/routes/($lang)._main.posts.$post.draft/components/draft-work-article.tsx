@@ -407,8 +407,6 @@ export const workArticleFragment = graphql(
       webFcmToken
       isFollower
       isFollowee
-      headerImageUrl
-      receivedLikesCount
       createdLikesCount
       createdBookmarksCount
       isMuted
@@ -545,9 +543,6 @@ export const sensitiveWorkArticleFragment = graphql(
       webFcmToken
       isFollower
       isFollowee
-      headerImageUrl
-      biography
-      receivedLikesCount
       createdLikesCount
       createdBookmarksCount
       isMuted
