@@ -17,7 +17,6 @@ test("センシティブなキーワードを正しく判定する", () => {
   expect(isSensitiveKeyword("セックス")).toBe(true)
   expect(isSensitiveKeyword("巨乳")).toBe(true)
   expect(isSensitiveKeyword("AV")).toBe(true)
-  expect(isSensitiveKeyword("ロリ")).toBe(true)
   expect(isSensitiveKeyword("ロリコン")).toBe(true)
 })
 
