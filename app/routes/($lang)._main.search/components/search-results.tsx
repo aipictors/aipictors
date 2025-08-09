@@ -1,7 +1,14 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useSearchParams, useNavigate, useLocation } from "@remix-run/react"
-import { useState, useEffect, useMemo, useCallback, useContext } from "react"
+import {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useContext,
+  useRef,
+} from "react"
 import {
   ResponsivePhotoWorksAlbum,
   PhotoAlbumWorkFragment,
@@ -16,7 +23,7 @@ import {
 } from "~/components/compact-filter"
 import { format } from "date-fns"
 import { Badge } from "~/components/ui/badge"
-import { Loader2, Eye, List, X } from "lucide-react"
+import { Loader2, Eye, List, X, Grid } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import type { SortType } from "~/types/sort-type"
@@ -84,6 +91,7 @@ export const SearchResults = ({
   const periodRange = periodParam.split(",").filter(Boolean)
   const navigateToTagPage = searchParams.get("navigateToTagPage") === "true"
   const dialogModeParam = searchParams.get("dialogMode") === "true"
+  const viewModeParam = searchParams.get("viewMode") || "pagination"
   const promptPublicParam = searchParams.get("promptPublic") || "all"
   const myWorksOnlyParam = searchParams.get("myWorksOnly") === "true"
   const aiUsageParam = searchParams.get("aiUsage") || "all"
@@ -98,6 +106,11 @@ export const SearchResults = ({
   useEffect(() => {
     setIsDialogMode(dialogModeParam)
   }, [dialogModeParam])
+
+  // Initialize view mode from URL
+  useEffect(() => {
+    setViewMode(viewModeParam === "infinite" ? "infinite" : "pagination")
+  }, [viewModeParam])
 
   // Sort state
   const [sortOrder, setSortOrder] = useState<SortType>(sortParam as SortType)
@@ -292,9 +305,7 @@ export const SearchResults = ({
   ])
 
   console.log("searchWords", searchWords)
-
   console.log("where", where)
-
   console.log("viewMode", viewMode)
 
   // Pagination query - unified for both pagination and infinite scroll
@@ -320,32 +331,81 @@ export const SearchResults = ({
     FragmentOf<typeof PhotoAlbumWorkFragment>
   >([], "search-works")
 
-  // Initialize first page for infinite scroll
-  useEffect(() => {
-    if (viewMode === "infinite" && data?.works?.length) {
-      if (pages.length === 0) {
-        replaceFirstPage(data.works)
-      }
-    }
-  }, [data?.works, viewMode, pages.length, replaceFirstPage])
+  // Debug logging with all variables available
+  console.log("Current filter state:", {
+    filterValues,
+    isInfiniteMode: viewMode === "infinite",
+    dataLength: data?.works?.length || 0,
+    flatLength: flat.length,
+    pagesLength: pages.length,
+  })
 
   // Reset infinite scroll when filters, sort, or search change
+  const whereString = JSON.stringify(where)
+  const prevWhereStringRef = useRef("")
+
   useEffect(() => {
-    if (viewMode === "infinite") {
+    const currentWhereString = whereString
+    if (
+      viewMode === "infinite" &&
+      currentWhereString !== prevWhereStringRef.current &&
+      prevWhereStringRef.current !== ""
+    ) {
+      console.log("Resetting infinite scroll due to filter change")
+      // Reset pages but don't clear immediately - let the data update first
+      setIsLoadingMore(false)
+    }
+    prevWhereStringRef.current = currentWhereString
+  }, [whereString, viewMode])
+
+  // Initialize/update first page for infinite scroll - improved implementation
+  useEffect(() => {
+    if (viewMode !== "infinite") return
+
+    console.log("Data update check:", {
+      hasData: !!data?.works,
+      dataLength: data?.works?.length || 0,
+      currentPagesLength: pages.length,
+      currentFlatLength: flat.length,
+    })
+
+    if (data?.works?.length) {
+      console.log("Updating first page with data:", data.works.length, "items")
+      // Always replace first page when data changes in infinite mode
+      replaceFirstPage(data.works)
+    } else if (data?.works?.length === 0) {
+      console.log("No data found, clearing pages")
       replaceFirstPage([])
     }
-  }, [where, viewMode, replaceFirstPage])
+  }, [data?.works, viewMode, replaceFirstPage, whereString])
 
-  // Load more for infinite scroll - improved logic
+  // hasNext calculation - similar to home feed implementation
   const hasNext = useMemo(() => {
     if (viewMode !== "infinite") return false
+    if (pages.length === 0) return true
+
     const lastPage = pages[pages.length - 1] ?? []
-    return lastPage.length >= PER_PAGE - 8
+    // Use a margin similar to home feed implementation (PER_PAGE - 8)
+    const hasMoreData = lastPage.length >= PER_PAGE - 8
+
+    console.log("hasNext calculation:", {
+      pagesLength: pages.length,
+      lastPageLength: lastPage.length,
+      PER_PAGE,
+      hasMoreData,
+      flatLength: flat.length,
+    })
+
+    return hasMoreData
   }, [viewMode, pages])
 
   const loadMore = useCallback(async () => {
-    if (!hasNext || loading || isLoadingMore) return
+    if (!hasNext || loading || isLoadingMore) {
+      console.log("loadMore blocked:", { hasNext, loading, isLoadingMore })
+      return
+    }
 
+    console.log("Starting loadMore, offset:", flat.length)
     setIsLoadingMore(true)
     try {
       const result = await fetchMore({
@@ -356,7 +416,10 @@ export const SearchResults = ({
         },
       })
       if (result.data?.works?.length) {
+        console.log("Loaded more works:", result.data.works.length)
         appendPage(result.data.works)
+      } else {
+        console.log("No more works found")
       }
     } catch (e) {
       console.error("Failed to load more works:", e)
@@ -506,8 +569,15 @@ export const SearchResults = ({
       setViewMode(mode)
       const newParams = new URLSearchParams(searchParams)
 
+      // Set viewMode parameter
+      newParams.set("viewMode", mode)
+
       if (mode === "infinite") {
         newParams.delete("page")
+        // When switching to infinite mode, reset and initialize with current data
+        console.log("Switching to infinite mode, initializing data")
+        setIsLoadingMore(false)
+        // Don't clear pages here - let the useEffect handle data initialization
       } else {
         newParams.set("page", "0")
       }
@@ -545,8 +615,33 @@ export const SearchResults = ({
     [searchParams, setSearchParams],
   )
 
-  // Current works based on view mode
-  const currentWorks = viewMode === "infinite" ? flat : data?.works || []
+  // Current works based on view mode with improved logic
+  const currentWorks = useMemo(() => {
+    console.log("currentWorks calculation:", {
+      viewMode,
+      flatLength: flat.length,
+      dataWorksLength: data?.works?.length || 0,
+      pagesLength: pages.length,
+    })
+
+    if (viewMode === "infinite") {
+      // In infinite mode, prioritize flat data if available and non-empty
+      if (flat.length > 0) {
+        console.log("Using flat data for infinite mode:", flat.length)
+        return flat
+      }
+      // If flat is empty but we have initial data, use initial data
+      if (data?.works?.length) {
+        console.log("Using initial data for infinite mode:", data.works.length)
+        return data.works
+      }
+      // Return empty array if no data
+      return []
+    }
+
+    // For pagination mode, always use data.works
+    return data?.works || []
+  }, [viewMode, flat, data?.works, pages.length])
   const totalCount = countData?.worksCount || 0
   const totalPages = Math.ceil(totalCount / PER_PAGE)
 
@@ -731,7 +826,7 @@ export const SearchResults = ({
             <List className="h-4 w-4" />
             {t("ページ送り", "Pagination")}
           </Button>
-          {/* <Button
+          <Button
             variant={viewMode === "infinite" ? "default" : "outline"}
             size="sm"
             onClick={() => handleViewModeChange("infinite")}
@@ -739,7 +834,7 @@ export const SearchResults = ({
           >
             <Grid className="h-4 w-4" />
             {t("フィード", "Infinite Scroll")}
-          </Button> */}
+          </Button>
         </div>
       </div>
       {/* Results */}

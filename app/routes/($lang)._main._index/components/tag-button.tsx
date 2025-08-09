@@ -12,41 +12,57 @@ type Props = {
 }
 
 export function TagButton(props: Props) {
-  const borderStyle = props.border
-    ? "border-4 border-blue-500"
-    : "border-4 border-transparent"
+  const isSelected = props.border
 
-  return props.isDisabled ? (
+  const buttonContent = (
     <div
       className={cn(
-        "box-border rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white",
-        borderStyle,
+        "group relative overflow-hidden rounded-xl px-4 py-3 text-center transition-all duration-300",
+        isSelected
+          ? "ring-2 ring-blue-500 ring-offset-2 ring-offset-background"
+          : "hover:scale-105",
+        props.isDisabled ? "cursor-default" : "cursor-pointer",
       )}
       style={{
-        backgroundColor: stringToColor(props.name, props.isDisabled ?? false),
+        background: isSelected
+          ? `linear-gradient(135deg, ${stringToColor(props.name, false)}, ${stringToColor(props.name + "2", false)})`
+          : stringToColor(props.name, props.isDisabled ?? false),
       }}
     >
-      {props.title && (
-        <div className="text-center font-bold text-md">{props.title}</div>
-      )}
-      <div className="text-center font-bold">{props.name}</div>
-    </div>
-  ) : (
-    <Link to={`${props.link}`}>
+      {/* グラデーションオーバーレイ */}
       <div
         className={cn(
-          "box-border rounded-full bg-blue-500 p-1 pr-4 pl-4 text-white",
-          borderStyle,
+          "absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 transition-opacity duration-300",
+          !props.isDisabled && "group-hover:opacity-100",
         )}
-        style={{
-          backgroundColor: stringToColor(props.name, props.isDisabled ?? false),
-        }}
-      >
+      />
+
+      {/* 選択インジケーター */}
+      {isSelected && (
+        <div className="absolute top-1 right-1 h-2 w-2 animate-pulse rounded-full bg-white" />
+      )}
+
+      <div className="relative z-10">
         {props.title && (
-          <div className="text-center font-bold text-md">{props.title}</div>
+          <div className="mb-1 font-semibold text-white text-xs opacity-90">
+            {props.title}
+          </div>
         )}
-        <div className="text-center font-bold">{props.name}</div>
+        <div
+          className={cn(
+            "font-bold text-white",
+            props.title ? "text-sm" : "text-base",
+          )}
+        >
+          {props.name}
+        </div>
       </div>
-    </Link>
+    </div>
+  )
+
+  return props.isDisabled ? (
+    buttonContent
+  ) : (
+    <Link to={`${props.link}`}>{buttonContent}</Link>
   )
 }

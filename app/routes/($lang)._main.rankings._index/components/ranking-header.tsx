@@ -1,9 +1,15 @@
 import type React from "react"
 import { useState } from "react"
 import { useNavigate, useLocation } from "@remix-run/react"
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CalendarIcon,
+  TrendingUpIcon,
+  UsersIcon,
+  ImageIcon,
+} from "lucide-react"
 import { Button } from "~/components/ui/button"
-import { Card } from "~/components/ui/card"
 import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
 import {
   Carousel,
@@ -14,6 +20,7 @@ import {
 } from "~/components/ui/carousel"
 import { useTranslation } from "~/hooks/use-translation"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
+import { getWeeksInMonth, getWeekOfMonth } from "~/utils/get-weeks-in-month"
 
 type Props = {
   year: number
@@ -27,7 +34,6 @@ type Props = {
 export function RankingHeader(props: Props) {
   const t = useTranslation()
 
-  // props から直接値を取得（ローカル状態を削除）
   const year = props.year
   const month = props.month
   const day = props.day
@@ -40,7 +46,6 @@ export function RankingHeader(props: Props) {
   const [date, setDate] = useState("")
 
   const navigate = useNavigate()
-
   const location = useLocation()
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +54,13 @@ export function RankingHeader(props: Props) {
     const newYear = selectedDate.getFullYear()
     const newMonth = selectedDate.getMonth() + 1
     const newDay = selectedDate.getDate()
-    handleNavigate(newYear, newMonth, newDay)
+
+    if (viewType === "ウィークリー") {
+      const weekNumber = getWeekOfMonth(newYear, newMonth, newDay)
+      navigateWithParams(`/rankings/${newYear}/${newMonth}/weeks/${weekNumber}`)
+    } else {
+      handleNavigate(newYear, newMonth, newDay)
+    }
   }
 
   const handleTodayClick = () => {
@@ -64,7 +75,6 @@ export function RankingHeader(props: Props) {
     handleNavigate(newYear, newMonth, newDay)
   }
 
-  // URLパラメータを保持してナビゲートするヘルパー関数
   const navigateWithParams = (path: string) => {
     const currentSearchParams = new URLSearchParams(location.search)
     const searchString = currentSearchParams.toString()
@@ -127,15 +137,16 @@ export function RankingHeader(props: Props) {
     }
 
     if (viewType === "ウィークリー") {
-      const newWeekIndex = weekIndex > 1 ? weekIndex - 1 : 4
-      if (weekIndex === 1) {
-        const newDate = new Date(year, month - 1, 1)
-        newDate.setDate(newDate.getDate() - 1)
-        navigateWithParams(
-          `/rankings/${newDate.getFullYear()}/${newDate.getMonth() + 1}/weeks/${newWeekIndex}`,
-        )
-      } else {
+      if (weekIndex > 1) {
+        const newWeekIndex = weekIndex - 1
         navigateWithParams(`/rankings/${year}/${month}/weeks/${newWeekIndex}`)
+      } else {
+        const prevMonth = month === 1 ? 12 : month - 1
+        const prevYear = month === 1 ? year - 1 : year
+        const prevMonthTotalWeeks = getWeeksInMonth(prevYear, prevMonth)
+        navigateWithParams(
+          `/rankings/${prevYear}/${prevMonth}/weeks/${prevMonthTotalWeeks}`,
+        )
       }
     }
   }
@@ -155,15 +166,15 @@ export function RankingHeader(props: Props) {
     }
 
     if (viewType === "ウィークリー") {
-      const newWeekIndex = weekIndex < 4 ? weekIndex + 1 : 1
-      if (weekIndex === 4) {
-        const newDate = new Date(year, month, 1)
-        newDate.setDate(newDate.getDate() + 30)
-        navigateWithParams(
-          `/rankings/${newDate.getFullYear()}/${newDate.getMonth() + 1}/weeks/${newWeekIndex}`,
-        )
-      } else {
+      const totalWeeksInMonth = getWeeksInMonth(year, month)
+
+      if (weekIndex < totalWeeksInMonth) {
+        const newWeekIndex = weekIndex + 1
         navigateWithParams(`/rankings/${year}/${month}/weeks/${newWeekIndex}`)
+      } else {
+        const nextMonth = month === 12 ? 1 : month + 1
+        const nextYear = month === 12 ? year + 1 : year
+        navigateWithParams(`/rankings/${nextYear}/${nextMonth}/weeks/1`)
       }
     }
   }
@@ -171,9 +182,13 @@ export function RankingHeader(props: Props) {
   const generateCarouselItems = () => {
     const today = new Date()
     today.setDate(today.getDate() - 1)
-    const items: { link: string; name: string; border: boolean }[] = []
+    const items: {
+      link: string
+      name: string
+      border: boolean
+      icon?: string
+    }[] = []
 
-    // 現在のURLパラメータを取得
     const currentSearchParams = new URLSearchParams(location.search)
     const searchString = currentSearchParams.toString()
 
@@ -181,13 +196,12 @@ export function RankingHeader(props: Props) {
       for (let index = 0; index < 7; index++) {
         const date = new Date(today)
         date.setDate(today.getDate() - (6 - index))
-        const formattedDate = `${date.getFullYear()}/${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}`
         const basePath = `/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
         const linkWithParams = searchString
           ? `${basePath}?${searchString}`
           : basePath
+
         items.push({
           link: linkWithParams,
           name: formattedDate,
@@ -199,34 +213,37 @@ export function RankingHeader(props: Props) {
     }
 
     if (viewType === "マンスリー") {
-      for (let index = 3; index >= 1; index--) {
+      for (let index = 5; index >= 0; index--) {
         const date = new Date(today)
         date.setMonth(today.getMonth() - index)
-        const formattedMonth = `${date.getFullYear()}/${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}`
+        const formattedMonth = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, "0")}`
         const basePath = `/rankings/${date.getFullYear()}/${date.getMonth() + 1}`
         const linkWithParams = searchString
           ? `${basePath}?${searchString}`
           : basePath
+
         items.push({
           link: linkWithParams,
           name: formattedMonth,
-          border: formattedMonth === `${year}/${month}`,
+          border:
+            formattedMonth === `${year}/${month.toString().padStart(2, "0")}`,
         })
       }
     }
 
     if (viewType === "ウィークリー") {
-      for (let index = 0; index < 4; index++) {
+      const totalWeeksInMonth = getWeeksInMonth(year, month)
+
+      for (let index = 0; index < totalWeeksInMonth; index++) {
         const weekNumber = index + 1
         const basePath = `/rankings/${year}/${month}/weeks/${weekNumber}`
         const linkWithParams = searchString
           ? `${basePath}?${searchString}`
           : basePath
+
         items.push({
           link: linkWithParams,
-          name: `${t(`${weekNumber}週目`, `${weekNumber}th Week`)}`,
+          name: `第${weekNumber}週`,
           border: weekIndex === weekNumber,
         })
       }
@@ -237,50 +254,78 @@ export function RankingHeader(props: Props) {
 
   const carouselItems = generateCarouselItems()
 
-  // ランキングタイプの変更ハンドラ
   const handleRankingTypeChange = (type: "works" | "users") => {
     if (props.onRankingTypeChange) {
       props.onRankingTypeChange(type)
     }
   }
 
-  // デバッグ用ログ
-  console.log("RankingHeader props:", {
-    day: props.day,
-    rankingType: props.rankingType,
-    hasOnRankingTypeChange: !!props.onRankingTypeChange,
-    viewType,
-  })
+  const getViewTypeIcon = () => {
+    switch (viewType) {
+      case "マンスリー":
+        return <CalendarIcon className="h-5 w-5" />
+      case "デイリー":
+        return <TrendingUpIcon className="h-5 w-5" />
+      case "ウィークリー":
+        return <ImageIcon className="h-5 w-5" />
+    }
+  }
+
+  const getViewTypeGradient = () => {
+    switch (viewType) {
+      case "マンスリー":
+        return "from-orange-500 to-red-500"
+      case "デイリー":
+        return "from-emerald-500 to-teal-500"
+      case "ウィークリー":
+        return "from-blue-500 to-indigo-500"
+    }
+  }
 
   return (
-    <Card className="flex flex-col items-center space-y-4 p-4">
+    <div className="mx-auto w-full max-w-6xl space-y-8 rounded-3xl border border-border/30 bg-gradient-to-br from-background/80 to-muted/10 p-8 backdrop-blur-md">
       {/* ランキングタイプ切り替え */}
       {props.day !== null && props.onRankingTypeChange && (
-        <div className="flex w-full max-w-72 justify-center space-x-2">
-          <Button
-            variant={props.rankingType === "works" ? "default" : "outline"}
-            onClick={() => handleRankingTypeChange("works")}
-            className="flex-1"
-          >
-            {t("作品ランキング", "Work Rankings")}
-          </Button>
-          <Button
-            variant={props.rankingType === "users" ? "default" : "outline"}
-            onClick={() => handleRankingTypeChange("users")}
-            className="flex-1"
-          >
-            {t("ユーザランキング", "User Rankings")}
-          </Button>
+        <div className="flex justify-center">
+          <div className="inline-flex items-center rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => handleRankingTypeChange("works")}
+              className={`flex items-center gap-3 rounded-xl px-6 py-3 transition-all duration-300 ${
+                props.rankingType === "works"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white ring-2 ring-blue-200 ring-offset-2"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              }`}
+            >
+              <ImageIcon className="h-5 w-5" />
+              {t("作品ランキング", "Work Rankings")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => handleRankingTypeChange("users")}
+              className={`flex items-center gap-3 rounded-xl px-6 py-3 transition-all duration-300 ${
+                props.rankingType === "users"
+                  ? "bg-gradient-to-r from-purple-500 to-pink-600 text-white ring-2 ring-purple-200 ring-offset-2"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              }`}
+            >
+              <UsersIcon className="h-5 w-5" />
+              {t("ユーザランキング", "User Rankings")}
+            </Button>
+          </div>
         </div>
       )}
 
       {/* ユーザーランキングの説明 */}
       {props.day !== null && props.rankingType === "users" && (
-        <div className="w-full max-w-md rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 p-3 text-center dark:from-purple-900/20 dark:to-pink-900/20">
-          <p className="font-semibold text-purple-700 text-sm dark:text-purple-300">
-            📊 {t("最高いいね数でランキング", "Ranked by Highest Likes")}
+        <div className="mx-auto w-full max-w-lg rounded-2xl border border-purple-200/50 bg-gradient-to-br from-purple-50/90 to-pink-50/90 p-6 text-center backdrop-blur-sm dark:border-purple-800/50 dark:from-purple-900/30 dark:to-pink-900/30">
+          <div className="mb-2 text-2xl">🏆</div>
+          <p className="font-semibold text-purple-700 dark:text-purple-300">
+            {t("最高いいね数でランキング", "Ranked by Highest Likes")}
           </p>
-          <p className="text-purple-600 text-xs dark:text-purple-400">
+          <p className="mt-2 text-purple-600 text-sm dark:text-purple-400">
             {t(
               "期間中の投稿作品で最もいいね数の多い作品で順位付けされています",
               "Ranked by the work with the highest likes in the period",
@@ -289,102 +334,139 @@ export function RankingHeader(props: Props) {
         </div>
       )}
 
-      {viewType === "マンスリー" && (
-        <p className="text-center font-bold text-md">
-          {t("マンスリー", "Monthly")}
-        </p>
-      )}
-      {viewType === "デイリー" && (
-        <p className="text-center font-bold text-md">
-          {t("デイリー", "Daily")}
-        </p>
-      )}
-      {viewType === "ウィークリー" && (
-        <p className="text-center font-bold text-md">
-          {t("ウィークリー", "Weekly")}
-        </p>
-      )}
+      {/* タイトルセクション */}
+      <div className="text-center">
+        <div
+          className={`mx-auto mb-4 inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r ${getViewTypeGradient()} p-4 text-white ring-4 ring-white/20`}
+        >
+          {getViewTypeIcon()}
+          <span className="font-bold text-lg">
+            {viewType === "マンスリー" &&
+              t("マンスリーランキング", "Monthly Rankings")}
+            {viewType === "デイリー" &&
+              t("デイリーランキング", "Daily Rankings")}
+            {viewType === "ウィークリー" &&
+              t("ウィークリーランキング", "Weekly Rankings")}
+          </span>
+        </div>
 
-      <p className="text-center font-bold text-md">
-        {year}年{month}月
-        {day
-          ? `${day}日`
-          : weekIndex && viewType !== "マンスリー"
-            ? `${weekIndex}週目`
-            : ""}
-        {t("のランキング", " Rankings")}
-      </p>
-      <div className="flex w-full max-w-72 flex-col space-y-4 md:max-w-72">
-        <div className="flex w-full justify-between space-x-1 md:space-x-4">
+        <h1 className="bg-gradient-to-r from-foreground via-foreground/80 to-muted-foreground bg-clip-text font-bold text-4xl text-transparent">
+          {year}年{month.toString().padStart(2, "0")}月
+          {day
+            ? `${day.toString().padStart(2, "0")}日`
+            : weekIndex && viewType !== "マンスリー"
+              ? ` 第${weekIndex}週`
+              : ""}
+        </h1>
+      </div>
+
+      {/* 期間選択ボタン */}
+      <div className="flex justify-center">
+        <div className="inline-flex items-center rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
           <Button
-            variant={"secondary"}
+            variant="ghost"
+            size="lg"
             onClick={() => handleViewChange("マンスリー")}
-            className={
+            className={`flex items-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 ${
               viewType === "マンスリー"
-                ? "rounded-lg border-blue-500"
-                : "rounded-lg"
-            }
+                ? "bg-gradient-to-r from-orange-500 to-red-500 text-white ring-2 ring-orange-200 ring-offset-2"
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            }`}
             disabled={viewType === "マンスリー"}
           >
+            <CalendarIcon className="h-4 w-4" />
             {t("月間", "Monthly")}
           </Button>
           <Button
-            variant={"secondary"}
+            variant="ghost"
+            size="lg"
             onClick={() => handleViewChange("デイリー")}
-            className={
+            className={`flex items-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 ${
               viewType === "デイリー"
-                ? "rounded-lg border-blue-500"
-                : "rounded-lg"
-            }
+                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white ring-2 ring-emerald-200 ring-offset-2"
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            }`}
             disabled={viewType === "デイリー"}
           >
+            <TrendingUpIcon className="h-4 w-4" />
             {t("日間", "Daily")}
           </Button>
           <Button
-            variant={"secondary"}
+            variant="ghost"
+            size="lg"
             onClick={() => handleViewChange("ウィークリー")}
-            className={
+            className={`flex items-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 ${
               viewType === "ウィークリー"
-                ? "rounded-lg border-blue-500"
-                : "rounded-lg"
-            }
+                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white ring-2 ring-blue-200 ring-offset-2"
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            }`}
             disabled={viewType === "ウィークリー"}
           >
+            <ImageIcon className="h-4 w-4" />
             {t("週間", "Weekly")}
           </Button>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-x-2 space-y-2 md:flex-row">
-        <div className="flex items-center space-x-4">
-          <Button variant={"ghost"} onClick={handlePrevious}>
-            <ChevronLeftIcon />
+
+      {/* ナビゲーションとコントロール */}
+      <div className="flex flex-col items-center gap-6 lg:flex-row lg:justify-between">
+        {/* 前へ・次へボタン */}
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={handlePrevious}
+            className="flex items-center gap-2 rounded-xl border-border/50 bg-background/80 px-6 py-3 backdrop-blur-sm transition-all hover:bg-muted/50"
+          >
+            <ChevronLeftIcon className="h-5 w-5" />
             {t("前へ", "Previous")}
           </Button>
-          <Button variant={"ghost"} onClick={handleNext}>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={handleNext}
+            className="flex items-center gap-2 rounded-xl border-border/50 bg-background/80 px-6 py-3 backdrop-blur-sm transition-all hover:bg-muted/50"
+          >
             {t("次へ", "Next")}
-            <ChevronRightIcon />
+            <ChevronRightIcon className="h-5 w-5" />
           </Button>
         </div>
-        <div className="flex items-center space-x-2">
-          <input
-            type="date"
-            value={date}
-            onChange={handleDateChange}
-            className="w-[200px] rounded-md border border-gray-300"
-            max={new Date().toISOString().split("T")[0]}
-          />
-          <Button onClick={handleTodayClick} variant="outline">
+
+        {/* 日付選択とコントロール */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-background/80 p-2 backdrop-blur-sm">
+            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+            <input
+              type="date"
+              value={date}
+              onChange={handleDateChange}
+              className="rounded-lg border-0 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              max={new Date().toISOString().split("T")[0]}
+            />
+          </div>
+
+          <Button
+            onClick={handleTodayClick}
+            variant="outline"
+            size="lg"
+            className="rounded-xl border-border/50 bg-background/80 px-6 py-3 backdrop-blur-sm transition-all hover:bg-muted/50"
+          >
             {t("最新", "Latest")}
           </Button>
+
+          <div className="rounded-xl border border-border/50 bg-background/80 p-2 backdrop-blur-sm">
+            <SensitiveToggle variant="compact" />
+          </div>
         </div>
-        <SensitiveToggle variant="compact" />
       </div>
-      <div className="mt-4 flex max-w-72 space-x-4 md:max-w-full">
+
+      {/* カルーセル */}
+      <div className="w-full">
         <Carousel
-          className="relative overflow-hidden"
+          className="relative overflow-hidden rounded-2xl"
           opts={{ dragFree: true, loop: false, align: "center" }}
         >
-          <CarouselContent>
+          <CarouselContent className="gap-3 pl-6">
             {carouselItems.map((item, index) => (
               <CarouselItem key={item.link} className="basis-auto">
                 <TagButton
@@ -396,10 +478,10 @@ export function RankingHeader(props: Props) {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute top-1/2 left-0" />
-          <CarouselNext className="absolute top-1/2 right-0" />
+          <CarouselPrevious className="absolute top-1/2 left-3 bg-background/95 backdrop-blur-sm hover:bg-background" />
+          <CarouselNext className="absolute top-1/2 right-3 bg-background/95 backdrop-blur-sm hover:bg-background" />
         </Carousel>
       </div>
-    </Card>
+    </div>
   )
 }
