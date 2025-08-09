@@ -167,33 +167,35 @@ export function usePagedInfinite<T extends ObjectWithId>(
     [existingIds, deduplicateItems, idKey, debug, setPages],
   )
 
-  // ✅ 修正: 初回のみ実行されるように
+  // ✅ 修正: pagesを依存配列から除去して無限ループを防ぐ
   const replaceFirstPage = useCallback(
     (page1: T[]) => {
-      const otherPagesIds = new Set<T[keyof T]>()
-      for (let i = 1; i < pages.length; i++) {
-        for (const item of pages[i]) {
-          const id = item[idKey]
-          if (id != null) {
-            otherPagesIds.add(id)
+      setPages((prev) => {
+        const otherPagesIds = new Set<T[keyof T]>()
+        for (let i = 1; i < prev.length; i++) {
+          for (const item of prev[i]) {
+            const id = item[idKey]
+            if (id != null) {
+              otherPagesIds.add(id)
+            }
           }
         }
-      }
 
-      const deduplicated = page1.filter((item) => {
-        const id = item[idKey]
-        return id == null || !otherPagesIds.has(id)
+        const deduplicated = page1.filter((item) => {
+          const id = item[idKey]
+          return id == null || !otherPagesIds.has(id)
+        })
+
+        if (debug && deduplicated.length !== page1.length) {
+          console.log(
+            `[usePagedInfinite] Removed ${page1.length - deduplicated.length} duplicates from first page`,
+          )
+        }
+
+        return [deduplicated, ...prev.slice(1)]
       })
-
-      if (debug && deduplicated.length !== page1.length) {
-        console.log(
-          `[usePagedInfinite] Removed ${page1.length - deduplicated.length} duplicates from first page`,
-        )
-      }
-
-      setPages((prev) => [deduplicated, ...prev.slice(1)])
     },
-    [pages, idKey, debug, setPages],
+    [idKey, debug, setPages],
   )
 
   const setPagesDirect = useCallback(

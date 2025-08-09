@@ -791,7 +791,7 @@ export function TagWorkSection(props: Props) {
         <ResponsivePhotoWorksAlbum
           works={displayedWorks}
           isShowProfile={true}
-          onSelect={isDialogMode ? openWork : undefined}
+          onSelect={openWork}
         />
       )}
 
