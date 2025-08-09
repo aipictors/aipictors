@@ -250,28 +250,6 @@ export function TagWorkSection(props: Props) {
     [filters],
   )
 
-  // フィルタ適用時の処理
-  const handleFiltersApply = useCallback(() => {
-    // フィルタが適用されたときの処理
-    setIsInitialDataSet(false)
-    setIsInitialized(false)
-    setInfinitePages([])
-    setHasNextPage(true)
-    if (isPagination) {
-      props.setPage(0)
-    }
-
-    // フィルタ適用後に初期化を再実行
-    setTimeout(() => {
-      setIsInitialized(true)
-    }, 0)
-  }, [isPagination, props])
-
-  // props.mode の変更を監視して内部状態を同期
-  useEffect(() => {
-    setIsPagination(props.mode === "pagination")
-  }, [props.mode])
-
   // フォロー中のタグを取得
   const { data: followedTagsData = null } = useQuery(viewerFollowedTagsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -293,14 +271,16 @@ export function TagWorkSection(props: Props) {
         where: getFilteredWhereCondition(),
       },
       notifyOnNetworkStatusChange: true,
+      fetchPolicy: "cache-and-network", // フィルタ変更時に再フェッチを確実に行う
     },
   )
 
   // ────────────────────　無限スクロール用クエリ ────────────────────
   const {
-    data: _infiniteResp,
+    data: infiniteResp,
     loading: infiniteLoading,
     fetchMore,
+    refetch: refetchInfinite,
   } = useQuery(tagWorksQuery, {
     skip:
       isPagination ||
@@ -313,7 +293,35 @@ export function TagWorkSection(props: Props) {
       where: getFilteredWhereCondition(),
     },
     notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network", // フィルタ変更時に再フェッチを確実に行う
   })
+
+  // フィルタ適用時の処理
+  const handleFiltersApply = useCallback(() => {
+    console.log("Filter applied, resetting infinite scroll")
+    // フィルタが適用されたときの処理
+    setIsInitialDataSet(false)
+    setIsInitialized(false)
+    setInfinitePages([])
+    setHasNextPage(true)
+    if (isPagination) {
+      props.setPage(0)
+    }
+
+    // フィルタ適用後に初期化を再実行
+    setTimeout(() => {
+      setIsInitialized(true)
+      // 無限スクロールモードの場合、クエリを再実行
+      if (!isPagination && refetchInfinite) {
+        refetchInfinite()
+      }
+    }, 0)
+  }, [isPagination, props, refetchInfinite])
+
+  // props.mode の変更を監視して内部状態を同期
+  useEffect(() => {
+    setIsPagination(props.mode === "pagination")
+  }, [props.mode])
 
   // 初期化: props.worksを必ず使用
   useEffect(() => {
@@ -339,6 +347,18 @@ export function TagWorkSection(props: Props) {
       }
     }
   }, [props.works, isPagination, isInitialDataSet, stateKey, props.page])
+
+  // フィルタが変更された時にインフィニットクエリを再実行
+  useEffect(() => {
+    if (isInitialized && !isPagination && infiniteResp) {
+      // フィルタ変更後の初回データを取得
+      const newData = infiniteResp.tagWorks
+      if (newData) {
+        setInfinitePages([newData])
+        setHasNextPage(newData.length === 32)
+      }
+    }
+  }, [infiniteResp, isInitialized, isPagination])
 
   // ────────────────────　スクロール位置復元 (ページネーション) ────────────────────
   useEffect(() => {
@@ -421,11 +441,13 @@ export function TagWorkSection(props: Props) {
     const flatWorks = infinitePages.flat()
     setIsLoadingMore(true)
     try {
+      const whereCondition = getFilteredWhereCondition()
+      console.log("Loading more with filter condition:", whereCondition)
       const result = await fetchMore({
         variables: {
           offset: flatWorks.length,
           limit: 32,
-          where: getFilteredWhereCondition(),
+          where: whereCondition,
         },
       })
       if (result.data?.tagWorks) {
@@ -444,12 +466,7 @@ export function TagWorkSection(props: Props) {
     isPagination,
     infinitePages,
     fetchMore,
-    props.tag,
-    props.orderBy,
-    props.sort,
-    props.hasPrompt,
-    filters, // フィルタも依存関係に追加
-    getFilteredWhereCondition, // 条件生成関数も追加
+    getFilteredWhereCondition,
     isInitialized,
   ])
 
@@ -471,7 +488,7 @@ export function TagWorkSection(props: Props) {
     return () => observerRef.current?.disconnect()
   }, [isPagination, hasNextPage, isLoadingMore, loadMore, isInitialized])
 
-  // 表示作品の決定: 初期表示時は必ずprops.worksを使用
+  // 表示作品の決定: フィルタ適用時は新しいクエリ結果を使用
   const displayedWorks = useMemo(() => {
     // 初期化が完了していない場合は必ずprops.worksを使用
     if (!isInitialized) {
@@ -479,22 +496,34 @@ export function TagWorkSection(props: Props) {
     }
 
     if (isPagination) {
-      // ページネーションモード: 初回はprops.works、その後はpaginationResp
-      if (props.page === 0 && !paginationResp) {
-        return props.works
+      // ページネーションモード: フィルタが適用されている場合はpaginationRespを優先
+      if (paginationResp?.tagWorks) {
+        return paginationResp.tagWorks
       }
-      return paginationResp?.tagWorks ?? props.works
+      // 初回はprops.works、フィルタ未適用時
+      return props.works
     }
-    // フィードモード: infinitePagesが空の場合はprops.works
+
+    // フィードモード: フィルタが適用されている場合は新しいクエリ結果を使用
     const flat = infinitePages.flat()
-    return flat.length > 0 ? flat : props.works
+    if (flat.length > 0) {
+      return flat
+    }
+
+    // infiniteRespがある場合（フィルタ適用後の初回データ）
+    if (infiniteResp?.tagWorks) {
+      return infiniteResp.tagWorks
+    }
+
+    // フォールバック
+    return props.works
   }, [
     isInitialized,
     isPagination,
     props.works,
-    props.page,
     paginationResp,
     infinitePages,
+    infiniteResp,
   ])
 
   // 一覧の最初の作品（バナー用）
@@ -618,7 +647,7 @@ export function TagWorkSection(props: Props) {
               )}
             </div>
             <div className="mt-auto space-y-1">
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+              <h2 className="font-semibold text-gray-800 text-xl dark:text-gray-200">
                 {props.tag}
                 {t("の作品", " works")}
               </h2>

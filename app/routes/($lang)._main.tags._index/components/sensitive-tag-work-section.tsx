@@ -6,7 +6,7 @@ import {
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import { useContext, useState, useCallback } from "react"
+import { useContext, useState, useCallback, useMemo } from "react"
 import { tagWorksQuery } from "~/routes/($lang)._main.tags.$tag._index/route"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { TagFollowButton } from "~/components/button/tag-follow-button"
@@ -26,7 +26,9 @@ type Props = {
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   hasPrompt: number
+  mode: "feed" | "pagination"
   setPage: (page: number) => void
+  setMode: (mode: "feed" | "pagination") => void
   setAccessType?: (accessType: IntrospectionEnum<"AccessType"> | null) => void
   setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
@@ -43,23 +45,36 @@ type Props = {
   onClickIsPromotionSortButton: () => void
 }
 
+type LocalFilterValues = {
+  ageRestrictions: string[]
+  aiUsage: string
+  promptPublic: string
+  dateFrom: Date | undefined
+  dateTo: Date | undefined
+  orderBy: string
+  workModelId: string | undefined
+  myWorksOnly?: boolean
+}
+
 export function SensitiveTagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 
   // フィルタ状態と更新関数
-  const [filters, setFilters] = useState({
-    ageRestrictions: [] as string[],
+  const [filters, setFilters] = useState<LocalFilterValues>({
+    ageRestrictions: [],
     aiUsage: "all",
     promptPublic: "all",
-    dateFrom: undefined as Date | undefined,
-    dateTo: undefined as Date | undefined,
+    dateFrom: undefined,
+    dateTo: undefined,
     orderBy: "LIKES_COUNT",
-    aiName: "", // AIモデル名検索用
+    workModelId: undefined,
+    myWorksOnly: false,
   })
 
   // CompactFilterとの互換性のため、型変換を行う関数
   const handleFiltersChange = useCallback((newFilters: FilterValues) => {
+    console.log("Sensitive tag filters changed:", newFilters)
     setFilters({
       ageRestrictions: newFilters.ageRestrictions,
       aiUsage: newFilters.aiUsage,
@@ -67,14 +82,115 @@ export function SensitiveTagWorkSection(props: Props) {
       dateFrom: newFilters.dateFrom,
       dateTo: newFilters.dateTo,
       orderBy: newFilters.orderBy || "LIKES_COUNT",
-      aiName: newFilters.aiUsage || "",
+      workModelId: newFilters.workModelId,
+      myWorksOnly: newFilters.myWorksOnly || false,
     })
   }, [])
 
   // フィルタ適用時の処理
   const handleFiltersApply = useCallback(() => {
+    console.log("Sensitive tag filters applied")
     props.setPage(0) // ページをリセット
   }, [props])
+
+  // フィルタ適用時の where 条件を生成
+  const getFilteredWhereCondition = useCallback(() => {
+    const baseWhere: {
+      tagNames: string[]
+      orderBy: IntrospectionEnum<"WorkOrderBy">
+      sort: SortType
+      ratings: ("G" | "R15" | "R18" | "R18G")[]
+      hasPrompt?: boolean
+      isPromptPublic?: boolean
+      isNowCreatedAt: boolean
+      modelPostedIds?: string[]
+      createdAtAfter?: string
+      beforeCreatedAt?: string
+      isSensitive: boolean
+      userId?: string
+    } = {
+      tagNames: [
+        decodeURIComponent(props.tag),
+        decodeURIComponent(props.tag).toLowerCase(),
+        decodeURIComponent(props.tag).toUpperCase(),
+        decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+          String.fromCharCode(m.charCodeAt(0) - 96),
+        ),
+        decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
+          String.fromCharCode(m.charCodeAt(0) + 96),
+        ),
+      ],
+      orderBy: props.orderBy,
+      sort: props.sort,
+      ratings: ["R18", "R18G"] as ("G" | "R15" | "R18" | "R18G")[],
+      hasPrompt: props.hasPrompt === 1 ? true : undefined,
+      isPromptPublic: props.hasPrompt === 1 ? true : undefined,
+      isNowCreatedAt: true,
+      isSensitive: true,
+    }
+
+    // 自分の作品のみフィルタ
+    if (filters.myWorksOnly && authContext.userId) {
+      baseWhere.userId = authContext.userId
+    }
+
+    // AIモデルフィルタ
+    if (filters.workModelId) {
+      baseWhere.modelPostedIds = [filters.workModelId]
+    }
+
+    // 年齢制限フィルタ（R18の場合は元々制限されているので、さらに制限する場合のみ）
+    if (filters.ageRestrictions.length > 0) {
+      const filteredRatings = filters.ageRestrictions.filter(
+        (rating) => rating === "R18" || rating === "R18G",
+      ) as ("R18" | "R18G")[]
+      if (filteredRatings.length > 0) {
+        baseWhere.ratings = filteredRatings
+      }
+    }
+
+    // プロンプト公開フィルタ
+    if (filters.promptPublic === "public") {
+      baseWhere.hasPrompt = true
+      baseWhere.isPromptPublic = true
+    } else if (filters.promptPublic === "private") {
+      baseWhere.hasPrompt = false
+      baseWhere.isPromptPublic = false
+    }
+
+    // 期間フィルタ
+    if (filters.dateFrom) {
+      baseWhere.createdAtAfter = filters.dateFrom.toISOString()
+    }
+    if (filters.dateTo) {
+      const endDate = new Date(filters.dateTo)
+      endDate.setHours(23, 59, 59, 999)
+      baseWhere.beforeCreatedAt = endDate.toISOString()
+    }
+
+    return baseWhere
+  }, [
+    props.tag,
+    props.orderBy,
+    props.sort,
+    props.hasPrompt,
+    filters,
+    authContext.userId,
+  ])
+
+  const compactFilterValues: FilterValues = useMemo(
+    () => ({
+      ageRestrictions: filters.ageRestrictions,
+      aiUsage: filters.aiUsage,
+      promptPublic: filters.promptPublic,
+      dateFrom: filters.dateFrom,
+      dateTo: filters.dateTo,
+      orderBy: filters.orderBy,
+      workModelId: filters.workModelId,
+      myWorksOnly: filters.myWorksOnly,
+    }),
+    [filters],
+  )
 
   const { data = null } = useQuery(viewerFollowedTagsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -83,34 +199,17 @@ export function SensitiveTagWorkSection(props: Props) {
 
   const {
     data: resp,
-    loading: _loading,
+    loading: isLoading,
     error: _error,
   } = useQuery(tagWorksQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: props.page * 32,
       limit: 32,
-      where: {
-        tagNames: [
-          decodeURIComponent(props.tag),
-          decodeURIComponent(props.tag).toLowerCase(),
-          decodeURIComponent(props.tag).toUpperCase(),
-          decodeURIComponent(props.tag).replace(/[\u30A1-\u30F6]/g, (m) =>
-            String.fromCharCode(m.charCodeAt(0) - 96),
-          ),
-          decodeURIComponent(props.tag).replace(/[\u3041-\u3096]/g, (m) =>
-            String.fromCharCode(m.charCodeAt(0) + 96),
-          ),
-        ],
-        orderBy: props.orderBy,
-        sort: props.sort,
-        ratings: ["R18", "R18G"],
-        isSensitive: true,
-        hasPrompt: props.hasPrompt === 1 ? true : undefined,
-        isPromptPublic: props.hasPrompt === 1 ? true : undefined,
-        isNowCreatedAt: true,
-      },
+      where: getFilteredWhereCondition(),
     },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network", // フィルタ変更時に再フェッチを確実に行う
   })
 
   const works = resp?.tagWorks ?? props.works
@@ -157,7 +256,7 @@ export function SensitiveTagWorkSection(props: Props) {
               )}
             </div>
             <div className="mt-auto space-y-1">
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+              <h2 className="font-semibold text-gray-800 text-xl dark:text-gray-200">
                 {props.tag}
                 {t("の作品", " works")}
               </h2>
@@ -190,9 +289,10 @@ export function SensitiveTagWorkSection(props: Props) {
             />
           </div>
           <CompactFilter
-            filters={filters}
+            filters={compactFilterValues}
             onFiltersChange={handleFiltersChange}
             onApplyFilters={handleFiltersApply}
+            isLoading={isLoading}
           />
           <div className="min-w-32">
             <div className="flex items-center space-x-2">
@@ -236,9 +336,10 @@ export function SensitiveTagWorkSection(props: Props) {
           />
         </div>
         <CompactFilter
-          filters={filters}
+          filters={compactFilterValues}
           onFiltersChange={handleFiltersChange}
           onApplyFilters={handleFiltersApply}
+          isLoading={isLoading}
         />
         <div className="min-w-32">
           <div className="flex items-center space-x-2">

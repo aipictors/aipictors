@@ -45,6 +45,9 @@ export async function loader(props: LoaderFunctionArgs) {
     ? (url.searchParams.get("sort") as SortType)
     : "DESC"
 
+  // mode パラメータを追加
+  const mode = url.searchParams.get("mode") || "pagination"
+
   const worksResp = await loaderClient.query({
     query: tagWorksQuery,
     variables: {
@@ -76,6 +79,7 @@ export async function loader(props: LoaderFunctionArgs) {
     worksCount: tagWorksCountResp.data.tagWorksCount,
     page: page,
     isSensitive: true,
+    mode: mode, // mode を追加
   }
 }
 
@@ -196,6 +200,11 @@ export default function Tag() {
     Number(searchParams.get("prompt")) || 0,
   )
 
+  // mode の状態を追加
+  const [mode, setMode] = React.useState<"feed" | "pagination">(
+    (searchParams.get("mode") as "feed" | "pagination") || "pagination",
+  )
+
   // URLパラメータの監視と更新
   useEffect(() => {
     const params = new URLSearchParams()
@@ -207,13 +216,27 @@ export default function Tag() {
     params.set("page", page.toString())
     params.set("prompt", hasPrompt.toString())
 
+    // mode パラメータの処理（デフォルトがpaginationなのでfeedの時のみセット）
+    if (mode === "feed") {
+      params.set("mode", "feed")
+    }
+
     // isSensitiveのパラメータが1なら、セット
     if (data.isSensitive) {
       params.set("sensitive", "1")
     }
 
     setSearchParams(params)
-  }, [page, hasPrompt, workType, WorkOrderby, worksOrderDeskAsc])
+  }, [
+    page,
+    hasPrompt,
+    workType,
+    WorkOrderby,
+    worksOrderDeskAsc,
+    mode,
+    data.isSensitive,
+    setSearchParams,
+  ])
 
   if (data === null) {
     return null
@@ -226,6 +249,8 @@ export default function Tag() {
         worksCount={data.worksCount}
         page={page}
         hasPrompt={hasPrompt}
+        mode={mode}
+        setMode={setMode}
         sort={worksOrderDeskAsc}
         orderBy={WorkOrderby}
         tag={decodeURIComponent(params.tag)}
