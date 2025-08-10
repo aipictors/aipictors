@@ -34,7 +34,9 @@ export default function NewCommentsPage() {
     return null
   }
 
-  return <NewCommentsPageContent initialComments={data.newComments} />
+  return (
+    <NewCommentsPageContent initialComments={data.newComments as never[]} />
+  )
 }
 
 const newCommentsPageQuery = graphql(

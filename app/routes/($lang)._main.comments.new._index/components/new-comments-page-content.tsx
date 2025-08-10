@@ -59,19 +59,8 @@ export function NewCommentsPageContent(props: Props) {
   )
   const [isLoading, setIsLoading] = useState(false)
 
-  // フィルタリング済みのコメント一覧
-  const filteredComments = allComments.filter((comment) => {
-    if (filter === "text-only") {
-      return comment.comment?.text && comment.comment.text.trim().length > 0
-    }
-    if (filter === "sticker-only") {
-      return (
-        comment.sticker?.imageUrl &&
-        (!comment.comment?.text || comment.comment.text.trim().length === 0)
-      )
-    }
-    return true
-  })
+  // サーバー側でフィルタリング済みなので、クライアントサイドでの追加フィルタリングは不要
+  const filteredComments = allComments
 
   const { refetch } = useQuery(newCommentsQuery, {
     skip: true,
@@ -100,7 +89,10 @@ export function NewCommentsPageContent(props: Props) {
       })
 
       if (result.data?.newComments) {
-        setAllComments((prev) => [...prev, ...result.data.newComments])
+        setAllComments((prev) => [
+          ...prev,
+          ...(result.data.newComments as Comment[]),
+        ])
         setOffset((prev) => prev + 24)
       }
     } catch (error) {
@@ -129,7 +121,8 @@ export function NewCommentsPageContent(props: Props) {
       })
 
       if (result.data?.newComments) {
-        setAllComments(result.data.newComments)
+        // フィルター変更時は完全に新しいデータに置き換える
+        setAllComments(result.data.newComments as Comment[])
       }
     } catch (error) {
       console.error("Failed to filter comments:", error)
@@ -289,7 +282,7 @@ export function NewCommentsPageContent(props: Props) {
                     {comment.comment?.text &&
                       comment.comment.text.trim().length > 0 && (
                         <div className="rounded-lg border bg-background p-3">
-                          <p className="break-words text-sm leading-relaxed whitespace-pre-wrap">
+                          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
                             {comment.comment.text}
                           </p>
                         </div>
@@ -316,7 +309,7 @@ export function NewCommentsPageContent(props: Props) {
                     {(!comment.comment?.text ||
                       comment.comment.text.trim().length === 0) &&
                       !comment.sticker?.imageUrl && (
-                        <div className="italic text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs italic">
                           {t("(コメント内容なし)", "(No comment content)")}
                         </div>
                       )}
