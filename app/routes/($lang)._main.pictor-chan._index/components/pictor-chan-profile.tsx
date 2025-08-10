@@ -132,7 +132,7 @@ simple background, white background,ahoge, full body, gravure pose, looking at v
             </h3>
             <p className="text-sm leading-relaxed">
               {t(
-                "ぴくたーちゃんは、Aipictorsが開設された2022年11月21日に誕生した公式マスコットキャラクターです。オレンジ、ブルー、グリーンの美しいマルチカラーヘアが特徴的で、いつもメイド服を着ています。みんなの素敵な作品を見ることが大好きで、今日も楽しそうにAipictorsを巡回しています。",
+                "ぴくたーちゃんは、Aipictorsが開設された2022年11月21日に誕生した公式マスコットキャラクターです。オレンジ、ブルー、グリーンの美しいマルチカラーヘアが特徴的で、いつも学生服を着ています。みんなの素敵な作品を見ることが大好きで、今日も楽しそうにAipictorsを巡回しています。",
                 "Pictor-chan is the official mascot character who was born on November 21, 2022, when Aipictors was launched. She is characterized by her beautiful multicolored hair in orange, blue, and green, and always wears a maid outfit. She loves looking at everyone's wonderful works and happily browses Aipictors every day.",
               )}
             </p>
