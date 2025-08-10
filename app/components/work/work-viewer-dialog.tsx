@@ -12,7 +12,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { Link } from "@remix-run/react"
+// Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
 // ───────────────── Types ─────────────────
 interface Props {
@@ -57,9 +57,12 @@ export function WorkViewerDialog({
   const initialIndex = useMemo(() => {
     if (startWorkId) {
       const idx = works.findIndex((w) => w.id === startWorkId)
+      console.log('🔍 startWorkId:', startWorkId, 'found at index:', idx, 'work:', works[idx]?.id)
       if (idx !== -1) return idx
     }
-    return startIndex ?? 0
+    const fallbackIndex = startIndex ?? 0
+    console.log('🔍 fallback index:', fallbackIndex, 'work:', works[fallbackIndex]?.id)
+    return fallbackIndex
   }, [startWorkId, startIndex, works])
 
   const [index, setIndex] = useState(initialIndex)
@@ -73,6 +76,21 @@ export function WorkViewerDialog({
   const [isDebouncing, setIsDebouncing] = useState(false)
   const isFirstScrollDone = useRef(false)
 
+  // 初期化時に正しい作品IDとインデックスを確実に設定
+  useEffect(() => {
+    const targetWork = works[initialIndex]
+    console.log('🎯 Initializing with index:', initialIndex, 'work ID:', targetWork?.id)
+    
+    if (targetWork) {
+      // インデックスも確実に初期値に設定
+      setIndex(initialIndex)
+      // 対応する作品IDも設定
+      if (activeWorkId !== targetWork.id) {
+        setActiveWorkId(targetWork.id)
+      }
+    }
+  }, [initialIndex, works]) // activeWorkIdを依存配列から除去して無限ループを防止
+
   const thumbListRef = useRef<HTMLDivElement | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
@@ -81,23 +99,6 @@ export function WorkViewerDialog({
   const work = works[index]
   const isWorkCached = workDataCache.has(work.id)
   const shouldFetchWork = activeWorkId === work.id && !isWorkCached
-
-  // ────────── デバウンス処理 ──────────
-  const debouncedSetActiveWork = useCallback((workId: string) => {
-    setIsDebouncing(true)
-
-    // 既存のタイマーをクリア
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-    }
-
-    // 新しいタイマーを設定
-    debounceTimerRef.current = setTimeout(() => {
-      setActiveWorkId(workId)
-      setIsDebouncing(false)
-      debounceTimerRef.current = null
-    }, 500) // 500ms のデバウンス
-  }, [])
 
   useEffect(() => {
     setTimeout(() => {
@@ -133,11 +134,26 @@ export function WorkViewerDialog({
           debounceTimerRef.current = null
         }
       } else {
-        // キャッシュされていない場合はデバウンス
-        debouncedSetActiveWork(currentWork.id)
+        // 初回表示または未キャッシュの場合
+        const isInitial = activeWorkId === null
+        setIsDebouncing(true)
+        
+        // 既存のタイマーをクリア
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current)
+        }
+
+        // デバウンス時間をさらに最適化（初回は即座、以降は短く）
+        const debounceTime = isInitial ? 0 : 200
+        
+        debounceTimerRef.current = setTimeout(() => {
+          setActiveWorkId(currentWork.id)
+          setIsDebouncing(false)
+          debounceTimerRef.current = null
+        }, debounceTime)
       }
     }
-  }, [index, works, workDataCache, debouncedSetActiveWork])
+  }, [index, works, workDataCache])
 
   // ────────── GraphQL Query with conditional execution ──────────
   const { data, loading } = useQuery(workDialogQuery, {
@@ -293,13 +309,47 @@ export function WorkViewerDialog({
         {/* 詳細パネル (Desktop) */}
         <aside className="hidden w-full flex-col bg-background/80 backdrop-blur-sm md:flex">
           <DialogHeader className="border-b p-4 pb-2">
-            <DialogTitle className="truncate font-bold text-lg">
-              <Link to={`/posts/${currentWork.id}`}>{currentWork.title}</Link>
+            <DialogTitle className="text-lg font-bold truncate">
+              <span 
+                onClick={() => {
+                  // Portal内でReact Routerが使用できないため、直接ナビゲーション
+                  if (typeof window !== 'undefined') {
+                    window.location.href = `/posts/${currentWork.id}`
+                  }
+                }}
+                className="cursor-pointer text-left transition-colors hover:text-primary"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    if (typeof window !== 'undefined') {
+                      window.location.href = `/posts/${currentWork.id}`
+                    }
+                  }
+                }}
+              >
+                {currentWork.title}
+              </span>
             </DialogTitle>
             <div className="mt-2">
-              <Link
-                to={`/users/${currentWork.user?.login}`}
-                className="flex items-center space-x-2"
+              <span
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.location.href = `/users/${currentWork.user?.login}`
+                  }
+                }}
+                className="flex cursor-pointer items-center space-x-2 transition-colors hover:text-primary"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    if (typeof window !== 'undefined') {
+                      window.location.href = `/users/${currentWork.user?.login}`
+                    }
+                  }
+                }}
               >
                 <Avatar className="size-6">
                   <AvatarImage
@@ -307,10 +357,10 @@ export function WorkViewerDialog({
                   />
                   <AvatarFallback />
                 </Avatar>
-                <span className="font-medium text-sm">
+                <span className="text-sm font-medium">
                   {currentWork.user?.name}
                 </span>
-              </Link>
+              </span>
             </div>
           </DialogHeader>
 
@@ -363,14 +413,15 @@ export function WorkViewerDialog({
         {/* サムネイル列 */}
         <aside
           ref={thumbListRef}
-          className="ml-auto hidden h-full w-24 flex-col overflow-y-auto overscroll-y-contain bg-background/60 backdrop-blur-sm md:flex"
+          className="ml-auto hidden h-full w-24 flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm md:flex"
+          style={{ scrollbarWidth: 'thin' }}
         >
           {works.map((w, i) => (
             <button
               key={w.id}
               type="button"
-              className={`relative m-1 rounded-md ring-offset-2 focus:outline-none focus:ring-2 ${
-                i === index ? "ring ring-primary" : ""
+              className={`relative m-1 rounded-md transition-all duration-200 ring-offset-2 focus:outline-none focus:ring-2 ${
+                i === index ? "bg-primary/10 ring ring-primary" : "hover:bg-background/20"
               }`}
               onClick={() => setIndex(i)}
             >
@@ -379,14 +430,15 @@ export function WorkViewerDialog({
                 alt={w.title}
                 className="h-20 w-full rounded-md object-cover"
                 draggable={false}
+                loading="lazy"
               />
               {/* キャッシュ済みインジケーター */}
               {loadedWorkIds.has(w.id) && (
-                <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-500" />
+                <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-400 shadow-sm" />
               )}
               {/* デバウンス中インジケーター */}
               {isDebouncing && i === index && (
-                <div className="absolute top-1 left-1 h-2 w-2 animate-pulse rounded-full bg-yellow-500" />
+                <div className="absolute top-1 left-1 h-2 w-2 animate-pulse rounded-full bg-yellow-400 shadow-sm" />
               )}
             </button>
           ))}

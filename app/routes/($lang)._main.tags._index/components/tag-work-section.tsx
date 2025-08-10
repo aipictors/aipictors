@@ -578,7 +578,7 @@ export function TagWorkSection(props: Props) {
     console.log("Open work with id:", idx)
     if (isDialogMode) {
       // ダイアログモードの場合、作品IDから配列内のインデックスを探す
-      const index = displayedWorks.findIndex(work => work.id === idx)
+      const index = displayedWorks.findIndex((work) => work.id === idx)
       setDialogIndex(index)
     } else {
       // 直接リンク遷移の場合、作品IDを使用
@@ -836,7 +836,7 @@ export function TagWorkSection(props: Props) {
       {dialogIndex !== null && (
         <WorkViewerDialog
           works={displayedWorks}
-          startWorkId={dialogIndex.toString()}
+          startIndex={dialogIndex}
           onClose={() => setDialogIndex(null)}
           loadMore={!isPagination ? loadMore : undefined}
           hasNextPage={hasNextPage}
