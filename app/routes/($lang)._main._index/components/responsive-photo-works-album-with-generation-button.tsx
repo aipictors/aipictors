@@ -12,6 +12,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { OptimizedImage } from "~/components/optimized-image"
 import { ReferenceGenerationButton } from "~/routes/($lang)._main._index/components/reference-generation-button"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { WorkMediaBadge } from "~/components/work-media-badge"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -46,6 +47,10 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                   size="lg"
                   imageWidth={workItem.smallThumbnailImageWidth}
                   imageHeight={workItem.smallThumbnailImageHeight}
+                  isPromptPublic={workItem.promptAccessType === "PUBLIC"}
+                  hasVideoUrl={Boolean(workItem.url)}
+                  isGeneration={workItem.isGeneration}
+                  hasReferenceButton={true}
                 />
                 {workItem.subWorksCount > 0 && (
                   <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
@@ -201,6 +206,19 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                       </div>
                     </div>
                   )}
+                  {/* プロンプト公開・動画バッジ */}
+                  <div className="absolute bottom-32 left-1 z-10">
+                    <WorkMediaBadge
+                      isPromptPublic={
+                        photo.context.promptAccessType === "PUBLIC" ||
+                        photo.context.isGeneration
+                      }
+                      hasVideoUrl={Boolean(photo.context.url)}
+                      isGeneration={photo.context.isGeneration}
+                      hasReferenceButton={true}
+                      size="md"
+                    />
+                  </div>
                   {props.isShowProfile && (
                     <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
                       {props.onSelect ? (
@@ -297,6 +315,12 @@ function HomeCroppedWorksWithGenerationButton(props: {
               imageWidth={work.smallThumbnailImageWidth}
               imageHeight={work.smallThumbnailImageHeight}
               subWorksCount={work.subWorksCount}
+              isPromptPublic={
+                work.promptAccessType === "PUBLIC" || work.isGeneration
+              }
+              hasVideoUrl={Boolean(work.url)}
+              isGeneration={work.isGeneration}
+              hasReferenceButton={true}
             />
             {work.subWorksCount > 0 && (
               <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">

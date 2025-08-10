@@ -12,7 +12,8 @@ import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
 import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { OptimizedImage } from "~/components/optimized-image"
+import { WorkMediaBadge } from "~/components/work-media-badge"
+import { HoverVideoImage } from "~/components/hover-video-image"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -46,6 +47,11 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   size="lg"
                   imageWidth={workItem.smallThumbnailImageWidth}
                   imageHeight={workItem.smallThumbnailImageHeight}
+                  isPromptPublic={
+                    workItem.promptAccessType === "PUBLIC" ||
+                    workItem.isGeneration
+                  }
+                  hasVideoUrl={Boolean(workItem.url)}
                 />
                 {workItem.subWorksCount > 0 && (
                   <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
@@ -128,10 +134,11 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                       onClick={() => props.onSelect?.(photo.id)}
                       aria-label={`Open ${photo.context.title}`}
                     >
-                      <OptimizedImage
-                        src={imageProps.src}
+                      <HoverVideoImage
+                        workId={photo.context.id}
+                        imageUrl={imageProps.src}
+                        videoUrl={photo.context.url}
                         alt={photo.context.title}
-                        className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
                         width={
                           typeof imageProps.width === "string"
                             ? Number.parseInt(imageProps.width)
@@ -143,30 +150,29 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                             : imageProps.height
                         }
                         loading={imageProps.loading as "lazy" | "eager"}
+                        className="h-full w-full"
                       />
                     </button>
                   ) : (
-                    <Link
-                      className="block h-full w-full overflow-hidden rounded"
+                    <HoverVideoImage
+                      workId={photo.context.id}
+                      imageUrl={imageProps.src}
+                      videoUrl={photo.context.url}
+                      alt={photo.context.title}
                       to={`/posts/${photo.context.id}`}
-                    >
-                      <OptimizedImage
-                        src={imageProps.src}
-                        alt={photo.context.title}
-                        className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
-                        width={
-                          typeof imageProps.width === "string"
-                            ? Number.parseInt(imageProps.width)
-                            : imageProps.width
-                        }
-                        height={
-                          typeof imageProps.height === "string"
-                            ? Number.parseInt(imageProps.height)
-                            : imageProps.height
-                        }
-                        loading={imageProps.loading as "lazy" | "eager"}
-                      />
-                    </Link>
+                      width={
+                        typeof imageProps.width === "string"
+                          ? Number.parseInt(imageProps.width)
+                          : imageProps.width
+                      }
+                      height={
+                        typeof imageProps.height === "string"
+                          ? Number.parseInt(imageProps.height)
+                          : imageProps.height
+                      }
+                      loading={imageProps.loading as "lazy" | "eager"}
+                      className="h-full w-full overflow-hidden rounded"
+                    />
                   )}
                   <div
                     className={cn(
@@ -205,6 +211,30 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                       </div>
                     </div>
                   )}
+                  {/* プロンプト公開・動画バッジ */}
+                  <div
+                    className={cn(
+                      "absolute z-10",
+                      props.isShowProfile ? "bottom-16" : "bottom-2",
+                      // コメント数がある場合は右下、ない場合は左下
+                      // ただしプロフィール表示時のbottom-16では、いいねボタン(right-0)との重複を避けるため左に固定
+                      props.isShowProfile
+                        ? "left-1"
+                        : photo.context.commentsCount > 0
+                          ? "right-1"
+                          : "left-1",
+                    )}
+                  >
+                    <WorkMediaBadge
+                      isPromptPublic={
+                        photo.context.promptAccessType === "PUBLIC"
+                      }
+                      hasVideoUrl={Boolean(photo.context.url)}
+                      isGeneration={photo.context.isGeneration}
+                      hasReferenceButton={false}
+                      size="md"
+                    />
+                  </div>
                   {props.isShowProfile && (
                     <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
                       {props.onSelect ? (
@@ -266,7 +296,7 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
         </SSR>
       </div>
       <div className="block md:hidden">
-        <HomeCroppedWorks works={props.works} isShowProfile={true} />
+        <HomeCroppedWorks works={props.works} isShowProfile={true} hasReferenceButton={false} />
       </div>
     </>
   )

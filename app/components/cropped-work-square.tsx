@@ -3,6 +3,7 @@ import { Images, MessageCircleIcon } from "lucide-react"
 import { useState } from "react"
 import { cn } from "~/lib/utils"
 import { OptimizedImage } from "~/components/optimized-image"
+import { WorkMediaBadge } from "~/components/work-media-badge"
 
 type Props = {
   workId: string
@@ -14,6 +15,10 @@ type Props = {
   ranking?: number
   subWorksCount?: number
   commentsCount?: number
+  isPromptPublic?: boolean
+  hasVideoUrl?: boolean
+  isGeneration?: boolean
+  hasReferenceButton?: boolean
 }
 
 /**
@@ -126,6 +131,24 @@ export function CroppedWorkSquare(props: Props) {
             </div>
           </div>
         )}
+        {/* プロンプト公開・動画バッジ */}
+        <div
+          className={cn(
+            "absolute z-10",
+            props.commentsCount !== undefined && props.commentsCount !== 0
+              ? "right-1"
+              : "left-1",
+            props.hasReferenceButton ? "bottom-12" : "bottom-2",
+          )}
+        >
+          <WorkMediaBadge
+            isPromptPublic={props.isPromptPublic}
+            hasVideoUrl={props.hasVideoUrl}
+            isGeneration={props.isGeneration}
+            hasReferenceButton={props.hasReferenceButton}
+            size={props.size === "xs" || props.size === "sm" ? "sm" : "md"}
+          />
+        </div>
       </Link>
     </div>
   )

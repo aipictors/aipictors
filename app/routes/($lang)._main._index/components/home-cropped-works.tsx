@@ -6,11 +6,14 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import type { FragmentOf } from "gql.tada"
 import { Images, MessageCircle } from "lucide-react"
+import { WorkMediaBadge } from "~/components/work-media-badge"
+import { HoverVideoImage } from "~/components/hover-video-image"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   isRanking?: boolean
   isShowProfile?: boolean
+  hasReferenceButton?: boolean
 }
 
 /**
@@ -42,20 +45,24 @@ export function HomeCroppedWorks(props: Props) {
                   className="w-full overflow-hidden"
                   style={{ paddingBottom: "100%" }}
                 >
-                  <img
-                    src={work.largeThumbnailImageURL}
+                  <HoverVideoImage
+                    workId={work.id}
+                    imageUrl={work.largeThumbnailImageURL}
+                    videoUrl={work.url}
                     alt={work.title}
-                    loading="lazy"
-                    className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 md:block"
+                    to={`/posts/${work.id}`}
+                    className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover md:block"
                   />
-                  <img
-                    src={work.smallThumbnailImageURL}
+                  <HoverVideoImage
+                    workId={work.id}
+                    imageUrl={work.smallThumbnailImageURL}
+                    videoUrl={work.url}
                     alt={t(
                       work.title,
                       work.enTitle.length > 0 ? work.enTitle : work.title,
                     )}
-                    loading="lazy"
-                    className="absolute top-0 left-0 block h-full w-full rounded-md object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 md:hidden"
+                    to={`/posts/${work.id}`}
+                    className="absolute top-0 left-0 block h-full w-full rounded-md object-cover md:hidden"
                   />
                   <div className="absolute right-2 bottom-2">
                     <LikeButton
@@ -102,14 +109,16 @@ export function HomeCroppedWorks(props: Props) {
                 className="relative overflow-hidden"
               >
                 <div
-                  className="relative w-full overflow-hidden"
+                  className="w-full overflow-hidden"
                   style={{ paddingBottom: "100%" }}
                 >
-                  <img
-                    src={work.smallThumbnailImageURL}
+                  <HoverVideoImage
+                    workId={work.id}
+                    imageUrl={work.smallThumbnailImageURL}
+                    videoUrl={work.url}
                     alt={work.title}
-                    loading="lazy"
-                    className="absolute top-0 left-0 block h-full w-full object-cover md:hidden "
+                    to={`/posts/${work.id}`}
+                    className="absolute top-0 left-0 block h-full w-full rounded-md object-cover md:hidden"
                   />
                   <div className="absolute right-2 bottom-2">
                     <LikeButton
@@ -139,6 +148,16 @@ export function HomeCroppedWorks(props: Props) {
                       </div>
                     </div>
                   )}
+                  {/* プロンプト公開・動画バッジ */}
+                  <div className={`absolute left-1 z-10 ${props.hasReferenceButton ? 'bottom-8' : 'bottom-2'}`}>
+                    <WorkMediaBadge
+                      isPromptPublic={work.promptAccessType === "PUBLIC"}
+                      hasVideoUrl={Boolean(work.url)}
+                      isGeneration={work.isGeneration}
+                      hasReferenceButton={props.hasReferenceButton}
+                      size="sm"
+                    />
+                  </div>
                 </div>
               </Link>
               {work.user && props.isShowProfile && (
