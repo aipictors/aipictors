@@ -22,6 +22,7 @@ type Props = {
   workType: IntrospectionEnum<"WorkType"> | null
   rating: IntrospectionEnum<"Rating"> | null
   sumWorksCount: number
+  isHideSortableSetting?: boolean
   setWorkType: (workType: IntrospectionEnum<"WorkType"> | null) => void
   setRating: (rating: IntrospectionEnum<"Rating"> | null) => void
   setSort: (sort: SortType) => void
@@ -71,23 +72,25 @@ export function EventWorkList(props: Props) {
 
   return (
     <>
-      <div className="mr-auto w-32">
-        <EventWorksListSortableSetting
-          nowSort={props.sort}
-          nowOrderBy={props.orderBy}
-          allOrderBy={allSortType}
-          setSort={props.setSort}
-          onClickTitleSortButton={props.onClickTitleSortButton}
-          onClickLikeSortButton={props.onClickLikeSortButton}
-          onClickBookmarkSortButton={props.onClickBookmarkSortButton}
-          onClickCommentSortButton={props.onClickCommentSortButton}
-          onClickViewSortButton={props.onClickViewSortButton}
-          onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
-          onClickDateSortButton={props.onClickDateSortButton}
-          onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
-          onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
-        />
-      </div>
+      {!props.isHideSortableSetting && (
+        <div className="mr-auto w-32">
+          <EventWorksListSortableSetting
+            nowSort={props.sort}
+            nowOrderBy={props.orderBy}
+            allOrderBy={allSortType}
+            setSort={props.setSort}
+            onClickTitleSortButton={props.onClickTitleSortButton}
+            onClickLikeSortButton={props.onClickLikeSortButton}
+            onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+            onClickCommentSortButton={props.onClickCommentSortButton}
+            onClickViewSortButton={props.onClickViewSortButton}
+            onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+            onClickDateSortButton={props.onClickDateSortButton}
+            onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+            onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+          />
+        </div>
+      )}
       <ResponsivePhotoWorksAlbum works={works} isShowProfile={true} />
       <div className="h-8" />
       <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">

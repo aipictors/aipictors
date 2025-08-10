@@ -408,13 +408,30 @@ export default function EventHalloween2025() {
         {/* Works List */}
         {data.appEvent?.works && (
           <section>
-            <h2 className="mb-8 text-center font-bold text-2xl">投稿作品</h2>
+            <div className="mb-8 text-center">
+              <h2 className="mb-4 font-bold text-2xl">投稿作品</h2>
+              <div className="mx-auto mb-6 max-w-2xl rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-950/20">
+                <Link
+                  to={`/tags/${encodeURIComponent(eventInfo.tag)}`}
+                  className="inline-block"
+                >
+                  <Button
+                    variant="default"
+                    size="lg"
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    <BadgeIcon className="mr-2 h-4 w-4" />
+                    {eventInfo.tag} のタグページで全作品を見る
+                  </Button>
+                </Link>
+              </div>
+            </div>
             <EventWorkList
               works={data.appEvent.works}
               maxCount={data.appEvent.worksCount}
               page={data.page}
               slug="halloween-2025"
-              sort="ASC"
+              sort="DESC"
               orderBy="DATE_CREATED"
               workType={null}
               rating={null}
@@ -422,6 +439,7 @@ export default function EventHalloween2025() {
               setWorkType={() => {}}
               setRating={() => {}}
               setSort={() => {}}
+              isHideSortableSetting={true}
               onClickTitleSortButton={() => {}}
               onClickLikeSortButton={() => {}}
               onClickBookmarkSortButton={() => {}}
