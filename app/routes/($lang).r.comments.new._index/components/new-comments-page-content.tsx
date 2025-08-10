@@ -1,6 +1,6 @@
-import { useQuery } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useState } from "react"
+import { useState, useContext, useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Select,
@@ -15,7 +15,16 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
-import { MessageCircleIcon, Filter, Type, Sticker } from "lucide-react"
+import {
+  MessageCircleIcon,
+  Filter,
+  Type,
+  Sticker,
+  ThumbsUp,
+} from "lucide-react"
+import { AuthContext } from "~/contexts/auth-context"
+import { toast } from "sonner"
+import { cn } from "~/lib/utils"
 
 type Comment = {
   user: {
@@ -39,6 +48,8 @@ type Comment = {
   comment: {
     id: string
     text: string
+    likesCount: number
+    isLiked: boolean
   } | null
   createdAt: number
 }
@@ -49,6 +60,7 @@ type Props = {
 
 export function NewCommentsPageContent(props: Props) {
   const t = useTranslation()
+  const authUser = useContext(AuthContext)
 
   const [filter, setFilter] = useState<"all" | "text-only" | "sticker-only">(
     "all",
@@ -58,6 +70,10 @@ export function NewCommentsPageContent(props: Props) {
     props.initialComments || [],
   )
   const [isLoading, setIsLoading] = useState(false)
+
+  // いいね機能の状態管理
+  const [likedCommentIds, setLikedCommentIds] = useState<string[]>([])
+  const [canceledCommentIds, setCanceledCommentIds] = useState<string[]>([])
 
   // サーバー側でフィルタリング済みなので、クライアントサイドでの追加フィルタリングは不要
   const filteredComments = allComments
@@ -74,6 +90,119 @@ export function NewCommentsPageContent(props: Props) {
       },
     },
   })
+
+  // いいねの最終状態を判定する関数
+  const getFinalLikeState = (commentId: string, serverIsLiked: boolean) => {
+    const isLocallyLiked = likedCommentIds.includes(commentId)
+    const isLocallyCanceled = canceledCommentIds.includes(commentId)
+
+    // ローカル操作が優先される
+    if (isLocallyLiked) return true
+    if (isLocallyCanceled) return false
+
+    // ローカル操作がない場合はサーバー状態
+    return serverIsLiked
+  }
+
+  // いいね数の最終状態を計算する関数
+  const getFinalLikeCount = (
+    commentId: string,
+    serverCount: number,
+    serverIsLiked: boolean,
+  ) => {
+    const isLocallyLiked = likedCommentIds.includes(commentId)
+    const isLocallyCanceled = canceledCommentIds.includes(commentId)
+
+    let adjustment = 0
+
+    if (isLocallyLiked && !serverIsLiked) {
+      adjustment = 1 // サーバーではいいねしていないが、ローカルでいいねした
+    } else if (isLocallyCanceled && serverIsLiked) {
+      adjustment = -1 // サーバーではいいねしているが、ローカルでキャンセルした
+    }
+
+    return Math.max(0, serverCount + adjustment)
+  }
+
+  // GraphQL Mutations
+  const [createCommentLike] = useMutation(createCommentLikeMutation)
+  const [deleteCommentLike] = useMutation(deleteCommentLikeMutation)
+
+  // ログイン状態が変わった時にコメント一覧を再取得（いいね状態の正確な反映のため）
+  useEffect(() => {
+    const refetchCommentsForLoginState = async () => {
+      if (authUser.isLoggedIn && !authUser.isLoading) {
+        // ログイン完了時に現在のフィルター条件で全体を再取得
+        try {
+          const result = await refetch({
+            offset: 0,
+            where: {
+              isSensitive: true,
+              ratings: ["R18", "R18G"],
+              ...(filter === "text-only" && { isTextOnly: true }),
+              ...(filter === "sticker-only" && { isStickerOnly: true }),
+            },
+          })
+
+          if (result.data?.newComments) {
+            setAllComments(result.data.newComments as Comment[])
+            setOffset(24)
+            // ローカルのいいね状態をクリア
+            setLikedCommentIds([])
+            setCanceledCommentIds([])
+          }
+        } catch (error) {
+          console.error("Failed to refetch comments after login:", error)
+        }
+      }
+    }
+
+    // ログイン状態が確定した時のみ実行
+    if (!authUser.isLoading) {
+      refetchCommentsForLoginState()
+    }
+  }, [authUser.isLoggedIn, authUser.isLoading])
+
+  // いいねを作成
+  const onCreateCommentLike = async (commentId: string) => {
+    if (!authUser.isLoggedIn) {
+      toast(t("ログインが必要です", "Login required"))
+      return
+    }
+
+    try {
+      await createCommentLike({
+        variables: {
+          input: {
+            commentId: commentId,
+          },
+        },
+      })
+      setLikedCommentIds([...likedCommentIds, commentId])
+      setCanceledCommentIds(canceledCommentIds.filter((id) => id !== commentId))
+    } catch (error) {
+      console.error("Failed to like comment:", error)
+      toast(t("いいねに失敗しました", "Failed to like"))
+    }
+  }
+
+  // いいねを削除
+  const onDeleteCommentLike = async (commentId: string) => {
+    try {
+      await deleteCommentLike({
+        variables: {
+          input: {
+            commentId: commentId,
+          },
+        },
+      })
+      setLikedCommentIds(likedCommentIds.filter((id) => id !== commentId))
+      setCanceledCommentIds([...canceledCommentIds, commentId])
+    } catch (error) {
+      console.error("Failed to unlike comment:", error)
+      toast(t("いいねの取り消しに失敗しました", "Failed to unlike"))
+    }
+  }
 
   const loadMoreComments = async () => {
     setIsLoading(true)
@@ -316,6 +445,67 @@ export function NewCommentsPageContent(props: Props) {
                           {t("(コメント内容なし)", "(No comment content)")}
                         </div>
                       )}
+
+                    {/* いいねボタン */}
+                    {comment.comment?.id && (
+                      <div className="mt-2 flex items-center gap-2">
+                        <Button
+                          onClick={() => {
+                            const commentId = comment.comment?.id
+                            if (!commentId) return
+
+                            const serverIsLiked =
+                              comment.comment?.isLiked || false
+                            const finalIsLiked = getFinalLikeState(
+                              commentId,
+                              serverIsLiked,
+                            )
+
+                            if (finalIsLiked) {
+                              onDeleteCommentLike(commentId)
+                            } else {
+                              onCreateCommentLike(commentId)
+                            }
+                          }}
+                          variant="ghost"
+                          size="sm"
+                          className="flex items-center gap-1 p-1"
+                          disabled={!authUser.isLoggedIn}
+                        >
+                          <ThumbsUp
+                            className={cn("h-4 w-4", {
+                              "fill-primary text-primary": (() => {
+                                const commentId = comment.comment?.id
+                                if (!commentId) return false
+
+                                const serverIsLiked =
+                                  comment.comment?.isLiked || false
+                                return getFinalLikeState(
+                                  commentId,
+                                  serverIsLiked,
+                                )
+                              })(),
+                            })}
+                          />
+                          <span className="text-sm">
+                            {(() => {
+                              const commentId = comment.comment?.id
+                              if (!commentId) return 0
+
+                              const serverCount =
+                                comment.comment?.likesCount || 0
+                              const serverIsLiked =
+                                comment.comment?.isLiked || false
+                              return getFinalLikeCount(
+                                commentId,
+                                serverCount,
+                                serverIsLiked,
+                              )
+                            })()}
+                          </span>
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -371,8 +561,26 @@ const newCommentsQuery = graphql(
       comment {
         id
         text
+        likesCount
+        isLiked
       }
       createdAt
+    }
+  }`,
+)
+
+const createCommentLikeMutation = graphql(
+  `mutation CreateCommentLike($input: CreateCommentLikeInput!) {
+    createCommentLike(input: $input) {
+      id
+    }
+  }`,
+)
+
+const deleteCommentLikeMutation = graphql(
+  `mutation DeleteCommentLike($input: DeleteCommentLikeInput!) {
+    deleteCommentLike(input: $input) {
+      id
     }
   }`,
 )

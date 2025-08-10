@@ -4,7 +4,7 @@ import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import { createMeta } from "~/utils/create-meta"
-import { NewCommentsPageContent } from "~/routes/($lang).r.comments.new._index/components/new-comments-page-content"
+import { NewCommentsPageContent } from "./components/new-comments-page-content"
 
 export const meta: MetaFunction = () => {
   return createMeta(META)
@@ -70,6 +70,8 @@ const newCommentsPageQuery = graphql(
       comment {
         id
         text
+        likesCount
+        isLiked
       }
       createdAt
     }
