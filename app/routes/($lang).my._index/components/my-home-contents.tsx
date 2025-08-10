@@ -19,7 +19,8 @@ export function DashboardHomeContents() {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(viewerUserQuery, {
-    skip: appContext.isLoading || appContext.isNotLoggedIn,
+    skip:
+      appContext.isLoading || appContext.isNotLoggedIn || !appContext.userId,
   })
 
   const truncateTitle = (title: string, maxLength: number) => {
@@ -215,10 +216,8 @@ const viewerUserQuery = graphql(
       id
       user {
         id
-        awardsCount
         followersCount
         followCount
-        generatedCount
         receivedLikesCount
         receivedViewsCount
         createdLikesCount

@@ -39,7 +39,8 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
   const [tab, setTab] = useState<"NO_SELECTED" | "SELECTED">("NO_SELECTED")
 
   const worksResult = useSuspenseQuery(worksQuery, {
-    skip: appContext.isLoading,
+    skip:
+      appContext.isLoading || appContext.isNotLoggedIn || !appContext.userId,
     variables: {
       offset: page * 32,
       limit: 32,
@@ -53,7 +54,8 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
   })
 
   const worksCountResp = useSuspenseQuery(worksCountQuery, {
-    skip: appContext.isLoading,
+    skip:
+      appContext.isLoading || appContext.isNotLoggedIn || !appContext.userId,
     variables: {
       where: {
         userId: appContext.userId,
@@ -93,8 +95,8 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
   ) => {
     return worksToRender.map((work) => (
       <div key={work.id}>
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-        <div
+        <button
+          type="button"
           className="relative m-2 size-24 cursor-pointer"
           onClick={() => handleWorkClick(work)}
         >
@@ -111,7 +113,7 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
               <CheckIcon className="p-1 text-white dark:text-black" />
             </div>
           )}
-        </div>
+        </button>
       </div>
     ))
   }
@@ -130,8 +132,8 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
   return (
     <>
       {props.selectedWorks.length > 7 && (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-        <p
+        <button
+          type="button"
           onClick={() => setIsOpen(true)}
           className="m-2 cursor-pointer text-right text-sm opacity-80"
         >
@@ -139,7 +141,7 @@ export function SelectCreatedSensitiveWorksDialog(props: Props) {
             `すべて見る(${props.selectedWorks.length})`,
             `View All (${props.selectedWorks.length})`,
           )}
-        </p>
+        </button>
       )}
 
       <div className="flex flex-wrap items-center">

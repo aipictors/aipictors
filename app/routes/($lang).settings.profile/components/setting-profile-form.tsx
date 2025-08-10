@@ -26,7 +26,8 @@ export function SettingProfileForm() {
   const t = useTranslation()
 
   const { data: user, loading } = useQuery(userQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
       userId: authContext.userId?.toString() ?? "",
     },

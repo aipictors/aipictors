@@ -27,7 +27,8 @@ export function BookmarkListContainer(props: Props) {
     return null
   }
   const { data: userResp, refetch } = useQuery(userQuery, {
-    skip: authContext.isLoading,
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
       bookmarksOffset: 16 * props.page,
       bookmarksLimit: 16,

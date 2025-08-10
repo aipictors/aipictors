@@ -52,7 +52,10 @@ export function WorksListContainer(props: Props) {
   const { data: workResp, refetch: workRespRefetch } = useSuspenseQuery(
     worksQuery,
     {
-      skip: authContext.isLoading || authContext.isNotLoggedIn,
+      skip:
+        authContext.isLoading ||
+        authContext.isNotLoggedIn ||
+        !authContext.userId,
       variables: {
         offset: (props.perPage ?? 50) * props.page,
         limit: props.perPage ?? 50,
@@ -83,7 +86,10 @@ export function WorksListContainer(props: Props) {
 
   const { data: worksCountResp, refetch: worksCountRespRefetch } =
     useSuspenseQuery(worksCountQuery, {
-      skip: authContext.isLoading || authContext.isNotLoggedIn,
+      skip:
+        authContext.isLoading ||
+        authContext.isNotLoggedIn ||
+        !authContext.userId,
       variables: {
         where: {
           userId: authContext.userId,

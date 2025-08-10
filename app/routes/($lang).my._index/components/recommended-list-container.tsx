@@ -22,7 +22,8 @@ export function RecommendedListContainer() {
     return null
   }
   const { data: worksResp, refetch } = useSuspenseQuery(worksQuery, {
-    skip: authContext.isLoading,
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
       offset: 0,
       limit: 16,

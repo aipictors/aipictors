@@ -37,7 +37,8 @@ export function AlbumsListContainer(props: Props) {
     return null
   }
   const { data: albumsResp, refetch } = useSuspenseQuery(viewerAlbumsQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
       offset: 16 * props.page,
       limit: 16,

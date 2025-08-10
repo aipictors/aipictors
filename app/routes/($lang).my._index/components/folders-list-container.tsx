@@ -36,7 +36,8 @@ export function FoldersListContainer(props: Props) {
   }
 
   const { data: FoldersResp, refetch } = useSuspenseQuery(viewerFoldersQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
       offset: 16 * props.page,
       limit: 16,
