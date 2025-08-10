@@ -60,11 +60,11 @@ export default function NewImage() {
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
   const { data: viewerData, loading } = useQuery(ViewerQuery, {
-    skip: authContext.isNotLoggedIn,
+    skip: !authContext.isLoggedIn,
     variables: {
       offset: 0,
       limit: 128,
-      ownerUserId: authContext.userId,
+      ownerUserId: authContext.userId ?? "-1",
       generationLimit: 64,
       generationOffset: 0,
       generationWhere: {
@@ -529,15 +529,24 @@ export default function NewImage() {
     ),
   )
 
-  if (data === null) {
-    return null
+  // 認証状態が読み込み中でない場合は、ページを表示する
+  const showPage = authContext.isNotLoading
+
+  if (!showPage) {
+    return (
+      <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4 bg-white dark:bg-gray-900">
+        <p className="text-center text-md font-bold text-gray-800 dark:text-gray-200">
+          {t("認証状態を確認中です", "Checking authentication status...")}
+        </p>
+      </div>
+    )
   }
 
   return (
-    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
+    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4 bg-white dark:bg-gray-900">
       <div className="max-w-[1200px] space-y-4">
-        {loading && (
-          <p className="text-center font-bold text-md">
+        {loading && authContext.isLoggedIn && (
+          <p className="text-center text-md font-bold text-gray-800 dark:text-gray-200">
             {t(
               "読み込み中です、完了まで操作しないようにご注意ください",
               "Loading, please be patient",
@@ -546,7 +555,7 @@ export default function NewImage() {
         )}
 
         {authContext.isNotLoggedIn && (
-          <p className="text-center font-bold text-md">
+          <p className="text-center text-md font-bold text-gray-800 dark:text-gray-200">
             {t(
               "ログインすると投稿できるようになります",
               "Log in to post your work",

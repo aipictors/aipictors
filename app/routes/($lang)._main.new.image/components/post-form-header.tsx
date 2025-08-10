@@ -40,13 +40,12 @@ export function PostFormHeader(props: Props) {
   }
 
   return (
-    <div className="flex w-full items-center rounded-t bg-zinc-700">
+    <div className="flex w-full items-center rounded-t bg-zinc-700 dark:bg-gray-700">
       <Button
         variant="secondary"
         className={cn(
-          "flex w-full items-center space-x-4 rounded-t bg-zinc-700 text-center text-white transition duration-300 hover:bg-zinc-700",
-          props.type === "image" && "bg-zinc-500",
-          "rounded-t rounded-r-none rounded-b-none",
+          "flex w-full items-center space-x-4 rounded-t rounded-r-none rounded-b-none bg-zinc-700 text-center text-white transition duration-300 hover:bg-zinc-700 dark:bg-gray-700 dark:hover:bg-gray-600",
+          props.type === "image" && "bg-zinc-500 dark:bg-gray-600",
         )}
         disabled={props.type === "image"}
         onClick={handleImageNavigation}
@@ -57,9 +56,8 @@ export function PostFormHeader(props: Props) {
       <Button
         variant="secondary"
         className={cn(
-          "flex w-full items-center space-x-4 bg-zinc-700 text-center text-white transition duration-300 hover:bg-zinc-700",
-          props.type === "animation" && "bg-zinc-500",
-          "rounded-t rounded-r-none rounded-b-none rounded-l-none",
+          "flex w-full items-center space-x-4 rounded-t rounded-r-none rounded-b-none rounded-l-none bg-zinc-700 text-center text-white transition duration-300 hover:bg-zinc-700 dark:bg-gray-700 dark:hover:bg-gray-600",
+          props.type === "animation" && "bg-zinc-500 dark:bg-gray-600",
         )}
         disabled={props.type === "animation"}
         onClick={handleAnimationNavigation}
@@ -70,9 +68,8 @@ export function PostFormHeader(props: Props) {
       <Button
         variant="secondary"
         className={cn(
-          "flex w-full items-center space-x-4 bg-zinc-700 text-center text-white transition duration-300 hover:bg-zinc-700",
-          props.type === "text" && "bg-zinc-500",
-          "rounded-t rounded-b-none rounded-l-none",
+          "flex w-full items-center space-x-4 rounded-t rounded-b-none rounded-l-none bg-zinc-700 text-center text-white transition duration-300 hover:bg-zinc-700 dark:bg-gray-700 dark:hover:bg-gray-600",
+          props.type === "text" && "bg-zinc-500 dark:bg-gray-600",
         )}
         disabled={props.type === "text"}
         onClick={handleTextNavigation}
