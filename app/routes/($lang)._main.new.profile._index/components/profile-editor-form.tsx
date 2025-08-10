@@ -119,30 +119,110 @@ export function ProfileEditorForm() {
 
   return (
     <>
-      <div className="container m-auto space-y-4">
-        <Card>
-          <CardContent className="m-0 p-4 text-xl">
-            <p>{t("Aipictorsへようこそ！", "Welcome to Aipictors!")}</p>
-            <p>
+      <div className="container mx-auto max-w-4xl space-y-8 p-6">
+        {/* ウェルカムセクション */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 border border-gray-100">
+          <div className="text-center space-y-4">
+            <h1 className="text-3xl font-bold text-gray-800">
+              {t("Aipictorsへようこそ！", "Welcome to Aipictors!")}
+            </h1>
+            <p className="text-lg text-gray-600">
               {t(
-                "Aipictorsで使用するプロフィールを設定しましょう！",
-                "Let's set up your profile for Aipictors!",
+                "日本最大級のAIイラスト・小説投稿サイトです",
+                "Japan's largest AI illustration and novel posting site",
               )}
             </p>
-            <p>
+            <div className="grid md:grid-cols-3 gap-4 mt-6">
+              <div className="bg-white rounded-lg p-4 border border-gray-100">
+                <div className="text-blue-500 text-2xl mb-2">🎨</div>
+                <h3 className="font-semibold text-gray-800">
+                  {t("作品投稿", "Post Artwork")}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {t(
+                    "AIイラストや小説を投稿して、多くの人に見てもらおう",
+                    "Share your AI artwork and novels with many people",
+                  )}
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4 border border-gray-100">
+                <div className="text-green-500 text-2xl mb-2">👥</div>
+                <h3 className="font-semibold text-gray-800">
+                  {t("コミュニティ", "Community")}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {t(
+                    "他のクリエイターとつながり、お互いの作品を楽しもう",
+                    "Connect with other creators and enjoy each other's work",
+                  )}
+                </p>
+              </div>
+              <div className="bg-white rounded-lg p-4 border border-gray-100">
+                <div className="text-purple-500 text-2xl mb-2">🏆</div>
+                <h3 className="font-semibold text-gray-800">
+                  {t("コンテスト", "Contests")}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {t(
+                    "定期的に開催されるコンテストに参加して腕試し",
+                    "Participate in regular contests to test your skills",
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* プロフィール設定説明 */}
+        <div className="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            {t("プロフィール設定について", "About Profile Setup")}
+          </h2>
+          <div className="space-y-3 text-gray-700">
+            <div className="flex items-start gap-3">
+              <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                1
+              </span>
+              <p>
+                {t(
+                  "ニックネームやプロフィール画像を設定して、あなたらしさを表現しましょう",
+                  "Set your nickname and profile image to express yourself",
+                )}
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                2
+              </span>
+              <p>
+                {t(
+                  "プロフィール文章で自己紹介や興味のあることを書いてみましょう",
+                  "Write a self-introduction and your interests in your profile",
+                )}
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                3
+              </span>
+              <p>
+                {t(
+                  "SNSアカウントを連携して、より多くの人とつながりましょう",
+                  "Link your SNS accounts to connect with more people",
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-sm text-blue-800">
+              💡{" "}
               {t(
-                "プロフィールを設定することで様々な機能をご利用いただけます！",
-                "By setting up your profile, you can use various features!",
+                "すべての項目は後から設定画面で変更できるので、まずは気軽に設定してみてください",
+                "All items can be changed later in the settings, so feel free to start with basic setup",
               )}
             </p>
-            <p>
-              {t(
-                "設定から内容はいつでも変更できます",
-                "You can change these settings anytime.",
-              )}
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
         <div className="justify-between">
           <div className="relative">
             {headerImageSrc ? (
