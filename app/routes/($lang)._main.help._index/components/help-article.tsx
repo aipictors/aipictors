@@ -486,7 +486,9 @@ export function HelpArticle() {
                       <li>• {t("AIツール情報", "AI Tool Information")}</li>
                       <li>• {t("プロンプト公開設定", "Prompt Visibility")}</li>
                       <li>• {t("コメント受付設定", "Comment Settings")}</li>
-                      <li>• {t("ダウンロード許可", "Download Permission")}</li>
+                      <li>
+                        • {t("作品公開範囲設定など", "Download Permission")}
+                      </li>
                     </ul>
                   </div>
                 </div>
