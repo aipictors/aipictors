@@ -4,7 +4,7 @@ import SSR from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
-import { useRef, useCallback } from "react"
+import { useRef, useCallback, useEffect, useState } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -21,8 +21,22 @@ type Props = {
  */
 export function ResponsivePhotoVideoWorksAlbum(props: Props) {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+  const [isMobile, setIsMobile] = useState(false)
 
   const isAutoPlay = props.isAutoPlay ?? true
+
+  // モバイルデバイス判定
+  useEffect(() => {
+    const checkMobile = () => {
+      if (typeof window === "undefined") return false
+      return (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        ) || window.innerWidth < 768
+      )
+    }
+    setIsMobile(checkMobile())
+  }, [])
 
   const handleMouseEnter = useCallback((index: number) => {
     if (isAutoPlay) {
@@ -60,12 +74,14 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
           >
             <video
               src={props.works[0].url ?? ""}
-              // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+              // biome-ignore lint/suspicious/noAssignInExpressions: ref assignment
               ref={(el) => (videoRefs.current[Number(props.works[0].id)] = el)}
-              className="absolute top-0 left-0 hidden max-h-72 w-full overflow-hidden rounded object-contain md:block"
-              style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
+              className="absolute top-0 left-0 max-h-72 w-full overflow-hidden rounded object-contain"
+              style={
+                isAutoPlay || isMobile ? { zIndex: "10" } : { zIndex: "-1" }
+              }
               muted
-              autoPlay={isAutoPlay}
+              autoPlay={isAutoPlay || isMobile}
               loop
               playsInline
             >
@@ -162,8 +178,8 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
               <div
                 style={props.style}
                 className={props.className}
-                aria-label={props["aria-label"]}
                 role={props.role}
+                title={props["aria-label"]}
               >
                 {props.children}
               </div>
@@ -191,12 +207,16 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                     />
                     <video
                       src={context.photo.url ?? ""}
-                      // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+                      // biome-ignore lint/suspicious/noAssignInExpressions: ref assignment
                       ref={(el) => (videoRefs.current[context.index] = el)}
-                      className="absolute top-0 left-0 hidden w-full overflow-hidden rounded object-contain md:block"
-                      style={isAutoPlay ? { zIndex: "10" } : { zIndex: "-1" }}
+                      className="absolute top-0 left-0 w-full overflow-hidden rounded object-contain"
+                      style={
+                        isAutoPlay || isMobile
+                          ? { zIndex: "10" }
+                          : { zIndex: "-1" }
+                      }
                       muted
-                      autoPlay={isAutoPlay}
+                      autoPlay={isAutoPlay || isMobile}
                       loop
                     >
                       <track
