@@ -7,7 +7,7 @@ export default function Route() {
       <div className="flex min-h-screen justify-center py-8">
         <div>
           <p className="text-center">{"お問い合わせはこちらまで"}</p>
-          <p className="text-center font-bold">hello@aipictors.com</p>
+          <p className="text-center font-bold">aipictors@gmail.com</p>
         </div>
       </div>
       <AppFooter />

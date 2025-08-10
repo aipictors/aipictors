@@ -92,10 +92,10 @@ export default function SpecifiedCommercialTransactionActPage() {
             "Specified Commercial Transaction Act",
           )}
         </h1>
-        <p className="text-muted-foreground">
+        <p className="text-lg text-muted-foreground">
           {t(
-            "法的に必要な取引情報と会社概要をご確認いただけます",
-            "You can check legally required transaction information and company overview",
+            "特定商取引に関する法律に基づく、販売者の情報を記載しています",
+            "Information about the seller based on the Specified Commercial Transaction Act",
           )}
         </p>
       </div>
@@ -119,6 +119,9 @@ export default function SpecifiedCommercialTransactionActPage() {
         <CardContent>
           <div className="overflow-x-auto">
             <Table>
+              <TableCaption>
+                {t("会社情報", "Company Information")}
+              </TableCaption>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[96px]">
@@ -129,8 +132,8 @@ export default function SpecifiedCommercialTransactionActPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.company.map((item) => (
-                  <TableRow key={`company-${item.title}`}>
+                {data.company.map((item, index) => (
+                  <TableRow key={index}>
                     <TableCell className="font-medium">{item.title}</TableCell>
                     <TableCell>{item.content}</TableCell>
                     <TableCell className="text-muted-foreground">

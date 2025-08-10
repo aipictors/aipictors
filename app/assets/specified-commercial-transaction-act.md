@@ -8,7 +8,7 @@
 - 大阪府大阪市北区梅田１丁目２番２号大阪駅前第２ビル１２－１２
 
 連絡先
-- hello@aipictors.com
+- aipictors@gmail.com
 
 販売価格
 - 税込み金額で記載

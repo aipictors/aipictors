@@ -40,15 +40,15 @@ export function SenderMessage(props: Props) {
       <div className="flex max-w-sm flex-col gap-y-2">
         <Card
           className={
-            "rounded-tl-xl rounded-tr-sm rounded-br-xl rounded-bl-xl px-6 py-2"
+            "rounded-tl-xl rounded-tr-sm rounded-br-xl rounded-bl-xl border-blue-500 bg-blue-500 px-4 py-3 text-white"
           }
         >
-          <p className="overflow-hidden whitespace-pre-wrap break-words">
+          <p className="overflow-hidden whitespace-pre-wrap break-words text-sm leading-relaxed">
             {parseTextWithLinks(props.message.text ?? "")}
           </p>
         </Card>
         <div className="flex justify-end space-x-2">
-          <span className="text-xs">
+          <span className="text-muted-foreground text-xs">
             {props.message.isRead ? t("既読", "Read") : ""}
           </span>
           <p className="text-xs">

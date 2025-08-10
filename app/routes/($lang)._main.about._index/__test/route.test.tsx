@@ -30,7 +30,7 @@ describe("About component tests", () => {
     setup()
     expect(
       screen.getByText(
-        "Aipictors株式会社が運営しております。お問い合わせは hello@aipictors.com からお願い致します。",
+        "Aipictors株式会社が運営しております。お問い合わせは aipictors@gmail.com からお願い致します。",
       ),
     ).toBeInTheDocument()
   })

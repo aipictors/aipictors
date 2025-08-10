@@ -15,6 +15,7 @@ import {
   TagIcon,
   RefreshCcwIcon,
   SearchIcon,
+  HelpCircleIcon,
 } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
@@ -166,6 +167,14 @@ export function HomeMenuRouteList({
         {t("更新情報", "Update Information")}
       </HomeMenuNavigationButton>
 
+      <HomeMenuNavigationButton
+        href={createLink("/help")}
+        icon={HelpCircleIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("使い方ガイド", "User Guide")}
+      </HomeMenuNavigationButton>
+
       {/* Separator ------------------------------------------------ */}
       <div className="hidden px-3 py-2 lg:block">
         <Separator />
@@ -236,9 +245,23 @@ export function HomeMenuRouteList({
               <span className="opacity-50">•</span>
               <Link
                 className="opacity-80 transition-opacity hover:opacity-100"
+                to="/help"
+              >
+                {t("使い方ガイド", "User Guide")}
+              </Link>
+              <span className="opacity-50">•</span>
+              <Link
+                className="opacity-80 transition-opacity hover:opacity-100"
                 to="/terms"
               >
                 {t("利用規約", "Terms")}
+              </Link>
+              <span className="opacity-50">•</span>
+              <Link
+                className="opacity-80 transition-opacity hover:opacity-100"
+                to="/privacy"
+              >
+                {t("プライバシーポリシー", "Privacy Policy")}
               </Link>
             </div>
 

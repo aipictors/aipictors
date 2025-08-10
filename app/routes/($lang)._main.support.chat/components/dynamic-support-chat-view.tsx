@@ -38,7 +38,7 @@ export function SupportChatView() {
   const onSubmit = async (message: string) => {
     try {
       // ユーザーメッセージを送信
-      const messageResult = await createMessage({
+      const _messageResult = await createMessage({
         variables: { input: { text: message, recipientId: "1" } },
       })
 

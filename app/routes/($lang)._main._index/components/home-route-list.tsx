@@ -17,6 +17,7 @@ import {
   ChevronLeftIcon,
   TagIcon,
   SearchIcon,
+  HelpCircleIcon,
 } from "lucide-react"
 import { useContext } from "react"
 import { Button } from "~/components/ui/button"
@@ -88,7 +89,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
       className={`fixed top-0 hidden h-screen flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 sm:z-30 md:z-40 md:flex lg:flex ${sidebarWidth()}`}
     >
       {/* Logo with Toggle Button */}
-      <div className="mb-4 flex items-center justify-start">
+      <div className="sticky top-[-16px] z-10 mb-4 flex items-center justify-start bg-background">
         {/* 三本線ボタン（ロゴの左に表示） - PC版で常に表示 */}
         <Button
           variant="ghost"
@@ -215,6 +216,14 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         {t("更新情報", "Update Information")}
       </SidebarNavigationButton>
 
+      <SidebarNavigationButton
+        href={createLink("/help")}
+        icon={HelpCircleIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("使い方ガイド", "User Guide")}
+      </SidebarNavigationButton>
+
       {/* Separator */}
       {sidebarState === "expanded" && (
         <div className="px-3 py-1">
@@ -285,8 +294,14 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
             <Link className="text-xs opacity-80" to="/about">
               {t("概要", "About")}
             </Link>
+            <Link className="text-xs opacity-80" to="/help">
+              {t("使い方ガイド", "User Guide")}
+            </Link>
             <Link className="text-xs opacity-80" to="/terms">
               {t("利用規約", "Terms")}
+            </Link>
+            <Link className="text-xs opacity-80" to="/privacy">
+              {t("プライバシーポリシー", "Privacy Policy")}
             </Link>
             <p className="text-xs opacity-80">©2025 Aipictors Co.,Ltd.</p>
           </div>

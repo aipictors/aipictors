@@ -52,8 +52,8 @@ export default function About() {
         </h2>
         <p>
           {t(
-            "Aipictors株式会社が運営しております。お問い合わせは hello@aipictors.com からお願い致します。",
-            "Operated by Aipictors Inc. For inquiries, please contact hello@aipictors.com.",
+            "Aipictors株式会社が運営しております。お問い合わせは aipictors@gmail.com からお願い致します。",
+            "Operated by Aipictors Inc. For inquiries, please contact aipictors@gmail.com.",
           )}
         </p>
         <h2 className="py-2 font-bold text-md">
@@ -86,6 +86,17 @@ export default function About() {
         <p>
           {t("機能の使い方は", "For how to use the features, please refer to")}
           <Link to="/guideline">{t("こちら", "here")}</Link>
+          {t("をご参照ください", ".")}
+        </p>
+        <h2 className="py-2 font-bold text-md">
+          {t("使い方ガイド", "User Guide")}
+        </h2>
+        <p>
+          {t(
+            "Aipictorsの使い方について詳しく知りたい方は",
+            "For detailed information on how to use Aipictors, please refer to",
+          )}
+          <Link to="/help">{t("こちら", "here")}</Link>
           {t("をご参照ください", ".")}
         </p>
         <h2 className="py-2 font-bold text-md">{t("ロゴ", "Logo")}</h2>

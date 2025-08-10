@@ -459,6 +459,15 @@ export const META: { [key: string]: MetaData } = {
       "A platform for AI-generated illustrations and creative activities, fostering communication and creativity.",
     isIndex: true,
   },
+  HELP: {
+    title: "使い方ガイド",
+    enTitle: "User Guide",
+    description:
+      "Aipictorsの使い方を詳しく説明します。初心者の方でも安心してサービスをご利用いただけるよう、機能やコミュニティガイドラインを詳しく解説しています。",
+    enDescription:
+      "Learn how to use Aipictors with our comprehensive guide. Detailed explanations of features and community guidelines for beginners and advanced users alike.",
+    isIndex: true,
+  },
   CONTACT: {
     title: "お問い合わせ",
     enTitle: "Contact",
