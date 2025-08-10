@@ -26,7 +26,7 @@ export function SettingProfileForm() {
   const t = useTranslation()
 
   const { data: user, loading } = useQuery(userQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
       userId: authContext.userId?.toString() ?? "",
     },
@@ -97,7 +97,11 @@ export function SettingProfileForm() {
   }, [userInfo, authContext.displayName])
 
   // ローディング状態をフック呼び出し後に確認
-  if (loading || authContext.isLoading) {
+  if (loading || authContext.isLoading || authContext.isNotLoggedIn) {
+    return <AppLoadingPage />
+  }
+
+  if (!userInfo) {
     return <AppLoadingPage />
   }
 
@@ -431,19 +435,11 @@ const userQuery = graphql(
     user(id: $userId) {
       id
       biography
-      createdBookmarksCount
       login
       nanoid
       name
-      receivedLikesCount
-      receivedViewsCount
-      awardsCount
-      followCount
-      followersCount
-      worksCount
       iconUrl
       headerImageUrl
-      webFcmToken
       featuredSensitiveWorks {
         ...DialogWork
       }
