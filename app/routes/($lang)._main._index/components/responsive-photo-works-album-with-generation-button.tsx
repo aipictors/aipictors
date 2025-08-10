@@ -303,7 +303,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
   isShowProfile?: boolean
 }) {
   return (
-    <div className="grid w-full grid-cols-2 gap-2 pr-4 pb-4 md:grid-cols-3">
+    <div className="grid w-full grid-cols-2 gap-3 pr-2 pb-4">
       {props.works.map((work) => (
         <div key={work.id} className="flex flex-col space-y-2">
           <div className="relative">
@@ -311,7 +311,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
               workId={work.id}
               imageUrl={work.smallThumbnailImageURL}
               thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-              size="sm"
+              size="lg"
               imageWidth={work.smallThumbnailImageWidth}
               imageHeight={work.smallThumbnailImageHeight}
               subWorksCount={work.subWorksCount}
