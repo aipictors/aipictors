@@ -35,8 +35,8 @@ export function NewUserSettingsForm() {
 
   const preferenceRating = userSettingData?.userSetting?.preferenceRating
 
-  // 年齢確認状態
-  const [isAdult, setIsAdult] = useState<boolean | null>(null)
+  // 年齢確認状態（初期値を18歳以上に設定）
+  const [isAdult, setIsAdult] = useState<boolean>(true)
 
   // 設定状態
   const [showR15InNormalMode, setShowR15InNormalMode] = useState(false)
@@ -88,6 +88,18 @@ export function NewUserSettingsForm() {
     }
   }
 
+  // 年齢設定が変更された時の処理
+  const handleAgeChange = (adult: boolean) => {
+    setIsAdult(adult)
+
+    // 18歳未満に変更された場合、すべての制限付きコンテンツをオフにする
+    if (!adult) {
+      setShowR15InNormalMode(false)
+      setShowSensitiveModeToggle(false)
+      setShowR18GInSensitiveMode(false)
+    }
+  }
+
   const onSubmit = async () => {
     if (isUpdatingUserSetting || authContext.userId === null) {
       return
@@ -114,60 +126,6 @@ export function NewUserSettingsForm() {
 
     toast(t("設定を更新しました。", "Settings updated."))
     navigate("/settings/completed")
-  }
-
-  // 年齢確認が完了していない場合
-  if (isAdult === null) {
-    return (
-      <div className="mx-auto max-w-4xl space-y-8 p-6">
-        {/* ウェルカムセクション */}
-        <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50 p-8 dark:border-gray-700 dark:from-blue-900/30 dark:to-purple-900/30">
-          <div className="space-y-4 text-center">
-            <h1 className="mb-4 text-3xl font-bold text-gray-800 dark:text-gray-100">
-              {t("表示設定", "Display Settings")}
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              {t(
-                "あなたに適した表示設定を行います",
-                "Configure display settings that suit you",
-              )}
-            </p>
-          </div>
-        </div>
-
-        {/* 年齢確認セクション */}
-        <div className="rounded-xl border border-gray-200 bg-white p-8 dark:border-gray-700 dark:bg-gray-800">
-          <div className="space-y-6 text-center">
-            <Shield className="mx-auto size-16 text-blue-500" />
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-              {t("年齢確認", "Age Verification")}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t(
-                "適切なコンテンツを表示するため、年齢をお聞かせください",
-                "Please confirm your age for appropriate content display",
-              )}
-            </p>
-            <div className="flex gap-4 justify-center">
-              <Button
-                onClick={() => setIsAdult(false)}
-                variant="outline"
-                className="h-16 flex-1 text-lg"
-              >
-                {t("18歳未満", "Under 18")}
-              </Button>
-              <Button
-                onClick={() => setIsAdult(true)}
-                variant="outline"
-                className="h-16 flex-1 text-lg"
-              >
-                {t("18歳以上", "18 or older")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -197,6 +155,49 @@ export function NewUserSettingsForm() {
                   )}
                 </span>
               )}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 年齢設定セクション */}
+      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+        <h2 className="mb-4 text-xl font-bold text-gray-800 dark:text-gray-100">
+          {t("年齢設定", "Age Setting")}
+        </h2>
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            {t(
+              "年齢設定は表示されるコンテンツの制限に影響します。いつでも変更可能です。",
+              "Age setting affects content visibility restrictions. You can change this anytime.",
+            )}
+          </p>
+          <div className="flex gap-3">
+            <Button
+              onClick={() => handleAgeChange(false)}
+              variant={!isAdult ? "default" : "outline"}
+              className="flex-1 h-12"
+            >
+              <Shield className="mr-2 size-4" />
+              {t("18歳未満", "Under 18")}
+            </Button>
+            <Button
+              onClick={() => handleAgeChange(true)}
+              variant={isAdult ? "default" : "outline"}
+              className="flex-1 h-12"
+            >
+              <Eye className="mr-2 size-4" />
+              {t("18歳以上", "18 or older")}
+            </Button>
+          </div>
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-600 dark:bg-amber-900/30">
+            <p className="text-xs text-amber-800 dark:text-amber-200">
+              ⚠️ {t("現在の設定: ", "Current setting: ")}
+              <strong>
+                {isAdult
+                  ? t("18歳以上", "18 or older")
+                  : t("18歳未満", "Under 18")}
+              </strong>
             </p>
           </div>
         </div>
