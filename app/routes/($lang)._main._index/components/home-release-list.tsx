@@ -19,7 +19,9 @@ export function HomeReleaseList({ releaseList }: Props) {
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-md">{t("お知らせ", "Announcements")}</h2>
+        <h2 className="text-left font-bold text-xl">
+          {t("お知らせ", "Announcements")}
+        </h2>
         <Button
           onClick={onMore}
           variant={"secondary"}
