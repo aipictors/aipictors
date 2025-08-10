@@ -59,7 +59,9 @@ export default function About() {
         <h2 className="py-2 font-bold text-md">
           {t("お問い合わせ先", "Contact Information")}
         </h2>
-        <Link to="/contact">{t("こちら", "here")}</Link>
+        <p>
+          <Link to="/contact">{t("こちら", "here")}</Link>
+        </p>
         <h2 className="py-2 font-bold text-md">
           {t("プライバシーポリシー", "Privacy Policy")}
         </h2>

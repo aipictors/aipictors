@@ -23,6 +23,7 @@ describe("About component tests", () => {
     expect(screen.getByText("プライバシーポリシー")).toBeInTheDocument()
     expect(screen.getByText("利用規約")).toBeInTheDocument()
     expect(screen.getByText("ガイドライン")).toBeInTheDocument()
+    expect(screen.getByText("使い方ガイド")).toBeInTheDocument()
     expect(screen.getByText("ロゴ")).toBeInTheDocument()
   })
 
@@ -40,7 +41,7 @@ describe("About component tests", () => {
 
     // "お問い合わせ先"の下にある"こちら"リンク
     expect(
-      screen.getByText("お問い合わせ先").nextElementSibling?.closest("a"),
+      screen.getByText("お問い合わせ先").nextElementSibling?.querySelector("a"),
     ).toHaveAttribute("href", "/contact")
 
     // "プライバシーポリシー"の下にあるリンク
@@ -60,8 +61,14 @@ describe("About component tests", () => {
       "/guideline",
     )
 
-    // "ロゴ"の段落にある"こちら"リンク
+    // "使い方ガイド"の段落にある"こちら"リンク
     expect(screen.getAllByText("こちら")[3].closest("a")).toHaveAttribute(
+      "href",
+      "/help",
+    )
+
+    // "ロゴ"の段落にある"こちら"リンク
+    expect(screen.getAllByText("こちら")[4].closest("a")).toHaveAttribute(
       "href",
       "https://www.aipictors.com/presskit/",
     )
