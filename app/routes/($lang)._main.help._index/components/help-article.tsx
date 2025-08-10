@@ -24,7 +24,7 @@ export function HelpArticle() {
       </div>
 
       <Tabs defaultValue="quickstart" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="quickstart">
             {t("クイックスタート", "Quick Start")}
           </TabsTrigger>
@@ -39,6 +39,9 @@ export function HelpArticle() {
           </TabsTrigger>
           <TabsTrigger value="community">
             {t("コミュニティ", "Community")}
+          </TabsTrigger>
+          <TabsTrigger value="pictor-chan">
+            {t("ぴくたーちゃん", "Pictor-chan")}
           </TabsTrigger>
         </TabsList>
 
@@ -813,6 +816,104 @@ export function HelpArticle() {
                       {t("コミュニティガイドライン", "Community Guidelines")}
                     </a>
                     {t("をご確認ください。", ".")}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ぴくたーちゃんタブ */}
+        <TabsContent value="pictor-chan" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {t("ぴくたーちゃん紹介", "Introducing Pictor-chan")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-col items-center space-y-4 text-center">
+                <div className="h-32 w-32 overflow-hidden rounded-full bg-gradient-to-r from-orange-400 via-blue-400 to-green-400 p-1">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-white">
+                    <img
+                      src="https://assets.aipictors.com/pictor-chan-01.webp"
+                      alt="ぴくたーちゃん"
+                      className="h-full w-full rounded-full object-cover"
+                    />
+                  </div>
+                </div>
+                <h3 className="font-bold text-2xl">
+                  <span className="bg-gradient-to-r from-orange-500 via-blue-500 to-green-500 bg-clip-text text-transparent">
+                    ぴくたーちゃん
+                  </span>
+                </h3>
+                <p className="text-muted-foreground">
+                  {t(
+                    "Aipictorsの公式マスコットキャラクター",
+                    "Official mascot character of Aipictors",
+                  )}
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="rounded-lg bg-gradient-to-r from-orange-50 via-blue-50 to-green-50 p-4 dark:from-orange-950 dark:via-blue-950 dark:to-green-950">
+                  <h4 className="mb-2 font-semibold">
+                    {t("プロフィール", "Profile")}
+                  </h4>
+                  <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
+                    <div>
+                      <span className="font-medium">
+                        {t("性別", "Gender")}:
+                      </span>{" "}
+                      {t("女の子", "Girl")}
+                    </div>
+                    <div>
+                      <span className="font-medium">{t("年齢", "Age")}:</span>{" "}
+                      {t("2歳", "2 years old")}
+                    </div>
+                    <div>
+                      <span className="font-medium">
+                        {t("誕生日", "Birthday")}:
+                      </span>{" "}
+                      11月21日
+                    </div>
+                    <div>
+                      <span className="font-medium">
+                        {t("好きな食べ物", "Favorite Food")}:
+                      </span>{" "}
+                      🥔 {t("じゃがいも", "Potato")}
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <span className="font-medium">{t("趣味", "Hobby")}:</span>{" "}
+                    {t(
+                      "Aipictorsでみんなの作品を閲覧すること",
+                      "Browsing everyone's works on Aipictors",
+                    )}
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <Link
+                    to="/pictor-chan"
+                    className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 via-blue-500 to-green-500 px-6 py-3 font-medium text-white transition-all hover:scale-105"
+                  >
+                    <span>✨</span>
+                    {t(
+                      "ぴくたーちゃんの詳細ページ",
+                      "Pictor-chan Details Page",
+                    )}
+                    <span>✨</span>
+                  </Link>
+                </div>
+
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-950">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    💡{" "}
+                    {t(
+                      "詳細ページでは、AI生成用のプロンプトやLoRAモデルのダウンロードもできます！",
+                      "On the details page, you can also download AI generation prompts and LoRA models!",
+                    )}
                   </p>
                 </div>
               </div>

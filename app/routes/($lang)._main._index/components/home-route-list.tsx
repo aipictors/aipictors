@@ -297,6 +297,12 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
             <Link className="text-xs opacity-80" to="/help">
               {t("使い方ガイド", "User Guide")}
             </Link>
+            <Link className="text-xs opacity-80" to="/pictor-chan">
+              {t("ぴくたーちゃん", "Contact")}
+            </Link>
+            <Link className="text-xs opacity-80" to="/contact">
+              {t("お問い合わせ", "Contact")}
+            </Link>
             <Link className="text-xs opacity-80" to="/terms">
               {t("利用規約", "Terms")}
             </Link>

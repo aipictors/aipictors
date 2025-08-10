@@ -16,6 +16,8 @@ import {
   RefreshCcwIcon,
   SearchIcon,
   HelpCircleIcon,
+  HeartIcon,
+  InfoIcon,
 } from "lucide-react"
 import { useContext } from "react"
 import { useTranslation } from "~/hooks/use-translation"
@@ -168,11 +170,27 @@ export function HomeMenuRouteList({
       </HomeMenuNavigationButton>
 
       <HomeMenuNavigationButton
+        href={createLink("/about")}
+        icon={InfoIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("概要", "About")}
+      </HomeMenuNavigationButton>
+
+      <HomeMenuNavigationButton
         href={createLink("/help")}
         icon={HelpCircleIcon}
         onClick={closeHeaderMenu}
       >
         {t("使い方ガイド", "User Guide")}
+      </HomeMenuNavigationButton>
+
+      <HomeMenuNavigationButton
+        href={createLink("/pictor-chan")}
+        icon={HeartIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("ぴくたーちゃん", "Pictor-chan")}
       </HomeMenuNavigationButton>
 
       {/* Separator ------------------------------------------------ */}
@@ -241,6 +259,13 @@ export function HomeMenuRouteList({
                 to="/about"
               >
                 {t("概要", "About")}
+              </Link>
+              <span className="opacity-50">•</span>
+              <Link
+                className="opacity-80 transition-opacity hover:opacity-100"
+                to="/pictor-chan"
+              >
+                {t("ぴくたーちゃん", "Pictor-chan")}
               </Link>
               <span className="opacity-50">•</span>
               <Link
