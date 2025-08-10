@@ -62,22 +62,24 @@ const OptimizedImage = memo((props: Props) => {
   }
 
   return (
-    <LazyLoadComponent
-      disableOnServer={true} // SSR対応でチカチカ防止
-      fallback={null} // fallbackは表示せずチカチカを防ぐ
-    >
-      <img
-        src={optimizedSrc}
-        alt={props.alt}
-        className={props.className}
-        loading={props.loading || "lazy"}
-        width={props.width}
-        height={props.height}
-        onLoad={props.onLoad}
-        onError={handleError}
-        decoding="async"
-      />
-    </LazyLoadComponent>
+    <div className="overflow-hidden">
+      <LazyLoadComponent
+        disableOnServer={true} // SSR対応でチカチカ防止
+        fallback={null} // fallbackは表示せずチカチカを防ぐ
+      >
+        <img
+          src={optimizedSrc}
+          alt={props.alt}
+          className={props.className}
+          loading={props.loading || "lazy"}
+          width={props.width}
+          height={props.height}
+          onLoad={props.onLoad}
+          onError={handleError}
+          decoding="async"
+        />
+      </LazyLoadComponent>
+    </div>
   )
 })
 

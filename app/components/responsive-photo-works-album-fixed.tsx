@@ -259,7 +259,11 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
         </SSR>
       </div>
       <div className="block md:hidden">
-        <HomeCroppedWorks works={props.works} isShowProfile={true} hasReferenceButton={false} />
+        <HomeCroppedWorks
+          works={props.works}
+          isShowProfile={true}
+          hasReferenceButton={false}
+        />
       </div>
     </>
   )
