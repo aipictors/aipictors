@@ -575,12 +575,14 @@ export function TagWorkSection(props: Props) {
 
   // ───────────────────────── 作品クリック ─────────────────────────
   const openWork = (idx: string) => {
-    const index = Number.parseInt(idx, 10)
-    console.log("Open work at index:", index)
+    console.log("Open work with id:", idx)
     if (isDialogMode) {
+      // ダイアログモードの場合、作品IDから配列内のインデックスを探す
+      const index = displayedWorks.findIndex(work => work.id === idx)
       setDialogIndex(index)
     } else {
-      navigate(`/posts/${displayedWorks[index].id}`)
+      // 直接リンク遷移の場合、作品IDを使用
+      navigate(`/posts/${idx}`)
     }
   }
 
@@ -791,7 +793,7 @@ export function TagWorkSection(props: Props) {
         <ResponsivePhotoWorksAlbum
           works={displayedWorks}
           isShowProfile={true}
-          onSelect={openWork}
+          onSelect={isDialogMode ? openWork : undefined}
         />
       )}
 
