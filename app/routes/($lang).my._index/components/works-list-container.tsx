@@ -3,7 +3,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { WorksList } from "~/routes/($lang).my._index/components/works-list"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
 import { MobileWorkListItemFragment } from "~/routes/($lang).my._index/components/works-sp-list"
@@ -40,6 +40,78 @@ type Props = {
 export function WorksListContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
+  // Hooksは常に呼び出す必要がある（条件分岐の前）
+  const {
+    data: workResp,
+    loading: workLoading,
+    error: workError,
+  } = useQuery(worksQuery, {
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
+    variables: {
+      offset: (props.perPage ?? 50) * props.page,
+      limit: props.perPage ?? 50,
+      where: {
+        userId: authContext.userId || "",
+        orderBy: props.orderBy,
+        sort: props.sort,
+        isIncludePrivate: true,
+        ...(props.accessType !== null && {
+          accessTypes: [props.accessType],
+        }),
+        ...(props.workType !== null && {
+          workTypes: [props.workType],
+        }),
+        ...(props.rating !== null
+          ? {
+              ratings: [props.rating],
+            }
+          : {
+              ratings: ["G", "R15", "R18", "R18G"],
+            }),
+        createdAtAfter: new Date("1999/01/01").toISOString(),
+        beforeCreatedAt: new Date("2099/01/01").toISOString(),
+      },
+    },
+    errorPolicy: "all",
+  })
+
+  const {
+    data: worksCountResp,
+    loading: countLoading,
+    error: countError,
+  } = useQuery(worksCountQuery, {
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
+    variables: {
+      where: {
+        userId: authContext.userId || "",
+        orderBy: props.orderBy,
+        sort: props.sort,
+        isIncludePrivate: true,
+        isNowCreatedAt: true,
+        ...(props.accessType !== null && {
+          accessTypes: [props.accessType],
+        }),
+        ...(props.workType !== null && {
+          workTypes: [props.workType],
+        }),
+        ...(props.rating !== null && {
+          ratings: [props.rating],
+        }),
+      },
+    },
+    errorPolicy: "all",
+  })
+
+  const works = workResp?.works
+  const worksMaxCount = worksCountResp?.worksCount ?? 0
+
+  useEffect(() => {
+    props.setWorksMaxCount(worksMaxCount)
+  }, [worksMaxCount, props])
+
+  // ログインしていない場合は早期リターン（Hooks呼び出し後）
   if (
     authContext.isLoading ||
     authContext.isNotLoggedIn ||
@@ -49,74 +121,20 @@ export function WorksListContainer(props: Props) {
     return null
   }
 
-  const { data: workResp, refetch: workRespRefetch } = useSuspenseQuery(
-    worksQuery,
-    {
-      skip:
-        authContext.isLoading ||
-        authContext.isNotLoggedIn ||
-        !authContext.userId,
-      variables: {
-        offset: (props.perPage ?? 50) * props.page,
-        limit: props.perPage ?? 50,
-        where: {
-          userId: authContext.userId,
-          orderBy: props.orderBy,
-          sort: props.sort,
-          isIncludePrivate: true,
-          ...(props.accessType !== null && {
-            accessTypes: [props.accessType],
-          }),
-          ...(props.workType !== null && {
-            workTypes: [props.workType],
-          }),
-          ...(props.rating !== null
-            ? {
-                ratings: [props.rating],
-              }
-            : {
-                ratings: ["G", "R15", "R18", "R18G"],
-              }),
-          createdAtAfter: new Date("1999/01/01").toISOString(),
-          beforeCreatedAt: new Date("2099/01/01").toISOString(),
-        },
-      },
-    },
-  )
+  // エラーハンドリング
+  if (workError && !workResp) {
+    console.error("Works query error:", workError)
+    return <div>作品の読み込みに失敗しました</div>
+  }
 
-  const { data: worksCountResp, refetch: worksCountRespRefetch } =
-    useSuspenseQuery(worksCountQuery, {
-      skip:
-        authContext.isLoading ||
-        authContext.isNotLoggedIn ||
-        !authContext.userId,
-      variables: {
-        where: {
-          userId: authContext.userId,
-          orderBy: props.orderBy,
-          sort: props.sort,
-          isIncludePrivate: true,
-          isNowCreatedAt: true,
-          ...(props.accessType !== null && {
-            accessTypes: [props.accessType],
-          }),
-          ...(props.workType !== null && {
-            workTypes: [props.workType],
-          }),
-          ...(props.rating !== null && {
-            ratings: [props.rating],
-          }),
-        },
-      },
-    })
+  if (countError && !worksCountResp) {
+    console.error("Works count query error:", countError)
+  }
 
-  const works = workResp?.works
-
-  const worksMaxCount = worksCountResp?.worksCount ?? 0
-
-  useEffect(() => {
-    props.setWorksMaxCount(worksMaxCount)
-  }, [worksMaxCount])
+  // ローディング状態
+  if (workLoading || countLoading) {
+    return <div>読み込み中...</div>
+  }
 
   return (
     <>
