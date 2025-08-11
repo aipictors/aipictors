@@ -1,8 +1,7 @@
 import { Link } from "@remix-run/react"
-import { useState, useRef, useCallback, useEffect } from "react"
+import { useState, useRef, useCallback } from "react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { cn } from "~/lib/utils"
-import { isMobileDevice } from "~/utils/mobile-performance"
 
 type Props = {
   workId: string
@@ -20,42 +19,28 @@ type Props = {
 /**
  * ホバー時に動画を再生する画像コンポーネント
  * PC: ホバー時のみ動画再生
- * スマホ: 静止画のサムネイルのみ表示（動画自動再生なし）
+ * スマホ: サムネイル内での動画再生（全画面表示は防ぐ）
  */
 export function HoverVideoImage(props: Props) {
   const [isHovered, setIsHovered] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
-
-  // モバイルデバイスの判定
-  useEffect(() => {
-    const checkMobile = () => {
-      if (typeof window === "undefined") return false
-      return (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent,
-        ) || window.innerWidth < 768
-      )
-    }
-    setIsMobile(checkMobile())
-  }, [])
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true)
-    // PCでのみ動画再生（スマホでは動画再生しない）
-    if (!isMobile && props.videoUrl && videoRef.current) {
+    // 動画再生（スマホでも再生するが全画面表示は防ぐ）
+    if (props.videoUrl && videoRef.current) {
       videoRef.current.currentTime = 0 // 最初から再生
       videoRef.current.play()
     }
-  }, [props.videoUrl, isMobile])
+  }, [props.videoUrl])
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false)
-    // PCでのみ動画停止
-    if (!isMobile && videoRef.current) {
+    // 動画停止
+    if (videoRef.current) {
       videoRef.current.pause()
     }
-  }, [isMobile])
+  }, [])
 
   const imageContent = (
     <>
@@ -68,8 +53,8 @@ export function HoverVideoImage(props: Props) {
         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
       />
 
-      {/* 動画はPCでホバー時のみ表示、スマホでは表示しない */}
-      {props.videoUrl && !isMobile && (
+      {/* 動画表示（スマホでは全画面表示を防ぐためplaysInlineを強制適用） */}
+      {props.videoUrl && (
         <video
           ref={videoRef}
           src={props.videoUrl}
@@ -81,6 +66,11 @@ export function HoverVideoImage(props: Props) {
           loop
           playsInline
           preload="metadata"
+          // スマホでの全画面表示を完全に防ぐ
+          webkit-playsinline="true"
+          x5-playsinline="true"
+          x5-video-player-type="h5"
+          x5-video-player-fullscreen="false"
         />
       )}
     </>
