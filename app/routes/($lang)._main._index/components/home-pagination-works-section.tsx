@@ -150,6 +150,7 @@ export function HomePaginationWorksSection(props: Props) {
           title={""}
           works={worksResp?.works || []}
           isAutoPlay={true}
+          onSelect={props.onSelect}
         />
       )}
 

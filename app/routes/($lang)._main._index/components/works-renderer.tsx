@@ -22,6 +22,7 @@ export function WorksRenderer({ workType, works, isCropped, onSelect }: Props) {
     return (
       <HomeNovelsWorksSection
         title=""
+        onSelect={onSelect}
         works={works as FragmentOf<typeof HomeNovelsWorkListItemFragment>[]}
       />
     )
@@ -31,6 +32,7 @@ export function WorksRenderer({ workType, works, isCropped, onSelect }: Props) {
     return (
       <HomeVideosWorksSection
         title=""
+        onSelect={onSelect}
         works={works as FragmentOf<typeof HomeVideosWorkListItemFragment>[]}
         isAutoPlay
       />

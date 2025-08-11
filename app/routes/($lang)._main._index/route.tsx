@@ -503,6 +503,7 @@ export default function Index() {
 
   // 作品クリック時の処理
   const openWork = (idx: string) => {
+    console.log("Opening work with index:", idx)
     // displayedWorksのworkのid一致するもの
     const work = displayedWorks.find((w) => w.id === idx)
     if (!work) {
@@ -974,7 +975,7 @@ export default function Index() {
                     isPromptPublic={isPromptPublic}
                     sortType={sortType}
                     timeRange={timeRange}
-                    onSelect={isDialogMode ? openWork : undefined}
+                    onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                     updateWorks={updateCurrentWorks}
                   />
                 ) : (
@@ -987,7 +988,7 @@ export default function Index() {
                     timeRange={timeRange}
                     isPagination={false}
                     onPaginationModeChange={setInternalIsPagination}
-                    onSelect={isDialogMode ? openWork : undefined}
+                    onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                     updateWorks={updateCurrentWorks}
                   />
                 )}
@@ -1038,7 +1039,7 @@ export default function Index() {
                   sortType={sortType}
                   isPagination={internalIsPagination}
                   onPaginationModeChange={setInternalIsPagination}
-                  onSelect={isDialogMode ? openWork : undefined}
+                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                   updateWorks={updateCurrentWorks}
                 />
               </Suspense>
@@ -1126,7 +1127,7 @@ export default function Index() {
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
-                  onSelect={isDialogMode ? openWork : undefined}
+                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                   updateWorks={updateCurrentWorks}
                 />
               </Suspense>
@@ -1216,7 +1217,7 @@ export default function Index() {
               setPage={setFollowUserFeedPage}
               isPagination={internalIsPagination}
               onPaginationModeChange={setInternalIsPagination}
-              onSelect={isDialogMode ? openWork : undefined}
+              onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               updateWorks={updateCurrentWorks}
             />
           </Suspense>
@@ -1303,7 +1304,7 @@ export default function Index() {
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}
               isPagination={internalIsPagination}
-              onSelect={isDialogMode ? openWork : undefined}
+              onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               updateWorks={updateCurrentWorks}
             />
           </Suspense>

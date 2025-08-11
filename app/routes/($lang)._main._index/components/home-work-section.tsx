@@ -60,7 +60,7 @@ export function HomeWorkSection(props: Props) {
         )}
       </div>
       {props.isCropped ? (
-        <HomeCroppedWorkList works={props.works} />
+        <HomeCroppedWorkList works={props.works} onSelect={props.onSelect} />
       ) : (
         <ResponsivePhotoWorksAlbum
           works={props.works}

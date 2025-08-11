@@ -14,6 +14,7 @@ type Props = {
   isRanking?: boolean
   isShowProfile?: boolean
   hasReferenceButton?: boolean
+  onSelect?: (index: string) => void
 }
 
 /**
@@ -102,63 +103,124 @@ export function HomeCroppedWorks(props: Props) {
           )
           .map((work) => (
             <div key={work.id} className="relative">
-              <Link
-                to={`/posts/${work.id}`}
-                className="relative overflow-hidden"
-              >
-                <div
-                  className="w-full overflow-hidden"
-                  style={{ paddingBottom: "100%" }}
+              {props.onSelect ? (
+                <button
+                  type="button"
+                  onClick={() => props.onSelect?.(work.id)}
+                  className="group relative w-full overflow-hidden border-none bg-transparent p-0"
                 >
-                  <HoverVideoImage
-                    workId={work.id}
-                    imageUrl={work.smallThumbnailImageURL}
-                    videoUrl={work.url}
-                    alt={work.title}
-                    className="absolute top-0 left-0 block h-full w-full rounded-md object-cover md:hidden"
-                  />
-                  <div className="absolute right-2 bottom-2">
-                    <LikeButton
-                      size={56}
-                      targetWorkId={work.id}
-                      targetWorkOwnerUserId={work.user?.id ?? ""}
-                      defaultLiked={work.isLiked}
-                      defaultLikedCount={0}
-                      isBackgroundNone={true}
-                      strokeWidth={2}
-                      isParticle={true}
-                    />
-                  </div>
-                  {work.subWorksCount > 0 && (
-                    <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <Images className="size-3 text-white" />
-                      <div className="font-bold text-white text-xs">
-                        {work.subWorksCount + 1}
-                      </div>
-                    </div>
-                  )}
-                  {work.commentsCount > 0 && (
-                    <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <MessageCircle className="size-3 text-white" />
-                      <div className="font-bold text-white text-xs">
-                        {work.commentsCount}
-                      </div>
-                    </div>
-                  )}
-                  {/* プロンプト公開・動画バッジ */}
                   <div
-                    className={`absolute left-1 z-10 ${props.hasReferenceButton ? "bottom-8" : "bottom-2"}`}
+                    className="w-full overflow-hidden"
+                    style={{ paddingBottom: "100%" }}
                   >
-                    <WorkMediaBadge
-                      isPromptPublic={work.promptAccessType === "PUBLIC"}
-                      hasVideoUrl={Boolean(work.url)}
-                      isGeneration={work.isGeneration}
-                      hasReferenceButton={props.hasReferenceButton}
-                      size="sm"
+                    <HoverVideoImage
+                      workId={work.id}
+                      imageUrl={work.smallThumbnailImageURL}
+                      videoUrl={work.url}
+                      alt={work.title}
+                      className="absolute top-0 left-0 block h-full w-full rounded-md object-cover"
                     />
+                    <div className="absolute right-2 bottom-2">
+                      <LikeButton
+                        size={56}
+                        targetWorkId={work.id}
+                        targetWorkOwnerUserId={work.user?.id ?? ""}
+                        defaultLiked={work.isLiked}
+                        defaultLikedCount={0}
+                        isBackgroundNone={true}
+                        strokeWidth={2}
+                        isParticle={true}
+                      />
+                    </div>
+                    {work.subWorksCount > 0 && (
+                      <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                        <Images className="size-3 text-white" />
+                        <div className="font-bold text-white text-xs">
+                          {work.subWorksCount + 1}
+                        </div>
+                      </div>
+                    )}
+                    {work.commentsCount > 0 && (
+                      <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                        <MessageCircle className="size-3 text-white" />
+                        <div className="font-bold text-white text-xs">
+                          {work.commentsCount}
+                        </div>
+                      </div>
+                    )}
+                    {/* プロンプト公開・動画バッジ */}
+                    <div
+                      className={`absolute left-1 z-10 ${props.hasReferenceButton ? "bottom-8" : "bottom-2"}`}
+                    >
+                      <WorkMediaBadge
+                        isPromptPublic={work.promptAccessType === "PUBLIC"}
+                        hasVideoUrl={Boolean(work.url)}
+                        isGeneration={work.isGeneration}
+                        hasReferenceButton={props.hasReferenceButton}
+                        size="sm"
+                      />
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </button>
+              ) : (
+                <Link
+                  to={`/posts/${work.id}`}
+                  className="relative overflow-hidden"
+                >
+                  <div
+                    className="w-full overflow-hidden"
+                    style={{ paddingBottom: "100%" }}
+                  >
+                    <HoverVideoImage
+                      workId={work.id}
+                      imageUrl={work.smallThumbnailImageURL}
+                      videoUrl={work.url}
+                      alt={work.title}
+                      className="absolute top-0 left-0 block h-full w-full rounded-md object-cover"
+                    />
+                    <div className="absolute right-2 bottom-2">
+                      <LikeButton
+                        size={56}
+                        targetWorkId={work.id}
+                        targetWorkOwnerUserId={work.user?.id ?? ""}
+                        defaultLiked={work.isLiked}
+                        defaultLikedCount={0}
+                        isBackgroundNone={true}
+                        strokeWidth={2}
+                        isParticle={true}
+                      />
+                    </div>
+                    {work.subWorksCount > 0 && (
+                      <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                        <Images className="size-3 text-white" />
+                        <div className="font-bold text-white text-xs">
+                          {work.subWorksCount + 1}
+                        </div>
+                      </div>
+                    )}
+                    {work.commentsCount > 0 && (
+                      <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+                        <MessageCircle className="size-3 text-white" />
+                        <div className="font-bold text-white text-xs">
+                          {work.commentsCount}
+                        </div>
+                      </div>
+                    )}
+                    {/* プロンプト公開・動画バッジ */}
+                    <div
+                      className={`absolute left-1 z-10 ${props.hasReferenceButton ? "bottom-8" : "bottom-2"}`}
+                    >
+                      <WorkMediaBadge
+                        isPromptPublic={work.promptAccessType === "PUBLIC"}
+                        hasVideoUrl={Boolean(work.url)}
+                        isGeneration={work.isGeneration}
+                        hasReferenceButton={props.hasReferenceButton}
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+                </Link>
+              )}
               {work.user && props.isShowProfile && (
                 <>
                   <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">

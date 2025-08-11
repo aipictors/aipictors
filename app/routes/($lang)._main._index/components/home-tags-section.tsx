@@ -11,6 +11,7 @@ import { HomeTagsSectionItem } from "~/routes/($lang)._main._index/components/ho
 type Props = {
   title?: string
   tags: FragmentOf<typeof HomeTagFragment>[]
+  onSelect?: (index: string) => void
 }
 
 export function HomeTagsSection(props: Props) {

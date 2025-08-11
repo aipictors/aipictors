@@ -9,6 +9,8 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
+import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -57,11 +59,23 @@ export function WorkViewerDialog({
   const initialIndex = useMemo(() => {
     if (startWorkId) {
       const idx = works.findIndex((w) => w.id === startWorkId)
-      console.log('🔍 startWorkId:', startWorkId, 'found at index:', idx, 'work:', works[idx]?.id)
+      console.log(
+        "🔍 startWorkId:",
+        startWorkId,
+        "found at index:",
+        idx,
+        "work:",
+        works[idx]?.id,
+      )
       if (idx !== -1) return idx
     }
     const fallbackIndex = startIndex ?? 0
-    console.log('🔍 fallback index:', fallbackIndex, 'work:', works[fallbackIndex]?.id)
+    console.log(
+      "🔍 fallback index:",
+      fallbackIndex,
+      "work:",
+      works[fallbackIndex]?.id,
+    )
     return fallbackIndex
   }, [startWorkId, startIndex, works])
 
@@ -75,12 +89,20 @@ export function WorkViewerDialog({
   const [activeWorkId, setActiveWorkId] = useState<string | null>(null)
   const [isDebouncing, setIsDebouncing] = useState(false)
   const isFirstScrollDone = useRef(false)
+  const isInitialized = useRef(false)
 
-  // 初期化時に正しい作品IDとインデックスを確実に設定
+  // 初期化時に正しい作品IDとインデックスを確実に設定（一回のみ）
   useEffect(() => {
+    if (isInitialized.current) return // 既に初期化済みの場合はスキップ
+
     const targetWork = works[initialIndex]
-    console.log('🎯 Initializing with index:', initialIndex, 'work ID:', targetWork?.id)
-    
+    console.log(
+      "🎯 Initializing with index:",
+      initialIndex,
+      "work ID:",
+      targetWork?.id,
+    )
+
     if (targetWork) {
       // インデックスも確実に初期値に設定
       setIndex(initialIndex)
@@ -88,8 +110,14 @@ export function WorkViewerDialog({
       if (activeWorkId !== targetWork.id) {
         setActiveWorkId(targetWork.id)
       }
+      isInitialized.current = true // 初期化完了をマーク
     }
-  }, [initialIndex, works]) // activeWorkIdを依存配列から除去して無限ループを防止
+  }, [initialIndex]) // worksとactiveWorkIdを依存配列から除去
+
+  // startWorkIdが変わった場合は再初期化を許可
+  useEffect(() => {
+    isInitialized.current = false
+  }, [startWorkId])
 
   const thumbListRef = useRef<HTMLDivElement | null>(null)
   const sentinelRef = useRef<HTMLDivElement | null>(null)
@@ -137,7 +165,7 @@ export function WorkViewerDialog({
         // 初回表示または未キャッシュの場合
         const isInitial = activeWorkId === null
         setIsDebouncing(true)
-        
+
         // 既存のタイマーをクリア
         if (debounceTimerRef.current) {
           clearTimeout(debounceTimerRef.current)
@@ -145,7 +173,7 @@ export function WorkViewerDialog({
 
         // デバウンス時間をさらに最適化（初回は即座、以降は短く）
         const debounceTime = isInitial ? 0 : 200
-        
+
         debounceTimerRef.current = setTimeout(() => {
           setActiveWorkId(currentWork.id)
           setIsDebouncing(false)
@@ -306,24 +334,57 @@ export function WorkViewerDialog({
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="flex h-[90vh] w-[100vw] max-w-[88vw] overflow-hidden p-0">
-        {/* 詳細パネル (Desktop) */}
-        <aside className="hidden w-full flex-col bg-background/80 backdrop-blur-sm md:flex">
+        {/* 詳細パネル (Desktop + Mobile) */}
+        <aside className="flex w-full flex-col bg-background/80 backdrop-blur-sm">
           <DialogHeader className="border-b p-4 pb-2">
+            {/* モバイル用ナビゲーション */}
+            <div className="flex items-center justify-between md:hidden">
+              <Button
+                onClick={prev}
+                variant="ghost"
+                size="sm"
+                disabled={index === 0}
+                className="p-2"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-xs text-muted-foreground">
+                {index + 1} / {works.length}
+              </span>
+              <Button
+                onClick={next}
+                variant="ghost"
+                size="sm"
+                disabled={index === works.length - 1}
+                className="p-2"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                onClick={onClose}
+                variant="ghost"
+                size="sm"
+                className="p-2"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
             <DialogTitle className="text-lg font-bold truncate">
-              <span 
+              {/* タイトルはデスクトップのみ */}
+              <span
+                className="hidden md:inline cursor-pointer text-left transition-colors hover:text-primary"
                 onClick={() => {
                   // Portal内でReact Routerが使用できないため、直接ナビゲーション
-                  if (typeof window !== 'undefined') {
+                  if (typeof window !== "undefined") {
                     window.location.href = `/posts/${currentWork.id}`
                   }
                 }}
-                className="cursor-pointer text-left transition-colors hover:text-primary"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault()
-                    if (typeof window !== 'undefined') {
+                    if (typeof window !== "undefined") {
                       window.location.href = `/posts/${currentWork.id}`
                     }
                   }
@@ -331,11 +392,13 @@ export function WorkViewerDialog({
               >
                 {currentWork.title}
               </span>
+              {/* モバイル用簡潔タイトル */}
+              <span className="md:hidden truncate">{currentWork.title}</span>
             </DialogTitle>
             <div className="mt-2">
               <span
                 onClick={() => {
-                  if (typeof window !== 'undefined') {
+                  if (typeof window !== "undefined") {
                     window.location.href = `/users/${currentWork.user?.login}`
                   }
                 }}
@@ -343,9 +406,9 @@ export function WorkViewerDialog({
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+                  if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault()
-                    if (typeof window !== 'undefined') {
+                    if (typeof window !== "undefined") {
                       window.location.href = `/users/${currentWork.user?.login}`
                     }
                   }
@@ -414,14 +477,16 @@ export function WorkViewerDialog({
         <aside
           ref={thumbListRef}
           className="ml-auto hidden h-full w-24 flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm md:flex"
-          style={{ scrollbarWidth: 'thin' }}
+          style={{ scrollbarWidth: "thin" }}
         >
           {works.map((w, i) => (
             <button
               key={w.id}
               type="button"
               className={`relative m-1 rounded-md transition-all duration-200 ring-offset-2 focus:outline-none focus:ring-2 ${
-                i === index ? "bg-primary/10 ring ring-primary" : "hover:bg-background/20"
+                i === index
+                  ? "bg-primary/10 ring ring-primary"
+                  : "hover:bg-background/20"
               }`}
               onClick={() => setIndex(i)}
             >
@@ -452,18 +517,6 @@ export function WorkViewerDialog({
           <div ref={sentinelRef} className="h-[2px] w-full" />
         </aside>
       </DialogContent>
-
-      {/* モバイル用：画像下にキャプション */}
-      <div className="px-4 pt-4 pb-8 md:hidden">
-        <h2 className="truncate font-bold text-lg">{currentWork.title}</h2>
-        <div className="mt-2 flex items-center space-x-2">
-          <Avatar className="size-6">
-            <AvatarImage src={withIconUrlFallback(currentWork.user?.iconUrl)} />
-            <AvatarFallback />
-          </Avatar>
-          <span className="font-medium text-sm">{currentWork.user?.name}</span>
-        </div>
-      </div>
     </Dialog>
   )
 }
