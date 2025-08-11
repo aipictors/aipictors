@@ -19,7 +19,8 @@ type Props = {
 
 /**
  * ホバー時に動画を再生する画像コンポーネント
- * スマホの場合は自動再生を行う
+ * PC: ホバー時のみ動画再生
+ * スマホ: 静止画のサムネイルのみ表示（動画自動再生なし）
  */
 export function HoverVideoImage(props: Props) {
   const [isHovered, setIsHovered] = useState(false)
@@ -39,19 +40,9 @@ export function HoverVideoImage(props: Props) {
     setIsMobile(checkMobile())
   }, [])
 
-  // スマホの場合の自動再生効果
-  useEffect(() => {
-    if (isMobile && props.videoUrl && videoRef.current) {
-      const video = videoRef.current
-      video.currentTime = 0
-      video.play().catch(() => {
-        // 自動再生に失敗した場合は何もしない
-      })
-    }
-  }, [isMobile, props.videoUrl])
-
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true)
+    // PCでのみ動画再生（スマホでは動画再生しない）
     if (!isMobile && props.videoUrl && videoRef.current) {
       videoRef.current.currentTime = 0 // 最初から再生
       videoRef.current.play()
@@ -60,6 +51,7 @@ export function HoverVideoImage(props: Props) {
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false)
+    // PCでのみ動画停止
     if (!isMobile && videoRef.current) {
       videoRef.current.pause()
     }
@@ -76,14 +68,14 @@ export function HoverVideoImage(props: Props) {
         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
       />
 
-      {props.videoUrl && (
+      {/* 動画はPCでホバー時のみ表示、スマホでは表示しない */}
+      {props.videoUrl && !isMobile && (
         <video
           ref={videoRef}
           src={props.videoUrl}
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
-            // スマホの場合は常に表示、PCの場合はホバー時のみ表示
-            isMobile || isHovered ? "opacity-100" : "opacity-0",
+            isHovered ? "opacity-100" : "opacity-0",
           )}
           muted
           loop
