@@ -206,20 +206,16 @@ export default function Index() {
 
   const navigate = useNavigate()
 
-  // 期間指定の state を追加し、URL パラメータから初期値を読む
-  const [timeRange, setTimeRange] = useState<string>(
-    searchParams.get("timeRange") || "ALL",
-  )
+  // 期間指定の state - SSR対応のため初期値は固定値を使用
+  const [timeRange, setTimeRange] = useState<string>("ALL")
 
   const location = useLocale()
 
-  // タブ（home / new / follow-user / follow-tag）
-  const [currentTab, setCurrentTab] = useState(
-    searchParams.get("tab") || "home",
-  )
+  // タブ（home / new / follow-user / follow-tag） - SSR対応のため初期値は固定値を使用
+  const [currentTab, setCurrentTab] = useState("home")
 
-  // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え
-  const [workView, setWorkView] = useState(searchParams.get("view") || "new")
+  // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え - SSR対応のため初期値は固定値を使用
+  const [workView, setWorkView] = useState("new")
 
   const [internalIsPagination, setInternalIsPagination] = useState(true)
 
@@ -255,16 +251,23 @@ export default function Index() {
   useEffect(() => {
     // 初回のみ実行
     if (!isMounted) {
+      // tab（currentTab）
+      const tabParam = searchParams.get("tab")
+      if (tabParam) {
+        setCurrentTab(tabParam)
+      }
+
       // ページ番号
       const page = searchParams.get("page")
       const pageNumber = page ? Number.parseInt(page, 10) : 0
 
       if (!Number.isNaN(pageNumber) && pageNumber >= 0 && pageNumber <= 100) {
-        if (currentTab === "new") {
+        const currentTabForPage = tabParam || "home"
+        if (currentTabForPage === "new") {
           setNewWorksPage(pageNumber)
-        } else if (currentTab === "follow-user") {
+        } else if (currentTabForPage === "follow-user") {
           setFollowUserFeedPage(pageNumber)
-        } else if (currentTab === "follow-tag") {
+        } else if (currentTabForPage === "follow-tag") {
           setFollowTagFeedPage(pageNumber)
         }
       }
@@ -307,7 +310,7 @@ export default function Index() {
 
       setIsMounted(true)
     }
-  }, [isMounted, searchParams, currentTab])
+  }, [isMounted, searchParams])
 
   // タブ変更時（Tabs の onValueChange）などで呼ばれる
   const handleTabChange = (tab: string) => {
@@ -373,12 +376,7 @@ export default function Index() {
     internalIsPagination,
   ])
 
-  useEffect(() => {
-    const urlTab = searchParams.get("tab") || "home"
-    if (urlTab !== currentTab) {
-      setCurrentTab(urlTab)
-    }
-  }, [searchParams])
+  // URLパラメータの変更は初期化時のuseEffectで処理されるため、この処理は削除
 
   /**
    * 新着タブ内の「新着 / 人気 / 新規ユーザ」切り替え
@@ -582,6 +580,7 @@ export default function Index() {
     <>
       <Tabs
         value={currentTab}
+        defaultValue="home"
         onValueChange={handleTabChange}
         className="space-y-6"
       >
@@ -597,7 +596,7 @@ export default function Index() {
                   { label: "お気に入りタグ新着", value: "follow-tag" },
                 ]}
                 value={currentTab}
-                onChange={setCurrentTab}
+                onChange={handleTabChange}
               />
             </div>
             {/* <div className="flex items-center gap-3">

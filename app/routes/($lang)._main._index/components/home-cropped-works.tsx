@@ -50,7 +50,6 @@ export function HomeCroppedWorks(props: Props) {
                     imageUrl={work.largeThumbnailImageURL}
                     videoUrl={work.url}
                     alt={work.title}
-                    to={`/posts/${work.id}`}
                     className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover md:block"
                   />
                   <HoverVideoImage
@@ -61,7 +60,6 @@ export function HomeCroppedWorks(props: Props) {
                       work.title,
                       work.enTitle.length > 0 ? work.enTitle : work.title,
                     )}
-                    to={`/posts/${work.id}`}
                     className="absolute top-0 left-0 block h-full w-full rounded-md object-cover md:hidden"
                   />
                   <div className="absolute right-2 bottom-2">
@@ -117,7 +115,6 @@ export function HomeCroppedWorks(props: Props) {
                     imageUrl={work.smallThumbnailImageURL}
                     videoUrl={work.url}
                     alt={work.title}
-                    to={`/posts/${work.id}`}
                     className="absolute top-0 left-0 block h-full w-full rounded-md object-cover md:hidden"
                   />
                   <div className="absolute right-2 bottom-2">
@@ -149,7 +146,9 @@ export function HomeCroppedWorks(props: Props) {
                     </div>
                   )}
                   {/* プロンプト公開・動画バッジ */}
-                  <div className={`absolute left-1 z-10 ${props.hasReferenceButton ? 'bottom-8' : 'bottom-2'}`}>
+                  <div
+                    className={`absolute left-1 z-10 ${props.hasReferenceButton ? "bottom-8" : "bottom-2"}`}
+                  >
                     <WorkMediaBadge
                       isPromptPublic={work.promptAccessType === "PUBLIC"}
                       hasVideoUrl={Boolean(work.url)}

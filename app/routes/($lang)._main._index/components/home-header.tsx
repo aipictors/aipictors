@@ -84,13 +84,10 @@ function HomeHeader(props: Props) {
     targetUrl: string
   } | null>(null)
   const timeoutRef = useRef<NodeJS.Timeout>()
-  const previousLocationRef = useRef(
-    typeof window !== "undefined" ? location.pathname : "/",
-  )
+  const previousLocationRef = useRef("/")
   const isNavigatingRef = useRef(false)
   const isManualNavigationRef = useRef(false) // 手動ナビゲーションフラグを追加
-  const sensitivePath =
-    typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
+  const sensitivePath = /\/r($|\/)/.test(location.pathname)
   const getSensitiveLink = (path: string, forceSensitive = false) => {
     // すでに /r 付与済みならそのまま返す
     if (path.startsWith("/r/") || path === "/r") return path

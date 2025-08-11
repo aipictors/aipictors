@@ -1,6 +1,6 @@
 import type { SortType } from "~/types/sort-type"
 import { AuthContext } from "~/contexts/auth-context"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useMemo } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { WorksList } from "~/routes/($lang).my._index/components/works-list"
 import { useQuery } from "@apollo/client/index"
@@ -40,15 +40,9 @@ type Props = {
 export function WorksListContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
-  // Hooksは常に呼び出す必要がある（条件分岐の前）
-  const {
-    data: workResp,
-    loading: workLoading,
-    error: workError,
-  } = useQuery(worksQuery, {
-    skip:
-      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
-    variables: {
+  // クエリ変数のメモ化で不要な再実行を防ぐ
+  const worksQueryVariables = useMemo(
+    () => ({
       offset: (props.perPage ?? 50) * props.page,
       limit: props.perPage ?? 50,
       where: {
@@ -64,26 +58,34 @@ export function WorksListContainer(props: Props) {
         }),
         ...(props.rating !== null
           ? {
-              ratings: [props.rating],
+              ratings: [props.rating] as ("G" | "R15" | "R18" | "R18G")[],
             }
           : {
-              ratings: ["G", "R15", "R18", "R18G"],
+              ratings: ["G", "R15", "R18", "R18G"] as (
+                | "G"
+                | "R15"
+                | "R18"
+                | "R18G"
+              )[],
             }),
         createdAtAfter: new Date("1999/01/01").toISOString(),
         beforeCreatedAt: new Date("2099/01/01").toISOString(),
       },
-    },
-    errorPolicy: "all",
-  })
+    }),
+    [
+      props.page,
+      props.perPage,
+      authContext.userId,
+      props.orderBy,
+      props.sort,
+      props.accessType,
+      props.workType,
+      props.rating,
+    ],
+  )
 
-  const {
-    data: worksCountResp,
-    loading: countLoading,
-    error: countError,
-  } = useQuery(worksCountQuery, {
-    skip:
-      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
-    variables: {
+  const worksCountQueryVariables = useMemo(
+    () => ({
       where: {
         userId: authContext.userId || "",
         orderBy: props.orderBy,
@@ -97,11 +99,45 @@ export function WorksListContainer(props: Props) {
           workTypes: [props.workType],
         }),
         ...(props.rating !== null && {
-          ratings: [props.rating],
+          ratings: [props.rating] as ("G" | "R15" | "R18" | "R18G")[],
         }),
       },
-    },
-    errorPolicy: "all",
+    }),
+    [
+      authContext.userId,
+      props.orderBy,
+      props.sort,
+      props.accessType,
+      props.workType,
+      props.rating,
+    ],
+  )
+
+  // Hooksは常に呼び出す必要がある（条件分岐の前）
+  const {
+    data: workResp,
+    loading: workLoading,
+    error: workError,
+  } = useQuery(worksQuery, {
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
+    variables: worksQueryVariables,
+    errorPolicy: "all", // 部分的なデータも受け取る
+    fetchPolicy: "cache-and-network", // キャッシュを優先してネットワークエラーを軽減
+    notifyOnNetworkStatusChange: true,
+  })
+
+  const {
+    data: worksCountResp,
+    loading: countLoading,
+    error: countError,
+  } = useQuery(worksCountQuery, {
+    skip:
+      authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
+    variables: worksCountQueryVariables,
+    errorPolicy: "all", // 部分的なデータも受け取る
+    fetchPolicy: "cache-and-network", // キャッシュを優先してネットワークエラーを軽減
+    notifyOnNetworkStatusChange: true,
   })
 
   const works = workResp?.works
@@ -121,19 +157,62 @@ export function WorksListContainer(props: Props) {
     return null
   }
 
-  // エラーハンドリング
+  // エラーハンドリング - より詳細な情報と再試行機能
   if (workError && !workResp) {
     console.error("Works query error:", workError)
-    return <div>作品の読み込みに失敗しました</div>
+    const isNetworkError = workError.networkError !== null
+    const isTimeoutError =
+      workError.message.includes("timeout") ||
+      workError.message.includes("fetch")
+
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 p-8">
+        <div className="text-center">
+          <p className="font-medium text-gray-900 text-lg dark:text-gray-100">
+            作品の読み込みに失敗しました
+          </p>
+          {isNetworkError && (
+            <p className="mt-2 text-gray-600 text-sm dark:text-gray-400">
+              ネットワークエラーが発生しました。混雑時間帯の可能性があります。
+            </p>
+          )}
+          {isTimeoutError && (
+            <p className="mt-2 text-gray-600 text-sm dark:text-gray-400">
+              リクエストがタイムアウトしました。しばらく時間をおいて再試行してください。
+            </p>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+        >
+          再読み込み
+        </button>
+      </div>
+    )
   }
 
   if (countError && !worksCountResp) {
     console.error("Works count query error:", countError)
+    // カウントエラーは非致命的なので警告のみ表示
   }
 
-  // ローディング状態
+  // ローディング状態 - ネットワーク状況を考慮した表示
   if (workLoading || countLoading) {
-    return <div>読み込み中...</div>
+    return (
+      <div className="flex flex-col items-center justify-center p-8 space-y-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100" />
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          作品を読み込んでいます...
+        </p>
+        {workLoading && countLoading && (
+          <p className="text-xs text-gray-500 dark:text-gray-500">
+            混雑時は読み込みに時間がかかる場合があります
+          </p>
+        )}
+      </div>
+    )
   }
 
   return (
