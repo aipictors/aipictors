@@ -35,45 +35,56 @@ export const headers: HeadersFunction = () => ({
 export default function MyPosts() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
-
-  const [albumOrderDeskAsc, _setAlbumOrderDeskAsc] = React.useState<SortType>(
-    (searchParams.get("albumOrderDeskAsc") as SortType) || "DESC",
-  )
-
+  // 初期値をURLパラメータから取得（一度だけ実行）
+  const [isInitialized, setIsInitialized] = React.useState(false)
+  const [page, setPage] = React.useState(0)
+  const [albumOrderDeskAsc, _setAlbumOrderDeskAsc] =
+    React.useState<SortType>("DESC")
   const [accessType, setAccessType] =
-    React.useState<IntrospectionEnum<"AccessType"> | null>(
-      (searchParams.get("accessType") as IntrospectionEnum<"AccessType">) ||
-        null,
-    )
-
+    React.useState<IntrospectionEnum<"AccessType"> | null>(null)
   const [workType, setWorkType] =
-    React.useState<IntrospectionEnum<"WorkType"> | null>(
-      (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
-    )
-
-  const [WorkOrderby, setWorkOrderby] = React.useState<
-    IntrospectionEnum<"WorkOrderBy">
-  >(
-    (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
-      "DATE_CREATED",
-  )
-
-  const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
-    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
-  )
-
+    React.useState<IntrospectionEnum<"WorkType"> | null>(null)
+  const [WorkOrderby, setWorkOrderby] =
+    React.useState<IntrospectionEnum<"WorkOrderBy">>("DATE_CREATED")
+  const [worksOrderDeskAsc, setWorksOrderDeskAsc] =
+    React.useState<SortType>("DESC")
   const [rating, setRating] =
-    React.useState<IntrospectionEnum<"Rating"> | null>(
-      (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
-    )
+    React.useState<IntrospectionEnum<"Rating"> | null>(null)
+  const [perPage, setPerPage] = React.useState(50)
 
-  const [perPage, setPerPage] = React.useState(
-    Number(searchParams.get("perPage")) || 50,
-  )
-
-  // URLパラメータの監視と更新
+  // URLパラメータから初期値を設定（一度だけ実行）
   useEffect(() => {
+    if (!isInitialized) {
+      setPage(Number(searchParams.get("page")) || 0)
+      _setAlbumOrderDeskAsc(
+        (searchParams.get("albumOrderDeskAsc") as SortType) || "DESC",
+      )
+      setAccessType(
+        (searchParams.get("accessType") as IntrospectionEnum<"AccessType">) ||
+          null,
+      )
+      setWorkType(
+        (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
+      )
+      setWorkOrderby(
+        (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
+          "DATE_CREATED",
+      )
+      setWorksOrderDeskAsc(
+        (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
+      )
+      setRating(
+        (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
+      )
+      setPerPage(Number(searchParams.get("perPage")) || 50)
+      setIsInitialized(true)
+    }
+  }, [searchParams, isInitialized])
+
+  // URLパラメータの更新（初期化後のみ実行）
+  useEffect(() => {
+    if (!isInitialized) return
+
     const params = new URLSearchParams()
 
     params.set("page", String(page))
@@ -85,8 +96,9 @@ export default function MyPosts() {
     params.set("WorkOrderby", WorkOrderby)
     params.set("worksOrderDeskAsc", worksOrderDeskAsc)
 
-    setSearchParams(params)
+    setSearchParams(params, { replace: true })
   }, [
+    isInitialized,
     page,
     perPage,
     albumOrderDeskAsc,
@@ -95,7 +107,6 @@ export default function MyPosts() {
     rating,
     WorkOrderby,
     worksOrderDeskAsc,
-    setSearchParams,
   ])
 
   // 作品一覧のソートボタンクリック時の処理
