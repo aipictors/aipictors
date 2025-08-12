@@ -26,7 +26,7 @@ export function RecipientMessage(props: Props) {
           <Link
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500"
+            className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
             key={index.toString()}
             to={part}
           >

@@ -23,7 +23,7 @@ export function SenderMessage(props: Props) {
           <Link
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500"
+            className="text-blue-100 underline hover:text-white"
             key={index.toString()}
             to={part}
           >
