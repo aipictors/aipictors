@@ -20,6 +20,7 @@ type Props = {
  * ホバー時に動画を再生する画像コンポーネント
  * PC: ホバー時のみ動画再生
  * スマホ: サムネイル内での動画再生（全画面表示は防ぐ）
+ * Safari対応：特定の表示問題を修正
  */
 export function HoverVideoImage(props: Props) {
   const [isHovered, setIsHovered] = useState(false)
@@ -51,9 +52,16 @@ export function HoverVideoImage(props: Props) {
         height={props.height}
         loading={props.loading}
         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
+        style={{
+          // Safari対応：画像表示を強制
+          WebkitBackfaceVisibility: "hidden",
+          transform: "translateZ(0)",
+          minWidth: "100%",
+          minHeight: "100%",
+        }}
       />
 
-      {/* 動画表示（スマホでは全画面表示を防ぐためplaysInlineを強制適用） */}
+      {/* 動画表示（Safari対応：動画再生エラー時の画像フォールバック強化） */}
       {props.videoUrl && (
         <video
           ref={videoRef}
@@ -66,11 +74,17 @@ export function HoverVideoImage(props: Props) {
           loop
           playsInline
           preload="metadata"
-          // スマホでの全画面表示を完全に防ぐ
+          // Safari対応：全画面表示とエラー時の制御強化
           webkit-playsinline="true"
           x5-playsinline="true"
           x5-video-player-type="h5"
           x5-video-player-fullscreen="false"
+          onError={() => {
+            // 動画読み込みエラー時は動画を非表示にする
+            if (videoRef.current) {
+              videoRef.current.style.display = "none"
+            }
+          }}
         />
       )}
     </>

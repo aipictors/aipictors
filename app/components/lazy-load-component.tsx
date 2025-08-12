@@ -29,6 +29,12 @@ export function LazyLoadComponent(props: Props) {
       return
     }
 
+    // Intersection Observer が利用できない場合（古いSafariなど）のフォールバック
+    if (typeof window !== "undefined" && !("IntersectionObserver" in window)) {
+      setIsVisible(true)
+      return
+    }
+
     // クライアントサイドでのみ遅延読み込み開始
     setIsVisible(false)
 

@@ -95,14 +95,14 @@ export function HomeCroppedWorks(props: Props) {
             </div>
           ))}
       </section>
-      <section className="grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <section className="safari-work-grid grid grid-cols-2 gap-2 md:hidden md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {props.works
           .filter(
             (work, index, self) =>
               self.findIndex((w) => w.id === work.id) === index,
           )
           .map((work) => (
-            <div key={work.id} className="relative">
+            <div key={work.id} className="relative w-full">
               {props.onSelect ? (
                 <button
                   type="button"
@@ -165,11 +165,13 @@ export function HomeCroppedWorks(props: Props) {
               ) : (
                 <Link
                   to={`/posts/${work.id}`}
-                  className="relative overflow-hidden"
+                  className="relative block w-full overflow-hidden"
                 >
                   <div
-                    className="w-full overflow-hidden"
-                    style={{ paddingBottom: "100%" }}
+                    className="relative w-full overflow-hidden"
+                    style={{
+                      paddingBottom: "100%",
+                    }}
                   >
                     <HoverVideoImage
                       workId={work.id}

@@ -92,3 +92,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .safari-work-grid {
+    /* 作品グリッド専用のSafari修正 */
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}

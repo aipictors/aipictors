@@ -17,6 +17,30 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
 // ───────────────── Types ─────────────────
+type Comment = {
+  id: string
+  user?: {
+    id: string
+    name: string
+    iconUrl?: string | null
+  }
+  text?: string | null
+  createdAt: number
+  likesCount: number
+  isLiked: boolean
+  isWorkOwnerLiked: boolean
+  isMuted?: boolean
+  isSensitive?: boolean
+  sticker?: {
+    id: string
+    title: string
+    imageUrl?: string | null
+    accessType: string
+    isDownloaded?: boolean
+  }
+  responses?: Comment[] | null
+}
+
 interface Props {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   /** 表示を開始したい作品 ID（優先） */
@@ -451,25 +475,54 @@ export function WorkViewerDialog({
                 userSetting={undefined}
                 mode={"dialog"}
               />
-              <div className="pb-4">
-                <WorkCommentSectionEnhanced
-                  workId={currentWork.id}
-                  workOwnerIconImageURL={withIconUrlFallback(
-                    currentWork.user?.iconUrl,
-                  )}
-                  isWorkOwnerBlocked={currentWork.user?.isBlocked ?? false}
-                  comments={
-                    Array.isArray(
-                      (currentWork as { comments?: unknown[] }).comments,
-                    )
-                      ? ((currentWork as any).comments.map((c: any) => ({
-                          ...c,
-                          responses: null,
-                        })) as any)
-                      : []
-                  }
-                />
-              </div>
+              {/* コメント欄はisCommentsEditableがtrueの場合のみ表示 */}
+              {currentWork.isCommentsEditable && (
+                <div className="pb-4">
+                  <WorkCommentSectionEnhanced
+                    workId={currentWork.id}
+                    workOwnerIconImageURL={withIconUrlFallback(
+                      currentWork.user?.iconUrl,
+                    )}
+                    isWorkOwnerBlocked={currentWork.user?.isBlocked ?? false}
+                    comments={
+                      Array.isArray(
+                        (currentWork as { comments?: unknown[] }).comments,
+                      )
+                        ? (currentWork as { comments: Comment[] }).comments.map(
+                            (c) => ({
+                              id: c.id,
+                              text: c.text,
+                              createdAt: c.createdAt,
+                              likesCount: c.likesCount,
+                              isLiked: c.isLiked,
+                              isWorkOwnerLiked: c.isWorkOwnerLiked,
+                              isMuted: c.isMuted,
+                              isSensitive: c.isSensitive,
+                              user: c.user
+                                ? {
+                                    id: c.user.id,
+                                    name: c.user.name || "",
+                                    iconUrl: c.user.iconUrl,
+                                  }
+                                : undefined,
+                              sticker: c.sticker
+                                ? {
+                                    id: c.sticker.id || "",
+                                    title: c.sticker.title || "",
+                                    imageUrl: c.sticker.imageUrl,
+                                    accessType:
+                                      c.sticker.accessType || "PUBLIC",
+                                    isDownloaded: c.sticker.isDownloaded,
+                                  }
+                                : undefined,
+                              responses: null,
+                            }),
+                          )
+                        : []
+                    }
+                  />
+                </div>
+              )}
             </div>
           )}
         </aside>
@@ -477,7 +530,7 @@ export function WorkViewerDialog({
         {/* サムネイル列 */}
         <aside
           ref={thumbListRef}
-          className="ml-auto hidden h-full w-24 flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm md:flex"
+          className="ml-auto flex h-full w-16 flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm md:w-24"
           style={{ scrollbarWidth: "thin" }}
         >
           {works.map((w, i) => (
@@ -494,7 +547,7 @@ export function WorkViewerDialog({
               <img
                 src={w.smallThumbnailImageURL}
                 alt={w.title}
-                className="h-20 w-full rounded-md object-cover"
+                className="h-14 w-full rounded-md object-cover md:h-20"
                 draggable={false}
                 loading="lazy"
               />
