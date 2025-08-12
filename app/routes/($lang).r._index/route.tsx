@@ -30,7 +30,7 @@ import {
   Navigation,
   PlaySquare,
 } from "lucide-react"
-import { useState, Suspense, useMemo } from "react"
+import { useState, Suspense, useMemo, useEffect } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { Button } from "~/components/ui/button"
@@ -208,6 +208,22 @@ export default function Index() {
     }
   }
 
+  // ダイアログモード変更時の処理（localStorageに保存）
+  const onChangeDialogMode = (mode: boolean) => {
+    setIsDialogMode(mode)
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("aipictors-dialog-mode", JSON.stringify(mode))
+      } catch (error) {
+        console.error("Failed to save dialog mode to localStorage:", error)
+      }
+    }
+    // ダイアログを閉じる
+    if (!mode) {
+      setDialogIndex(null)
+    }
+  }
+
   // currentWorksを更新するコールバック関数
   const updateCurrentWorks = (
     works: FragmentOf<typeof PhotoAlbumWorkFragment>[],
@@ -253,6 +269,21 @@ export default function Index() {
   const isSubscriptionUser = ["LITE", "STANDARD", "PREMIUM"].includes(
     pass?.viewer?.currentPass?.type ?? "",
   )
+
+  // localStorageからダイアログモードを復元
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const savedMode = localStorage.getItem("aipictors-dialog-mode")
+        if (savedMode !== null) {
+          const parsedMode = JSON.parse(savedMode)
+          setIsDialogMode(parsedMode)
+        }
+      } catch (error) {
+        console.error("Failed to restore dialog mode from localStorage:", error)
+      }
+    }
+  }, [])
 
   // ---------- render ----------
   if (!data) return null
@@ -595,7 +626,7 @@ export default function Index() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setIsDialogMode(false)}
+                          onClick={() => onChangeDialogMode(false)}
                           className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                             !isDialogMode
                               ? "bg-background text-foreground shadow-sm"
@@ -608,7 +639,7 @@ export default function Index() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setIsDialogMode(true)}
+                          onClick={() => onChangeDialogMode(true)}
                           className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                             isDialogMode
                               ? "bg-background text-foreground shadow-sm"
@@ -783,7 +814,7 @@ export default function Index() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setIsDialogMode(false)}
+                          onClick={() => onChangeDialogMode(false)}
                           className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                             !isDialogMode
                               ? "bg-background text-foreground shadow-sm"
@@ -796,7 +827,7 @@ export default function Index() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setIsDialogMode(true)}
+                          onClick={() => onChangeDialogMode(true)}
                           className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                             isDialogMode
                               ? "bg-background text-foreground shadow-sm"
@@ -872,7 +903,7 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsDialogMode(false)}
+                onClick={() => onChangeDialogMode(false)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                   !isDialogMode
                     ? "bg-background text-foreground shadow-sm"
@@ -885,7 +916,7 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsDialogMode(true)}
+                onClick={() => onChangeDialogMode(true)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                   isDialogMode
                     ? "bg-background text-foreground shadow-sm"
@@ -963,7 +994,7 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsDialogMode(false)}
+                onClick={() => onChangeDialogMode(false)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                   !isDialogMode
                     ? "bg-background text-foreground shadow-sm"
@@ -976,7 +1007,7 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsDialogMode(true)}
+                onClick={() => onChangeDialogMode(true)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                   isDialogMode
                     ? "bg-background text-foreground shadow-sm"

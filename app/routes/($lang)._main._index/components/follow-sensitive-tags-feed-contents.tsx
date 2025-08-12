@@ -34,6 +34,7 @@ import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._ind
 
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -52,11 +53,6 @@ function chunkPosts<T>(arr: T[], size: number): T[][] {
   for (let i = 0; i < arr.length; i += size) res.push(arr.slice(i, i + size))
   return res
 }
-
-type WorkItem = FragmentOf<typeof workFieldsFragment> & {
-  comments?: CommentItem[] | null
-}
-type CommentItem = FragmentOf<typeof CommentListItemFragment>
 
 /* -----------------------------------------------------------------
  * GraphQL
@@ -170,7 +166,7 @@ export function FollowSensitiveTagsFeedContents({
 }: FollowTagsFeedContentsProps) {
   const navigate = useNavigate()
   const t = useTranslation()
-  const [isTimelineView, setIsTimelineView] = useState<boolean>(false)
+  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
 
   /* タグプレビュー取得 */
   const { data: tagData } = useSuspenseQuery(followedTagsPreviewQuery, {
@@ -504,7 +500,7 @@ function InfiniteMode({
 function FeedContent({
   posts,
   isTimelineView,
-  setIsTimelineView,
+  setIsTimelineView: _setIsTimelineView,
   onSelect,
 }: {
   posts: PostItem[]
@@ -557,7 +553,7 @@ function TimelineView({
   toggleCommentsVisibility,
   toggleSubWorksVisibility,
   onSelect,
-  index,
+  index: _index,
 }: {
   works: NonNullable<PostItem["work"]>[]
   t: ReturnType<typeof useTranslation>
@@ -737,12 +733,12 @@ function GridView({
     const optimizedWorks = works.map((work) => ({
       id: work.id,
       title: work.title,
-      imageUrl: work.smallThumbnailImageURL,
-      width: work.smallThumbnailImageWidth,
-      height: work.smallThumbnailImageHeight,
+      imageUrl: work.largeThumbnailImageURL,
+      width: 300, // fallback width for mobile
+      height: 200, // fallback height for mobile
       userId: work.user?.id,
       userName: work.user?.name,
-      userIcon: work.user?.iconUrl,
+      userIcon: work.user?.iconUrl ?? undefined,
     }))
 
     return (

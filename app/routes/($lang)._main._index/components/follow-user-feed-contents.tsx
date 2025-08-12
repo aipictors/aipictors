@@ -18,7 +18,7 @@ import { LikeButton } from "~/components/like-button"
 import { Link, useNavigate } from "@remix-run/react"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { cn } from "~/lib/utils"
+import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import {
@@ -30,6 +30,7 @@ import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infin
 import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 import { ResponsivePagination } from "~/components/responsive-pagination"
+import { cn } from "~/lib/utils"
 
 type Props = {
   tab: string
@@ -95,7 +96,7 @@ function PaginationMode(props: Props) {
   const t = useTranslation()
   const [prevDataKey, setPrevDataKey] = useState<string>("")
 
-  const [isTimelineView, setIsTimelineView] = useState(false)
+  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
 
   const currentPage = props.page ?? 0
   const setPage = props.setPage ?? (() => {})
@@ -217,7 +218,7 @@ function PaginationMode(props: Props) {
           setIsTimelineView={setIsTimelineView}
           navigate={navigate}
           t={t}
-          isPagination={true}
+          _isPagination={true}
           onSelect={props.onSelect}
         />
       )}
@@ -248,7 +249,7 @@ function InfiniteMode(props: Props) {
   const navigate = useNavigate()
   const t = useTranslation()
 
-  const [isTimelineView, setIsTimelineView] = useState(false)
+  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
@@ -453,7 +454,7 @@ function InfiniteMode(props: Props) {
               navigate={navigate}
               t={t}
               showControls={idx === 0}
-              isPagination={false}
+              _isPagination={false}
               onSelect={props.onSelect}
             />
           ),
@@ -482,7 +483,7 @@ type FeedContentProps = {
   navigate: ReturnType<typeof useNavigate>
   t: ReturnType<typeof useTranslation>
   showControls?: boolean
-  isPagination: boolean
+  _isPagination: boolean
   onSelect?: (index: string) => void
 }
 
@@ -493,7 +494,7 @@ function FeedContent({
   navigate,
   t,
   showControls = true,
-  isPagination,
+  _isPagination,
   onSelect,
 }: FeedContentProps) {
   const [hiddenComments, setHiddenComments] = useState<{

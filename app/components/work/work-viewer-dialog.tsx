@@ -12,7 +12,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
-import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { WorkCommentSectionEnhanced } from "~/components/work/work-comment-section-final"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
@@ -438,7 +438,7 @@ export function WorkViewerDialog({
               </div>
             </div>
           ) : (
-            <div className="flex flex-1 flex-col gap-y-6 overflow-y-auto overscroll-y-contain p-4">
+            <div className="flex flex-1 flex-col gap-y-6 overflow-y-auto overscroll-y-contain p-4 pb-8">
               <WorkArticle
                 work={{
                   ...currentWork,
@@ -451,24 +451,25 @@ export function WorkViewerDialog({
                 userSetting={undefined}
                 mode={"dialog"}
               />
-              <WorkCommentList
-                workId={currentWork.id}
-                workOwnerIconImageURL={withIconUrlFallback(
-                  currentWork.user?.iconUrl,
-                )}
-                isWorkOwnerBlocked={currentWork.user?.isBlocked ?? false}
-                comments={
-                  Array.isArray(
-                    (currentWork as { comments?: unknown[] }).comments,
-                  )
-                    ? ((currentWork as any).comments.map((c: any) => ({
-                        ...c,
-                        responses: null,
-                      })) as any)
-                    : []
-                }
-                defaultShowCommentCount={8}
-              />
+              <div className="pb-4">
+                <WorkCommentSectionEnhanced
+                  workId={currentWork.id}
+                  workOwnerIconImageURL={withIconUrlFallback(
+                    currentWork.user?.iconUrl,
+                  )}
+                  isWorkOwnerBlocked={currentWork.user?.isBlocked ?? false}
+                  comments={
+                    Array.isArray(
+                      (currentWork as { comments?: unknown[] }).comments,
+                    )
+                      ? ((currentWork as any).comments.map((c: any) => ({
+                          ...c,
+                          responses: null,
+                        })) as any)
+                      : []
+                  }
+                />
+              </div>
             </div>
           )}
         </aside>

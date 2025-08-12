@@ -230,6 +230,18 @@ export default function Index() {
     FragmentOf<typeof PhotoAlbumWorkFragment>[]
   >([])
 
+  const onChangeDialogMode = (mode: boolean) => {
+    setIsDialogMode(mode)
+    if (!mode) {
+      setDialogIndex(null)
+    }
+
+    // ローカルストレージに保存
+    if (typeof window !== "undefined") {
+      localStorage.setItem("aipictors-dialog-mode", JSON.stringify(mode))
+    }
+  }
+
   // ホームタブ用の作品データを管理するstate
   const homeWorks = useMemo(
     () =>
@@ -375,6 +387,25 @@ export default function Index() {
     searchParams,
     internalIsPagination,
   ])
+
+  /**
+   * ダイアログモードの設定をローカルストレージから復元
+   */
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const savedDialogMode = localStorage.getItem("aipictors-dialog-mode")
+        if (savedDialogMode !== null) {
+          const parsedMode = JSON.parse(savedDialogMode)
+          if (typeof parsedMode === "boolean") {
+            setIsDialogMode(parsedMode)
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to parse dialog mode from localStorage:", error)
+      }
+    }
+  }, [])
 
   // URLパラメータの変更は初期化時のuseEffectで処理されるため、この処理は削除
 
@@ -937,7 +968,7 @@ export default function Index() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setIsDialogMode(false)}
+                        onClick={() => onChangeDialogMode(false)}
                         className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                           !isDialogMode
                             ? "bg-background text-foreground shadow-sm"
@@ -950,7 +981,7 @@ export default function Index() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setIsDialogMode(true)}
+                        onClick={() => onChangeDialogMode(true)}
                         className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                           isDialogMode
                             ? "bg-background text-foreground shadow-sm"
@@ -1096,7 +1127,7 @@ export default function Index() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsDialogMode(false)}
+                    onClick={() => onChangeDialogMode(false)}
                     className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                       !isDialogMode
                         ? "bg-background text-foreground shadow-sm"
@@ -1109,7 +1140,7 @@ export default function Index() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsDialogMode(true)}
+                    onClick={() => onChangeDialogMode(true)}
                     className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                       isDialogMode
                         ? "bg-background text-foreground shadow-sm"
@@ -1271,7 +1302,7 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsDialogMode(false)}
+                onClick={() => onChangeDialogMode(false)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                   !isDialogMode
                     ? "bg-background text-foreground shadow-sm"
@@ -1284,7 +1315,7 @@ export default function Index() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setIsDialogMode(true)}
+                onClick={() => onChangeDialogMode(true)}
                 className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
                   isDialogMode
                     ? "bg-background text-foreground shadow-sm"

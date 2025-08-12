@@ -29,6 +29,7 @@ import {
 } from "~/components/responsive-photo-works-album"
 import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
 import { LikeButton } from "~/components/like-button"
+import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 
@@ -146,7 +147,7 @@ export type PostItem = {
 }
 
 export type FollowTagsFeedContentsProps = {
-  tab?: string
+  _tab?: string
   page: number
   setPage: (p: number) => void
   isPagination: boolean
@@ -158,7 +159,7 @@ export type FollowTagsFeedContentsProps = {
  * Root component
  * -----------------------------------------------------------------*/
 export function FollowTagsFeedContents({
-  tab,
+  _tab,
   page,
   setPage,
   isPagination,
@@ -167,7 +168,7 @@ export function FollowTagsFeedContents({
 }: FollowTagsFeedContentsProps) {
   const navigate = useNavigate()
   const t = useTranslation()
-  const [isTimelineView, setIsTimelineView] = useState<boolean>(false)
+  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
 
   /* タグプレビュー取得 */
   const { data: tagData } = useSuspenseQuery(followedTagsPreviewQuery, {
@@ -218,7 +219,7 @@ export function FollowTagsFeedContents({
       {isPagination ? (
         <PaginationMode
           key={key}
-          tab={tab}
+          _tab={_tab}
           page={page}
           setPage={setPage}
           isTimelineView={isTimelineView}
@@ -229,7 +230,7 @@ export function FollowTagsFeedContents({
       ) : (
         <InfiniteMode
           key={key}
-          tab={tab}
+          _tab={_tab}
           isTimelineView={isTimelineView}
           setIsTimelineView={setIsTimelineView}
           onSelect={onSelect}
@@ -244,7 +245,7 @@ export function FollowTagsFeedContents({
  * Pagination Mode
  * ===============================================================*/
 function PaginationMode({
-  tab,
+  _tab,
   page,
   setPage,
   isTimelineView,
@@ -252,7 +253,7 @@ function PaginationMode({
   onSelect,
   updateWorks,
 }: {
-  tab?: string
+  _tab?: string
   page: number
   setPage: (n: number) => void
   isTimelineView: boolean
@@ -304,7 +305,7 @@ function PaginationMode({
       updateWorks(works)
       setPrevDataKey(dataKey)
     }
-  }, [data?.feed?.posts, updateWorks, page, isTimelineView, prevDataKey, tab])
+  }, [data?.feed?.posts, updateWorks, page, isTimelineView, prevDataKey, _tab])
 
   if (auth.isLoading) return <Loader />
   if (auth.isNotLoggedIn || !auth.userId) return <NeedLoginMessage />
@@ -336,13 +337,13 @@ function PaginationMode({
  * Infinite Scroll Mode
  * ===============================================================*/
 function InfiniteMode({
-  tab,
+  _tab,
   isTimelineView,
   setIsTimelineView,
   onSelect,
   updateWorks,
 }: {
-  tab?: string
+  _tab?: string
   isTimelineView: boolean
   setIsTimelineView: (v: boolean) => void
   onSelect?: (index: string) => void
@@ -504,7 +505,7 @@ function InfiniteMode({
 function FeedContent({
   posts,
   isTimelineView,
-  setIsTimelineView,
+  setIsTimelineView: _setIsTimelineView,
   onSelect,
 }: {
   posts: PostItem[]
@@ -557,7 +558,7 @@ function TimelineView({
   toggleCommentsVisibility,
   toggleSubWorksVisibility,
   onSelect,
-  index,
+  index: _index,
 }: {
   works: NonNullable<PostItem["work"]>[]
   t: ReturnType<typeof useTranslation>
@@ -737,12 +738,12 @@ function GridView({
     const optimizedWorks = works.map((work) => ({
       id: work.id,
       title: work.title,
-      imageUrl: work.smallThumbnailImageURL,
-      width: work.smallThumbnailImageWidth,
-      height: work.smallThumbnailImageHeight,
+      imageUrl: work.largeThumbnailImageURL,
+      width: 300, // fallback width for mobile
+      height: 200, // fallback height for mobile
       userId: work.user?.id,
       userName: work.user?.name,
-      userIcon: work.user?.iconUrl,
+      userIcon: work.user?.iconUrl ?? undefined,
     }))
 
     return (
