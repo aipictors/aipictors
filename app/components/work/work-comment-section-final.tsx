@@ -83,6 +83,7 @@ type Props = {
   comments: Comment[]
   workOwnerIconImageURL?: string | null
   isWorkOwnerBlocked?: boolean
+  isFixedInput?: boolean
 }
 
 /**
@@ -545,7 +546,7 @@ export function WorkCommentSectionEnhanced(props: Props) {
         )}
 
         {/* コメント入力欄 */}
-        {!props.isWorkOwnerBlocked && (
+        {!props.isWorkOwnerBlocked && !props.isFixedInput && (
           <div className="space-y-2">
             <div className="flex w-full items-center space-x-3">
               <Avatar>

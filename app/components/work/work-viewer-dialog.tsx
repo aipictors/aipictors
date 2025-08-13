@@ -13,6 +13,7 @@ import { Button } from "~/components/ui/button"
 import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentSectionEnhanced } from "~/components/work/work-comment-section-final"
+import { WorkCommentInputFixed } from "~/components/work/work-comment-input-fixed"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
@@ -105,7 +106,7 @@ export function WorkViewerDialog({
 
   const [index, setIndex] = useState(initialIndex)
   const [loadedWorkIds, setLoadedWorkIds] = useState<Set<string>>(new Set())
-  const [workDataCache, setWorkDataCache] = useState<Map<string, any>>(
+  const [workDataCache, setWorkDataCache] = useState<Map<string, unknown>>(
     new Map(),
   )
 
@@ -208,7 +209,7 @@ export function WorkViewerDialog({
   }, [index, works, workDataCache])
 
   // ────────── GraphQL Query with conditional execution ──────────
-  const { data, loading } = useQuery(workDialogQuery, {
+  const { data, loading, refetch } = useQuery(workDialogQuery, {
     variables: { workId: work.id },
     skip: !shouldFetchWork, // デバウンス完了 & 未キャッシュの場合のみ実行
     fetchPolicy: "cache-and-network",
@@ -277,12 +278,25 @@ export function WorkViewerDialog({
     // キャッシュからデータを取得
     const cachedData = workDataCache.get(work.id)
     if (cachedData) {
-      return cachedData
+      return cachedData as typeof work
     }
 
     // キャッシュにない場合はAPIからのデータまたは基本データを使用
-    return data?.work ?? work
+    return (data?.work as typeof work) ?? work
   }, [work, workDataCache, data])
+
+  // ────────── コメント送信後の処理 ──────────
+  const handleCommentAdded = useCallback(async () => {
+    try {
+      // データを再取得してキャッシュを更新
+      const result = await refetch()
+      if (result.data?.work) {
+        setWorkDataCache((prev) => new Map(prev).set(work.id, result.data.work))
+      }
+    } catch (error) {
+      console.error("Failed to refetch comments:", error)
+    }
+  }, [refetch, work.id])
 
   // ────────── index が末尾なら自動ロード ──────────
   useEffect(() => {
@@ -372,7 +386,7 @@ export function WorkViewerDialog({
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {index + 1} / {works.length}
               </span>
               <Button
@@ -393,10 +407,10 @@ export function WorkViewerDialog({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <DialogTitle className="text-lg font-bold truncate">
+            <DialogTitle className="truncate text-lg font-bold">
               {/* タイトルはデスクトップのみ */}
               <span
-                className="hidden md:inline cursor-pointer text-left transition-colors hover:text-primary"
+                className="cursor-pointer text-left transition-colors hover:text-primary hidden md:inline"
                 onClick={() => {
                   // Portal内でReact Routerが使用できないため、直接ナビゲーション
                   if (typeof window !== "undefined") {
@@ -417,7 +431,7 @@ export function WorkViewerDialog({
                 {currentWork.title}
               </span>
               {/* モバイル用簡潔タイトル */}
-              <span className="md:hidden truncate">{currentWork.title}</span>
+              <span className="truncate md:hidden">{currentWork.title}</span>
             </DialogTitle>
             <div className="mt-2">
               <span
@@ -444,7 +458,7 @@ export function WorkViewerDialog({
                   />
                   <AvatarFallback />
                 </Avatar>
-                <span className="text-sm font-medium">
+                <span className="font-medium text-sm">
                   {currentWork.user?.name}
                 </span>
               </span>
@@ -462,66 +476,134 @@ export function WorkViewerDialog({
               </div>
             </div>
           ) : (
-            <div className="flex flex-1 flex-col gap-y-6 overflow-y-auto overscroll-y-contain p-4 pb-8">
-              <WorkArticle
-                work={{
-                  ...currentWork,
-                  user: currentWork.user
-                    ? { ...currentWork.user, works: [] }
-                    : null,
-                  nextWork: null,
-                  previousWork: null,
-                }}
-                userSetting={undefined}
-                mode={"dialog"}
-              />
-              {/* コメント欄はisCommentsEditableがtrueの場合のみ表示 */}
-              {currentWork.isCommentsEditable && (
-                <div className="pb-4">
-                  <WorkCommentSectionEnhanced
-                    workId={currentWork.id}
-                    workOwnerIconImageURL={withIconUrlFallback(
-                      currentWork.user?.iconUrl,
-                    )}
-                    isWorkOwnerBlocked={currentWork.user?.isBlocked ?? false}
-                    comments={
-                      Array.isArray(
-                        (currentWork as { comments?: unknown[] }).comments,
-                      )
-                        ? (currentWork as { comments: Comment[] }).comments.map(
-                            (c) => ({
-                              id: c.id,
-                              text: c.text,
-                              createdAt: c.createdAt,
-                              likesCount: c.likesCount,
-                              isLiked: c.isLiked,
-                              isWorkOwnerLiked: c.isWorkOwnerLiked,
-                              isMuted: c.isMuted,
-                              isSensitive: c.isSensitive,
-                              user: c.user
+            <div className="flex flex-1 flex-col overflow-hidden">
+              {/* メインコンテンツエリア（スクロール可能） */}
+              <div className="flex-1 overflow-y-auto overscroll-y-contain p-4">
+                <WorkArticle
+                  work={{
+                    ...currentWork,
+                    user: currentWork.user
+                      ? { ...currentWork.user, works: [] }
+                      : null,
+                    nextWork: null,
+                    previousWork: null,
+                  }}
+                  userSetting={undefined}
+                  mode={"dialog"}
+                />
+                {/* コメント一覧（コメントが有効な場合のみ） */}
+                {currentWork.isCommentsEditable && (
+                  <div className="mt-6">
+                    <WorkCommentSectionEnhanced
+                      workId={currentWork.id}
+                      workOwnerIconImageURL={withIconUrlFallback(
+                        currentWork.user?.iconUrl,
+                      )}
+                      isWorkOwnerBlocked={
+                        (currentWork as { user?: { isBlocked?: boolean } }).user
+                          ?.isBlocked ?? false
+                      }
+                      isFixedInput={true}
+                      comments={
+                        Array.isArray(
+                          (currentWork as unknown as { comments?: unknown[] })
+                            .comments,
+                        )
+                          ? (
+                              currentWork as unknown as { comments: unknown[] }
+                            ).comments.map((c: unknown) => ({
+                              id: (c as { id: string }).id,
+                              text: (c as { text?: string | null }).text,
+                              createdAt: (c as { createdAt: number }).createdAt,
+                              likesCount: (c as { likesCount: number })
+                                .likesCount,
+                              isLiked: (c as { isLiked: boolean }).isLiked,
+                              isWorkOwnerLiked: (
+                                c as { isWorkOwnerLiked: boolean }
+                              ).isWorkOwnerLiked,
+                              isMuted: (c as { isMuted?: boolean }).isMuted,
+                              isSensitive: (c as { isSensitive?: boolean })
+                                .isSensitive,
+                              user: (
+                                c as {
+                                  user?: {
+                                    id: string
+                                    name: string
+                                    iconUrl?: string | null
+                                  }
+                                }
+                              ).user
                                 ? {
-                                    id: c.user.id,
-                                    name: c.user.name || "",
-                                    iconUrl: c.user.iconUrl,
+                                    id: (c as { user: { id: string } }).user.id,
+                                    name:
+                                      (c as { user: { name: string } }).user
+                                        .name || "",
+                                    iconUrl: (
+                                      c as { user: { iconUrl?: string | null } }
+                                    ).user.iconUrl,
                                   }
                                 : undefined,
-                              sticker: c.sticker
+                              sticker: (
+                                c as {
+                                  sticker?: {
+                                    id: string
+                                    title: string
+                                    imageUrl?: string | null
+                                    accessType: string
+                                    isDownloaded?: boolean
+                                  }
+                                }
+                              ).sticker
                                 ? {
-                                    id: c.sticker.id || "",
-                                    title: c.sticker.title || "",
-                                    imageUrl: c.sticker.imageUrl,
+                                    id:
+                                      (c as { sticker: { id: string } }).sticker
+                                        .id || "",
+                                    title:
+                                      (c as { sticker: { title: string } })
+                                        .sticker.title || "",
+                                    imageUrl: (
+                                      c as {
+                                        sticker: { imageUrl?: string | null }
+                                      }
+                                    ).sticker.imageUrl,
                                     accessType:
-                                      c.sticker.accessType || "PUBLIC",
-                                    isDownloaded: c.sticker.isDownloaded,
+                                      (c as { sticker: { accessType: string } })
+                                        .sticker.accessType || "PUBLIC",
+                                    isDownloaded: (
+                                      c as {
+                                        sticker: { isDownloaded?: boolean }
+                                      }
+                                    ).sticker.isDownloaded,
                                   }
                                 : undefined,
-                              responses: null,
-                            }),
-                          )
-                        : []
-                    }
-                  />
-                </div>
+                              responses: [],
+                            }))
+                          : []
+                      }
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* 固定コメント入力欄 */}
+              {currentWork.isCommentsEditable && (
+                <WorkCommentInputFixed
+                  workId={currentWork.id}
+                  isWorkOwnerBlocked={
+                    (currentWork as { user?: { isBlocked?: boolean } }).user
+                      ?.isBlocked ?? false
+                  }
+                  commentsCount={
+                    Array.isArray(
+                      (currentWork as unknown as { comments?: unknown[] })
+                        .comments,
+                    )
+                      ? (currentWork as unknown as { comments: unknown[] })
+                          .comments.length
+                      : 0
+                  }
+                  onCommentAdded={handleCommentAdded}
+                />
               )}
             </div>
           )}
