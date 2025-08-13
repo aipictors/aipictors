@@ -66,6 +66,7 @@ import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import { HomePaginationSensitiveWorksSection } from "~/routes/($lang).r._index/components/home-pagination-sensitive-works-section"
+import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 
 // ---------- meta ----------
 export const meta: MetaFunction = (props) =>
@@ -167,8 +168,8 @@ export default function Index() {
   // 作品遷移モード（ダイアログ / 直接リンク）
   const [isDialogMode, setIsDialogMode] = useState(false)
 
-  // ダイアログ制御
-  const [dialogIndex, setDialogIndex] = useState<string | null>(null)
+  // Work dialog URL state management
+  const workDialog = useWorkDialogUrl()
 
   // 作品データの管理用state
   const [currentWorks, setCurrentWorks] = useState<
@@ -200,8 +201,8 @@ export default function Index() {
       return
     }
     if (isDialogMode) {
-      console.log("Setting dialogIndex to:", idx)
-      setDialogIndex(idx)
+      console.log("Opening dialog for work ID:", idx)
+      workDialog.openDialog(idx)
     } else {
       console.log("Navigating to:", `/posts/${work.id}`)
       navigate(`/posts/${work.id}`)
@@ -220,7 +221,7 @@ export default function Index() {
     }
     // ダイアログを閉じる
     if (!mode) {
-      setDialogIndex(null)
+      workDialog.closeDialog()
     }
   }
 
@@ -1033,13 +1034,11 @@ export default function Index() {
       </Tabs>
 
       {/* ────────── 作品ダイアログ ────────── */}
-      {dialogIndex !== null && (
+      {workDialog.isOpen && workDialog.workId && (
         <WorkViewerDialog
           works={displayedWorks}
-          startWorkId={dialogIndex}
-          onClose={() => {
-            setDialogIndex(null)
-          }}
+          startWorkId={workDialog.workId}
+          onClose={workDialog.closeDialog}
           loadMore={!internalIsPagination ? loadMore : undefined}
           hasNextPage={hasNextPage}
           isLoadingMore={isLoadingMore}

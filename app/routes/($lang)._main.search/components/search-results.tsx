@@ -29,6 +29,7 @@ import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import type { SortType } from "~/types/sort-type"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { SearchWorksSortableSetting } from "./search-works-sortable-setting"
+import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 
@@ -66,9 +67,10 @@ export const SearchResults = ({
   const { isLoggedIn } = useContext(AuthContext)
   const authContext = useContext(AuthContext)
 
+  // Work dialog URL state management
+  const workDialog = useWorkDialogUrl()
+
   // State for dialog mode
-  const [selectedWorkId, setSelectedWorkId] = useState<string | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDialogMode, setIsDialogMode] = useState(false)
 
   // View mode state
@@ -544,8 +546,7 @@ export const SearchResults = ({
         const tagPath = hasR18 ? `/r/tags/${firstTag}` : `/tags/${firstTag}`
         navigate(tagPath)
       } else if (isDialogMode) {
-        setSelectedWorkId(workId)
-        setIsDialogOpen(true)
+        workDialog.openDialog(workId)
       } else {
         // ダイアログモードでない場合は作品詳細ページへ遷移
         const hasR18 = work?.rating === "R18"
@@ -560,6 +561,7 @@ export const SearchResults = ({
       data?.works,
       navigate,
       isDialogMode,
+      workDialog.openDialog,
     ],
   )
 
@@ -892,11 +894,11 @@ export const SearchResults = ({
       )}
 
       {/* Work Viewer Dialog */}
-      {isDialogOpen && selectedWorkId && (
+      {workDialog.isOpen && workDialog.workId && (
         <WorkViewerDialog
           works={currentWorks}
-          startWorkId={selectedWorkId}
-          onClose={() => setIsDialogOpen(false)}
+          startWorkId={workDialog.workId}
+          onClose={workDialog.closeDialog}
         />
       )}
     </div>

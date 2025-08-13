@@ -18,29 +18,6 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
 // ───────────────── Types ─────────────────
-type Comment = {
-  id: string
-  user?: {
-    id: string
-    name: string
-    iconUrl?: string | null
-  }
-  text?: string | null
-  createdAt: number
-  likesCount: number
-  isLiked: boolean
-  isWorkOwnerLiked: boolean
-  isMuted?: boolean
-  isSensitive?: boolean
-  sticker?: {
-    id: string
-    title: string
-    imageUrl?: string | null
-    accessType: string
-    isDownloaded?: boolean
-  }
-  responses?: Comment[] | null
-}
 
 interface Props {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -150,8 +127,8 @@ export function WorkViewerDialog({
 
   // ────────── 現在の作品 ──────────
   const work = works[index]
-  const isWorkCached = workDataCache.has(work.id)
-  const shouldFetchWork = activeWorkId === work.id && !isWorkCached
+  const isWorkCached = work ? workDataCache.has(work.id) : false
+  const shouldFetchWork = work && activeWorkId === work.id && !isWorkCached
 
   useEffect(() => {
     setTimeout(() => {
@@ -210,14 +187,14 @@ export function WorkViewerDialog({
 
   // ────────── GraphQL Query with conditional execution ──────────
   const { data, loading, refetch } = useQuery(workDialogQuery, {
-    variables: { workId: work.id },
-    skip: !shouldFetchWork, // デバウンス完了 & 未キャッシュの場合のみ実行
+    variables: { workId: work?.id || "" },
+    skip: !shouldFetchWork || !work, // workが存在しない場合もスキップ
     fetchPolicy: "cache-and-network",
     nextFetchPolicy: "cache-first",
     notifyOnNetworkStatusChange: true,
     returnPartialData: true,
     onCompleted: (data) => {
-      if (data?.work) {
+      if (data?.work && work) {
         // データが取得できたらキャッシュに保存
         setWorkDataCache((prev) => new Map(prev).set(work.id, data.work))
         setLoadedWorkIds((prev) => new Set(prev).add(work.id))
@@ -238,8 +215,9 @@ export function WorkViewerDialog({
       i <= Math.min(works.length - 1, index + 2);
       i++
     ) {
-      if (i !== index && !loadedWorkIds.has(works[i].id)) {
-        prefetchIds.push(works[i].id)
+      const workItem = works[i]
+      if (workItem && i !== index && !loadedWorkIds.has(workItem.id)) {
+        prefetchIds.push(workItem.id)
       }
     }
 
@@ -275,6 +253,8 @@ export function WorkViewerDialog({
 
   // ────────── 現在表示する作品データの決定 ──────────
   const currentWork = useMemo(() => {
+    if (!work) return null
+
     // キャッシュからデータを取得
     const cachedData = workDataCache.get(work.id)
     if (cachedData) {
@@ -287,6 +267,8 @@ export function WorkViewerDialog({
 
   // ────────── コメント送信後の処理 ──────────
   const handleCommentAdded = useCallback(async () => {
+    if (!work) return
+
     try {
       // データを再取得してキャッシュを更新
       const result = await refetch()
@@ -296,7 +278,7 @@ export function WorkViewerDialog({
     } catch (error) {
       console.error("Failed to refetch comments:", error)
     }
-  }, [refetch, work.id])
+  }, [refetch, work])
 
   // ────────── index が末尾なら自動ロード ──────────
   useEffect(() => {
@@ -367,6 +349,25 @@ export function WorkViewerDialog({
 
   // ────────── ローディング状態 ──────────
   const isCurrentWorkLoading = (!isWorkCached && loading) || isDebouncing
+
+  // ────────── 安全性チェック ──────────
+  if (!work || !currentWork) {
+    console.error(
+      "Work not found at index:",
+      index,
+      "Works length:",
+      works.length,
+    )
+    return (
+      <Dialog open onOpenChange={onClose}>
+        <DialogContent className="flex h-[90vh] w-[100vw] max-w-[88vw] overflow-hidden p-0">
+          <div className="flex flex-1 items-center justify-center">
+            <p className="text-muted-foreground">作品が見つかりませんでした</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
 
   // ───────────────── Render ─────────────────
   return (

@@ -92,6 +92,7 @@ import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import type { FragmentOf } from "gql.tada"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
+import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -222,8 +223,8 @@ export default function Index() {
   // 作品遷移モード（ダイアログ / 直接リンク）
   const [isDialogMode, setIsDialogMode] = useState(false)
 
-  // ダイアログ制御
-  const [dialogIndex, setDialogIndex] = useState<string | null>(null)
+  // Work dialog URL state management
+  const workDialog = useWorkDialogUrl()
 
   // 作品データの管理用state
   const [currentWorks, setCurrentWorks] = useState<
@@ -233,7 +234,7 @@ export default function Index() {
   const onChangeDialogMode = (mode: boolean) => {
     setIsDialogMode(mode)
     if (!mode) {
-      setDialogIndex(null)
+      workDialog.closeDialog()
     }
 
     // ローカルストレージに保存
@@ -542,8 +543,8 @@ export default function Index() {
       return
     }
     if (isDialogMode) {
-      console.log("Setting dialogIndex to:", idx)
-      setDialogIndex(idx)
+      console.log("Opening dialog for work ID:", idx)
+      workDialog.openDialog(idx)
     } else {
       console.log("Navigating to:", `/posts/${work.id}`)
       navigate(`/posts/${work.id}`)
@@ -1343,13 +1344,11 @@ export default function Index() {
       </Tabs>
 
       {/* ────────── 作品ダイアログ ────────── */}
-      {dialogIndex !== null && (
+      {workDialog.isOpen && workDialog.workId && (
         <WorkViewerDialog
           works={displayedWorks}
-          startWorkId={dialogIndex}
-          onClose={() => {
-            setDialogIndex(null)
-          }}
+          startWorkId={workDialog.workId}
+          onClose={workDialog.closeDialog}
           loadMore={!internalIsPagination ? loadMore : undefined}
           hasNextPage={hasNextPage}
           isLoadingMore={isLoadingMore}

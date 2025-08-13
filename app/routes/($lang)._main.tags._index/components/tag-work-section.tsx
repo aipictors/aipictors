@@ -30,6 +30,7 @@ import { CompactFilter, type FilterValues } from "~/components/compact-filter"
 import { useNavigate } from "@remix-run/react"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import { Separator } from "~/components/ui/separator"
+import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 
 // ──────────────────────────────────────────────────────────────────────────────
 // GraphQL
@@ -98,8 +99,8 @@ export function TagWorkSection(props: Props) {
   // 作品遷移モード（ダイアログ / 直接リンク）
   const [isDialogMode, setIsDialogMode] = useState(false)
 
-  // ダイアログ制御
-  const [dialogIndex, setDialogIndex] = useState<number | null>(null)
+  // Work dialog URL state management
+  const workDialog = useWorkDialogUrl()
 
   // フィルタ状態と更新関数
   const [filters, setFilters] = useState<LocalFilterValues>({
@@ -577,9 +578,8 @@ export function TagWorkSection(props: Props) {
   const openWork = (idx: string) => {
     console.log("Open work with id:", idx)
     if (isDialogMode) {
-      // ダイアログモードの場合、作品IDから配列内のインデックスを探す
-      const index = displayedWorks.findIndex((work) => work.id === idx)
-      setDialogIndex(index)
+      // ダイアログモードの場合、作品IDを直接渡す
+      workDialog.openDialog(idx)
     } else {
       // 直接リンク遷移の場合、作品IDを使用
       navigate(`/posts/${idx}`)
@@ -833,11 +833,11 @@ export function TagWorkSection(props: Props) {
       )}
 
       {/* ────────── 作品ダイアログ ────────── */}
-      {dialogIndex !== null && (
+      {workDialog.isOpen && workDialog.workId && (
         <WorkViewerDialog
           works={displayedWorks}
-          startIndex={dialogIndex}
-          onClose={() => setDialogIndex(null)}
+          startWorkId={workDialog.workId}
+          onClose={workDialog.closeDialog}
           loadMore={!isPagination ? loadMore : undefined}
           hasNextPage={hasNextPage}
           isLoadingMore={isLoadingMore}
