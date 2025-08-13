@@ -16,22 +16,17 @@ export function AlbumWorkDescription(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(
-    userFolloweesQuery,
+    userQuery,
     appContext.isLoading || appContext.userId === null
       ? skipToken
       : {
           variables: {
-            user_id: appContext.userId,
-            offset: 0,
-            limit: 128,
+            id: props.album.user.id,
           },
         },
   )
 
-  const _isFollow =
-    data?.user?.followees?.some(
-      (followee) => followee.id === props.album.user.id,
-    ) ?? false
+  const _isFollow = data?.user?.isFollowee ?? false
 
   return (
     <Card>
@@ -54,20 +49,11 @@ export function AlbumWorkDescription(props: Props) {
   )
 }
 
-const userFolloweesQuery = graphql(
-  `query UserFollowees($user_id: ID!, $offset: Int!, $limit: Int!) {
-    user(id: $user_id) {
+const userQuery = graphql(
+  `query User($id: ID!) {
+    user(id: $id) {
       id
-      followees(offset: $offset, limit: $limit) {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      isFollowee
     }
   }`,
 )

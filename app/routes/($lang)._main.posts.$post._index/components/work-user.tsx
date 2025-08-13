@@ -30,18 +30,14 @@ export function WorkUser(props: Props) {
 
   const t = useTranslation()
 
-  const { data = null } = useQuery(userFolloweesQuery, {
+  const { data = null } = useQuery(userQuery, {
     skip: appContext.isLoading || appContext.userId === null,
     variables: {
-      user_id: appContext.userId ?? "",
-      offset: 0,
-      limit: 128,
+      id: props.userId,
     },
   })
 
-  const isFollow =
-    data?.user?.followees?.some((followee) => followee.id === props.userId) ??
-    false
+  const isFollow = data?.user?.isFollowee ?? false
 
   return (
     <Card>
@@ -88,20 +84,11 @@ export function WorkUser(props: Props) {
   )
 }
 
-const userFolloweesQuery = graphql(
-  `query UserFollowees($user_id: ID!, $offset: Int!, $limit: Int!) {
-    user(id: $user_id) {
+const userQuery = graphql(
+  `query User($id: ID!) {
+    user(id: $id) {
       id
-      followees(offset: $offset, limit: $limit) {
-        id
-        nanoid
-        login
-        name
-        iconUrl
-        isFollowee
-        isFollower
-        iconUrl
-      }
+      isFollowee
     }
   }`,
 )
