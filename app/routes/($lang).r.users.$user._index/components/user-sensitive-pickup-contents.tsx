@@ -34,7 +34,7 @@ export function UserSensitivePickupContents(props: Props) {
         <HomeWorkSection
           title="最新"
           works={newWorkDisplayed}
-          isCropped={true}
+          isCropped={false}
         />
       )}
       {workDisplayed && workDisplayed.length > 0 && (

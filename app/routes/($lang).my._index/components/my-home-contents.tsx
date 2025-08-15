@@ -13,6 +13,7 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { ResponsivePhotoWorksAlbum, PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 export function DashboardHomeContents() {
   const t = useTranslation()
@@ -45,7 +46,22 @@ export function DashboardHomeContents() {
     },
   })
 
+  const latestWorksResult = useSuspenseQuery(latestWorksQuery, {
+    skip:
+      appContext.isLoading || appContext.isNotLoggedIn || !appContext.userId,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: appContext.userId || "",
+        orderBy: "DATE_CREATED",
+        sort: "DESC",
+      },
+    },
+  })
+
   const works = worksResult.data?.works
+  const latestWorks = latestWorksResult.data?.works
 
   return (
     <>
@@ -205,6 +221,23 @@ export function DashboardHomeContents() {
             </div>
           )}
         </div>
+
+        {/* 最新作品セクション */}
+        {latestWorks?.length > 0 && (
+          <div className="w-full">
+            <DashboardHomeContentContainer
+              title={t("最新作品", "Latest Works")}
+            >
+              <div className="rounded-md">
+                <ResponsivePhotoWorksAlbum
+                  works={latestWorks}
+                  targetRowHeight={140}
+                  isShowProfile={false}
+                />
+              </div>
+            </DashboardHomeContentContainer>
+          </div>
+        )}
       </div>
     </>
   )
@@ -246,4 +279,13 @@ const worksQuery = graphql(
     }
   }`,
   [MyWorkFragment],
+)
+
+const latestWorksQuery = graphql(
+  `query LatestWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PhotoAlbumWork
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
 )
