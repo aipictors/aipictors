@@ -1,10 +1,10 @@
-import { LikeButton } from "~/components/like-button"
+// LikeButton は CroppedWorkSquare 内部での表示に統合されたため未使用
 import { graphql, type FragmentOf } from "gql.tada"
 import { Link } from "@remix-run/react"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
-import { Images, MessageCircle } from "lucide-react"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
 
 type Props = {
   works: FragmentOf<typeof HomeCoppedWorkFragment>[]
@@ -33,54 +33,20 @@ export function HomeCroppedWorkList(props: Props) {
           )
           .map((work) => {
             const content = (
-              <div
-                className="w-full overflow-hidden"
-                style={{ paddingBottom: "100%" }}
-              >
-                <img
-                  src={work.largeThumbnailImageURL}
-                  alt={work.title}
-                  loading="lazy"
-                  className="absolute top-0 left-0 hidden h-full w-full rounded-md object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 md:block"
-                />
-                <img
-                  src={work.smallThumbnailImageURL}
-                  alt={t(
-                    work.title,
-                    work.enTitle.length > 0 ? work.enTitle : work.title,
-                  )}
-                  loading="lazy"
-                  className="absolute top-0 left-0 block h-full w-full rounded-md object-cover transition-transform duration-200 ease-in-out group-hover:scale-105 md:hidden"
-                />
-                <div className="absolute right-2 bottom-2">
-                  <LikeButton
-                    size={56}
-                    targetWorkId={work.id}
-                    targetWorkOwnerUserId={work.user?.id ?? ""}
-                    defaultLiked={work.isLiked}
-                    defaultLikedCount={0}
-                    isBackgroundNone={true}
-                    strokeWidth={2}
-                    isParticle={true}
-                  />
-                </div>
-                {work.subWorksCount > 0 && (
-                  <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                    <Images className="size-3 text-white" />
-                    <div className="font-bold text-white text-xs">
-                      {work.subWorksCount + 1}
-                    </div>
-                  </div>
-                )}
-                {work.commentsCount > 0 && (
-                  <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                    <MessageCircle className="size-3 text-white" />
-                    <div className="font-bold text-white text-xs">
-                      {work.commentsCount}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <CroppedWorkSquare
+                workId={work.id}
+                imageUrl={work.smallThumbnailImageURL}
+                thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                size="lg"
+                imageWidth={work.smallThumbnailImageWidth}
+                imageHeight={work.smallThumbnailImageHeight}
+                subWorksCount={work.subWorksCount}
+                commentsCount={work.commentsCount}
+                isPromptPublic={false}
+                hasVideoUrl={false}
+                isGeneration={false}
+                hasReferenceButton={false}
+              />
             )
 
             return (
@@ -112,7 +78,7 @@ export function HomeCroppedWorkList(props: Props) {
                     userId={work.user.id}
                     userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                     name={work.user.name}
-                    width={"lg"}
+                    width={"sm"}
                     likesCount={work.likesCount}
                   />
                 )}
@@ -132,29 +98,20 @@ export function HomeCroppedWorkList(props: Props) {
                 to={`/posts/${work.id}`}
                 className="relative overflow-hidden"
               >
-                <div
-                  className="relative w-full overflow-hidden"
-                  style={{ paddingBottom: "100%" }}
-                >
-                  <img
-                    src={work.smallThumbnailImageURL}
-                    alt={work.title}
-                    loading="lazy"
-                    className="absolute top-0 left-0 block h-full w-full object-cover md:hidden "
-                  />
-                  <div className="absolute right-2 bottom-2">
-                    <LikeButton
-                      size={56}
-                      targetWorkId={work.id}
-                      targetWorkOwnerUserId={work.user?.id ?? ""}
-                      defaultLiked={work.isLiked}
-                      defaultLikedCount={0}
-                      isBackgroundNone={true}
-                      strokeWidth={2}
-                      isParticle={true}
-                    />
-                  </div>
-                </div>
+                <CroppedWorkSquare
+                  workId={work.id}
+                  imageUrl={work.smallThumbnailImageURL}
+                  thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                  size="lg"
+                  imageWidth={work.smallThumbnailImageWidth}
+                  imageHeight={work.smallThumbnailImageHeight}
+                  subWorksCount={work.subWorksCount}
+                  commentsCount={work.commentsCount}
+                  isPromptPublic={false}
+                  hasVideoUrl={false}
+                  isGeneration={false}
+                  hasReferenceButton={false}
+                />
               </Link>
               {work.user && props.isShowProfile && (
                 <>
@@ -165,7 +122,7 @@ export function HomeCroppedWorkList(props: Props) {
                     userId={work.user.id}
                     userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                     name={work.user.name}
-                    width={"md"}
+                    width={"sm"}
                     likesCount={work.likesCount}
                   />
                 </>

@@ -99,6 +99,9 @@ const OptimizedImage = memo((props: Props) => {
           onLoad={props.onLoad}
           onError={handleError}
           decoding="async"
+          style={{
+            ...props.style,
+          }}
         />
       </LazyLoadComponent>
     </div>

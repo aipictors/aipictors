@@ -1,6 +1,5 @@
 import { Link } from "@remix-run/react"
 import { Images, MessageCircleIcon } from "lucide-react"
-import { useState } from "react"
 import { cn } from "~/lib/utils"
 import { OptimizedImage } from "~/components/optimized-image"
 import { WorkMediaBadge } from "~/components/work-media-badge"
@@ -25,24 +24,72 @@ type Props = {
  * 四角形で作品をクロップして表示するコンポーネント
  */
 export function CroppedWorkSquare(props: Props) {
-  const [isHovered, setIsHovered] = useState(false)
+  // 仕様: 常に表示領域は正方形。auto は親グリッドセル幅にフィットして aspect-square。固定サイズは size-* で正方形。
+  // 仕様: 短辺フィット + 長辺方向のみ translate. オーバーレイのズレ防止のためラッパーを正方形サイズそのものにする。
 
-  const getThumbnailPos = (
-    src: number,
-    width: number,
-    height: number,
-  ): string => {
-    let result = ""
-    result = width < height ? "translateY(" : "translateX("
-    result = `${result + (src ?? (width === height ? 0 : -5))}%)`
-    return result
+  // 位置値を安全にクランプする (-50% ~ 50% を意図した可動域とする)
+  const clampThumbnailPosition = (value: number) => {
+    if (Number.isNaN(value)) return 0
+    if (value > 50) return 50
+    if (value < -50) return -50
+    return value
   }
 
-  const transform = getThumbnailPos(
-    props.thumbnailImagePosition,
-    props.imageWidth,
-    props.imageHeight,
-  )
+  type CropStyleParams = {
+    imageWidth: number
+    imageHeight: number
+    thumbnailPosition: number
+  }
+
+  // サムネイルの中央寄せクロップ風スタイルを計算
+  const computeCropStyle = ({
+    imageWidth,
+    imageHeight,
+    thumbnailPosition,
+  }: CropStyleParams) => {
+    const aspectRatio = imageWidth / imageHeight
+    const clampedPos = clampThumbnailPosition(thumbnailPosition || 0)
+
+    // 横長: 高さ100%固定 (短辺=高さ) -> 幅は aspectRatio * 100% 分溢れる
+    // 縦長: 幅100%固定 (短辺=幅) -> 高さは (1/aspectRatio) * 100% 分溢れる
+    if (aspectRatio > 1) {
+      const overflowRatio = aspectRatio - 1 // 追加で溢れる幅割合
+      const maxTravelPercent = (overflowRatio / 2) * 100
+      const translatePercent = (clampedPos / 50) * maxTravelPercent
+      return {
+        width: "auto",
+        height: "100%",
+        transform: `translateX(${translatePercent}%)`,
+        objectFit: "cover" as const,
+      }
+    }
+
+    if (aspectRatio < 1) {
+      const overflowRatio = 1 / aspectRatio - 1
+      const maxTravelPercent = (overflowRatio / 2) * 100
+      const translatePercent = (clampedPos / 50) * maxTravelPercent
+      return {
+        width: "100%",
+        height: "auto",
+        transform: `translateY(${translatePercent}%)`,
+        objectFit: "cover" as const,
+      }
+    }
+
+    // 正方形
+    return {
+      width: "100%",
+      height: "100%",
+      transform: "none",
+      objectFit: "cover" as const,
+    }
+  }
+
+  const cropStyle = computeCropStyle({
+    imageWidth: props.imageWidth,
+    imageHeight: props.imageHeight,
+    thumbnailPosition: props.thumbnailImagePosition,
+  })
 
   const backgroundColor = () => {
     if (props.ranking === 1) return "#d6ba49"
@@ -51,105 +98,82 @@ export function CroppedWorkSquare(props: Props) {
     return "#00000052"
   }
 
+  const sizeClass = (() => {
+    if (props.size === "auto") return "w-full aspect-square"
+    if (props.size === "xs") return "size-16"
+    if (props.size === "sm") return "size-20"
+    if (props.size === "md") return "size-32"
+    if (props.size === "lg") return "size-40"
+    return "w-full aspect-square"
+  })()
+
   return (
-    <div className="inline-box relative">
+    <div
+      className={cn(
+        "relative block shrink-0 overflow-hidden rounded",
+        sizeClass,
+      )}
+    >
       <Link
         to={`/posts/${props.workId}`}
-        className="transition-all duration-300 ease-in-out"
+        className="block h-full w-full transition-all duration-300 ease-in-out"
       >
-        <div
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          className={cn("relative overflow-hidden rounded", {
-            "w-full": props.size === "auto",
-            "size-16": props.size === "xs",
-            "size-20": props.size === "sm",
-            "size-32": props.size === "md",
-            "size-40": props.size === "lg",
-          })}
-        >
-          <div
-            style={{
-              transform: `${transform} ${isHovered ? "scale(1.05)" : "scale(1)"}`,
-            }}
-          >
-            <OptimizedImage
-              src={props.imageUrl}
-              alt=""
-              key={props.imageUrl}
-              loading="lazy"
-              width={props.imageWidth}
-              height={props.imageHeight}
-              className={cn(
-                "max-w-none rounded transition-transform duration-300 ease-in-out",
-                {
-                  "h-auto w-full": props.size === "auto",
-                  "h-20 w-auto":
-                    props.size === "sm" && props.imageWidth > props.imageHeight,
-                  "h-auto w-20":
-                    props.size === "sm" &&
-                    props.imageWidth <= props.imageHeight,
-                  "h-32 w-auto":
-                    props.size === "md" && props.imageWidth > props.imageHeight,
-                  "h-auto w-32":
-                    props.size === "md" &&
-                    props.imageWidth <= props.imageHeight,
-                  "h-40 w-auto":
-                    props.size !== "sm" &&
-                    props.size !== "md" &&
-                    props.imageWidth > props.imageHeight,
-                  "h-auto w-40":
-                    props.size !== "sm" &&
-                    props.size !== "md" &&
-                    props.imageWidth <= props.imageHeight,
-                },
-              )}
-            />
-          </div>
-        </div>
-        {props.ranking && (
-          <div
-            className="absolute bottom-2 left-2 flex size-6 items-center justify-center rounded-full font-bold text-white text-xs"
-            style={{ backgroundColor: backgroundColor() }}
-          >
-            {props.ranking}
-          </div>
-        )}
-        {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
-          <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-            <Images className="size-3 text-white" />
-            <div className="font-bold text-white text-xs">
-              {props.subWorksCount + 1}
-            </div>
-          </div>
-        )}
-        {props.commentsCount !== undefined && props.commentsCount !== 0 && (
-          <div className="absolute top-1 left-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-            <MessageCircleIcon className="size-3 text-white" />
-            <div className="font-bold text-white text-xs">
-              {props.commentsCount + 1}
-            </div>
-          </div>
-        )}
-        {/* プロンプト公開・動画バッジ */}
-        <div
-          className={cn(
-            "absolute z-10",
-            props.commentsCount !== undefined && props.commentsCount !== 0
-              ? "right-1"
-              : "left-1",
-            props.hasReferenceButton ? "bottom-12" : "bottom-2",
-          )}
-        >
-          <WorkMediaBadge
-            isPromptPublic={props.isPromptPublic}
-            hasVideoUrl={props.hasVideoUrl}
-            isGeneration={props.isGeneration}
-            hasReferenceButton={props.hasReferenceButton}
-            size={props.size === "xs" || props.size === "sm" ? "sm" : "md"}
-          />
-        </div>
+        <OptimizedImage
+          src={props.imageUrl}
+          alt=""
+          key={props.imageUrl}
+          loading="lazy"
+          width={props.imageWidth}
+          height={props.imageHeight}
+          style={cropStyle}
+          className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
+        />
       </Link>
+
+      {props.ranking && (
+        <div
+          className="absolute bottom-2 left-2 flex size-6 items-center justify-center rounded-full font-bold text-white text-xs"
+          style={{ backgroundColor: backgroundColor() }}
+        >
+          {props.ranking}
+        </div>
+      )}
+
+      {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
+        <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+          <Images className="size-3 text-white" />
+          <div className="font-bold text-white text-xs">
+            {props.subWorksCount + 1}
+          </div>
+        </div>
+      )}
+
+      {props.commentsCount !== undefined && props.commentsCount !== 0 && (
+        <div className="absolute top-1 left-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
+          <MessageCircleIcon className="size-3 text-white" />
+          <div className="font-bold text-white text-xs">
+            {props.commentsCount + 1}
+          </div>
+        </div>
+      )}
+
+      <div
+        className={cn(
+          "absolute z-10",
+          props.commentsCount !== undefined && props.commentsCount !== 0
+            ? "right-1"
+            : "left-1",
+          props.hasReferenceButton ? "bottom-12" : "bottom-2",
+        )}
+      >
+        <WorkMediaBadge
+          isPromptPublic={props.isPromptPublic}
+          hasVideoUrl={props.hasVideoUrl}
+          isGeneration={props.isGeneration}
+          hasReferenceButton={props.hasReferenceButton}
+          size={props.size === "xs" || props.size === "sm" ? "sm" : "md"}
+        />
+      </div>
     </div>
   )
 }

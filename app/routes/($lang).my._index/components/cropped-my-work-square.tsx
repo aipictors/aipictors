@@ -19,21 +19,59 @@ type Props = {
 export function CroppedMyWorkSquare(props: Props) {
   const [isHovered, setIsHovered] = useState(false)
 
-  const getThumbnailPos = (
-    src: number,
-    width: number,
-    height: number,
-  ): string => {
-    let result = ""
-    result = width < height ? "translateY(" : "translateX("
-    result = `${result + (src ?? (width === height ? 0 : -5))}%)`
-    return result
+  /**
+   * 適切なクロップスタイルを計算する
+   * 四角形コンテナに対して画像をクロップして表示
+   */
+  const getCropStyle = (
+    imageWidth: number,
+    imageHeight: number,
+    thumbnailPosition: number,
+  ) => {
+    const aspectRatio = imageWidth / imageHeight
+
+    if (aspectRatio > 1) {
+      // 横長画像: 高さを100%にして、横方向でクロップ
+      const scale = 1.05 // 若干拡大してクロップ領域を確保
+      const translateX =
+        thumbnailPosition || -((aspectRatio - 1) / (2 * aspectRatio)) * 100
+
+      return {
+        width: "auto",
+        height: "100%",
+        transform: `translateX(${translateX}%) scale(${scale})`,
+        minWidth: "100%",
+        objectFit: "cover" as const,
+      }
+    }
+
+    if (aspectRatio < 1) {
+      // 縦長画像: 幅を100%にして、縦方向でクロップ
+      const scale = 1.05
+      const translateY = thumbnailPosition || -((1 - aspectRatio) * 50)
+
+      return {
+        width: "100%",
+        height: "auto",
+        transform: `translateY(${translateY}%) scale(${scale})`,
+        minHeight: "100%",
+        objectFit: "cover" as const,
+      }
+    }
+
+    // 正方形画像: そのまま表示
+    return {
+      width: "100%",
+      height: "100%",
+      transform: "scale(1.05)",
+      objectFit: "cover" as const,
+    }
   }
 
-  const transform = getThumbnailPos(
-    props.thumbnailImagePosition,
+  const cropStyle = getCropStyle(
     props.imageWidth,
     props.imageHeight,
+    props.thumbnailImagePosition,
   )
 
   const backgroundColor = () => {
@@ -61,31 +99,11 @@ export function CroppedMyWorkSquare(props: Props) {
             src={props.imageUrl}
             alt=""
             key={props.imageUrl}
-            className={cn(
-              "max-w-none rounded transition-transform duration-300 ease-in-out",
-              {
-                "h-auto w-full": props.size === "auto",
-                "h-20 w-auto":
-                  props.size === "sm" && props.imageWidth > props.imageHeight,
-                "h-auto w-20":
-                  props.size === "sm" && props.imageWidth <= props.imageHeight,
-                "h-32 w-auto":
-                  props.size === "md" && props.imageWidth > props.imageHeight,
-                "h-auto w-32":
-                  props.size === "md" && props.imageWidth <= props.imageHeight,
-                "h-40 w-auto":
-                  props.size !== "sm" &&
-                  props.size !== "md" &&
-                  props.imageWidth > props.imageHeight,
-                "h-auto w-40":
-                  props.size !== "sm" &&
-                  props.size !== "md" &&
-                  props.imageWidth <= props.imageHeight,
-              },
-            )}
             style={{
-              transform: `${transform} ${isHovered ? "scale(1.05)" : "scale(1)"}`,
+              ...cropStyle,
+              transform: `${cropStyle.transform} ${isHovered ? "scale(1.05)" : "scale(1)"}`,
             }}
+            className="max-w-none rounded transition-transform duration-300 ease-in-out"
           />
         </div>
         {props.ranking && (

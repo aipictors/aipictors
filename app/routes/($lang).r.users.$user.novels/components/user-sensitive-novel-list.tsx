@@ -68,7 +68,7 @@ export function UserSensitiveNovelList(props: Props) {
                       userId={work.user.id}
                       userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                       name={work.user.name}
-                      width={"lg"}
+                      width={"sm"}
                       padding={"md"}
                     />
                     <div className="absolute right-0 bottom-0">

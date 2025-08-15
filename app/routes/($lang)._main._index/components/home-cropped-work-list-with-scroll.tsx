@@ -54,7 +54,7 @@ export function HomeCroppedWorkListWithScroll(props: Props) {
               userId={work.user?.id ?? ""}
               userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
               name={work.user?.name ?? ""}
-              width={"lg"}
+              width={"sm"}
             />
           </div>
         ))}

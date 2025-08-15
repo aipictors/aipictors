@@ -19,7 +19,10 @@ type Props = {
  */
 export function UserNameBadge(props: Props) {
   return (
-    <Link className="flex flex-col gap-y-2" to={`/users/${props.userId}`}>
+    <Link
+      className="flex max-w-40 flex-col gap-y-2"
+      to={`/users/${props.userId}`}
+    >
       <div
         className={cn("flex items-center overflow-hidden text-ellipsis", {
           "p-1": props.padding === "sm",
