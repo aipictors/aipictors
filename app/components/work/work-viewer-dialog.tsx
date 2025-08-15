@@ -374,7 +374,7 @@ export function WorkViewerDialog({
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="h-[96vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
-        <div className="flex h-[86vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
+        <div className="flex h-[88vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
           {/* 詳細パネル (Desktop + Mobile) */}
           <aside
             className="flex flex-col bg-background/80 backdrop-blur-sm"
@@ -700,9 +700,9 @@ export function WorkViewerDialog({
             <div ref={sentinelRef} className="h-[2px] w-full" />
           </aside>
         </div>
-        {/* いいねボタンエリア - コンパクト版 */}
-        <div className="border-border/50 border-b bg-gradient-to-r from-primary/3 to-transparent px-4 py-2">
-          <div className="flex items-center justify-center">
+        {/* いいねボタンエリア - フル幅有効領域 */}
+        <div className="border-t bg-background/95 backdrop-blur-sm">
+          <div className="w-full">
             <WorkActionContainer
               workLikesCount={currentWork.likesCount}
               title={currentWork.title}

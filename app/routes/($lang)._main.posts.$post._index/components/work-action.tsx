@@ -1,6 +1,7 @@
 import { WorkActionMenu } from "./work-action-menu"
 import { SharePopover } from "./work-action-share"
 import { LikeButton } from "~/components/like-button"
+import { DialogLikeButton } from "~/components/work/dialog-like-button"
 import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post._index/components/work-editor-button"
@@ -69,17 +70,23 @@ export function WorkAction(props: Props) {
   }
 
   return (
-    <div className="flex justify-end">
-      <div className="flex space-x-2">
+    <div
+      className={
+        props.mode === "dialogLikeOnly" ? "w-full" : "flex justify-end"
+      }
+    >
+      <div
+        className={
+          props.mode === "dialogLikeOnly" ? "w-full" : "flex space-x-2"
+        }
+      >
         {props.mode === "dialogLikeOnly" ? (
-          // ダイアログ専用のいいねボタンのみ表示（コンパクト版）
-          <LikeButton
-            size={32}
+          // ダイアログ専用のいいねボタン - フル幅対応
+          <DialogLikeButton
             text={`${props.workLikesCount}`}
             defaultLiked={props.defaultLiked}
             defaultLikedCount={props.workLikesCount}
             targetWorkId={props.targetWorkId}
-            isBackgroundNone={false}
             targetWorkOwnerUserId={props.targetWorkOwnerUserId}
             isUsedShortcutKey={true}
             isTargetUserBlocked={props.isTargetUserBlocked}
