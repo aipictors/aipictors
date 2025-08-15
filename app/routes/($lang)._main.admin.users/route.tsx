@@ -14,6 +14,17 @@ import {
 import { Badge } from "~/components/ui/badge"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Separator } from "~/components/ui/separator"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "~/components/ui/alert-dialog"
 import { Search, Shield, UserX, MessageSquareOff, ImageOff } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { graphql } from "gql.tada"
@@ -118,9 +129,7 @@ export default function AdminUsersPage() {
 
   // どちらかのクエリ結果を使用
   const userLoading = isNumericId ? userLoadingById : userLoadingByLogin
-  const userError = isNumericId ? userErrorById : userErrorByLogin
-
-  // ユーザー情報を取得
+  const userError = isNumericId ? userErrorById : userErrorByLogin // ユーザー情報を取得
   type UserType = {
     id: string
     name: string
@@ -131,9 +140,9 @@ export default function AdminUsersPage() {
 
   let user: UserType | null = null
   if (isNumericId && userDataById?.user) {
-    user = userDataById.user
+    user = userDataById.user as UserType
   } else if (!isNumericId && userDataByLogin?.users?.[0]) {
-    user = userDataByLogin.users[0]
+    user = userDataByLogin.users[0] as UserType
   }
 
   // コメントBAN切り替えミューテーション
@@ -254,19 +263,19 @@ export default function AdminUsersPage() {
             <span>ユーザー検索</span>
           </CardTitle>
           <CardDescription>
-            ユーザーIDまたはユーザー名で検索してBAN操作を行います
+            ユーザーIDで検索してBAN操作を行います
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex space-x-2">
             <div className="flex-1">
               <label htmlFor="userId" className="sr-only">
-                ユーザーIDまたはユーザー名
+                ユーザーID
               </label>
               <Input
                 id="userId"
                 type="text"
-                placeholder="ユーザーIDまたはユーザー名を入力"
+                placeholder="ユーザーIDを入力"
                 value={inputUserId}
                 onChange={(e) => setInputUserId(e.target.value)}
                 onKeyDown={(e) => {
@@ -367,29 +376,85 @@ export default function AdminUsersPage() {
             <div>
               <h3 className="mb-4 text-lg font-semibold">BAN操作</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <Button
-                  variant={user.isCommentBanned ? "destructive" : "outline"}
-                  onClick={() => handleBanToggle("toggleCommentBan")}
-                  disabled={commentBanLoading}
-                  className="w-full"
-                >
-                  <MessageSquareOff className="mr-2 h-4 w-4" />
-                  {commentBanLoading
-                    ? "処理中..."
-                    : `コメントBAN${user.isCommentBanned ? "解除" : "設定"}`}
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant={user.isCommentBanned ? "destructive" : "outline"}
+                      className="w-full"
+                      disabled={commentBanLoading}
+                    >
+                      <MessageSquareOff className="mr-2 h-4 w-4" />
+                      {commentBanLoading
+                        ? "処理中..."
+                        : `コメントBAN${user.isCommentBanned ? "解除" : "設定"}`}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {user.isCommentBanned
+                          ? "コメントBAN解除"
+                          : "コメントBAN設定"}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {user.isCommentBanned
+                          ? `ユーザー「${user.name}」(@${user.login})のコメントBANを解除しますか？`
+                          : `ユーザー「${user.name}」(@${user.login})をコメントBANしますか？`}
+                        <br />
+                        この操作は取り消すことができます。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleBanToggle("toggleCommentBan")}
+                        variant={
+                          user.isCommentBanned ? "default" : "destructive"
+                        }
+                      >
+                        {user.isCommentBanned ? "BAN解除" : "BAN設定"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
 
-                <Button
-                  variant={user.isPostBanned ? "destructive" : "outline"}
-                  onClick={() => handleBanToggle("togglePostBan")}
-                  disabled={postBanLoading}
-                  className="w-full"
-                >
-                  <ImageOff className="mr-2 h-4 w-4" />
-                  {postBanLoading
-                    ? "処理中..."
-                    : `投稿BAN${user.isPostBanned ? "解除" : "設定"}`}
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant={user.isPostBanned ? "destructive" : "outline"}
+                      className="w-full"
+                      disabled={postBanLoading}
+                    >
+                      <ImageOff className="mr-2 h-4 w-4" />
+                      {postBanLoading
+                        ? "処理中..."
+                        : `投稿BAN${user.isPostBanned ? "解除" : "設定"}`}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {user.isPostBanned ? "投稿BAN解除" : "投稿BAN設定"}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {user.isPostBanned
+                          ? `ユーザー「${user.name}」(@${user.login})の投稿BANを解除しますか？`
+                          : `ユーザー「${user.name}」(@${user.login})を投稿BANしますか？`}
+                        <br />
+                        この操作は取り消すことができます。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleBanToggle("togglePostBan")}
+                        variant={user.isPostBanned ? "default" : "destructive"}
+                      >
+                        {user.isPostBanned ? "BAN解除" : "BAN設定"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </CardContent>
@@ -402,7 +467,7 @@ export default function AdminUsersPage() {
           <CardContent className="py-12 text-center">
             <Search className="mx-auto mb-4 h-12 w-12 text-gray-400" />
             <p className="text-gray-500">
-              ユーザーIDまたはユーザー名を入力して検索してください
+              ユーザーIDを入力して検索してください
             </p>
           </CardContent>
         </Card>
