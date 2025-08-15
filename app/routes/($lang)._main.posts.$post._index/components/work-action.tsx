@@ -30,6 +30,7 @@ type Props = {
   isTargetUserBlocked?: boolean
   prompt?: string | null
   negativePrompt?: string | null
+  mode?: "default" | "dialogLikeOnly"
 }
 
 /**
@@ -70,51 +71,71 @@ export function WorkAction(props: Props) {
   return (
     <div className="flex justify-end">
       <div className="flex space-x-2">
-        <LikeButton
-          size={40}
-          text={`いいね ${props.workLikesCount}`}
-          defaultLiked={props.defaultLiked}
-          defaultLikedCount={props.workLikesCount}
-          targetWorkId={props.targetWorkId}
-          isBackgroundNone={false}
-          targetWorkOwnerUserId={props.targetWorkOwnerUserId}
-          isUsedShortcutKey={true}
-          isTargetUserBlocked={props.isTargetUserBlocked}
-        />
-        <Suspense fallback={null}>
-          <RecommendButton
-            workId={props.targetWorkId}
-            ownerUserId={props.targetWorkOwnerUserId}
-            isRecommended={props.isRecommended}
-          />
-        </Suspense>
-        {!props.isHideEditButton && (
-          <WorkEditorButton
+        {props.mode === "dialogLikeOnly" ? (
+          // ダイアログ専用のいいねボタンのみ表示（コンパクト版）
+          <LikeButton
+            size={32}
+            text={`${props.workLikesCount}`}
+            defaultLiked={props.defaultLiked}
+            defaultLikedCount={props.workLikesCount}
             targetWorkId={props.targetWorkId}
+            isBackgroundNone={false}
             targetWorkOwnerUserId={props.targetWorkOwnerUserId}
-            type={props.workType}
+            isUsedShortcutKey={true}
+            isTargetUserBlocked={props.isTargetUserBlocked}
           />
+        ) : (
+          // 通常モード：全てのアクションボタンを表示
+          <>
+            <LikeButton
+              size={40}
+              text={`いいね ${props.workLikesCount}`}
+              defaultLiked={props.defaultLiked}
+              defaultLikedCount={props.workLikesCount}
+              targetWorkId={props.targetWorkId}
+              isBackgroundNone={false}
+              targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+              isUsedShortcutKey={true}
+              isTargetUserBlocked={props.isTargetUserBlocked}
+            />
+            <Suspense fallback={null}>
+              <RecommendButton
+                workId={props.targetWorkId}
+                ownerUserId={props.targetWorkOwnerUserId}
+                isRecommended={props.isRecommended}
+              />
+            </Suspense>
+            {!props.isHideEditButton && (
+              <WorkEditorButton
+                targetWorkId={props.targetWorkId}
+                targetWorkOwnerUserId={props.targetWorkOwnerUserId}
+                type={props.workType}
+              />
+            )}
+            {props.targetWorkOwnerUserId !== appContext.userId && (
+              <WorkActionBookmark
+                targetWorkId={props.targetWorkId}
+                bookmarkFolderId={props.bookmarkFolderId}
+                defaultBookmarked={props.defaultBookmarked}
+              />
+            )}
+            <SharePopover
+              isDisabledShare={props.isDisabledShare}
+              title={props.title ?? ""}
+              description={props.description ?? ""}
+              id={props.targetWorkId}
+            />
+            <WorkActionMenu
+              onDownload={onDownload}
+              onZipDownload={onZipAllDownload}
+              isEnabledDelete={
+                props.targetWorkOwnerUserId === appContext.userId
+              }
+              postId={props.targetWorkId}
+              disabledZipDownload={(props.imageUrls?.length ?? 0) <= 1}
+            />
+          </>
         )}
-        {props.targetWorkOwnerUserId !== appContext.userId && (
-          <WorkActionBookmark
-            targetWorkId={props.targetWorkId}
-            bookmarkFolderId={props.bookmarkFolderId}
-            defaultBookmarked={props.defaultBookmarked}
-          />
-        )}
-        <SharePopover
-          isDisabledShare={props.isDisabledShare}
-          title={props.title ?? ""}
-          description={props.description ?? ""}
-          id={props.targetWorkId}
-        />
-        <WorkActionMenu
-          onDownload={onDownload}
-          onZipDownload={onZipAllDownload}
-          isEnabledDelete={props.targetWorkOwnerUserId === appContext.userId}
-          postId={props.targetWorkId}
-          disabledZipDownload={(props.imageUrls?.length ?? 0) <= 1}
-        />
       </div>
     </div>
   )

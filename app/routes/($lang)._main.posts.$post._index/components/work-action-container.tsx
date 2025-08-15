@@ -15,6 +15,7 @@ type Props = {
   bookmarkFolderId: string | null
   isDisabledShare?: boolean
   isTargetUserBlocked?: boolean
+  mode?: "default" | "dialogLikeOnly"
 }
 
 /**
@@ -56,6 +57,7 @@ export function WorkActionContainer(props: Props) {
       isTargetUserBlocked={props.isTargetUserBlocked}
       prompt={data?.work?.prompt}
       negativePrompt={data?.work?.negativePrompt}
+      mode={props.mode}
     />
   )
 }

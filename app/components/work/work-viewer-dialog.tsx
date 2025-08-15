@@ -14,6 +14,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react"
 import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
 import { WorkCommentSectionEnhanced } from "~/components/work/work-comment-section-final"
 import { WorkCommentInputFixed } from "~/components/work/work-comment-input-fixed"
+import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 
@@ -372,319 +373,360 @@ export function WorkViewerDialog({
   // ───────────────── Render ─────────────────
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="flex h-[90vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
-        {/* 詳細パネル (Desktop + Mobile) */}
-        <aside
-          className="flex flex-col bg-background/80 backdrop-blur-sm"
-          style={{
-            width: "calc(100% - 5rem)",
-            minWidth: "calc(100% - 5rem)",
-            maxWidth: "calc(100% - 5rem)",
-          }}
-        >
-          <DialogHeader className="border-b p-4 pb-2">
-            {/* モバイル用ナビゲーション */}
-            <div className="flex items-center justify-between md:hidden">
-              <Button
-                onClick={prev}
-                variant="ghost"
-                size="sm"
-                disabled={index === 0}
-                className="p-2"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-muted-foreground text-xs">
-                {index + 1} / {works.length}
-              </span>
-              <Button
-                onClick={next}
-                variant="ghost"
-                size="sm"
-                disabled={index === works.length - 1}
-                className="p-2"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                onClick={onClose}
-                variant="ghost"
-                size="sm"
-                className="p-2"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <DialogTitle className="truncate font-bold text-lg">
-              {/* タイトルはデスクトップのみ */}
-              <span
-                className="hidden cursor-pointer text-left transition-colors hover:text-primary md:inline"
-                onClick={() => {
-                  // Portal内でReact Routerが使用できないため、直接ナビゲーション
-                  if (typeof window !== "undefined") {
-                    window.location.href = `/posts/${currentWork.id}`
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault()
+      <DialogContent className="h-[96vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
+        <div className="flex h-[86vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
+          {/* 詳細パネル (Desktop + Mobile) */}
+          <aside
+            className="flex flex-col bg-background/80 backdrop-blur-sm"
+            style={{
+              width: "calc(100% - 5rem)",
+              minWidth: "calc(100% - 5rem)",
+              maxWidth: "calc(100% - 5rem)",
+            }}
+          >
+            <DialogHeader className="border-b p-4 pb-2">
+              {/* モバイル用ナビゲーション */}
+              <div className="flex items-center justify-between md:hidden">
+                <Button
+                  onClick={prev}
+                  variant="ghost"
+                  size="sm"
+                  disabled={index === 0}
+                  className="p-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-muted-foreground text-xs">
+                  {index + 1} / {works.length}
+                </span>
+                <Button
+                  onClick={next}
+                  variant="ghost"
+                  size="sm"
+                  disabled={index === works.length - 1}
+                  className="p-2"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={onClose}
+                  variant="ghost"
+                  size="sm"
+                  className="p-2"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              <DialogTitle className="truncate font-bold text-lg">
+                {/* タイトルはデスクトップのみ */}
+                <span
+                  className="hidden cursor-pointer text-left transition-colors hover:text-primary md:inline"
+                  onClick={() => {
+                    // Portal内でReact Routerが使用できないため、直接ナビゲーション
                     if (typeof window !== "undefined") {
                       window.location.href = `/posts/${currentWork.id}`
                     }
-                  }
-                }}
-              >
-                {currentWork.title}
-              </span>
-              {/* モバイル用簡潔タイトル */}
-              <span className="truncate md:hidden">{currentWork.title}</span>
-            </DialogTitle>
-            <div className="mt-2">
-              <span
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    window.location.href = `/users/${currentWork.user?.login}`
-                  }
-                }}
-                className="flex cursor-pointer items-center space-x-2 transition-colors hover:text-primary"
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault()
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      if (typeof window !== "undefined") {
+                        window.location.href = `/posts/${currentWork.id}`
+                      }
+                    }
+                  }}
+                >
+                  {currentWork.title}
+                </span>
+                {/* モバイル用簡潔タイトル */}
+                <span className="truncate md:hidden">{currentWork.title}</span>
+              </DialogTitle>
+              <div className="mt-2">
+                <span
+                  onClick={() => {
                     if (typeof window !== "undefined") {
                       window.location.href = `/users/${currentWork.user?.login}`
                     }
-                  }
-                }}
-              >
-                <Avatar className="size-6">
-                  <AvatarImage
-                    src={withIconUrlFallback(currentWork.user?.iconUrl)}
-                  />
-                  <AvatarFallback />
-                </Avatar>
-                <span className="font-medium text-sm">
-                  {currentWork.user?.name}
-                </span>
-              </span>
-            </div>
-          </DialogHeader>
-
-          {/* ローディング表示 */}
-          {isCurrentWorkLoading ? (
-            <div className="flex flex-1 items-center justify-center">
-              <div className="flex flex-col items-center space-y-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-                <span className="text-muted-foreground text-sm">
-                  {isDebouncing ? "待機中..." : "読み込み中..."}
+                  }}
+                  className="flex cursor-pointer items-center space-x-2 transition-colors hover:text-primary"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      if (typeof window !== "undefined") {
+                        window.location.href = `/users/${currentWork.user?.login}`
+                      }
+                    }
+                  }}
+                >
+                  <Avatar className="size-6">
+                    <AvatarImage
+                      src={withIconUrlFallback(currentWork.user?.iconUrl)}
+                    />
+                    <AvatarFallback />
+                  </Avatar>
+                  <span className="font-medium text-sm">
+                    {currentWork.user?.name}
+                  </span>
                 </span>
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-1 flex-col overflow-hidden">
-              {/* メインコンテンツエリア（スクロール可能） */}
-              <div className="flex-1 overflow-y-auto overscroll-y-contain p-4">
-                <WorkArticle
-                  work={{
-                    ...currentWork,
-                    user: currentWork.user
-                      ? { ...currentWork.user, works: [] }
-                      : null,
-                    nextWork: null,
-                    previousWork: null,
-                  }}
-                  userSetting={undefined}
-                  mode={"dialog"}
-                />
-                {/* コメント一覧（コメントが有効な場合のみ） */}
-                {currentWork.isCommentsEditable && (
-                  <div className="mt-6">
-                    <WorkCommentSectionEnhanced
+            </DialogHeader>
+
+            {/* ローディング表示 */}
+            {isCurrentWorkLoading ? (
+              <div className="flex flex-1 items-center justify-center">
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+                  <span className="text-muted-foreground text-sm">
+                    {isDebouncing ? "待機中..." : "読み込み中..."}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-1 flex-col overflow-hidden">
+                {/* メインコンテンツエリア（スクロール可能） */}
+                <div className="flex-1 overflow-y-auto overscroll-y-contain p-4">
+                  <WorkArticle
+                    work={{
+                      ...currentWork,
+                      user: currentWork.user
+                        ? { ...currentWork.user, works: [] }
+                        : null,
+                      nextWork: null,
+                      previousWork: null,
+                    }}
+                    userSetting={undefined}
+                    mode={"dialog"}
+                  />
+                  {/* コメント一覧（コメントが有効な場合のみ） */}
+                  {currentWork.isCommentsEditable && (
+                    <div className="mt-6">
+                      <WorkCommentSectionEnhanced
+                        workId={currentWork.id}
+                        workOwnerIconImageURL={withIconUrlFallback(
+                          currentWork.user?.iconUrl,
+                        )}
+                        isWorkOwnerBlocked={
+                          (currentWork as { user?: { isBlocked?: boolean } })
+                            .user?.isBlocked ?? false
+                        }
+                        isFixedInput={true}
+                        comments={
+                          Array.isArray(
+                            (currentWork as unknown as { comments?: unknown[] })
+                              .comments,
+                          )
+                            ? (
+                                currentWork as unknown as {
+                                  comments: unknown[]
+                                }
+                              ).comments.map((c: unknown) => ({
+                                id: (c as { id: string }).id,
+                                text: (c as { text?: string | null }).text,
+                                createdAt: (c as { createdAt: number })
+                                  .createdAt,
+                                likesCount: (c as { likesCount: number })
+                                  .likesCount,
+                                isLiked: (c as { isLiked: boolean }).isLiked,
+                                isWorkOwnerLiked: (
+                                  c as { isWorkOwnerLiked: boolean }
+                                ).isWorkOwnerLiked,
+                                isMuted: (c as { isMuted?: boolean }).isMuted,
+                                isSensitive: (c as { isSensitive?: boolean })
+                                  .isSensitive,
+                                user: (
+                                  c as {
+                                    user?: {
+                                      id: string
+                                      name: string
+                                      iconUrl?: string | null
+                                    }
+                                  }
+                                ).user
+                                  ? {
+                                      id: (c as { user: { id: string } }).user
+                                        .id,
+                                      name:
+                                        (c as { user: { name: string } }).user
+                                          .name || "",
+                                      iconUrl: (
+                                        c as {
+                                          user: { iconUrl?: string | null }
+                                        }
+                                      ).user.iconUrl,
+                                    }
+                                  : undefined,
+                                sticker: (
+                                  c as {
+                                    sticker?: {
+                                      id: string
+                                      title: string
+                                      imageUrl?: string | null
+                                      accessType: string
+                                      isDownloaded?: boolean
+                                    }
+                                  }
+                                ).sticker
+                                  ? {
+                                      id:
+                                        (c as { sticker: { id: string } })
+                                          .sticker.id || "",
+                                      title:
+                                        (c as { sticker: { title: string } })
+                                          .sticker.title || "",
+                                      imageUrl: (
+                                        c as {
+                                          sticker: { imageUrl?: string | null }
+                                        }
+                                      ).sticker.imageUrl,
+                                      accessType:
+                                        (
+                                          c as {
+                                            sticker: { accessType: string }
+                                          }
+                                        ).sticker.accessType || "PUBLIC",
+                                      isDownloaded: (
+                                        c as {
+                                          sticker: { isDownloaded?: boolean }
+                                        }
+                                      ).sticker.isDownloaded,
+                                    }
+                                  : undefined,
+                                responses: [],
+                              }))
+                            : []
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* 固定アクションエリア（コメント入力） */}
+                <div className="border-t bg-background/98 backdrop-blur-md">
+                  {/* 固定コメント入力欄 */}
+                  {currentWork.isCommentsEditable && (
+                    <WorkCommentInputFixed
                       workId={currentWork.id}
-                      workOwnerIconImageURL={withIconUrlFallback(
-                        currentWork.user?.iconUrl,
-                      )}
                       isWorkOwnerBlocked={
                         (currentWork as { user?: { isBlocked?: boolean } }).user
                           ?.isBlocked ?? false
                       }
-                      isFixedInput={true}
-                      comments={
+                      commentsCount={
                         Array.isArray(
                           (currentWork as unknown as { comments?: unknown[] })
                             .comments,
                         )
-                          ? (
-                              currentWork as unknown as { comments: unknown[] }
-                            ).comments.map((c: unknown) => ({
-                              id: (c as { id: string }).id,
-                              text: (c as { text?: string | null }).text,
-                              createdAt: (c as { createdAt: number }).createdAt,
-                              likesCount: (c as { likesCount: number })
-                                .likesCount,
-                              isLiked: (c as { isLiked: boolean }).isLiked,
-                              isWorkOwnerLiked: (
-                                c as { isWorkOwnerLiked: boolean }
-                              ).isWorkOwnerLiked,
-                              isMuted: (c as { isMuted?: boolean }).isMuted,
-                              isSensitive: (c as { isSensitive?: boolean })
-                                .isSensitive,
-                              user: (
-                                c as {
-                                  user?: {
-                                    id: string
-                                    name: string
-                                    iconUrl?: string | null
-                                  }
-                                }
-                              ).user
-                                ? {
-                                    id: (c as { user: { id: string } }).user.id,
-                                    name:
-                                      (c as { user: { name: string } }).user
-                                        .name || "",
-                                    iconUrl: (
-                                      c as { user: { iconUrl?: string | null } }
-                                    ).user.iconUrl,
-                                  }
-                                : undefined,
-                              sticker: (
-                                c as {
-                                  sticker?: {
-                                    id: string
-                                    title: string
-                                    imageUrl?: string | null
-                                    accessType: string
-                                    isDownloaded?: boolean
-                                  }
-                                }
-                              ).sticker
-                                ? {
-                                    id:
-                                      (c as { sticker: { id: string } }).sticker
-                                        .id || "",
-                                    title:
-                                      (c as { sticker: { title: string } })
-                                        .sticker.title || "",
-                                    imageUrl: (
-                                      c as {
-                                        sticker: { imageUrl?: string | null }
-                                      }
-                                    ).sticker.imageUrl,
-                                    accessType:
-                                      (c as { sticker: { accessType: string } })
-                                        .sticker.accessType || "PUBLIC",
-                                    isDownloaded: (
-                                      c as {
-                                        sticker: { isDownloaded?: boolean }
-                                      }
-                                    ).sticker.isDownloaded,
-                                  }
-                                : undefined,
-                              responses: [],
-                            }))
-                          : []
+                          ? (currentWork as unknown as { comments: unknown[] })
+                              .comments.length
+                          : 0
                       }
+                      onCommentAdded={handleCommentAdded}
                     />
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
+            )}
+          </aside>
 
-              {/* 固定コメント入力欄 */}
-              {currentWork.isCommentsEditable && (
-                <WorkCommentInputFixed
-                  workId={currentWork.id}
-                  isWorkOwnerBlocked={
-                    (currentWork as { user?: { isBlocked?: boolean } }).user
-                      ?.isBlocked ?? false
-                  }
-                  commentsCount={
-                    Array.isArray(
-                      (currentWork as unknown as { comments?: unknown[] })
-                        .comments,
-                    )
-                      ? (currentWork as unknown as { comments: unknown[] })
-                          .comments.length
-                      : 0
-                  }
-                  onCommentAdded={handleCommentAdded}
+          {/* サムネイル列 - スマホでも常に表示（幅固定） */}
+          <aside
+            ref={thumbListRef}
+            className="ml-auto flex h-full flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm"
+            style={{
+              width: "5rem", // 固定幅
+              minWidth: "5rem", // 最小幅
+              maxWidth: "5rem", // 最大幅
+              scrollbarWidth: "thin",
+              display: "flex",
+              visibility: "visible",
+              opacity: 1,
+            }}
+          >
+            {works.map((w, i) => (
+              <button
+                key={w.id}
+                type="button"
+                className={`relative m-1 rounded-md ring-offset-2 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                  i === index
+                    ? "bg-primary/10 ring ring-primary"
+                    : "hover:bg-background/20"
+                }`}
+                onClick={() => setIndex(i)}
+              >
+                <img
+                  src={w.smallThumbnailImageURL}
+                  alt={w.title}
+                  className="h-16 w-full rounded-md object-cover"
+                  draggable={false}
+                  loading="lazy"
+                  onLoad={(e) => {
+                    // 画像読み込み完了時にサムネイル幅の安定化
+                    const img = e.target as HTMLImageElement
+                    img.style.opacity = "1"
+                  }}
+                  onError={(e) => {
+                    // エラー時もサイズを維持
+                    const img = e.target as HTMLImageElement
+                    img.style.opacity = "0.5"
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "4rem",
+                    objectFit: "cover",
+                    opacity: 0,
+                    transition: "opacity 0.3s ease-in-out",
+                  }}
                 />
-              )}
-            </div>
-          )}
-        </aside>
+                {/* キャッシュ済みインジケーター */}
+                {loadedWorkIds.has(w.id) && (
+                  <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-400 shadow-sm" />
+                )}
+                {/* デバウンス中インジケーター */}
+                {isDebouncing && i === index && (
+                  <div className="absolute top-1 left-1 h-2 w-2 animate-pulse rounded-full bg-yellow-400 shadow-sm" />
+                )}
+              </button>
+            ))}
 
-        {/* サムネイル列 - スマホでも常に表示（幅固定） */}
-        <aside
-          ref={thumbListRef}
-          className="ml-auto flex h-full flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm"
-          style={{
-            width: "5rem", // 固定幅
-            minWidth: "5rem", // 最小幅
-            maxWidth: "5rem", // 最大幅
-            scrollbarWidth: "thin",
-            display: "flex",
-            visibility: "visible",
-            opacity: 1,
-          }}
-        >
-          {works.map((w, i) => (
-            <button
-              key={w.id}
-              type="button"
-              className={`relative m-1 rounded-md ring-offset-2 transition-all duration-200 focus:outline-none focus:ring-2 ${
-                i === index
-                  ? "bg-primary/10 ring ring-primary"
-                  : "hover:bg-background/20"
-              }`}
-              onClick={() => setIndex(i)}
-            >
-              <img
-                src={w.smallThumbnailImageURL}
-                alt={w.title}
-                className="h-16 w-full rounded-md object-cover"
-                draggable={false}
-                loading="lazy"
-                onLoad={(e) => {
-                  // 画像読み込み完了時にサムネイル幅の安定化
-                  const img = e.target as HTMLImageElement
-                  img.style.opacity = "1"
-                }}
-                onError={(e) => {
-                  // エラー時もサイズを維持
-                  const img = e.target as HTMLImageElement
-                  img.style.opacity = "0.5"
-                }}
-                style={{
-                  width: "100%",
-                  height: "4rem",
-                  objectFit: "cover",
-                  opacity: 0,
-                  transition: "opacity 0.3s ease-in-out",
-                }}
-              />
-              {/* キャッシュ済みインジケーター */}
-              {loadedWorkIds.has(w.id) && (
-                <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-green-400 shadow-sm" />
-              )}
-              {/* デバウンス中インジケーター */}
-              {isDebouncing && i === index && (
-                <div className="absolute top-1 left-1 h-2 w-2 animate-pulse rounded-full bg-yellow-400 shadow-sm" />
-              )}
-            </button>
-          ))}
-
-          {/* sentinel & spinner */}
-          {isLoadingMore && (
-            <div className="flex justify-center py-2">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-            </div>
-          )}
-          <div ref={sentinelRef} className="h-[2px] w-full" />
-        </aside>
+            {/* sentinel & spinner */}
+            {isLoadingMore && (
+              <div className="flex justify-center py-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+              </div>
+            )}
+            <div ref={sentinelRef} className="h-[2px] w-full" />
+          </aside>
+        </div>
+        {/* いいねボタンエリア - コンパクト版 */}
+        <div className="border-border/50 border-b bg-gradient-to-r from-primary/3 to-transparent px-4 py-2">
+          <div className="flex items-center justify-center">
+            <WorkActionContainer
+              workLikesCount={currentWork.likesCount}
+              title={currentWork.title}
+              description={
+                (currentWork.description?.length ?? 0) > 100
+                  ? `${currentWork.description?.slice(0, 100)}...`
+                  : (currentWork.description ?? "")
+              }
+              currentImageUrl={currentWork.imageURL}
+              imageUrls={[
+                currentWork.imageURL,
+                ...(currentWork.subWorks || []).map(
+                  (subWork) => subWork.imageUrl ?? "",
+                ),
+              ]}
+              targetWorkId={currentWork.id}
+              bookmarkFolderId={null}
+              targetWorkOwnerUserId={currentWork.user?.id ?? ""}
+              isDisabledShare={false}
+              isTargetUserBlocked={Boolean(currentWork.user?.isBlocked)}
+              mode="dialogLikeOnly"
+            />
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   )
