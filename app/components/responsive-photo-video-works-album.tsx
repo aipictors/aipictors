@@ -218,6 +218,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                       muted
                       autoPlay={isAutoPlay || isMobile}
                       loop
+                      playsInline
                     >
                       <track
                         kind="captions"
