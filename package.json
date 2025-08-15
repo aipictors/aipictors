@@ -6,6 +6,7 @@
   "scripts": {
     "build": "remix vite:build && wrangler pages functions build --outdir build/worker",
     "dev": "remix vite:dev",
+    "dev:fresh": "rm -rf build .vite && remix vite:dev",
     "start": "wrangler pages dev ./build/client",
     "check": "tsc --noEmit --isolatedDeclarations",
     "lint": "biome lint --write app",

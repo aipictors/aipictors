@@ -20,6 +20,14 @@ export default defineConfig({
   ssr: {
     noExternal: ["react-easy-crop", "tslib"],
   },
+  server: {
+    hmr: {
+      overlay: false,
+    },
+    fs: {
+      strict: false,
+    },
+  },
   plugins: [
     cloudflareDevProxyVitePlugin(),
     remix({
