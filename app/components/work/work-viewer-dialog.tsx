@@ -374,7 +374,14 @@ export function WorkViewerDialog({
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="flex h-[90vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
         {/* 詳細パネル (Desktop + Mobile) */}
-        <aside className="flex w-full max-w-[calc(100%-5rem)] flex-col bg-background/80 backdrop-blur-sm">
+        <aside
+          className="flex flex-col bg-background/80 backdrop-blur-sm"
+          style={{
+            width: "calc(100% - 5rem)",
+            minWidth: "calc(100% - 5rem)",
+            maxWidth: "calc(100% - 5rem)",
+          }}
+        >
           <DialogHeader className="border-b p-4 pb-2">
             {/* モバイル用ナビゲーション */}
             <div className="flex items-center justify-between md:hidden">
@@ -610,11 +617,14 @@ export function WorkViewerDialog({
           )}
         </aside>
 
-        {/* サムネイル列 - スマホでも常に表示（強制表示） */}
+        {/* サムネイル列 - スマホでも常に表示（幅固定） */}
         <aside
           ref={thumbListRef}
-          className="ml-auto flex h-full w-20 min-w-[5rem] flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm md:w-24"
+          className="ml-auto flex h-full flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm"
           style={{
+            width: "5rem", // 固定幅
+            minWidth: "5rem", // 最小幅
+            maxWidth: "5rem", // 最大幅
             scrollbarWidth: "thin",
             display: "flex",
             visibility: "visible",
@@ -635,9 +645,26 @@ export function WorkViewerDialog({
               <img
                 src={w.smallThumbnailImageURL}
                 alt={w.title}
-                className="h-16 w-full rounded-md object-cover md:h-20"
+                className="h-16 w-full rounded-md object-cover"
                 draggable={false}
                 loading="lazy"
+                onLoad={(e) => {
+                  // 画像読み込み完了時にサムネイル幅の安定化
+                  const img = e.target as HTMLImageElement
+                  img.style.opacity = "1"
+                }}
+                onError={(e) => {
+                  // エラー時もサイズを維持
+                  const img = e.target as HTMLImageElement
+                  img.style.opacity = "0.5"
+                }}
+                style={{
+                  width: "100%",
+                  height: "4rem",
+                  objectFit: "cover",
+                  opacity: 0,
+                  transition: "opacity 0.3s ease-in-out",
+                }}
               />
               {/* キャッシュ済みインジケーター */}
               {loadedWorkIds.has(w.id) && (
