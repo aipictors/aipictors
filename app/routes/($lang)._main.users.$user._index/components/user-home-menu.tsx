@@ -27,15 +27,15 @@ export function UserHomeMenu(props: Props) {
     variables: { userId: decodeURIComponent(cachedUser.id) },
   })
 
-  const user = readFragment(UserHomeMenuFragment, data?.user)
+  const user = readFragment(UserHomeMenuFragment, data?.user) ?? cachedUser
 
   const t = useTranslation()
 
-  const isFollowee = user?.isFollowee ?? false
+  const isFollowee = Boolean(user.isFollowee)
 
-  const isMuted = user?.isMuted ?? false
+  const isMuted = Boolean(user.isMuted)
 
-  const isBlocked = user?.isBlocked ?? false
+  const isBlocked = Boolean(user.isBlocked)
 
   const navigate = useNavigate()
 
@@ -43,39 +43,39 @@ export function UserHomeMenu(props: Props) {
     <div className="relative m-auto h-72 w-full md:h-24">
       <div className="absolute top-2 right-0 z-10 md:hidden">
         <div className="flex space-x-2">
-          {cachedUser.receivedSensitiveLikesCount > 0 && (
+          {user.receivedSensitiveLikesCount > 0 && (
             <Button
               onClick={() => {
-                navigate(`/r/users/${cachedUser.login}`)
+                navigate(`/r/users/${user.login}`)
               }}
               variant={"secondary"}
             >
               <div className="flex cursor-pointer items-center">
                 <Heart className="mr-2 h-5 w-4" />
-                {cachedUser.receivedSensitiveLikesCount}
+                {user.receivedSensitiveLikesCount}
                 <p>{t("センシティブ", "Sensitive")}</p>
               </div>
             </Button>
           )}
-          <UserActionShare login={cachedUser.login} name={cachedUser.name} />
+          <UserActionShare login={user.login} name={user.name} />
         </div>
       </div>
       <div className="absolute top-2 right-0 hidden md:block">
         <div className="flex w-full items-center justify-end space-x-4">
-          {cachedUser.receivedSensitiveLikesCount > 0 && (
+          {user.receivedSensitiveLikesCount > 0 && (
             <SensitiveToggle
               variant="compact"
-              targetUrl={`/r/users/${cachedUser.login}`}
+              targetUrl={`/r/users/${user.login}`}
             />
           )}
           <UserActionOther
-            id={cachedUser.id}
+            id={user.id}
             isMuted={isMuted}
             isBlocked={isBlocked}
           />
-          <UserActionShare login={cachedUser.login} name={cachedUser.name} />
+          <UserActionShare login={user.login} name={user.name} />
           <FollowButton
-            targetUserId={cachedUser.id}
+            targetUserId={user.id}
             isFollow={isFollowee}
             triggerChildren={
               <Button className="font-bold">
@@ -95,7 +95,7 @@ export function UserHomeMenu(props: Props) {
               targetUserId={user.id}
             />
           )}
-          {authContext.userId === cachedUser.id && (
+          {authContext.userId === user.id && (
             <ProfileEditDialog
               triggerChildren={<Button>{t("編集", "Edit")}</Button>}
             />
@@ -106,7 +106,7 @@ export function UserHomeMenu(props: Props) {
         <div className="mb-4 flex md:mb-0 md:hidden">
           <div className="w-32">
             <div className="white mt-4 font-bold text-md">
-              {toOmissionNumberText(cachedUser.followersCount)}
+              {toOmissionNumberText(user.followersCount)}
             </div>
             <div className="white mt-1 text-sm opacity-50">
               {t("フォロワー", "Followers")}
@@ -114,32 +114,31 @@ export function UserHomeMenu(props: Props) {
           </div>
           <div className="w-32">
             <div className="white mt-4 font-bold text-md">
-              {toOmissionNumberText(cachedUser.receivedLikesCount)}
+              {toOmissionNumberText(user.receivedLikesCount)}
             </div>
             <div className="white mt-1 text-sm opacity-50">
               {t("いいね", "Liked")}
             </div>
           </div>
         </div>
-        {authContext.userId !== cachedUser.id && (
+        {authContext.userId !== user.id && (
           <FollowButton
             className="mb-2 w-[100%] rounded-full"
-            targetUserId={"2"}
+            targetUserId={user.id}
             isFollow={isFollowee}
           />
         )}
-        {cachedUser.promptonUser !== null &&
-          cachedUser.promptonUser.id !== null && (
-            <div className={"block w-[100%] rounded-full"}>
-              <PromptonRequestColorfulButton
-                rounded="rounded-full"
-                promptonId={cachedUser.promptonUser.id}
-                hideIcon={true}
-                targetUserId={cachedUser.id}
-              />
-            </div>
-          )}
-        {authContext.userId === cachedUser.id && (
+        {user.promptonUser !== null && user.promptonUser.id !== null && (
+          <div className={"block w-[100%] rounded-full"}>
+            <PromptonRequestColorfulButton
+              rounded="rounded-full"
+              promptonId={user.promptonUser.id}
+              hideIcon={true}
+              targetUserId={user.id}
+            />
+          </div>
+        )}
+        {authContext.userId === user.id && (
           <ProfileEditDialog
             triggerChildren={
               <Button className="w-full rounded-full">

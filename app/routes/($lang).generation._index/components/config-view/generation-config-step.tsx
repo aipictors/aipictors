@@ -1,11 +1,12 @@
 import { Input } from "~/components/ui/input"
+import { Button } from "~/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import { HelpCircleIcon } from "lucide-react"
+import { HelpCircleIcon, MinusIcon, PlusIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 import { config } from "~/config"
 
@@ -17,9 +18,52 @@ type Props = {
 export function GenerationConfigStep(props: Props) {
   const t = useTranslation()
 
+  const minSteps = config.generationFeature.imageGenerationMinSteps
+  const maxSteps = config.generationFeature.imageGenerationMaxSteps
+
+  const handleIncrement = () => {
+    const newValue = Math.min(props.value + 1, maxSteps)
+    props.onChange(newValue)
+  }
+
+  const handleDecrement = () => {
+    const newValue = Math.max(props.value - 1, minSteps)
+    props.onChange(newValue)
+  }
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value
+
+    // 空文字の場合は一時的に許可（入力中の可能性があるため）
+    if (inputValue === "") {
+      return
+    }
+
+    const numericValue = Number(inputValue)
+
+    // 数値でない場合は処理しない
+    if (Number.isNaN(numericValue)) {
+      return
+    }
+
+    // 範囲内の値のみ受け入れる
+    if (numericValue >= minSteps && numericValue <= maxSteps) {
+      props.onChange(numericValue)
+    }
+  }
+
+  const handleInputBlur = () => {
+    // フォーカスが外れた時に範囲チェック
+    if (props.value < minSteps) {
+      props.onChange(minSteps)
+    } else if (props.value > maxSteps) {
+      props.onChange(maxSteps)
+    }
+  }
+
   return (
     <div className="flex flex-col gap-y-2">
-      <div className="flex gap-x-2">
+      <div className="flex items-center gap-x-2">
         <span className="font-bold text-sm">{"Steps"}</span>
         <TooltipProvider>
           <Tooltip>
@@ -36,26 +80,51 @@ export function GenerationConfigStep(props: Props) {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        <span className="text-muted-foreground text-xs">
+          ({minSteps}-{maxSteps})
+        </span>
       </div>
-      <Input
-        type="number"
-        value={props.value}
-        min={9}
-        max={config.generationFeature.imageGenerationMaxSteps}
-        onChange={(event) => {
-          const inputValue = Number(event.target.value)
-          // 最大値を超えないように制限
-          if (inputValue > config.generationFeature.imageGenerationMaxSteps) {
-            props.onChange(config.generationFeature.imageGenerationMaxSteps)
-          } else {
-            props.onChange(inputValue)
-          }
 
-          if (inputValue < config.generationFeature.imageGenerationMinSteps) {
-            props.onChange(config.generationFeature.imageGenerationMinSteps)
-          }
-        }}
-      />
+      {/* モバイル向けプラスマイナスボタン付きUI */}
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 shrink-0"
+          onClick={handleDecrement}
+          disabled={props.value <= minSteps}
+          aria-label={t("ステップ数を減らす", "Decrease steps")}
+        >
+          <MinusIcon className="h-4 w-4" />
+        </Button>
+
+        <div className="relative max-w-20 flex-1">
+          <Input
+            type="number"
+            value={props.value}
+            min={minSteps}
+            max={maxSteps}
+            step="1"
+            className="h-10 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            aria-label={t("ステップ数", "Steps")}
+          />
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 shrink-0"
+          onClick={handleIncrement}
+          disabled={props.value >= maxSteps}
+          aria-label={t("ステップ数を増やす", "Increase steps")}
+        >
+          <PlusIcon className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   )
 }
