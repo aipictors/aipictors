@@ -372,9 +372,9 @@ export function WorkViewerDialog({
   // ───────────────── Render ─────────────────
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="flex h-[90vh] w-[100vw] max-w-[88vw] overflow-hidden p-0">
+      <DialogContent className="flex h-[90vh] w-[100vw] max-w-[95vw] overflow-hidden p-0 sm:max-w-[88vw]">
         {/* 詳細パネル (Desktop + Mobile) */}
-        <aside className="flex w-full flex-col bg-background/80 backdrop-blur-sm">
+        <aside className="flex w-full max-w-[calc(100%-5rem)] flex-col bg-background/80 backdrop-blur-sm">
           <DialogHeader className="border-b p-4 pb-2">
             {/* モバイル用ナビゲーション */}
             <div className="flex items-center justify-between md:hidden">
@@ -408,10 +408,10 @@ export function WorkViewerDialog({
                 <X className="h-4 w-4" />
               </Button>
             </div>
-            <DialogTitle className="truncate text-lg font-bold">
+            <DialogTitle className="truncate font-bold text-lg">
               {/* タイトルはデスクトップのみ */}
               <span
-                className="cursor-pointer text-left transition-colors hover:text-primary hidden md:inline"
+                className="hidden cursor-pointer text-left transition-colors hover:text-primary md:inline"
                 onClick={() => {
                   // Portal内でReact Routerが使用できないため、直接ナビゲーション
                   if (typeof window !== "undefined") {
@@ -610,17 +610,22 @@ export function WorkViewerDialog({
           )}
         </aside>
 
-        {/* サムネイル列 */}
+        {/* サムネイル列 - スマホでも常に表示（強制表示） */}
         <aside
           ref={thumbListRef}
-          className="ml-auto flex h-full w-16 flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm md:w-24"
-          style={{ scrollbarWidth: "thin" }}
+          className="ml-auto flex h-full w-20 min-w-[5rem] flex-col overflow-y-auto overscroll-y-contain bg-background/80 backdrop-blur-sm md:w-24"
+          style={{
+            scrollbarWidth: "thin",
+            display: "flex",
+            visibility: "visible",
+            opacity: 1,
+          }}
         >
           {works.map((w, i) => (
             <button
               key={w.id}
               type="button"
-              className={`relative m-1 rounded-md transition-all duration-200 ring-offset-2 focus:outline-none focus:ring-2 ${
+              className={`relative m-1 rounded-md ring-offset-2 transition-all duration-200 focus:outline-none focus:ring-2 ${
                 i === index
                   ? "bg-primary/10 ring ring-primary"
                   : "hover:bg-background/20"
@@ -630,7 +635,7 @@ export function WorkViewerDialog({
               <img
                 src={w.smallThumbnailImageURL}
                 alt={w.title}
-                className="h-14 w-full rounded-md object-cover md:h-20"
+                className="h-16 w-full rounded-md object-cover md:h-20"
                 draggable={false}
                 loading="lazy"
               />
