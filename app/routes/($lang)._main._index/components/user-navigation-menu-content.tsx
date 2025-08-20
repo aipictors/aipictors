@@ -33,13 +33,13 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { graphql } from "gql.tada"
 import {
   userNavigationStyles,
   getSkeletonClass,
   getMenuSkeletonClass,
 } from "./user-navigation-styles"
+import { setCookie } from "~/lib/cookie-utils"
 
 type Props = {
   onLogout(): void
@@ -90,8 +90,6 @@ export function UserNavigationMenuContent(props: Props) {
   const featurePromptonRequest =
     userSetting?.userSetting?.featurePromptonRequest ?? false
   const viewerUserToken = tokenData?.viewer?.token
-  const isSensitiveToggleVisible =
-    typeof window !== "undefined" ? location.pathname !== "/generation" : true
 
   const setColorTheme = (newMode: string) => {
     if (newMode === "system") {
@@ -117,10 +115,11 @@ export function UserNavigationMenuContent(props: Props) {
     const currentLocale = location.pathname.match(/^\/(ja|en)(\/|$)/)?.[1] || ""
     const basePath = location.pathname.replace(/^\/(ja|en)(\/|$)/, "/")
 
-    if (typeof document !== "undefined") {
-      // @ts-ignore - クッキーの設定のため必要
-      document.cookie = `locale=${locale}; path=/; SameSite=Lax`
-    }
+    setCookie("locale", locale, {
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+      path: "/",
+    })
 
     const newUrl =
       locale === "ja" && currentLocale
@@ -129,9 +128,7 @@ export function UserNavigationMenuContent(props: Props) {
           ? location.pathname.replace(`/${currentLocale}`, `/${locale}`)
           : `/${locale}${basePath}`
 
-    if (location.pathname !== newUrl) {
-      navigate(newUrl)
-    }
+    if (location.pathname !== newUrl) navigate(newUrl)
   }
 
   const setMode = (theme: string) => {
