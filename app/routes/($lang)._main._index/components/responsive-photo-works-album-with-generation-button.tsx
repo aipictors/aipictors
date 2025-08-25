@@ -51,6 +51,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                   hasVideoUrl={Boolean(workItem.url)}
                   isGeneration={workItem.isGeneration}
                   hasReferenceButton={true}
+                  onSelect={props.onSelect}
                 />
                 {workItem.subWorksCount > 0 && (
                   <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
@@ -289,6 +290,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
         <HomeCroppedWorksWithGenerationButton
           works={props.works}
           isShowProfile={true}
+          onSelect={props.onSelect}
         />
       </div>
     </>
@@ -302,6 +304,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   isRanking?: boolean
   isShowProfile?: boolean
+  onSelect?: (index: string) => void
 }) {
   return (
     <div className="grid w-full grid-cols-2 gap-3 pr-2 pb-4">
@@ -322,6 +325,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
               hasVideoUrl={Boolean(work.url)}
               isGeneration={work.isGeneration}
               hasReferenceButton={true}
+              onSelect={props.onSelect}
             />
             {work.subWorksCount > 0 && (
               <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
@@ -354,9 +358,19 @@ function HomeCroppedWorksWithGenerationButton(props: {
 
           {props.isShowProfile && (
             <div className="flex flex-col space-y-1">
-              <Link to={`/posts/${work.id}`}>
-                <p className="line-clamp-2 text-sm">{work.title}</p>
-              </Link>
+              {props.onSelect ? (
+                <button
+                  type="button"
+                  onClick={() => props.onSelect?.(work.id)}
+                  className="cursor-pointer text-left"
+                >
+                  <p className="line-clamp-2 text-sm">{work.title}</p>
+                </button>
+              ) : (
+                <Link to={`/posts/${work.id}`}>
+                  <p className="line-clamp-2 text-sm">{work.title}</p>
+                </Link>
+              )}
               <Link to={`/users/${work.user?.id}`}>
                 <div className="flex items-center space-x-2">
                   <Avatar className="size-4">

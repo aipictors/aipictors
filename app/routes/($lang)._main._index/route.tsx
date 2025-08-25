@@ -671,7 +671,6 @@ export default function Index() {
               <HomeWorksGeneratedSection
                 works={[]}
                 dateText={data.awardDateText}
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               />
               <HomeNewUsersWorksSection
                 works={data.newUserWorks}

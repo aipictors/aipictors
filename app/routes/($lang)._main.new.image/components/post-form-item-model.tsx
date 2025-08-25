@@ -1,9 +1,10 @@
 import { type SetStateAction, useState, useEffect } from "react"
-import { Search } from "lucide-react"
+import { Search, XIcon } from "lucide-react"
 import type { AiModel } from "~/routes/($lang)._main.new.image/types/model"
 import { useTranslation } from "~/hooks/use-translation"
 import { Card, CardContent } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
+import { Button } from "~/components/ui/button"
 import {
   Select,
   SelectTrigger,
@@ -16,7 +17,7 @@ import {
 type Props = {
   model: string | null
   models: AiModel[]
-  setModel: (value: string) => void
+  setModel: (value: string | null) => void
 }
 
 export function PostFormItemModel({ model, models, setModel }: Props) {
@@ -41,6 +42,14 @@ export function PostFormItemModel({ model, models, setModel }: Props) {
     }
   }, [model])
 
+  // モデル選択をクリアする関数
+  const clearModel = () => {
+    setModel(null)
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("selectedModel")
+    }
+  }
+
   // モデル名でソートし、検索語でフィルタリング
   const filteredModels = models
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -49,7 +58,21 @@ export function PostFormItemModel({ model, models, setModel }: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
-        <p className="font-bold text-sm">{t("使用AI", "Used AI")}</p>
+        <div className="flex items-center justify-between">
+          <p className="font-bold text-sm">{t("使用AI", "Used AI")}</p>
+          {model && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={clearModel}
+              className="h-6 w-6 p-0"
+              title={t("選択をクリア", "Clear selection")}
+            >
+              <XIcon className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
         <div className="flex items-center space-x-2">
           <div className="relative">
             <Input

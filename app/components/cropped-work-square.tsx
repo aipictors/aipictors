@@ -18,6 +18,7 @@ type Props = {
   hasVideoUrl?: boolean
   isGeneration?: boolean
   hasReferenceButton?: boolean
+  onSelect?: (workId: string) => void
 }
 
 /**
@@ -121,21 +122,40 @@ export function CroppedWorkSquare(props: Props) {
         <div className="w-full pb-[100%]" />
         <div className="absolute inset-0">
           <div className="relative block h-full w-full shrink-0 overflow-hidden rounded">
-            <Link
-              to={`/posts/${props.workId}`}
-              className="block h-full w-full transition-all duration-300 ease-in-out"
-            >
-              <OptimizedImage
-                src={props.imageUrl}
-                alt=""
-                key={props.imageUrl}
-                loading="lazy"
-                width={props.imageWidth}
-                height={props.imageHeight}
-                style={cropStyle}
-                className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
-              />
-            </Link>
+            {props.onSelect ? (
+              <button
+                type="button"
+                onClick={() => props.onSelect?.(props.workId)}
+                className="block h-full w-full cursor-pointer transition-all duration-300 ease-in-out"
+              >
+                <OptimizedImage
+                  src={props.imageUrl}
+                  alt=""
+                  key={props.imageUrl}
+                  loading="lazy"
+                  width={props.imageWidth}
+                  height={props.imageHeight}
+                  style={cropStyle}
+                  className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
+                />
+              </button>
+            ) : (
+              <Link
+                to={`/posts/${props.workId}`}
+                className="block h-full w-full transition-all duration-300 ease-in-out"
+              >
+                <OptimizedImage
+                  src={props.imageUrl}
+                  alt=""
+                  key={props.imageUrl}
+                  loading="lazy"
+                  width={props.imageWidth}
+                  height={props.imageHeight}
+                  style={cropStyle}
+                  className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
+                />
+              </Link>
+            )}
 
             {props.ranking && (
               <div
