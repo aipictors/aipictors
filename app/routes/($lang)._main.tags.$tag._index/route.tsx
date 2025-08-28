@@ -201,28 +201,39 @@ export default function Tag() {
 
   // URLパラメータの監視と更新
   useEffect(() => {
-    const params = new URLSearchParams()
+    setSearchParams(
+      (prevParams) => {
+        const params = new URLSearchParams(prevParams)
 
-    if (workType) {
-      params.set("workType", workType)
-    }
+        if (workType) {
+          params.set("workType", workType)
+        } else {
+          params.delete("workType")
+        }
 
-    params.set("orderBy", WorkOrderby)
-    params.set("sort", worksOrderDeskAsc)
-    params.set("page", page.toString())
-    params.set("prompt", hasPrompt.toString())
+        params.set("orderBy", WorkOrderby)
+        params.set("sort", worksOrderDeskAsc)
+        params.set("page", page.toString())
+        params.set("prompt", hasPrompt.toString())
 
-    // mode パラメータの処理（デフォルトがfeedなのでpaginationの時のみセット）
-    if (mode === "pagination") {
-      params.set("mode", "pagination")
-    }
+        // mode パラメータの処理（デフォルトがfeedなのでpaginationの時のみセット）
+        if (mode === "pagination") {
+          params.set("mode", "pagination")
+        } else {
+          params.delete("mode")
+        }
 
-    // isSensitiveのパラメータが1なら、セット
-    if (data.isSensitive) {
-      params.set("sensitive", "1")
-    }
+        // isSensitiveのパラメータが1なら、セット
+        if (data.isSensitive) {
+          params.set("sensitive", "1")
+        } else {
+          params.delete("sensitive")
+        }
 
-    setSearchParams(params, { replace: true })
+        return params
+      },
+      { replace: true },
+    )
   }, [
     page,
     hasPrompt,

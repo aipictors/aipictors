@@ -816,20 +816,23 @@ export function TagWorkSection(props: Props) {
 
       {/* ページネーション コントロール */}
       {isPagination && (
-        <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
-          <ResponsivePagination
-            maxCount={Number(props.worksCount)}
-            perPage={32}
-            currentPage={props.page}
-            onPageChange={(p: number) => {
-              sessionStorage.setItem(
-                `scroll-pagination-${stateKey}-${props.page}`,
-                window.scrollY.toString(),
-              )
-              props.setPage(p)
-            }}
-          />
-        </div>
+        <>
+          <div className="h-4" /> {/* スペース確保用 */}
+          <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
+            <ResponsivePagination
+              maxCount={Number(props.worksCount)}
+              perPage={32}
+              currentPage={props.page}
+              onPageChange={(p: number) => {
+                sessionStorage.setItem(
+                  `scroll-pagination-${stateKey}-${props.page}`,
+                  window.scrollY.toString(),
+                )
+                props.setPage(p)
+              }}
+            />
+          </div>
+        </>
       )}
 
       {/* ────────── 作品ダイアログ ────────── */}
