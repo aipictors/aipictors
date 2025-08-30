@@ -3,6 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { Suspense } from "react"
 import { config, META } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 import { MyStickersList } from "~/routes/($lang).settings.sticker/components/my-stickers-list"
@@ -36,7 +37,17 @@ export default function SettingSticker() {
         <SettingsHeader title={t("スタンプ一覧", "Stickers")} />
       </div>
       <div className="space-y-4">
-        <MyStickersList />
+        <Suspense
+          fallback={
+            <div className="flex min-h-96 items-center justify-center">
+              <div className="text-sm text-gray-500">
+                {t("読み込み中...", "Loading...")}
+              </div>
+            </div>
+          }
+        >
+          <MyStickersList />
+        </Suspense>
       </div>
     </div>
   )

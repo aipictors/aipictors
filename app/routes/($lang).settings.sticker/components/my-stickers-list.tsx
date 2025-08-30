@@ -26,6 +26,24 @@ export function MyStickersList() {
   const authContext = useContext(AuthContext)
   const t = useTranslation() // 翻訳フックの使用
 
+  // 認証がロード中の場合はローディング状態を表示
+  if (authContext.isLoading) {
+    return (
+      <div className="flex min-h-96 items-center justify-center">
+        <div className="text-gray-500 text-sm">
+          {t("読み込み中...", "Loading...")}
+        </div>
+      </div>
+    )
+  }
+
+  return <MyStickersContent />
+}
+
+function MyStickersContent() {
+  const authContext = useContext(AuthContext)
+  const t = useTranslation() // 翻訳フックの使用
+
   // フォーカスタイムアウト検知
   const isTimeout = useFocusTimeout()
 
@@ -45,9 +63,7 @@ export function MyStickersList() {
 
   const { data: stickersCount = null, refetch: reactStickers } =
     useSuspenseQuery(viewerUserStickersCountQuery, {
-      skip: authContext.isLoading,
       variables: {
-        orderBy: "DATE_CREATED",
         where: {
           savedTypes: [stickerStatus],
         },
@@ -56,7 +72,6 @@ export function MyStickersList() {
 
   const { data: stickers = null, refetch: reactStickersCount } =
     useSuspenseQuery(viewerUserStickersQuery, {
-      skip: authContext.isLoading,
       variables: {
         limit: maxStickersPage,
         offset: createdSortStickerPage * maxStickersPage,
