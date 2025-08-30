@@ -1,7 +1,40 @@
-import { test, expect } from "bun:test"
-import { render, fireEvent } from "@testing-library/react"
+import { test, expect, beforeEach, mock } from "bun:test"
+import { render, fireEvent, waitFor } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { AiEvaluationDisplay } from "../ai-evaluation-display"
+
+// useTranslationのモック
+mock.module("~/hooks/use-translation", () => ({
+  useTranslation: () => (jaText: string, enText: string) => jaText,
+}))
+
+// LocalStorageのモック
+const createLocalStorageMock = () => {
+  let store: Record<string, string> = {}
+
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => {
+      store[key] = value
+    },
+    removeItem: (key: string) => {
+      delete store[key]
+    },
+    clear: () => {
+      store = {}
+    },
+  }
+}
+
+// グローバルなLocalStorageモック
+Object.defineProperty(window, "localStorage", {
+  value: createLocalStorageMock(),
+})
+
+beforeEach(() => {
+  // 各テスト前にLocalStorageをクリア
+  window.localStorage.clear()
+})
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(<MemoryRouter initialEntries={["/"]}>{component}</MemoryRouter>)
@@ -161,7 +194,7 @@ test("評価が非公開で投稿者の場合は非公開状態と表示され�
   expect(container.textContent).toContain("AI評価は非公開設定です")
 })
 
-test("閉じるボタンをクリックするとAI評価が非表示になる", () => {
+test("閉じるボタンをクリックするとAI評価が非表示になる", async () => {
   const mockEvaluation = {
     cutenessScore: 85,
     coolnessScore: 72,
@@ -176,7 +209,7 @@ test("閉じるボタンをクリックするとAI評価が非表示になる", 
     personality: "female",
   }
 
-  const { container } = renderWithRouter(
+  const { container, rerender } = renderWithRouter(
     <AiEvaluationDisplay
       evaluation={mockEvaluation}
       personality="female"
@@ -201,8 +234,31 @@ test("閉じるボタンをクリックするとAI評価が非表示になる", 
     fireEvent.click(closeButton)
   }
 
-  // クリック後は非表示になる
-  expect(container.innerHTML).toBe("")
+  // 少し待機してから状態の変更を確認
+  await waitFor(() => {
+    // LocalStorageに保存されたことを確認
+    expect(
+      window.localStorage.getItem("ai-evaluation-hidden-test-close-button"),
+    ).toBe("true")
+  })
+
+  // コンポーネントを再レンダリングして状態変更を反映
+  rerender(
+    <AiEvaluationDisplay
+      evaluation={mockEvaluation}
+      personality="female"
+      isVisible={true}
+      isBotGradingEnabled={true}
+      isBotGradingPublic={true}
+      isOwner={false}
+      workId="test-close-button"
+    />,
+  )
+
+  // 再度開くボタンが表示されることを確認
+  await waitFor(() => {
+    expect(container.textContent).toContain("AI評価を表示")
+  })
 })
 
 test("長いコメントは省略表示され、もっと見るボタンで全文表示される", () => {
@@ -272,7 +328,7 @@ test("長いコメントは省略表示され、もっと見るボタンで全�
   expect(container.textContent).not.toContain(longComment)
 })
 
-test("AI評価を閉じた後、再度開くボタンが表示される", () => {
+test("AI評価を閉じた後、再度開くボタンが表示される", async () => {
   const mockEvaluation = {
     cutenessScore: 85,
     coolnessScore: 72,
@@ -303,10 +359,21 @@ test("AI評価を閉じた後、再度開くボタンが表示される", () => 
   expect(container.textContent).toContain("テストコメント")
 
   // 閉じるボタンをクリック
-  const closeButton = container.querySelector('button[aria-label*="閉じる"]')
+  const closeButton = container.querySelector(
+    '[data-testid="ai-evaluation-close-button"]',
+  )
+  expect(closeButton).toBeTruthy()
+
   if (closeButton) {
     fireEvent.click(closeButton)
   }
+
+  // LocalStorageに保存されるまで待機
+  await waitFor(() => {
+    expect(
+      window.localStorage.getItem("ai-evaluation-hidden-test-reopen"),
+    ).toBe("true")
+  })
 
   // 再レンダリング（状態の変更を反映）
   rerender(
@@ -321,17 +388,43 @@ test("AI評価を閉じた後、再度開くボタンが表示される", () => 
     />,
   )
 
-  // 再度開くボタンが表示される
-  expect(container.textContent).toContain("AI評価を表示")
+  // 再度開くボタンが表示されることを確認
+  await waitFor(() => {
+    expect(container.textContent).toContain("AI評価を表示")
+  })
 
   // 再度開くボタンをクリック
   const reopenButton = container.querySelector(
-    'button:has(svg[data-lucide="message-square"])',
+    '[data-testid="ai-evaluation-reopen-button"]',
   )
+  expect(reopenButton).toBeTruthy()
+
   if (reopenButton) {
     fireEvent.click(reopenButton)
   }
 
-  // AI評価が再び表示される
-  expect(container.textContent).toContain("テストコメント")
+  // LocalStorageの状態が更新されるまで待機
+  await waitFor(() => {
+    expect(
+      window.localStorage.getItem("ai-evaluation-hidden-test-reopen"),
+    ).toBe("false")
+  })
+
+  // 再レンダリング
+  rerender(
+    <AiEvaluationDisplay
+      evaluation={mockEvaluation}
+      personality="female"
+      isVisible={true}
+      isBotGradingEnabled={true}
+      isBotGradingPublic={true}
+      isOwner={false}
+      workId="test-reopen"
+    />,
+  )
+
+  // AI評価が再び表示されることを確認
+  await waitFor(() => {
+    expect(container.textContent).toContain("テストコメント")
+  })
 })

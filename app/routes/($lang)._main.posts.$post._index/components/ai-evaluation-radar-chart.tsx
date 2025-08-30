@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -17,17 +17,39 @@ type Props = {
 }
 
 /**
- * AI評価レーダーチャート（アニメーション付き）
+ * AI評価レーダーチャート（アニメーション付き・レスポンシブ対応）
  */
 export function AiEvaluationRadarChart(props: Props) {
   const [animatedScores, setAnimatedScores] = useState(
     Object.fromEntries(Object.keys(props.scores).map((key) => [key, 0])),
   )
   const [isVisible, setIsVisible] = useState(false)
+  const [containerSize, setContainerSize] = useState(240)
+  const containerRef = useRef<HTMLDivElement>(null)
   const t = useTranslation()
-  const size = props.size || 240
+
+  // レスポンシブサイズの計算
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth
+        // 最小200px、最大320px、コンテナ幅の85%を基準（スマホ対応）
+        const newSize = Math.min(Math.max(containerWidth * 0.85, 200), 320)
+        setContainerSize(newSize)
+      }
+    }
+
+    updateSize()
+    window.addEventListener("resize", updateSize)
+    return () => window.removeEventListener("resize", updateSize)
+  }, [])
+
+  const size = props.size || containerSize
   const center = size / 2
-  const radius = size * 0.35
+  const radius = size * 0.32 // 少し小さくしてラベル用のスペースを確保
+
+  // スマホ対応: サイズに応じてラベル距離を調整
+  const labelDistance = size < 250 ? radius + 18 : radius + 25
 
   // アニメーション効果
   useEffect(() => {
@@ -91,10 +113,9 @@ export function AiEvaluationRadarChart(props: Props) {
   // ラベル座標計算
   const getLabelCoordinates = (index: number) => {
     const angle = (index * 2 * Math.PI) / criteria.length - Math.PI / 2
-    const distance = radius + 25
     return {
-      x: center + Math.cos(angle) * distance,
-      y: center + Math.sin(angle) * distance,
+      x: center + Math.cos(angle) * labelDistance,
+      y: center + Math.sin(angle) * labelDistance,
     }
   }
 
@@ -115,12 +136,13 @@ export function AiEvaluationRadarChart(props: Props) {
   }
 
   return (
-    <div className="relative flex flex-col items-center">
+    <div ref={containerRef} className="flex w-full flex-col items-center">
       <svg
         width={size}
         height={size}
-        className="transition-opacity duration-500"
+        className="h-auto max-w-full transition-opacity duration-500"
         style={{ opacity: isVisible ? 1 : 0 }}
+        viewBox={`0 0 ${size} ${size}`}
       >
         <title>
           {t("AI評価レーダーチャート", "AI Evaluation Radar Chart")}
@@ -164,7 +186,7 @@ export function AiEvaluationRadarChart(props: Props) {
 
         {/* データエリア（グラデーション付き） */}
         <defs>
-          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
+          {/* biome-ignore lint/nursery/useUniqueElementIds: グラデーション要素のためIDが必要 */}
           <radialGradient id="scoreGradient" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0.1" />
@@ -183,22 +205,25 @@ export function AiEvaluationRadarChart(props: Props) {
         {criteria.map((criterion, index) => {
           const value = animatedScores[criterion.key] || 0
           const point = getPointCoordinates(index, value)
+          // スマホ対応: データポイントのサイズを調整
+          const pointRadius = size < 250 ? 3 : 4
+          const pulseRadius = size < 250 ? 6 : 8
 
           return (
             <g key={criterion.key}>
               <circle
                 cx={point.x}
                 cy={point.y}
-                r="4"
+                r={pointRadius}
                 fill={criterion.color}
                 stroke="white"
                 strokeWidth="2"
-                className="hover:r-6 transition-all duration-300"
+                className="transition-all duration-300 hover:r-6"
               />
               <circle
                 cx={point.x}
                 cy={point.y}
-                r="8"
+                r={pulseRadius}
                 fill={criterion.color}
                 opacity="0.2"
                 className="animate-pulse"
@@ -211,6 +236,8 @@ export function AiEvaluationRadarChart(props: Props) {
         {criteria.map((criterion, index) => {
           const point = getLabelCoordinates(index)
           const score = Math.round(animatedScores[criterion.key] || 0)
+          // スマホ対応: フォントサイズを動的調整
+          const fontSize = size < 250 ? "10px" : "12px"
 
           return (
             <g key={`label-${criterion.key}`}>
@@ -219,16 +246,18 @@ export function AiEvaluationRadarChart(props: Props) {
                 y={point.y}
                 textAnchor="middle"
                 dominantBaseline="central"
-                className="fill-slate-700 font-medium text-xs dark:fill-slate-300"
+                className="fill-slate-700 font-medium dark:fill-slate-300"
+                style={{ fontSize }}
               >
                 {criterion.label}
               </text>
               <text
                 x={point.x}
-                y={point.y + 12}
+                y={point.y + (size < 250 ? 10 : 12)}
                 textAnchor="middle"
                 dominantBaseline="central"
-                className="fill-slate-500 text-xs dark:fill-slate-400"
+                className="fill-slate-500 dark:fill-slate-400"
+                style={{ fontSize: size < 250 ? "9px" : "11px" }}
               >
                 {score}
               </text>

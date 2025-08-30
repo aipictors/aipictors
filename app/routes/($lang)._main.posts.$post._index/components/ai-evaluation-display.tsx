@@ -291,7 +291,7 @@ export function AiEvaluationDisplay(props: Props) {
         <div className="flex-1">
           <Card className="relative border border-slate-200 bg-gradient-to-br from-white to-slate-50 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
             {/* 吹き出しの三角形 */}
-            <div className="absolute -left-3 top-6 h-0 w-0 border-t-[12px] border-r-[12px] border-b-[12px] border-t-transparent border-r-white border-b-transparent dark:border-r-slate-800" />
+            <div className="absolute -left-3 top-6 h-0 w-0 border-b-[12px] border-r-[12px] border-t-[12px] border-b-transparent border-r-white border-t-transparent dark:border-r-slate-800" />
 
             {/* 閉じるボタン */}
             <button
@@ -317,12 +317,12 @@ export function AiEvaluationDisplay(props: Props) {
                             {getTruncatedComment(props.evaluation.comment)}
                           </p>
                           {/* グラデーション */}
-                          <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-slate-800/50 dark:via-slate-800/40" />
+                          <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent via-white/80 dark:from-slate-800/50 dark:via-slate-800/40" />
                         </div>
                         <button
                           type="button"
                           onClick={() => setIsCommentExpanded(true)}
-                          className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                          className="mt-2 flex items-center gap-1 text-blue-600 text-xs hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
                         >
                           <ChevronDown className="h-3 w-3" />
                           {t("もっと見る", "Show more")}
@@ -337,7 +337,7 @@ export function AiEvaluationDisplay(props: Props) {
                           <button
                             type="button"
                             onClick={() => setIsCommentExpanded(false)}
-                            className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                            className="mt-2 flex items-center gap-1 text-blue-600 text-xs hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
                           >
                             <ChevronUp className="h-3 w-3" />
                             {t("閉じる", "Close")}
@@ -366,8 +366,8 @@ export function AiEvaluationDisplay(props: Props) {
 
               {/* 展開時のレーダーチャート */}
               {isExpanded && hasScores && (
-                <div className="mt-6 rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-blue-50 p-6 dark:border-slate-700 dark:from-slate-800 dark:to-blue-900/20">
-                  <div className="mb-4 flex items-center justify-center gap-2">
+                <div className="mt-6 rounded-xl border border-slate-200 bg-gradient-to-br from-slate-50 to-blue-50 p-3 sm:p-6 dark:border-slate-700 dark:from-slate-800 dark:to-blue-900/20">
+                  <div className="mb-3 flex items-center justify-center gap-2 sm:mb-4">
                     <h4 className="font-medium text-slate-800 text-sm dark:text-slate-200">
                       詳細評価スコア
                     </h4>
@@ -377,12 +377,10 @@ export function AiEvaluationDisplay(props: Props) {
                       </span>
                     )}
                   </div>
-                  <div className="flex justify-center">
-                    <AiEvaluationRadarChart
-                      scores={scores}
-                      size={320}
-                      animate={true}
-                    />
+                  <div className="flex justify-center px-2 sm:px-0">
+                    <div className="w-full max-w-[280px] sm:max-w-xs md:max-w-sm">
+                      <AiEvaluationRadarChart scores={scores} animate={true} />
+                    </div>
                   </div>
                 </div>
               )}
