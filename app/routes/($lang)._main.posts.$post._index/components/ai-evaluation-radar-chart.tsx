@@ -149,7 +149,7 @@ export function AiEvaluationRadarChart(props: Props) {
             const point = getPointCoordinates(index, 100)
             return (
               <line
-                key={index}
+                key={index.toString()}
                 x1={center}
                 y1={center}
                 x2={point.x}
@@ -164,6 +164,7 @@ export function AiEvaluationRadarChart(props: Props) {
 
         {/* データエリア（グラデーション付き） */}
         <defs>
+          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <radialGradient id="scoreGradient" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0.1" />
@@ -192,7 +193,7 @@ export function AiEvaluationRadarChart(props: Props) {
                 fill={criterion.color}
                 stroke="white"
                 strokeWidth="2"
-                className="transition-all duration-300 hover:r-6"
+                className="hover:r-6 transition-all duration-300"
               />
               <circle
                 cx={point.x}
@@ -218,7 +219,7 @@ export function AiEvaluationRadarChart(props: Props) {
                 y={point.y}
                 textAnchor="middle"
                 dominantBaseline="central"
-                className="fill-slate-700 text-xs font-medium dark:fill-slate-300"
+                className="fill-slate-700 font-medium text-xs dark:fill-slate-300"
               >
                 {criterion.label}
               </text>

@@ -244,7 +244,7 @@ export function PostFormItemBotGrading(props: Props) {
               >
                 <span>
                   {t(
-                    "AI評価ランキングに参加する",
+                    "AI評価ランキングに参加する（未リリース、後日リリース予定です）",
                     "Participate in AI grading ranking",
                   )}
                 </span>

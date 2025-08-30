@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useContext, useState } from "react"
-import { useQuery, useMutation } from "@apollo/client/index"
+import { useQuery, useMutation, useLazyQuery } from "@apollo/client/index"
 import {
   type MetaFunction,
   useBeforeUnload,
@@ -317,6 +317,7 @@ export default function NewImage() {
   }, [searchParams])
 
   const [createWork] = useMutation(CreateWorkMutation)
+  const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery)
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
@@ -387,185 +388,254 @@ export default function NewImage() {
       return
     }
 
-    const uploadedImageUrls = []
+    dispatch({ type: "SET_PROGRESS", payload: 5 })
 
-    try {
-      dispatch({ type: "SET_PROGRESS", payload: 10 })
+    const MAX_RETRIES = 3
+    const uploadedImageUrls: string[] = []
 
-      const smallThumbnail = state.isThumbnailLandscape
-        ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
-        : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
+    const performPost = async (retryCount = 0): Promise<void> => {
+      try {
+        dispatch({ type: "SET_PROGRESS", payload: 10 })
 
-      dispatch({ type: "SET_PROGRESS", payload: 20 })
+        const smallThumbnail = state.isThumbnailLandscape
+          ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
+          : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
 
-      const largeThumbnail = state.isThumbnailLandscape
-        ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
-        : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
+        dispatch({ type: "SET_PROGRESS", payload: 20 })
 
-      dispatch({ type: "SET_PROGRESS", payload: 30 })
+        const largeThumbnail = state.isThumbnailLandscape
+          ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
+          : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
 
-      const smallThumbnailUrl = await uploadPublicImage(
-        smallThumbnail.base64,
-        viewerData?.viewer?.token,
-      )
+        dispatch({ type: "SET_PROGRESS", payload: 30 })
 
-      dispatch({ type: "SET_PROGRESS", payload: 40 })
+        // 初回のみ画像をアップロードし、リトライ時は既存のURLを使用
+        if (retryCount === 0) {
+          const smallThumbnailUrl = await uploadPublicImage(
+            smallThumbnail.base64,
+            viewerData?.viewer?.token,
+          )
 
-      uploadedImageUrls.push(smallThumbnailUrl)
+          dispatch({ type: "SET_PROGRESS", payload: 40 })
 
-      const largeThumbnailUrl = await uploadPublicImage(
-        largeThumbnail.base64,
-        viewerData?.viewer?.token,
-      )
+          const largeThumbnailUrl = await uploadPublicImage(
+            largeThumbnail.base64,
+            viewerData?.viewer?.token,
+          )
 
-      dispatch({ type: "SET_PROGRESS", payload: 50 })
+          dispatch({ type: "SET_PROGRESS", payload: 50 })
 
-      uploadedImageUrls.push(largeThumbnailUrl)
+          const ogpBase64Url = state.ogpBase64
+            ? await uploadPublicImage(
+                state.ogpBase64,
+                viewerData?.viewer?.token,
+              )
+            : null
 
-      const ogpBase64Url = state.ogpBase64
-        ? await uploadPublicImage(state.ogpBase64, viewerData?.viewer?.token)
-        : null
+          dispatch({ type: "SET_PROGRESS", payload: 60 })
 
-      dispatch({ type: "SET_PROGRESS", payload: 60 })
+          // AI評価用のJPEG画像をアップロード
+          const botGradingImage = await resizeImage(
+            formResult.output.thumbnailBase64,
+            400,
+            400,
+            "jpeg",
+          )
 
-      if (ogpBase64Url !== null) {
-        uploadedImageUrls.push(ogpBase64Url)
-      }
+          const botGradingImageUrl = await uploadPublicImage(
+            botGradingImage.base64,
+            viewerData?.viewer?.token,
+          )
 
-      // AI評価用のJPEG画像をアップロード
-      const botGradingImage = await resizeImage(
-        formResult.output.thumbnailBase64,
-        400,
-        400,
-        "jpeg",
-      )
+          const uploadResults = await uploadImages()
+          const imageUrls = uploadResults.filter((url) => url !== null)
 
-      const botGradingImageUrl = await uploadPublicImage(
-        botGradingImage.base64,
-        viewerData?.viewer?.token,
-      )
+          if (imageUrls.length === 0) {
+            throw new Error(
+              t(
+                "画像のアップロードに失敗しました",
+                "Failed to upload the images",
+              ),
+            )
+          }
 
-      uploadedImageUrls.push(botGradingImageUrl)
+          // uploadedImageUrlsに順番に追加
+          uploadedImageUrls.push(smallThumbnailUrl)
+          uploadedImageUrls.push(largeThumbnailUrl)
+          uploadedImageUrls.push(ogpBase64Url || "") // nullの場合は空文字列
+          uploadedImageUrls.push(botGradingImageUrl)
+          uploadedImageUrls.push(...imageUrls)
+        }
 
-      const reservedAt =
-        inputState.reservationDate !== null &&
-        inputState.reservationTime !== null
-          ? new Date(
-              `${inputState.reservationDate}T${inputState.reservationTime}`,
-            ).getTime() +
-            3600000 * 9
-          : undefined
+        const reservedAt =
+          inputState.reservationDate !== null &&
+          inputState.reservationTime !== null
+            ? new Date(
+                `${inputState.reservationDate}T${inputState.reservationTime}`,
+              ).getTime() +
+              3600000 * 9
+            : undefined
 
-      const mainImageSha256 = await sha256(formResult.output.thumbnailBase64)
+        const mainImageSha256 = await sha256(formResult.output.thumbnailBase64)
 
-      const mainImageSize = await getSizeFromBase64(
-        formResult.output.thumbnailBase64,
-      )
-
-      dispatch({ type: "SET_PROGRESS", payload: 70 })
-
-      const uploadResults = await uploadImages()
-
-      const imageUrls = uploadResults.filter((url) => url !== null)
-
-      if (imageUrls.length === 0) {
-        toast(
-          t("画像のアップロードに失敗しました", "Failed to upload the images"),
+        const mainImageSize = await getSizeFromBase64(
+          formResult.output.thumbnailBase64,
         )
-        return
-      }
 
-      const work = await createWork({
-        variables: {
-          input: {
-            title: formResult.output.title,
-            entitle: formResult.output.enTitle,
-            explanation: formResult.output.caption,
-            enExplanation: formResult.output.enCaption,
-            rating: inputState.ratingRestriction,
-            prompt: inputState.imageInformation?.params.prompt ?? null,
-            negativePrompt:
-              inputState.imageInformation?.params.negativePrompt ?? null,
-            seed: inputState.imageInformation?.params.seed?.toString() ?? null,
-            sampler:
-              inputState.imageInformation?.params.sampler?.toString() ?? null,
-            strength:
-              inputState.imageInformation?.params.strength?.toString() ?? null,
-            noise:
-              inputState.imageInformation?.params.noise?.toString() ?? null,
-            modelName: inputState.imageInformation?.params.model ?? null,
-            modelHash:
-              inputState.imageInformation?.params.modelHash?.toString() ?? null,
-            otherGenerationParams: null,
-            pngInfo: inputState.imageInformation?.src ?? null,
-            imageStyle: inputState.imageStyle,
-            relatedUrl: inputState.link,
-            tags: inputState.tags.map((tag) => tag.text),
-            isTagEditable: inputState.useTagFeature,
-            isCommentEditable: inputState.useCommentFeature,
-            thumbnailPosition: state.isThumbnailLandscape
-              ? state.thumbnailPosX
-              : state.thumbnailPosY,
-            modelId: inputState.aiModelId,
-            type: "WORK",
-            subjectId: inputState.themeId,
-            albumId: inputState.albumId,
-            isPromotion: inputState.usePromotionFeature,
-            reservedAt: reservedAt,
-            mainImageSha256: mainImageSha256,
-            accessType: inputState.accessType,
-            imageUrls: imageUrls,
-            smallThumbnailImageURL: smallThumbnailUrl,
-            smallThumbnailImageWidth: smallThumbnail.width,
-            smallThumbnailImageHeight: smallThumbnail.height,
-            largeThumbnailImageURL: largeThumbnailUrl,
-            largeThumbnailImageWidth: largeThumbnail.width,
-            largeThumbnailImageHeight: largeThumbnail.height,
-            videoUrl: null,
-            ogpImageUrl: ogpBase64Url,
-            imageHeight: mainImageSize.height,
-            imageWidth: mainImageSize.width,
-            accessGenerationType:
-              state.isSelectedGenerationImage && inputState.useGenerationParams
-                ? "PUBLIC_RESTORABLE"
-                : inputState.useGenerationParams
-                  ? "PUBLIC"
-                  : "PRIVATE",
-            // AI grading fields - temporarily commented out until backend support is added
-            isBotGradingEnabled: inputState.isBotGradingEnabled,
-            isBotGradingPublic: inputState.isBotGradingPublic,
-            isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
-            botPersonality: inputState.botPersonality,
-            botGradingImageUrl: botGradingImageUrl,
-            botGradingType: inputState.botGradingType,
+        dispatch({ type: "SET_PROGRESS", payload: 70 })
+
+        // リトライ時は先にworkByImageHashで作品の存在確認
+        if (retryCount > 0) {
+          try {
+            const { data: existingWorkData } = await checkWorkByImageHash({
+              variables: { imageHash: mainImageSha256 },
+            })
+
+            const existingWork = existingWorkData?.workByImageHash as {
+              id: string
+              uuid: string | null
+            } | null
+            if (existingWork?.id) {
+              // 作品が既に存在する場合は成功として扱う
+              dispatch({
+                type: "MARK_AS_DONE",
+                payload: {
+                  uploadedWorkId: existingWork.id,
+                  uploadedWorkUuid: existingWork.uuid || null,
+                },
+              })
+
+              toast(t("作品を投稿しました", "Work has been posted"))
+              return
+            }
+          } catch (error) {
+            // workByImageHashでエラーが発生した場合は無視して続行
+            console.warn(
+              "workByImageHash query failed, continuing with post:",
+              error,
+            )
+          }
+        }
+
+        const work = await createWork({
+          variables: {
+            input: {
+              title: formResult.output.title,
+              entitle: formResult.output.enTitle,
+              explanation: formResult.output.caption,
+              enExplanation: formResult.output.enCaption,
+              rating: inputState.ratingRestriction as
+                | "G"
+                | "R15"
+                | "R18"
+                | "R18G",
+              prompt: inputState.imageInformation?.params.prompt ?? null,
+              negativePrompt:
+                inputState.imageInformation?.params.negativePrompt ?? null,
+              seed:
+                inputState.imageInformation?.params.seed?.toString() ?? null,
+              sampler:
+                inputState.imageInformation?.params.sampler?.toString() ?? null,
+              strength:
+                inputState.imageInformation?.params.strength?.toString() ??
+                null,
+              noise:
+                inputState.imageInformation?.params.noise?.toString() ?? null,
+              modelName: inputState.imageInformation?.params.model ?? null,
+              modelHash:
+                inputState.imageInformation?.params.modelHash?.toString() ??
+                null,
+              otherGenerationParams: null,
+              pngInfo: inputState.imageInformation?.src ?? null,
+              imageStyle: inputState.imageStyle,
+              relatedUrl: inputState.link,
+              tags: inputState.tags.map((tag) => tag.text),
+              isTagEditable: inputState.useTagFeature,
+              isCommentEditable: inputState.useCommentFeature,
+              thumbnailPosition: state.isThumbnailLandscape
+                ? state.thumbnailPosX
+                : state.thumbnailPosY,
+              modelId: inputState.aiModelId,
+              type: "WORK",
+              subjectId: inputState.themeId,
+              albumId: inputState.albumId,
+              isPromotion: inputState.usePromotionFeature,
+              reservedAt: reservedAt,
+              mainImageSha256: mainImageSha256,
+              accessType: inputState.accessType,
+              imageUrls: uploadedImageUrls.slice(4), // 最初の4つを除外（thumbnails, ogp, botGradingImage）
+              smallThumbnailImageURL: uploadedImageUrls[0],
+              smallThumbnailImageWidth: smallThumbnail.width,
+              smallThumbnailImageHeight: smallThumbnail.height,
+              largeThumbnailImageURL: uploadedImageUrls[1],
+              largeThumbnailImageWidth: largeThumbnail.width,
+              largeThumbnailImageHeight: largeThumbnail.height,
+              videoUrl: null,
+              ogpImageUrl:
+                uploadedImageUrls[2] !== "" ? uploadedImageUrls[2] : null,
+              imageHeight: mainImageSize.height,
+              imageWidth: mainImageSize.width,
+              accessGenerationType:
+                state.isSelectedGenerationImage &&
+                inputState.useGenerationParams
+                  ? "PUBLIC_RESTORABLE"
+                  : inputState.useGenerationParams
+                    ? "PUBLIC"
+                    : "PRIVATE",
+              isBotGradingEnabled: inputState.isBotGradingEnabled,
+              isBotGradingPublic: inputState.isBotGradingPublic,
+              isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
+              botPersonality: inputState.botPersonality,
+              botGradingImageUrl: uploadedImageUrls[3],
+              botGradingType: inputState.botGradingType,
+            },
           },
-        },
-      })
+        })
 
-      if (work.data?.createWork === undefined) {
-        toast(t("作品の投稿に失敗しました", "Failed to post the work"))
-        return
+        if (work.data?.createWork === undefined) {
+          throw new Error(
+            t("作品の投稿に失敗しました", "Failed to post the work"),
+          )
+        }
+
+        dispatch({
+          type: "MARK_AS_DONE",
+          payload: {
+            uploadedWorkId: work.data?.createWork.id,
+            uploadedWorkUuid: work.data?.createWork.uuid,
+          },
+        })
+
+        toast(t("作品を投稿しました", "Work has been posted"))
+      } catch (error) {
+        if (retryCount < MAX_RETRIES) {
+          // リトライ前に少し待機
+          const waitTime = 2 ** retryCount * 1000 // 指数バックオフ: 1秒, 2秒, 4秒
+          toast(
+            t(
+              `投稿に失敗しました。${waitTime / 1000}秒後にリトライします...`,
+              `Post failed. Retrying in ${waitTime / 1000} seconds...`,
+            ),
+          )
+
+          setTimeout(() => {
+            performPost(retryCount + 1)
+          }, waitTime)
+        } else {
+          // 最大リトライ回数に達した場合は画像を削除
+          if (error instanceof Error) {
+            toast(error.message)
+          }
+          const promises = uploadedImageUrls.map((url) => {
+            return deleteUploadedImage(url)
+          })
+          await Promise.all(promises)
+          dispatch({ type: "SET_PROGRESS", payload: 0 })
+        }
       }
-
-      dispatch({
-        type: "MARK_AS_DONE",
-        payload: {
-          uploadedWorkId: work.data?.createWork.id,
-          uploadedWorkUuid: work.data?.createWork.uuid,
-        },
-      })
-
-      toast(t("作品を投稿しました", "Work has been posted"))
-    } catch (error) {
-      if (error instanceof Error) {
-        toast(error.message)
-      }
-      const promises = uploadedImageUrls.map((url) => {
-        return deleteUploadedImage(url)
-      })
-      await Promise.all(promises)
-      dispatch({ type: "SET_PROGRESS", payload: 0 })
     }
+
+    await performPost()
   }
 
   const createdAt = new Date(
@@ -914,6 +984,18 @@ const ViewerQuery = graphql(
 const CreateWorkMutation = graphql(
   `mutation CreateWork($input: CreateWorkInput!) {
     createWork(input: $input) {
+      id
+      title
+      accessType
+      nanoid
+      uuid
+    }
+  }`,
+)
+
+const WorkByImageHashQuery = graphql(
+  `query WorkByImageHash($imageHash: String!) {
+    workByImageHash(imageHash: $imageHash) {
       id
       title
       accessType
