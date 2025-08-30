@@ -706,7 +706,21 @@ export default function NewImage() {
   useBeforeUnload(
     React.useCallback(
       (event) => {
-        if (state) {
+        // 実際にユーザーが作品投稿に関する入力をしている場合のみ確認ダイアログを表示
+        // AI評価設定の変更は除外（永続化される設定のため）
+        const hasUserInput =
+          state.thumbnailBase64 !== null ||
+          inputState.title.trim() !== "" ||
+          inputState.caption.trim() !== "" ||
+          inputState.enTitle.trim() !== "" ||
+          inputState.enCaption.trim() !== "" ||
+          inputState.tags.length > 0 ||
+          state.items.length > 0 ||
+          inputState.link.trim() !== "" ||
+          inputState.reservationDate !== null ||
+          inputState.reservationTime !== null
+
+        if (hasUserInput) {
           const confirmationMessage = t(
             "ページ遷移すると変更が消えますが問題無いですか？",
             "Are you sure you want to leave this page? Your changes will be lost.",
@@ -715,7 +729,19 @@ export default function NewImage() {
           return confirmationMessage
         }
       },
-      [state, t],
+      [
+        state.thumbnailBase64,
+        state.items.length,
+        inputState.title,
+        inputState.caption,
+        inputState.enTitle,
+        inputState.enCaption,
+        inputState.tags.length,
+        inputState.link,
+        inputState.reservationDate,
+        inputState.reservationTime,
+        t,
+      ],
     ),
   )
 
