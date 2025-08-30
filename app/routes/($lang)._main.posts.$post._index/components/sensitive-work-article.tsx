@@ -311,19 +311,6 @@ export function SensitiveWorkArticle(props: Props) {
             setTagNames={setTagNames}
             isEditable={props.work.isTagEditable}
           />
-
-          {/* AI評価表示 */}
-          <div className="flex justify-start">
-            <AiEvaluationDisplay
-              isBotGradingEnabled={props.work.isBotGradingEnabled ?? false}
-              evaluation={props.work.botEvaluation}
-              personality={props.work.botEvaluation?.personality}
-              isVisible={true}
-              isBotGradingPublic={props.work.isBotGradingPublic}
-              isOwner={props.work.user?.id === appContext.userId}
-              workId={props.work.id}
-            />
-          </div>
         </div>
         <p className="overflow-hidden whitespace-pre-wrap break-words">
           {parseTextWithLinks(
@@ -370,6 +357,18 @@ export function SensitiveWorkArticle(props: Props) {
           strength={props.work.strength}
           otherGenerationParams={props.work.otherGenerationParams}
         />
+        {/* AI評価表示 */}
+        <div className="flex justify-start">
+          <AiEvaluationDisplay
+            isBotGradingEnabled={props.work.isBotGradingEnabled ?? false}
+            evaluation={props.work.botEvaluation}
+            personality={props.work.botEvaluation?.personality}
+            isVisible={true}
+            isBotGradingPublic={props.work.isBotGradingPublic}
+            isOwner={props.work.user?.id === appContext.userId}
+            workId={props.work.id}
+          />
+        </div>
 
         {props.work.user && (
           <div className="flex items-center justify-between">
