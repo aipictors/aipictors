@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext, useState } from "react"
+import { useEffect, useReducer, useContext, useState, useCallback } from "react"
 import { useQuery, useMutation, useLazyQuery } from "@apollo/client/index"
 import {
   type MetaFunction,
@@ -703,24 +703,38 @@ export default function NewImage() {
     // dispatch({ type: "OPEN_LOADING_AI", payload: false })
   }
 
-  useBeforeUnload(
-    React.useCallback(
-      (event) => {
-        // 実際にユーザーが作品投稿に関する入力をしている場合のみ確認ダイアログを表示
-        // AI評価設定の変更は除外（永続化される設定のため）
-        const hasUserInput =
-          state.thumbnailBase64 !== null ||
-          inputState.title.trim() !== "" ||
-          inputState.caption.trim() !== "" ||
-          inputState.enTitle.trim() !== "" ||
-          inputState.enCaption.trim() !== "" ||
-          inputState.tags.length > 0 ||
-          state.items.length > 0 ||
-          inputState.link.trim() !== "" ||
-          inputState.reservationDate !== null ||
-          inputState.reservationTime !== null
+  // ユーザーが実際に作品投稿に関する入力をしているかチェックする関数
+  const hasUserInput = useCallback(() => {
+    return (
+      state.thumbnailBase64 !== null ||
+      inputState.title.trim() !== "" ||
+      inputState.caption.trim() !== "" ||
+      inputState.enTitle.trim() !== "" ||
+      inputState.enCaption.trim() !== "" ||
+      inputState.tags.length > 0 ||
+      state.items.length > 0 ||
+      inputState.link.trim() !== "" ||
+      inputState.reservationDate !== null ||
+      inputState.reservationTime !== null
+    )
+  }, [
+    state.thumbnailBase64,
+    state.items.length,
+    inputState.title,
+    inputState.caption,
+    inputState.enTitle,
+    inputState.enCaption,
+    inputState.tags.length,
+    inputState.link,
+    inputState.reservationDate,
+    inputState.reservationTime,
+  ])
 
-        if (hasUserInput) {
+  // ブラウザ離脱時の確認ダイアログ（リロード・タブ閉じる・外部サイトへの遷移）
+  useBeforeUnload(
+    useCallback(
+      (event) => {
+        if (hasUserInput()) {
           const confirmationMessage = t(
             "ページ遷移すると変更が消えますが問題無いですか？",
             "Are you sure you want to leave this page? Your changes will be lost.",
@@ -729,21 +743,49 @@ export default function NewImage() {
           return confirmationMessage
         }
       },
-      [
-        state.thumbnailBase64,
-        state.items.length,
-        inputState.title,
-        inputState.caption,
-        inputState.enTitle,
-        inputState.enCaption,
-        inputState.tags.length,
-        inputState.link,
-        inputState.reservationDate,
-        inputState.reservationTime,
-        t,
-      ],
+      [hasUserInput, t],
     ),
   )
+
+  // Reactコンポーネントのunmount時の警告（アプリ内ページ遷移）
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (hasUserInput()) {
+        const confirmationMessage = t(
+          "ページ遷移すると変更が消えますが問題無いですか？",
+          "Are you sure you want to leave this page? Your changes will be lost.",
+        )
+        event.returnValue = confirmationMessage
+        return confirmationMessage
+      }
+    }
+
+    // カスタムイベントリスナーでルート変更を検知
+    const handleRouteChange = () => {
+      if (hasUserInput()) {
+        const shouldProceed = window.confirm(
+          t(
+            "ページ遷移すると変更が消えますが問題無いですか？",
+            "Are you sure you want to leave this page? Your changes will be lost.",
+          ),
+        )
+
+        if (!shouldProceed) {
+          // ユーザーがキャンセルした場合、履歴を一つ戻す
+          window.history.pushState(null, "", window.location.href)
+        }
+      }
+    }
+
+    // popstateイベント（ブラウザの戻る/進むボタン）をリッスン
+    window.addEventListener("popstate", handleRouteChange)
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("popstate", handleRouteChange)
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [hasUserInput, t])
 
   // 認証状態が読み込み中でない場合は、ページを表示する
   const showPage = authContext.isNotLoading
