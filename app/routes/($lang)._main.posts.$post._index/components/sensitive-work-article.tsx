@@ -321,6 +321,7 @@ export function SensitiveWorkArticle(props: Props) {
               isVisible={true}
               isBotGradingPublic={props.work.isBotGradingPublic}
               isOwner={props.work.user?.id === appContext.userId}
+              workId={props.work.id}
             />
           </div>
         </div>

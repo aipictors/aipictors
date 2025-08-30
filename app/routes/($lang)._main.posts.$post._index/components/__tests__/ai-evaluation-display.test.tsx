@@ -1,10 +1,10 @@
 import { test, expect } from "bun:test"
-import { render } from "@testing-library/react"
-import { BrowserRouter } from "react-router-dom"
+import { render, fireEvent } from "@testing-library/react"
+import { MemoryRouter } from "react-router-dom"
 import { AiEvaluationDisplay } from "../ai-evaluation-display"
 
 const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>)
+  return render(<MemoryRouter initialEntries={["/"]}>{component}</MemoryRouter>)
 }
 
 test("AI評価表示が正しくレンダリングされる", () => {
@@ -31,6 +31,7 @@ test("AI評価表示が正しくレンダリングされる", () => {
       isBotGradingEnabled={true}
       isBotGradingPublic={true}
       isOwner={false}
+      workId="test-work-id"
     />,
   )
 
@@ -60,6 +61,7 @@ test("ぴくたーちゃんの場合は正しい名前が表示される", () =>
       isBotGradingEnabled={true}
       isBotGradingPublic={true}
       isOwner={false}
+      workId="test-work-id-2"
     />,
   )
 
@@ -89,6 +91,7 @@ test("ぴくたーちゃん以外の場合はAIと表示される", () => {
       isBotGradingEnabled={true}
       isBotGradingPublic={true}
       isOwner={false}
+      workId="test-work-id-3"
     />,
   )
 
@@ -119,6 +122,7 @@ test("非表示の場合はレンダリングされない", () => {
       isBotGradingEnabled={true}
       isBotGradingPublic={true}
       isOwner={false}
+      workId="test-work-id-4"
     />,
   )
 
@@ -134,6 +138,7 @@ test("評価が公開だが評価がない場合は評価中と表示される",
       isBotGradingEnabled={true}
       isBotGradingPublic={true}
       isOwner={false}
+      workId="test-work-id-5"
     />,
   )
 
@@ -149,8 +154,184 @@ test("評価が非公開で投稿者の場合は非公開状態と表示され�
       isBotGradingEnabled={true}
       isBotGradingPublic={false}
       isOwner={true}
+      workId="test-work-id-6"
     />,
   )
 
   expect(container.textContent).toContain("AI評価は非公開設定です")
+})
+
+test("閉じるボタンをクリックするとAI評価が非表示になる", () => {
+  const mockEvaluation = {
+    cutenessScore: 85,
+    coolnessScore: 72,
+    beautyScore: 90,
+    originalityScore: 78,
+    compositionScore: 88,
+    colorScore: 92,
+    detailScore: 84,
+    consistencyScore: 86,
+    overallScore: 85,
+    comment: "素晴らしい作品です。",
+    personality: "female",
+  }
+
+  const { container } = renderWithRouter(
+    <AiEvaluationDisplay
+      evaluation={mockEvaluation}
+      personality="female"
+      isVisible={true}
+      isBotGradingEnabled={true}
+      isBotGradingPublic={true}
+      isOwner={false}
+      workId="test-close-button"
+    />,
+  )
+
+  // 最初は表示されている
+  expect(container.textContent).toContain("素晴らしい作品です。")
+
+  // 閉じるボタンを探してクリック
+  const closeButton = container.querySelector(
+    '[data-testid="ai-evaluation-close-button"]',
+  )
+  expect(closeButton).toBeTruthy()
+
+  if (closeButton) {
+    fireEvent.click(closeButton)
+  }
+
+  // クリック後は非表示になる
+  expect(container.innerHTML).toBe("")
+})
+
+test("長いコメントは省略表示され、もっと見るボタンで全文表示される", () => {
+  const longComment = "これは非常に長いコメントです。".repeat(10) // 300文字以上の長いコメント
+  const mockEvaluation = {
+    cutenessScore: 85,
+    coolnessScore: 72,
+    beautyScore: 90,
+    originalityScore: 78,
+    compositionScore: 88,
+    colorScore: 92,
+    detailScore: 84,
+    consistencyScore: 86,
+    overallScore: 85,
+    comment: longComment,
+    personality: "female",
+  }
+
+  const { container } = renderWithRouter(
+    <AiEvaluationDisplay
+      evaluation={mockEvaluation}
+      personality="female"
+      isVisible={true}
+      isBotGradingEnabled={true}
+      isBotGradingPublic={true}
+      isOwner={false}
+      workId="test-long-comment"
+    />,
+  )
+
+  // 最初は省略されたコメントが表示される
+  expect(container.textContent).toContain("もっと見る")
+  expect(container.textContent).not.toContain(longComment)
+
+  // もっと見るボタンをクリック
+  const buttons = container.querySelectorAll("button")
+  let showMoreBtn = null
+  for (const button of buttons) {
+    if (button.textContent?.includes("もっと見る")) {
+      showMoreBtn = button
+      break
+    }
+  }
+  if (showMoreBtn) {
+    fireEvent.click(showMoreBtn)
+  }
+
+  // 全文が表示される
+  expect(container.textContent).toContain("閉じる")
+  expect(container.textContent).toContain(longComment)
+
+  // 閉じるボタンをクリック
+  const allButtons = container.querySelectorAll("button")
+  let collapseBtn = null
+  for (const button of allButtons) {
+    if (button.textContent?.includes("閉じる")) {
+      collapseBtn = button
+      break
+    }
+  }
+  if (collapseBtn) {
+    fireEvent.click(collapseBtn)
+  }
+
+  // 再び省略表示に戻る
+  expect(container.textContent).toContain("もっと見る")
+  expect(container.textContent).not.toContain(longComment)
+})
+
+test("AI評価を閉じた後、再度開くボタンが表示される", () => {
+  const mockEvaluation = {
+    cutenessScore: 85,
+    coolnessScore: 72,
+    beautyScore: 90,
+    originalityScore: 78,
+    compositionScore: 88,
+    colorScore: 92,
+    detailScore: 84,
+    consistencyScore: 86,
+    overallScore: 85,
+    comment: "テストコメント",
+    personality: "female",
+  }
+
+  const { container, rerender } = renderWithRouter(
+    <AiEvaluationDisplay
+      evaluation={mockEvaluation}
+      personality="female"
+      isVisible={true}
+      isBotGradingEnabled={true}
+      isBotGradingPublic={true}
+      isOwner={false}
+      workId="test-reopen"
+    />,
+  )
+
+  // 最初はAI評価が表示される
+  expect(container.textContent).toContain("テストコメント")
+
+  // 閉じるボタンをクリック
+  const closeButton = container.querySelector('button[aria-label*="閉じる"]')
+  if (closeButton) {
+    fireEvent.click(closeButton)
+  }
+
+  // 再レンダリング（状態の変更を反映）
+  rerender(
+    <AiEvaluationDisplay
+      evaluation={mockEvaluation}
+      personality="female"
+      isVisible={true}
+      isBotGradingEnabled={true}
+      isBotGradingPublic={true}
+      isOwner={false}
+      workId="test-reopen"
+    />,
+  )
+
+  // 再度開くボタンが表示される
+  expect(container.textContent).toContain("AI評価を表示")
+
+  // 再度開くボタンをクリック
+  const reopenButton = container.querySelector(
+    'button:has(svg[data-lucide="message-square"])',
+  )
+  if (reopenButton) {
+    fireEvent.click(reopenButton)
+  }
+
+  // AI評価が再び表示される
+  expect(container.textContent).toContain("テストコメント")
 })

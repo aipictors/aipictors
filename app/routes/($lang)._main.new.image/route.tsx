@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useContext } from "react"
+import React, { useEffect, useReducer, useContext, useState } from "react"
 import { useQuery, useMutation } from "@apollo/client/index"
 import {
   type MetaFunction,
@@ -41,7 +41,6 @@ import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { useTranslation } from "~/hooks/use-translation"
-import { usePersistentState } from "~/hooks/use-persistent-state"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import { loaderClient } from "~/lib/loader-client"
 
@@ -59,26 +58,6 @@ export default function NewImage() {
   const now = getJstDate(new Date())
 
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-
-  // AI評価設定の永続化
-  const [persistedBotSettings, setPersistedBotSettings] = usePersistentState(
-    "post-bot-grading-settings",
-    {
-      isBotGradingEnabled: true,
-      isBotGradingPublic: true,
-      isBotGradingRankingEnabled: true,
-      botPersonality: "female" as
-        | "female"
-        | "male"
-        | "robot"
-        | "sage"
-        | "pictor_chan",
-      botGradingType: "COMMENT_AND_SCORE" as
-        | "COMMENT_ONLY"
-        | "SCORE_ONLY"
-        | "COMMENT_AND_SCORE",
-    },
-  )
 
   const { data: viewerData, loading } = useQuery(ViewerQuery, {
     skip: !authContext.isLoggedIn,
@@ -144,30 +123,104 @@ export default function NewImage() {
     usePromotionFeature: false,
     useTagFeature: true,
     correctionMessage: "",
-    // 永続化された設定を使用
-    isBotGradingEnabled: persistedBotSettings.isBotGradingEnabled,
-    isBotGradingPublic: persistedBotSettings.isBotGradingPublic,
-    isBotGradingRankingEnabled: persistedBotSettings.isBotGradingRankingEnabled,
-    botPersonality: persistedBotSettings.botPersonality,
-    botGradingType: persistedBotSettings.botGradingType,
+    // デフォルト値（永続化設定で上書きされる）
+    isBotGradingEnabled: true,
+    isBotGradingPublic: true,
+    isBotGradingRankingEnabled: true,
+    botPersonality: "female",
+    botGradingType: "COMMENT_AND_SCORE",
   })
 
-  // AI評価設定の変更を永続化
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  // localStorageから設定を読み込む関数
+  const loadBotSettings = () => {
+    try {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("post-bot-grading-settings")
+        if (stored) {
+          return JSON.parse(stored)
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to load bot settings:", error)
+    }
+    return null
+  }
+
+  // localStorageに設定を保存する関数
+  const saveBotSettings = (settings: {
+    isBotGradingEnabled: boolean
+    isBotGradingPublic: boolean
+    isBotGradingRankingEnabled: boolean
+    botPersonality: string
+    botGradingType: string
+  }) => {
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          "post-bot-grading-settings",
+          JSON.stringify(settings),
+        )
+      }
+    } catch (error) {
+      console.warn("Failed to save bot settings:", error)
+    }
+  }
+
+  // コンポーネントマウント後にlocalStorageから設定を読み込み
   useEffect(() => {
-    setPersistedBotSettings({
-      isBotGradingEnabled: inputState.isBotGradingEnabled,
-      isBotGradingPublic: inputState.isBotGradingPublic,
-      isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
-      botPersonality: inputState.botPersonality,
-      botGradingType: inputState.botGradingType,
-    })
+    const timer = setTimeout(() => {
+      if (!isInitialized) {
+        const storedSettings = loadBotSettings()
+        if (storedSettings) {
+          dispatchInput({
+            type: "SET_BOT_GRADING_ENABLED",
+            payload: storedSettings.isBotGradingEnabled ?? true,
+          })
+          dispatchInput({
+            type: "SET_BOT_GRADING_PUBLIC",
+            payload: storedSettings.isBotGradingPublic ?? true,
+          })
+          dispatchInput({
+            type: "SET_BOT_GRADING_RANKING_ENABLED",
+            payload: storedSettings.isBotGradingRankingEnabled ?? true,
+          })
+          dispatchInput({
+            type: "SET_BOT_PERSONALITY",
+            payload: storedSettings.botPersonality ?? "female",
+          })
+          dispatchInput({
+            type: "SET_BOT_GRADING_TYPE",
+            payload: storedSettings.botGradingType ?? "COMMENT_AND_SCORE",
+          })
+        }
+        setIsInitialized(true)
+      }
+    }, 100) // 100msの遅延
+
+    return () => clearTimeout(timer)
+  }, []) // 空の依存配列でマウント時のみ実行
+
+  // AI評価設定の変更をlocalStorageに保存
+  useEffect(() => {
+    if (isInitialized) {
+      const settings = {
+        isBotGradingEnabled: inputState.isBotGradingEnabled,
+        isBotGradingPublic: inputState.isBotGradingPublic,
+        isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
+        botPersonality: inputState.botPersonality,
+        botGradingType: inputState.botGradingType,
+      }
+      saveBotSettings(settings)
+    }
   }, [
     inputState.isBotGradingEnabled,
     inputState.isBotGradingPublic,
     inputState.isBotGradingRankingEnabled,
     inputState.botPersonality,
     inputState.botGradingType,
-    setPersistedBotSettings,
+    isInitialized,
   ])
 
   const onChangeImageInformation = (imageInformation: PNGInfo) => {

@@ -1,7 +1,15 @@
-import { BarChart3, Clock, EyeOff } from "lucide-react"
+import {
+  BarChart3,
+  Clock,
+  EyeOff,
+  X,
+  ChevronDown,
+  ChevronUp,
+  MessageSquare,
+} from "lucide-react"
 import { Card, CardContent } from "~/components/ui/card"
 import { AiEvaluationRadarChart } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-radar-chart"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -26,6 +34,30 @@ type Props = {
   isBotGradingEnabled: boolean
   isBotGradingPublic: boolean
   isOwner?: boolean
+  workId: string
+}
+
+/**
+ * AI評価表示を隠すかどうかの状態を管理する関数
+ */
+const getAiEvaluationHiddenKey = (workId: string) =>
+  `ai-evaluation-hidden-${workId}`
+
+const loadAiEvaluationHidden = (workId: string): boolean => {
+  try {
+    const hidden = localStorage.getItem(getAiEvaluationHiddenKey(workId))
+    return hidden === "true"
+  } catch {
+    return false
+  }
+}
+
+const saveAiEvaluationHidden = (workId: string, hidden: boolean): void => {
+  try {
+    localStorage.setItem(getAiEvaluationHiddenKey(workId), hidden.toString())
+  } catch {
+    // LocalStorage書き込みに失敗した場合は無視
+  }
 }
 
 /**
@@ -33,7 +65,55 @@ type Props = {
  */
 export function AiEvaluationDisplay(props: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isHidden, setIsHidden] = useState(false)
+  const [isCommentExpanded, setIsCommentExpanded] = useState(false)
   const t = useTranslation()
+
+  // 初期化時に隠された状態を読み込み
+  useEffect(() => {
+    const hidden = loadAiEvaluationHidden(props.workId)
+    setIsHidden(hidden)
+  }, [props.workId])
+
+  // 閉じるボタンのクリックハンドラー
+  const handleClose = () => {
+    setIsHidden(true)
+    saveAiEvaluationHidden(props.workId, true)
+  }
+
+  // 再度開くボタンのクリックハンドラー
+  const handleReopen = () => {
+    setIsHidden(false)
+    saveAiEvaluationHidden(props.workId, false)
+  }
+
+  // コメントを省略するかどうかの判定（120文字以上で省略）
+  const shouldTruncateComment = (comment: string) => {
+    return comment.length > 120
+  }
+
+  // 省略されたコメントを取得（100文字で切り取り）
+  const getTruncatedComment = (comment: string) => {
+    return comment.substring(0, 100)
+  }
+
+  // 隠された場合は再度開くボタンを表示
+  if (isHidden) {
+    return (
+      <div className="w-full max-w-2xl">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleReopen}
+          data-testid="ai-evaluation-reopen-button"
+          className="border-blue-300 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-950/20 dark:text-blue-300 dark:hover:bg-blue-900/30"
+        >
+          <MessageSquare className="mr-2 h-4 w-4" />
+          {t("AI評価を表示", "Show AI Evaluation")}
+        </Button>
+      </div>
+    )
+  }
 
   // 表示しない場合
   if (!props.isVisible) {
@@ -211,18 +291,62 @@ export function AiEvaluationDisplay(props: Props) {
 
         {/* 吹き出し */}
         <div className="flex-1">
-          <Card className="relative border-none bg-gradient-to-br from-white to-slate-50 shadow-xl dark:from-slate-800 dark:to-slate-900">
+          <Card className="relative border border-slate-200 bg-gradient-to-br from-white to-slate-50 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
             {/* 吹き出しの三角形 */}
-            <div className="-left-3 absolute top-6 h-0 w-0 border-t-[12px] border-t-transparent border-r-[12px] border-r-white border-b-[12px] border-b-transparent dark:border-r-slate-800" />
+            <div className="absolute -left-3 top-6 h-0 w-0 border-t-[12px] border-r-[12px] border-b-[12px] border-t-transparent border-r-white border-b-transparent dark:border-r-slate-800" />
+
+            {/* 閉じるボタン */}
+            <button
+              type="button"
+              onClick={handleClose}
+              data-testid="ai-evaluation-close-button"
+              className="absolute top-2 right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-slate-600 transition-all duration-200 hover:bg-slate-300 hover:text-slate-800 dark:bg-slate-700 dark:text-slate-400 dark:hover:bg-slate-600 dark:hover:text-slate-200"
+              aria-label={t("AI評価を閉じる", "Close AI evaluation")}
+            >
+              <X className="h-3 w-3" />
+            </button>
 
             <CardContent className="p-2">
               {/* コメント */}
               {props.evaluation.comment && (
                 <div className="mb-6">
-                  <div className="rounded-lg border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4 dark:border-slate-700 dark:from-slate-900/50 dark:to-slate-800/50">
-                    <p className="text-slate-700 text-sm leading-relaxed dark:text-slate-300">
-                      {props.evaluation.comment}
-                    </p>
+                  <div className="relative rounded-lg border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4 dark:border-slate-700 dark:from-slate-900/50 dark:to-slate-800/50">
+                    {shouldTruncateComment(props.evaluation.comment) &&
+                    !isCommentExpanded ? (
+                      <>
+                        <div className="relative">
+                          <p className="text-slate-700 text-sm leading-relaxed dark:text-slate-300">
+                            {getTruncatedComment(props.evaluation.comment)}
+                          </p>
+                          {/* グラデーション */}
+                          <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-slate-800/50 dark:via-slate-800/40" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsCommentExpanded(true)}
+                          className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                        >
+                          <ChevronDown className="h-3 w-3" />
+                          {t("もっと見る", "Show more")}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-slate-700 text-sm leading-relaxed dark:text-slate-300">
+                          {props.evaluation.comment}
+                        </p>
+                        {shouldTruncateComment(props.evaluation.comment) && (
+                          <button
+                            type="button"
+                            onClick={() => setIsCommentExpanded(false)}
+                            className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                          >
+                            <ChevronUp className="h-3 w-3" />
+                            {t("閉じる", "Close")}
+                          </button>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               )}
