@@ -279,9 +279,7 @@ export function AiEvaluationDisplay(props: Props) {
               ) : (
                 <span className="text-xl">{avatarData.value}</span>
               )}
-            </div>
-            {/* オンラインインジケーター */}
-            <div className="-bottom-1 -right-1 absolute h-4 w-4 animate-pulse rounded-full border-2 border-white bg-green-500" />
+            </div>{" "}
             {/* キャラクター名 */}
             <span className="mt-2 font-medium text-slate-700 text-xs dark:text-slate-300">
               {getPersonalityName(props.personality)}
