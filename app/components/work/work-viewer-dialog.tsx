@@ -62,23 +62,9 @@ export function WorkViewerDialog({
   const initialIndex = useMemo(() => {
     if (startWorkId) {
       const idx = works.findIndex((w) => w.id === startWorkId)
-      console.log(
-        "🔍 startWorkId:",
-        startWorkId,
-        "found at index:",
-        idx,
-        "work:",
-        works[idx]?.id,
-      )
       if (idx !== -1) return idx
     }
     const fallbackIndex = startIndex ?? 0
-    console.log(
-      "🔍 fallback index:",
-      fallbackIndex,
-      "work:",
-      works[fallbackIndex]?.id,
-    )
     return fallbackIndex
   }, [startWorkId, startIndex, works])
 
@@ -99,13 +85,6 @@ export function WorkViewerDialog({
     if (isInitialized.current) return // 既に初期化済みの場合はスキップ
 
     const targetWork = works[initialIndex]
-    console.log(
-      "🎯 Initializing with index:",
-      initialIndex,
-      "work ID:",
-      targetWork?.id,
-    )
-
     if (targetWork) {
       // インデックスも確実に初期値に設定
       setIndex(initialIndex)

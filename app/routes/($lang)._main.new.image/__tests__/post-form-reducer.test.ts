@@ -25,6 +25,11 @@ const initialState: PostImageFormInputState = {
   reservationTime: null,
   useGenerationParams: true,
   correctionMessage: "",
+  isBotGradingEnabled: true,
+  isBotGradingPublic: false,
+  isBotGradingRankingEnabled: true,
+  botPersonality: "female",
+  botGradingType: "COMMENT_AND_SCORE",
 }
 
 describe("SET_RESERVATION_DATE", () => {

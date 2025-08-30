@@ -26,6 +26,7 @@ import { ToggleContent } from "~/components/toggle-content"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
 import { Separator } from "~/components/ui/separator"
+import { AiEvaluationDisplay } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-display"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -75,6 +76,8 @@ export function WorkArticle(props: Props) {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string>(
     props.work.imageURL,
   )
+
+  console.log(props.work.botEvaluation)
 
   const parseTextWithLinks = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
@@ -312,6 +315,17 @@ export function WorkArticle(props: Props) {
             setTagNames={setTagNames}
             isEditable={props.work.isTagEditable}
           />
+          {/* AI評価表示 */}
+          <div className="flex justify-start">
+            <AiEvaluationDisplay
+              isBotGradingEnabled={props.work.isBotGradingEnabled ?? false}
+              evaluation={props.work.botEvaluation}
+              personality={props.work.botEvaluation?.personality}
+              isVisible={true}
+              isBotGradingPublic={props.work.isBotGradingPublic}
+              isOwner={props.work.user?.id === appContext.userId}
+            />
+          </div>
         </div>
         <p className="overflow-hidden whitespace-pre-wrap break-words">
           {parseTextWithLinks(
@@ -530,6 +544,21 @@ export const workArticleFragment = graphql(
     monthlyRanking
     relatedUrl
     nanoid
+    isBotGradingEnabled
+    isBotGradingPublic
+    botEvaluation {
+      cutenessScore
+      coolnessScore
+      beautyScore
+      originalityScore
+      compositionScore
+      colorScore
+      detailScore
+      consistencyScore
+      overallScore
+      comment
+      personality
+    }
   }`,
 )
 
@@ -671,6 +700,21 @@ export const sensitiveWorkArticleFragment = graphql(
     relatedUrl
     nanoid
     isPromotion
+    isBotGradingEnabled
+    isBotGradingPublic
+    botEvaluation {
+      cutenessScore
+      coolnessScore
+      beautyScore
+      originalityScore
+      compositionScore
+      colorScore
+      detailScore
+      consistencyScore
+      overallScore
+      comment
+      personality
+    }
   }`,
 )
 

@@ -23,6 +23,7 @@ import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/r
 import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
+import { PostFormItemBotGrading } from "~/routes/($lang)._main.new.image/components/post-form-item-bot-grading"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳フックの使用
 
 type Props = {
@@ -44,6 +45,7 @@ type Props = {
   }[]
   aiModels: FragmentOf<typeof PostImageFormAiModelFragment>[]
   needFix: boolean
+  isEditMode?: boolean
 }
 
 const getJSTDate = () => {
@@ -345,6 +347,32 @@ export function PostImageFormInput(props: Props) {
         isCommentsEditableChecked={props.state.useCommentFeature}
         onCommentsEditableChange={(value) => {
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
+        }}
+      />
+      <PostFormItemBotGrading
+        isBotGradingEnabled={props.state.isBotGradingEnabled}
+        isBotGradingPublic={props.state.isBotGradingPublic}
+        isBotGradingRankingEnabled={props.state.isBotGradingRankingEnabled}
+        botPersonality={props.state.botPersonality}
+        botGradingType={props.state.botGradingType}
+        isEditMode={props.isEditMode}
+        onChangeBotGradingEnabled={(enabled) => {
+          props.dispatch({ type: "SET_BOT_GRADING_ENABLED", payload: enabled })
+        }}
+        onChangeBotGradingPublic={(isPublic) => {
+          props.dispatch({ type: "SET_BOT_GRADING_PUBLIC", payload: isPublic })
+        }}
+        onChangeBotGradingRankingEnabled={(enabled) => {
+          props.dispatch({
+            type: "SET_BOT_GRADING_RANKING_ENABLED",
+            payload: enabled,
+          })
+        }}
+        onChangeBotPersonality={(personality) => {
+          props.dispatch({ type: "SET_BOT_PERSONALITY", payload: personality })
+        }}
+        onChangeBotGradingType={(type) => {
+          props.dispatch({ type: "SET_BOT_GRADING_TYPE", payload: type })
         }}
       />
       {props.albums.length !== 0 && (

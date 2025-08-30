@@ -584,10 +584,6 @@ export function CompactFilter(props: Props) {
     // URLパラメータを更新
     updateUrlParams(updatedFilters)
 
-    console.log(
-      "Applying filters with workModelId:",
-      updatedFilters.workModelId,
-    )
     onFiltersChange(updatedFilters)
     onApplyFilters()
     setIsDialogOpen(false)

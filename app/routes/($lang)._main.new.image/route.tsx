@@ -41,6 +41,7 @@ import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { useTranslation } from "~/hooks/use-translation"
+import { usePersistentState } from "~/hooks/use-persistent-state"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import { loaderClient } from "~/lib/loader-client"
 
@@ -58,6 +59,26 @@ export default function NewImage() {
   const now = getJstDate(new Date())
 
   const afterDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+  // AI評価設定の永続化
+  const [persistedBotSettings, setPersistedBotSettings] = usePersistentState(
+    "post-bot-grading-settings",
+    {
+      isBotGradingEnabled: true,
+      isBotGradingPublic: true,
+      isBotGradingRankingEnabled: true,
+      botPersonality: "female" as
+        | "female"
+        | "male"
+        | "robot"
+        | "sage"
+        | "pictor_chan",
+      botGradingType: "COMMENT_AND_SCORE" as
+        | "COMMENT_ONLY"
+        | "SCORE_ONLY"
+        | "COMMENT_AND_SCORE",
+    },
+  )
 
   const { data: viewerData, loading } = useQuery(ViewerQuery, {
     skip: !authContext.isLoggedIn,
@@ -123,7 +144,31 @@ export default function NewImage() {
     usePromotionFeature: false,
     useTagFeature: true,
     correctionMessage: "",
+    // 永続化された設定を使用
+    isBotGradingEnabled: persistedBotSettings.isBotGradingEnabled,
+    isBotGradingPublic: persistedBotSettings.isBotGradingPublic,
+    isBotGradingRankingEnabled: persistedBotSettings.isBotGradingRankingEnabled,
+    botPersonality: persistedBotSettings.botPersonality,
+    botGradingType: persistedBotSettings.botGradingType,
   })
+
+  // AI評価設定の変更を永続化
+  useEffect(() => {
+    setPersistedBotSettings({
+      isBotGradingEnabled: inputState.isBotGradingEnabled,
+      isBotGradingPublic: inputState.isBotGradingPublic,
+      isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
+      botPersonality: inputState.botPersonality,
+      botGradingType: inputState.botGradingType,
+    })
+  }, [
+    inputState.isBotGradingEnabled,
+    inputState.isBotGradingPublic,
+    inputState.isBotGradingRankingEnabled,
+    inputState.botPersonality,
+    inputState.botGradingType,
+    setPersistedBotSettings,
+  ])
 
   const onChangeImageInformation = (imageInformation: PNGInfo) => {
     dispatchInput({
@@ -334,6 +379,21 @@ export default function NewImage() {
         uploadedImageUrls.push(ogpBase64Url)
       }
 
+      // AI評価用のJPEG画像をアップロード
+      const botGradingImage = await resizeImage(
+        formResult.output.thumbnailBase64,
+        400,
+        400,
+        "jpeg",
+      )
+
+      const botGradingImageUrl = await uploadPublicImage(
+        botGradingImage.base64,
+        viewerData?.viewer?.token,
+      )
+
+      uploadedImageUrls.push(botGradingImageUrl)
+
       const reservedAt =
         inputState.reservationDate !== null &&
         inputState.reservationTime !== null
@@ -418,6 +478,13 @@ export default function NewImage() {
                 : inputState.useGenerationParams
                   ? "PUBLIC"
                   : "PRIVATE",
+            // AI grading fields - temporarily commented out until backend support is added
+            isBotGradingEnabled: inputState.isBotGradingEnabled,
+            isBotGradingPublic: inputState.isBotGradingPublic,
+            isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
+            botPersonality: inputState.botPersonality,
+            botGradingImageUrl: botGradingImageUrl,
+            botGradingType: inputState.botGradingType,
           },
         },
       })
@@ -534,8 +601,8 @@ export default function NewImage() {
 
   if (!showPage) {
     return (
-      <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4 bg-white dark:bg-gray-900">
-        <p className="text-center text-md font-bold text-gray-800 dark:text-gray-200">
+      <div className="m-auto w-full max-w-[1200px] space-y-4 bg-white pb-4 dark:bg-gray-900">
+        <p className="text-center font-bold text-gray-800 text-md dark:text-gray-200">
           {t("認証状態を確認中です", "Checking authentication status...")}
         </p>
       </div>
@@ -543,10 +610,10 @@ export default function NewImage() {
   }
 
   return (
-    <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4 bg-white dark:bg-gray-900">
+    <div className="m-auto w-full max-w-[1200px] space-y-4 bg-white pb-4 dark:bg-gray-900">
       <div className="max-w-[1200px] space-y-4">
         {loading && authContext.isLoggedIn && (
-          <p className="text-center text-md font-bold text-gray-800 dark:text-gray-200">
+          <p className="text-center font-bold text-gray-800 text-md dark:text-gray-200">
             {t(
               "読み込み中です、完了まで操作しないようにご注意ください",
               "Loading, please be patient",
@@ -555,7 +622,7 @@ export default function NewImage() {
         )}
 
         {authContext.isNotLoggedIn && (
-          <p className="text-center text-md font-bold text-gray-800 dark:text-gray-200">
+          <p className="text-center font-bold text-gray-800 text-md dark:text-gray-200">
             {t(
               "ログインすると投稿できるようになります",
               "Log in to post your work",

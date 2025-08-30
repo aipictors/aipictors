@@ -150,44 +150,6 @@ export function HomeNotificationsMenu(props: Props) {
 
   const t = useTranslation()
 
-  // デバッグ用ログ
-  console.log("🔔 HomeNotificationsMenu render:", {
-    isExistedNewNotification: props.isExistedNewNotification,
-    authContext: {
-      isLoggedIn: authContext.isLoggedIn,
-      isNotLoggedIn: authContext.isNotLoggedIn,
-      isLoading: authContext.isLoading,
-    },
-    queries: {
-      likeData: !!likeNotificationData.data,
-      likeLoading: likeNotificationData.loading,
-      likeError: !!likeNotificationData.error,
-      commentData: !!commentNotificationData.data,
-      commentLoading: commentNotificationData.loading,
-      commentError: !!commentNotificationData.error,
-      awardData: !!awardNotificationData.data,
-      awardLoading: awardNotificationData.loading,
-      followData: !!followNotificationData.data,
-      followLoading: followNotificationData.loading,
-      messageData: !!messageNotificationData.data,
-      messageLoading: messageNotificationData.loading,
-    },
-    notifications: {
-      like: !!likeNotification,
-      comment: !!commentNotification,
-      award: !!awardNotification,
-      follow: !!followNotification,
-      message: !!messageNotification,
-    },
-    newNotifications: {
-      isNewLike: isNewLikeNotification,
-      isNewComment: isNewCommentNotification,
-      isNewAward: isNewAwardNotification,
-      isNewFollow: isNewFollowNotification,
-      isNewMessage: isNewMessageNotification,
-    },
-  })
-
   // ログインしていない場合またはまだ認証状態が確定していない場合は何も表示しない
   if (!authContext.isLoggedIn) {
     return null

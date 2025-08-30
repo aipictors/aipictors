@@ -178,6 +178,36 @@ export const postImageFormInputReducer = (
         correctionMessage: action.payload,
       }
     }
+    case "SET_BOT_GRADING_ENABLED": {
+      return {
+        ...state,
+        isBotGradingEnabled: action.payload,
+      }
+    }
+    case "SET_BOT_GRADING_PUBLIC": {
+      return {
+        ...state,
+        isBotGradingPublic: action.payload,
+      }
+    }
+    case "SET_BOT_GRADING_RANKING_ENABLED": {
+      return {
+        ...state,
+        isBotGradingRankingEnabled: action.payload,
+      }
+    }
+    case "SET_BOT_PERSONALITY": {
+      return {
+        ...state,
+        botPersonality: action.payload,
+      }
+    }
+    case "SET_BOT_GRADING_TYPE": {
+      return {
+        ...state,
+        botGradingType: action.payload,
+      }
+    }
     case "INITIALIZE": {
       return {
         ...state,
@@ -196,12 +226,18 @@ export const postImageFormInputReducer = (
         useGenerationParams: action.payload.useGenerationParams,
         ratingRestriction: action.payload.ratingRestriction,
         accessType: action.payload.accessType,
+        generationParamAccessType: action.payload.generationParamAccessType,
         imageStyle: action.payload.imageStyle,
         aiModelId: action.payload.aiModelId,
         reservationDate: action.payload.reservationDate,
         reservationTime: action.payload.reservationTime,
         imageInformation: action.payload.imageInformation,
         correctionMessage: action.payload.correctionMessage,
+        isBotGradingEnabled: action.payload.isBotGradingEnabled,
+        isBotGradingPublic: action.payload.isBotGradingPublic,
+        isBotGradingRankingEnabled: action.payload.isBotGradingRankingEnabled,
+        botPersonality: action.payload.botPersonality,
+        botGradingType: action.payload.botGradingType,
       }
     }
   }

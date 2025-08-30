@@ -255,14 +255,17 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
               // },
             }}
             onClick={(clickHandlerProps) => {
-              console.log("clickHandlerProps", clickHandlerProps)
               return props.onSelect?.(clickHandlerProps.photo.id.toString())
             }}
           />
         </SSR>
       </div>
       <div className="block md:hidden">
-        <HomeCroppedWorks works={props.works} isShowProfile={true} hasReferenceButton={false} />
+        <HomeCroppedWorks
+          works={props.works}
+          isShowProfile={true}
+          hasReferenceButton={false}
+        />
       </div>
     </>
   )

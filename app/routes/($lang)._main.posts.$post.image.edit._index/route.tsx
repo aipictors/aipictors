@@ -19,14 +19,19 @@ import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useContext, useEffect, useReducer } from "react"
+import React, {
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+  useCallback,
+} from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { Link, useBeforeUnload, useLoaderData } from "@remix-run/react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { EditImageFormUploader } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/edit-image-form-uploader"
-import React from "react"
 import { getJstDate } from "~/utils/jst-date"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -185,7 +190,16 @@ export default function EditImage() {
           useGenerationParams: work?.promptAccessType === "PUBLIC",
           usePromotionFeature: work?.isPromotion ?? false,
           useTagFeature: work?.isTagEditable ?? false,
-          correctionMessage: "",
+          correctionMessage: null,
+          generationParamAccessType:
+            work?.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
+          isBotGradingEnabled: Boolean(work?.isBotGradingEnabled ?? false),
+          isBotGradingPublic: Boolean(work?.isBotGradingPublic ?? false),
+          isBotGradingRankingEnabled: Boolean(
+            work?.isBotGradingRankingEnabled ?? true,
+          ),
+          botPersonality: "female" as const,
+          botGradingType: "COMMENT_AND_SCORE" as const,
         },
       })
     }
@@ -248,54 +262,34 @@ export default function EditImage() {
     isOpenLoadingAi: false,
   })
 
-  const { reservationDate, reservationTime } = getReservationDetails(
-    work?.createdAt ?? 0,
-  )
-
   const [inputState, dispatchInput] = useReducer(postImageFormInputReducer, {
-    accessType: work?.accessType ?? "PUBLIC",
-    generationParamAccessType:
-      work?.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
-    aiModelId: work?.workModelId?.toString() ?? null,
-    albumId: work?.album?.id ?? null,
-    caption: work?.description ?? "",
-    date: new Date(work?.createdAt ?? new Date()),
-    enCaption: work?.enDescription ?? "",
-    enTitle: work?.enTitle ?? "",
-    imageInformation: {
-      params: {
-        prompt: work?.prompt ?? "",
-        negativePrompt: work?.negativePrompt ?? "",
-        seed: work?.seed?.toString() ?? "",
-        steps: work?.steps ? work?.steps.toString() : "",
-        strength: work?.strength ?? "",
-        noise: work?.noise ?? "",
-        scale: work?.scale ? work?.scale.toString() : "",
-        sampler: work?.sampler ?? "",
-        vae: work?.vae ?? "",
-        modelHash: work?.modelHash ?? "",
-        model: work?.model ?? "",
-      },
-      src: work?.pngInfo ?? "",
-    },
-    imageStyle: work?.style ?? "ILLUSTRATION",
-    link: work?.relatedUrl ?? "",
-    ratingRestriction: work?.rating ?? "G",
-    reservationDate: reservationDate,
-    reservationTime: reservationTime,
-    tags: work?.tagNames.length
-      ? work?.tagNames.map((tag) => ({ id: tag, text: tag }))
-      : [],
-    themeId: work?.dailyTheme?.id ?? null,
-    title: work?.title ?? "",
-    useCommentFeature:
-      work?.isCommentsEditable === undefined ? true : work?.isCommentsEditable,
-    useGenerationParams: work?.promptAccessType === "PUBLIC",
-    usePromotionFeature:
-      work?.isPromotion === undefined ? false : work?.isPromotion,
-    useTagFeature:
-      work?.isTagEditable === undefined ? true : work?.isTagEditable,
+    accessType: "PUBLIC",
+    generationParamAccessType: "PUBLIC",
+    aiModelId: "1",
+    albumId: null,
+    caption: "",
+    date: new Date(),
+    enCaption: "",
+    enTitle: "",
+    imageInformation: null,
+    imageStyle: "ILLUSTRATION",
+    link: "",
+    ratingRestriction: null,
+    reservationDate: null,
+    reservationTime: null,
+    tags: [],
+    themeId: null,
+    title: "",
+    useCommentFeature: true,
+    useGenerationParams: true,
+    usePromotionFeature: false,
+    useTagFeature: true,
     correctionMessage: "",
+    isBotGradingEnabled: false,
+    isBotGradingPublic: false,
+    isBotGradingRankingEnabled: true,
+    botPersonality: "female",
+    botGradingType: "COMMENT_AND_SCORE",
   })
 
   const now = getJstDate(new Date())
@@ -314,8 +308,7 @@ export default function EditImage() {
     },
   })
 
-  const [updateWork, { loading: isUpdatedLoading }] =
-    useMutation(updateWorkMutation)
+  const [updateWork] = useMutation(updateWorkMutation)
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
@@ -507,7 +500,7 @@ export default function EditImage() {
             pngInfo: inputState.imageInformation?.src ?? null,
             imageStyle: inputState.imageStyle,
             relatedUrl: inputState.link,
-            tags: inputState.tags.map((tag) => tag.text),
+            tags: inputState.tags.map((tag: { text: string }) => tag.text),
             isTagEditable: inputState.useTagFeature,
             isCommentEditable: inputState.useCommentFeature,
             thumbnailPosition: state.isThumbnailLandscape
@@ -584,10 +577,10 @@ export default function EditImage() {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  const [disabledSubmit, setDisabledSubmit] = React.useState(false)
+  const [disabledSubmit, setDisabledSubmit] = useState(false)
 
   useBeforeUnload(
-    React.useCallback(
+    useCallback(
       (event) => {
         if (state) {
           const confirmationMessage =
@@ -640,6 +633,7 @@ export default function EditImage() {
           aiModels={viewer?.aiModels ?? []}
           events={viewer?.appEvents ?? []}
           needFix={work?.moderatorReport?.status === "UNHANDLED"}
+          isEditMode={true}
         />
         <div className="h-4" />
         <Button
@@ -795,6 +789,9 @@ const workQuery = graphql(
       style
       url
       relatedUrl
+      isBotGradingEnabled
+      isBotGradingPublic
+      isBotGradingRankingEnabled
       user {
         id
         works(offset: 0, limit: 16) {

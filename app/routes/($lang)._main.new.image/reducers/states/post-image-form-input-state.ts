@@ -11,6 +11,8 @@ import {
   date,
   array,
   nullable,
+  union,
+  literal,
   type InferInput,
 } from "valibot"
 
@@ -41,4 +43,19 @@ export const vPostImageFormInputState = object({
   usePromotionFeature: boolean(),
   useTagFeature: boolean(),
   correctionMessage: nullable(string()),
+  isBotGradingEnabled: boolean(),
+  isBotGradingPublic: boolean(),
+  isBotGradingRankingEnabled: boolean(),
+  botPersonality: union([
+    literal("female"),
+    literal("male"),
+    literal("robot"),
+    literal("sage"),
+    literal("pictor_chan"),
+  ]),
+  botGradingType: union([
+    literal("COMMENT_ONLY"),
+    literal("SCORE_ONLY"),
+    literal("COMMENT_AND_SCORE"),
+  ]),
 })

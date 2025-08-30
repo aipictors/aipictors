@@ -91,7 +91,6 @@ export const onRequest: PagesFunction = async (ctx) => {
       const jitter = Math.random() * 0.3 * delay
       const actualDelay = delay + jitter
 
-      console.log(`Retrying in ${Math.round(actualDelay)}ms...`)
       await new Promise((resolve) => setTimeout(resolve, actualDelay))
     }
   }

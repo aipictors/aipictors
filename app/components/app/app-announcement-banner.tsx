@@ -18,7 +18,7 @@ const hashString = (str: string): string => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
+    hash = (hash << 5) - hash + char
     hash = hash & hash // 32bit整数に変換
   }
   return hash.toString()
@@ -43,7 +43,10 @@ const addDismissedAnnouncement = (contentHash: string): void => {
     const dismissed = getDismissedAnnouncements()
     if (!dismissed.includes(contentHash)) {
       dismissed.push(contentHash)
-      localStorage.setItem(DISMISSED_ANNOUNCEMENTS_KEY, JSON.stringify(dismissed))
+      localStorage.setItem(
+        DISMISSED_ANNOUNCEMENTS_KEY,
+        JSON.stringify(dismissed),
+      )
     }
   } catch {
     // localStorage が使えない場合は何もしない
@@ -57,7 +60,11 @@ export function AppAnnouncementBanner() {
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true)
   const location = useLocation()
 
-  const { data: announcementData, loading, error } = useQuery(emergencyAnnouncementsQuery, {})
+  const {
+    data: announcementData,
+    loading,
+    error,
+  } = useQuery(emergencyAnnouncementsQuery, {})
 
   // 表示対象のパスを判定（トップ画面専用）
   const isAnnouncementPath = location.pathname === "/"
@@ -65,23 +72,15 @@ export function AppAnnouncementBanner() {
   // お知らせが読み込まれたら、過去に閉じたものかチェック
   useEffect(() => {
     if (announcementData?.emergencyAnnouncements?.content) {
-      const contentHash = hashString(announcementData.emergencyAnnouncements.content)
+      const contentHash = hashString(
+        announcementData.emergencyAnnouncements.content,
+      )
       const dismissed = getDismissedAnnouncements()
       if (dismissed.includes(contentHash)) {
         setIsAnnouncementVisible(false)
       }
     }
   }, [announcementData])
-
-  // デバッグ用ログ
-  console.log("AppAnnouncementBanner Debug:", {
-    pathname: location.pathname,
-    loading,
-    error,
-    announcementData,
-    isAnnouncementVisible,
-    isAnnouncementPath
-  })
 
   const navigateToExternal = (url: string) => {
     window.open(url, "_blank", "noreferrer")
@@ -93,7 +92,9 @@ export function AppAnnouncementBanner() {
 
   const handleClose = () => {
     if (announcementData?.emergencyAnnouncements?.content) {
-      const contentHash = hashString(announcementData.emergencyAnnouncements.content)
+      const contentHash = hashString(
+        announcementData.emergencyAnnouncements.content,
+      )
       addDismissedAnnouncement(contentHash)
     }
     setIsAnnouncementVisible(false)
@@ -105,9 +106,11 @@ export function AppAnnouncementBanner() {
   }
 
   // 実際のお知らせデータがない場合は表示しない（空文字列もチェック）
-  if (!announcementData?.emergencyAnnouncements || 
-      !announcementData.emergencyAnnouncements.content ||
-      announcementData.emergencyAnnouncements.content.trim() === "") {
+  if (
+    !announcementData?.emergencyAnnouncements ||
+    !announcementData.emergencyAnnouncements.content ||
+    announcementData.emergencyAnnouncements.content.trim() === ""
+  ) {
     return null
   }
 
@@ -123,18 +126,21 @@ export function AppAnnouncementBanner() {
           >
             <X className="h-4 w-4" />
           </button>
-          
+
           {/* Icon */}
           <div className="flex-shrink-0 rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
             <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </div>
-          
+
           {/* Content */}
-          {announcementData.emergencyAnnouncements.url && announcementData.emergencyAnnouncements.url.length > 0 ? (
+          {announcementData.emergencyAnnouncements.url &&
+          announcementData.emergencyAnnouncements.url.length > 0 ? (
             <button
               onClick={() =>
                 announcementData.emergencyAnnouncements.url.startsWith("http")
-                  ? navigateToExternal(announcementData.emergencyAnnouncements.url)
+                  ? navigateToExternal(
+                      announcementData.emergencyAnnouncements.url,
+                    )
                   : handleNavigate(announcementData.emergencyAnnouncements.url)
               }
               className="flex-1 text-left transition-colors hover:text-blue-600 dark:hover:text-blue-400"
@@ -143,8 +149,18 @@ export function AppAnnouncementBanner() {
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
                   {announcementData.emergencyAnnouncements.content}
                 </span>
-                <svg className="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="h-3 w-3 text-slate-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </div>
             </button>

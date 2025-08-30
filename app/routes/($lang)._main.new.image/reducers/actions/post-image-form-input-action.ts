@@ -103,7 +103,7 @@ export const vPostImageFormInputAction = union([
   }),
   object({
     type: literal("SET_AI_MODEL_ID"),
-    payload: string(),
+    payload: nullable(string()),
   }),
   object({
     type: literal("SET_RESERVATION_DATE"),
@@ -120,6 +120,36 @@ export const vPostImageFormInputAction = union([
   object({
     type: literal("SET_CORRECTION_MESSAGE"),
     payload: string(),
+  }),
+  object({
+    type: literal("SET_BOT_GRADING_ENABLED"),
+    payload: boolean(),
+  }),
+  object({
+    type: literal("SET_BOT_GRADING_PUBLIC"),
+    payload: boolean(),
+  }),
+  object({
+    type: literal("SET_BOT_GRADING_RANKING_ENABLED"),
+    payload: boolean(),
+  }),
+  object({
+    type: literal("SET_BOT_PERSONALITY"),
+    payload: union([
+      literal("female"),
+      literal("male"),
+      literal("robot"),
+      literal("sage"),
+      literal("pictor_chan"),
+    ]),
+  }),
+  object({
+    type: literal("SET_BOT_GRADING_TYPE"),
+    payload: union([
+      literal("COMMENT_ONLY"),
+      literal("SCORE_ONLY"),
+      literal("COMMENT_AND_SCORE"),
+    ]),
   }),
   object({
     type: literal("INITIALIZE"),
@@ -139,6 +169,7 @@ export const vPostImageFormInputAction = union([
       useGenerationParams: boolean(),
       ratingRestriction: vPostRating,
       accessType: vPostAccessType,
+      generationParamAccessType: union([literal("PUBLIC"), literal("PRIVATE")]),
       imageStyle: union([
         literal("ILLUSTRATION"),
         literal("REAL"),
@@ -149,6 +180,21 @@ export const vPostImageFormInputAction = union([
       reservationTime: nullable(string()),
       imageInformation: nullable(vImageInformation),
       correctionMessage: nullable(string()),
+      isBotGradingEnabled: boolean(),
+      isBotGradingPublic: boolean(),
+      isBotGradingRankingEnabled: boolean(),
+      botPersonality: union([
+        literal("female"),
+        literal("male"),
+        literal("robot"),
+        literal("sage"),
+        literal("pictor_chan"),
+      ]),
+      botGradingType: union([
+        literal("COMMENT_ONLY"),
+        literal("SCORE_ONLY"),
+        literal("COMMENT_AND_SCORE"),
+      ]),
     }),
   }),
 ])

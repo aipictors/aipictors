@@ -42,7 +42,6 @@ export function SocialLoginButton(props: Props) {
         navigate("/new/profile")
       }
     } catch (error) {
-      console.log(error)
       if (error instanceof Error) {
         toast("アカウントが見つかりませんでした")
       }
