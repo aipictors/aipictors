@@ -28,7 +28,7 @@ const initialState: PostImageFormInputState = {
   isBotGradingEnabled: true,
   isBotGradingPublic: false,
   isBotGradingRankingEnabled: true,
-  botPersonality: "female",
+  botPersonality: "pictor_chan",
   botGradingType: "COMMENT_AND_SCORE",
 }
 

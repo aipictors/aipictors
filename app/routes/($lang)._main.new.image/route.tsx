@@ -127,7 +127,7 @@ export default function NewImage() {
     isBotGradingEnabled: true,
     isBotGradingPublic: true,
     isBotGradingRankingEnabled: true,
-    botPersonality: "female",
+    botPersonality: "pictor_chan",
     botGradingType: "COMMENT_AND_SCORE",
   })
 
@@ -188,7 +188,7 @@ export default function NewImage() {
           })
           dispatchInput({
             type: "SET_BOT_PERSONALITY",
-            payload: storedSettings.botPersonality ?? "female",
+            payload: storedSettings.botPersonality ?? "pictor_chan",
           })
           dispatchInput({
             type: "SET_BOT_GRADING_TYPE",

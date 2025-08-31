@@ -198,7 +198,7 @@ export default function EditImage() {
           isBotGradingRankingEnabled: Boolean(
             work?.isBotGradingRankingEnabled ?? true,
           ),
-          botPersonality: "female" as const,
+          botPersonality: "pictor_chan" as const,
           botGradingType: "COMMENT_AND_SCORE" as const,
         },
       })
@@ -288,7 +288,7 @@ export default function EditImage() {
     isBotGradingEnabled: false,
     isBotGradingPublic: false,
     isBotGradingRankingEnabled: true,
-    botPersonality: "female",
+    botPersonality: "pictor_chan",
     botGradingType: "COMMENT_AND_SCORE",
   })
 
