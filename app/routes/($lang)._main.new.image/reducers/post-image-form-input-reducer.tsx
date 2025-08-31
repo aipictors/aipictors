@@ -185,16 +185,26 @@ export const postImageFormInputReducer = (
       }
     }
     case "SET_BOT_GRADING_PUBLIC": {
-      return {
+      console.log("=== SET_BOT_GRADING_PUBLIC reducer ===")
+      console.log("Current state:", state.isBotGradingPublic)
+      console.log("New payload:", action.payload)
+      const newState = {
         ...state,
         isBotGradingPublic: action.payload,
       }
+      console.log("New state:", newState.isBotGradingPublic)
+      return newState
     }
     case "SET_BOT_GRADING_RANKING_ENABLED": {
-      return {
+      console.log("=== SET_BOT_GRADING_RANKING_ENABLED reducer ===")
+      console.log("Current state:", state.isBotGradingRankingEnabled)
+      console.log("New payload:", action.payload)
+      const newState = {
         ...state,
         isBotGradingRankingEnabled: action.payload,
       }
+      console.log("New state:", newState.isBotGradingRankingEnabled)
+      return newState
     }
     case "SET_BOT_PERSONALITY": {
       return {

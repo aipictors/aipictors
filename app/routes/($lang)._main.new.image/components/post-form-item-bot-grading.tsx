@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { useTranslation } from "~/hooks/use-translation"
-import { Badge } from "~/components/ui/badge"
 import { useId } from "react"
 
 type BotPersonalityType = "female" | "male" | "robot" | "sage" | "pictor_chan"

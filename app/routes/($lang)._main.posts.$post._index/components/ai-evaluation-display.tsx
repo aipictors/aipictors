@@ -1,7 +1,6 @@
 import {
   BarChart3,
   Clock,
-  EyeOff,
   X,
   ChevronDown,
   ChevronUp,
@@ -120,39 +119,22 @@ export function AiEvaluationDisplay(props: Props) {
     return null
   }
 
-  // 非公開だが投稿者の場合の表示
-  if (!props.isBotGradingPublic && props.isOwner) {
-    return (
-      <div className="w-full max-w-2xl">
-        <Card className="border-amber-300 border-dashed bg-amber-50 dark:bg-amber-950/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <EyeOff className="h-5 w-5 text-amber-600" />
-              <div>
-                <h3 className="font-medium text-amber-800 text-sm dark:text-amber-200">
-                  {t(
-                    "AI評価は非公開設定です",
-                    "AI evaluation is set to private",
-                  )}
-                </h3>
-                <p className="text-amber-700 text-xs dark:text-amber-300">
-                  {t(
-                    "他のユーザーには表示されません",
-                    "Not visible to other users",
-                  )}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
+  // AI評価が有効でない場合は表示しない
+  if (!props.isBotGradingEnabled) {
+    return null
   }
 
-  // 評価が公開だが、まだ評価がない場合（評価中）
+  // 非公開設定で投稿者でない場合は表示しない
+  if (props.isBotGradingPublic === false && !props.isOwner) {
+    return null
+  }
+
+  // 評価が有効だが、まだ評価がない場合（評価中）
+  // 公開設定の場合、または非公開でオーナーの場合
   if (
     props.isBotGradingEnabled &&
-    props.isBotGradingPublic &&
+    (props.isBotGradingPublic === true ||
+      (props.isBotGradingPublic === false && props.isOwner)) &&
     !props.evaluation
   ) {
     return (
@@ -291,7 +273,7 @@ export function AiEvaluationDisplay(props: Props) {
         <div className="flex-1">
           <Card className="relative border border-slate-200 bg-gradient-to-br from-white to-slate-50 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
             {/* 吹き出しの三角形 */}
-            <div className="absolute -left-3 top-6 h-0 w-0 border-b-[12px] border-r-[12px] border-t-[12px] border-b-transparent border-r-white border-t-transparent dark:border-r-slate-800" />
+            <div className="-left-3 absolute top-6 h-0 w-0 border-t-[12px] border-t-transparent border-r-[12px] border-r-white border-b-[12px] border-b-transparent dark:border-r-slate-800" />
 
             {/* 閉じるボタン */}
             <button
@@ -317,7 +299,7 @@ export function AiEvaluationDisplay(props: Props) {
                             {getTruncatedComment(props.evaluation.comment)}
                           </p>
                           {/* グラデーション */}
-                          <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent via-white/80 dark:from-slate-800/50 dark:via-slate-800/40" />
+                          <div className="absolute right-0 bottom-0 left-0 h-6 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-slate-800/50 dark:via-slate-800/40" />
                         </div>
                         <button
                           type="button"

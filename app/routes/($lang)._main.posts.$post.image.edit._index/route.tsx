@@ -91,6 +91,8 @@ export default function EditImage() {
 
   const work = workWithAuth?.work ?? null
 
+  console.log("work:", work)
+
   useEffect(() => {
     if (work) {
       console.log("Work data loaded:", {
@@ -99,6 +101,15 @@ export default function EditImage() {
         isBotGradingEnabled: work?.isBotGradingEnabled,
       })
 
+      console.log("About to set inputState with:", {
+        isBotGradingPublic: Boolean(work?.isBotGradingPublic ?? false),
+        isBotGradingRankingEnabled: Boolean(
+          work?.isBotGradingRankingEnabled ?? true,
+        ),
+        isBotGradingEnabled: Boolean(work?.isBotGradingEnabled ?? false),
+      })
+
+      // 画像関連のstateを初期化
       dispatch({
         type: "INITIALIZE",
         payload: {
@@ -148,6 +159,7 @@ export default function EditImage() {
         },
       })
 
+      // フォーム入力stateを初期化（AI評価設定も含む）
       dispatchInput({
         type: "INITIALIZE",
         payload: {
@@ -194,16 +206,18 @@ export default function EditImage() {
           generationParamAccessType:
             work?.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
           isBotGradingEnabled: Boolean(work?.isBotGradingEnabled ?? false),
-          // 編集画面では実際のデータベース値を使用するため、GraphQLのresolverが
-          // 作者本人に常にtrueを返すことを考慮し、デフォルトをfalseに設定
-          isBotGradingPublic: false, // work?.isBotGradingPublic は作者本人の場合常にtrueを返すため無視
+          // WorkNodeから直接取得してstateに設定（編集画面用）
+          isBotGradingPublic: Boolean(work?.isBotGradingPublic ?? false),
           isBotGradingRankingEnabled: Boolean(
-            work?.isBotGradingRankingEnabled ?? true,
+            work?.isBotGradingRankingEnabled ?? false,
           ),
           botPersonality: "pictor_chan" as const,
           botGradingType: "COMMENT_AND_SCORE" as const,
         },
       })
+
+      console.log("=== After INITIALIZE dispatch ===")
+      // dispatchは非同期なので、次のrender cycleでinputStateが更新される
     }
   }, [work])
 
@@ -289,10 +303,28 @@ export default function EditImage() {
     correctionMessage: "",
     isBotGradingEnabled: false,
     isBotGradingPublic: false,
-    isBotGradingRankingEnabled: true,
+    isBotGradingRankingEnabled: false,
     botPersonality: "pictor_chan",
     botGradingType: "COMMENT_AND_SCORE",
   })
+
+  // inputStateのAI評価設定値の変化を監視
+  useEffect(() => {
+    console.log("=== inputState AI評価設定 values changed ===")
+    console.log("inputState.isBotGradingPublic:", inputState.isBotGradingPublic)
+    console.log(
+      "inputState.isBotGradingRankingEnabled:",
+      inputState.isBotGradingRankingEnabled,
+    )
+    console.log(
+      "inputState.isBotGradingEnabled:",
+      inputState.isBotGradingEnabled,
+    )
+  }, [
+    inputState.isBotGradingPublic,
+    inputState.isBotGradingRankingEnabled,
+    inputState.isBotGradingEnabled,
+  ])
 
   const now = getJstDate(new Date())
 
@@ -312,11 +344,27 @@ export default function EditImage() {
 
   const [updateWork] = useMutation(updateWorkMutation)
 
+  // inputStateの変更を監視（デバッグ用）
+  useEffect(() => {
+    console.log("=== inputState changed ===")
+    console.log("isBotGradingPublic:", inputState.isBotGradingPublic)
+    console.log(
+      "isBotGradingRankingEnabled:",
+      inputState.isBotGradingRankingEnabled,
+    )
+    console.log("isBotGradingEnabled:", inputState.isBotGradingEnabled)
+  }, [
+    inputState.isBotGradingPublic,
+    inputState.isBotGradingRankingEnabled,
+    inputState.isBotGradingEnabled,
+  ])
+
   // AI評価設定の変更をUIに即座反映する関数
   const handleBotGradingPublicChange = useCallback(
     (isPublic: boolean) => {
-      console.log("handleBotGradingPublicChange called with:", isPublic)
-      console.log("Current inputState:", {
+      console.log("=== handleBotGradingPublicChange called ===")
+      console.log("New value:", isPublic)
+      console.log("Current inputState before change:", {
         isBotGradingPublic: inputState.isBotGradingPublic,
         isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
       })
@@ -324,14 +372,20 @@ export default function EditImage() {
         type: "SET_BOT_GRADING_PUBLIC",
         payload: isPublic,
       })
+      console.log("Dispatched SET_BOT_GRADING_PUBLIC with:", isPublic)
     },
-    [dispatchInput, inputState],
+    [
+      dispatchInput,
+      inputState.isBotGradingPublic,
+      inputState.isBotGradingRankingEnabled,
+    ],
   )
 
   const handleBotGradingRankingChange = useCallback(
     (enabled: boolean) => {
-      console.log("handleBotGradingRankingChange called with:", enabled)
-      console.log("Current inputState:", {
+      console.log("=== handleBotGradingRankingChange called ===")
+      console.log("New value:", enabled)
+      console.log("Current inputState before change:", {
         isBotGradingPublic: inputState.isBotGradingPublic,
         isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
       })
@@ -339,8 +393,13 @@ export default function EditImage() {
         type: "SET_BOT_GRADING_RANKING_ENABLED",
         payload: enabled,
       })
+      console.log("Dispatched SET_BOT_GRADING_RANKING_ENABLED with:", enabled)
     },
-    [dispatchInput, inputState],
+    [
+      dispatchInput,
+      inputState.isBotGradingPublic,
+      inputState.isBotGradingRankingEnabled,
+    ],
   )
 
   const formResult = safeParse(vPostImageForm, {
@@ -375,6 +434,15 @@ export default function EditImage() {
   }
 
   const onPost = async () => {
+    console.log("=== onPost function started ===")
+    console.log("Current inputState at onPost start:", {
+      isBotGradingPublic: inputState.isBotGradingPublic,
+      isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
+      isBotGradingEnabled: inputState.isBotGradingEnabled,
+      title: inputState.title,
+      accessType: inputState.accessType,
+    })
+
     if (work === null) {
       return
     }
@@ -511,77 +579,125 @@ export default function EditImage() {
         return
       }
 
+      // AI評価設定の値をデバッグログで確認
+      console.log("=== updateWork AI評価設定 ===")
+      console.log(
+        "inputState.isBotGradingPublic:",
+        inputState.isBotGradingPublic,
+      )
+      console.log(
+        "inputState.isBotGradingRankingEnabled:",
+        inputState.isBotGradingRankingEnabled,
+      )
+      console.log(
+        "inputState.isBotGradingEnabled:",
+        inputState.isBotGradingEnabled,
+      )
+
+      // updateWork mutation用の入力データを準備
+      const updateWorkInput = {
+        id: work?.id,
+        title: formResult.output.title,
+        entitle: formResult.output.enTitle,
+        explanation: formResult.output.caption,
+        enExplanation: formResult.output.enCaption,
+        rating: inputState.ratingRestriction,
+        prompt: inputState.imageInformation?.params.prompt ?? null,
+        negativePrompt:
+          inputState.imageInformation?.params.negativePrompt ?? null,
+        seed: inputState.imageInformation?.params.seed?.toString() ?? null,
+        sampler: inputState.imageInformation?.params.sampler ?? null,
+        strength: inputState.imageInformation?.params.strength ?? null,
+        noise: inputState.imageInformation?.params.noise ?? null,
+        modelName: inputState.imageInformation?.params.model ?? null,
+        modelHash: inputState.imageInformation?.params.modelHash ?? null,
+        otherGenerationParams: inputState.imageInformation?.src ?? null,
+        pngInfo: inputState.imageInformation?.src ?? null,
+        imageStyle: inputState.imageStyle,
+        relatedUrl: inputState.link,
+        tags: inputState.tags.map((tag: { text: string }) => tag.text),
+        isTagEditable: inputState.useTagFeature,
+        isCommentEditable: inputState.useCommentFeature,
+        thumbnailPosition: state.isThumbnailLandscape
+          ? state.thumbnailPosX
+          : state.thumbnailPosY,
+        modelId: inputState.aiModelId,
+        type: "WORK" as const,
+        subjectId: inputState.themeId,
+        albumId: inputState.albumId,
+        isPromotion: inputState.usePromotionFeature,
+        reservedAt: reservedAt,
+        mainImageSha256: mainImageSha256,
+        accessType: inputState.accessType,
+        imageUrls: imageUrls,
+        smallThumbnailImageURL: smallThumbnailUrl,
+        smallThumbnailImageWidth: smallThumbnail
+          ? smallThumbnail.width
+          : (work.smallThumbnailImageWidth ?? 0),
+        smallThumbnailImageHeight: smallThumbnail
+          ? smallThumbnail.height
+          : (work.smallThumbnailImageHeight ?? 0),
+        largeThumbnailImageURL: largeThumbnailUrl,
+        largeThumbnailImageWidth: largeThumbnail
+          ? largeThumbnail.width
+          : (work.largeThumbnailImageWidth ?? 0),
+        largeThumbnailImageHeight: largeThumbnail
+          ? largeThumbnail.height
+          : (work.largeThumbnailImageHeight ?? 0),
+        videoUrl: null,
+        ogpImageUrl: ogpBase64Url,
+        imageHeight: mainImageSize.height,
+        imageWidth: mainImageSize.width,
+        accessGenerationType:
+          state.isSelectedGenerationImage && inputState.useGenerationParams
+            ? ("PUBLIC_RESTORABLE" as const)
+            : inputState.useGenerationParams
+              ? ("PUBLIC" as const)
+              : ("PRIVATE" as const),
+        correctionMessage:
+          work?.moderatorReport?.status === "UNHANDLED"
+            ? inputState.correctionMessage
+            : undefined,
+        // AI評価設定を含める
+        isBotGradingPublic: inputState.isBotGradingPublic,
+        isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
+      }
+
+      // mutation実行前に全データをログ出力
+      console.log("=== updateWork 完全なinput ===")
+      console.log("Full input object:", updateWorkInput)
+      console.log("AI評価設定のみ抽出:")
+      console.log("- isBotGradingPublic:", updateWorkInput.isBotGradingPublic)
+      console.log(
+        "- isBotGradingRankingEnabled:",
+        updateWorkInput.isBotGradingRankingEnabled,
+      )
+
       const updatedWork = await updateWork({
         variables: {
-          input: {
-            id: work?.id,
-            title: formResult.output.title,
-            entitle: formResult.output.enTitle,
-            explanation: formResult.output.caption,
-            enExplanation: formResult.output.enCaption,
-            rating: inputState.ratingRestriction,
-            prompt: inputState.imageInformation?.params.prompt ?? null,
-            negativePrompt:
-              inputState.imageInformation?.params.negativePrompt ?? null,
-            seed: inputState.imageInformation?.params.seed?.toString() ?? null,
-            sampler: inputState.imageInformation?.params.sampler ?? null,
-            strength: inputState.imageInformation?.params.strength ?? null,
-            noise: inputState.imageInformation?.params.noise ?? null,
-            modelName: inputState.imageInformation?.params.model ?? null,
-            modelHash: inputState.imageInformation?.params.modelHash ?? null,
-            otherGenerationParams: inputState.imageInformation?.src ?? null,
-            pngInfo: inputState.imageInformation?.src ?? null,
-            imageStyle: inputState.imageStyle,
-            relatedUrl: inputState.link,
-            tags: inputState.tags.map((tag: { text: string }) => tag.text),
-            isTagEditable: inputState.useTagFeature,
-            isCommentEditable: inputState.useCommentFeature,
-            thumbnailPosition: state.isThumbnailLandscape
-              ? state.thumbnailPosX
-              : state.thumbnailPosY,
-            modelId: inputState.aiModelId,
-            type: "WORK",
-            subjectId: inputState.themeId,
-            albumId: inputState.albumId,
-            isPromotion: inputState.usePromotionFeature,
-            reservedAt: reservedAt,
-            mainImageSha256: mainImageSha256,
-            accessType: inputState.accessType,
-            imageUrls: imageUrls,
-            smallThumbnailImageURL: smallThumbnailUrl,
-            smallThumbnailImageWidth: smallThumbnail
-              ? smallThumbnail.width
-              : (work.smallThumbnailImageWidth ?? 0),
-            smallThumbnailImageHeight: smallThumbnail
-              ? smallThumbnail.height
-              : (work.smallThumbnailImageHeight ?? 0),
-            largeThumbnailImageURL: largeThumbnailUrl,
-            largeThumbnailImageWidth: largeThumbnail
-              ? largeThumbnail.width
-              : (work.largeThumbnailImageWidth ?? 0),
-            largeThumbnailImageHeight: largeThumbnail
-              ? largeThumbnail.height
-              : (work.largeThumbnailImageHeight ?? 0),
-            videoUrl: null,
-            ogpImageUrl: ogpBase64Url,
-            imageHeight: mainImageSize.height,
-            imageWidth: mainImageSize.width,
-            accessGenerationType:
-              state.isSelectedGenerationImage && inputState.useGenerationParams
-                ? "PUBLIC_RESTORABLE"
-                : inputState.useGenerationParams
-                  ? "PUBLIC"
-                  : "PRIVATE",
-            correctionMessage:
-              work?.moderatorReport?.status === "UNHANDLED"
-                ? inputState.correctionMessage
-                : undefined,
-            // AI評価設定も含める
-            isBotGradingPublic: inputState.isBotGradingPublic,
-            isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
-          },
+          input: updateWorkInput,
         },
       })
+
+      // mutation実行後の結果をログ出力
+      console.log("=== updateWork 実行結果 ===")
+      console.log("updatedWork result:", updatedWork)
+      console.log("updatedWork.data:", updatedWork.data)
+      console.log("updatedWork.data?.updateWork:", updatedWork.data?.updateWork)
+      if (updatedWork.data?.updateWork) {
+        console.log("更新後のAI評価設定:")
+        console.log(
+          "- isBotGradingPublic:",
+          updatedWork.data.updateWork.isBotGradingPublic,
+        )
+        console.log(
+          "- isBotGradingRankingEnabled:",
+          updatedWork.data.updateWork.isBotGradingRankingEnabled,
+        )
+      }
+      if (updatedWork.errors) {
+        console.log("GraphQL errors:", updatedWork.errors)
+      }
 
       if (updatedWork?.data?.updateWork === undefined) {
         toast("作品の更新に失敗しました")
@@ -676,6 +792,7 @@ export default function EditImage() {
             isAlreadyRequested: Boolean(work?.isBotGradingEnabled),
             isAlreadyEvaluated: false, // 実際の評価状態に応じて設定
             isBotGradingEnabled: Boolean(work?.isBotGradingEnabled),
+            // inputStateの値を直接使用
             currentBotGradingPublic: inputState.isBotGradingPublic,
             currentBotGradingRankingEnabled:
               inputState.isBotGradingRankingEnabled,

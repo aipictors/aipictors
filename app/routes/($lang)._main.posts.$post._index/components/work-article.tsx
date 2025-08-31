@@ -368,7 +368,7 @@ export function WorkArticle(props: Props) {
             evaluation={props.work.botEvaluation}
             personality={props.work.botEvaluation?.personality}
             isVisible={true}
-            isBotGradingPublic={props.work.isBotGradingPublic}
+            isBotGradingPublic={props.work.isBotGradingPublic ?? false}
             isOwner={props.work.user?.id === appContext.userId}
             workId={props.work.id}
           />
