@@ -975,6 +975,9 @@ export default function NewImage() {
           aiModels={viewerData?.aiModels ?? []}
           events={viewer?.appEvents ?? []}
           needFix={false}
+          imageBase64={state.thumbnailBase64}
+          token={viewerData?.viewer?.token}
+          onContentGenerated={onContentGenerated}
         />
         <div className="h-4" />
         <Button

@@ -17,7 +17,6 @@ import { toast } from "sonner"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PaintCanvas } from "~/components/paint-canvas"
 import { useTranslation } from "~/hooks/use-translation"
-import { GenerateContentFromImageButton } from "~/routes/($lang)._main.new.image/components/generate-content-from-image-button"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
@@ -175,27 +174,11 @@ export function PostImageFormUploader(props: Props) {
             />
           )}
       </div>
-      <div className="flex flex-wrap justify-end gap-2">
-        {props.state.thumbnailBase64 && (
-          <>
-            <GenerateContentFromImageButton
-              imageBase64={props.state.thumbnailBase64}
-              token={props.token}
-              onContentGenerated={props.onContentGenerated || (() => {})}
-              tagsOnly={false}
-            />
-            <GenerateContentFromImageButton
-              imageBase64={props.state.thumbnailBase64}
-              token={props.token}
-              onContentGenerated={props.onContentGenerated || (() => {})}
-              tagsOnly={true}
-            />
-          </>
-        )}
+      <div className="flex justify-end">
         <Button
           variant={"secondary"}
           onClick={onInputPngInfo}
-          className="block"
+          className="mr-2 block"
         >
           {t("画像から生成情報のみ反映", "Apply Information Only from Image")}
         </Button>

@@ -2,11 +2,10 @@ import { useEffect, type Dispatch } from "react"
 import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
 import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
 import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
-import { PostFormItemTitle } from "~/routes/($lang)._main.new.image/components/post-form-item-title"
+import { PostFormItemTitleCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-title-caption"
 import { useQuery } from "@apollo/client/index"
 import { PostFormItemTheme } from "~/routes/($lang)._main.new.image/components/post-form-item-theme"
 import { Checkbox } from "~/components/ui/checkbox"
-import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
 import { PostFormItemView } from "~/routes/($lang)._main.new.image/components/post-form-item-view"
 import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
 import { PostFormItemTags } from "~/routes/($lang)._main.new.image/components/post-form-item-tags"
@@ -46,6 +45,17 @@ type Props = {
   aiModels: FragmentOf<typeof PostImageFormAiModelFragment>[]
   needFix: boolean
   isEditMode?: boolean
+  // AI自動生成関連のprops
+  imageBase64?: string | null
+  token?: string | undefined | null
+  onContentGenerated?: (data: {
+    title?: string
+    description?: string
+    tags?: string[]
+    titleEn?: string
+    descriptionEn?: string
+    tagsEn?: string[]
+  }) => void
 }
 
 const getJSTDate = () => {
@@ -189,17 +199,18 @@ export function PostImageFormInput(props: Props) {
           value={props.state.correctionMessage ?? ""}
         />
       )}
-      <PostFormItemTitle
-        onChange={(title) => {
+      <PostFormItemTitleCaption
+        title={props.state.title}
+        caption={props.state.caption}
+        onTitleChange={(title) => {
           props.dispatch({ type: "SET_TITLE", payload: title })
         }}
-        value={props.state.title}
-      />
-      <PostFormItemCaption
-        setCaption={(caption) => {
+        onCaptionChange={(caption) => {
           props.dispatch({ type: "SET_CAPTION", payload: caption })
         }}
-        caption={props.state.caption}
+        imageBase64={props.imageBase64 ?? null}
+        token={props.token ?? null}
+        onContentGenerated={props.onContentGenerated || (() => {})}
       />
       <PostFormItemEnglish
         onChangeTitle={(title) => {
@@ -336,6 +347,9 @@ export function PostImageFormInput(props: Props) {
         onRemoveTag={(tag) => {
           props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
+        imageBase64={props.imageBase64 ?? null}
+        token={props.token ?? null}
+        onTagsGenerated={props.onContentGenerated}
       />
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}
