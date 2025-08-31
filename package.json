@@ -9,6 +9,7 @@
     "dev:fresh": "rm -rf build .vite && remix vite:dev",
     "start": "wrangler pages dev ./build/client",
     "check": "tsc --noEmit --isolatedDeclarations",
+    "test": "bun test",
     "lint": "biome lint --write app",
     "lint:unsafe": "biome lint --write --unsafe app",
     "storybook": "storybook dev -p 6006 --no-open",

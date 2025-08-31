@@ -5,6 +5,7 @@ import {
   ChevronDown,
   ChevronUp,
   MessageSquare,
+  EyeOff,
 } from "lucide-react"
 import { Card, CardContent } from "~/components/ui/card"
 import { AiEvaluationRadarChart } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-radar-chart"
@@ -129,37 +130,56 @@ export function AiEvaluationDisplay(props: Props) {
     return null
   }
 
-  // 評価が有効だが、まだ評価がない場合（評価中）
-  // 公開設定の場合、または非公開でオーナーの場合
-  if (
-    props.isBotGradingEnabled &&
-    (props.isBotGradingPublic === true ||
-      (props.isBotGradingPublic === false && props.isOwner)) &&
-    !props.evaluation
-  ) {
-    return (
-      <div className="w-full max-w-2xl">
-        <Card className="border-blue-300 border-dashed bg-blue-50 dark:bg-blue-950/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 animate-spin text-blue-600" />
-              <div>
-                <h3 className="font-medium text-blue-800 text-sm dark:text-blue-200">
-                  {t("AI評価を生成中です", "AI evaluation is being generated")}
-                </h3>
-                <p className="text-blue-700 text-xs dark:text-blue-300">
-                  {t("しばらくお待ちください", "Please wait a moment")}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // 評価がない場合は非表示
+  // 評価がない場合の処理
   if (!props.evaluation) {
+    // 非公開設定で投稿者の場合は非公開状態を表示
+    if (props.isBotGradingPublic === false && props.isOwner) {
+      return (
+        <div className="w-full max-w-2xl">
+          <Card className="border-gray-300 border-dashed bg-gray-50 dark:bg-gray-950/20">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <EyeOff className="h-5 w-5 text-gray-600" />
+                <div>
+                  <h3 className="font-medium text-gray-800 text-sm dark:text-gray-200">
+                    {t("AI評価は非公開設定です", "AI evaluation is set to private")}
+                  </h3>
+                  <p className="text-gray-700 text-xs dark:text-gray-300">
+                    {t("他のユーザーには表示されません", "Not visible to other users")}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )
+    }
+
+    // 評価が有効だが、まだ評価がない場合（評価中）
+    // 公開設定の場合
+    if (props.isBotGradingEnabled && props.isBotGradingPublic === true) {
+      return (
+        <div className="w-full max-w-2xl">
+          <Card className="border-blue-300 border-dashed bg-blue-50 dark:bg-blue-950/20">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 animate-spin text-blue-600" />
+                <div>
+                  <h3 className="font-medium text-blue-800 text-sm dark:text-blue-200">
+                    {t("AI評価を生成中です", "AI evaluation is being generated")}
+                  </h3>
+                  <p className="text-blue-700 text-xs dark:text-blue-300">
+                    {t("しばらくお待ちください", "Please wait a moment")}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )
+    }
+
+    // その他の場合は非表示
     return null
   }
 
