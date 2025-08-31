@@ -18,6 +18,7 @@ export interface WorksWhereInput {
   isNowCreatedAt?: boolean
   createdAtAfter?: string
   beforeCreatedAt?: string
+  isOneWorkPerUser?: boolean
 }
 
 export type WorkItem = {

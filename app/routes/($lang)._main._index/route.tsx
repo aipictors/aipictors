@@ -75,6 +75,7 @@ import {
 } from "~/components/ui/select"
 import { Separator } from "~/components/ui/separator"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
+import { Checkbox } from "~/components/ui/checkbox"
 import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
 import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
@@ -204,6 +205,7 @@ export default function Index() {
   const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
   const [sortType, setSortType] =
     useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
+  const [isOneWorkPerUser, setIsOneWorkPerUser] = useState<boolean>(false)
 
   const navigate = useNavigate()
 
@@ -315,6 +317,12 @@ export default function Index() {
         setTimeRange(tr)
       }
 
+      // isOneWorkPerUser
+      const isOneWorkPerUserParam = searchParams.get("isOneWorkPerUser")
+      if (isOneWorkPerUserParam === "true") {
+        setIsOneWorkPerUser(true)
+      }
+
       // workView
       const viewParam = searchParams.get("view")
       if (viewParam) {
@@ -376,6 +384,15 @@ export default function Index() {
       newSearchParams.set("timeRange", timeRange)
     }
 
+    // ユーザー毎に1作品フィルター
+    if (currentTab === "new") {
+      if (isOneWorkPerUser) {
+        newSearchParams.set("isOneWorkPerUser", "true")
+      } else {
+        newSearchParams.delete("isOneWorkPerUser")
+      }
+    }
+
     updateQueryParams(newSearchParams)
   }, [
     currentTab,
@@ -384,6 +401,7 @@ export default function Index() {
     followTagFeedPage,
     isMounted,
     timeRange,
+    isOneWorkPerUser,
     updateQueryParams,
     searchParams,
     internalIsPagination,
@@ -890,38 +908,70 @@ export default function Index() {
                   </Select>
                 </div>
 
-                {/* フィルター行2: 期間指定 + 表示方式切り替え */}
-                <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between md:space-y-0">
-                  {/* 期間指定 */}
-                  <Select
-                    value={timeRange}
-                    onValueChange={handleTimeRangeChange}
-                  >
-                    <SelectTrigger className="w-full text-xs md:w-auto md:min-w-[120px] md:text-sm">
-                      <SelectValue
-                        placeholder={
-                          timeRange === "ALL"
-                            ? t("全期間", "All time")
-                            : timeRange
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">
-                        {t("全期間", "All time")}
-                      </SelectItem>
-                      <SelectItem value="TODAY">
-                        {t("本日", "Today")}
-                      </SelectItem>
-                      <SelectItem value="YESTERDAY">
-                        {t("昨日", "Yesterday")}
-                      </SelectItem>
-                      <SelectItem value="WEEK">{t("週間", "Week")}</SelectItem>
-                    </SelectContent>
-                  </Select>
+                {/* フィルター行2: 期間指定とチェックボックス */}
+                <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                  {/* 左側: 期間指定とチェックボックス */}
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    {/* 期間指定 */}
+                    <Select
+                      value={timeRange}
+                      onValueChange={handleTimeRangeChange}
+                    >
+                      <SelectTrigger className="w-full text-xs sm:w-auto sm:min-w-[120px] md:text-sm">
+                        <SelectValue
+                          placeholder={
+                            timeRange === "ALL"
+                              ? t("全期間", "All time")
+                              : timeRange
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ALL">
+                          {t("全期間", "All time")}
+                        </SelectItem>
+                        <SelectItem value="TODAY">
+                          {t("本日", "Today")}
+                        </SelectItem>
+                        <SelectItem value="YESTERDAY">
+                          {t("昨日", "Yesterday")}
+                        </SelectItem>
+                        <SelectItem value="WEEK">
+                          {t("週間", "Week")}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  {/* 表示方式切り替え - よりスタイリッシュなデザイン */}
-                  <div className="flex space-x-2 md:space-x-4">
+                    {/* ユーザー毎に1作品フィルター */}
+                    <div className="flex items-center space-x-2 rounded-lg border bg-card px-3 py-2.5">
+                      <Checkbox
+                        id="one-work-per-user"
+                        checked={isOneWorkPerUser}
+                        onCheckedChange={(checked) => {
+                          const newValue = checked === true
+                          setIsOneWorkPerUser(newValue)
+                          const newSearchParams = new URLSearchParams(
+                            searchParams,
+                          )
+                          if (newValue) {
+                            newSearchParams.set("isOneWorkPerUser", "true")
+                          } else {
+                            newSearchParams.delete("isOneWorkPerUser")
+                          }
+                          updateQueryParams(newSearchParams)
+                        }}
+                      />
+                      <label
+                        htmlFor="one-work-per-user"
+                        className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {t("ユーザー毎に1作品", "One work per user")}
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* 右側: 表示方式切り替え */}
+                  <div className="flex space-x-2 md:ml-auto">
                     <div className="flex rounded-lg bg-muted p-1">
                       <Button
                         variant="ghost"
@@ -976,7 +1026,9 @@ export default function Index() {
                         } `}
                       >
                         <ExternalLink className="h-4 w-4" />
-                        <span>{t("リンク遷移", "Open page")}</span>
+                        <span className="hidden lg:inline">
+                          {t("リンク遷移", "Open page")}
+                        </span>
                       </Button>
                       <Button
                         variant="ghost"
@@ -989,7 +1041,9 @@ export default function Index() {
                         } `}
                       >
                         <PlaySquare className="h-4 w-4" />
-                        <span>{t("ダイアログ", "Dialog")}</span>
+                        <span className="hidden lg:inline">
+                          {t("ダイアログ", "Dialog")}
+                        </span>
                       </Button>
                     </div>
                   </div>
@@ -1006,6 +1060,7 @@ export default function Index() {
                     isPromptPublic={isPromptPublic}
                     sortType={sortType}
                     timeRange={timeRange}
+                    isOneWorkPerUser={isOneWorkPerUser}
                     onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                     updateWorks={updateCurrentWorks}
                   />
@@ -1017,6 +1072,7 @@ export default function Index() {
                     isPromptPublic={isPromptPublic}
                     sortType={sortType}
                     timeRange={timeRange}
+                    isOneWorkPerUser={isOneWorkPerUser}
                     isPagination={false}
                     onPaginationModeChange={setInternalIsPagination}
                     onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
@@ -1158,6 +1214,7 @@ export default function Index() {
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
+                  isOneWorkPerUser={isOneWorkPerUser}
                   onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                   updateWorks={updateCurrentWorks}
                 />

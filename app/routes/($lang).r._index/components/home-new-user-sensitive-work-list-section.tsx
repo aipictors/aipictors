@@ -23,6 +23,7 @@ type Props = {
   isPromptPublic: boolean | null
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
   style?: IntrospectionEnum<"ImageStyle">
+  isOneWorkPerUser?: boolean
   onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
@@ -35,6 +36,13 @@ export function HomeNewUsersSensitiveWorkListSection(props: Props) {
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
     skip: appContext.isLoading,
+    variables: {
+      where: {
+        ratings: ["R18", "R18G"],
+        isNowCreatedAt: true,
+        ...(props.isOneWorkPerUser && { isOneWorkPerUser: true }),
+      },
+    },
   })
 
   useEffect(() => {
@@ -76,14 +84,11 @@ export function HomeNewUsersSensitiveWorkListSection(props: Props) {
 }
 
 const WorksQuery = graphql(
-  `query Works {
+  `query Works($where: WorksWhereInput) {
     newUserWorks: newUserWorks(
       offset: 0,
       limit: 20,
-      where: {
-        ratings: [R18, R18G],
-        isNowCreatedAt: true
-      }
+      where: $where
     ) {
       ...HomeWork
       ...HomeNovelsWorkListItem

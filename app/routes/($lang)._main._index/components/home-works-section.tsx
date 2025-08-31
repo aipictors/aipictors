@@ -19,6 +19,7 @@ interface Props {
   onPaginationModeChange?: (isPagination: boolean) => void
   onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
+  isOneWorkPerUser?: boolean
 }
 
 export function HomeWorksSection(props: Props) {

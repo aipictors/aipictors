@@ -87,6 +87,7 @@ type LocalFilterValues = {
   orderBy: string
   workModelId: string | undefined
   myWorksOnly?: boolean
+  isOneWorkPerUser?: boolean
 }
 
 export function TagWorkSection(props: Props) {
@@ -112,6 +113,7 @@ export function TagWorkSection(props: Props) {
     orderBy: "LIKES_COUNT",
     workModelId: undefined, // 単体として初期化
     myWorksOnly: false,
+    isOneWorkPerUser: false,
   })
 
   // CompactFilterとの互換性のため、型変換を行う関数
@@ -126,6 +128,7 @@ export function TagWorkSection(props: Props) {
       orderBy: newFilters.orderBy || "LIKES_COUNT",
       workModelId: newFilters.workModelId, // 単体として設定
       myWorksOnly: newFilters.myWorksOnly || false,
+      isOneWorkPerUser: newFilters.isOneWorkPerUser || false,
     })
   }, [])
 
@@ -164,6 +167,7 @@ export function TagWorkSection(props: Props) {
       isSensitive?: boolean
       modelPostedIds?: string[]
       userId?: string
+      isOneWorkPerUser?: boolean
     } = {
       tagNames: [
         decodeURIComponent(props.tag),
@@ -225,6 +229,11 @@ export function TagWorkSection(props: Props) {
       baseWhere.beforeCreatedAt = endDate.toISOString()
     }
 
+    // One work per user filter
+    if (filters.isOneWorkPerUser) {
+      baseWhere.isOneWorkPerUser = true
+    }
+
     return baseWhere
   }, [
     props.tag,
@@ -247,6 +256,7 @@ export function TagWorkSection(props: Props) {
       orderBy: filters.orderBy,
       workModelId: filters.workModelId,
       myWorksOnly: filters.myWorksOnly,
+      isOneWorkPerUser: filters.isOneWorkPerUser,
     }),
     [filters],
   )

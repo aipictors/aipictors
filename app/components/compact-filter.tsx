@@ -52,6 +52,7 @@ export type FilterValues = {
   dateFrom: Date | undefined
   dateTo: Date | undefined
   myWorksOnly?: boolean
+  isOneWorkPerUser?: boolean
   selectedModelId?: string | undefined // 単体のモデルID
   modelSearch?: string
   workModelId?: string // 単体のworkModelId
@@ -201,6 +202,23 @@ function FilterContent({
           </label>
         </div>
       )}
+
+      {/* 一人一作品 */}
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id={`${uniqueId}-one-work-per-user-${inSheet ? "sheet" : "dialog"}`}
+          checked={localFilters.isOneWorkPerUser || false}
+          onCheckedChange={(checked) => {
+            updateLocalFilter("isOneWorkPerUser", checked === true)
+          }}
+        />
+        <label
+          htmlFor={`${uniqueId}-one-work-per-user-${inSheet ? "sheet" : "dialog"}`}
+          className="cursor-pointer font-medium text-sm"
+        >
+          {t("一人一作品", "One work per user")}
+        </label>
+      </div>
 
       {/* AIモデル選択 */}
       <div className="space-y-2">
@@ -463,6 +481,12 @@ export function CompactFilter(props: Props) {
         newParams.delete("myWorksOnly")
       }
 
+      if (newFilters.isOneWorkPerUser) {
+        newParams.set("isOneWorkPerUser", "true")
+      } else {
+        newParams.delete("isOneWorkPerUser")
+      }
+
       if (newFilters.modelSearch) {
         newParams.set("modelSearch", newFilters.modelSearch)
       } else {
@@ -527,6 +551,7 @@ export function CompactFilter(props: Props) {
       ...filters,
       selectedModelId: undefined,
       myWorksOnly: authContext.isNotLoggedIn ? false : filters.myWorksOnly,
+      isOneWorkPerUser: filters.isOneWorkPerUser || false,
     }
 
     // workModelIdから選択されたモデルIDを復元
@@ -605,6 +630,7 @@ export function CompactFilter(props: Props) {
       dateFrom: undefined,
       dateTo: undefined,
       myWorksOnly: false,
+      isOneWorkPerUser: false,
       selectedModelId: undefined,
       modelSearch: "",
       workModelId: undefined,
@@ -620,6 +646,7 @@ export function CompactFilter(props: Props) {
     filters.dateFrom ||
     filters.dateTo ||
     filters.myWorksOnly ||
+    filters.isOneWorkPerUser ||
     filters.workModelId ||
     (filters.orderBy && filters.orderBy !== "LIKES_COUNT")
 
@@ -630,6 +657,7 @@ export function CompactFilter(props: Props) {
     localFilters.dateFrom ||
     localFilters.dateTo ||
     localFilters.myWorksOnly ||
+    localFilters.isOneWorkPerUser ||
     localFilters.selectedModelId ||
     (localFilters.orderBy && localFilters.orderBy !== "LIKES_COUNT")
 

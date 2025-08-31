@@ -84,5 +84,6 @@ export function makeWhere(
     ...(createdAtBefore && { beforeCreatedAt: createdAtBefore }),
     ...(!createdAtBefore && needAnchor ? { beforeCreatedAt: anchorAt } : {}),
     ...(isNowCreatedAt ? { isNowCreatedAt: true } : {}),
+    ...(props.isOneWorkPerUser && { isOneWorkPerUser: true }),
   }
 }

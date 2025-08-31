@@ -69,6 +69,7 @@ type Props = {
   sortType: IntrospectionEnum<"WorkOrderBy"> | null
   timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
+  isOneWorkPerUser?: boolean
   onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
@@ -109,6 +110,7 @@ export function HomePaginationSensitiveWorksSection(props: Props) {
         ...(props.style && {
           style: props.style,
         }),
+        ...(props.isOneWorkPerUser && { isOneWorkPerUser: true }),
         ...(!createdAtAfter && !createdAtBefore && { isNowCreatedAt: true }),
 
         // ★ 期間指定

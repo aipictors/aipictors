@@ -17,13 +17,13 @@ export function AppContents(props: Props) {
   const getContentMargin = () => {
     switch (sidebarState) {
       case "expanded":
-        return "sm:ml-[0px] md:ml-[232px] md:max-w-[calc(100vw_-_262px)]"
+        return "sm:ml-[0px] md:ml-[232px] md:max-w-[calc(100vw_-_276px)]"
       case "collapsed":
         return "sm:ml-[0px] md:ml-[80px] md:max-w-[calc(100vw_-_104px)]"
       case "minimal":
         return "sm:ml-[0px] md:ml-[0px] md:max-w-full"
       default:
-        return "sm:ml-[0px] md:ml-[232px] md:max-w-[calc(100vw_-_262px)]"
+        return "sm:ml-[0px] md:ml-[232px] md:max-w-[calc(100vw_-_276px)]"
     }
   }
 

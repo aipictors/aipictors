@@ -96,6 +96,7 @@ export const SearchResults = ({
   const viewModeParam = searchParams.get("viewMode") || "pagination"
   const promptPublicParam = searchParams.get("promptPublic") || "all"
   const myWorksOnlyParam = searchParams.get("myWorksOnly") === "true"
+  const isOneWorkPerUserParam = searchParams.get("isOneWorkPerUser") === "true"
   const aiUsageParam = searchParams.get("aiUsage") || "all"
   const dateFromParam = searchParams.get("dateFrom")
   const dateToParam = searchParams.get("dateTo")
@@ -224,6 +225,7 @@ export const SearchResults = ({
         ? new Date(periodRange[1])
         : undefined,
     myWorksOnly: myWorksOnlyParam,
+    isOneWorkPerUser: isOneWorkPerUserParam,
     selectedModelId: modelParam,
     modelSearch: "",
     workModelId: modelParam, // modelパラメータをworkModelIdとして使用
@@ -288,6 +290,11 @@ export const SearchResults = ({
     // AI model
     if (filterValues.workModelId) {
       conditions.modelPostedIds = [filterValues.workModelId]
+    }
+
+    // One work per user filter
+    if (filterValues.isOneWorkPerUser) {
+      conditions.isOneWorkPerUser = true
     }
 
     // Sort condition
@@ -484,6 +491,13 @@ export const SearchResults = ({
         newParams.set("myWorksOnly", "true")
       } else {
         newParams.delete("myWorksOnly")
+      }
+
+      // Update one work per user
+      if (values.isOneWorkPerUser) {
+        newParams.set("isOneWorkPerUser", "true")
+      } else {
+        newParams.delete("isOneWorkPerUser")
       }
 
       // Update period (individual dateFrom and dateTo)
@@ -691,6 +705,10 @@ export const SearchResults = ({
 
     if (filterValues.myWorksOnly) {
       filters.push(t("自分の作品のみ", "My works only"))
+    }
+
+    if (filterValues.isOneWorkPerUser) {
+      filters.push(t("ユーザー毎に1作品", "One work per user"))
     }
 
     if (filterValues.dateFrom && filterValues.dateTo) {

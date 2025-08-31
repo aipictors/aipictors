@@ -162,6 +162,9 @@ export default function Index() {
   const [timeRange, setTimeRange] = useState(
     searchParams.get("timeRange") ?? "ALL",
   )
+  const [isOneWorkPerUser, setIsOneWorkPerUser] = useState<boolean>(
+    searchParams.get("isOneWorkPerUser") === "true",
+  )
 
   const [internalIsPagination, setInternalIsPagination] = useState(true)
 
@@ -665,6 +668,7 @@ export default function Index() {
                     isPromptPublic={isPromptPublic}
                     sortType={sortType}
                     timeRange={timeRange}
+                    isOneWorkPerUser={isOneWorkPerUser}
                     onSelect={isDialogMode ? openWork : undefined}
                     updateWorks={updateCurrentWorks}
                   />
@@ -848,6 +852,7 @@ export default function Index() {
                   workType={workType}
                   isPromptPublic={isPromptPublic}
                   sortType={sortType}
+                  isOneWorkPerUser={isOneWorkPerUser}
                   onSelect={isDialogMode ? openWork : undefined}
                   updateWorks={updateCurrentWorks}
                 />
