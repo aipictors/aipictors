@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "~/components/ui/card"
 import { ExpansionTransition } from "~/components/expansion-transition"
 import { Button } from "~/components/ui/button"
@@ -21,9 +21,18 @@ type Props = {
 export function PostFormItemEnglish(props: Props) {
   const t = useTranslation()
   const [isExpanded, setIsExpanded] = useState(false)
-  const [enTitle, setEnTitle] = useState(props.enTitle || "")
-  const [enCaption, setEnCaption] = useState(props.enCaption || "")
+  const [enTitle, setEnTitle] = useState(props.title || "")
+  const [enCaption, setEnCaption] = useState(props.caption || "")
   const [isTranslating, setIsTranslating] = useState(false)
+
+  // propsの変更を内部状態に反映
+  useEffect(() => {
+    setEnTitle(props.title || "")
+  }, [props.title])
+
+  useEffect(() => {
+    setEnCaption(props.caption || "")
+  }, [props.caption])
 
   const handleTranslate = async () => {
     setIsTranslating(true)

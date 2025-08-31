@@ -208,10 +208,8 @@ export function PostImageFormInput(props: Props) {
         onChangeCaption={(caption) => {
           props.dispatch({ type: "SET_EN_CAPTION", payload: caption })
         }}
-        title={props.state.title}
-        caption={props.state.caption}
-        enTitle={props.state.enTitle}
-        enCaption={props.state.enCaption}
+        title={props.state.enTitle}
+        caption={props.state.enCaption}
       />
       <PostFormItemRating
         rating={props.state.ratingRestriction ?? undefined}

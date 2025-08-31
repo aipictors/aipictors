@@ -17,12 +17,22 @@ import { toast } from "sonner"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PaintCanvas } from "~/components/paint-canvas"
 import { useTranslation } from "~/hooks/use-translation"
+import { GenerateContentFromImageButton } from "~/routes/($lang)._main.new.image/components/generate-content-from-image-button"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
   onChangeImageInformation: (imageInformation: PNGInfo) => void
   state: PostImageFormState
   onInputFiles?: (files: FileList) => void
+  token?: string | undefined | null
+  onContentGenerated?: (data: {
+    title?: string
+    description?: string
+    tags?: string[]
+    titleEn?: string
+    descriptionEn?: string
+    tagsEn?: string[]
+  }) => void
 }
 
 export function PostImageFormUploader(props: Props) {
@@ -165,7 +175,23 @@ export function PostImageFormUploader(props: Props) {
             />
           )}
       </div>
-      <div className="flex justify-end space-x-2">
+      <div className="flex flex-wrap justify-end gap-2">
+        {props.state.thumbnailBase64 && (
+          <>
+            <GenerateContentFromImageButton
+              imageBase64={props.state.thumbnailBase64}
+              token={props.token}
+              onContentGenerated={props.onContentGenerated || (() => {})}
+              tagsOnly={false}
+            />
+            <GenerateContentFromImageButton
+              imageBase64={props.state.thumbnailBase64}
+              token={props.token}
+              onContentGenerated={props.onContentGenerated || (() => {})}
+              tagsOnly={true}
+            />
+          </>
+        )}
         <Button
           variant={"secondary"}
           onClick={onInputPngInfo}

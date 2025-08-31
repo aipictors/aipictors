@@ -319,6 +319,120 @@ export default function NewImage() {
   const [createWork] = useMutation(CreateWorkMutation)
   const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery)
 
+  /**
+   * AI生成されたコンテンツをフォームに反映する
+   */
+  const onContentGenerated = (data: {
+    title?: string
+    description?: string
+    tags?: string[]
+    titleEn?: string
+    descriptionEn?: string
+    tagsEn?: string[]
+  }) => {
+    // タイトルが設定されている場合は日本語タイトルを設定
+    if (data.title && data.title.trim() !== "") {
+      dispatchInput({
+        type: "SET_TITLE",
+        payload: data.title,
+      })
+    }
+
+    // 英語タイトルが設定されている場合は英語タイトルを設定
+    if (data.titleEn && data.titleEn.trim() !== "") {
+      dispatchInput({
+        type: "SET_EN_TITLE",
+        payload: data.titleEn,
+      })
+    }
+
+    // 説明文が設定されている場合は日本語説明文を設定
+    if (data.description && data.description.trim() !== "") {
+      dispatchInput({
+        type: "SET_CAPTION",
+        payload: data.description,
+      })
+    }
+
+    // 英語説明文が設定されている場合は英語説明文を設定
+    if (data.descriptionEn && data.descriptionEn.trim() !== "") {
+      dispatchInput({
+        type: "SET_EN_CAPTION",
+        payload: data.descriptionEn,
+      })
+    }
+
+    // タグが設定されている場合はタグを追加（上限10個まで）
+    if (data.tags && data.tags.length > 0) {
+      const currentTagCount = inputState.tags.length
+      const maxTags = 10
+      let addedCount = 0
+
+      for (const tag of data.tags) {
+        if (tag.trim() !== "" && currentTagCount + addedCount < maxTags) {
+          // 重複チェック: 既存のタグと重複しないかを確認
+          const isDuplicate = inputState.tags.some(
+            (existingTag) =>
+              existingTag.text.toLowerCase() === tag.trim().toLowerCase(),
+          )
+
+          if (!isDuplicate) {
+            dispatchInput({
+              type: "ADD_TAG",
+              payload: {
+                id: Math.random().toString(),
+                text: tag.trim(),
+              },
+            })
+            addedCount++
+          }
+        }
+      }
+
+      // 上限に達した場合はユーザーに通知
+      if (currentTagCount + addedCount >= maxTags) {
+        toast.warning(
+          "タグの上限は10個までです。一部のタグが追加されませんでした。",
+        )
+      }
+    }
+
+    // 英語タグが設定されている場合は英語タグを追加（上限10個まで）
+    if (data.tagsEn && data.tagsEn.length > 0) {
+      const currentTagCount = inputState.tags.length
+      const maxTags = 10
+      let addedCount = 0
+
+      for (const tag of data.tagsEn) {
+        if (tag.trim() !== "" && currentTagCount + addedCount < maxTags) {
+          // 重複チェック: 既存のタグと重複しないかを確認
+          const isDuplicate = inputState.tags.some(
+            (existingTag) =>
+              existingTag.text.toLowerCase() === tag.trim().toLowerCase(),
+          )
+
+          if (!isDuplicate) {
+            dispatchInput({
+              type: "ADD_TAG",
+              payload: {
+                id: Math.random().toString(),
+                text: tag.trim(),
+              },
+            })
+            addedCount++
+          }
+        }
+      }
+
+      // 上限に達した場合はユーザーに通知
+      if (currentTagCount + addedCount >= maxTags) {
+        toast.warning(
+          "タグの上限は10個までです。一部のタグが追加されませんでした。",
+        )
+      }
+    }
+  }
+
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
     caption: inputState.caption,
@@ -838,6 +952,8 @@ export default function NewImage() {
             state={state}
             dispatch={dispatch}
             onInputFiles={onInputFiles}
+            token={viewerData?.viewer?.token}
+            onContentGenerated={onContentGenerated}
           />
         </div>
         <PostImageFormInput
