@@ -23,7 +23,22 @@ import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/comp
 import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
 import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
 import { PostFormItemBotGrading } from "~/routes/($lang)._main.new.image/components/post-form-item-bot-grading"
+import { AiEvaluationSection } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/ai-evaluation-section"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳フックの使用
+
+// AI評価セクション用のprops型
+type AiEvaluationProps = {
+  workId: string
+  isAlreadyRequested?: boolean
+  isAlreadyEvaluated?: boolean
+  isBotGradingEnabled?: boolean
+  currentBotGradingPublic?: boolean
+  currentBotGradingRankingEnabled?: boolean
+  smallThumbnailImageURL?: string
+  userToken?: string | null
+  onChangeBotGradingPublic: (isPublic: boolean) => void
+  onChangeBotGradingRankingEnabled: (enabled: boolean) => void
+}
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
@@ -56,6 +71,8 @@ type Props = {
     descriptionEn?: string
     tagsEn?: string[]
   }) => void
+  // AI評価セクション用のprops
+  aiEvaluationProps?: AiEvaluationProps
 }
 
 const getJSTDate = () => {
@@ -255,6 +272,7 @@ export function PostImageFormInput(props: Props) {
       </div>
       {hasImageInfo && (
         <div className="flex items-center">
+          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <Checkbox
             checked={props.state.useGenerationParams}
             id="set-generation-check"
@@ -361,32 +379,67 @@ export function PostImageFormInput(props: Props) {
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
         }}
       />
-      <PostFormItemBotGrading
-        isBotGradingEnabled={props.state.isBotGradingEnabled}
-        isBotGradingPublic={props.state.isBotGradingPublic}
-        isBotGradingRankingEnabled={props.state.isBotGradingRankingEnabled}
-        botPersonality={props.state.botPersonality}
-        botGradingType={props.state.botGradingType}
-        isEditMode={props.isEditMode}
-        onChangeBotGradingEnabled={(enabled) => {
-          props.dispatch({ type: "SET_BOT_GRADING_ENABLED", payload: enabled })
-        }}
-        onChangeBotGradingPublic={(isPublic) => {
-          props.dispatch({ type: "SET_BOT_GRADING_PUBLIC", payload: isPublic })
-        }}
-        onChangeBotGradingRankingEnabled={(enabled) => {
-          props.dispatch({
-            type: "SET_BOT_GRADING_RANKING_ENABLED",
-            payload: enabled,
-          })
-        }}
-        onChangeBotPersonality={(personality) => {
-          props.dispatch({ type: "SET_BOT_PERSONALITY", payload: personality })
-        }}
-        onChangeBotGradingType={(type) => {
-          props.dispatch({ type: "SET_BOT_GRADING_TYPE", payload: type })
-        }}
-      />
+      {/* AI評価セクション - 編集モードでは専用コンポーネントを使用、新規投稿では標準コンポーネントを使用 */}
+      {props.isEditMode && props.aiEvaluationProps ? (
+        <AiEvaluationSection
+          workId={props.aiEvaluationProps.workId}
+          isAlreadyRequested={props.aiEvaluationProps.isAlreadyRequested}
+          isAlreadyEvaluated={props.aiEvaluationProps.isAlreadyEvaluated}
+          isBotGradingEnabled={props.aiEvaluationProps.isBotGradingEnabled}
+          currentBotGradingPublic={
+            props.aiEvaluationProps.currentBotGradingPublic
+          }
+          currentBotGradingRankingEnabled={
+            props.aiEvaluationProps.currentBotGradingRankingEnabled
+          }
+          smallThumbnailImageURL={
+            props.aiEvaluationProps.smallThumbnailImageURL
+          }
+          userToken={props.aiEvaluationProps.userToken}
+          onChangeBotGradingPublic={
+            props.aiEvaluationProps.onChangeBotGradingPublic
+          }
+          onChangeBotGradingRankingEnabled={
+            props.aiEvaluationProps.onChangeBotGradingRankingEnabled
+          }
+        />
+      ) : (
+        <PostFormItemBotGrading
+          isBotGradingEnabled={props.state.isBotGradingEnabled}
+          isBotGradingPublic={props.state.isBotGradingPublic}
+          isBotGradingRankingEnabled={props.state.isBotGradingRankingEnabled}
+          botPersonality={props.state.botPersonality}
+          botGradingType={props.state.botGradingType}
+          isEditMode={props.isEditMode}
+          onChangeBotGradingEnabled={(enabled) => {
+            props.dispatch({
+              type: "SET_BOT_GRADING_ENABLED",
+              payload: enabled,
+            })
+          }}
+          onChangeBotGradingPublic={(isPublic) => {
+            props.dispatch({
+              type: "SET_BOT_GRADING_PUBLIC",
+              payload: isPublic,
+            })
+          }}
+          onChangeBotGradingRankingEnabled={(enabled) => {
+            props.dispatch({
+              type: "SET_BOT_GRADING_RANKING_ENABLED",
+              payload: enabled,
+            })
+          }}
+          onChangeBotPersonality={(personality) => {
+            props.dispatch({
+              type: "SET_BOT_PERSONALITY",
+              payload: personality,
+            })
+          }}
+          onChangeBotGradingType={(type) => {
+            props.dispatch({ type: "SET_BOT_GRADING_TYPE", payload: type })
+          }}
+        />
+      )}
       {props.albums.length !== 0 && (
         <PostFormItemAlbum
           album={props.state.albumId}

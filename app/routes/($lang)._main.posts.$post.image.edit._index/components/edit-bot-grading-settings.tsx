@@ -34,9 +34,6 @@ export function EditBotGradingSettings(props: Props) {
           <p className="font-bold text-sm">
             {t("AI評価設定", "AI Grading Settings")}
           </p>
-          <Badge variant="secondary" className="text-xs">
-            {t("ベータ", "Beta")}
-          </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

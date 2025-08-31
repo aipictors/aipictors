@@ -152,6 +152,14 @@ export const vPostImageFormInputAction = union([
     ]),
   }),
   object({
+    type: literal("SET_BOT_GRADING_PUBLIC"),
+    payload: boolean(),
+  }),
+  object({
+    type: literal("SET_BOT_GRADING_RANKING_ENABLED"),
+    payload: boolean(),
+  }),
+  object({
     type: literal("INITIALIZE"),
     payload: object({
       date: instance(Date),

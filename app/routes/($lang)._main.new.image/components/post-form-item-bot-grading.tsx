@@ -33,6 +33,14 @@ type Props = {
  * AI評価設定フォーム
  */
 export function PostFormItemBotGrading(props: Props) {
+  console.log("=== PostFormItemBotGrading rendered ===")
+  console.log("Props:", {
+    isBotGradingPublic: props.isBotGradingPublic,
+    isBotGradingRankingEnabled: props.isBotGradingRankingEnabled,
+    isBotGradingEnabled: props.isBotGradingEnabled,
+    isEditMode: props.isEditMode,
+  })
+
   const t = useTranslation()
   const botPersonalityId = useId()
   const botGradingTypeId = useId()
@@ -40,8 +48,8 @@ export function PostFormItemBotGrading(props: Props) {
   const botGradingPublicId = useId()
   const botGradingRankingId = useId()
 
-  // 編集画面でAI評価が無効な場合は何も表示しない
-  if (props.isEditMode && !props.isBotGradingEnabled) {
+  // 編集画面では何も表示しない（AiEvaluationSectionが使用される）
+  if (props.isEditMode) {
     return null
   }
 

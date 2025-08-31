@@ -19,13 +19,7 @@ import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import React, {
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-  useCallback,
-} from "react"
+import { useContext, useEffect, useReducer, useState, useCallback } from "react"
 import { toast } from "sonner"
 import { safeParse } from "valibot"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
@@ -99,6 +93,12 @@ export default function EditImage() {
 
   useEffect(() => {
     if (work) {
+      console.log("Work data loaded:", {
+        isBotGradingPublic: work?.isBotGradingPublic,
+        isBotGradingRankingEnabled: work?.isBotGradingRankingEnabled,
+        isBotGradingEnabled: work?.isBotGradingEnabled,
+      })
+
       dispatch({
         type: "INITIALIZE",
         payload: {
@@ -194,7 +194,9 @@ export default function EditImage() {
           generationParamAccessType:
             work?.promptAccessType === "PUBLIC" ? "PUBLIC" : "PRIVATE",
           isBotGradingEnabled: Boolean(work?.isBotGradingEnabled ?? false),
-          isBotGradingPublic: Boolean(work?.isBotGradingPublic ?? false),
+          // 編集画面では実際のデータベース値を使用するため、GraphQLのresolverが
+          // 作者本人に常にtrueを返すことを考慮し、デフォルトをfalseに設定
+          isBotGradingPublic: false, // work?.isBotGradingPublic は作者本人の場合常にtrueを返すため無視
           isBotGradingRankingEnabled: Boolean(
             work?.isBotGradingRankingEnabled ?? true,
           ),
@@ -309,6 +311,37 @@ export default function EditImage() {
   })
 
   const [updateWork] = useMutation(updateWorkMutation)
+
+  // AI評価設定の変更をUIに即座反映する関数
+  const handleBotGradingPublicChange = useCallback(
+    (isPublic: boolean) => {
+      console.log("handleBotGradingPublicChange called with:", isPublic)
+      console.log("Current inputState:", {
+        isBotGradingPublic: inputState.isBotGradingPublic,
+        isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
+      })
+      dispatchInput({
+        type: "SET_BOT_GRADING_PUBLIC",
+        payload: isPublic,
+      })
+    },
+    [dispatchInput, inputState],
+  )
+
+  const handleBotGradingRankingChange = useCallback(
+    (enabled: boolean) => {
+      console.log("handleBotGradingRankingChange called with:", enabled)
+      console.log("Current inputState:", {
+        isBotGradingPublic: inputState.isBotGradingPublic,
+        isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
+      })
+      dispatchInput({
+        type: "SET_BOT_GRADING_RANKING_ENABLED",
+        payload: enabled,
+      })
+    },
+    [dispatchInput, inputState],
+  )
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
@@ -543,6 +576,9 @@ export default function EditImage() {
               work?.moderatorReport?.status === "UNHANDLED"
                 ? inputState.correctionMessage
                 : undefined,
+            // AI評価設定も含める
+            isBotGradingPublic: inputState.isBotGradingPublic,
+            isBotGradingRankingEnabled: inputState.isBotGradingRankingEnabled,
           },
         },
       })
@@ -634,6 +670,20 @@ export default function EditImage() {
           events={viewer?.appEvents ?? []}
           needFix={work?.moderatorReport?.status === "UNHANDLED"}
           isEditMode={true}
+          // AI評価セクション用のprops
+          aiEvaluationProps={{
+            workId: work?.id || "",
+            isAlreadyRequested: Boolean(work?.isBotGradingEnabled),
+            isAlreadyEvaluated: false, // 実際の評価状態に応じて設定
+            isBotGradingEnabled: Boolean(work?.isBotGradingEnabled),
+            currentBotGradingPublic: inputState.isBotGradingPublic,
+            currentBotGradingRankingEnabled:
+              inputState.isBotGradingRankingEnabled,
+            smallThumbnailImageURL: work?.smallThumbnailImageURL,
+            userToken: viewer?.viewer?.token,
+            onChangeBotGradingPublic: handleBotGradingPublicChange,
+            onChangeBotGradingRankingEnabled: handleBotGradingRankingChange,
+          }}
         />
         <div className="h-4" />
         <Button
@@ -836,6 +886,8 @@ const updateWorkMutation = graphql(
       accessType
       nanoid
       uuid
+      isBotGradingPublic
+      isBotGradingRankingEnabled
     }
   }`,
 )
