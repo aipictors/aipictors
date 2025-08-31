@@ -133,6 +133,22 @@ export default function NewAnimation() {
       return
     }
 
+    // 動画ファイルとサムネイルの存在チェック
+    if (state.videoFile === null) {
+      toast(t("動画ファイルを選択してください", "Please select a video file"))
+      return
+    }
+
+    if (state.thumbnailBase64 === null) {
+      toast(
+        t(
+          "動画のサムネイルが生成されていません。動画ファイルを再選択してください",
+          "Video thumbnail not generated. Please reselect the video file",
+        ),
+      )
+      return
+    }
+
     if (
       inputState.reservationDate !== null &&
       inputState.reservationTime === null
@@ -304,14 +320,20 @@ export default function NewAnimation() {
 
       toast(t("作品を投稿しました", "Work has been posted"))
     } catch (error) {
+      console.error("動画投稿エラー:", error)
       if (error instanceof Error) {
         toast(error.message)
+      } else {
+        toast(t("動画の投稿に失敗しました", "Failed to post video"))
       }
       const promises = uploadedImageUrls.map((url) => {
         return deleteUploadedImage(url)
       })
       await Promise.all(promises)
-      dispatch({ type: "SET_PROGRESS", payload: 0 })
+      // プログレスをリセットする前に少し待機してユーザーがエラーメッセージを確認できるようにする
+      setTimeout(() => {
+        dispatch({ type: "SET_PROGRESS", payload: 0 })
+      }, 3000)
     }
   }
 

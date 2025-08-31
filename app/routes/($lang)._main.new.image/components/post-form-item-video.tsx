@@ -81,6 +81,12 @@ export function PostFormItemVideo(props: Props) {
 
           video.src = URL.createObjectURL(file)
           video.onloadedmetadata = () => {
+            console.log("動画メタデータ読み込み完了:", {
+              duration: video.duration,
+              videoWidth: video.videoWidth,
+              videoHeight: video.videoHeight,
+            })
+
             if (video.duration > 12) {
               toast(
                 t(
@@ -98,14 +104,42 @@ export function PostFormItemVideo(props: Props) {
             canvas.height = video.videoHeight
             const ctx = canvas.getContext("2d")
 
-            const time = video.duration / 2
-            video.currentTime = time
-            video.onseeked = () => {
-              ctx?.drawImage(video, 0, 0, canvas.width, canvas.height)
-              const thumbnailUrl = canvas.toDataURL() // サムネイルをDataURL形式で取得
-
-              updateThumbnail(thumbnailUrl)
+            if (!ctx) {
+              console.error("Canvas 2Dコンテキストの取得に失敗しました")
+              toast("サムネイルの生成に失敗しました")
+              return
             }
+
+            const time = video.duration / 2
+            console.log("シークタイム設定:", time)
+            video.currentTime = time
+
+            video.onseeked = () => {
+              console.log("動画シーク完了、サムネイル生成開始")
+              try {
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+                const thumbnailUrl = canvas.toDataURL() // サムネイルをDataURL形式で取得
+                console.log(
+                  "サムネイル生成完了:",
+                  thumbnailUrl.substring(0, 50) + "...",
+                )
+
+                updateThumbnail(thumbnailUrl)
+              } catch (error) {
+                console.error("サムネイル生成エラー:", error)
+                toast("サムネイルの生成に失敗しました")
+              }
+            }
+
+            video.onerror = (error) => {
+              console.error("動画シークエラー:", error)
+              toast("動画の処理に失敗しました")
+            }
+          }
+
+          video.onerror = (error) => {
+            console.error("動画メタデータ読み込みエラー:", error)
+            toast("動画ファイルの読み込みに失敗しました")
           }
         }
       })
