@@ -142,10 +142,16 @@ export function AiEvaluationDisplay(props: Props) {
                 <EyeOff className="h-5 w-5 text-gray-600" />
                 <div>
                   <h3 className="font-medium text-gray-800 text-sm dark:text-gray-200">
-                    {t("AI評価は非公開設定です", "AI evaluation is set to private")}
+                    {t(
+                      "AI評価は非公開設定です",
+                      "AI evaluation is set to private",
+                    )}
                   </h3>
                   <p className="text-gray-700 text-xs dark:text-gray-300">
-                    {t("他のユーザーには表示されません", "Not visible to other users")}
+                    {t(
+                      "他のユーザーには表示されません",
+                      "Not visible to other users",
+                    )}
                   </p>
                 </div>
               </div>
@@ -166,7 +172,10 @@ export function AiEvaluationDisplay(props: Props) {
                 <Clock className="h-5 w-5 animate-spin text-blue-600" />
                 <div>
                   <h3 className="font-medium text-blue-800 text-sm dark:text-blue-200">
-                    {t("AI評価を生成中です", "AI evaluation is being generated")}
+                    {t(
+                      "AI評価を生成中です",
+                      "AI evaluation is being generated",
+                    )}
                   </h3>
                   <p className="text-blue-700 text-xs dark:text-blue-300">
                     {t("しばらくお待ちください", "Please wait a moment")}
