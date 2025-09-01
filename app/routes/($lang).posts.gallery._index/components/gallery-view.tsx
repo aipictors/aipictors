@@ -52,8 +52,7 @@ export function GalleryView(props: Props) {
       ratings: [props.rating],
       ...(props.workType && { workType: props.workType }),
       ...(props.isSensitive && { isSensitive: props.isSensitive }),
-      // 一時的に検索機能を除外してテスト
-      // ...(props.searchText && { search: props.searchText }),
+      ...(props.searchText && { search: props.searchText }),
       orderBy: props.sort,
     }
 

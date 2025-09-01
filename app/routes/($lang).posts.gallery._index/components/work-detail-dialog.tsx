@@ -80,7 +80,7 @@ export function WorkDetailDialog(props: Props) {
               {/* ユーザー情報 */}
               {work.user && (
                 <Link
-                  to={`/users/${work.user.id}`}
+                  to={`/posts/gallery/users/${work.user.login}`}
                   className="flex items-center gap-3 transition-colors hover:text-primary"
                 >
                   <Avatar className="size-10">

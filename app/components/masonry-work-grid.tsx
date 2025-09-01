@@ -5,6 +5,8 @@ import { Heart, Eye, Images } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { Skeleton } from "~/components/ui/skeleton"
 import { LikeButton } from "~/components/like-button"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 type Props = {
@@ -119,7 +121,8 @@ export function MasonryWorkGrid(props: Props) {
         Math.max(aspectRatio * 240, 180),
         400,
       )
-      const totalItemHeight = estimatedImageHeight + 12 // 画像 + gap-3（12px）
+      // 画像 + gap-3（12px） + 作品情報部分（タイトル + ユーザ情報で約80px）
+      const totalItemHeight = estimatedImageHeight + 12 + 80
       columnHeights[shortestColumnIndex] += totalItemHeight
     })
 

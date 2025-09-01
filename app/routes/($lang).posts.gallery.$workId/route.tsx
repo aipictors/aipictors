@@ -252,10 +252,7 @@ function WorkDetailContent(props: {
                             <XIntent
                               text={`AIイラスト投稿サイトAipictorsに投稿された作品\n「${work.title}」\n\n${work.description ?? ""}`}
                               url={`https://www.aipictors.com/posts/${work.id}`}
-                              hashtags={[
-                                "Aipictors",
-                                "AIイラスト",
-                              ]}
+                              hashtags={["Aipictors", "AIイラスト"]}
                             />
                           </div>
                         </div>
@@ -515,7 +512,7 @@ function WorkDetailsPanel(props: {
               </Avatar>
               <div>
                 <Link
-                  to={`/users/${work.user.login}`}
+                  to={`/posts/gallery/users/${work.user.login}`}
                   className="font-medium text-foreground hover:underline"
                 >
                   {work.user.name}

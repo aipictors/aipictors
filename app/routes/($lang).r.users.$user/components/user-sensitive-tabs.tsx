@@ -32,6 +32,7 @@ export function UserSensitiveTabs(props: Props) {
     hasPublicStickers: user.hasPublicStickers,
     hasBadges: user.hasBadges,
     lang: locale,
+    showGallery: true, // ギャラリータブを表示
   })
 
   const activeTab = getActiveTab()

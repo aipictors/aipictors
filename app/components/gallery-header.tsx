@@ -2,14 +2,14 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { 
-  MenuIcon, 
-  Search, 
-  ArrowLeft, 
-  X 
-} from "lucide-react"
+import { MenuIcon, Search, X, Grid3X3 } from "lucide-react"
 import { useState, Suspense, lazy, useEffect } from "react"
-import { useNavigate, Link, useLocation, useSearchParams } from "@remix-run/react"
+import {
+  useNavigate,
+  Link,
+  useLocation,
+  useSearchParams,
+} from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 
 // Lazy load メニューコンポーネント
@@ -68,20 +68,51 @@ export function GalleryHeader() {
 
   const closeMenu = () => setIsMenuOpen(false)
 
+  // ギャラリーのサブページかどうかを判定
+  const isGallerySubPage =
+    location.pathname.includes("/posts/gallery") &&
+    location.pathname !== "/posts/gallery"
+
   return (
     <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          {/* 左側: メニューとタイトル */}
+          {/* 左側: ロゴ、ギャラリートップボタン、メニュー */}
           <div className="flex items-center gap-4">
+            {/* ロゴ（常に表示） */}
+            <Link to="/" className="flex items-center gap-2">
+              <img
+                src="/icon.svg"
+                alt="Aipictors"
+                className="size-8 rounded-full"
+                width={32}
+                height={32}
+              />
+              <span className="hidden font-bold text-xl sm:inline">
+                Aipictors
+              </span>
+            </Link>
+
+            {/* ギャラリートップに戻るボタン（ギャラリーサブページで表示） */}
+            {isGallerySubPage && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/posts/gallery")}
+                className="flex items-center gap-2"
+                title={t("ギャラリートップに戻る", "Back to gallery")}
+              >
+                <Grid3X3 className="size-4" />
+                <span className="hidden sm:inline">
+                  {t("ギャラリー", "Gallery")}
+                </span>
+              </Button>
+            )}
+
             {/* メニューボタン */}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden"
-                >
+                <Button variant="ghost" size="icon" className="md:hidden">
                   <MenuIcon className="size-5" />
                 </Button>
               </SheetTrigger>
@@ -93,39 +124,10 @@ export function GalleryHeader() {
                 </ScrollArea>
               </SheetContent>
             </Sheet>
-
-            {/* ホームに戻るボタン（モバイル用） */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/")}
-              className="md:hidden"
-              title={t("ホームに戻る", "Back to home")}
-            >
-              <ArrowLeft className="size-5" />
-            </Button>
-
-            {/* タイトル */}
-            <div className="flex items-center gap-2">
-              {/* ロゴ（デスクトップ用） */}
-              <Link
-                to="/"
-                className="hidden items-center gap-2 md:flex"
-              >
-                <img
-                  src="/icon.svg"
-                  alt="Aipictors"
-                  className="size-8 rounded-full"
-                  width={32}
-                  height={32}
-                />
-                <span className="font-bold text-xl">Aipictors</span>
-              </Link>
-            </div>
           </div>
 
           {/* 中央: 検索バー（デスクトップのみ） */}
-          <div className="hidden flex-1 max-w-md mx-8 md:block">
+          <div className="mx-8 hidden max-w-md flex-1 md:block">
             <div className="relative">
               <Input
                 type="text"
@@ -139,7 +141,7 @@ export function GalleryHeader() {
                 onClick={handleSearch}
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
+                className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 transform"
               >
                 <Search className="size-4" />
               </Button>
@@ -155,7 +157,11 @@ export function GalleryHeader() {
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="md:hidden"
             >
-              {isSearchOpen ? <X className="size-5" /> : <Search className="size-5" />}
+              {isSearchOpen ? (
+                <X className="size-5" />
+              ) : (
+                <Search className="size-5" />
+              )}
             </Button>
           </div>
         </div>
@@ -177,7 +183,7 @@ export function GalleryHeader() {
                 onClick={handleSearch}
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
+                className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 transform"
               >
                 <Search className="size-4" />
               </Button>

@@ -23,6 +23,8 @@ type Props = {
   isShowProfile?: boolean
   /** 作品クリック時に index を返す。未指定なら従来通りリンク遷移 */
   onSelect?: (index: string) => void
+  /** ユーザリンクのプレフィックス（例: "/users" または "/posts/gallery/users"） */
+  userLinkPrefix?: string
 }
 
 /**
@@ -263,7 +265,9 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                       )}
 
                       <div className="flex items-center justify-between">
-                        <Link to={`/users/${photo.context.user?.id}`}>
+                        <Link
+                          to={`${props.userLinkPrefix || "/users"}/${photo.context.user?.id}`}
+                        >
                           <div className="flex items-center space-x-2">
                             <Avatar className="size-6">
                               <AvatarImage
