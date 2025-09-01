@@ -28,6 +28,7 @@ export function GalleryHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchText, setSearchText] = useState("")
+  const [isMobile, setIsMobile] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -38,6 +39,17 @@ export function GalleryHeader() {
     const currentSearchText = searchParams.get("q") || ""
     setSearchText(currentSearchText)
   }, [searchParams])
+
+  // モバイル判定
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   const handleSearch = () => {
     if (searchText.trim()) {
@@ -73,6 +85,9 @@ export function GalleryHeader() {
     location.pathname.includes("/posts/gallery") &&
     location.pathname !== "/posts/gallery"
 
+  // ギャラリーページ（メインページ含む）かどうかを判定
+  const isGalleryPage = location.pathname.includes("/posts/gallery")
+
   return (
     <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto px-4 py-4">
@@ -93,8 +108,8 @@ export function GalleryHeader() {
               </span>
             </Link>
 
-            {/* ギャラリートップに戻るボタン（ギャラリーサブページで表示） */}
-            {isGallerySubPage && (
+            {/* ギャラリートップに戻るボタン（ギャラリーサブページで表示、スマホではギャラリーページ全体で表示） */}
+            {(isGallerySubPage || (isGalleryPage && isMobile)) && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -109,21 +124,23 @@ export function GalleryHeader() {
               </Button>
             )}
 
-            {/* メニューボタン */}
-            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <MenuIcon className="size-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="p-0" side="left">
-                <ScrollArea className="h-full p-4">
-                  <Suspense fallback={null}>
-                    <HomeMenuRouteList onClickMenuItem={closeMenu} />
-                  </Suspense>
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
+            {/* メニューボタン（ギャラリーページ以外で表示） */}
+            {!isGalleryPage && (
+              <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="md:hidden">
+                    <MenuIcon className="size-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="p-0" side="left">
+                  <ScrollArea className="h-full p-4">
+                    <Suspense fallback={null}>
+                      <HomeMenuRouteList onClickMenuItem={closeMenu} />
+                    </Suspense>
+                  </ScrollArea>
+                </SheetContent>
+              </Sheet>
+            )}
           </div>
 
           {/* 中央: 検索バー（デスクトップのみ） */}
