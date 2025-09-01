@@ -10,11 +10,17 @@ import {
   Copy,
   ChevronDown,
   ChevronUp,
+  Share2,
 } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
@@ -31,7 +37,8 @@ import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-albu
 import { MasonryWorkGrid } from "~/components/masonry-work-grid"
 import { LikeButton } from "~/components/like-button"
 import { FollowButton } from "~/components/button/follow-button"
-import { SharePopover } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share"
+import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/components/work-action-copy-url"
+import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 
 export function HydrateFallback() {
@@ -152,12 +159,36 @@ export default function GalleryWorkPage() {
             </Button>
             <Separator orientation="vertical" className="h-6" />
             <div className="flex items-center gap-2">
-              <SharePopover
-                title={work.title}
-                description={work.description ?? ""}
-                id={work.id}
-                isDisabledShare={false}
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Share2 className="mr-2 size-4" />
+                    {t("共有", "Share")}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">
+                        {t("作品を共有する", "Share work")}
+                      </h4>
+                    </div>
+                    <div className="grid gap-2">
+                      <CopyWorkUrlButton
+                        currentUrl={`https://www.aipictors.com/posts/${work.id}`}
+                      />
+                      <XIntent
+                        text={t(
+                          `AIイラスト投稿サイトAipictorsに投稿された作品\n「${work.title}」\n\n${work.description}`,
+                          `Work posted on AI Illustration Posting Site Aipictors\n"${work.title}"\n\n${work.description}`,
+                        )}
+                        url={`https://www.aipictors.com/posts/${work.id}`}
+                        hashtags={["Aipictors", t("AIイラスト", "AIIllust")]}
+                      />
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <Button variant="ghost" size="sm" onClick={onDownload}>
                 <Download className="mr-2 size-4" />
                 {t("保存", "Save")}
@@ -205,6 +236,7 @@ function WorkDetailContent(props: {
   }
 }) {
   const { work, data } = props
+  const t = useTranslation()
 
   // ダウンロード機能
   const onDownload = () => {
@@ -234,9 +266,9 @@ function WorkDetailContent(props: {
 
                   {/* 画像上のアクションボタン */}
                   <div className="absolute top-4 right-4 flex gap-2">
-                    <div className="rounded bg-white/90 hover:bg-white">
+                    <div className="flex size-9 items-center justify-center overflow-hidden rounded-md bg-white/90 hover:bg-white">
                       <LikeButton
-                        size={32}
+                        size={36}
                         targetWorkId={work.id}
                         targetWorkOwnerUserId={work.user?.id ?? ""}
                         defaultLiked={work.isLiked}
@@ -248,19 +280,47 @@ function WorkDetailContent(props: {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="bg-white/90 hover:bg-white"
+                      className="size-9 bg-white/90 p-0 hover:bg-white"
                       onClick={onDownload}
                     >
                       <Download className="size-4" />
                     </Button>
-                    <div className="rounded bg-white/90 hover:bg-white">
-                      <SharePopover
-                        title={work.title}
-                        description={work.description ?? ""}
-                        id={work.id}
-                        isDisabledShare={false}
-                      />
-                    </div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="size-9 bg-white/90 p-0 hover:bg-white"
+                        >
+                          <Share2 className="size-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-80">
+                        <div className="grid gap-4">
+                          <div className="space-y-2">
+                            <h4 className="font-medium leading-none">
+                              {t("作品を共有する", "Share work")}
+                            </h4>
+                          </div>
+                          <div className="grid gap-2">
+                            <CopyWorkUrlButton
+                              currentUrl={`https://www.aipictors.com/posts/${work.id}`}
+                            />
+                            <XIntent
+                              text={t(
+                                `AIイラスト投稿サイトAipictorsに投稿された作品\n「${work.title}」\n\n${work.description ?? ""}`,
+                                `Work posted on AI Illustration Posting Site Aipictors\n"${work.title}"\n\n${work.description ?? ""}`,
+                              )}
+                              url={`https://www.aipictors.com/posts/${work.id}`}
+                              hashtags={[
+                                "Aipictors",
+                                t("AIイラスト", "AIIllust"),
+                              ]}
+                            />
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </div>
@@ -529,6 +589,7 @@ function WorkDetailsPanel(props: {
             <FollowButton
               targetUserId={work.user.id}
               isFollow={work.user.isFollowee}
+              className="!w-auto flex h-10 items-center justify-center rounded-full px-6 py-2 font-medium transition-all duration-200 hover:scale-105"
             />
           </div>
         )}
