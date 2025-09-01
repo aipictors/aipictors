@@ -4,11 +4,9 @@ import { useLoaderData, Link } from "@remix-run/react"
 import { useState, useCallback, useMemo } from "react"
 import {
   ArrowLeft,
-  Heart,
   Eye,
   MessageCircle,
   Download,
-  Share,
   Copy,
   ChevronDown,
   ChevronUp,
@@ -30,6 +28,11 @@ import { useQuery } from "@apollo/client/index"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { MasonryWorkGrid } from "~/components/masonry-work-grid"
+import { LikeButton } from "~/components/like-button"
+import { FollowButton } from "~/components/button/follow-button"
+import { SharePopover } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share"
+import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -127,6 +130,14 @@ export default function GalleryWorkPage() {
     return null
   }
 
+  const { work } = data
+
+  // ダウンロード機能
+  const onDownload = () => {
+    if (!work.largeThumbnailImageURL) return
+    downloadImageFile(work.id, work.largeThumbnailImageURL)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* ヘッダー */}
@@ -141,11 +152,13 @@ export default function GalleryWorkPage() {
             </Button>
             <Separator orientation="vertical" className="h-6" />
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm">
-                <Share className="mr-2 size-4" />
-                {t("共有", "Share")}
-              </Button>
-              <Button variant="ghost" size="sm">
+              <SharePopover
+                title={work.title}
+                description={work.description ?? ""}
+                id={work.id}
+                isDisabledShare={false}
+              />
+              <Button variant="ghost" size="sm" onClick={onDownload}>
                 <Download className="mr-2 size-4" />
                 {t("保存", "Save")}
               </Button>
@@ -192,7 +205,12 @@ function WorkDetailContent(props: {
   }
 }) {
   const { work, data } = props
-  const t = useTranslation()
+
+  // ダウンロード機能
+  const onDownload = () => {
+    if (!work.largeThumbnailImageURL) return
+    downloadImageFile(work.id, work.largeThumbnailImageURL)
+  }
 
   return (
     <>
@@ -216,27 +234,33 @@ function WorkDetailContent(props: {
 
                   {/* 画像上のアクションボタン */}
                   <div className="absolute top-4 right-4 flex gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-white/90 text-black hover:bg-white"
-                    >
-                      <Heart className="mr-1 size-4" />
-                      {work.likesCount}
-                    </Button>
+                    <div className="rounded bg-white/90 hover:bg-white">
+                      <LikeButton
+                        size={32}
+                        targetWorkId={work.id}
+                        targetWorkOwnerUserId={work.user?.id ?? ""}
+                        defaultLiked={work.isLiked}
+                        defaultLikedCount={work.likesCount}
+                        isBackgroundNone={true}
+                        strokeWidth={2}
+                      />
+                    </div>
                     <Button
                       size="sm"
                       variant="outline"
                       className="bg-white/90 hover:bg-white"
+                      onClick={onDownload}
                     >
                       <Download className="size-4" />
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="bg-white/90 hover:bg-white"
-                    >
-                      <Share className="size-4" />
-                    </Button>
+                    <div className="rounded bg-white/90 hover:bg-white">
+                      <SharePopover
+                        title={work.title}
+                        description={work.description ?? ""}
+                        id={work.id}
+                        isDisabledShare={false}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -275,7 +299,11 @@ function WorkDetailContent(props: {
       <RelatedWorksSection
         workId={work.id}
         tagNames={data.mainTags}
-        initialWorks={data.relatedWorks}
+        initialWorks={
+          data.relatedWorks as unknown as FragmentOf<
+            typeof PhotoAlbumWorkFragment
+          >[]
+        }
       />
     </>
   )
@@ -402,50 +430,11 @@ function RelatedWorksSection(props: {
       </div>
 
       {/* 関連作品グリッド */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {works.map((work) => (
-          <Link
-            key={work.id}
-            to={`/posts/gallery/${work.id}`}
-            className="group relative block"
-          >
-            <div className="aspect-[3/4] overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
-              <OptimizedImage
-                src={work.smallThumbnailImageURL}
-                alt={work.title}
-                width={work.smallThumbnailImageWidth}
-                height={work.smallThumbnailImageHeight}
-                className="size-full object-cover transition-transform duration-200 group-hover:scale-105"
-                loading="lazy"
-              />
-
-              {/* ホバー時の情報表示 */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <div className="absolute right-0 bottom-0 left-0 p-3">
-                  <p className="line-clamp-2 font-medium text-white text-xs">
-                    {work.title}
-                  </p>
-                  {work.user && (
-                    <p className="mt-1 text-gray-300 text-xs">
-                      by {work.user.name}
-                    </p>
-                  )}
-                  <div className="mt-1 flex items-center gap-2 text-gray-300 text-xs">
-                    <span className="flex items-center gap-1">
-                      <Heart className="size-3" />
-                      {work.likesCount}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Eye className="size-3" />
-                      {work.viewsCount}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+      <MasonryWorkGrid
+        works={works}
+        isLoadingMore={isLoadingMore}
+        baseUrl="posts/gallery"
+      />
 
       {/* 無限スクロール用のセンチネル */}
       {hasNext && (
@@ -537,9 +526,10 @@ function WorkDetailsPanel(props: {
               </div>
             </div>
 
-            <Button variant="outline" size="sm">
-              {t("フォロー", "Follow")}
-            </Button>
+            <FollowButton
+              targetUserId={work.user.id}
+              isFollow={work.user.isFollowee}
+            />
           </div>
         )}
       </div>

@@ -32,9 +32,9 @@ const MasonryGridSkeleton = () => {
   )
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {columnKeys.map((columnKey, columnIndex) => (
-        <div key={columnKey} className="flex flex-col gap-3">
+        <div key={columnKey} className="flex flex-col gap-4">
           {skeletonItems
             .filter((_, index) => index % 6 === columnIndex)
             .map((item) => (
@@ -94,11 +94,11 @@ export const MasonryGrid = memo<Props>(({ works, loading }) => {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {columns.map((column, columnIndex) => (
         <div
           key={`column-${columnIndex}-${works.length}`}
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-4"
         >
           {column.map((work) => (
             <WorkItem key={work.id} work={work} />

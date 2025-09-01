@@ -10,10 +10,12 @@ import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   isLoadingMore?: boolean
+  baseUrl?: string // "posts/gallery" or "gallery" など
 }
 
 type WorkItemProps = {
   work: FragmentOf<typeof PhotoAlbumWorkFragment>
+  baseUrl?: string
 }
 
 /**
@@ -40,7 +42,7 @@ const MasonryGridSkeleton = ({
   )
 
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {columns.map((column) => {
         // スケルトンカラムの一意のキーを生成
         const firstItemId =
@@ -50,10 +52,9 @@ const MasonryGridSkeleton = ({
         const columnKey = `skeleton-column-${firstItemId}-${column.length}`
 
         return (
-          <div key={columnKey} className="flex flex-col gap-4">
+          <div key={columnKey} className="flex flex-col gap-3">
             {column.map((item) => (
-              <div key={item.id} className="overflow-hidden bg-card">
-                {/* 画像スケルトンのみ - テキスト情報は削除 */}
+              <div key={item.id} className="overflow-hidden rounded-lg bg-card">
                 <Skeleton
                   className="w-full bg-muted/20"
                   style={{ height: `${item.height}px` }}
@@ -68,14 +69,11 @@ const MasonryGridSkeleton = ({
 }
 
 /**
- * ピンタレスト風マソンリーグリッド（改良版）
+ * 共通のマソンリーグリッド
  */
-export function MasonryGrid(props: Props) {
-  const { works, isLoadingMore } = props
+export function MasonryWorkGrid(props: Props) {
+  const { works, isLoadingMore, baseUrl = "posts/gallery" } = props
   const [columnCount, setColumnCount] = useState(6)
-
-  // デバッグログ
-  console.log("MasonryGrid - received works:", works.length, works)
 
   // レスポンシブなカラム数を設定
   useEffect(() => {
@@ -114,14 +112,14 @@ export function MasonryGrid(props: Props) {
       )
       cols[shortestColumnIndex].push(work)
 
-      // 作品の高さを推定してカラムの高さを更新（テキスト部分を削除したため調整）
+      // 作品の高さを推定してカラムの高さを更新
       const aspectRatio =
         work.smallThumbnailImageHeight / work.smallThumbnailImageWidth
       const estimatedImageHeight = Math.min(
         Math.max(aspectRatio * 240, 180),
         400,
       )
-      const totalItemHeight = estimatedImageHeight + 16 // 画像 + gap-4（16px）
+      const totalItemHeight = estimatedImageHeight + 12 // 画像 + gap-3（12px）
       columnHeights[shortestColumnIndex] += totalItemHeight
     })
 
@@ -130,14 +128,11 @@ export function MasonryGrid(props: Props) {
 
   // 初期読み込み中（作品がない場合）はフルスケルトンを表示
   if (works.length === 0) {
-    console.log("MasonryGrid - No works, showing skeleton")
     return <MasonryGridSkeleton showFullGrid={true} />
   }
 
-  console.log("MasonryGrid - Rendering grid with", works.length, "works")
-
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
       {columns.map((column) => {
         // カラムの一意のキーを生成（カラム内の作品IDから）
         const columnKey =
@@ -146,17 +141,17 @@ export function MasonryGrid(props: Props) {
             : `empty-col-${Math.random().toString(36).substr(2, 9)}`
 
         return (
-          <div key={columnKey} className="flex flex-col gap-4">
+          <div key={columnKey} className="flex flex-col gap-3">
             {/* 既存の作品 */}
             {column.map((work) => (
-              <WorkItem key={work.id} work={work} />
+              <WorkItem key={work.id} work={work} baseUrl={baseUrl} />
             ))}
 
             {/* ローディング中のスケルトンタイル（カラムあたり1個ずつ） */}
             {isLoadingMore && (
               <div
                 key={`loading-skeleton-${columnKey}`}
-                className="overflow-hidden bg-card"
+                className="overflow-hidden rounded-lg bg-card"
               >
                 <Skeleton
                   className="w-full bg-muted/20"
@@ -177,7 +172,7 @@ export function MasonryGrid(props: Props) {
  * 個別の作品アイテム
  */
 function WorkItem(props: WorkItemProps) {
-  const { work } = props
+  const { work, baseUrl = "posts/gallery" } = props
 
   // アスペクト比を計算してカードの高さを決定
   const aspectRatio =
@@ -186,7 +181,7 @@ function WorkItem(props: WorkItemProps) {
 
   return (
     <Link
-      to={`/posts/gallery/${work.id}`}
+      to={`/${baseUrl}/${work.id}`}
       className="group relative block overflow-hidden rounded-lg bg-card shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
     >
       {/* メイン画像 - 余白を完全に削除 */}

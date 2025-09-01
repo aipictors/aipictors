@@ -64,28 +64,9 @@ export default function GalleryPage() {
               <h1 className="font-bold text-2xl">
                 {t("ギャラリー", "Gallery")}
               </h1>
-              <p className="text-muted-foreground text-sm">
-                {t(
-                  "作品をピンタレスト風に探索",
-                  "Explore artworks Pinterest-style",
-                )}
-              </p>
             </div>
             <GalleryToolbar />
           </div>
-        </div>
-      </div>
-
-      {/* フィルター */}
-      <div className="sticky top-[88px] z-30 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="container mx-auto px-4 py-3">
-          <GalleryFilters
-            initialRating={data.rating}
-            initialWorkType={data.workType}
-            initialSort={data.sort}
-            initialStyle={data.style}
-            initialIsSensitive={data.isSensitive}
-          />
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { graphql } from "gql.tada"
-import { MasonryGrid } from "./masonry-grid"
+import { MasonryWorkGrid } from "~/components/masonry-work-grid"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
@@ -141,7 +141,7 @@ export function GalleryView(props: Props) {
   if (loading && works.length === 0) {
     return (
       <div className="space-y-6">
-        <MasonryGrid works={[]} isLoadingMore={false} />
+        <MasonryWorkGrid works={[]} isLoadingMore={false} />
       </div>
     )
   }
@@ -149,7 +149,7 @@ export function GalleryView(props: Props) {
   return (
     <div className="space-y-6">
       {/* 作品グリッド */}
-      <MasonryGrid works={works} isLoadingMore={isLoadingMore} />
+      <MasonryWorkGrid works={works} isLoadingMore={isLoadingMore} />
 
       {/* 無限スクロール用のセンチネル */}
       {hasNext && (

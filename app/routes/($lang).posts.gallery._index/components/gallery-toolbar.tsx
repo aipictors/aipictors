@@ -40,11 +40,6 @@ export function GalleryToolbar() {
       >
         <Settings className="size-4" />
       </Button>
-
-      {/* 結果数表示 */}
-      <Badge variant="secondary" className="ml-auto">
-        {t("作品を表示中", "Showing artworks")}
-      </Badge>
     </div>
   )
 }
