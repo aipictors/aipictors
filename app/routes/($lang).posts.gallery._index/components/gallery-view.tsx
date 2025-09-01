@@ -35,6 +35,12 @@ type Props = {
   style: "ILLUSTRATION" | "PHOTO" | "SEMI_REAL" | null
   isSensitive: boolean
   searchText: string
+  promptText: string
+  ratings: ("G" | "R15" | "R18")[]
+  hasPrompt: boolean
+  hasEmbedding: boolean
+  isAnimation: boolean
+  isFanbox: boolean
 }
 
 /**
@@ -48,12 +54,25 @@ export function GalleryView(props: Props) {
 
   // フィルター条件を構築（型を修正）
   const where = useMemo(() => {
+    // レーティングの決定（詳細検索のratingsがある場合はそれを使用、そうでなければデフォルト）
+    const activeRatings =
+      props.ratings.length > 0
+        ? props.ratings
+        : [props.rating as "G" | "R15" | "R18"]
+
     const baseWhere = {
-      ratings: [props.rating],
+      ratings: activeRatings,
       ...(props.workType && { workType: props.workType }),
       ...(props.isSensitive && { isSensitive: props.isSensitive }),
       // 検索テキストが存在する場合のみsearchフィールドを追加
       ...(props.searchText.trim() && { search: props.searchText.trim() }),
+      // プロンプト検索が存在する場合のみpromptフィールドを追加
+      ...(props.promptText.trim() && { prompt: props.promptText.trim() }),
+      // 詳細オプション
+      ...(props.hasPrompt && { hasPrompt: true }),
+      ...(props.hasEmbedding && { hasEmbedding: true }),
+      ...(props.isAnimation && { isAnimationWork: true }),
+      ...(props.isFanbox && { isPublicFanbox: true }),
       orderBy: props.sort,
     }
 
@@ -72,11 +91,17 @@ export function GalleryView(props: Props) {
     return baseWhere
   }, [
     props.rating,
+    props.ratings,
     props.workType,
     props.style,
     props.isSensitive,
     props.sort,
     props.searchText,
+    props.promptText,
+    props.hasPrompt,
+    props.hasEmbedding,
+    props.isAnimation,
+    props.isFanbox,
   ])
 
   console.log("Gallery search text:", props.searchText)
@@ -120,11 +145,17 @@ export function GalleryView(props: Props) {
     () =>
       JSON.stringify({
         rating: props.rating,
+        ratings: props.ratings,
         workType: props.workType,
         sort: props.sort,
         style: props.style,
         isSensitive: props.isSensitive,
         searchText: props.searchText,
+        promptText: props.promptText,
+        hasPrompt: props.hasPrompt,
+        hasEmbedding: props.hasEmbedding,
+        isAnimation: props.isAnimation,
+        isFanbox: props.isFanbox,
       }),
     [props],
   )

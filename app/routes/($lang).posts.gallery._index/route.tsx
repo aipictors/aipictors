@@ -1,11 +1,11 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
 import { useLoaderData, useSearchParams } from "@remix-run/react"
-import { Suspense, useEffect } from "react"
+import { Suspense } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { GalleryView } from "./components/gallery-view"
-import { GalleryFilters } from "./components/gallery-filters"
 import { GalleryHeader } from "~/components/gallery-header"
+import { GallerySearchFilters } from "~/components/gallery-search-filters"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 type LoaderData = {
@@ -58,29 +58,60 @@ export default function GalleryPage() {
     return null
   }
 
-  // 検索パラメータの変更を監視
-  useEffect(() => {
-    console.log("Gallery page - search params changed:", searchParams.get("q"))
-  }, [searchParams])
-
-  // 現在の検索テキストを取得（リアルタイム）
+  // 現在の検索テキストとフィルターパラメータを取得（リアルタイム）
   const currentSearchText = searchParams.get("q") ?? ""
-  
+  const promptText = searchParams.get("prompt") ?? ""
+  const workTypeParam = searchParams.get("workType") as
+    | "WORK"
+    | "NOVEL"
+    | "VIDEO"
+    | "COLUMN"
+    | null
+  const sortParam = searchParams.get("sort") as
+    | "DATE_CREATED"
+    | "LIKES_COUNT"
+    | "VIEWS_COUNT"
+    | "COMMENTS_COUNT"
+    | null
+  const ratingsParam = searchParams.get("ratings")
+  const hasPrompt = searchParams.get("hasPrompt") === "true"
+  const hasEmbedding = searchParams.get("hasEmbedding") === "true"
+  const isAnimation = searchParams.get("isAnimation") === "true"
+  const isFanbox = searchParams.get("isFanbox") === "true"
+
+  // レーティングを配列に変換
+  const ratings: ("G" | "R15" | "R18")[] = ratingsParam
+    ? ratingsParam
+        .split(",")
+        .filter((r): r is "G" | "R15" | "R18" =>
+          ["G", "R15", "R18"].includes(r as "G" | "R15" | "R18"),
+        )
+    : ["G"]
+
   return (
     <div className="flex min-h-screen flex-col">
       {/* ヘッダー */}
       <GalleryHeader />
+
+      {/* 詳細検索フィルター */}
+      <GallerySearchFilters />
 
       {/* メインコンテンツ */}
       <div className="flex-1 px-4 py-6">
         <Suspense fallback={<AppLoadingPage />}>
           <GalleryView
             rating={data.rating}
-            workType={data.workType}
-            sort={data.sort}
+            workType={workTypeParam || data.workType}
+            sort={sortParam || data.sort}
             style={data.style}
             isSensitive={data.isSensitive}
             searchText={currentSearchText}
+            promptText={promptText}
+            ratings={ratings}
+            hasPrompt={hasPrompt}
+            hasEmbedding={hasEmbedding}
+            isAnimation={isAnimation}
+            isFanbox={isFanbox}
           />
         </Suspense>
       </div>

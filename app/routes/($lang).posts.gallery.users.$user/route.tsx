@@ -5,6 +5,7 @@ import { ParamsError } from "~/errors/params-error"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import { config } from "~/config"
 import { GalleryHeader } from "~/components/gallery-header"
+import { GallerySearchFilters } from "~/components/gallery-search-filters"
 import { UserGalleryView } from "~/routes/($lang).posts.gallery.users.$user/components/user-gallery-view"
 import { graphql } from "gql.tada"
 
@@ -51,6 +52,9 @@ export default function GalleryUserPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* ギャラリーヘッダー */}
       <GalleryHeader />
+
+      {/* 詳細検索フィルター */}
+      <GallerySearchFilters />
 
       {/* メインコンテンツ */}
       <div className="mx-auto max-w-7xl px-4 py-8">

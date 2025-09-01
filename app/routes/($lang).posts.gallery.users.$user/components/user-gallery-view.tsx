@@ -7,6 +7,7 @@ import { useQuery } from "@apollo/client/index"
 import { useTranslation } from "~/hooks/use-translation"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { useCallback, useState, useMemo, useEffect } from "react"
+import { useSearchParams } from "@remix-run/react"
 
 // ユーザー作品取得クエリ
 const UserWorksQuery = graphql(
@@ -38,21 +39,75 @@ type Props = {
 export function UserGalleryView(props: Props) {
   const t = useTranslation()
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [searchParams] = useSearchParams()
 
   console.log("UserGalleryView userId:", props.userId)
+
+  // 詳細検索フィルターの値を取得
+  const searchText = searchParams.get("q") ?? ""
+  const promptText = searchParams.get("prompt") ?? ""
+  const workTypeParam = searchParams.get("workType") as
+    | "WORK"
+    | "NOVEL"
+    | "VIDEO"
+    | "COLUMN"
+    | null
+  const sortParam = searchParams.get("sort") as
+    | "DATE_CREATED"
+    | "LIKES_COUNT"
+    | "VIEWS_COUNT"
+    | "COMMENTS_COUNT"
+    | null
+  const ratingsParam = searchParams.get("ratings")
+  const hasPrompt = searchParams.get("hasPrompt") === "true"
+  const hasEmbedding = searchParams.get("hasEmbedding") === "true"
+  const isAnimation = searchParams.get("isAnimation") === "true"
+  const isFanbox = searchParams.get("isFanbox") === "true"
+
+  // レーティングを配列に変換（デフォルトは全レーティング）
+  const ratings: ("G" | "R15" | "R18" | "R18G")[] = ratingsParam
+    ? ratingsParam
+        .split(",")
+        .filter((r): r is "G" | "R15" | "R18" | "R18G" =>
+          ["G", "R15", "R18", "R18G"].includes(
+            r as "G" | "R15" | "R18" | "R18G",
+          ),
+        )
+    : ["G", "R15", "R18", "R18G"]
 
   // ユーザー作品のフィルター条件を構築
   const where = useMemo(() => {
     const userWhere = {
       userId: props.userId,
-      ratings: ["G", "R15", "R18", "R18G"], // 全レーティングを含める
-      orderBy: "DATE_CREATED", // 最新順で表示
+      ratings,
+      ...(workTypeParam && { workType: workTypeParam }),
+      // 検索テキストが存在する場合のみsearchフィールドを追加
+      ...(searchText.trim() && { search: searchText.trim() }),
+      // プロンプト検索が存在する場合のみpromptフィールドを追加
+      ...(promptText.trim() && { prompt: promptText.trim() }),
+      // 詳細オプション
+      ...(hasPrompt && { hasPrompt: true }),
+      ...(hasEmbedding && { hasEmbedding: true }),
+      ...(isAnimation && { isAnimationWork: true }),
+      ...(isFanbox && { isPublicFanbox: true }),
+      orderBy: sortParam || "DATE_CREATED",
       isNowCreatedAt: true,
     }
 
     console.log("User Gallery Query Where:", userWhere)
     return userWhere
-  }, [props.userId])
+  }, [
+    props.userId,
+    ratings,
+    workTypeParam,
+    searchText,
+    promptText,
+    hasPrompt,
+    hasEmbedding,
+    isAnimation,
+    isFanbox,
+    sortParam,
+  ])
 
   const PER_PAGE = 32
 
@@ -80,7 +135,33 @@ export function UserGalleryView(props: Props) {
   }
 
   // ページ管理
-  const storeKey = useMemo(() => `user-gallery-${props.userId}`, [props.userId])
+  const storeKey = useMemo(
+    () =>
+      JSON.stringify({
+        userId: props.userId,
+        ratings,
+        workType: workTypeParam,
+        sort: sortParam,
+        searchText,
+        promptText,
+        hasPrompt,
+        hasEmbedding,
+        isAnimation,
+        isFanbox,
+      }),
+    [
+      props.userId,
+      ratings,
+      workTypeParam,
+      sortParam,
+      searchText,
+      promptText,
+      hasPrompt,
+      hasEmbedding,
+      isAnimation,
+      isFanbox,
+    ],
+  )
 
   const { pages, appendPage, flat, replaceFirstPage } = usePagedInfinite(
     data?.works ? [data.works] : [],
