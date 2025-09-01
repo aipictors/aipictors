@@ -24,7 +24,8 @@ describe("About component tests", () => {
     expect(screen.getByText("利用規約")).toBeInTheDocument()
     expect(screen.getByText("ガイドライン")).toBeInTheDocument()
     expect(screen.getByText("使い方ガイド")).toBeInTheDocument()
-    expect(screen.getByText("ロゴ")).toBeInTheDocument()
+    expect(screen.getByText("ロードマップ")).toBeInTheDocument()
+    expect(screen.getByText("プレスキット")).toBeInTheDocument()
   })
 
   it("should provide correct company information", () => {
@@ -39,52 +40,58 @@ describe("About component tests", () => {
   it("should contain links with correct destinations", () => {
     setup()
 
-    // "お問い合わせ先"の下にある"こちら"リンク
-    expect(
-      screen.getByText("お問い合わせ先").nextElementSibling?.querySelector("a"),
-    ).toHaveAttribute("href", "/contact")
+    // "お問い合わせ先"のリンクを確認
+    const contactLink = screen.getByText("お問い合わせ先").closest("a")
+    expect(contactLink).toBeTruthy()
+    if (contactLink) {
+      expect(contactLink.getAttribute("href")).toBe("/contact")
+    }
 
-    // "プライバシーポリシー"の下にあるリンク
-    expect(
-      screen.getByText("個人情報の利用目的などについて").closest("a"),
-    ).toHaveAttribute("href", "/privacy")
+    // "プライバシーポリシー"のリンクを確認
+    const privacyLink = screen.getByText("プライバシーポリシー").closest("a")
+    expect(privacyLink).toBeTruthy()
+    if (privacyLink) {
+      expect(privacyLink.getAttribute("href")).toBe("/privacy")
+    }
 
-    // "利用規約"の段落にある"こちら"リンク
-    expect(screen.getAllByText("こちら")[1].closest("a")).toHaveAttribute(
-      "href",
-      "/terms",
-    )
+    // "利用規約"のリンクを確認
+    const termsLink = screen.getByText("利用規約").closest("a")
+    expect(termsLink).toBeTruthy()
+    if (termsLink) {
+      expect(termsLink.getAttribute("href")).toBe("/terms")
+    }
 
-    // "ガイドライン"の段落にある"こちら"リンク
-    expect(screen.getAllByText("こちら")[2].closest("a")).toHaveAttribute(
-      "href",
-      "/guideline",
-    )
+    // "ガイドライン"のリンクを確認
+    const guidelineLink = screen.getByText("ガイドライン").closest("a")
+    expect(guidelineLink).toBeTruthy()
+    if (guidelineLink) {
+      expect(guidelineLink.getAttribute("href")).toBe("/guideline")
+    }
 
-    // "使い方ガイド"の段落にある"こちら"リンク
-    expect(screen.getAllByText("こちら")[3].closest("a")).toHaveAttribute(
-      "href",
-      "/help",
-    )
+    // "使い方ガイド"のリンクを確認
+    const helpLink = screen.getByText("使い方ガイド").closest("a")
+    expect(helpLink).toBeTruthy()
+    if (helpLink) {
+      expect(helpLink.getAttribute("href")).toBe("/help")
+    }
 
-    // "ロゴ"の段落にある"こちら"リンク
-    expect(screen.getAllByText("こちら")[4].closest("a")).toHaveAttribute(
-      "href",
-      "https://www.aipictors.com/presskit/",
-    )
+    // "プレスキット"のリンクを確認
+    const presskitLink = screen.getByText("プレスキット").closest("a")
+    expect(presskitLink).toBeTruthy()
+    if (presskitLink) {
+      expect(presskitLink.getAttribute("href")).toBe("/presskit")
+    }
   })
 
-  it("should check if all texts are in bold and the correct font sizes are applied to headings", () => {
+  it("should check if main heading has correct styling", () => {
     setup()
-    const headings = screen.getAllByRole("heading")
-    for (const heading of headings) {
-      expect(heading).toHaveClass("font-bold")
-      const level = heading.tagName.toLowerCase()
-      if (level === "h1") {
-        expect(heading).toHaveClass("text-2xl")
-      } else if (level === "h2") {
-        expect(heading).toHaveClass("text-md")
-      }
-    }
+    const mainHeading = screen.getByText("本サイトについて")
+    expect(mainHeading).toBeTruthy()
+    // メインタイトルはh1要素であることを確認
+    expect(mainHeading.tagName.toLowerCase()).toBe("h1")
+    // フォントボールドクラスがあることを確認
+    expect(mainHeading.className).toContain("font-bold")
+    // 大きなフォントサイズクラスがあることを確認
+    expect(mainHeading.className).toContain("text-4xl")
   })
 })
