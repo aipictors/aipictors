@@ -178,16 +178,7 @@ export default function EditImage() {
         : (work?.thumbnailImagePosition ?? 0),
     uploadedWorkId: null,
     uploadedWorkUuid: null,
-    videoFile:
-      typeof work?.url === "string"
-        ? {
-            type: "video/mp4",
-            name: "video.mp4",
-            lastModified: 0,
-            size: 0,
-            webkitRelativePath: "",
-          }
-        : null,
+    videoFile: null,
   })
 
   const now = getJstDate(new Date())
@@ -234,8 +225,7 @@ export default function EditImage() {
     },
   })
 
-  const [updateWork, { loading: isUpdatedLoading }] =
-    useMutation(updateWorkMutation)
+  const [updateWork] = useMutation(updateWorkMutation)
 
   const formResult = safeParse(vPostImageForm, {
     title: inputState.title,
