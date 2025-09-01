@@ -8,6 +8,7 @@ import { LikeButton } from "~/components/like-button"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { GalleryTagList } from "~/components/tag/gallery-tag"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -239,13 +240,13 @@ function WorkItem(props: WorkItemProps) {
         </button>
 
         {/* 統計情報 */}
-        <div className="absolute right-2 bottom-2 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
+        <div className="absolute bottom-2 right-2 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white backdrop-blur-sm">
             <Heart className="size-3" />
             <span>{work.likesCount}</span>
           </div>
           {work.commentsCount > 0 && (
-            <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
+            <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white backdrop-blur-sm">
               <Eye className="size-3" />
               <span>{work.commentsCount}</span>
             </div>

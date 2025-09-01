@@ -39,6 +39,7 @@ import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/com
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
 import { GalleryHeader } from "~/components/gallery-header"
+import { GalleryTagList } from "~/components/tag/gallery-tag"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -48,6 +49,23 @@ export async function loader(props: LoaderFunctionArgs) {
   const redirectResponse = checkLocaleRedirect(props.request)
   if (redirectResponse) {
     return redirectResponse
+  }
+
+  // クエリパラメータをチェック（検索機能優先）
+  const url = new URL(props.request.url)
+  const searchQuery = url.searchParams.get("q")
+
+  // 検索クエリがある場合はギャラリー一覧ページにリダイレクト
+  if (searchQuery) {
+    const redirectUrl = new URL("/posts/gallery", url.origin)
+    redirectUrl.searchParams.set("q", searchQuery)
+    // 他のクエリパラメータも保持
+    for (const [key, value] of url.searchParams) {
+      if (key !== "q") {
+        redirectUrl.searchParams.set(key, value)
+      }
+    }
+    return redirect(redirectUrl.toString())
   }
 
   const workId = props.params.workId
@@ -597,17 +615,12 @@ function WorkDetailsPanel(props: {
       {work.tagNames && work.tagNames.length > 0 && (
         <div className="space-y-2">
           <h3 className="font-medium text-foreground">{t("タグ", "Tags")}</h3>
-          <div className="flex flex-wrap gap-2">
-            {work.tagNames.map((tagName) => (
-              <Link
-                key={tagName}
-                to={`/tags/${encodeURIComponent(tagName)}`}
-                className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-gray-700 text-sm transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-              >
-                #{tagName}
-              </Link>
-            ))}
-          </div>
+          <GalleryTagList
+            tags={work.tagNames}
+            variant="outline"
+            size="md"
+            getTagHref={(tag) => `/posts/gallery?q=${encodeURIComponent(tag)}`}
+          />
         </div>
       )}
 
