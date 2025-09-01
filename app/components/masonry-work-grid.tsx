@@ -78,6 +78,14 @@ export function MasonryWorkGrid(props: Props) {
   const { works, isLoadingMore, baseUrl = "posts/gallery" } = props
   const [columnCount, setColumnCount] = useState(6)
 
+  // デバッグログ
+  console.log("MasonryWorkGrid - received props:", {
+    worksLength: works.length,
+    isLoadingMore,
+    baseUrl,
+    works: works.slice(0, 3), // 最初の3件のみログ出力
+  })
+
   // レスポンシブなカラム数を設定
   useEffect(() => {
     const updateColumnCount = () => {

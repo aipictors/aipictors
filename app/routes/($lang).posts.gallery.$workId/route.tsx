@@ -111,14 +111,45 @@ export async function loader(props: LoaderFunctionArgs) {
             offset: 0,
             limit: 32, // 初期ページ分
             where: {
-              tagNames: mainTags,
+              tagNames: [
+                ...mainTags,
+                ...mainTags.map((tag) => decodeURIComponent(tag).toLowerCase()),
+                ...mainTags.map((tag) => decodeURIComponent(tag).toUpperCase()),
+                ...mainTags.map((tag) =>
+                  decodeURIComponent(tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+                    String.fromCharCode(m.charCodeAt(0) - 96),
+                  ),
+                ),
+                ...mainTags.map((tag) =>
+                  decodeURIComponent(tag).replace(/[\u3041-\u3096]/g, (m) =>
+                    String.fromCharCode(m.charCodeAt(0) + 96),
+                  ),
+                ),
+              ],
+              ratings: ["G", "R15"],
+              orderBy: "LIKES_COUNT",
+              sort: "DESC",
+              isNowCreatedAt: true, // 最新の作品を優先
             },
           },
         })
-      : { data: { works: [] } }
+      : { data: { tagWorks: [] } }
 
   const relatedWorks =
-    relatedWorksResp.data.works?.filter((work) => work.id !== workId) || []
+    relatedWorksResp.data.tagWorks?.filter((work) => work.id !== workId) || []
+
+  // デバッグログ：関連作品の詳細
+  console.log("Loader - Related Works Debug:", {
+    mainTags,
+    originalWorksCount: relatedWorksResp.data.tagWorks?.length || 0,
+    filteredWorksCount: relatedWorks.length,
+    sampleWorks: relatedWorks.slice(0, 3).map((work) => ({
+      id: work.id,
+      title: work.title,
+      // tagNamesがあれば出力
+      ...(work.tagNames && { tagNames: work.tagNames }),
+    })),
+  })
 
   return json({
     workId,
@@ -152,8 +183,6 @@ export default function GalleryWorkPage() {
   if ("status" in data) {
     return null
   }
-
-  const { work } = data
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -335,7 +364,7 @@ const workQuery = graphql(
 
 const relatedWorksQuery = graphql(
   `query RelatedWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
-    works(offset: $offset, limit: $limit, where: $where) {
+    tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
     }
   }`,
@@ -357,10 +386,40 @@ function RelatedWorksSection(props: {
   // フィルター条件を構築
   const where = useMemo(
     () => ({
-      tagNames,
+      tagNames:
+        tagNames.length > 0
+          ? [
+              ...tagNames,
+              ...tagNames.map((tag) => decodeURIComponent(tag).toLowerCase()),
+              ...tagNames.map((tag) => decodeURIComponent(tag).toUpperCase()),
+              ...tagNames.map((tag) =>
+                decodeURIComponent(tag).replace(/[\u30A1-\u30F6]/g, (m) =>
+                  String.fromCharCode(m.charCodeAt(0) - 96),
+                ),
+              ),
+              ...tagNames.map((tag) =>
+                decodeURIComponent(tag).replace(/[\u3041-\u3096]/g, (m) =>
+                  String.fromCharCode(m.charCodeAt(0) + 96),
+                ),
+              ),
+            ]
+          : [],
+      ratings: ["G", "R15"] as ("G" | "R15" | "R18" | "R18G")[],
+      orderBy: "LIKES_COUNT" as const,
+      sort: "DESC" as const,
+      isNowCreatedAt: true, // 最新の作品を優先
     }),
     [tagNames],
   )
+
+  // デバッグログ
+  console.log("RelatedWorksSection:", {
+    workId,
+    tagNames,
+    initialWorksLength: initialWorks.length,
+    initialWorks: initialWorks.slice(0, 3), // 最初の3件のみログ出力
+    where, // フィルター条件も出力
+  })
 
   const PER_PAGE = 32
 
@@ -400,9 +459,9 @@ function RelatedWorksSection(props: {
           where,
         },
       })
-      if (result.data?.works?.length) {
+      if (result.data?.tagWorks?.length) {
         // 現在の作品を除外
-        const filteredWorks = result.data.works.filter(
+        const filteredWorks = result.data.tagWorks.filter(
           (work) => work.id !== workId,
         )
         if (filteredWorks.length > 0) {
@@ -430,6 +489,14 @@ function RelatedWorksSection(props: {
   })
 
   const works = flat
+
+  // デバッグログ：最終的な works の確認
+  console.log("RelatedWorksSection - final works:", {
+    worksLength: works.length,
+    hasNext,
+    isLoadingMore,
+    works: works.slice(0, 3), // 最初の3件のみログ出力
+  })
 
   if (!tagNames.length || works.length === 0) return null
 
