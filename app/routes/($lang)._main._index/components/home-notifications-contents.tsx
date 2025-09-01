@@ -15,8 +15,6 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
-import { AuthContext } from "~/contexts/auth-context"
-import { useContext } from "react"
 
 type Props = {
   type: IntrospectionEnum<"NotificationType">

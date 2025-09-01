@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { config, META } from "~/config"
+import { config } from "~/config"
 import { RoadmapPage } from "~/routes/($lang)._main.roadmap._index/components/roadmap-page"
 import { createMeta } from "~/utils/create-meta"
 

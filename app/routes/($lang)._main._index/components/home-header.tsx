@@ -323,7 +323,7 @@ function HomeHeader(props: Props) {
   }
   const t = useTranslation()
 
-  const onSubmitSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const _onSubmitSearch = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault() // Enterキーでのフォーム送信を防ぐ
       onSearch()

@@ -147,7 +147,7 @@ export function WorkCommentSection(props: Props) {
                       >
                         <Smile className="h-4 w-4" />
                       </Button>
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-muted-foreground text-xs">
                         {comment.length}/500
                       </span>
                     </div>
@@ -211,10 +211,10 @@ export function WorkCommentSection(props: Props) {
       ) : (
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <MessageCircle className="mb-3 h-12 w-12 text-muted-foreground/50" />
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {t("まだコメントがありません", "No comments yet")}
           </p>
-          <p className="text-xs text-muted-foreground/70">
+          <p className="text-muted-foreground/70 text-xs">
             {t(
               "最初にコメントしてみませんか？",
               "Be the first to leave a comment!",
@@ -274,7 +274,7 @@ function CommentCard({
 
           <div className="min-w-0 flex-1">
             {/* ユーザー名と時刻 */}
-            <div className="mb-2 flex items-center gap-2 flex-wrap">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
               <span
                 className={cn(
                   "font-medium text-foreground",
@@ -283,13 +283,13 @@ function CommentCard({
               >
                 {comment.user?.name}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {toDateTimeText(comment.createdAt, true)}
               </span>
               {comment.isWorkOwnerLiked && (
                 <Badge
                   variant="secondary"
-                  className="h-5 px-2 text-xs font-medium"
+                  className="h-5 px-2 font-medium text-xs"
                 >
                   <Heart className="mr-1 h-2.5 w-2.5 fill-current text-red-500" />
                   {t("作者", "Creator")}
@@ -305,7 +305,7 @@ function CommentCard({
                   isCompact ? "text-xs" : "text-sm",
                 )}
               >
-                <p className="break-words leading-relaxed text-foreground">
+                <p className="break-words text-foreground leading-relaxed">
                   {comment.text}
                 </p>
               </div>
@@ -331,7 +331,7 @@ function CommentCard({
                 className={cn(
                   "h-7 px-2 text-xs",
                   isLiked
-                    ? "text-primary bg-primary/10"
+                    ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-primary",
                 )}
               >
@@ -347,7 +347,7 @@ function CommentCard({
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowReplyInput(!showReplyInput)}
-                className="h-7 px-2 text-xs text-muted-foreground hover:text-primary"
+                className="h-7 px-2 text-muted-foreground text-xs hover:text-primary"
               >
                 <Reply className="mr-1 h-3 w-3" />
                 {t("返信", "Reply")}
@@ -369,7 +369,7 @@ function CommentCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowReplies(!showReplies)}
-                  className="h-6 px-0 text-xs text-primary hover:text-primary/80"
+                  className="h-6 px-0 text-primary text-xs hover:text-primary/80"
                 >
                   {showReplies ? (
                     <ChevronUp className="mr-1 h-3 w-3" />
@@ -387,7 +387,7 @@ function CommentCard({
                     {comment.responses.map((reply) => (
                       <div
                         key={reply.id}
-                        className="ml-6 border-l-2 border-muted pl-4"
+                        className="ml-6 border-muted border-l-2 pl-4"
                       >
                         <CommentCard comment={reply} isCompact={true} />
                       </div>
@@ -399,7 +399,7 @@ function CommentCard({
 
             {/* 返信入力欄 */}
             {showReplyInput && (
-              <div className="mt-3 ml-6 border-l-2 border-muted pl-4">
+              <div className="mt-3 ml-6 border-muted border-l-2 pl-4">
                 <div className="flex gap-2">
                   <Avatar className="h-6 w-6 flex-shrink-0">
                     <AvatarImage src={withIconUrlFallback(null)} alt="" />

@@ -249,7 +249,7 @@ export default function AdminUsersPage() {
       {/* ヘッダー */}
       <div className="flex items-center space-x-2">
         <Shield className="h-6 w-6 text-orange-500" />
-        <h1 className="text-2xl font-bold">モデレーター管理画面</h1>
+        <h1 className="font-bold text-2xl">モデレーター管理画面</h1>
         <Badge variant="secondary">管理者専用</Badge>
       </div>
 
@@ -325,15 +325,15 @@ export default function AdminUsersPage() {
             {/* ユーザー基本情報 */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <p className="text-sm font-medium text-gray-500">ユーザーID</p>
+                <p className="font-medium text-gray-500 text-sm">ユーザーID</p>
                 <p className="font-mono text-sm">{user.id}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">ユーザー名</p>
+                <p className="font-medium text-gray-500 text-sm">ユーザー名</p>
                 <p className="font-medium">{user.name}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">ログイン名</p>
+                <p className="font-medium text-gray-500 text-sm">ログイン名</p>
                 <p className="font-mono text-sm">@{user.login}</p>
               </div>
             </div>
@@ -342,7 +342,7 @@ export default function AdminUsersPage() {
 
             {/* BAN状態表示 */}
             <div>
-              <h3 className="mb-4 text-lg font-semibold">現在のBAN状態</h3>
+              <h3 className="mb-4 font-semibold text-lg">現在のBAN状態</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="flex items-center justify-between rounded-lg border p-4">
                   <div className="flex items-center space-x-2">
@@ -374,7 +374,7 @@ export default function AdminUsersPage() {
 
             {/* BAN操作ボタン */}
             <div>
-              <h3 className="mb-4 text-lg font-semibold">BAN操作</h3>
+              <h3 className="mb-4 font-semibold text-lg">BAN操作</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>

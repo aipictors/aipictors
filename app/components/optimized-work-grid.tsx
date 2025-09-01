@@ -1,7 +1,6 @@
 import { memo, useMemo } from "react"
 import { LazyLoadComponent } from "~/components/lazy-load-component"
 import { OptimizedImage } from "~/components/optimized-image"
-import { Link } from "@remix-run/react"
 import { cn } from "~/lib/utils"
 import { debounce } from "~/utils/mobile-performance"
 
@@ -129,12 +128,12 @@ const WorkItem = memo(
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
 
         {/* タイトル */}
-        <div className="absolute bottom-2 left-2 right-2 translate-y-full transform transition-transform duration-200 group-hover:translate-y-0">
-          <p className="truncate text-sm font-medium text-white">
+        <div className="absolute right-2 bottom-2 left-2 translate-y-full transform transition-transform duration-200 group-hover:translate-y-0">
+          <p className="truncate font-medium text-sm text-white">
             {work.title}
           </p>
           {work.userName && (
-            <p className="truncate text-xs text-white/80">{work.userName}</p>
+            <p className="truncate text-white/80 text-xs">{work.userName}</p>
           )}
         </div>
       </button>

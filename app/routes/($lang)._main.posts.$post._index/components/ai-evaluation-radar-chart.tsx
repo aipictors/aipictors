@@ -218,7 +218,7 @@ export function AiEvaluationRadarChart(props: Props) {
                 fill={criterion.color}
                 stroke="white"
                 strokeWidth="2"
-                className="transition-all duration-300 hover:r-6"
+                className="hover:r-6 transition-all duration-300"
               />
               <circle
                 cx={point.x}

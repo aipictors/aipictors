@@ -3,7 +3,6 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { Badge } from "~/components/ui/badge"
 import { WorkCommentInput } from "~/components/work/work-comment-input"
 import { StickerDialog } from "~/components/work/sticker-dialog"
 import { StickerInfoDialog } from "~/components/work/sticker-info-dialog"
@@ -13,7 +12,6 @@ import {
   MessageCircle,
   Heart,
   ThumbsUp,
-  MoreVertical,
   Reply,
   Loader2Icon,
   Eye,
@@ -21,7 +19,7 @@ import {
   ArrowDownToLine,
   StampIcon,
 } from "lucide-react"
-import { useState, useContext, useRef, useEffect } from "react"
+import { useState, useContext, useRef } from "react"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -388,7 +386,7 @@ export function WorkCommentSectionEnhanced(props: Props) {
               >
                 {comment.user?.name}
               </Link>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {toDateTimeText(comment.createdAt, true)}
               </span>
               {comment.isWorkOwnerLiked && (
@@ -400,7 +398,7 @@ export function WorkCommentSectionEnhanced(props: Props) {
                     />
                     <AvatarFallback />
                   </Avatar>
-                  <Heart className="absolute -right-1 -bottom-1 size-3 fill-rose-500 text-rose-500" />
+                  <Heart className="-right-1 -bottom-1 absolute size-3 fill-rose-500 text-rose-500" />
                 </div>
               )}
             </div>
@@ -578,7 +576,7 @@ export function WorkCommentSectionEnhanced(props: Props) {
                 </Button>
               )}
             </div>
-            <div className="flex items-center space-x-2 pl-14 text-xs text-muted-foreground">
+            <div className="flex items-center space-x-2 pl-14 text-muted-foreground text-xs">
               <Checkbox
                 id="sensitive-checkbox"
                 checked={isSensitive}
@@ -604,8 +602,8 @@ export function WorkCommentSectionEnhanced(props: Props) {
         <ScrollArea className="max-h-96 overflow-auto" ref={scrollAreaRef}>
           <div className="space-y-4">
             {allComments.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <MessageCircle className="size-12 mx-auto mb-2 opacity-50" />
+              <div className="py-8 text-center text-muted-foreground">
+                <MessageCircle className="mx-auto mb-2 size-12 opacity-50" />
                 <p>{t("まだコメントはありません", "No comments yet")}</p>
                 <p className="text-xs">
                   {t(

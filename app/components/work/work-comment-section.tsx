@@ -87,7 +87,7 @@ export function WorkCommentSection(props: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MessageCircle className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">
+          <span className="font-medium text-sm">
             {t("コメント", "Comments")} ({props.comments.length})
           </span>
         </div>
@@ -232,7 +232,7 @@ function CommentCard({
               >
                 {comment.user?.name}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {toDateTimeText(comment.createdAt, true)}
               </span>
               {comment.isWorkOwnerLiked && (
@@ -297,7 +297,7 @@ function CommentCard({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="mt-1 h-6 px-0 text-xs text-muted-foreground"
+                    className="mt-1 h-6 px-0 text-muted-foreground text-xs"
                   >
                     {showReplies ? (
                       <ChevronUp className="mr-1 h-3 w-3" />
@@ -312,7 +312,7 @@ function CommentCard({
                   {comment.responses.map((reply) => (
                     <div
                       key={reply.id}
-                      className="ml-4 border-l-2 border-muted pl-3"
+                      className="ml-4 border-muted border-l-2 pl-3"
                     >
                       <CommentCard comment={reply} isCompact={true} />
                     </div>

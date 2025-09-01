@@ -133,11 +133,11 @@ export function NewUserSettingsForm() {
       {/* ウェルカムセクション */}
       <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-green-50 to-blue-50 p-8 dark:border-gray-700 dark:from-green-900/30 dark:to-blue-900/30">
         <div className="space-y-4 text-center">
-          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+          <h1 className="font-bold text-gray-800 text-xl dark:text-gray-100">
             {t("表示設定の説明", "Display Settings Explanation")}
           </h1>
           <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-600 dark:bg-blue-900/30">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
+            <p className="text-blue-800 text-sm dark:text-blue-200">
               {isAdult ? (
                 <span className="flex items-center gap-2">
                   <Eye className="size-4" />
@@ -162,11 +162,11 @@ export function NewUserSettingsForm() {
 
       {/* 年齢設定セクション */}
       <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-        <h2 className="mb-4 text-xl font-bold text-gray-800 dark:text-gray-100">
+        <h2 className="mb-4 font-bold text-gray-800 text-xl dark:text-gray-100">
           {t("年齢設定", "Age Setting")}
         </h2>
         <div className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+          <p className="text-gray-600 text-sm dark:text-gray-300">
             {t(
               "年齢設定は表示されるコンテンツの制限に影響します。いつでも変更可能です。",
               "Age setting affects content visibility restrictions. You can change this anytime.",
@@ -176,7 +176,7 @@ export function NewUserSettingsForm() {
             <Button
               onClick={() => handleAgeChange(false)}
               variant={!isAdult ? "default" : "outline"}
-              className="flex-1 h-12"
+              className="h-12 flex-1"
             >
               <Shield className="mr-2 size-4" />
               {t("18歳未満", "Under 18")}
@@ -184,14 +184,14 @@ export function NewUserSettingsForm() {
             <Button
               onClick={() => handleAgeChange(true)}
               variant={isAdult ? "default" : "outline"}
-              className="flex-1 h-12"
+              className="h-12 flex-1"
             >
               <Eye className="mr-2 size-4" />
               {t("18歳以上", "18 or older")}
             </Button>
           </div>
           <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-600 dark:bg-amber-900/30">
-            <p className="text-xs text-amber-800 dark:text-amber-200">
+            <p className="text-amber-800 text-xs dark:text-amber-200">
               ⚠️ {t("現在の設定: ", "Current setting: ")}
               <strong>
                 {isAdult
@@ -206,7 +206,7 @@ export function NewUserSettingsForm() {
       {/* コンテンツレーティング説明 */}
       <div className="space-y-4">
         <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+          <h2 className="font-bold text-gray-800 text-xl dark:text-gray-100">
             {t("コンテンツレーティングについて", "About Content Ratings")}
           </h2>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -220,7 +220,7 @@ export function NewUserSettingsForm() {
                   {t("全年齢対象", "General Audiences")}
                 </h3>
               </div>
-              <p className="mt-2 text-sm text-green-700 dark:text-green-300">
+              <p className="mt-2 text-green-700 text-sm dark:text-green-300">
                 {t(
                   "誰でも安心して見ることができる健全なコンテンツ",
                   "Safe content that anyone can view with confidence",
@@ -238,7 +238,7 @@ export function NewUserSettingsForm() {
                   {t("15歳以上推奨", "15+ Recommended")}
                 </h3>
               </div>
-              <p className="mt-2 text-sm text-red-700 dark:text-red-300">
+              <p className="mt-2 text-red-700 text-sm dark:text-red-300">
                 {t(
                   "軽度な暴力表現や扇情的な表現を含む可能性があります",
                   "May contain mild violence or suggestive content",
@@ -258,7 +258,7 @@ export function NewUserSettingsForm() {
                       {t("18歳以上限定", "18+ Only")}
                     </h3>
                   </div>
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                  <p className="mt-2 text-gray-600 text-sm dark:text-gray-300">
                     {t(
                       "成人向けコンテンツ（性的表現を含む）",
                       "Adult content (including sexual expressions)",
@@ -275,7 +275,7 @@ export function NewUserSettingsForm() {
                       {t("R18G", "R18G")}
                     </h3>
                   </div>
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                  <p className="mt-2 text-gray-600 text-sm dark:text-gray-300">
                     {t(
                       "極めて過激な表現を含む成人向けコンテンツ",
                       "Adult content with extremely explicit expressions",
@@ -290,7 +290,7 @@ export function NewUserSettingsForm() {
 
       {/* 表示設定 */}
       <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+        <h2 className="font-bold text-gray-800 text-xl dark:text-gray-100">
           {t("表示するコンテンツを選択", "Select Content to Display")}
         </h2>
         <div className="mt-6 space-y-6">
@@ -303,13 +303,13 @@ export function NewUserSettingsForm() {
                 disabled={!isAdult && !showR15InNormalMode}
               />
               <Label htmlFor={showR15Id} className="flex items-center gap-2">
-                <span className="flex size-6 items-center justify-center rounded-full bg-yellow-500 text-xs font-bold text-white">
+                <span className="flex size-6 items-center justify-center rounded-full bg-yellow-500 font-bold text-white text-xs">
                   15
                 </span>
                 {t("R15コンテンツを表示", "Show R15 content")}
               </Label>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-gray-600 text-sm dark:text-gray-300">
               {t(
                 "軽度な暴力表現や扇情的な表現を含むコンテンツを表示します",
                 "Shows content with mild violence or suggestive expressions",
@@ -332,13 +332,13 @@ export function NewUserSettingsForm() {
                     htmlFor={showSensitiveToggleId}
                     className="flex items-center gap-2"
                   >
-                    <span className="flex size-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                    <span className="flex size-6 items-center justify-center rounded-full bg-red-500 font-bold text-white text-xs">
                       18
                     </span>
                     {t("R18コンテンツを表示", "Show R18 content")}
                   </Label>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-gray-600 text-sm dark:text-gray-300">
                   {t(
                     "成人向けコンテンツを表示します（性的表現を含む）",
                     "Shows adult content (including sexual expressions)",
@@ -358,13 +358,13 @@ export function NewUserSettingsForm() {
                     htmlFor={showR18GId}
                     className="flex items-center gap-2"
                   >
-                    <span className="flex size-6 items-center justify-center rounded-full bg-purple-500 text-xs font-bold text-white">
+                    <span className="flex size-6 items-center justify-center rounded-full bg-purple-500 font-bold text-white text-xs">
                       G
                     </span>
                     {t("R18Gコンテンツを表示", "Show R18G content")}
                   </Label>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+                <p className="text-gray-600 text-sm dark:text-gray-300">
                   {t(
                     "極めて過激な表現を含む成人向けコンテンツを表示します",
                     "Shows adult content with extremely explicit expressions",
@@ -391,7 +391,7 @@ export function NewUserSettingsForm() {
                 {t("コメント通知を受け取る", "Receive comment notifications")}
               </Label>
             </div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
+            <p className="text-gray-600 text-sm dark:text-gray-300">
               {t(
                 "作品にコメントがついた時に通知を受け取ります",
                 "Receive notifications when your works receive comments",
@@ -404,7 +404,7 @@ export function NewUserSettingsForm() {
       {/* 完了ボタン */}
       <div className="rounded-xl border border-green-200 bg-green-50 p-6 dark:border-green-600 dark:bg-green-900/30">
         <div className="text-center">
-          <h3 className="mb-2 text-lg font-bold text-gray-800 dark:text-gray-100">
+          <h3 className="mb-2 font-bold text-gray-800 text-lg dark:text-gray-100">
             {t("設定完了", "Settings Complete")}
           </h3>
           <p className="mb-6 text-gray-600 dark:text-gray-300">
@@ -416,7 +416,7 @@ export function NewUserSettingsForm() {
           <Button
             disabled={isUpdatingUserSetting}
             onClick={onSubmit}
-            className="h-12 w-full rounded-lg bg-green-600 text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
+            className="h-12 w-full rounded-lg bg-green-600 font-semibold text-lg hover:bg-green-700 disabled:opacity-50"
           >
             {isUpdatingUserSetting ? (
               <div className="flex items-center gap-2">

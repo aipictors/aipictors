@@ -254,7 +254,7 @@ export function DialogLikeButton(props: Props) {
         {props.text && (
           <span
             className={cn(
-              "text-sm font-medium transition-colors duration-200",
+              "font-medium text-sm transition-colors duration-200",
               isLiked
                 ? "text-pink-600 dark:text-pink-400"
                 : "text-muted-foreground",

@@ -201,13 +201,13 @@ export function WorksListContainer(props: Props) {
   // ローディング状態 - ネットワーク状況を考慮した表示
   if (workLoading || countLoading) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 space-y-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100" />
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="flex flex-col items-center justify-center space-y-4 p-8">
+        <div className="h-8 w-8 animate-spin rounded-full border-gray-900 border-b-2 dark:border-gray-100" />
+        <p className="text-gray-600 text-sm dark:text-gray-400">
           作品を読み込んでいます...
         </p>
         {workLoading && countLoading && (
-          <p className="text-xs text-gray-500 dark:text-gray-500">
+          <p className="text-gray-500 text-xs dark:text-gray-500">
             混雑時は読み込みに時間がかかる場合があります
           </p>
         )}

@@ -162,7 +162,7 @@ export default function Index() {
   const [timeRange, setTimeRange] = useState(
     searchParams.get("timeRange") ?? "ALL",
   )
-  const [isOneWorkPerUser, setIsOneWorkPerUser] = useState<boolean>(
+  const [isOneWorkPerUser, _setIsOneWorkPerUser] = useState<boolean>(
     searchParams.get("isOneWorkPerUser") === "true",
   )
 

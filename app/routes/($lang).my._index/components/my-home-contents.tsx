@@ -13,7 +13,10 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { ResponsivePhotoWorksAlbum, PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import {
+  ResponsivePhotoWorksAlbum,
+  PhotoAlbumWorkFragment,
+} from "~/components/responsive-photo-works-album"
 
 export function DashboardHomeContents() {
   const t = useTranslation()

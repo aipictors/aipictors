@@ -17,7 +17,7 @@ const hashString = (str: string): string => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
+    hash = (hash << 5) - hash + char
     hash = hash & hash // 32bit整数に変換
   }
   return hash.toString()
@@ -42,7 +42,10 @@ const addDismissedAnnouncement = (contentHash: string): void => {
     const dismissed = getDismissedAnnouncements()
     if (!dismissed.includes(contentHash)) {
       dismissed.push(contentHash)
-      localStorage.setItem(DISMISSED_ANNOUNCEMENTS_KEY, JSON.stringify(dismissed))
+      localStorage.setItem(
+        DISMISSED_ANNOUNCEMENTS_KEY,
+        JSON.stringify(dismissed),
+      )
     }
   } catch {
     // localStorage が使えない場合は何もしない
@@ -55,12 +58,18 @@ const addDismissedAnnouncement = (contentHash: string): void => {
 export function GenerationAnnouncementBanner() {
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true)
 
-  const { data: announcementData, loading, error } = useQuery(emergencyAnnouncementsQuery, {})
+  const {
+    data: announcementData,
+    loading,
+    error,
+  } = useQuery(emergencyAnnouncementsQuery, {})
 
   // お知らせが読み込まれたら、過去に閉じたものかチェック
   useEffect(() => {
     if (announcementData?.emergencyAnnouncements?.content) {
-      const contentHash = hashString(announcementData.emergencyAnnouncements.content)
+      const contentHash = hashString(
+        announcementData.emergencyAnnouncements.content,
+      )
       const dismissed = getDismissedAnnouncements()
       if (dismissed.includes(contentHash)) {
         setIsAnnouncementVisible(false)
@@ -73,7 +82,7 @@ export function GenerationAnnouncementBanner() {
     loading,
     error,
     announcementData,
-    isAnnouncementVisible
+    isAnnouncementVisible,
   })
 
   const navigateToExternal = (url: string) => {
@@ -86,7 +95,9 @@ export function GenerationAnnouncementBanner() {
 
   const handleClose = () => {
     if (announcementData?.emergencyAnnouncements?.content) {
-      const contentHash = hashString(announcementData.emergencyAnnouncements.content)
+      const contentHash = hashString(
+        announcementData.emergencyAnnouncements.content,
+      )
       addDismissedAnnouncement(contentHash)
     }
     setIsAnnouncementVisible(false)
@@ -98,52 +109,67 @@ export function GenerationAnnouncementBanner() {
   }
 
   // 実際のお知らせデータがない場合は表示しない（空文字列もチェック）
-  if (!announcementData?.emergencyAnnouncements || 
-      !announcementData.emergencyAnnouncements.content ||
-      announcementData.emergencyAnnouncements.content.trim() === "") {
+  if (
+    !announcementData?.emergencyAnnouncements ||
+    !announcementData.emergencyAnnouncements.content ||
+    announcementData.emergencyAnnouncements.content.trim() === ""
+  ) {
     return null
   }
 
   return (
-    <div className="border-b border-slate-200 bg-slate-50/50 dark:border-slate-700 dark:bg-slate-800/50">
+    <div className="border-slate-200 border-b bg-slate-50/50 dark:border-slate-700 dark:bg-slate-800/50">
       <div className="relative w-full px-4 py-3">
         <div className="flex items-center gap-3 pr-10">
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+            className="-translate-y-1/2 absolute top-1/2 right-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
             aria-label="お知らせを閉じる"
           >
             <X className="h-4 w-4" />
           </button>
-          
+
           {/* Icon */}
           <div className="flex-shrink-0 rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
             <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </div>
-          
+
           {/* Content */}
-          {announcementData.emergencyAnnouncements.url && announcementData.emergencyAnnouncements.url.length > 0 ? (
+          {announcementData.emergencyAnnouncements.url &&
+          announcementData.emergencyAnnouncements.url.length > 0 ? (
             <button
               onClick={() =>
                 announcementData.emergencyAnnouncements.url.startsWith("http")
-                  ? navigateToExternal(announcementData.emergencyAnnouncements.url)
+                  ? navigateToExternal(
+                      announcementData.emergencyAnnouncements.url,
+                    )
                   : handleNavigate(announcementData.emergencyAnnouncements.url)
               }
               className="flex-1 text-left transition-colors hover:text-blue-600 dark:hover:text-blue-400"
             >
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                <span className="font-medium text-slate-700 text-sm dark:text-slate-200">
                   {announcementData.emergencyAnnouncements.content}
                 </span>
-                <svg className="h-3 w-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="h-3 w-3 text-slate-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </div>
             </button>
           ) : (
             <div className="flex-1">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              <span className="font-medium text-slate-700 text-sm dark:text-slate-200">
                 {announcementData.emergencyAnnouncements.content}
               </span>
             </div>

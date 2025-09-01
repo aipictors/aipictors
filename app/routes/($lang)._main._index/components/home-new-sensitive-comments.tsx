@@ -34,8 +34,9 @@ export function HomeNewSensitiveCommentsSection(props: Props) {
     : comments
 
   // テキストのみのコメントを絞り込み（GraphQLでフィルタが効かない場合のフォールバック）
-  const textOnlyComments = newComments.filter(comment => 
-    comment.comment?.text && comment.comment.text.trim().length > 0
+  const textOnlyComments = newComments.filter(
+    (comment) =>
+      comment.comment?.text && comment.comment.text.trim().length > 0,
   )
 
   return (
@@ -55,11 +56,14 @@ export function HomeNewSensitiveCommentsSection(props: Props) {
           </Button>
         </Link>
       </div>
-      
+
       <p className="text-muted-foreground text-xs">
-        {t("テキストが入力されているコメントのみを表示しています", "Showing only comments with text content")}
+        {t(
+          "テキストが入力されているコメントのみを表示しています",
+          "Showing only comments with text content",
+        )}
       </p>
-      
+
       {textOnlyComments.map((comment) => (
         <div
           key={comment.comment?.id}

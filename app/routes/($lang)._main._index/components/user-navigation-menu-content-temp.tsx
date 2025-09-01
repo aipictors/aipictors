@@ -78,11 +78,11 @@ export function UserNavigationMenuContent(props: Props) {
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium">
+              <p className="font-medium text-sm">
                 {user?.name ?? authContext.displayName}
               </p>
               {user && (
-                <div className="text-xs text-muted-foreground space-y-1">
+                <div className="space-y-1 text-muted-foreground text-xs">
                   <div className="flex space-x-2">
                     <span>フォロワー: {user.followersCount}</span>
                     <span>フォロー: {user.followCount}</span>
@@ -99,40 +99,40 @@ export function UserNavigationMenuContent(props: Props) {
 
         {/* メニュー項目 */}
         <MenuItemLink to={`/users/${authContext.userId}`}>
-          <UserIcon className="mr-2 w-4 h-4" />
+          <UserIcon className="mr-2 h-4 w-4" />
           <span>{t("マイページ")}</span>
         </MenuItemLink>
 
         <MenuItemLink to="/dashboard">
-          <SquareKanbanIcon className="mr-2 w-4 h-4" />
+          <SquareKanbanIcon className="mr-2 h-4 w-4" />
           <span>{t("ダッシュボード")}</span>
         </MenuItemLink>
 
         <MenuItemLink to="/messages">
-          <MessageCircleIcon className="mr-2 w-4 h-4" />
+          <MessageCircleIcon className="mr-2 h-4 w-4" />
           <span>{t("メッセージ")}</span>
         </MenuItemLink>
 
         <MenuItemLink to="/settings">
-          <SettingsIcon className="mr-2 w-4 h-4" />
+          <SettingsIcon className="mr-2 h-4 w-4" />
           <span>{t("設定")}</span>
         </MenuItemLink>
 
         <MenuItemLink to="/support/chat">
-          <CoffeeIcon className="mr-2 w-4 h-4" />
+          <CoffeeIcon className="mr-2 h-4 w-4" />
           <span>{t("サポート")}</span>
         </MenuItemLink>
 
         <MenuItemLink to="/plus">
-          <GemIcon className="mr-2 w-4 h-4" />
+          <GemIcon className="mr-2 h-4 w-4" />
           <span>{t("Aipictors+")} </span>
         </MenuItemLink>
 
         {/* テーマ設定 */}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <SunIcon className="mr-2 w-4 h-4 dark:hidden" />
-            <MoonIcon className="mr-2 w-4 h-4 hidden dark:block" />
+            <SunIcon className="mr-2 h-4 w-4 dark:hidden" />
+            <MoonIcon className="mr-2 hidden h-4 w-4 dark:block" />
             <span>{t("テーマ")}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
@@ -142,15 +142,15 @@ export function UserNavigationMenuContent(props: Props) {
                 onValueChange={setTheme}
               >
                 <DropdownMenuRadioItem value="light">
-                  <SunIcon className="mr-2 w-4 h-4" />
+                  <SunIcon className="mr-2 h-4 w-4" />
                   <span>{t("ライトモード")}</span>
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="dark">
-                  <MoonIcon className="mr-2 w-4 h-4" />
+                  <MoonIcon className="mr-2 h-4 w-4" />
                   <span>{t("ダークモード")}</span>
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="system">
-                  <UserCircleIcon className="mr-2 w-4 h-4" />
+                  <UserCircleIcon className="mr-2 h-4 w-4" />
                   <span>{t("システム")}</span>
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
@@ -161,7 +161,7 @@ export function UserNavigationMenuContent(props: Props) {
         {/* 言語設定 */}
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <Languages className="mr-2 w-4 h-4" />
+            <Languages className="mr-2 h-4 w-4" />
             <span>{t("言語")}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
@@ -188,7 +188,7 @@ export function UserNavigationMenuContent(props: Props) {
 
         {/* ログアウト */}
         <DropdownMenuItem onClick={props.onLogout}>
-          <LogOutIcon className="mr-2 w-4 h-4" />
+          <LogOutIcon className="mr-2 h-4 w-4" />
           <span>{t("ログアウト")}</span>
         </DropdownMenuItem>
       </div>

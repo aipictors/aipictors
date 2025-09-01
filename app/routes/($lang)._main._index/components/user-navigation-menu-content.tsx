@@ -33,7 +33,6 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { graphql } from "gql.tada"
 import {
   userNavigationStyles,
@@ -90,7 +89,7 @@ export function UserNavigationMenuContent(props: Props) {
   const featurePromptonRequest =
     userSetting?.userSetting?.featurePromptonRequest ?? false
   const viewerUserToken = tokenData?.viewer?.token
-  const isSensitiveToggleVisible =
+  const _isSensitiveToggleVisible =
     typeof window !== "undefined" ? location.pathname !== "/generation" : true
 
   const setColorTheme = (newMode: string) => {

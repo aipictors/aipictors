@@ -49,7 +49,7 @@ export function WorkCommentInputFixed(props: Props) {
   const sendComment = async (
     text: string,
     stickerId: string,
-    stickerImageURL: string,
+    _stickerImageURL: string,
   ) => {
     try {
       await createWorkComment({
@@ -95,7 +95,7 @@ export function WorkCommentInputFixed(props: Props) {
       </div>
 
       {props.isWorkOwnerBlocked ? (
-        <div className="mt-3 rounded-md bg-gray-100 p-3 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+        <div className="mt-3 rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
           {t(
             "ブロック中のユーザーにはコメントできません",
             "Cannot comment to blocked users",
@@ -117,7 +117,7 @@ export function WorkCommentInputFixed(props: Props) {
                 className="w-full"
               />
             </div>
-            <div className="flex flex-col space-y-1 md:flex-row md:space-y-0 md:space-x-1">
+            <div className="flex flex-col space-y-1 md:flex-row md:space-x-1 md:space-y-0">
               <Button
                 disabled={!authContext.isLoggedIn}
                 variant="secondary"
@@ -145,7 +145,7 @@ export function WorkCommentInputFixed(props: Props) {
               )}
             </div>
           </div>
-          <div className="flex items-center space-x-2 pl-10 text-xs text-muted-foreground md:pl-14">
+          <div className="flex items-center space-x-2 pl-10 text-muted-foreground text-xs md:pl-14">
             <Checkbox
               id="sensitive-checkbox"
               checked={isSensitive}

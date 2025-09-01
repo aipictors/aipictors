@@ -121,7 +121,7 @@ export function PostFormItemVideo(props: Props) {
                 const thumbnailUrl = canvas.toDataURL() // サムネイルをDataURL形式で取得
                 console.log(
                   "サムネイル生成完了:",
-                  thumbnailUrl.substring(0, 50) + "...",
+                  `${thumbnailUrl.substring(0, 50)}...`,
                 )
 
                 updateThumbnail(thumbnailUrl)

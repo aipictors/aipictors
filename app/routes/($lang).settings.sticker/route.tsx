@@ -40,7 +40,7 @@ export default function SettingSticker() {
         <Suspense
           fallback={
             <div className="flex min-h-96 items-center justify-center">
-              <div className="text-sm text-gray-500">
+              <div className="text-gray-500 text-sm">
                 {t("読み込み中...", "Loading...")}
               </div>
             </div>

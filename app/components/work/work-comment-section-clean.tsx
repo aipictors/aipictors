@@ -90,7 +90,7 @@ export function WorkCommentSection(props: Props) {
             variant="ghost"
             size="sm"
             onClick={() => setShowAllComments(true)}
-            className="text-xs text-primary"
+            className="text-primary text-xs"
           >
             {t("すべて表示", "Show all")}
           </Button>
@@ -99,7 +99,7 @@ export function WorkCommentSection(props: Props) {
 
       {/* コメント入力 */}
       {!props.isWorkOwnerBlocked && authContext.isLoggedIn && (
-        <Card className="bg-muted/30 border-0 p-3">
+        <Card className="border-0 bg-muted/30 p-3">
           <div className="flex gap-3">
             <Avatar className="h-8 w-8 flex-shrink-0">
               <AvatarImage
@@ -177,7 +177,7 @@ export function WorkCommentSection(props: Props) {
       ) : (
         <div className="flex flex-col items-center py-8 text-center">
           <MessageCircle className="mb-2 h-8 w-8 text-muted-foreground/50" />
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {t("まだコメントがありません", "No comments yet")}
           </p>
         </div>
@@ -223,7 +223,7 @@ function CommentItem({
           >
             {comment.user?.name}
           </span>
-          <span className="text-xs text-muted-foreground">
+          <span className="text-muted-foreground text-xs">
             {toDateTimeText(comment.createdAt, true)}
           </span>
           {comment.isWorkOwnerLiked && (
@@ -288,7 +288,7 @@ function CommentItem({
               variant="ghost"
               size="sm"
               onClick={() => setShowReplies(!showReplies)}
-              className="h-5 px-0 text-xs text-primary"
+              className="h-5 px-0 text-primary text-xs"
             >
               <ChevronDown
                 className={cn(
@@ -304,7 +304,7 @@ function CommentItem({
                 {comment.responses.map((reply) => (
                   <div
                     key={reply.id}
-                    className="ml-4 border-l-2 border-muted pl-3"
+                    className="ml-4 border-muted border-l-2 pl-3"
                   >
                     <CommentItem comment={reply} isCompact={true} />
                   </div>

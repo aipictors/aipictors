@@ -7,7 +7,6 @@ import { Alert, AlertDescription } from "~/components/ui/alert"
 import {
   Globe,
   MapPin,
-  Server,
   Monitor,
   RefreshCw,
   Copy,
@@ -74,7 +73,7 @@ export default function Route() {
       }
 
       setIpInfo(info)
-    } catch (err) {
+    } catch (_err) {
       setError(
         t(
           "IPアドレス情報の取得に失敗しました。ネットワーク接続を確認してください。",
@@ -110,7 +109,7 @@ export default function Route() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
           <Button onClick={fetchIpInfo} className="flex items-center gap-2">
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="h-4 w-4" />
             {t("再試行", "Retry")}
           </Button>
         </div>
@@ -133,7 +132,7 @@ export default function Route() {
             disabled={isLoading}
           >
             <RefreshCw
-              className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+              className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
             />
             {t("更新", "Refresh")}
           </Button>
@@ -152,7 +151,7 @@ export default function Route() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Globe className="w-5 h-5" />
+              <Globe className="h-5 w-5" />
               {t("基本情報", "Basic Information")}
             </CardTitle>
           </CardHeader>
@@ -172,7 +171,7 @@ export default function Route() {
                       variant="ghost"
                       onClick={() => ipInfo?.ip && copyToClipboard(ipInfo.ip)}
                     >
-                      <Copy className="w-4 h-4" />
+                      <Copy className="h-4 w-4" />
                     </Button>
                   </div>
                 )}
@@ -194,7 +193,7 @@ export default function Route() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
+              <MapPin className="h-5 w-5" />
               {t("地理的情報", "Geographic Information")}
             </CardTitle>
           </CardHeader>
@@ -288,7 +287,7 @@ export default function Route() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Monitor className="w-5 h-5" />
+              <Monitor className="h-5 w-5" />
               {t("デバイス情報", "Device Information")}
             </CardTitle>
           </CardHeader>
@@ -309,11 +308,11 @@ export default function Route() {
                         ipInfo?.userAgent && copyToClipboard(ipInfo.userAgent)
                       }
                     >
-                      <Copy className="w-4 h-4" />
+                      <Copy className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-                <div className="text-sm text-muted-foreground break-all">
+                <div className="break-all text-muted-foreground text-sm">
                   {ipInfo?.userAgent}
                 </div>
               </div>
@@ -327,12 +326,12 @@ export default function Route() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5" />
+            <ShieldCheck className="h-5 w-5" />
             {t("プライバシーについて", "About Privacy")}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {t(
               "この情報は外部のIPアドレス情報提供サービスから取得されています。個人を特定する情報は含まれておらず、この画面以外に保存されることはありません。",
               "This information is obtained from external IP address information services. It does not contain personally identifiable information and is not stored outside of this screen.",

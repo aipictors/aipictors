@@ -25,7 +25,7 @@ export function TagButton(props: Props) {
       )}
       style={{
         background: isSelected
-          ? `linear-gradient(135deg, ${stringToColor(props.name, false)}, ${stringToColor(props.name + "2", false)})`
+          ? `linear-gradient(135deg, ${stringToColor(props.name, false)}, ${stringToColor(`${props.name}2`, false)})`
           : stringToColor(props.name, props.isDisabled ?? false),
       }}
     >

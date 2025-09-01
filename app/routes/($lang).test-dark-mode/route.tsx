@@ -6,8 +6,8 @@ export default function TestDarkMode() {
 
   return (
     <div className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-2xl font-bold">ダークモードテスト</h1>
+      <div className="mx-auto max-w-4xl space-y-8">
+        <h1 className="font-bold text-2xl">ダークモードテスト</h1>
 
         <div className="space-y-4">
           <p>現在のテーマ: {theme}</p>
@@ -19,10 +19,10 @@ export default function TestDarkMode() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">ダークモードテスト要素</h2>
+          <h2 className="font-semibold text-xl">ダークモードテスト要素</h2>
 
           {/* 基本的なdark:クラスのテスト */}
-          <div className="p-4 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+          <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
             <p className="text-gray-900 dark:text-gray-100">
               このテキストはライトモードでは黒、ダークモードでは白になります
             </p>
@@ -30,13 +30,13 @@ export default function TestDarkMode() {
 
           {/* 背景色のテスト */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded">
+            <div className="rounded bg-gray-100 p-4 dark:bg-gray-800">
               <p className="text-gray-900 dark:text-gray-100">Gray 100/800</p>
             </div>
-            <div className="p-4 bg-blue-100 dark:bg-blue-800 rounded">
+            <div className="rounded bg-blue-100 p-4 dark:bg-blue-800">
               <p className="text-blue-900 dark:text-blue-100">Blue 100/800</p>
             </div>
-            <div className="p-4 bg-green-100 dark:bg-green-800 rounded">
+            <div className="rounded bg-green-100 p-4 dark:bg-green-800">
               <p className="text-green-900 dark:text-green-100">
                 Green 100/800
               </p>
@@ -44,24 +44,24 @@ export default function TestDarkMode() {
           </div>
 
           {/* CSSカスタムプロパティのテスト */}
-          <div className="p-4 rounded-lg bg-background text-foreground border border-border">
+          <div className="rounded-lg border border-border bg-background p-4 text-foreground">
             <p>CSSカスタムプロパティ: background, foreground, border</p>
           </div>
 
-          <div className="p-4 rounded-lg bg-card text-card-foreground border border-border">
+          <div className="rounded-lg border border-border bg-card p-4 text-card-foreground">
             <p>カードの背景色とテキスト色</p>
           </div>
 
-          <div className="p-4 rounded-lg bg-muted text-muted-foreground">
+          <div className="rounded-lg bg-muted p-4 text-muted-foreground">
             <p>ミュートされた背景色とテキスト色</p>
           </div>
         </div>
 
         {/* data-theme属性の確認 */}
         <div className="space-y-2">
-          <h3 className="text-lg font-medium">デバッグ情報</h3>
+          <h3 className="font-medium text-lg">デバッグ情報</h3>
           <p>HTML要素のdata-theme属性を確認:</p>
-          <pre className="p-4 bg-gray-100 dark:bg-gray-800 rounded text-sm overflow-auto">
+          <pre className="overflow-auto rounded bg-gray-100 p-4 text-sm dark:bg-gray-800">
             {typeof window !== "undefined"
               ? `document.documentElement.getAttribute('data-theme'): ${document.documentElement.getAttribute("data-theme")}`
               : "サーバーサイドレンダリング中"}
@@ -71,16 +71,16 @@ export default function TestDarkMode() {
           <div className="space-y-4">
             <h4 className="font-medium">Tailwind dark:クラステスト</h4>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-red-100 dark:bg-red-900 rounded">
+              <div className="rounded bg-red-100 p-3 dark:bg-red-900">
                 <p className="text-red-900 dark:text-red-100">Red</p>
               </div>
-              <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded">
+              <div className="rounded bg-yellow-100 p-3 dark:bg-yellow-900">
                 <p className="text-yellow-900 dark:text-yellow-100">Yellow</p>
               </div>
-              <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded">
+              <div className="rounded bg-purple-100 p-3 dark:bg-purple-900">
                 <p className="text-purple-900 dark:text-purple-100">Purple</p>
               </div>
-              <div className="p-3 bg-pink-100 dark:bg-pink-900 rounded">
+              <div className="rounded bg-pink-100 p-3 dark:bg-pink-900">
                 <p className="text-pink-900 dark:text-pink-100">Pink</p>
               </div>
             </div>

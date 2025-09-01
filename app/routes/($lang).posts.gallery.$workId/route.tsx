@@ -1,0 +1,672 @@
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
+import { json, redirect } from "@remix-run/cloudflare"
+import { useLoaderData, Link } from "@remix-run/react"
+import { useState, useCallback, useMemo } from "react"
+import {
+  ArrowLeft,
+  Heart,
+  Eye,
+  MessageCircle,
+  Download,
+  Share,
+  Copy,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react"
+import { OptimizedImage } from "~/components/optimized-image"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
+import { Separator } from "~/components/ui/separator"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { useTranslation } from "~/hooks/use-translation"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
+import { loaderClient } from "~/lib/loader-client"
+import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
+import { type FragmentOf, graphql } from "gql.tada"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
+import { useQuery } from "@apollo/client/index"
+import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
+import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
+import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+
+export function HydrateFallback() {
+  return <AppLoadingPage />
+}
+
+export async function loader(props: LoaderFunctionArgs) {
+  const redirectResponse = checkLocaleRedirect(props.request)
+  if (redirectResponse) {
+    return redirectResponse
+  }
+
+  const workId = props.params.workId
+  if (!workId) {
+    throw new Response("Work not found", { status: 404 })
+  }
+
+  const workResp = await loaderClient.query({
+    query: workQuery,
+    variables: {
+      id: workId,
+    },
+  })
+
+  if (workResp.data.work === null) {
+    throw new Response(null, { status: 404 })
+  }
+
+  // 非公開の場合はエラー
+  if (
+    workResp.data.work.accessType === "PRIVATE" ||
+    workResp.data.work.accessType === "DRAFT"
+  ) {
+    throw new Response(null, { status: 404 })
+  }
+
+  // センシティブな作品の場合は/r/にリダイレクト
+  if (
+    workResp.data.work.rating === "R18" ||
+    workResp.data.work.rating === "R18G"
+  ) {
+    return redirect(`/r/posts/${workId}`)
+  }
+
+  // 関連作品を取得（主要なタグのみ使用）
+  const mainTags = workResp.data.work.tagNames?.slice(0, 2) || []
+
+  const relatedWorksResp =
+    mainTags.length > 0
+      ? await loaderClient.query({
+          query: relatedWorksQuery,
+          variables: {
+            offset: 0,
+            limit: 32, // 初期ページ分
+            where: {
+              tagNames: mainTags,
+            },
+          },
+        })
+      : { data: { works: [] } }
+
+  const relatedWorks =
+    relatedWorksResp.data.works?.filter((work) => work.id !== workId) || []
+
+  return json({
+    workId,
+    work: workResp.data.work,
+    relatedWorks,
+    mainTags,
+  })
+}
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  if (!data || "status" in data || !data.work) {
+    return [{ title: "作品が見つかりません" }]
+  }
+
+  const work = data.work
+
+  return createMeta(META.POSTS, {
+    title: work.title,
+    description: work.description ?? "",
+    image: work.largeThumbnailImageURL,
+  })
+}
+
+/**
+ * ギャラリーの作品詳細ページ
+ */
+export default function GalleryWorkPage() {
+  const data = useLoaderData<typeof loader>()
+  const t = useTranslation()
+
+  // リダイレクトレスポンスの場合は何も表示しない
+  if ("status" in data) {
+    return null
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      {/* ヘッダー */}
+      <div className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 dark:bg-gray-950/95 dark:supports-backdrop-filter:bg-gray-950/60">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/posts/gallery">
+                <ArrowLeft className="mr-2 size-4" />
+                {t("ギャラリーに戻る", "Back to Gallery")}
+              </Link>
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm">
+                <Share className="mr-2 size-4" />
+                {t("共有", "Share")}
+              </Button>
+              <Button variant="ghost" size="sm">
+                <Download className="mr-2 size-4" />
+                {t("保存", "Save")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* メインコンテンツ */}
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <WorkDetailContent work={data.work} data={data} />
+      </div>
+    </div>
+  )
+}
+
+/**
+ * 作品詳細コンテンツ
+ */
+function WorkDetailContent(props: {
+  work: FragmentOf<typeof workArticleFragment>
+  data: {
+    workId: string
+    work: FragmentOf<typeof workArticleFragment>
+    relatedWorks: Array<{
+      id: string
+      title: string
+      largeThumbnailImageURL: string
+      largeThumbnailImageWidth: number
+      largeThumbnailImageHeight: number
+      smallThumbnailImageURL: string
+      smallThumbnailImageWidth: number
+      smallThumbnailImageHeight: number
+      likesCount: number
+      viewsCount: number
+      user: {
+        id: string
+        name: string
+        login: string
+        iconUrl?: string | null
+      } | null
+    }>
+    mainTags: string[]
+  }
+}) {
+  const { work, data } = props
+  const t = useTranslation()
+
+  return (
+    <>
+      {/* Pinterest風レイアウト */}
+      <div className="mx-auto max-w-7xl">
+        {/* PC時: 横並び、モバイル時: 縦並び */}
+        <div className="flex flex-col gap-8 lg:flex-row">
+          {/* 左側: メイン画像 */}
+          <div className="flex-1 lg:max-w-2xl">
+            <div className="sticky top-24">
+              <div className="overflow-hidden rounded-2xl bg-white shadow-xl dark:bg-card">
+                <div className="relative">
+                  <OptimizedImage
+                    src={work.largeThumbnailImageURL}
+                    alt={work.title}
+                    width={work.largeThumbnailImageWidth}
+                    height={work.largeThumbnailImageHeight}
+                    className="w-full object-cover"
+                    loading="eager"
+                  />
+
+                  {/* 画像上のアクションボタン */}
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <Button
+                      size="sm"
+                      className="bg-white/90 text-black hover:bg-white"
+                    >
+                      <Heart className="mr-1 size-4" />
+                      {work.likesCount}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="bg-white/90 hover:bg-white"
+                    >
+                      <Download className="size-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="bg-white/90 hover:bg-white"
+                    >
+                      <Share className="size-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 右側: 詳細情報 */}
+          <div className="flex-1 lg:max-w-md">
+            <WorkDetailsPanel work={work} />
+          </div>
+        </div>
+
+        {/* サブ画像がある場合 */}
+        {work.subWorks && work.subWorks.length > 0 && (
+          <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {work.subWorks.map((subWork) => (
+              <div
+                key={subWork.id}
+                className="overflow-hidden rounded-2xl bg-white shadow-lg dark:bg-card"
+              >
+                <OptimizedImage
+                  src={subWork.imageUrl || ""}
+                  alt={`${work.title} - ${subWork.id}`}
+                  width={400}
+                  height={400}
+                  className="w-full object-cover transition-transform duration-200 hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 関連作品セクション */}
+      <RelatedWorksSection
+        workId={work.id}
+        tagNames={data.mainTags}
+        initialWorks={data.relatedWorks}
+      />
+    </>
+  )
+}
+
+const workQuery = graphql(
+  `query Work($id: ID!) {
+    work(id: $id) {
+      ...WorkArticle
+    }
+  }`,
+  [workArticleFragment],
+)
+
+const relatedWorksQuery = graphql(
+  `query RelatedWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    works(offset: $offset, limit: $limit, where: $where) {
+      ...PhotoAlbumWork
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+/**
+ * 関連作品セクション
+ */
+function RelatedWorksSection(props: {
+  workId: string
+  tagNames: string[]
+  initialWorks: Array<FragmentOf<typeof PhotoAlbumWorkFragment>>
+}) {
+  const { workId, tagNames, initialWorks } = props
+  const t = useTranslation()
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+
+  // フィルター条件を構築
+  const where = useMemo(
+    () => ({
+      tagNames,
+    }),
+    [tagNames],
+  )
+
+  const PER_PAGE = 32
+
+  // 無限スクロール用のGraphQLクエリ
+  const { fetchMore } = useQuery(relatedWorksQuery, {
+    variables: {
+      offset: 0,
+      limit: PER_PAGE,
+      where,
+    },
+    skip: true, // 初期データは既にあるのでスキップ
+  })
+
+  // ページ管理
+  const storeKey = useMemo(
+    () => `related-works-${workId}-${tagNames.join("-")}`,
+    [workId, tagNames],
+  )
+
+  const { pages, appendPage, flat } = usePagedInfinite(
+    initialWorks.length > 0 ? [initialWorks] : [],
+    storeKey,
+  )
+
+  // hasNextの計算
+  const hasNext = (pages.at(-1)?.length ?? 0) >= PER_PAGE - 8
+
+  const loadMore = useCallback(async () => {
+    if (!hasNext || isLoadingMore) return
+
+    setIsLoadingMore(true)
+    try {
+      const result = await fetchMore({
+        variables: {
+          offset: flat.length,
+          limit: PER_PAGE,
+          where,
+        },
+      })
+      if (result.data?.works?.length) {
+        // 現在の作品を除外
+        const filteredWorks = result.data.works.filter(
+          (work) => work.id !== workId,
+        )
+        if (filteredWorks.length > 0) {
+          appendPage(filteredWorks)
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load more related works:", error)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [
+    hasNext,
+    isLoadingMore,
+    fetchMore,
+    flat.length,
+    where,
+    workId,
+    appendPage,
+  ])
+
+  const sentinelRef = useInfiniteScroll(loadMore, {
+    hasNext,
+    loading: isLoadingMore,
+  })
+
+  const works = flat
+
+  if (!tagNames.length || works.length === 0) return null
+
+  return (
+    <div className="mt-16 space-y-8">
+      <div className="text-center">
+        <h2 className="font-bold text-2xl text-foreground">
+          {t("関連する作品", "Related Works")}
+        </h2>
+        <p className="mt-2 text-muted-foreground">
+          {tagNames.map((tag) => `#${tag}`).join(" ")} {t("の作品", "works")}
+        </p>
+      </div>
+
+      {/* 関連作品グリッド */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+        {works.map((work) => (
+          <Link
+            key={work.id}
+            to={`/posts/gallery/${work.id}`}
+            className="group relative block"
+          >
+            <div className="aspect-[3/4] overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
+              <OptimizedImage
+                src={work.smallThumbnailImageURL}
+                alt={work.title}
+                width={work.smallThumbnailImageWidth}
+                height={work.smallThumbnailImageHeight}
+                className="size-full object-cover transition-transform duration-200 group-hover:scale-105"
+                loading="lazy"
+              />
+
+              {/* ホバー時の情報表示 */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <div className="absolute right-0 bottom-0 left-0 p-3">
+                  <p className="line-clamp-2 font-medium text-white text-xs">
+                    {work.title}
+                  </p>
+                  {work.user && (
+                    <p className="mt-1 text-gray-300 text-xs">
+                      by {work.user.name}
+                    </p>
+                  )}
+                  <div className="mt-1 flex items-center gap-2 text-gray-300 text-xs">
+                    <span className="flex items-center gap-1">
+                      <Heart className="size-3" />
+                      {work.likesCount}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Eye className="size-3" />
+                      {work.viewsCount}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* 無限スクロール用のセンチネル */}
+      {hasNext && (
+        <div
+          ref={sentinelRef}
+          className="h-1 w-full"
+          style={{ marginTop: "24px" }}
+        />
+      )}
+
+      {/* ローディング表示 */}
+      {isLoadingMore && (
+        <div className="flex justify-center py-8">
+          <div className="flex items-center gap-2">
+            <div className="size-5 animate-spin rounded-full border-2 border-muted border-t-primary" />
+            <span className="text-muted-foreground text-sm">
+              {t("作品を読み込み中...", "Loading more artworks...")}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* 終了メッセージ */}
+      {!hasNext && works.length > 0 && (
+        <div className="py-8 text-center">
+          <p className="text-muted-foreground text-sm">
+            {t("すべての関連作品を表示しました", "All related works loaded")}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * 作品詳細パネル（右側）
+ */
+function WorkDetailsPanel(props: {
+  work: FragmentOf<typeof workArticleFragment>
+}) {
+  const { work } = props
+  const t = useTranslation()
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
+  const [isPromptExpanded, setIsPromptExpanded] = useState(false)
+
+  // テキストの長さによって展開ボタンを表示するかどうかを決定
+  const shouldShowDescriptionExpand = (work.description?.length || 0) > 150
+  const shouldShowPromptExpand = (work.prompt?.length || 0) > 200
+
+  // クリップボードにコピーする関数
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      // TODO: トースト通知を追加
+      console.log(`${type}をコピーしました`)
+    } catch (err) {
+      console.error("コピーに失敗しました:", err)
+    }
+  }
+
+  return (
+    <div className="space-y-6 rounded-2xl bg-white p-6 shadow-xl dark:bg-card">
+      {/* タイトルとユーザー情報 */}
+      <div className="space-y-4">
+        <h1 className="font-bold text-2xl text-foreground lg:text-3xl">
+          {work.title}
+        </h1>
+
+        {work.user && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Avatar className="size-12">
+                <AvatarImage
+                  src={withIconUrlFallback(work.user.iconUrl)}
+                  alt={work.user.name}
+                />
+                <AvatarFallback>{work.user.name?.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <Link
+                  to={`/users/${work.user.login}`}
+                  className="font-medium text-foreground hover:underline"
+                >
+                  {work.user.name}
+                </Link>
+                <p className="text-muted-foreground text-sm">
+                  @{work.user.login}
+                </p>
+              </div>
+            </div>
+
+            <Button variant="outline" size="sm">
+              {t("フォロー", "Follow")}
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* 統計情報 */}
+      <div className="flex items-center gap-6 text-muted-foreground text-sm">
+        <div className="flex items-center gap-1">
+          <Eye className="size-4" />
+          <span>
+            {work.viewsCount} {t("閲覧", "views")}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <MessageCircle className="size-4" />
+          <span>
+            {work.commentsCount} {t("コメント", "comments")}
+          </span>
+        </div>
+      </div>
+
+      {/* 説明文 */}
+      {work.description && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium text-foreground">
+              {t("説明", "Description")}
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => copyToClipboard(work.description || "", "説明")}
+            >
+              <Copy className="size-4" />
+            </Button>
+          </div>
+          <div className="space-y-2">
+            <p className="whitespace-pre-wrap text-foreground leading-relaxed">
+              {shouldShowDescriptionExpand && !isDescriptionExpanded
+                ? `${work.description.slice(0, 150)}...`
+                : work.description}
+            </p>
+            {shouldShowDescriptionExpand && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                className="h-auto p-0 text-primary hover:bg-transparent"
+              >
+                {isDescriptionExpanded ? (
+                  <>
+                    <ChevronUp className="mr-1 size-4" />
+                    {t("閉じる", "Show less")}
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="mr-1 size-4" />
+                    {t("もっと見る", "Show more")}
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* タグ */}
+      {work.tagNames && work.tagNames.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="font-medium text-foreground">{t("タグ", "Tags")}</h3>
+          <div className="flex flex-wrap gap-2">
+            {work.tagNames.map((tagName) => (
+              <Link
+                key={tagName}
+                to={`/tags/${encodeURIComponent(tagName)}`}
+                className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-gray-700 text-sm transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                #{tagName}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* プロンプト */}
+      {work.prompt && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium text-foreground">
+              {t("プロンプト", "Prompt")}
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => copyToClipboard(work.prompt || "", "プロンプト")}
+            >
+              <Copy className="size-4" />
+            </Button>
+          </div>
+          <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
+            <p className="font-mono text-muted-foreground text-sm">
+              {shouldShowPromptExpand && !isPromptExpanded
+                ? `${work.prompt.slice(0, 200)}...`
+                : work.prompt}
+            </p>
+            {shouldShowPromptExpand && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsPromptExpanded(!isPromptExpanded)}
+                className="mt-2 h-auto p-0 text-primary hover:bg-transparent"
+              >
+                {isPromptExpanded ? (
+                  <>
+                    <ChevronUp className="mr-1 size-4" />
+                    {t("閉じる", "Show less")}
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="mr-1 size-4" />
+                    {t("もっと見る", "Show more")}
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

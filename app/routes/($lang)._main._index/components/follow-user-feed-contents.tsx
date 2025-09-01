@@ -446,17 +446,22 @@ function InfiniteMode(props: Props) {
       {pages.map(
         (pagePosts, idx) =>
           pagePosts.length > 0 && (
-            <FeedContent
-              key={idx.toString()}
-              posts={pagePosts}
-              isTimelineView={isTimelineView}
-              setIsTimelineView={setIsTimelineView}
-              navigate={navigate}
-              t={t}
-              showControls={idx === 0}
-              _isPagination={false}
-              onSelect={props.onSelect}
-            />
+            <div key={idx.toString()} className="w-full">
+              <FeedContent
+                posts={pagePosts}
+                isTimelineView={isTimelineView}
+                setIsTimelineView={setIsTimelineView}
+                navigate={navigate}
+                t={t}
+                showControls={idx === 0}
+                _isPagination={false}
+                onSelect={props.onSelect}
+              />
+              {/* ページ間の視覚的区切り（最後のページ以外） */}
+              {idx < pages.length - 1 && !isTimelineView && (
+                <div className="mt-8 border-t border-muted/20" />
+              )}
+            </div>
           ),
       )}
 

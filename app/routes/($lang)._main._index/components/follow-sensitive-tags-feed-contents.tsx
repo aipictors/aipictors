@@ -480,13 +480,18 @@ function InfiniteMode({
   return (
     <div className="space-y-8">
       {pages.map((p, idx) => (
-        <FeedContent
-          key={idx.toString()}
-          posts={p}
-          isTimelineView={isTimelineView}
-          setIsTimelineView={setIsTimelineView}
-          onSelect={onSelect}
-        />
+        <div key={idx.toString()} className="w-full">
+          <FeedContent
+            posts={p}
+            isTimelineView={isTimelineView}
+            setIsTimelineView={setIsTimelineView}
+            onSelect={onSelect}
+          />
+          {/* ページ間の視覚的区切り（最後のページ以外） */}
+          {idx < pages.length - 1 && !isTimelineView && (
+            <div className="mt-8 border-t border-muted/20" />
+          )}
+        </div>
       ))}
       {isLoadingMore && <Loader />}
       {hasNext && <div ref={sentinelRef} style={{ height: 1 }} />}

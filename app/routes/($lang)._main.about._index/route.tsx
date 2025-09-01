@@ -135,7 +135,7 @@ export default function About() {
     <div className="container mx-auto max-w-4xl space-y-8 p-6">
       {/* ヘッダー */}
       <div className="space-y-4 text-center">
-        <h1 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent">
+        <h1 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-4xl text-transparent">
           {t("本サイトについて", "About This Site")}
         </h1>
         <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
@@ -157,7 +157,7 @@ export default function About() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="leading-relaxed text-muted-foreground">
+              <p className="text-muted-foreground leading-relaxed">
                 {section.content}
               </p>
             </CardContent>
@@ -167,7 +167,7 @@ export default function About() {
 
       {/* リンクセクション */}
       <div className="space-y-6">
-        <h2 className="text-center text-2xl font-semibold">
+        <h2 className="text-center font-semibold text-2xl">
           {t("関連リンク", "Related Links")}
         </h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -187,14 +187,14 @@ export default function About() {
                   </div>
                   <div className="flex flex-1 flex-col space-y-2">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="text-lg font-semibold leading-tight text-gray-900 transition-colors group-hover:text-blue-700 dark:text-gray-100 dark:group-hover:text-blue-300">
+                      <h3 className="font-semibold text-gray-900 text-lg leading-tight transition-colors group-hover:text-blue-700 dark:text-gray-100 dark:group-hover:text-blue-300">
                         {section.title}
                       </h3>
                       {section.external && (
                         <ExternalLinkIcon className="mt-1 h-4 w-4 shrink-0 text-gray-400 transition-colors group-hover:text-blue-500" />
                       )}
                     </div>
-                    <p className="flex-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                    <p className="flex-1 text-gray-600 text-sm leading-relaxed dark:text-gray-400">
                       {section.description}
                     </p>
                   </div>
@@ -207,7 +207,7 @@ export default function About() {
 
       {/* フッター CTA */}
       <div className="space-y-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-8 text-center dark:from-blue-950/20 dark:to-purple-950/20">
-        <h3 className="text-xl font-semibold">
+        <h3 className="font-semibold text-xl">
           {t("Aipictorsを始めよう", "Get Started with Aipictors")}
         </h3>
         <p className="text-muted-foreground">

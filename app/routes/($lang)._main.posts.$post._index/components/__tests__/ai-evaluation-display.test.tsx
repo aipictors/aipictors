@@ -5,7 +5,7 @@ import { AiEvaluationDisplay } from "../ai-evaluation-display"
 
 // useTranslationのモック
 mock.module("~/hooks/use-translation", () => ({
-  useTranslation: () => (jaText: string, enText: string) => jaText,
+  useTranslation: () => (jaText: string, _enText: string) => jaText,
 }))
 
 // LocalStorageのモック

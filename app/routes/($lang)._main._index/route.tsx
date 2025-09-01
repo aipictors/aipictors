@@ -963,7 +963,7 @@ export default function Index() {
                       />
                       <label
                         htmlFor="one-work-per-user"
-                        className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        className="cursor-pointer font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         {t("ユーザー毎に1作品", "One work per user")}
                       </label>

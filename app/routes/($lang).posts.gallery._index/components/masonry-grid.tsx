@@ -1,0 +1,297 @@
+import { useMemo, useState, useEffect } from "react"
+import type { FragmentOf } from "gql.tada"
+import { Link } from "@remix-run/react"
+import { Heart, Eye, Images } from "lucide-react"
+import { OptimizedImage } from "~/components/optimized-image"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Skeleton } from "~/components/ui/skeleton"
+import { LikeButton } from "~/components/like-button"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+
+type Props = {
+  works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
+  isLoadingMore?: boolean
+}
+
+type WorkItemProps = {
+  work: FragmentOf<typeof PhotoAlbumWorkFragment>
+}
+
+/**
+ * マソンリーグリッドのスケルトンローディング
+ */
+const MasonryGridSkeleton = ({
+  showFullGrid = true,
+}: {
+  showFullGrid?: boolean
+}) => {
+  // サーバーサイドでもクライアントサイドでも一貫したカラム数を使用
+  const columnCount = 6 // 最大カラム数に合わせる
+  const itemCount = showFullGrid ? 36 : columnCount * 3 // フルグリッドまたは部分的なスケルトン
+
+  const skeletonItems = Array.from({ length: itemCount }, (_, i) => ({
+    id: `skeleton-${i}`,
+    height: 200 + (i % 3) * 100, // 200px, 300px, 400pxの高さをローテーション
+    columnIndex: i % columnCount,
+  }))
+
+  // カラムごとにスケルトンアイテムを分散
+  const columns = Array.from({ length: columnCount }, (_, columnIndex) =>
+    skeletonItems.filter((item) => item.columnIndex === columnIndex),
+  )
+
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      {columns.map((column) => {
+        // スケルトンカラムの一意のキーを生成
+        const firstItemId =
+          column.length > 0
+            ? column[0]?.id
+            : `empty-${Math.random().toString(36).substr(2, 9)}`
+        const columnKey = `skeleton-column-${firstItemId}-${column.length}`
+
+        return (
+          <div key={columnKey} className="flex flex-col gap-3">
+            {column.map((item) => (
+              <div
+                key={item.id}
+                className="overflow-hidden rounded-lg border bg-card shadow-sm"
+              >
+                {/* 画像スケルトン */}
+                <Skeleton
+                  className="w-full rounded-b-none bg-muted/20"
+                  style={{ height: `${item.height}px` }}
+                />
+                {/* 情報スケルトン */}
+                <div className="space-y-2 p-2">
+                  <Skeleton className="h-4 w-3/4 bg-muted/20" />
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-5 w-5 rounded-full bg-muted/20" />
+                    <Skeleton className="h-3 w-16 bg-muted/20" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/**
+ * ピンタレスト風マソンリーグリッド（改良版）
+ */
+export function MasonryGrid(props: Props) {
+  const { works, isLoadingMore } = props
+  const [columnCount, setColumnCount] = useState(6)
+
+  // レスポンシブなカラム数を設定
+  useEffect(() => {
+    const updateColumnCount = () => {
+      const width = window.innerWidth
+      if (width < 640)
+        setColumnCount(2) // sm未満
+      else if (width < 768)
+        setColumnCount(3) // md未満
+      else if (width < 1024)
+        setColumnCount(4) // lg未満
+      else if (width < 1280)
+        setColumnCount(5) // xl未満
+      else setColumnCount(6) // xl以上
+    }
+
+    updateColumnCount()
+    window.addEventListener("resize", updateColumnCount)
+    return () => window.removeEventListener("resize", updateColumnCount)
+  }, [])
+
+  // 作品をカラムに分散配置（高さを考慮した最適化）
+  const columns = useMemo(() => {
+    const cols: FragmentOf<typeof PhotoAlbumWorkFragment>[][] = Array.from(
+      { length: columnCount },
+      () => [],
+    )
+
+    // カラムの現在の高さを追跡（推定値）
+    const columnHeights = Array.from({ length: columnCount }, () => 0)
+
+    works.forEach((work) => {
+      // 最も高さの低いカラムを選択
+      const shortestColumnIndex = columnHeights.indexOf(
+        Math.min(...columnHeights),
+      )
+      cols[shortestColumnIndex].push(work)
+
+      // 作品の高さを推定してカラムの高さを更新
+      const aspectRatio =
+        work.smallThumbnailImageHeight / work.smallThumbnailImageWidth
+      const estimatedImageHeight = Math.min(
+        Math.max(aspectRatio * 240, 180),
+        400,
+      )
+      const totalItemHeight = estimatedImageHeight + 80 // 画像 + パディング + テキスト部分
+      columnHeights[shortestColumnIndex] += totalItemHeight
+    })
+
+    return cols
+  }, [works, columnCount])
+
+  // 初期読み込み中（作品がない場合）はフルスケルトンを表示
+  if (works.length === 0) {
+    return <MasonryGridSkeleton showFullGrid={true} />
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      {columns.map((column) => {
+        // カラムの一意のキーを生成（カラム内の作品IDから）
+        const columnKey =
+          column.length > 0
+            ? `col-${column[0]?.id}-${column.length}`
+            : `empty-col-${Math.random().toString(36).substr(2, 9)}`
+
+        return (
+          <div key={columnKey} className="flex flex-col gap-3">
+            {/* 既存の作品 */}
+            {column.map((work) => (
+              <WorkItem key={work.id} work={work} />
+            ))}
+
+            {/* ローディング中のスケルトンタイル（カラムあたり1個ずつ） */}
+            {isLoadingMore && (
+              <div
+                key={`loading-skeleton-${columnKey}`}
+                className="overflow-hidden rounded-lg border bg-card shadow-sm"
+              >
+                <Skeleton
+                  className="w-full rounded-b-none bg-muted/20"
+                  style={{
+                    height: `${200 + (columns.indexOf(column) % 3) * 100}px`,
+                  }}
+                />
+                <div className="space-y-2 p-2">
+                  <Skeleton className="h-4 w-3/4 bg-muted/20" />
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-5 w-5 rounded-full bg-muted/20" />
+                    <Skeleton className="h-3 w-16 bg-muted/20" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/**
+ * 個別の作品アイテム
+ */
+function WorkItem(props: WorkItemProps) {
+  const { work } = props
+
+  // アスペクト比を計算してカードの高さを決定
+  const aspectRatio =
+    work.smallThumbnailImageHeight / work.smallThumbnailImageWidth
+  const imageHeight = Math.min(Math.max(aspectRatio * 240, 180), 400) // 最小180px、最大400px
+
+  return (
+    <Link
+      to={`/posts/gallery/${work.id}`}
+      className="group relative block overflow-hidden rounded-lg bg-card shadow-sm transition-all duration-200 hover:shadow-lg"
+    >
+      {/* メイン画像 */}
+      <div className="relative overflow-hidden" style={{ height: imageHeight }}>
+        <OptimizedImage
+          src={work.smallThumbnailImageURL}
+          alt={work.title}
+          width={work.smallThumbnailImageWidth}
+          height={work.smallThumbnailImageHeight}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+
+        {/* オーバーレイ */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+
+        {/* サブ作品数バッジ */}
+        {work.subWorksCount > 0 && (
+          <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
+            <Images className="size-3" />
+            <span>{work.subWorksCount + 1}</span>
+          </div>
+        )}
+
+        {/* いいねボタン */}
+        <button
+          type="button"
+          className="absolute top-2 left-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault()
+              e.stopPropagation()
+            }
+          }}
+        >
+          <LikeButton
+            size={32}
+            targetWorkId={work.id}
+            targetWorkOwnerUserId={work.user?.id ?? ""}
+            defaultLiked={work.isLiked}
+            defaultLikedCount={work.likesCount}
+            isBackgroundNone={false}
+            strokeWidth={2}
+          />
+        </button>
+
+        {/* 統計情報 */}
+        <div className="absolute right-2 bottom-2 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
+            <Heart className="size-3" />
+            <span>{work.likesCount}</span>
+          </div>
+          {work.commentsCount > 0 && (
+            <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
+              <Eye className="size-3" />
+              <span>{work.commentsCount}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 作品情報 */}
+      <div className="p-2">
+        {/* タイトル */}
+        <h3 className="line-clamp-2 font-medium text-foreground text-sm leading-tight">
+          {work.title}
+        </h3>
+
+        {/* ユーザー情報 */}
+        {work.user && (
+          <div className="mt-1 flex items-center gap-2">
+            <Avatar className="size-5">
+              <AvatarImage
+                src={withIconUrlFallback(work.user.iconUrl)}
+                alt={work.user.name}
+                className="size-5"
+              />
+              <AvatarFallback className="size-5 text-xs">
+                {work.user.name?.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="truncate text-muted-foreground text-xs">
+              {work.user.name}
+            </span>
+          </div>
+        )}
+      </div>
+    </Link>
+  )
+}

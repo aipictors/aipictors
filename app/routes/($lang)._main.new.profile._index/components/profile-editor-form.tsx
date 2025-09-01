@@ -11,7 +11,6 @@ import { useContext, useState } from "react"
 import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toast } from "sonner"
-import { Card, CardContent } from "~/components/ui/card"
 import { useNavigate } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -121,48 +120,48 @@ export function ProfileEditorForm() {
     <>
       <div className="container mx-auto max-w-4xl space-y-8 p-6">
         {/* ウェルカムセクション */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 border border-gray-100">
-          <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold text-gray-800">
+        <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50 p-8">
+          <div className="space-y-4 text-center">
+            <h1 className="font-bold text-3xl text-gray-800">
               {t("Aipictorsへようこそ！", "Welcome to Aipictors!")}
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-gray-600 text-lg">
               {t(
                 "日本最大級のAIイラスト・小説投稿サイトです",
                 "Japan's largest AI illustration and novel posting site",
               )}
             </p>
-            <div className="grid md:grid-cols-3 gap-4 mt-6">
-              <div className="bg-white rounded-lg p-4 border border-gray-100">
-                <div className="text-blue-500 text-2xl mb-2">🎨</div>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              <div className="rounded-lg border border-gray-100 bg-white p-4">
+                <div className="mb-2 text-2xl text-blue-500">🎨</div>
                 <h3 className="font-semibold text-gray-800">
                   {t("作品投稿", "Post Artwork")}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-gray-600 text-sm">
                   {t(
                     "AIイラストや小説を投稿して、多くの人に見てもらおう",
                     "Share your AI artwork and novels with many people",
                   )}
                 </p>
               </div>
-              <div className="bg-white rounded-lg p-4 border border-gray-100">
-                <div className="text-green-500 text-2xl mb-2">👥</div>
+              <div className="rounded-lg border border-gray-100 bg-white p-4">
+                <div className="mb-2 text-2xl text-green-500">👥</div>
                 <h3 className="font-semibold text-gray-800">
                   {t("コミュニティ", "Community")}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-gray-600 text-sm">
                   {t(
                     "他のクリエイターとつながり、お互いの作品を楽しもう",
                     "Connect with other creators and enjoy each other's work",
                   )}
                 </p>
               </div>
-              <div className="bg-white rounded-lg p-4 border border-gray-100">
-                <div className="text-purple-500 text-2xl mb-2">🏆</div>
+              <div className="rounded-lg border border-gray-100 bg-white p-4">
+                <div className="mb-2 text-2xl text-purple-500">🏆</div>
                 <h3 className="font-semibold text-gray-800">
                   {t("コンテスト", "Contests")}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-gray-600 text-sm">
                   {t(
                     "定期的に開催されるコンテストに参加して腕試し",
                     "Participate in regular contests to test your skills",
@@ -174,13 +173,13 @@ export function ProfileEditorForm() {
         </div>
 
         {/* プロフィール設定説明 */}
-        <div className="bg-yellow-50 rounded-xl p-6 border border-yellow-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
+        <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-6">
+          <h2 className="mb-4 font-bold text-gray-800 text-xl">
             {t("プロフィール設定について", "About Profile Setup")}
           </h2>
           <div className="space-y-3 text-gray-700">
             <div className="flex items-start gap-3">
-              <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+              <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-500 font-bold text-sm text-white">
                 1
               </span>
               <p>
@@ -191,7 +190,7 @@ export function ProfileEditorForm() {
               </p>
             </div>
             <div className="flex items-start gap-3">
-              <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+              <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-500 font-bold text-sm text-white">
                 2
               </span>
               <p>
@@ -202,7 +201,7 @@ export function ProfileEditorForm() {
               </p>
             </div>
             <div className="flex items-start gap-3">
-              <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+              <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-500 font-bold text-sm text-white">
                 3
               </span>
               <p>
@@ -213,8 +212,8 @@ export function ProfileEditorForm() {
               </p>
             </div>
           </div>
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-sm text-blue-800">
+          <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
+            <p className="text-blue-800 text-sm">
               💡{" "}
               {t(
                 "すべての項目は後から設定画面で変更できるので、まずは気軽に設定してみてください",

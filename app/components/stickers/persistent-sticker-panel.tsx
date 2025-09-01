@@ -66,7 +66,7 @@ export function PersistentStickerPanel(props: Props) {
   return (
     <div
       className={cn(
-        "fixed bottom-4 right-4 z-30 w-80 rounded-lg border bg-background/95 shadow-lg backdrop-blur supports-backdrop-filter:bg-background/60",
+        "fixed right-4 bottom-4 z-30 w-80 rounded-lg border bg-background/95 shadow-lg backdrop-blur supports-backdrop-filter:bg-background/60",
         props.className,
       )}
     >
