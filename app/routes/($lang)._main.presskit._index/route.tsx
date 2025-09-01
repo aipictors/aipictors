@@ -104,13 +104,13 @@ export default function Presskit() {
   }
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-8 p-6">
+    <div className="container mx-auto max-w-6xl space-y-6 sm:space-y-8 p-4 sm:p-6">
       {/* ヘッダー */}
-      <div className="space-y-4 text-center">
-        <h1 className="text-4xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
+      <div className="space-y-3 sm:space-y-4 text-center">
+        <h1 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-3xl sm:text-4xl font-bold text-transparent">
           {t("プレスキット", "Press Kit")}
         </h1>
-        <p className="mx-auto max-w-3xl text-lg text-muted-foreground">
+        <p className="mx-auto max-w-3xl text-base sm:text-lg text-muted-foreground">
           {t(
             "Aipictorsのロゴ素材をダウンロードしていただけます。メディア掲載や紹介記事などでご活用ください。",
             "Download Aipictors logo materials. Use them for media coverage, articles, and other promotional purposes.",
@@ -119,31 +119,31 @@ export default function Presskit() {
       </div>
 
       {/* 利用規約セクション */}
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-950/20">
-        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-amber-800 dark:text-amber-200">
-          <FileTypeIcon className="h-6 w-6" />
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 sm:p-6 dark:border-amber-800 dark:bg-amber-950/20">
+        <h2 className="mb-3 sm:mb-4 flex items-center gap-2 text-lg sm:text-xl font-semibold text-amber-800 dark:text-amber-200">
+          <FileTypeIcon className="h-5 w-5 sm:h-6 sm:w-6" />
           {t("利用規約", "Terms of Use")}
         </h2>
-        <div className="space-y-3 text-amber-800 dark:text-amber-200">
-          <p>
+        <div className="space-y-2 sm:space-y-3 text-amber-800 dark:text-amber-200">
+          <p className="text-sm sm:text-base">
             {t(
               "・商用・非商用問わず、自由にご利用いただけます",
               "• Free to use for both commercial and non-commercial purposes",
             )}
           </p>
-          <p>
+          <p className="text-sm sm:text-base">
             {t(
               "・当サービスが支援または推奨しているかのような印象を与える使用は禁止します",
               "• Usage that implies endorsement or recommendation by our service is prohibited",
             )}
           </p>
-          <p>
+          <p className="text-sm sm:text-base">
             {t(
               "・ロゴの改変、色の変更は避けてください",
               "• Please avoid modifying the logo or changing its colors",
             )}
           </p>
-          <p>
+          <p className="text-sm sm:text-base">
             {t(
               "・不適切な用途での使用はお控えください",
               "• Please refrain from using it for inappropriate purposes",
@@ -157,16 +157,16 @@ export default function Presskit() {
         <h2 className="text-center text-2xl font-semibold">
           {t("ロゴ素材", "Logo Assets")}
         </h2>
-        <div className="grid gap-8 lg:grid-cols-1">
+        <div className="space-y-8">
           {logos.map((logo) => (
             <div
               key={logo.id}
-              className="rounded-xl border border-gray-200 bg-white p-8 dark:border-gray-700 dark:bg-gray-800"
+              className="rounded-xl border border-gray-200 bg-white p-4 sm:p-8 dark:border-gray-700 dark:bg-gray-800"
             >
-              <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
+              <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-8 lg:space-y-0 lg:items-center">
                 {/* ロゴプレビュー */}
                 <div className="space-y-4">
-                  <div className="flex aspect-video items-center justify-center rounded-lg bg-gray-50 p-8 dark:bg-gray-900">
+                  <div className="flex aspect-video items-center justify-center rounded-lg bg-gray-50 p-4 sm:p-8 dark:bg-gray-900">
                     <img
                       src={logo.imageUrl}
                       alt={logo.title}
@@ -198,15 +198,19 @@ export default function Presskit() {
                 {/* ロゴ情報・ダウンロード */}
                 <div className="space-y-6">
                   <div className="space-y-3">
-                    <h3 className="text-2xl font-semibold">{logo.title}</h3>
-                    <p className="text-muted-foreground">{logo.description}</p>
+                    <h3 className="text-xl sm:text-2xl font-semibold">
+                      {logo.title}
+                    </h3>
+                    <p className="text-sm sm:text-base text-muted-foreground">
+                      {logo.description}
+                    </p>
                   </div>
 
                   <div className="space-y-4">
-                    <h4 className="text-lg font-medium">
+                    <h4 className="text-base sm:text-lg font-medium">
                       {t("ダウンロード", "Download")}
                     </h4>
-                    <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="grid gap-3">
                       {logo.formats.map((format) => (
                         <Button
                           key={format.type}
@@ -216,18 +220,18 @@ export default function Presskit() {
                               `aipictors_logo_${logo.id}.${format.type.toLowerCase()}`,
                             )
                           }
-                          className="flex items-center gap-2"
+                          className="flex w-full items-center justify-center gap-2 sm:w-auto"
                           variant="default"
                         >
                           <DownloadIcon className="h-4 w-4" />
-                          {format.type}形式
+                          {format.type}形式でダウンロード
                         </Button>
                       ))}
                     </div>
                   </div>
 
                   <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {t(
                         "画像を右クリックして「名前を付けて保存」からも保存できます",
                         "You can also right-click the image and select 'Save as' to download",
@@ -242,17 +246,17 @@ export default function Presskit() {
       </div>
 
       {/* マスコットキャラクター */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-        <h2 className="mb-6 flex items-center gap-2 text-xl font-semibold">
-          <SparklesIcon className="h-6 w-6 text-purple-600" />
+      <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-6 dark:border-gray-700 dark:bg-gray-800">
+        <h2 className="mb-4 sm:mb-6 flex items-center gap-2 text-lg sm:text-xl font-semibold">
+          <SparklesIcon className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600" />
           {t("マスコットキャラクター", "Mascot Character")}
         </h2>
-        <div className="grid gap-6 lg:grid-cols-2 lg:items-center">
+        <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0 lg:items-center">
           {/* キャラクター画像 */}
           <div className="flex justify-center">
             <div className="relative">
               <div className="-inset-1 absolute rounded-full bg-gradient-to-r from-red-500 to-purple-500 opacity-20 blur-sm" />
-              <div className="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-full bg-white dark:bg-gray-800">
+              <div className="relative flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center overflow-hidden rounded-full bg-white dark:bg-gray-800">
                 <img
                   src="https://assets.aipictors.com/6308eaf00a05fd7c3001b709dbe8e39a.webp"
                   alt={t("ぴくたーちゃん", "Pictor-chan")}
@@ -265,10 +269,10 @@ export default function Presskit() {
           {/* キャラクター説明 */}
           <div className="space-y-4">
             <div className="space-y-2">
-              <h3 className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text font-semibold text-2xl text-transparent">
+              <h3 className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-lg sm:text-2xl font-semibold text-transparent">
                 {t("ぴくたーちゃん", "Pictor-chan")}
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 {t(
                   "Aipictorsの公式マスコットキャラクターです。AI画像生成の世界を案内する可愛らしいキャラクターとして親しまれています。",
                   "The official mascot character of Aipictors. A lovable character who guides users through the world of AI image generation.",
@@ -276,8 +280,8 @@ export default function Presskit() {
               </p>
             </div>
 
-            <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
-              <p className="text-sm text-muted-foreground">
+            <div className="rounded-lg bg-gray-50 p-3 sm:p-4 dark:bg-gray-900">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {t(
                   "ぴくたーちゃんの詳細情報やキャラクター設定については、専用ページをご覧ください。",
                   "For detailed information and character settings of Pictor-chan, please visit the dedicated page.",
@@ -285,8 +289,11 @@ export default function Presskit() {
               </p>
             </div>
 
-            <Button asChild variant="outline">
-              <a href="/pictor-chan" className="inline-flex items-center gap-2">
+            <Button asChild variant="outline" className="w-full sm:w-auto">
+              <a
+                href="/pictor-chan"
+                className="inline-flex items-center justify-center gap-2"
+              >
                 <SparklesIcon className="h-4 w-4" />
                 {t("ぴくたーちゃんについて", "About Pictor-chan")}
               </a>
@@ -296,23 +303,23 @@ export default function Presskit() {
       </div>
 
       {/* SVGファイル・その他の素材 */}
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-950/20">
-        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-blue-800 dark:text-blue-200">
-          <ImageIcon className="h-6 w-6" />
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 sm:p-6 dark:border-blue-800 dark:bg-blue-950/20">
+        <h2 className="mb-3 sm:mb-4 flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-800 dark:text-blue-200">
+          <ImageIcon className="h-5 w-5 sm:h-6 sm:w-6" />
           {t("SVGファイル・その他の素材", "SVG Files & Other Assets")}
         </h2>
-        <p className="mb-4 text-blue-800 dark:text-blue-200">
+        <p className="mb-3 sm:mb-4 text-sm sm:text-base text-blue-800 dark:text-blue-200">
           {t(
             "SVGファイルやその他の形式のロゴ素材は、Google Driveで提供しています。",
             "SVG files and other logo formats are available on Google Drive.",
           )}
         </p>
-        <Button asChild variant="default">
+        <Button asChild variant="default" className="w-full sm:w-auto">
           <a
             href="https://drive.google.com/drive/u/2/folders/14P8S880GRH91gaHQ_ZyAt-7VnpCYZlL7"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2"
+            className="inline-flex items-center justify-center gap-2"
           >
             <ExternalLinkIcon className="h-4 w-4" />
             {t("Google Driveで素材を見る", "View Assets on Google Drive")}
@@ -321,18 +328,21 @@ export default function Presskit() {
       </div>
 
       {/* フッター CTA */}
-      <div className="space-y-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-8 text-center dark:from-blue-950/20 dark:to-purple-950/20">
-        <h3 className="text-xl font-semibold">
+      <div className="space-y-3 sm:space-y-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 p-6 sm:p-8 text-center dark:from-blue-950/20 dark:to-purple-950/20">
+        <h3 className="text-lg sm:text-xl font-semibold">
           {t("お問い合わせ", "Contact Us")}
         </h3>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           {t(
             "ロゴの使用に関してご質問がございましたら、お気軽にお問い合わせください。",
             "If you have any questions about logo usage, please feel free to contact us.",
           )}
         </p>
-        <Button asChild variant="default">
-          <a href="/contact" className="inline-flex items-center gap-2">
+        <Button asChild variant="default" className="w-full sm:w-auto">
+          <a
+            href="/contact"
+            className="inline-flex items-center justify-center gap-2"
+          >
             {t("お問い合わせページへ", "Go to Contact Page")}
           </a>
         </Button>

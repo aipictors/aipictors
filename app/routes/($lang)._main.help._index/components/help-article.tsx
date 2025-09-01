@@ -24,23 +24,53 @@ export function HelpArticle() {
       </div>
 
       <Tabs defaultValue="quickstart" className="w-full">
-        <TabsList className="grid w-full grid-cols-8">
-          <TabsTrigger value="quickstart">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 p-1 text-xs sm:grid-cols-4 sm:text-sm lg:grid-cols-8">
+          <TabsTrigger 
+            value="quickstart" 
+            className="px-2 py-2 sm:px-4"
+          >
             {t("クイックスタート", "Quick Start")}
           </TabsTrigger>
-          <TabsTrigger value="overview">{t("概要", "Overview")}</TabsTrigger>
-          <TabsTrigger value="registration">
+          <TabsTrigger 
+            value="overview" 
+            className="px-2 py-2 sm:px-4"
+          >
+            {t("概要", "Overview")}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="registration" 
+            className="px-2 py-2 sm:px-4"
+          >
             {t("登録", "Registration")}
           </TabsTrigger>
-          <TabsTrigger value="posting">{t("投稿", "Posting")}</TabsTrigger>
-          <TabsTrigger value="features">{t("機能", "Features")}</TabsTrigger>
-          <TabsTrigger value="generation">
+          <TabsTrigger 
+            value="posting" 
+            className="px-2 py-2 sm:px-4"
+          >
+            {t("投稿", "Posting")}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="features" 
+            className="px-2 py-2 sm:px-4"
+          >
+            {t("機能", "Features")}
+          </TabsTrigger>
+          <TabsTrigger 
+            value="generation" 
+            className="px-2 py-2 sm:px-4"
+          >
             {t("AI生成", "AI Generation")}
           </TabsTrigger>
-          <TabsTrigger value="community">
+          <TabsTrigger 
+            value="community" 
+            className="px-2 py-2 sm:px-4"
+          >
             {t("コミュニティ", "Community")}
           </TabsTrigger>
-          <TabsTrigger value="pictor-chan">
+          <TabsTrigger 
+            value="pictor-chan" 
+            className="px-2 py-2 sm:px-4"
+          >
             {t("ぴくたーちゃん", "Pictor-chan")}
           </TabsTrigger>
         </TabsList>
