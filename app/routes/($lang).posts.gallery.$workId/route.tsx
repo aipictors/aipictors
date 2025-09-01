@@ -3,7 +3,6 @@ import { json, redirect } from "@remix-run/cloudflare"
 import { useLoaderData, Link } from "@remix-run/react"
 import { useState, useCallback, useMemo } from "react"
 import {
-  ArrowLeft,
   Eye,
   MessageCircle,
   Download,
@@ -15,7 +14,6 @@ import {
 import { OptimizedImage } from "~/components/optimized-image"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
-import { Separator } from "~/components/ui/separator"
 import {
   Popover,
   PopoverContent,
@@ -40,6 +38,7 @@ import { FollowButton } from "~/components/button/follow-button"
 import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/components/work-action-copy-url"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
+import { GalleryHeader } from "~/components/gallery-header"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -130,7 +129,6 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
  */
 export default function GalleryWorkPage() {
   const data = useLoaderData<typeof loader>()
-  const t = useTranslation()
 
   // リダイレクトレスポンスの場合は何も表示しない
   if ("status" in data) {
@@ -139,64 +137,10 @@ export default function GalleryWorkPage() {
 
   const { work } = data
 
-  // ダウンロード機能
-  const onDownload = () => {
-    if (!work.largeThumbnailImageURL) return
-    downloadImageFile(work.id, work.largeThumbnailImageURL)
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* ヘッダー */}
-      <div className="sticky top-0 z-40 border-b bg-white/95 backdrop-blur supports-backdrop-filter:bg-white/60 dark:bg-gray-950/95 dark:supports-backdrop-filter:bg-gray-950/60">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/posts/gallery">
-                <ArrowLeft className="mr-2 size-4" />
-                {t("ギャラリーに戻る", "Back to Gallery")}
-              </Link>
-            </Button>
-            <Separator orientation="vertical" className="h-6" />
-            <div className="flex items-center gap-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Share2 className="mr-2 size-4" />
-                    {t("共有", "Share")}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80">
-                  <div className="grid gap-4">
-                    <div className="space-y-2">
-                      <h4 className="font-medium leading-none">
-                        {t("作品を共有する", "Share work")}
-                      </h4>
-                    </div>
-                    <div className="grid gap-2">
-                      <CopyWorkUrlButton
-                        currentUrl={`https://www.aipictors.com/posts/${work.id}`}
-                      />
-                      <XIntent
-                        text={t(
-                          `AIイラスト投稿サイトAipictorsに投稿された作品\n「${work.title}」\n\n${work.description}`,
-                          `Work posted on AI Illustration Posting Site Aipictors\n"${work.title}"\n\n${work.description}`,
-                        )}
-                        url={`https://www.aipictors.com/posts/${work.id}`}
-                        hashtags={["Aipictors", t("AIイラスト", "AIIllust")]}
-                      />
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-              <Button variant="ghost" size="sm" onClick={onDownload}>
-                <Download className="mr-2 size-4" />
-                {t("保存", "Save")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <GalleryHeader />
 
       {/* メインコンテンツ */}
       <div className="mx-auto max-w-7xl px-4 py-8">
@@ -236,7 +180,6 @@ function WorkDetailContent(props: {
   }
 }) {
   const { work, data } = props
-  const t = useTranslation()
 
   // ダウンロード機能
   const onDownload = () => {
@@ -299,7 +242,7 @@ function WorkDetailContent(props: {
                         <div className="grid gap-4">
                           <div className="space-y-2">
                             <h4 className="font-medium leading-none">
-                              {t("作品を共有する", "Share work")}
+                              作品を共有する
                             </h4>
                           </div>
                           <div className="grid gap-2">
@@ -307,14 +250,11 @@ function WorkDetailContent(props: {
                               currentUrl={`https://www.aipictors.com/posts/${work.id}`}
                             />
                             <XIntent
-                              text={t(
-                                `AIイラスト投稿サイトAipictorsに投稿された作品\n「${work.title}」\n\n${work.description ?? ""}`,
-                                `Work posted on AI Illustration Posting Site Aipictors\n"${work.title}"\n\n${work.description ?? ""}`,
-                              )}
+                              text={`AIイラスト投稿サイトAipictorsに投稿された作品\n「${work.title}」\n\n${work.description ?? ""}`}
                               url={`https://www.aipictors.com/posts/${work.id}`}
                               hashtags={[
                                 "Aipictors",
-                                t("AIイラスト", "AIIllust"),
+                                "AIイラスト",
                               ]}
                             />
                           </div>

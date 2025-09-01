@@ -5,8 +5,7 @@ import { Suspense } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { GalleryView } from "./components/gallery-view"
 import { GalleryFilters } from "./components/gallery-filters"
-import { GalleryToolbar } from "./components/gallery-toolbar"
-import { useTranslation } from "~/hooks/use-translation"
+import { GalleryHeader } from "~/components/gallery-header"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 type LoaderData = {
@@ -47,7 +46,6 @@ export async function loader(props: LoaderFunctionArgs) {
  */
 export default function GalleryPage() {
   const data = useLoaderData<typeof loader>()
-  const t = useTranslation()
 
   // リダイレクトレスポンスの場合は何も表示しない
   if ("status" in data) {
@@ -57,18 +55,7 @@ export default function GalleryPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* ヘッダー */}
-      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-bold text-2xl">
-                {t("ギャラリー", "Gallery")}
-              </h1>
-            </div>
-            <GalleryToolbar />
-          </div>
-        </div>
-      </div>
+      <GalleryHeader />
 
       {/* メインコンテンツ */}
       <div className="flex-1 px-4 py-6">
