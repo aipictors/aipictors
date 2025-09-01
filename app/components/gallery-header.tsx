@@ -8,8 +8,8 @@ import {
   ArrowLeft, 
   X 
 } from "lucide-react"
-import { useState, Suspense, lazy } from "react"
-import { useNavigate, Link } from "@remix-run/react"
+import { useState, Suspense, lazy, useEffect } from "react"
+import { useNavigate, Link, useLocation, useSearchParams } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 
 // Lazy load メニューコンポーネント
@@ -29,11 +29,34 @@ export function GalleryHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchText, setSearchText] = useState("")
   const navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
   const t = useTranslation()
+
+  // 現在の検索テキストをURLパラメータから初期化
+  useEffect(() => {
+    const currentSearchText = searchParams.get("q") || ""
+    setSearchText(currentSearchText)
+  }, [searchParams])
 
   const handleSearch = () => {
     if (searchText.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchText.trim())}`)
+      // 現在のページがギャラリーページの場合は、このページ内で検索
+      if (location.pathname.includes("/posts/gallery")) {
+        const newSearchParams = new URLSearchParams(searchParams)
+        newSearchParams.set("q", searchText.trim())
+        navigate(`${location.pathname}?${newSearchParams.toString()}`)
+      } else {
+        // その他のページの場合は検索ページに遷移
+        navigate(`/search?q=${encodeURIComponent(searchText.trim())}`)
+      }
+    } else {
+      // 検索テキストが空の場合は検索パラメータを削除
+      if (location.pathname.includes("/posts/gallery")) {
+        const newSearchParams = new URLSearchParams(searchParams)
+        newSearchParams.delete("q")
+        navigate(`${location.pathname}?${newSearchParams.toString()}`)
+      }
     }
   }
 

@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
-import { Suspense } from "react"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
+import { Suspense, useEffect } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { GalleryView } from "./components/gallery-view"
 import { GalleryFilters } from "./components/gallery-filters"
@@ -14,6 +14,7 @@ type LoaderData = {
   sort: "DATE_CREATED" | "LIKES_COUNT" | "VIEWS_COUNT" | "COMMENTS_COUNT"
   style: "ILLUSTRATION" | "PHOTO" | "SEMI_REAL" | null
   isSensitive: boolean
+  searchText: string
 }
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -31,6 +32,9 @@ export async function loader(props: LoaderFunctionArgs) {
     "DATE_CREATED") as LoaderData["sort"]
   const style = searchParams.get("style") as LoaderData["style"]
   const isSensitive = searchParams.get("sensitive") === "true"
+  const searchText = searchParams.get("q") ?? ""
+
+  console.log("Gallery loader - search text:", searchText)
 
   return json({
     rating,
@@ -38,6 +42,7 @@ export async function loader(props: LoaderFunctionArgs) {
     sort,
     style,
     isSensitive,
+    searchText,
   })
 }
 
@@ -46,12 +51,21 @@ export async function loader(props: LoaderFunctionArgs) {
  */
 export default function GalleryPage() {
   const data = useLoaderData<typeof loader>()
+  const [searchParams] = useSearchParams()
 
   // リダイレクトレスポンスの場合は何も表示しない
   if ("status" in data) {
     return null
   }
 
+  // 検索パラメータの変更を監視
+  useEffect(() => {
+    console.log("Gallery page - search params changed:", searchParams.get("q"))
+  }, [searchParams])
+
+  // 現在の検索テキストを取得（リアルタイム）
+  const currentSearchText = searchParams.get("q") ?? ""
+  
   return (
     <div className="flex min-h-screen flex-col">
       {/* ヘッダー */}
@@ -66,6 +80,7 @@ export default function GalleryPage() {
             sort={data.sort}
             style={data.style}
             isSensitive={data.isSensitive}
+            searchText={currentSearchText}
           />
         </Suspense>
       </div>

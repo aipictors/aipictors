@@ -6,7 +6,7 @@ import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-sc
 import { useQuery } from "@apollo/client/index"
 import { useTranslation } from "~/hooks/use-translation"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { useCallback, useState, useMemo } from "react"
+import { useCallback, useState, useMemo, useEffect, useRef } from "react"
 
 // フラグメントをクエリに追加
 const WorksQuery = graphql(
@@ -34,6 +34,7 @@ type Props = {
   sort: "DATE_CREATED" | "LIKES_COUNT" | "VIEWS_COUNT" | "COMMENTS_COUNT"
   style: "ILLUSTRATION" | "PHOTO" | "SEMI_REAL" | null
   isSensitive: boolean
+  searchText: string
 }
 
 /**
@@ -43,12 +44,15 @@ export function GalleryView(props: Props) {
   const t = useTranslation()
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
+  console.log("GalleryView props:", props)
+
   // フィルター条件を構築（型を修正）
   const where = useMemo(() => {
     const baseWhere = {
       ratings: [props.rating],
       ...(props.workType && { workType: props.workType }),
       ...(props.isSensitive && { isSensitive: props.isSensitive }),
+      ...(props.searchText && { search: props.searchText }),
       orderBy: props.sort,
     }
 
@@ -63,7 +67,10 @@ export function GalleryView(props: Props) {
 
     console.log("Gallery Query Where:", baseWhere)
     return baseWhere
-  }, [props.rating, props.workType, props.style, props.isSensitive, props.sort])
+  }, [props.rating, props.workType, props.style, props.isSensitive, props.sort, props.searchText])
+
+  console.log("Gallery search text:", props.searchText)
+  console.log("Gallery where condition:", where)
 
   const PER_PAGE = 32
 
@@ -75,7 +82,10 @@ export function GalleryView(props: Props) {
       where,
     },
     errorPolicy: "all",
+    notifyOnNetworkStatusChange: true,
   })
+
+  console.log("GraphQL query result:", { data: data?.works?.length, loading, error })
 
   // エラーをコンソールに出力
   if (error) {
@@ -91,14 +101,32 @@ export function GalleryView(props: Props) {
         sort: props.sort,
         style: props.style,
         isSensitive: props.isSensitive,
+        searchText: props.searchText,
       }),
     [props],
   )
 
-  const { pages, appendPage, flat } = usePagedInfinite(
+  const { pages, appendPage, flat, replaceFirstPage } = usePagedInfinite(
     data?.works ? [data.works] : [],
     `gallery-${storeKey}`,
   )
+
+  // 検索条件が変更された時にページデータをリセット
+  const whereString = JSON.stringify(where)
+  const prevWhereStringRef = useRef("")
+
+  useEffect(() => {
+    if (prevWhereStringRef.current && prevWhereStringRef.current !== whereString) {
+      // 検索条件が変更された場合、ページデータをリセット
+      console.log("Search conditions changed, resetting pages")
+      console.log("Previous where:", prevWhereStringRef.current)
+      console.log("New where:", whereString)
+      if (data?.works) {
+        replaceFirstPage(data.works)
+      }
+    }
+    prevWhereStringRef.current = whereString
+  }, [whereString, data?.works, replaceFirstPage])
 
   // hasNextの計算を修正：最後のページが満タンの場合、次のページがある可能性
   // 他の実装に合わせて PER_PAGE - 8 の閾値を使用
@@ -148,6 +176,23 @@ export function GalleryView(props: Props) {
 
   return (
     <div className="space-y-6">
+      {/* 検索結果のヘッダー */}
+      {props.searchText && (
+        <div className="rounded-lg bg-muted p-4">
+          <h2 className="font-semibold text-lg">
+            {t("検索結果", "Search Results")}
+          </h2>
+          <p className="text-muted-foreground">
+            {t(`「${props.searchText}」の検索結果`, `Results for "${props.searchText}"`)}
+            {works.length > 0 && (
+              <span className="ml-2">
+                ({t(`${works.length}件`, `${works.length} results`)})
+              </span>
+            )}
+          </p>
+        </div>
+      )}
+
       {/* 作品グリッド */}
       <MasonryWorkGrid works={works} isLoadingMore={isLoadingMore} />
 
@@ -186,13 +231,16 @@ export function GalleryView(props: Props) {
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center">
             <p className="text-lg text-muted-foreground">
-              {t("作品が見つかりませんでした", "No artworks found")}
+              {props.searchText 
+                ? t(`"${props.searchText}" の検索結果が見つかりませんでした`, `No search results found for "${props.searchText}"`)
+                : t("作品が見つかりませんでした", "No artworks found")
+              }
             </p>
             <p className="text-muted-foreground text-sm">
-              {t(
-                "フィルター条件を変更してみてください",
-                "Try changing the filter conditions",
-              )}
+              {props.searchText
+                ? t("別のキーワードで検索してみてください", "Try searching with different keywords")
+                : t("フィルター条件を変更してみてください", "Try changing the filter conditions")
+              }
             </p>
           </div>
         </div>
