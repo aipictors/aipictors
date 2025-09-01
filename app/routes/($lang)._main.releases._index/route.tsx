@@ -118,9 +118,16 @@ export default function Milestone() {
       </div>
       <div className="flex items-center justify-center space-x-4">
         <Link
+          to="/roadmap"
+          className="rounded-md bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+        >
+          {t("ロードマップを見る", "View Roadmap")}
+        </Link>
+        <Link
           target="_blank"
           rel="noreferrer"
           to={"https://github.com/aipictors/aipictors/releases"}
+          className="text-blue-500 transition-colors hover:text-blue-600"
         >
           {"GitHub Releases"}
         </Link>

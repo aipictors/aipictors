@@ -263,6 +263,13 @@ export function HomeMenuRouteList({
               <span className="opacity-50">•</span>
               <Link
                 className="opacity-80 transition-opacity hover:opacity-100"
+                to="/roadmap"
+              >
+                {t("ロードマップ", "Roadmap")}
+              </Link>
+              <span className="opacity-50">•</span>
+              <Link
+                className="opacity-80 transition-opacity hover:opacity-100"
                 to="/pictor-chan"
               >
                 {t("ぴくたーちゃん", "Pictor-chan")}

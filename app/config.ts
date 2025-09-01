@@ -412,6 +412,14 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Stay updated on the latest Aipictors release information",
     isIndex: true,
   },
+  ROADMAP: {
+    title: "ロードマップ",
+    enTitle: "Roadmap",
+    description: "AIpictorsの歩みと展望 - これまでの軌跡と今後の開発計画",
+    enDescription:
+      "Aipictors Journey and Vision - Past milestones and future development plans",
+    isIndex: true,
+  },
   MILESTONES: {
     title: "開発予定",
     enTitle: "Development Milestones",
@@ -457,6 +465,15 @@ export const META: { [key: string]: MetaData } = {
       "This service is a platform for communication and creative activities centered on AI-generated illustrations",
     enDescription:
       "A platform for AI-generated illustrations and creative activities, fostering communication and creativity.",
+    isIndex: true,
+  },
+  PRESSKIT: {
+    title: "プレスキット",
+    enTitle: "Press Kit",
+    description:
+      "Aipictorsのロゴ素材をダウンロードできます。メディア掲載や紹介記事などでご活用ください。",
+    enDescription:
+      "Download Aipictors logo materials for media coverage, articles, and promotional purposes.",
     isIndex: true,
   },
   HELP: {

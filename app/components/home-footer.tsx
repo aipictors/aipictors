@@ -26,6 +26,9 @@ export function HomeFooter() {
           >
             {"プライバシーポリシー"}
           </Link>
+          <Link to={"/roadmap"} className="text-sm">
+            {"ロードマップ"}
+          </Link>
         </div>
         <div className="flex gap-x-4">
           <Link
