@@ -19,6 +19,11 @@ export interface WorksWhereInput {
   createdAtAfter?: string
   beforeCreatedAt?: string
   isOneWorkPerUser?: boolean
+  search?: string
+  prompt?: string
+  hasEmbedding?: boolean
+  isAnimationWork?: boolean
+  isPublicFanbox?: boolean
 }
 
 export type WorkItem = {

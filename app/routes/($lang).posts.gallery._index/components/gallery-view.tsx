@@ -36,11 +36,8 @@ type Props = {
   isSensitive: boolean
   searchText: string
   promptText: string
-  ratings: ("G" | "R15" | "R18")[]
+  ratings: ("G" | "R15" | "R18" | "R18G")[]
   hasPrompt: boolean
-  hasEmbedding: boolean
-  isAnimation: boolean
-  isFanbox: boolean
 }
 
 /**
@@ -52,29 +49,57 @@ export function GalleryView(props: Props) {
 
   console.log("GalleryView props:", props)
 
-  // フィルター条件を構築（型を修正）
+  // フィルター条件を構築（検索結果ページの実装パターンを参考）
   const where = useMemo(() => {
+    const conditions: Record<string, unknown> = {}
+
     // レーティングの決定（詳細検索のratingsがある場合はそれを使用、そうでなければデフォルト）
     const activeRatings =
       props.ratings.length > 0
         ? props.ratings
-        : [props.rating as "G" | "R15" | "R18"]
+        : [props.rating as "G" | "R15" | "R18" | "R18G"]
 
-    const baseWhere = {
-      ratings: activeRatings,
-      ...(props.workType && { workType: props.workType }),
-      ...(props.isSensitive && { isSensitive: props.isSensitive }),
-      // 検索テキストが存在する場合のみsearchフィールドを追加
-      ...(props.searchText.trim() && { search: props.searchText.trim() }),
-      // プロンプト検索が存在する場合のみpromptフィールドを追加
-      ...(props.promptText.trim() && { prompt: props.promptText.trim() }),
-      // 詳細オプション
-      ...(props.hasPrompt && { hasPrompt: true }),
-      ...(props.hasEmbedding && { hasEmbedding: true }),
-      ...(props.isAnimation && { isAnimationWork: true }),
-      ...(props.isFanbox && { isPublicFanbox: true }),
-      orderBy: props.sort,
+    conditions.ratings = activeRatings
+
+    // 作品タイプ
+    if (props.workType) {
+      conditions.workType = props.workType
     }
+
+    // センシティブコンテンツ
+    if (props.isSensitive) {
+      conditions.isSensitive = props.isSensitive
+    }
+
+    // 検索テキスト（search-results.tsxと同じフィールド名を使用）
+    if (props.searchText.trim()) {
+      conditions.search = props.searchText.trim()
+    }
+
+    // プロンプト検索（検索結果ページではpromptフィールドは使用されていないため、代替手段を検討）
+    if (props.promptText.trim()) {
+      // プロンプト検索の場合は検索テキストとして扱う
+      const searchTerms = []
+      if (props.searchText.trim()) {
+        searchTerms.push(props.searchText.trim())
+      }
+      searchTerms.push(props.promptText.trim())
+      conditions.search = searchTerms.join(" ")
+    }
+
+    // AI使用フィルター（プロンプトありフィルター）
+    if (props.hasPrompt) {
+      conditions.hasPrompt = true
+    }
+
+    // その他の詳細オプション（検索結果ページには対応するフィールドがないため、コメントアウト）
+    // ...(props.hasEmbedding && { hasEmbedding: true }),
+    // ...(props.isAnimation && { isAnimationWork: true }),
+    // ...(props.isFanbox && { isPublicFanbox: true }),
+
+    // ソート条件
+    conditions.orderBy = props.sort
+    conditions.sort = "DESC" // 検索結果ページと同じデフォルト
 
     // styleを正しい型にマッピング
     if (props.style) {
@@ -82,13 +107,11 @@ export function GalleryView(props: Props) {
         props.style === "PHOTO"
           ? "REAL"
           : (props.style as "ILLUSTRATION" | "SEMI_REAL" | "REAL")
-      const finalWhere = { ...baseWhere, style: mappedStyle }
-      console.log("Gallery Query Where (with style):", finalWhere)
-      return finalWhere
+      conditions.style = mappedStyle
     }
 
-    console.log("Gallery Query Where (no style):", baseWhere)
-    return baseWhere
+    console.log("Gallery Query Where:", conditions)
+    return conditions
   }, [
     props.rating,
     props.ratings,
@@ -99,9 +122,6 @@ export function GalleryView(props: Props) {
     props.searchText,
     props.promptText,
     props.hasPrompt,
-    props.hasEmbedding,
-    props.isAnimation,
-    props.isFanbox,
   ])
 
   console.log("Gallery search text:", props.searchText)
@@ -118,7 +138,7 @@ export function GalleryView(props: Props) {
   const PER_PAGE = 32
 
   // 初期クエリ
-  const { data, fetchMore, loading, error } = useQuery(WorksQuery, {
+  const { data, fetchMore, loading, error, refetch } = useQuery(WorksQuery, {
     variables: {
       offset: 0,
       limit: PER_PAGE,
@@ -126,9 +146,10 @@ export function GalleryView(props: Props) {
     },
     errorPolicy: "all",
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "network-only", // 画面更新時は必ずネットワークから取得
+    fetchPolicy: "cache-and-network", // 初回はキャッシュを使用
   })
 
+  console.log("GraphQL query executed with where:", where)
   console.log("GraphQL query result:", {
     data: data?.works?.length,
     loading,
@@ -153,9 +174,6 @@ export function GalleryView(props: Props) {
         searchText: props.searchText,
         promptText: props.promptText,
         hasPrompt: props.hasPrompt,
-        hasEmbedding: props.hasEmbedding,
-        isAnimation: props.isAnimation,
-        isFanbox: props.isFanbox,
       }),
     [props],
   )
@@ -165,13 +183,16 @@ export function GalleryView(props: Props) {
     `gallery-${storeKey}`,
   )
 
-  // 初期データをページに設定
+  // 初期データをページに設定（検索結果ページの実装パターンを参考）
   useEffect(() => {
-    if (data?.works && data.works.length > 0 && pages.length === 0) {
-      console.log("Setting initial page data:", data.works.length)
+    if (data?.works && data.works.length > 0) {
+      console.log("Setting/updating page data:", data.works.length)
       replaceFirstPage(data.works)
+    } else if (data?.works && data.works.length === 0) {
+      console.log("No data found, clearing pages")
+      replaceFirstPage([])
     }
-  }, [data?.works, pages.length, replaceFirstPage])
+  }, [data?.works, replaceFirstPage])
 
   // 詳細ログ出力
   console.log("Gallery state:", {
@@ -191,16 +212,20 @@ export function GalleryView(props: Props) {
       prevWhereStringRef.current &&
       prevWhereStringRef.current !== whereString
     ) {
-      // 検索条件が変更された場合、ページデータをリセット
-      console.log("Search conditions changed, resetting pages")
+      // 検索条件が変更された場合、新しいデータを取得
+      console.log("Search conditions changed, refetching data")
       console.log("Previous where:", prevWhereStringRef.current)
       console.log("New where:", whereString)
-      if (data?.works) {
-        replaceFirstPage(data.works)
-      }
+      // 新しい検索条件でデータを再取得
+      refetch({
+        offset: 0,
+        limit: PER_PAGE,
+        where,
+      })
+      setIsLoadingMore(false)
     }
     prevWhereStringRef.current = whereString
-  }, [whereString, data?.works, replaceFirstPage])
+  }, [whereString, refetch, where])
 
   // hasNextの計算を修正：最後のページが満タンの場合、次のページがある可能性
   // 他の実装に合わせて PER_PAGE - 8 の閾値を使用

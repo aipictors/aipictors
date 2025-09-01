@@ -75,16 +75,15 @@ export default function GalleryPage() {
     | null
   const ratingsParam = searchParams.get("ratings")
   const hasPrompt = searchParams.get("hasPrompt") === "true"
-  const hasEmbedding = searchParams.get("hasEmbedding") === "true"
-  const isAnimation = searchParams.get("isAnimation") === "true"
-  const isFanbox = searchParams.get("isFanbox") === "true"
 
   // レーティングを配列に変換
-  const ratings: ("G" | "R15" | "R18")[] = ratingsParam
+  const ratings: ("G" | "R15" | "R18" | "R18G")[] = ratingsParam
     ? ratingsParam
         .split(",")
-        .filter((r): r is "G" | "R15" | "R18" =>
-          ["G", "R15", "R18"].includes(r as "G" | "R15" | "R18"),
+        .filter((r): r is "G" | "R15" | "R18" | "R18G" =>
+          ["G", "R15", "R18", "R18G"].includes(
+            r as "G" | "R15" | "R18" | "R18G",
+          ),
         )
     : ["G"]
 
@@ -109,9 +108,6 @@ export default function GalleryPage() {
             promptText={promptText}
             ratings={ratings}
             hasPrompt={hasPrompt}
-            hasEmbedding={hasEmbedding}
-            isAnimation={isAnimation}
-            isFanbox={isFanbox}
           />
         </Suspense>
       </div>

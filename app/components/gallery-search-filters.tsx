@@ -26,7 +26,7 @@ type SortType =
   | "LIKES_COUNT"
   | "VIEWS_COUNT"
   | "COMMENTS_COUNT"
-type RatingType = "G" | "R15" | "R18"
+type RatingType = "G" | "R15" | "R18" | "R18G"
 
 /**
  * ギャラリー検索フィルター
@@ -45,9 +45,6 @@ export function GallerySearchFilters() {
   const [sortType, setSortType] = useState<SortType>("DATE_CREATED")
   const [ratings, setRatings] = useState<RatingType[]>(["G"])
   const [hasPrompt, setHasPrompt] = useState(false)
-  const [hasEmbedding, setHasEmbedding] = useState(false)
-  const [isAnimationWork, setIsAnimationWork] = useState(false)
-  const [isPublicFanbox, setIsPublicFanbox] = useState(false)
 
   // URLパラメータから初期値を設定
   useEffect(() => {
@@ -59,12 +56,11 @@ export function GallerySearchFilters() {
     const ratingsParam = searchParams.get("ratings")
     if (ratingsParam) {
       setRatings(ratingsParam.split(",") as RatingType[])
+    } else {
+      setRatings(["G"])
     }
 
     setHasPrompt(searchParams.get("hasPrompt") === "true")
-    setHasEmbedding(searchParams.get("hasEmbedding") === "true")
-    setIsAnimationWork(searchParams.get("isAnimation") === "true")
-    setIsPublicFanbox(searchParams.get("isFanbox") === "true")
   }, [searchParams])
 
   const handleRatingChange = (rating: RatingType, checked: boolean) => {
@@ -102,18 +98,6 @@ export function GallerySearchFilters() {
       newSearchParams.set("hasPrompt", "true")
     }
 
-    if (hasEmbedding) {
-      newSearchParams.set("hasEmbedding", "true")
-    }
-
-    if (isAnimationWork) {
-      newSearchParams.set("isAnimation", "true")
-    }
-
-    if (isPublicFanbox) {
-      newSearchParams.set("isFanbox", "true")
-    }
-
     navigate(`${location.pathname}?${newSearchParams.toString()}`)
     setIsOpen(false)
   }
@@ -125,9 +109,6 @@ export function GallerySearchFilters() {
     setSortType("DATE_CREATED")
     setRatings(["G"])
     setHasPrompt(false)
-    setHasEmbedding(false)
-    setIsAnimationWork(false)
-    setIsPublicFanbox(false)
     navigate(location.pathname)
   }
 
@@ -138,9 +119,6 @@ export function GallerySearchFilters() {
     sortType !== "DATE_CREATED",
     !(ratings.length === 1 && ratings[0] === "G"),
     hasPrompt,
-    hasEmbedding,
-    isAnimationWork,
-    isPublicFanbox,
   ].filter(Boolean).length
 
   return (
@@ -271,6 +249,7 @@ export function GallerySearchFilters() {
                       { value: "G" as const, label: t("全年齢", "All Ages") },
                       { value: "R15" as const, label: "R-15" },
                       { value: "R18" as const, label: "R-18" },
+                      { value: "R18G" as const, label: "R-18G" },
                     ].map(({ value, label }) => (
                       <div key={value} className="flex items-center space-x-2">
                         <Checkbox
@@ -303,30 +282,14 @@ export function GallerySearchFilters() {
                       onChange: setHasPrompt,
                       label: t("プロンプトあり", "Has Prompt"),
                     },
-                    {
-                      id: "hasEmbedding",
-                      checked: hasEmbedding,
-                      onChange: setHasEmbedding,
-                      label: t("埋め込み情報あり", "Has Embedding"),
-                    },
-                    {
-                      id: "isAnimation",
-                      checked: isAnimationWork,
-                      onChange: setIsAnimationWork,
-                      label: t("アニメーション作品", "Animation Work"),
-                    },
-                    {
-                      id: "isFanbox",
-                      checked: isPublicFanbox,
-                      onChange: setIsPublicFanbox,
-                      label: t("FANBOX公開作品", "FANBOX Public Work"),
-                    },
                   ].map(({ id, checked, onChange, label }) => (
                     <div key={id} className="flex items-center space-x-2">
                       <Checkbox
                         id={id}
                         checked={checked}
-                        onCheckedChange={onChange}
+                        onCheckedChange={(checked) =>
+                          onChange(checked === true)
+                        }
                       />
                       <Label htmlFor={id} className="text-sm">
                         {label}
