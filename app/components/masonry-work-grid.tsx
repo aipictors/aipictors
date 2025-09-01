@@ -170,31 +170,34 @@ export function MasonryWorkGrid(props: Props) {
     </div>
   )
 }
-
 /**
- * 個別の作品アイテム
+ * 個別の作品アイテム（余白ゼロ対策版）
+ * ポイント:
+ * - 画像に `block` を必ず付けてインライン隙間を消す
+ * - 画像を `absolute inset-0` で親の高さにピッタリ合わせる
+ * - 親Linkに `leading-none` を入れて行高由来の隙間も予防
  */
 function WorkItem(props: WorkItemProps) {
   const { work, baseUrl = "posts/gallery" } = props
 
-  // アスペクト比を計算してカードの高さを決定
   const aspectRatio =
     work.smallThumbnailImageHeight / work.smallThumbnailImageWidth
-  const imageHeight = Math.min(Math.max(aspectRatio * 240, 180), 400) // 最小180px、最大400px
+  const imageHeight = Math.min(Math.max(aspectRatio * 240, 180), 400)
 
   return (
     <Link
       to={`/${baseUrl}/${work.id}`}
-      className="group relative block overflow-hidden rounded-lg bg-card shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
+      className="group relative block overflow-hidden rounded-lg bg-card shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 leading-none"
     >
-      {/* メイン画像 - 余白を完全に削除 */}
+      {/* 画像コンテナ */}
       <div className="relative" style={{ height: imageHeight }}>
+        {/* ここが重要：block + absolute inset-0 で下余白を完全排除 */}
         <OptimizedImage
           src={work.smallThumbnailImageURL}
           alt={work.title}
           width={work.smallThumbnailImageWidth}
           height={work.smallThumbnailImageHeight}
-          className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="block absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
         />
 
@@ -209,7 +212,7 @@ function WorkItem(props: WorkItemProps) {
           </div>
         )}
 
-        {/* いいねボタン */}
+        {/* いいねボタン（クリックをLinkに伝播させない） */}
         <button
           type="button"
           className="absolute top-2 left-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
