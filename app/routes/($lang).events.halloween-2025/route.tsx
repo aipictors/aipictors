@@ -27,6 +27,10 @@ import {
   EventWorkListItemFragment,
   EventWorkList,
 } from "~/routes/($lang).events.$event._index/components/event-work-list"
+import {
+  EventAwardWorkListItemFragment,
+  EventAwardWorkList,
+} from "~/routes/($lang).events.$event._index/components/event-award-work-list"
 import { config } from "~/config"
 import { useState, useId } from "react"
 
@@ -405,6 +409,16 @@ export default function EventHalloween2025() {
           </div>
         </section>
 
+        {/* Ranking Works Section */}
+        {data.appEvent?.awardWorks && data.appEvent.awardWorks.length > 0 && (
+          <section>
+            <EventAwardWorkList
+              works={data.appEvent.awardWorks}
+              slug="halloween-2025"
+            />
+          </section>
+        )}
+
         {/* Works List */}
         {data.appEvent?.works && (
           <section>
@@ -664,7 +678,10 @@ const appEventQuery = graphql(
       works(offset: $offset, limit: $limit, where: $where) {
         ...EventWorkListItem
       }
+      awardWorks(offset: 0, limit: 20, isSensitive: false) {
+        ...EventAwardWorkListItem
+      }
     }
   }`,
-  [EventWorkListItemFragment],
+  [EventWorkListItemFragment, EventAwardWorkListItemFragment],
 )
