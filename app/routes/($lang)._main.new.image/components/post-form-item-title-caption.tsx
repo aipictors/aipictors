@@ -272,7 +272,7 @@ export function PostFormItemTitleCaption(props: Props) {
           <p className="font-bold text-sm">
             {t("タイトル（必須）・キャプション", "Title (Required) & Caption")}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="items-center gap-2 md:flex">
             <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
               <CollapsibleTrigger asChild>
                 <Button
