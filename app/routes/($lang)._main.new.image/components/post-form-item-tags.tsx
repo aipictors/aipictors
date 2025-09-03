@@ -265,7 +265,7 @@ export function PostFormItemTags(props: Props) {
               `Tags (${props.tags.length}/10)`,
             )}
           </p>
-          <div className="flex items-center gap-2">
+          <div className="block items-center gap-2 md:flex">
             <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
               <CollapsibleTrigger asChild>
                 <Button
@@ -277,7 +277,7 @@ export function PostFormItemTags(props: Props) {
                   <span>{t("設定", "Settings")}</span>
                 </Button>
               </CollapsibleTrigger>
-              <CollapsibleContent className="absolute z-10 mt-2 border rounded-lg bg-card p-4 shadow-lg">
+              <CollapsibleContent className="absolute z-10 mt-2 rounded-lg border bg-card p-4 shadow-lg">
                 <ContentTypeSelector
                   value={contentType}
                   onChange={setContentType}
