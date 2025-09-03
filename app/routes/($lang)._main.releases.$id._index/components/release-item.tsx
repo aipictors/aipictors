@@ -3,6 +3,7 @@ import StarterKit from "@tiptap/starter-kit"
 import { Markdown } from "tiptap-markdown"
 import { Badge } from "~/components/ui/badge"
 import Image from "@tiptap/extension-image"
+import Link from "@tiptap/extension-link"
 import CodeBlock from "@tiptap/extension-code-block"
 import Blockquote from "@tiptap/extension-blockquote"
 import HorizontalRule from "@tiptap/extension-horizontal-rule"
@@ -54,6 +55,15 @@ export function ReleaseItem(props: Props) {
         },
       }),
       Markdown,
+      Link.configure({
+        openOnClick: true,
+        HTMLAttributes: {
+          class:
+            "text-blue-600 hover:text-blue-800 underline cursor-pointer dark:text-blue-400 dark:hover:text-blue-300",
+          target: "_blank",
+          rel: "noopener noreferrer",
+        },
+      }),
       Image.configure({
         inline: true,
         allowBase64: true,
