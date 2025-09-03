@@ -74,6 +74,8 @@ export function PaintCanvas(props: Props) {
     x: number
     y: number
   }>({ x: 0, y: 0 })
+  // 描画状態の管理（パン操作との競合を防ぐため）
+  const [isDrawing, setIsDrawing] = useState<boolean>(false)
 
   const [points, setPoints] = useState<{ x: number; y: number }[]>([]) // 状態としてポイントを保存
   const [canvasWidth, setCanvasWidth] = useState<number>(props.width || 240)
@@ -360,7 +362,7 @@ export function PaintCanvas(props: Props) {
 
       tempCanvas.width = originalImageData.width
       tempCanvas.height = originalImageData.height
-      
+
       // 元画像データのコピーを作成
       const tempImageData = new ImageData(
         new Uint8ClampedArray(originalImageData.data),
@@ -369,7 +371,13 @@ export function PaintCanvas(props: Props) {
       )
 
       // フィルターを適用
-      applyBasicFilters(tempImageData.data, brightness, contrast, saturation, hue)
+      applyBasicFilters(
+        tempImageData.data,
+        brightness,
+        contrast,
+        saturation,
+        hue,
+      )
 
       // 一時キャンバスにフィルター適用済み画像を描画
       tempCtx.putImageData(tempImageData, 0, 0)
@@ -428,7 +436,7 @@ export function PaintCanvas(props: Props) {
 
     tempCanvas.width = originalImageData.width
     tempCanvas.height = originalImageData.height
-    
+
     // 元画像データのコピーを作成
     const tempImageData = new ImageData(
       new Uint8ClampedArray(originalImageData.data),
@@ -664,6 +672,9 @@ export function PaintCanvas(props: Props) {
         return
       }
 
+      // 描画開始を記録
+      setIsDrawing(true)
+
       if (props.onChangeSetDrawing) props.onChangeSetDrawing(true)
 
       const rect = brushCanvas.getBoundingClientRect()
@@ -733,6 +744,9 @@ export function PaintCanvas(props: Props) {
       }
 
       const handleMouseUp = () => {
+        // 描画終了を記録
+        setIsDrawing(false)
+
         if (canvasStates.length === 0) {
           if (props.isMosaicMode) {
             if (imageCanvas) {
@@ -818,6 +832,7 @@ export function PaintCanvas(props: Props) {
     points,
     translateX,
     translateY,
+    isDrawing,
   ])
 
   useEffect(() => {
@@ -1079,17 +1094,22 @@ export function PaintCanvas(props: Props) {
             onMouseUp={handlePanEnd}
             onMouseLeave={handlePanEnd}
             onTouchStart={(e) => {
+              // モザイクモードでは描画操作を優先し、selectツールまたは描画中でない場合のみパンを許可
               if (
-                (tool === "select" || props.isMosaicMode) &&
-                e.touches.length === 1
+                tool === "select" ||
+                (props.isMosaicMode &&
+                  tool !== "eraser" &&
+                  tool !== "lasso-mosaic")
               ) {
-                e.preventDefault()
-                const touch = e.touches[0]
-                handlePanStart(touch.clientX, touch.clientY)
+                if (e.touches.length === 1 && !isDrawing) {
+                  e.preventDefault()
+                  const touch = e.touches[0]
+                  handlePanStart(touch.clientX, touch.clientY)
+                }
               }
             }}
             onTouchMove={(e) => {
-              if (isPanning && e.touches.length === 1) {
+              if (isPanning && e.touches.length === 1 && !isDrawing) {
                 e.preventDefault()
                 const touch = e.touches[0]
                 handlePanMove(touch.clientX, touch.clientY)
