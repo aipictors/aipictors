@@ -1099,13 +1099,13 @@ export function PaintCanvas(props: Props) {
                 if (props.onClose) {
                   props.onClose()
                 }
-                
+
                 // 確実にモーダルを閉じるため、Escapeキーイベントを発行
-                const escEvent = new KeyboardEvent('keydown', {
-                  key: 'Escape',
+                const escEvent = new KeyboardEvent("keydown", {
+                  key: "Escape",
                   keyCode: 27,
                   bubbles: true,
-                  cancelable: true
+                  cancelable: true,
                 })
                 document.dispatchEvent(escEvent)
               }}
