@@ -32,28 +32,72 @@ const MosaicCanvas = ({
     const image = new Image()
     image.crossOrigin = "anonymous" // CORSポリシーに対応するために必要
 
+    const calculateAverageColor = (
+      x: number,
+      y: number,
+      mosaicSize: number,
+      imageData: ImageData,
+      imageWidth: number,
+      imageHeight: number,
+    ) => {
+      const total = { totalR: 0, totalG: 0, totalB: 0, count: 0 }
+      for (let i = 0; i < mosaicSize; i++) {
+        for (let j = 0; j < mosaicSize; j++) {
+          if (x + j < imageWidth && y + i < imageHeight) {
+            const index = ((y + i) * imageWidth + (x + j)) * 4
+            total.totalR += imageData.data[index]
+            total.totalG += imageData.data[index + 1]
+            total.totalB += imageData.data[index + 2]
+            total.count++
+          }
+        }
+      }
+      return total
+    }
+
     image.onload = () => {
       if (!context) return
-      canvas.width = !width ? image.width : width
-      canvas.height = !height ? image.height : height
+      
+      // アスペクト比を保持してcanvasサイズを設定
+      if (width && height) {
+        // 指定されたwidth, heightがある場合、アスペクト比を保持して調整
+        const imageAspectRatio = image.width / image.height
+        const canvasAspectRatio = width / height
+        
+        if (imageAspectRatio > canvasAspectRatio) {
+          // 画像が横長の場合、widthを基準に調整
+          canvas.width = width
+          canvas.height = width / imageAspectRatio
+        } else {
+          // 画像が縦長の場合、heightを基準に調整
+          canvas.width = height * imageAspectRatio
+          canvas.height = height
+        }
+      } else {
+        // width, heightが指定されていない場合は元画像サイズを使用
+        canvas.width = image.width
+        canvas.height = image.height
+      }
 
       // 長辺の1/100をモザイクサイズとする
-      const _longestSide = Math.max(image.width, image.height)
       const effectiveMosaicSize = Math.ceil(
-        Math.max(image.width, image.height) / 100,
+        Math.max(canvas.width, canvas.height) / 100,
       )
-      context.drawImage(image, 0, 0)
+      
+      // 画像をcanvasサイズに合わせて描画
+      context.drawImage(image, 0, 0, canvas.width, canvas.height)
 
       // モザイク処理を改善
-      const imageData = context.getImageData(0, 0, image.width, image.height)
-      for (let y = 0; y < image.height; y += effectiveMosaicSize) {
-        for (let x = 0; x < image.width; x += effectiveMosaicSize) {
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+      for (let y = 0; y < canvas.height; y += effectiveMosaicSize) {
+        for (let x = 0; x < canvas.width; x += effectiveMosaicSize) {
           const { totalR, totalG, totalB, count } = calculateAverageColor(
             x,
             y,
             effectiveMosaicSize,
             imageData,
-            image.width,
+            canvas.width,
+            canvas.height,
           )
 
           const averageR = totalR / count
@@ -65,28 +109,6 @@ const MosaicCanvas = ({
           context.fillRect(x, y, effectiveMosaicSize, effectiveMosaicSize)
         }
       }
-    }
-
-    const calculateAverageColor = (
-      x: number,
-      y: number,
-      mosaicSize: number,
-      imageData: ImageData,
-      imageWidth: number,
-    ) => {
-      const total = { totalR: 0, totalG: 0, totalB: 0, count: 0 }
-      for (let i = 0; i < mosaicSize; i++) {
-        for (let j = 0; j < mosaicSize; j++) {
-          if (x + j < imageWidth && y + i < image.height) {
-            const index = ((y + i) * imageWidth + (x + j)) * 4
-            total.totalR += imageData.data[index]
-            total.totalG += imageData.data[index + 1]
-            total.totalB += imageData.data[index + 2]
-            total.count++
-          }
-        }
-      }
-      return total
     }
 
     image.src = imageUrl

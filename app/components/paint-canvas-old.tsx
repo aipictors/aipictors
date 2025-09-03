@@ -745,8 +745,8 @@ export function PaintCanvas(props: Props) {
                   className="absolute left-0 top-0"
                   imageUrl={props.imageUrl}
                   mosaicSize={10}
-                  width={props.width}
-                  height={props.height}
+                  width={canvasWidth}
+                  height={canvasHeight}
                   onChangeCanvasRef={onChangeMosaicCanvasRef}
                   style={{
                     top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
