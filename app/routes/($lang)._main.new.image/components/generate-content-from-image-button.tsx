@@ -24,6 +24,7 @@ type Props = {
     tagsEn?: string[]
   }) => void
   tagsOnly?: boolean
+  contentType?: "STORY" | "CHARACTER" | "STANDARD"
 }
 
 // 画像URLのキャッシュ（メモリ内）
@@ -164,6 +165,7 @@ export function GenerateContentFromImageButton(props: Props) {
           input: {
             imageUrl,
             tagsOnly: props.tagsOnly || false,
+            contentType: props.contentType || "STORY",
           },
         },
       })

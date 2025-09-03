@@ -3,7 +3,7 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Card, CardContent } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { Button } from "~/components/ui/button"
-import { Sparkles, Loader2Icon } from "lucide-react"
+import { Sparkles, Loader2Icon, Settings } from "lucide-react"
 import { cn } from "~/lib/utils"
 import { useTranslation } from "~/hooks/use-translation"
 import { toast } from "sonner"
@@ -15,6 +15,12 @@ import {
   canUseAiGeneration,
   consumeAiGenerationUsage,
 } from "../utils/ai-generation-usage"
+import { ContentTypeSelector } from "./content-type-selector"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible"
 
 // 画像URLのキャッシュ（メモリ内）
 const imageUrlCache = new Map<string, string>()
@@ -61,6 +67,10 @@ export function PostFormItemTitleCaption(props: Props) {
   const [localTitle, setLocalTitle] = useState(props.title || "")
   const [localCaption, setLocalCaption] = useState(props.caption || "")
   const [isLocalGenerating, setIsLocalGenerating] = useState(false)
+  const [contentType, setContentType] = useState<
+    "STORY" | "CHARACTER" | "STANDARD"
+  >("STORY")
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false)
 
   const [generateContent] = useMutation(GenerateImageContentMutation)
 
@@ -209,6 +219,7 @@ export function PostFormItemTitleCaption(props: Props) {
           input: {
             imageUrl,
             tagsOnly: false,
+            contentType,
           },
         },
       })
@@ -261,24 +272,44 @@ export function PostFormItemTitleCaption(props: Props) {
           <p className="font-bold text-sm">
             {t("タイトル（必須）・キャプション", "Title (Required) & Caption")}
           </p>
-          <Button
-            onClick={handleGenerate}
-            disabled={isGenerating || !props.imageBase64}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            {isGenerating ? (
-              <Loader2Icon className="h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="h-4 w-4" />
-            )}
-            <span>
-              {isGenerating
-                ? t("生成中...", "Generating...")
-                : t("自動生成（タグ含む）", "Auto Generate")}
-            </span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>{t("設定", "Settings")}</span>
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="absolute z-10 mt-2 rounded-lg border bg-card p-4 shadow-lg">
+                <ContentTypeSelector
+                  value={contentType}
+                  onChange={setContentType}
+                />
+              </CollapsibleContent>
+            </Collapsible>
+            <Button
+              onClick={handleGenerate}
+              disabled={isGenerating || !props.imageBase64}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              {isGenerating ? (
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              <span>
+                {isGenerating
+                  ? t("生成中...", "Generating...")
+                  : t("自動生成（タグ含む）", "Auto Generate")}
+              </span>
+            </Button>
+          </div>
         </div>
 
         {/* タイトル入力欄 */}
@@ -289,6 +320,7 @@ export function PostFormItemTitleCaption(props: Props) {
           >
             {t("タイトル", "Title")}
           </label>
+          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <Input
             id="title-input"
             onChange={handleTitleChange}
@@ -314,6 +346,7 @@ export function PostFormItemTitleCaption(props: Props) {
           >
             {t("キャプション（任意）", "Caption (Optional)")}
           </label>
+          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <AutoResizeTextarea
             id="caption-input"
             onChange={handleCaptionChange}

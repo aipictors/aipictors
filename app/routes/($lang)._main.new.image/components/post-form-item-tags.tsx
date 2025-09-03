@@ -3,7 +3,7 @@ import { type Tag, TagInput } from "~/components/tag/tag-input"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
-import { Hash, Loader2Icon } from "lucide-react"
+import { Hash, Loader2Icon, Settings } from "lucide-react"
 import { toast } from "sonner"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
@@ -13,6 +13,12 @@ import {
   canUseAiGeneration,
   consumeAiGenerationUsage,
 } from "../utils/ai-generation-usage"
+import { ContentTypeSelector } from "./content-type-selector"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "~/components/ui/collapsible"
 
 type Props = {
   tags: Tag[]
@@ -58,6 +64,10 @@ export function PostFormItemTags(props: Props) {
   const t = useTranslation()
   const whiteListTags = props.whiteListTags
   const [isGenerating, setIsGenerating] = useState(false)
+  const [contentType, setContentType] = useState<
+    "STORY" | "CHARACTER" | "STANDARD"
+  >("STORY")
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false)
 
   // GraphQL mutation
   const [generateContent] = useMutation(GenerateImageContentMutation)
@@ -224,6 +234,7 @@ export function PostFormItemTags(props: Props) {
           input: {
             imageUrl,
             tagsOnly: true,
+            contentType,
           },
         },
       })
@@ -254,24 +265,44 @@ export function PostFormItemTags(props: Props) {
               `Tags (${props.tags.length}/10)`,
             )}
           </p>
-          <Button
-            onClick={handleTagGenerate}
-            disabled={isGenerating || !props.imageBase64}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            {isGenerating ? (
-              <Loader2Icon className="h-4 w-4 animate-spin" />
-            ) : (
-              <Hash className="h-4 w-4" />
-            )}
-            <span>
-              {isGenerating
-                ? t("生成中...", "Generating...")
-                : t("タグ自動生成", "Auto Generate Tags")}
-            </span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Collapsible open={isAdvancedOpen} onOpenChange={setIsAdvancedOpen}>
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Settings className="h-4 w-4" />
+                  <span>{t("設定", "Settings")}</span>
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="absolute z-10 mt-2 border rounded-lg bg-card p-4 shadow-lg">
+                <ContentTypeSelector
+                  value={contentType}
+                  onChange={setContentType}
+                />
+              </CollapsibleContent>
+            </Collapsible>
+            <Button
+              onClick={handleTagGenerate}
+              disabled={isGenerating || !props.imageBase64}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              {isGenerating ? (
+                <Loader2Icon className="h-4 w-4 animate-spin" />
+              ) : (
+                <Hash className="h-4 w-4" />
+              )}
+              <span>
+                {isGenerating
+                  ? t("生成中...", "Generating...")
+                  : t("タグ自動生成", "Auto Generate Tags")}
+              </span>
+            </Button>
+          </div>
         </div>
         <TagInput
           placeholder={t("タグを追加してください", "Add tags")}
