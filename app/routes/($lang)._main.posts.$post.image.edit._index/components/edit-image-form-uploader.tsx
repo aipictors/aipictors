@@ -219,10 +219,12 @@ export function EditImageFormUploader(props: Props) {
       {props.state.editTargetImageBase64 !== null && (
         <FullScreenContainer
           onClose={() => {
+            console.log("EditImageFormUploader: FullScreenContainer onClose called")
             props.dispatch({
               type: "SET_EDIT_TARGET_IMAGE_BASE64",
               payload: null,
             })
+            console.log("EditImageFormUploader: FullScreenContainer - Dispatched SET_EDIT_TARGET_IMAGE_BASE64 with null")
           }}
           enabledScroll={props.state.isDrawing}
         >
@@ -240,10 +242,12 @@ export function EditImageFormUploader(props: Props) {
               })
             }}
             onClose={() => {
+              console.log("EditImageFormUploader: onClose called")
               props.dispatch({
                 type: "SET_EDIT_TARGET_IMAGE_BASE64",
                 payload: null,
               })
+              console.log("EditImageFormUploader: Dispatched SET_EDIT_TARGET_IMAGE_BASE64 with null")
             }}
           />
         </FullScreenContainer>

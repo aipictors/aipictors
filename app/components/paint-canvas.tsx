@@ -1095,9 +1095,19 @@ export function PaintCanvas(props: Props) {
             <Button
               className="h-14 flex-1 rounded-lg bg-gray-600 text-lg font-bold text-white shadow-lg hover:bg-gray-700"
               onClick={() => {
+                // まずonCloseを呼び出す
                 if (props.onClose) {
                   props.onClose()
                 }
+                
+                // 確実にモーダルを閉じるため、Escapeキーイベントを発行
+                const escEvent = new KeyboardEvent('keydown', {
+                  key: 'Escape',
+                  keyCode: 27,
+                  bubbles: true,
+                  cancelable: true
+                })
+                document.dispatchEvent(escEvent)
               }}
             >
               <XIcon className="mr-2 h-6 w-6" />
