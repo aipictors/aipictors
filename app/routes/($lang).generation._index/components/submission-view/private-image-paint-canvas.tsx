@@ -6,6 +6,7 @@ type Props = {
   token: string
   onChangeBrushImageBase64?(value: string): void
   setIsDrawing?(value: boolean): void
+  onClose?(): void
 }
 
 export function PrivateImagePaintCanvas(props: Props) {
@@ -40,6 +41,7 @@ export function PrivateImagePaintCanvas(props: Props) {
       imageUrl={base64Image}
       onChangeBrushImageBase64={props.onChangeBrushImageBase64}
       onChangeSetDrawing={props.setIsDrawing}
+      onClose={props.onClose}
     />
   )
 }

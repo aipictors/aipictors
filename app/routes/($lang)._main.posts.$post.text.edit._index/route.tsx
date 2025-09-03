@@ -642,7 +642,7 @@ export default function EditText() {
         <div className="h-4" />
         <Button
           disabled={disabledSubmit}
-          className="fixed bottom-0 left-0 z-60 ml-0 w-full rounded-none p-0 md:ml-[72px] md:pr-[72px] lg:ml-[224px] lg:pr-[224px] xl:left-auto xl:m-0 xl:max-w-[1200px] xl:pl-[8%]"
+          className="fixed bottom-0 left-0 z-30 ml-0 w-full rounded-none p-0 md:ml-[72px] md:pr-[72px] lg:ml-[224px] lg:pr-[224px] xl:left-auto xl:m-0 xl:max-w-[1200px] xl:pl-[8%]"
           size={"lg"}
           type="submit"
           onClick={onPost}

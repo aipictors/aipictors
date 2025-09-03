@@ -193,6 +193,7 @@ export function InPaintingDialog(props: Props) {
             setIsDrawing={(value) => {
               setIsDrawing(value)
             }}
+            onClose={props.onClose}
           />
         </div>
         <InPaintingImageForm

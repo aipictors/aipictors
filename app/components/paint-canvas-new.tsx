@@ -11,7 +11,6 @@ import {
   ZoomInIcon,
   ZoomOutIcon,
   FilterIcon,
-  XIcon,
 } from "lucide-react"
 import { Slider } from "~/components/ui/slider"
 import { cn } from "~/lib/utils"
@@ -53,7 +52,6 @@ export function PaintCanvas(props: Props) {
   const brushCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const assistedCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null)
-  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
   const [tool, setTool] = useState(props.isMosaicMode ? "eraser" : "brush")
   const [color, setColor] = useState("#000000") // ブラシの初期色
@@ -87,11 +85,6 @@ export function PaintCanvas(props: Props) {
   const [hue, setHue] = useState<number>(0)
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState<boolean>(false)
 
-  // フィルター適用前の元画像を保存
-  const [originalImageData, setOriginalImageData] = useState<ImageData | null>(
-    null,
-  )
-
   // Canvas 描画状態の配列
   const [canvasStates, setCanvasStates] = useState<CanvasState[]>([])
   // 現在の Canvas の状態を示すインデックス
@@ -100,49 +93,6 @@ export function PaintCanvas(props: Props) {
   const onChangeMosaicCanvasRef = (canvas: HTMLCanvasElement) => {
     setMosaicCanvasRef(canvas)
   }
-
-  // フィルター値が変更されたときにプレビューと本体を更新
-  useEffect(() => {
-    updatePreview()
-    applyFilterToCanvas()
-  }, [brightness, contrast, saturation, hue, props.imageUrl])
-
-  // 画像読み込み時に元画像データを保存
-  useEffect(() => {
-    if (props.imageUrl && imageCanvasRef.current) {
-      const canvas = imageCanvasRef.current
-      const ctx = canvas.getContext("2d")
-      if (!ctx) return
-
-      const img = new Image()
-      img.crossOrigin = "Anonymous"
-      img.onload = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-
-        // 元画像データを保存
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-        setOriginalImageData(imageData)
-      }
-      img.src = props.imageUrl
-    }
-  }, [props.imageUrl])
-
-  // 初回読み込み時にプレビューを更新
-  useEffect(() => {
-    if (props.imageUrl) {
-      updatePreview()
-    }
-  }, [props.imageUrl])
-
-  // プレビューキャンバスの参照を設定
-  useEffect(() => {
-    const canvas = previewCanvasRef.current
-    if (canvas) {
-      canvas.width = 200
-      canvas.height = 200
-    }
-  }, [])
 
   // Canvas の描画状態を保存する関数
   const saveCanvasState = (canvas: HTMLCanvasElement) => {
@@ -196,147 +146,28 @@ export function PaintCanvas(props: Props) {
     img.src = state.dataUrl
   }
 
-  // プレビューキャンバスを更新する関数
-  const updatePreview = () => {
-    const previewCanvas = previewCanvasRef.current
-    if (!previewCanvas || !props.imageUrl) return
-
-    const ctx = previewCanvas.getContext("2d")
-    if (!ctx) return
-
-    const img = new Image()
-    img.crossOrigin = "Anonymous"
-    img.onload = () => {
-      // アスペクト比を維持してプレビューサイズを計算
-      const aspectRatio = img.width / img.height
-      const maxSize = 200
-
-      let drawWidth = maxSize
-      let drawHeight = maxSize
-      let offsetX = 0
-      let offsetY = 0
-
-      if (aspectRatio > 1) {
-        // 横長の画像
-        drawHeight = maxSize / aspectRatio
-        offsetY = (maxSize - drawHeight) / 2
-      } else {
-        // 縦長の画像
-        drawWidth = maxSize * aspectRatio
-        offsetX = (maxSize - drawWidth) / 2
-      }
-
-      // プレビューキャンバスをクリア
-      ctx.clearRect(0, 0, maxSize, maxSize)
-
-      // フィルターを適用してプレビュー描画
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) hue-rotate(${hue}deg)`
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight)
-      ctx.filter = "none"
-    }
-    img.src = props.imageUrl
-  }
-
-  // リアルタイムでキャンバスにフィルターを適用する関数
-  const applyFilterToCanvas = () => {
-    if (!originalImageData) return
-
-    const canvas = imageCanvasRef.current
+  // フィルターを適用する関数
+  const applyFilter = () => {
+    const canvas = props.isMosaicMode
+      ? imageCanvasRef.current
+      : brushCanvasRef.current
     if (!canvas) return
 
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // 元画像データを復元
-    ctx.putImageData(originalImageData, 0, 0)
-
-    // フィルターが初期値と異なる場合のみ適用
-    if (
-      brightness !== 100 ||
-      contrast !== 100 ||
-      saturation !== 100 ||
-      hue !== 0
-    ) {
-      // 一時キャンバスを作成してフィルターを適用
-      const tempCanvas = document.createElement("canvas")
-      const tempCtx = tempCanvas.getContext("2d")
-      if (!tempCtx) return
-
-      tempCanvas.width = canvas.width
-      tempCanvas.height = canvas.height
-      tempCtx.putImageData(originalImageData, 0, 0)
-
-      // フィルターを適用して元のキャンバスに描画
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) hue-rotate(${hue}deg)`
-      ctx.drawImage(tempCanvas, 0, 0)
-      ctx.filter = "none"
-    }
-  }
-
-  // フィルターをリセットする関数
-  const resetFilters = () => {
-    setBrightness(100)
-    setContrast(100)
-    setSaturation(100)
-    setHue(0)
-
-    // リセット後すぐにプレビューを更新
-    setTimeout(() => {
-      updatePreview()
-    }, 0)
-  }
-
-  // フィルターを適用する関数
-  const applyFilter = () => {
-    if (!originalImageData || !imageCanvasRef.current) {
-      console.error("Original image data or canvas not found")
-      return
-    }
-
-    const canvas = imageCanvasRef.current
-    const ctx = canvas.getContext("2d")
-    if (!ctx) {
-      console.error("Canvas context not found")
-      return
-    }
-
-    // 現在のフィルター設定を元画像データに永続的に適用
-    const tempCanvas = document.createElement("canvas")
-    const tempCtx = tempCanvas.getContext("2d")
-    if (!tempCtx) return
-
-    tempCanvas.width = canvas.width
-    tempCanvas.height = canvas.height
-
-    // 元画像データを一時キャンバスに描画
-    tempCtx.putImageData(originalImageData, 0, 0)
-
-    // フィルターを適用して元のキャンバスに描画
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    // フィルターを適用
     ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) hue-rotate(${hue}deg)`
-    ctx.drawImage(tempCanvas, 0, 0)
+
+    // 画像データを取得して再描画
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+    ctx.putImageData(imageData, 0, 0)
+
+    // フィルターをリセット
     ctx.filter = "none"
-
-    // フィルター適用後の画像を新しい元画像として保存
-    const newImageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    setOriginalImageData(newImageData)
-
-    // フィルター値をリセット（見た目は変わらない）
-    setBrightness(100)
-    setContrast(100)
-    setSaturation(100)
-    setHue(0)
 
     // 状態を保存
     saveCanvasState(canvas)
-
-    // プレビューを更新（フィルターリセット後の状態で）
-    setTimeout(() => {
-      updatePreview()
-    }, 0)
-
-    console.log("Filter applied and made permanent")
   }
 
   // 戻るボタンのクリック時の処理
@@ -816,22 +647,6 @@ export function PaintCanvas(props: Props) {
               />
             </div>
           )}
-
-          {/* 閉じるボタン */}
-          {props.onClose && (
-            <>
-              <div className="my-4 h-px bg-gray-600" />
-              <Button
-                className="h-12 w-12 bg-red-600 text-white hover:bg-red-700 md:h-16 md:w-16"
-                size="icon"
-                variant="ghost"
-                onClick={props.onClose}
-                title="閉じる"
-              >
-                <XIcon className="h-6 w-6" />
-              </Button>
-            </>
-          )}
         </div>
 
         {/* メインキャンバスエリア */}
@@ -966,9 +781,21 @@ export function PaintCanvas(props: Props) {
               </h3>
               <div className="aspect-square w-full overflow-hidden rounded-lg border border-gray-600 bg-gray-700">
                 <canvas
-                  ref={previewCanvasRef}
-                  width={200}
-                  height={200}
+                  ref={(canvas) => {
+                    if (canvas && props.imageUrl) {
+                      const ctx = canvas.getContext("2d")
+                      if (ctx) {
+                        const img = new Image()
+                        img.crossOrigin = "Anonymous"
+                        img.onload = () => {
+                          canvas.width = 200
+                          canvas.height = 200
+                          ctx.drawImage(img, 0, 0, 200, 200)
+                        }
+                        img.src = props.imageUrl
+                      }
+                    }
+                  }}
                   className="h-full w-full object-contain"
                 />
               </div>
@@ -1033,38 +860,11 @@ export function PaintCanvas(props: Props) {
                   />
                 </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    onClick={applyFilter}
-                    className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
-                  >
-                    適用
-                  </Button>
-                  <Button
-                    onClick={resetFilters}
-                    variant="outline"
-                    className="flex-1 border-gray-600 "
-                  >
-                    リセット
-                  </Button>
-                </div>
-
                 <Button
-                  onClick={() => {
-                    resetFilters()
-                    // 元画像に戻す
-                    if (originalImageData && imageCanvasRef.current) {
-                      const ctx = imageCanvasRef.current.getContext("2d")
-                      if (ctx) {
-                        ctx.putImageData(originalImageData, 0, 0)
-                      }
-                    }
-                    setIsFilterPanelOpen(false)
-                  }}
-                  variant="outline"
-                  className="w-full border-gray-600 "
+                  onClick={applyFilter}
+                  className="w-full bg-blue-600 text-white hover:bg-blue-700"
                 >
-                  キャンセル
+                  フィルターを適用
                 </Button>
               </div>
             )}
@@ -1088,60 +888,44 @@ export function PaintCanvas(props: Props) {
           </div>
         </div>
 
-        {/* 決定・キャンセルボタン */}
+        {/* 決定ボタン */}
         {props.isShowSubmitButton && (
-          <div className="fixed bottom-0 left-0 z-50 flex w-full gap-1 bg-gray-900 p-2">
-            {/* キャンセルボタン */}
-            <Button
-              className="h-14 flex-1 rounded-lg bg-gray-600 text-lg font-bold text-white shadow-lg hover:bg-gray-700"
-              onClick={() => {
-                if (props.onClose) {
-                  props.onClose()
-                }
-              }}
-            >
-              <XIcon className="mr-2 h-6 w-6" />
-              キャンセル
-            </Button>
+          <Button
+            className="fixed bottom-0 left-0 z-50 h-16 w-full rounded-none bg-blue-600 text-lg font-bold text-white shadow-lg hover:bg-blue-700"
+            onClick={() => {
+              if (props.onSubmit) {
+                const compositeCanvas = document.createElement("canvas")
+                const ctx = compositeCanvas.getContext("2d")
+                if (!ctx) return
+                compositeCanvas.width = brushCanvasRef?.current?.width || 0
+                compositeCanvas.height = brushCanvasRef?.current?.height || 0
 
-            {/* 決定ボタン */}
-            <Button
-              className="h-14 flex-1 rounded-lg bg-blue-600 text-lg font-bold text-white shadow-lg hover:bg-blue-700"
-              onClick={() => {
-                if (props.onSubmit) {
-                  const compositeCanvas = document.createElement("canvas")
-                  const ctx = compositeCanvas.getContext("2d")
-                  if (!ctx) return
-                  compositeCanvas.width = brushCanvasRef?.current?.width || 0
-                  compositeCanvas.height = brushCanvasRef?.current?.height || 0
-
-                  if (backgroundCanvasRef?.current) {
-                    ctx.drawImage(backgroundCanvasRef.current, 0, 0)
-                  }
-                  if (mosaicCanvasRef) {
-                    ctx.drawImage(mosaicCanvasRef, 0, 0)
-                  }
-                  if (imageCanvasRef?.current) {
-                    ctx.drawImage(imageCanvasRef.current, 0, 0)
-                  }
-                  if (brushCanvasRef?.current) {
-                    ctx.drawImage(brushCanvasRef.current, 0, 0)
-                  }
-
-                  const dataUrl = compositeCanvas.toDataURL(
-                    `image/${props.extension ?? "webp"}`,
-                    1.0,
-                  )
-                  props.onSubmit(dataUrl)
+                if (backgroundCanvasRef?.current) {
+                  ctx.drawImage(backgroundCanvasRef.current, 0, 0)
                 }
-                if (props.onClose) {
-                  props.onClose()
+                if (mosaicCanvasRef) {
+                  ctx.drawImage(mosaicCanvasRef, 0, 0)
                 }
-              }}
-            >
-              決定
-            </Button>
-          </div>
+                if (imageCanvasRef?.current) {
+                  ctx.drawImage(imageCanvasRef.current, 0, 0)
+                }
+                if (brushCanvasRef?.current) {
+                  ctx.drawImage(brushCanvasRef.current, 0, 0)
+                }
+
+                const dataUrl = compositeCanvas.toDataURL(
+                  `image/${props.extension ?? "webp"}`,
+                  1.0,
+                )
+                props.onSubmit(dataUrl)
+              }
+              if (props.onClose) {
+                props.onClose()
+              }
+            }}
+          >
+            決定
+          </Button>
         )}
       </div>
     </section>

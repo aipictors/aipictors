@@ -239,6 +239,12 @@ export function EditImageFormUploader(props: Props) {
                 payload: { base64 },
               })
             }}
+            onClose={() => {
+              props.dispatch({
+                type: "SET_EDIT_TARGET_IMAGE_BASE64",
+                payload: null,
+              })
+            }}
           />
         </FullScreenContainer>
       )}
