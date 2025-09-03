@@ -92,6 +92,9 @@ export function PaintCanvas(props: Props) {
     null,
   )
 
+  // モザイクが適用されたかを追跡
+  const [isMosaicApplied, setIsMosaicApplied] = useState<boolean>(false)
+
   // Canvas 描画状態の配列
   const [canvasStates, setCanvasStates] = useState<CanvasState[]>([])
   // 現在の Canvas の状態を示すインデックス
@@ -498,6 +501,8 @@ export function PaintCanvas(props: Props) {
         ctx.globalCompositeOperation = "destination-out"
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         ctx.lineWidth = brushSize
+        // モザイクが適用されたことを記録
+        setIsMosaicApplied(true)
       } else if (tool === "eraser") {
         ctx.globalCompositeOperation = "destination-out"
         ctx.lineWidth = brushSize
@@ -509,6 +514,8 @@ export function PaintCanvas(props: Props) {
         ctx.globalCompositeOperation = "destination-out"
         ctx.strokeStyle = color
         ctx.lineWidth = 1
+        // モザイクが適用されたことを記録
+        setIsMosaicApplied(true)
       } else {
         ctx.globalCompositeOperation = "source-over"
         ctx.strokeStyle = color
@@ -682,6 +689,28 @@ export function PaintCanvas(props: Props) {
           >
             <MoveIcon className="h-6 w-6" />
           </Button>
+          {/* 区切り線 */}
+          <div className="my-4 h-px bg-gray-600" />
+
+          {/* フィルターツール */}
+          <Button
+            className={cn(
+              "mb-2 h-12 w-12 md:h-16 md:w-16",
+              isFilterPanelOpen
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600",
+              // モザイクが適用された場合は無効化
+              props.isMosaicMode &&
+                isMosaicApplied &&
+                "cursor-not-allowed opacity-50",
+            )}
+            size="icon"
+            variant="ghost"
+            disabled={props.isMosaicMode && isMosaicApplied}
+            onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+          >
+            <FilterIcon className="h-6 w-6" />
+          </Button>
 
           {!props.isMosaicMode && (
             <Button
@@ -715,6 +744,20 @@ export function PaintCanvas(props: Props) {
             </Button>
           )}
 
+          <Button
+            className={cn(
+              "mb-2 h-12 w-12 md:h-16 md:w-16",
+              tool === "eraser"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600",
+            )}
+            size="icon"
+            variant="ghost"
+            onClick={() => setTool("eraser")}
+          >
+            <EraserIcon className="h-6 w-6" />
+          </Button>
+
           {props.isMosaicMode && (
             <Button
               className={cn(
@@ -730,38 +773,6 @@ export function PaintCanvas(props: Props) {
               <LassoIcon className="h-6 w-6" />
             </Button>
           )}
-
-          <Button
-            className={cn(
-              "mb-2 h-12 w-12 md:h-16 md:w-16",
-              tool === "eraser"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600",
-            )}
-            size="icon"
-            variant="ghost"
-            onClick={() => setTool("eraser")}
-          >
-            <EraserIcon className="h-6 w-6" />
-          </Button>
-
-          {/* フィルターツール */}
-          <Button
-            className={cn(
-              "mb-2 h-12 w-12 md:h-16 md:w-16",
-              isFilterPanelOpen
-                ? "bg-blue-600 text-white"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600",
-            )}
-            size="icon"
-            variant="ghost"
-            onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
-          >
-            <FilterIcon className="h-6 w-6" />
-          </Button>
-
-          {/* 区切り線 */}
-          <div className="my-4 h-px bg-gray-600" />
 
           {/* 拡大縮小ボタン */}
           <Button
