@@ -1,10 +1,21 @@
+# ハッシュ付きアセットファイル（Viteが生成）- 長期キャッシュ
+/assets/*
+  Cache-Control: max-age=31536000, immutable
+
+# その他の静的ファイル - 短期キャッシュ
 /*
   Cache-Control: max-age=3600, s-maxage=3600, stale-while-revalidate=3600, stale-if-error=3600
+
+# Service Workerは短期キャッシュ
 /firebase-messaging-sw.js
   Cache-Control: max-age=3600, s-maxage=3600
+
+# アイコンファイル
 /favicon.ico
   Cache-Control: max-age=3600, s-maxage=3600
 /icon.png
   Cache-Control: max-age=3600, s-maxage=3600
+
+# マニフェストファイル  
 /manifest.json
   Cache-Control: max-age=3600, s-maxage=3600
