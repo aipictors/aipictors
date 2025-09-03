@@ -16,6 +16,8 @@ import {
 import { Slider } from "~/components/ui/slider"
 import { cn } from "~/lib/utils"
 import MosaicCanvas from "~/components/mosaic-canvas"
+import { ImageFilterPanel } from "~/components/image-filter-panel"
+import { applyImageFilter, type FilterType } from "~/utils/image-filter-utils"
 
 type Props = {
   width?: number // キャンバスの横幅
@@ -86,6 +88,11 @@ export function PaintCanvas(props: Props) {
   const [saturation, setSaturation] = useState<number>(100)
   const [hue, setHue] = useState<number>(0)
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState<boolean>(false)
+  const [isAdvancedFilterPanelOpen, setIsAdvancedFilterPanelOpen] =
+    useState<boolean>(false)
+  const [appliedFilters, setAppliedFilters] = useState<
+    { type: FilterType; intensity: number }[]
+  >([])
 
   // フィルター適用前の元画像を保存
   const [originalImageData, setOriginalImageData] = useState<ImageData | null>(
@@ -340,6 +347,55 @@ export function PaintCanvas(props: Props) {
     }, 0)
 
     console.log("Filter applied and made permanent")
+  }
+
+  // 高度なフィルターを適用する関数
+  const handleAdvancedFilterApply = (
+    filterType: FilterType,
+    intensity: number,
+  ) => {
+    if (!imageCanvasRef.current) return
+
+    const canvas = imageCanvasRef.current
+    applyImageFilter(canvas, filterType, intensity)
+
+    // 適用されたフィルターをリストに追加
+    setAppliedFilters((prev) => [...prev, { type: filterType, intensity }])
+
+    // 新しい元画像データを保存
+    const ctx = canvas.getContext("2d")
+    if (ctx) {
+      setOriginalImageData(ctx.getImageData(0, 0, canvas.width, canvas.height))
+    }
+
+    // プレビューを更新
+    setTimeout(() => {
+      updatePreview()
+    }, 0)
+  }
+
+  // 全フィルターをリセットする関数
+  const handleResetAllFilters = () => {
+    if (!originalImageData || !imageCanvasRef.current) return
+
+    const canvas = imageCanvasRef.current
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    // 元画像データを復元
+    ctx.putImageData(originalImageData, 0, 0)
+
+    // フィルター状態をリセット
+    setBrightness(100)
+    setContrast(100)
+    setSaturation(100)
+    setHue(0)
+    setAppliedFilters([])
+
+    // プレビューを更新
+    setTimeout(() => {
+      updatePreview()
+    }, 0)
   }
 
   // 戻るボタンのクリック時の処理
@@ -708,9 +764,32 @@ export function PaintCanvas(props: Props) {
             variant="ghost"
             disabled={props.isMosaicMode && isMosaicApplied}
             onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+            title="基本フィルター"
           >
             <FilterIcon className="h-6 w-6" />
           </Button>
+
+          {/* 高度なフィルターツール */}
+          {/* <Button
+            className={cn(
+              "mb-2 h-12 w-12 md:h-16 md:w-16",
+              isAdvancedFilterPanelOpen
+                ? "bg-purple-600 text-white"
+                : "bg-gray-700 text-gray-300 hover:bg-gray-600",
+              // モザイクが適用された場合は無効化
+              props.isMosaicMode &&
+                isMosaicApplied &&
+                "cursor-not-allowed opacity-50",
+            )}
+            size="icon"
+            variant="ghost"
+            disabled={props.isMosaicMode && isMosaicApplied}
+            onClick={() => setIsAdvancedFilterPanelOpen(true)}
+            title="高度なフィルター"
+          >
+            <FilterIcon className="h-6 w-6" />
+            <div className="absolute -top-1 -right-1 h-2 w-2 bg-purple-500 rounded-full" />
+          </Button> */}
 
           {!props.isMosaicMode && (
             <Button
@@ -988,8 +1067,6 @@ export function PaintCanvas(props: Props) {
             {/* フィルターパネル */}
             {isFilterPanelOpen && (
               <div className="space-y-4">
-                <h3 className="text-sm font-bold text-gray-300">フィルター</h3>
-
                 <div>
                   <div className="mb-2 text-xs text-gray-400">
                     明度: {brightness}%
@@ -1165,6 +1242,17 @@ export function PaintCanvas(props: Props) {
           </div>
         )}
       </div>
+
+      {/* 高度なフィルターパネル */}
+      <ImageFilterPanel
+        isOpen={isAdvancedFilterPanelOpen}
+        onClose={() => setIsAdvancedFilterPanelOpen(false)}
+        onApply={handleAdvancedFilterApply}
+        onReset={handleResetAllFilters}
+        appliedFilters={appliedFilters}
+        originalImageData={originalImageData}
+        canvasSize={{ width: canvasWidth, height: canvasHeight }}
+      />
     </section>
   )
 }
