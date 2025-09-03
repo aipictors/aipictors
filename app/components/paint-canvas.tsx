@@ -78,7 +78,7 @@ export function PaintCanvas(props: Props) {
   const [points, setPoints] = useState<{ x: number; y: number }[]>([]) // 状態としてポイントを保存
   const [canvasWidth, setCanvasWidth] = useState<number>(props.width || 240)
   const [canvasHeight, setCanvasHeight] = useState<number>(props.height || 360)
-  const [backgroundColor, setBackgroundColor] = useState("#fff")
+  const [backgroundColor] = useState("#fff")
   const [mosaicCanvasRef, setMosaicCanvasRef] =
     useState<HTMLCanvasElement | null>(null)
 
@@ -206,7 +206,71 @@ export function PaintCanvas(props: Props) {
     img.src = state.dataUrl
   }
 
-  // プレビューキャンバスを更新する関数
+  // Safari対応: 基本フィルターをImageDataに適用する関数
+  const applyBasicFilters = (
+    data: Uint8ClampedArray,
+    brightness: number,
+    contrast: number,
+    saturation: number,
+    hue: number,
+  ) => {
+    const brightnessAdjust = brightness / 100
+    const contrastAdjust = contrast / 100
+    const saturationAdjust = saturation / 100
+    const hueAdjust = (hue * Math.PI) / 180
+
+    for (let i = 0; i < data.length; i += 4) {
+      let r = data[i]
+      let g = data[i + 1]
+      let b = data[i + 2]
+
+      // 明度調整
+      r = r * brightnessAdjust
+      g = g * brightnessAdjust
+      b = b * brightnessAdjust
+
+      // コントラスト調整
+      r = ((r / 255 - 0.5) * contrastAdjust + 0.5) * 255
+      g = ((g / 255 - 0.5) * contrastAdjust + 0.5) * 255
+      b = ((b / 255 - 0.5) * contrastAdjust + 0.5) * 255
+
+      // 彩度調整
+      const gray = 0.299 * r + 0.587 * g + 0.114 * b
+      r = gray + (r - gray) * saturationAdjust
+      g = gray + (g - gray) * saturationAdjust
+      b = gray + (b - gray) * saturationAdjust
+
+      // 色相調整（簡易版）
+      if (hue !== 0) {
+        const cosA = Math.cos(hueAdjust)
+        const sinA = Math.sin(hueAdjust)
+
+        const newR =
+          r * (cosA + (1 - cosA) * 0.299) +
+          g * ((1 - cosA) * 0.587 - sinA * 0.114) +
+          b * ((1 - cosA) * 0.114 + sinA * 0.587)
+        const newG =
+          r * ((1 - cosA) * 0.299 + sinA * 0.114) +
+          g * (cosA + (1 - cosA) * 0.587) +
+          b * ((1 - cosA) * 0.114 - sinA * 0.299)
+        const newB =
+          r * ((1 - cosA) * 0.299 - sinA * 0.587) +
+          g * ((1 - cosA) * 0.587 + sinA * 0.299) +
+          b * (cosA + (1 - cosA) * 0.114)
+
+        r = newR
+        g = newG
+        b = newB
+      }
+
+      // 値を0-255の範囲にクランプ
+      data[i] = Math.max(0, Math.min(255, r))
+      data[i + 1] = Math.max(0, Math.min(255, g))
+      data[i + 2] = Math.max(0, Math.min(255, b))
+    }
+  }
+
+  // プレビューキャンバスを更新する関数（Safari対応）
   const updatePreview = () => {
     const previewCanvas = previewCanvasRef.current
     if (!previewCanvas || !props.imageUrl) return
@@ -236,18 +300,43 @@ export function PaintCanvas(props: Props) {
         offsetX = (maxSize - drawWidth) / 2
       }
 
+      // プレビューキャンバスのサイズを正しく設定
+      previewCanvas.width = maxSize
+      previewCanvas.height = maxSize
+
       // プレビューキャンバスをクリア
       ctx.clearRect(0, 0, maxSize, maxSize)
 
-      // フィルターを適用してプレビュー描画
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) hue-rotate(${hue}deg)`
-      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight)
-      ctx.filter = "none"
+      // 一時キャンバスを作成して画像を描画
+      const tempCanvas = document.createElement("canvas")
+      const tempCtx = tempCanvas.getContext("2d")
+      if (!tempCtx) return
+
+      tempCanvas.width = drawWidth
+      tempCanvas.height = drawHeight
+
+      // 画像を一時キャンバスに描画
+      tempCtx.drawImage(img, 0, 0, drawWidth, drawHeight)
+
+      // フィルターが適用されている場合、ImageDataを使用してフィルターを適用
+      if (
+        brightness !== 100 ||
+        contrast !== 100 ||
+        saturation !== 100 ||
+        hue !== 0
+      ) {
+        const imageData = tempCtx.getImageData(0, 0, drawWidth, drawHeight)
+        applyBasicFilters(imageData.data, brightness, contrast, saturation, hue)
+        tempCtx.putImageData(imageData, 0, 0)
+      }
+
+      // フィルター適用済みの画像をプレビューキャンバスに描画
+      ctx.drawImage(tempCanvas, offsetX, offsetY)
     }
     img.src = props.imageUrl
   }
 
-  // リアルタイムでキャンバスにフィルターを適用する関数
+  // リアルタイムでキャンバスにフィルターを適用する関数（Safari対応）
   const applyFilterToCanvas = () => {
     if (!originalImageData) return
 
@@ -257,9 +346,6 @@ export function PaintCanvas(props: Props) {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // 元画像データを復元
-    ctx.putImageData(originalImageData, 0, 0)
-
     // フィルターが初期値と異なる場合のみ適用
     if (
       brightness !== 100 ||
@@ -267,20 +353,44 @@ export function PaintCanvas(props: Props) {
       saturation !== 100 ||
       hue !== 0
     ) {
-      // 一時キャンバスを作成してフィルターを適用
+      // 一時キャンバスを作成して元画像データを復元
       const tempCanvas = document.createElement("canvas")
       const tempCtx = tempCanvas.getContext("2d")
       if (!tempCtx) return
 
-      tempCanvas.width = canvas.width
-      tempCanvas.height = canvas.height
+      tempCanvas.width = originalImageData.width
+      tempCanvas.height = originalImageData.height
+      
+      // 元画像データのコピーを作成
+      const tempImageData = new ImageData(
+        new Uint8ClampedArray(originalImageData.data),
+        originalImageData.width,
+        originalImageData.height,
+      )
+
+      // フィルターを適用
+      applyBasicFilters(tempImageData.data, brightness, contrast, saturation, hue)
+
+      // 一時キャンバスにフィルター適用済み画像を描画
+      tempCtx.putImageData(tempImageData, 0, 0)
+
+      // メインキャンバスをクリアして、フィルター適用済み画像をキャンバス全体に描画
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height)
+    } else {
+      // フィルターが初期値の場合は元画像データを復元
+      // 一時キャンバスを作成して元画像データから描画
+      const tempCanvas = document.createElement("canvas")
+      const tempCtx = tempCanvas.getContext("2d")
+      if (!tempCtx) return
+
+      tempCanvas.width = originalImageData.width
+      tempCanvas.height = originalImageData.height
       tempCtx.putImageData(originalImageData, 0, 0)
 
-      // フィルターを適用して元のキャンバスに描画
+      // メインキャンバスをクリアして、元画像をキャンバス全体に描画
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) hue-rotate(${hue}deg)`
-      ctx.drawImage(tempCanvas, 0, 0)
-      ctx.filter = "none"
+      ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height)
     }
   }
 
@@ -297,7 +407,7 @@ export function PaintCanvas(props: Props) {
     }, 0)
   }
 
-  // フィルターを適用する関数
+  // フィルターを適用する関数（Safari対応）
   const applyFilter = () => {
     if (!originalImageData || !imageCanvasRef.current) {
       console.error("Original image data or canvas not found")
@@ -311,24 +421,32 @@ export function PaintCanvas(props: Props) {
       return
     }
 
-    // 現在のフィルター設定を元画像データに永続的に適用
+    // 一時キャンバスを作成して元画像データを復元
     const tempCanvas = document.createElement("canvas")
     const tempCtx = tempCanvas.getContext("2d")
     if (!tempCtx) return
 
-    tempCanvas.width = canvas.width
-    tempCanvas.height = canvas.height
+    tempCanvas.width = originalImageData.width
+    tempCanvas.height = originalImageData.height
+    
+    // 元画像データのコピーを作成
+    const tempImageData = new ImageData(
+      new Uint8ClampedArray(originalImageData.data),
+      originalImageData.width,
+      originalImageData.height,
+    )
 
-    // 元画像データを一時キャンバスに描画
-    tempCtx.putImageData(originalImageData, 0, 0)
+    // フィルターを適用
+    applyBasicFilters(tempImageData.data, brightness, contrast, saturation, hue)
 
-    // フィルターを適用して元のキャンバスに描画
+    // 一時キャンバスにフィルター適用済み画像を描画
+    tempCtx.putImageData(tempImageData, 0, 0)
+
+    // メインキャンバスをクリアして、フィルター適用済み画像をキャンバス全体に描画
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) hue-rotate(${hue}deg)`
-    ctx.drawImage(tempCanvas, 0, 0)
-    ctx.filter = "none"
+    ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height)
 
-    // フィルター適用後の画像を新しい元画像として保存
+    // フィルター適用後の新しい元画像データを保存（キャンバスサイズ）
     const newImageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     setOriginalImageData(newImageData)
 
@@ -382,8 +500,18 @@ export function PaintCanvas(props: Props) {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
-    // 元画像データを復元
-    ctx.putImageData(originalImageData, 0, 0)
+    // 一時キャンバスを作成して元画像データを復元
+    const tempCanvas = document.createElement("canvas")
+    const tempCtx = tempCanvas.getContext("2d")
+    if (!tempCtx) return
+
+    tempCanvas.width = originalImageData.width
+    tempCanvas.height = originalImageData.height
+    tempCtx.putImageData(originalImageData, 0, 0)
+
+    // メインキャンバスをクリアして、元画像をキャンバス全体に描画
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height)
 
     // フィルター状態をリセット
     setBrightness(100)
