@@ -456,7 +456,7 @@ function InfiniteMode(props: Props) {
               />
               {/* ページ間の視覚的区切り（最後のページ以外） */}
               {idx < pages.length - 1 && !isTimelineView && (
-                <div className="mt-8 border-t border-muted/20" />
+                <div className="mt-8 border-muted/20 border-t" />
               )}
             </div>
           ),

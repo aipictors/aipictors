@@ -220,9 +220,9 @@ function WorkItem({ work }: WorkItemProps) {
       </div>
 
       {/* 作品情報 - 底部に固定、背景を半透明に */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3">
+      <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/90 to-transparent p-3">
         {/* タイトル */}
-        <h3 className="line-clamp-2 font-medium text-white text-sm leading-tight mb-1">
+        <h3 className="mb-1 line-clamp-2 font-medium text-sm text-white leading-tight">
           {work.title}
         </h3>
 
@@ -239,7 +239,7 @@ function WorkItem({ work }: WorkItemProps) {
                 loading="lazy"
               />
             </div>
-            <span className="text-white/90 text-xs truncate">
+            <span className="truncate text-white/90 text-xs">
               {work.user.name}
             </span>
           </div>

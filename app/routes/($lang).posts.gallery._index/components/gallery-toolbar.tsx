@@ -1,5 +1,4 @@
 import { Button } from "~/components/ui/button"
-import { Badge } from "~/components/ui/badge"
 import { Grid, List, Settings } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 

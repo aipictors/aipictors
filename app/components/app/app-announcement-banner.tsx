@@ -115,13 +115,13 @@ export function AppAnnouncementBanner() {
   }
 
   return (
-    <div className="border-b border-slate-200 bg-slate-50/50 dark:border-slate-700 dark:bg-slate-800/50">
+    <div className="border-slate-200 border-b bg-slate-50/50 dark:border-slate-700 dark:bg-slate-800/50">
       <div className="relative w-full px-4 py-3">
         <div className="flex items-center gap-3 pr-10">
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+            className="-translate-y-1/2 absolute top-1/2 right-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
             aria-label="お知らせを閉じる"
           >
             <X className="h-4 w-4" />
@@ -146,7 +146,7 @@ export function AppAnnouncementBanner() {
               className="flex-1 text-left transition-colors hover:text-blue-600 dark:hover:text-blue-400"
             >
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                <span className="font-medium text-slate-700 text-sm dark:text-slate-200">
                   {announcementData.emergencyAnnouncements.content}
                 </span>
                 <svg
@@ -166,7 +166,7 @@ export function AppAnnouncementBanner() {
             </button>
           ) : (
             <div className="flex-1">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+              <span className="font-medium text-slate-700 text-sm dark:text-slate-200">
                 {announcementData.emergencyAnnouncements.content}
               </span>
             </div>

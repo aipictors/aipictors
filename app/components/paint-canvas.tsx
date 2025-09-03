@@ -7,10 +7,11 @@ import {
   CookingPotIcon,
   SlidersHorizontalIcon,
   LassoIcon,
+  MoveIcon,
   RotateCwIcon,
   RotateCcwIcon,
-  ArrowLeft,
-  ArrowRight,
+  ZoomInIcon,
+  ZoomOutIcon,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -69,7 +70,18 @@ export function PaintCanvas(props: Props) {
 
   const [scale, setScale] = useState<number>(1)
   const [translateX, setTranslateX] = useState<number>(0)
-  const [translateY, _setTranslateY] = useState<number>(0)
+  const [translateY, setTranslateY] = useState<number>(0)
+
+  // パン操作用の状態
+  const [isPanning, setIsPanning] = useState<boolean>(false)
+  const [panStart, setPanStart] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  })
+  const [panStartTranslate, setPanStartTranslate] = useState<{
+    x: number
+    y: number
+  }>({ x: 0, y: 0 })
 
   const [points, setPoints] = useState<{ x: number; y: number }[]>([]) // 状態としてポイントを保存
 
@@ -226,6 +238,11 @@ export function PaintCanvas(props: Props) {
     if (!assistedCtx) return
 
     const handleMouseDown = (e: MouseEvent | TouchEvent) => {
+      // 選択モードの場合は描画処理をスキップ
+      if (tool === "select") {
+        return
+      }
+
       if (props.onChangeSetDrawing) props.onChangeSetDrawing(true)
 
       const rect = brushCanvas.getBoundingClientRect()
@@ -416,11 +433,52 @@ export function PaintCanvas(props: Props) {
     }
   }, [props.imageUrl])
 
+  // パン操作のハンドラー関数
+  const handlePanStart = (clientX: number, clientY: number) => {
+    setIsPanning(true)
+    setPanStart({ x: clientX, y: clientY })
+    setPanStartTranslate({ x: translateX, y: translateY })
+  }
+
+  const handlePanMove = (clientX: number, clientY: number) => {
+    if (!isPanning) return
+    const deltaX = clientX - panStart.x
+    const deltaY = clientY - panStart.y
+    setTranslateX(panStartTranslate.x + deltaX)
+    setTranslateY(panStartTranslate.y + deltaY)
+  }
+
+  const handlePanEnd = () => {
+    setIsPanning(false)
+  }
+
   const handleWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault() // デフォルトのイベントをキャンセル
-    const scaleFactor = 1.1
-    const newScale = e.deltaY < 0 ? scale * scaleFactor : scale / scaleFactor
-    setScale(Math.max(0.1, Math.min(newScale, 10))) // scale を更新
+
+    // 選択モードまたはモザイクモードでは拡大縮小を許可
+    if (tool === "select" || props.isMosaicMode) {
+      const rect = e.currentTarget.getBoundingClientRect()
+      const mouseX = e.clientX - rect.left - rect.width / 2
+      const mouseY = e.clientY - rect.top - rect.height / 2
+
+      const scaleFactor = 1.1
+      const newScale = e.deltaY < 0 ? scale * scaleFactor : scale / scaleFactor
+      const clampedScale = Math.max(0.1, Math.min(newScale, 5))
+
+      // マウス位置を基準とした拡大縮小
+      const scaleChange = clampedScale / scale
+      const newTranslateX = translateX - mouseX * (scaleChange - 1)
+      const newTranslateY = translateY - mouseY * (scaleChange - 1)
+
+      setScale(clampedScale)
+      setTranslateX(newTranslateX)
+      setTranslateY(newTranslateY)
+    } else {
+      // 通常の拡大縮小
+      const scaleFactor = 1.1
+      const newScale = e.deltaY < 0 ? scale * scaleFactor : scale / scaleFactor
+      setScale(Math.max(0.1, Math.min(newScale, 10)))
+    }
   }
 
   const resetCanvas = () => {
@@ -464,95 +522,147 @@ export function PaintCanvas(props: Props) {
 
   return (
     <section className="relative h-[100%] w-[100%]">
-      <div className="block h-[100%] w-[100%] md:flex">
-        <div className="mb-1 flex bg-card md:flex-col">
+      <div className="flex h-[100%] w-[100%] flex-col md:flex-row">
+        {/* スマホ対応ツールバー - 水平配置でアイコンを大きく */}
+        <div className="flex flex-row bg-card p-2 md:flex-col md:p-1">
+          {/* 選択・移動ツール */}
+          <Button
+            className={cn(
+              "mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10",
+              tool === "select" ? "border-2 border-blue-500 bg-blue-50" : "",
+            )}
+            size="icon"
+            variant="ghost"
+            onClick={() => setTool("select")}
+          >
+            <MoveIcon className="h-6 w-6 text-black md:h-4 md:w-4" />
+          </Button>
+
           {!props.isMosaicMode && (
             <Button
-              className={cn(tool === "brush" ? "mr-2 border" : "mr-2")}
+              className={cn(
+                "mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10",
+                tool === "brush" ? "border-2 border-blue-500 bg-blue-50" : "",
+              )}
               size="icon"
               variant="ghost"
               onClick={() => setTool("brush")}
             >
-              <BrushIcon className="m-auto text-black" />
+              <BrushIcon className="h-6 w-6 text-black md:h-4 md:w-4" />
             </Button>
           )}
+
           {!props.isMosaicMode && (
-            <Button // 2. 投げ縄ボタンを追加
-              className={cn(tool === "lasso" ? "mr-2 border" : "mr-2")}
+            <Button
+              className={cn(
+                "mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10",
+                tool === "lasso" ? "border-2 border-blue-500 bg-blue-50" : "",
+              )}
               size="icon"
               variant="ghost"
               onClick={() => setTool("lasso")}
             >
-              <LassoIcon className="m-auto" />
+              <LassoIcon className="h-6 w-6 md:h-4 md:w-4" />
             </Button>
           )}
+
           {props.isMosaicMode && (
-            <Button // 2. 投げ縄ボタンを追加
-              className={cn(tool === "lasso-mosaic" ? "mr-2 border" : "mr-2")}
+            <Button
+              className={cn(
+                "mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10",
+                tool === "lasso-mosaic"
+                  ? "border-2 border-blue-500 bg-blue-50"
+                  : "",
+              )}
               size="icon"
               variant="ghost"
               onClick={() => setTool("lasso-mosaic")}
             >
-              <LassoIcon className="m-auto" />
+              <LassoIcon className="h-6 w-6 md:h-4 md:w-4" />
             </Button>
           )}
 
           <Button
-            className={cn(tool === "eraser" ? "mr-2 border" : "mr-2")}
+            className={cn(
+              "mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10",
+              tool === "eraser" ? "border-2 border-blue-500 bg-blue-50" : "",
+            )}
             size="icon"
             variant="ghost"
             onClick={() => setTool("eraser")}
           >
-            <EraserIcon className="m-auto" />
+            <EraserIcon className="h-6 w-6 md:h-4 md:w-4" />
           </Button>
+
           {!props.isMosaicMode && (
             <Button
-              className="mr-2"
+              className="mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10"
               size="icon"
               variant="ghost"
               onClick={resetCanvas}
             >
-              <CookingPotIcon className="m-auto" />
+              <CookingPotIcon className="h-6 w-6 md:h-4 md:w-4" />
             </Button>
           )}
+
           {props.isMosaicMode && (
             <Button
-              className="mr-2"
+              className="mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10"
               size="icon"
               variant="ghost"
               onClick={resetMosaicCanvas}
             >
-              <CookingPotIcon className="m-auto" />
+              <CookingPotIcon className="h-6 w-6 md:h-4 md:w-4" />
             </Button>
           )}
 
           <Button
-            className="mr-2"
+            className="mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10"
             size="icon"
             variant="ghost"
             onClick={handleUndo}
           >
-            <RotateCcwIcon className="m-auto" />
+            <RotateCcwIcon className="h-6 w-6 md:h-4 md:w-4" />
           </Button>
+
           <Button
-            className="mr-2"
+            className="mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10"
             size="icon"
             variant="ghost"
             onClick={handleRedo}
             disabled={stateIndex >= canvasStates.length - 1}
           >
-            <RotateCwIcon className="m-auto" />
+            <RotateCwIcon className="h-6 w-6 md:h-4 md:w-4" />
+          </Button>
+
+          {/* 拡大縮小ボタン */}
+          <Button
+            className="mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10"
+            size="icon"
+            variant="ghost"
+            onClick={() => setScale((prev) => Math.min(prev * 1.2, 5))}
+          >
+            <ZoomInIcon className="h-6 w-6 md:h-4 md:w-4" />
+          </Button>
+
+          <Button
+            className="mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10"
+            size="icon"
+            variant="ghost"
+            onClick={() => setScale((prev) => Math.max(prev / 1.2, 0.1))}
+          >
+            <ZoomOutIcon className="h-6 w-6 md:h-4 md:w-4" />
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger className="block">
               <Button
-                className="mr-2"
+                className="mr-1 h-12 w-12 md:mr-2 md:h-10 md:w-10"
                 size={"icon"}
                 variant={"ghost"}
                 onClick={() => {}}
               >
-                <SlidersHorizontalIcon className="m-auto" />
+                <SlidersHorizontalIcon className="h-6 w-6 md:h-4 md:w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -577,31 +687,76 @@ export function PaintCanvas(props: Props) {
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
+
           {!props.isMosaicMode && props.isColorPicker && (
             <input
               type="color"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-              className="mr-2 size-10 cursor-pointer border-0 p-0"
+              className="mr-1 h-12 w-12 cursor-pointer border-0 p-0 md:mr-2 md:h-10 md:w-10"
               style={{ backgroundColor: color }}
               title="Choose a color"
             />
           )}
+
           {props.isBackgroundColorPicker && (
             <input
               type="color"
               value={color}
               onChange={(e) => setBackgroundColor(e.target.value)}
-              className="mr-2 size-10 cursor-pointer border-0 p-0"
+              className="mr-1 h-12 w-12 cursor-pointer border-0 p-0 md:mr-2 md:h-10 md:w-10"
               style={{ backgroundColor: color }}
               title="Choose a color"
             />
           )}
         </div>
+        {/* メインキャンバスエリア - 選択モード対応 */}
         <div
           className={cn(
             "flex h-[100%] w-full items-center justify-center overflow-hidden border border-gray-300 bg-card",
+            // 選択モードまたはモザイクモード時のカーソル
+            (tool === "select" || props.isMosaicMode) && "cursor-grab",
+            (tool === "select" || props.isMosaicMode) &&
+              isPanning &&
+              "cursor-grabbing",
           )}
+          onMouseDown={(e) => {
+            // 選択モード時は左クリック、モザイクモード時は右クリックでパン開始
+            if (tool === "select" && e.button === 0) {
+              e.preventDefault()
+              handlePanStart(e.clientX, e.clientY)
+            } else if (props.isMosaicMode && (e.button === 2 || e.ctrlKey)) {
+              e.preventDefault()
+              handlePanStart(e.clientX, e.clientY)
+            }
+          }}
+          onMouseMove={(e) => {
+            if (isPanning) {
+              handlePanMove(e.clientX, e.clientY)
+            }
+          }}
+          onMouseUp={handlePanEnd}
+          onMouseLeave={handlePanEnd}
+          onTouchStart={(e) => {
+            // タッチでのパン操作（選択モードまたはモザイクモード）
+            if (
+              (tool === "select" || props.isMosaicMode) &&
+              e.touches.length === 1
+            ) {
+              e.preventDefault()
+              const touch = e.touches[0]
+              handlePanStart(touch.clientX, touch.clientY)
+            }
+          }}
+          onTouchMove={(e) => {
+            if (isPanning && e.touches.length === 1) {
+              e.preventDefault()
+              const touch = e.touches[0]
+              handlePanMove(touch.clientX, touch.clientY)
+            }
+          }}
+          onTouchEnd={handlePanEnd}
+          onContextMenu={(e) => e.preventDefault()}
         >
           <div
             className={cn(
@@ -682,7 +837,7 @@ export function PaintCanvas(props: Props) {
           </div>
           {props.isShowSubmitButton && (
             <Button
-              className="-translate-x-1/2 absolute bottom-56 left-1/2"
+              className="fixed bottom-0 left-0 z-50 h-12 w-full rounded-none  text-lg font-bold text-white shadow-lg hover:bg-blue-700"
               onClick={() => {
                 if (props.onSubmit) {
                   const compositeCanvas = document.createElement("canvas")
@@ -718,35 +873,6 @@ export function PaintCanvas(props: Props) {
               決定
             </Button>
           )}
-          <div className="absolute bottom-32 z-50 w-[72%]">
-            <Slider
-              aria-label="slider-ex-2"
-              defaultValue={[scale]}
-              min={0.1}
-              max={10}
-              step={0.1}
-              onValueChange={(value) => {
-                setScale(value[0])
-              }}
-            />
-          </div>
-          {/* 下部に左右移動ボタン */}
-          <div className="-translate-x-1/2 absolute bottom-40 left-1/2 z-50 flex gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTranslateX((prev) => prev + 50)}
-            >
-              <ArrowLeft />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTranslateX((prev) => prev - 50)}
-            >
-              <ArrowRight />
-            </Button>
-          </div>
         </div>
       </div>
     </section>

@@ -5,10 +5,7 @@ import { Heart, Eye, Images } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { Skeleton } from "~/components/ui/skeleton"
 import { LikeButton } from "~/components/like-button"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { GalleryTagList } from "~/components/tag/gallery-tag"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -196,7 +193,7 @@ function WorkItem(props: WorkItemProps) {
   return (
     <Link
       to={`/${baseUrl}/${work.id}`}
-      className="group relative block overflow-hidden rounded-lg bg-card shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 leading-none"
+      className="group relative block overflow-hidden rounded-lg bg-card leading-none shadow-sm transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
     >
       {/* 画像コンテナ */}
       <div className="relative" style={{ height: imageHeight }}>
@@ -206,7 +203,7 @@ function WorkItem(props: WorkItemProps) {
           alt={work.title}
           width={work.smallThumbnailImageWidth}
           height={work.smallThumbnailImageHeight}
-          className="block absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="absolute inset-0 block h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
         />
 
@@ -248,13 +245,13 @@ function WorkItem(props: WorkItemProps) {
         </button>
 
         {/* 統計情報 */}
-        <div className="absolute bottom-2 right-2 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white backdrop-blur-sm">
+        <div className="absolute right-2 bottom-2 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
             <Heart className="size-3" />
             <span>{work.likesCount}</span>
           </div>
           {work.commentsCount > 0 && (
-            <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-xs text-white backdrop-blur-sm">
+            <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
               <Eye className="size-3" />
               <span>{work.commentsCount}</span>
             </div>
