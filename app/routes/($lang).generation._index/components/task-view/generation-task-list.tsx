@@ -9,10 +9,12 @@ import {
   GenerationResultCardTaskFragment,
   GenerationTaskCard,
 } from "~/routes/($lang).generation._index/components/generation-task-card"
+import { PlanUpgradePrompt } from "~/routes/($lang).generation._index/components/plan-upgrade-prompt"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
+import { getMaxPagesByPlan } from "~/routes/($lang).generation._index/utils/get-max-pages-by-plan"
 import { graphql, type FragmentOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
@@ -207,24 +209,28 @@ export function GenerationTaskList(props: Props) {
         </div>
         {/* </Suspense> */}
       </ScrollArea>
-      <div className="p-2 pb-4 md:pb-4">
+      <div className="space-y-3 p-2 pb-4 md:pb-4">
         {props.protect !== 1 && (
-          <ResponsivePagination
-            perPage={props.rating === 0 || props.rating === -1 ? 56 : 800}
-            maxCount={
-              (props.protect === 0 || props.protect === -1) &&
-              (props.rating === 0 || props.rating === -1)
-                ? (queryData.userStatus
-                    ?.remainingImageGenerationTasksTotalCount ?? 0)
-                : componentTasks.length
-            }
-            currentPage={props.currentPage}
-            onPageChange={(page: number) => {
-              props.setCurrentPage(page)
-            }}
-            isActiveButtonStyle={true}
-            allowExtendedPagination={true}
-          />
+          <>
+            <ResponsivePagination
+              perPage={props.rating === 0 || props.rating === -1 ? 56 : 800}
+              maxCount={
+                (props.protect === 0 || props.protect === -1) &&
+                (props.rating === 0 || props.rating === -1)
+                  ? (queryData.userStatus
+                      ?.remainingImageGenerationTasksTotalCount ?? 0)
+                  : componentTasks.length
+              }
+              currentPage={props.currentPage}
+              onPageChange={(page: number) => {
+                props.setCurrentPage(page)
+              }}
+              isActiveButtonStyle={true}
+              allowExtendedPagination={true}
+              maxPages={getMaxPagesByPlan(queryData.currentPass?.type)}
+            />
+            <PlanUpgradePrompt currentPlan={queryData.currentPass?.type} />
+          </>
         )}
       </div>
     </>
