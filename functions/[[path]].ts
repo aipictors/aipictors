@@ -7,10 +7,34 @@ const remix = createPagesFunctionHandler({
 })
 
 export const onRequest: PagesFunction = async (ctx) => {
-  const maxRetry = 3
-  const baseDelay = 200 // 基本遅延時間（ミリ秒）
-  const maxDelay = 5000 // 最大遅延時間（ミリ秒）
-  const timeoutMs = 30000 // 30秒のタイムアウト
+  const maxRetry = 5 // リトライ回数を増加
+  const baseDelay = 300 // 基本遅延時間を若干増加
+  const maxDelay = 8000 // 最大遅延時間を増加
+  const timeoutMs = 45000 // 45秒のタイムアウトに延長
+
+  // 基本的な健全性チェック
+  try {
+    if (!ctx || !ctx.request) {
+      throw new Error("Invalid request context")
+    }
+
+    const url = new URL(ctx.request.url)
+    console.log(`Processing request: ${ctx.request.method} ${url.pathname}`)
+  } catch (healthCheckError) {
+    console.error("Health check failed:", healthCheckError)
+    return new Response(
+      JSON.stringify({
+        error: "Invalid request",
+        code: "BAD_REQUEST",
+      }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    )
+  }
 
   /**
    * Error 1101やDB接続エラーを検出する
@@ -22,7 +46,23 @@ export const onRequest: PagesFunction = async (ctx) => {
       errorMessage.includes("Worker threw exception") ||
       errorMessage.includes("database") ||
       errorMessage.includes("timeout") ||
-      errorMessage.includes("connection")
+      errorMessage.includes("connection") ||
+      errorMessage.includes("ECONNRESET") ||
+      errorMessage.includes("ENOTFOUND") ||
+      errorMessage.includes("ETIMEDOUT") ||
+      errorMessage.includes("socket hang up") ||
+      errorMessage.includes("network") ||
+      errorMessage.includes("502") ||
+      errorMessage.includes("503") ||
+      errorMessage.includes("504") ||
+      errorMessage.includes("Rate limit") ||
+      errorMessage.includes("Too many requests") ||
+      // CloudFlare関連エラー
+      errorMessage.includes("cloudflare") ||
+      errorMessage.includes("CF-") ||
+      // メモリ関連エラー
+      errorMessage.includes("out of memory") ||
+      errorMessage.includes("memory limit")
     )
   }
 
@@ -50,6 +90,15 @@ export const onRequest: PagesFunction = async (ctx) => {
       return res
     } catch (err) {
       console.error(`Request attempt ${attempt + 1}/${maxRetry} failed:`, err)
+      console.error(
+        `Error type: ${err instanceof Error ? err.constructor.name : typeof err}`,
+      )
+      console.error(
+        `Error message: ${err instanceof Error ? err.message : String(err)}`,
+      )
+      console.error(
+        `Stack trace: ${err instanceof Error ? err.stack : "No stack trace available"}`,
+      )
 
       // リトライ可能なエラーかどうかを判定
       if (!isRetryableError(err)) {
@@ -70,10 +119,18 @@ export const onRequest: PagesFunction = async (ctx) => {
 
       // 最後の試行の場合はエラーを返す
       if (attempt === maxRetry - 1) {
+        const errorDetails = err instanceof Error ? err.message : String(err)
+        console.error(
+          `All ${maxRetry} attempts failed. Final error:`,
+          errorDetails,
+        )
+
         return new Response(
           JSON.stringify({
             error: "Service temporarily unavailable. Please try again later.",
             code: "TEMPORARY_UNAVAILABLE",
+            details: import.meta.env.DEV ? errorDetails : undefined, // 開発環境でのみ詳細を表示
+            timestamp: new Date().toISOString(),
           }),
           {
             status: 503,
