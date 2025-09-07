@@ -38,6 +38,7 @@ type Props = {
   onClose?(): void
   setBackImageBase64?(value: string): void
   extension?: string // 保存する拡張子
+  onChangeMosaicMode?(isMosaicMode: boolean): void // モザイクモードの切り替え
 }
 
 // Canvas 描画状態を保存するためのインターフェース
@@ -57,9 +58,46 @@ export function PaintCanvas(props: Props) {
   const backgroundCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement | null>(null)
 
-  const [tool, setTool] = useState(props.isMosaicMode ? "eraser" : "brush")
-  const [color, setColor] = useState("#000000") // ブラシの初期色
-  const [brushSize, setBrushSize] = useState<number>(20)
+  // ローカルストレージから前回のツール状態を復元
+  const getStoredTool = () => {
+    if (typeof window === "undefined")
+      return props.isMosaicMode ? "eraser" : "brush"
+    const stored = localStorage.getItem("paint-canvas-tool")
+    if (
+      stored &&
+      (stored === "brush" ||
+        stored === "eraser" ||
+        stored === "lasso" ||
+        stored === "select" ||
+        stored === "lasso-mosaic")
+    ) {
+      // モザイクモードの場合は適切なツールに変換
+      if (props.isMosaicMode) {
+        if (stored === "brush") return "eraser"
+        if (stored === "lasso") return "lasso-mosaic"
+        return stored
+      }
+      // 通常モードの場合はモザイク専用ツールを変換
+      if (!props.isMosaicMode && stored === "lasso-mosaic") return "lasso"
+      return stored
+    }
+    return props.isMosaicMode ? "eraser" : "brush"
+  }
+
+  const getStoredColor = () => {
+    if (typeof window === "undefined") return "#000000"
+    return localStorage.getItem("paint-canvas-color") || "#000000"
+  }
+
+  const getStoredBrushSize = () => {
+    if (typeof window === "undefined") return 20
+    const stored = localStorage.getItem("paint-canvas-brush-size")
+    return stored ? Number(stored) : 20
+  }
+
+  const [tool, setTool] = useState(getStoredTool())
+  const [color, setColor] = useState(getStoredColor()) // ブラシの初期色
+  const [brushSize, setBrushSize] = useState<number>(getStoredBrushSize())
   const [scale, setScale] = useState<number>(1)
   const [translateX, setTranslateX] = useState<number>(0)
   const [translateY, setTranslateY] = useState<number>(0)
@@ -108,6 +146,50 @@ export function PaintCanvas(props: Props) {
   const [canvasStates, setCanvasStates] = useState<CanvasState[]>([])
   // 現在の Canvas の状態を示すインデックス
   const [stateIndex, setStateIndex] = useState<number>(0)
+
+  // ツールが変更された時にローカルストレージに保存
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("paint-canvas-tool", tool)
+    }
+  }, [tool])
+
+  // 色が変更された時にローカルストレージに保存
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("paint-canvas-color", color)
+    }
+  }, [color])
+
+  // フィルターパネルが開いている時にモザイクツールから切り替え
+  useEffect(() => {
+    if (
+      props.isMosaicMode &&
+      isFilterPanelOpen &&
+      (tool === "eraser" || tool === "lasso-mosaic")
+    ) {
+      setTool("select")
+    }
+  }, [isFilterPanelOpen, props.isMosaicMode, tool])
+
+  // モザイクモードが変更された時の処理
+  useEffect(() => {
+    if (!props.isMosaicMode) {
+      // フィルターモードに切り替わった時はフィルターパネルを開く
+      setIsFilterPanelOpen(true)
+      // モザイク適用状態をリセット
+      setIsMosaicApplied(false)
+    }
+    // モザイクモードに戻った時はフィルターパネルの状態を維持
+    // (トグルボタンとして動作させるため)
+  }, [props.isMosaicMode])
+
+  // ブラシサイズが変更された時にローカルストレージに保存
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("paint-canvas-brush-size", brushSize.toString())
+    }
+  }, [brushSize])
 
   const onChangeMosaicCanvasRef = (canvas: HTMLCanvasElement) => {
     setMosaicCanvasRef(canvas)
@@ -895,7 +977,8 @@ export function PaintCanvas(props: Props) {
           <Button
             className={cn(
               "mb-2 h-12 w-12 md:h-16 md:w-16",
-              isFilterPanelOpen
+              // フィルターパネルが開いているか、モザイクモードで未適用の場合は選択状態
+              isFilterPanelOpen || (props.isMosaicMode && !isMosaicApplied)
                 ? "bg-blue-600 text-white"
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600",
               // モザイクが適用された場合は無効化
@@ -906,8 +989,37 @@ export function PaintCanvas(props: Props) {
             size="icon"
             variant="ghost"
             disabled={props.isMosaicMode && isMosaicApplied}
-            onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
-            title="基本フィルター"
+            onClick={() => {
+              console.log("フィルターボタンクリック:", {
+                isMosaicMode: props.isMosaicMode,
+                isMosaicApplied,
+                isFilterPanelOpen,
+                hasOnChangeMosaicMode: !!props.onChangeMosaicMode,
+              })
+
+              if (props.isMosaicMode && !isMosaicApplied) {
+                // モザイクモードからフィルターモードに切り替え（モザイク未適用の場合のみ）
+                if (props.onChangeMosaicMode) {
+                  console.log("モード切り替え実行")
+                  props.onChangeMosaicMode(false)
+                } else {
+                  // onChangeMosaicModeが提供されていない場合は、直接フィルターパネルを開く
+                  console.log("フィルターパネル直接トグル（モザイクモード）")
+                  setIsFilterPanelOpen(!isFilterPanelOpen)
+                }
+              } else if (!props.isMosaicMode) {
+                // フィルターモードでのトグル動作
+                console.log("フィルターパネルトグル（フィルターモード）")
+                setIsFilterPanelOpen(!isFilterPanelOpen)
+              }
+            }}
+            title={
+              props.isMosaicMode && isMosaicApplied
+                ? "モザイク適用後はフィルターを使用できません"
+                : props.isMosaicMode
+                  ? "フィルターモードに切り替え"
+                  : "基本フィルター"
+            }
           >
             <FilterIcon className="h-6 w-6" />
           </Button>
@@ -972,10 +1084,20 @@ export function PaintCanvas(props: Props) {
               tool === "eraser"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-700 text-gray-300 hover:bg-gray-600",
+              // フィルターパネル開いている場合は無効化（モザイクモードのみ）
+              props.isMosaicMode &&
+                isFilterPanelOpen &&
+                "cursor-not-allowed opacity-50",
             )}
             size="icon"
             variant="ghost"
+            disabled={props.isMosaicMode && isFilterPanelOpen}
             onClick={() => setTool("eraser")}
+            title={
+              props.isMosaicMode && isFilterPanelOpen
+                ? "フィルター適用中はモザイクツールを使用できません"
+                : "消しゴム"
+            }
           >
             <EraserIcon className="h-6 w-6" />
           </Button>
@@ -987,10 +1109,18 @@ export function PaintCanvas(props: Props) {
                 tool === "lasso-mosaic"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-700 text-gray-300 hover:bg-gray-600",
+                // フィルターパネル開いている場合は無効化
+                isFilterPanelOpen && "cursor-not-allowed opacity-50",
               )}
               size="icon"
               variant="ghost"
+              disabled={isFilterPanelOpen}
               onClick={() => setTool("lasso-mosaic")}
+              title={
+                isFilterPanelOpen
+                  ? "フィルター適用中はモザイクツールを使用できません"
+                  : "投げ縄（モザイク）"
+              }
             >
               <LassoIcon className="h-6 w-6" />
             </Button>
@@ -1072,7 +1202,7 @@ export function PaintCanvas(props: Props) {
           <div
             className={cn(
               "flex h-[100%] flex-1 items-center justify-center overflow-hidden bg-gray-700",
-              (tool === "select" || props.isMosaicMode) && "cursor-grab",
+              tool === "select" && "cursor-grab",
               (tool === "select" || props.isMosaicMode) &&
                 isPanning &&
                 "cursor-grabbing",
