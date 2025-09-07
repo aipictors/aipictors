@@ -15,6 +15,31 @@ import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
+import type { GeminiImageSize } from "~/types/gemini-image-generation"
+
+/**
+ * UIサイズタイプをGeminiImageSizeに変換する
+ */
+const convertToGeminiImageSize = (sizeType: string): GeminiImageSize => {
+  switch (sizeType) {
+    case "SD3_512_512":
+    case "SD5_512_512":
+      return "SQUARE_512"
+    case "SD3_768_768":
+    case "SD5_768_768":
+      return "SQUARE_768"
+    case "SD3_1024_1024":
+    case "SD5_1024_1024":
+      return "SQUARE_1024"
+    case "SD3_1280_720":
+      return "LANDSCAPE"
+    case "SD3_720_1280":
+    case "SD5_720_1280":
+      return "PORTRAIT"
+    default:
+      return "SQUARE_1024"
+  }
+}
 
 type Props = {
   termsText: string
@@ -544,7 +569,7 @@ export function GenerationSubmissionView(props: Props) {
             variables: {
               input: {
                 prompt: promptsTexts[i],
-                size: "SQUARE_1024",
+                size: convertToGeminiImageSize(context.config.sizeType),
               },
             },
           })
