@@ -83,7 +83,7 @@ export function ImageModelCard(props: Props) {
             )}
             {(props.type === "SD5" ||
               props.type === "GEMINI" ||
-              props.displayName === "Gemini 2.5") && (
+              props.displayName === "GeminiNanoBanana") && (
               <Badge>{t("5枚分消費", "cost of 5")}</Badge>
             )}
             {props.type !== "FLUX" && <Badge>{props.type}</Badge>}
