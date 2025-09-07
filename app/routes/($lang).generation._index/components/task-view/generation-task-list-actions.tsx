@@ -66,10 +66,10 @@ export function GenerationTaskListActions(props: Props) {
    */
   const handleRefresh = useCallback(async () => {
     if (isRefreshDisabled || !props.onRefresh) return
-    
+
     // 連打防止のため3秒間ボタンを無効化
     setIsRefreshDisabled(true)
-    
+
     try {
       await props.onRefresh()
     } finally {
@@ -186,17 +186,17 @@ export function GenerationTaskListActions(props: Props) {
         )}
         {/* 更新ボタン */}
         {props.onRefresh && (
-          <div className="hidden md:block">
-            <Button
-              onClick={handleRefresh}
-              variant={"outline"}
-              size={"icon"}
-              disabled={isRefreshDisabled}
-              title={t("履歴一覧を更新", "Refresh history list")}
-            >
-              <RefreshCwIcon className={`w-4 ${isRefreshDisabled ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
+          <Button
+            onClick={handleRefresh}
+            variant={"outline"}
+            size={"icon"}
+            disabled={isRefreshDisabled}
+            title={t("履歴一覧を更新", "Refresh history list")}
+          >
+            <RefreshCwIcon
+              className={`w-4 ${isRefreshDisabled ? "animate-spin" : ""}`}
+            />
+          </Button>
         )}
       </div>
       <div className="flex items-center space-x-2 px-2 pb-2 md:px-4 xl:px-4">

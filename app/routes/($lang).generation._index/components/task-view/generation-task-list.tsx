@@ -223,6 +223,7 @@ export function GenerationTaskList(props: Props) {
               props.setCurrentPage(page)
             }}
             isActiveButtonStyle={true}
+            allowExtendedPagination={true}
           />
         )}
       </div>

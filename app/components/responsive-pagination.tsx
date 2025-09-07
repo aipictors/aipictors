@@ -15,6 +15,7 @@ type Props = {
   onPageChange: (page: number) => void
   isActiveButtonStyle?: boolean
   disableScrollToTop?: boolean // ページ変更時のスクロールを無効化
+  allowExtendedPagination?: boolean // 100ページまでのページングを許可する
 }
 
 /**
@@ -39,12 +40,21 @@ export function ResponsivePagination({
   onPageChange,
   isActiveButtonStyle,
   disableScrollToTop = false,
+  allowExtendedPagination = false,
 }: Props) {
   const authContext = useContext(AuthContext)
 
+  // 100ページ制限を適用する場合の最大アイテム数
+  const maxItemsFor100Pages = perPage * 100
+
+  // 拡張ページングが許可されている場合は100ページ制限、そうでなければ通常のoffsetMax制限
+  const offsetLimit = allowExtendedPagination
+    ? maxItemsFor100Pages
+    : config.query.offsetMax
+
   const adjustedMaxCount = authContext.isLoggedIn
-    ? Math.min(maxCount, config.query.offsetMax)
-    : Math.min(maxCount, config.query.offsetMax)
+    ? Math.min(maxCount, offsetLimit)
+    : Math.min(maxCount, offsetLimit)
 
   const pageCount = Math.ceil(adjustedMaxCount / perPage)
   const currentPageIndex =
