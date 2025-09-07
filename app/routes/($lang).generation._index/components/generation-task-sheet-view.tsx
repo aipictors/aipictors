@@ -29,7 +29,7 @@ type Props = {
     | FragmentOf<typeof GenerationImageResultSheetTaskFragment>
   isReferenceLink?: boolean
   isScroll?: boolean
-  setShowInPaintDialog?: (show: boolean) => void
+  setShowAiModificationDialog?: (show: boolean) => void
 }
 
 /**
@@ -84,14 +84,18 @@ export function GenerationTaskSheetView(props: Props) {
    * @param token
    */
   const saveGenerationImage = async (_fileName: string) => {
-    if (!props.task.imageUrl) {
+    // Type-safe property access
+    const taskImageUrl =
+      props.task && "imageUrl" in props.task ? props.task.imageUrl : null
+
+    if (!taskImageUrl || typeof taskImageUrl !== "string") {
       toast("画像が存在しません")
       return
     }
 
     const name = `${new Date().toISOString().replace(/[^0-9]/g, "")}`
 
-    downloadImageFile(name, props.task.imageUrl)
+    downloadImageFile(name, taskImageUrl)
   }
 
   const context = useGenerationContext()
@@ -102,7 +106,8 @@ export function GenerationTaskSheetView(props: Props) {
     props.task.isProtected ?? false,
   )
 
-  const [showInPaintDialog, setShowInPaintDialog] = useState(false)
+  const [showAiModificationDialog, setShowAiModificationDialog] =
+    useState(false)
 
   const onRestore = (isWithSeed: boolean) => {
     context.updateSettings(
@@ -148,28 +153,39 @@ export function GenerationTaskSheetView(props: Props) {
   }
 
   const onReference = (isWithSeed: boolean) => {
-    if (!props.isReferenceLink && props.task.nanoid !== null) {
+    const taskNanoid =
+      props.task && "nanoid" in props.task ? props.task.nanoid : null
+
+    if (
+      !props.isReferenceLink &&
+      taskNanoid !== null &&
+      typeof taskNanoid === "string"
+    ) {
       onRestore(isWithSeed)
-    } else if (props.isReferenceLink && props.task.nanoid !== null) {
-      window.location.href = `/generation/?ref=${props.task.nanoid ?? ""}`
+    } else if (
+      props.isReferenceLink &&
+      taskNanoid !== null &&
+      typeof taskNanoid === "string"
+    ) {
+      window.location.href = `/generation/?ref=${taskNanoid}`
     } else {
       toast("不明なエラーです。")
     }
   }
 
   const onInPaint = () => {
-    if (props.setShowInPaintDialog) {
-      props.setShowInPaintDialog(true)
+    if (props.setShowAiModificationDialog) {
+      props.setShowAiModificationDialog(true)
     } else {
-      setShowInPaintDialog(true)
+      setShowAiModificationDialog(true)
     }
   }
 
   const setShowInPaintChange = (show: boolean) => {
-    if (props.setShowInPaintDialog) {
-      props.setShowInPaintDialog(true)
+    if (props.setShowAiModificationDialog) {
+      props.setShowAiModificationDialog(true)
     } else {
-      setShowInPaintDialog(show)
+      setShowAiModificationDialog(show)
     }
   }
 
@@ -179,7 +195,17 @@ export function GenerationTaskSheetView(props: Props) {
       return
     }
 
-    const url = `/new/image?generation=${imageGenerationTask.nanoid}`
+    const taskNanoid =
+      imageGenerationTask && "nanoid" in imageGenerationTask
+        ? imageGenerationTask.nanoid
+        : null
+
+    if (!taskNanoid || typeof taskNanoid !== "string") {
+      toast("履歴が見つかりません、画面更新下さい。")
+      return
+    }
+
+    const url = `/new/image?generation=${taskNanoid}`
     window.open(url, "_blank")
   }
 
@@ -188,14 +214,25 @@ export function GenerationTaskSheetView(props: Props) {
   )
 
   const onDelete = async () => {
-    if (!imageGenerationTask || imageGenerationTask.nanoid === null) {
+    if (!imageGenerationTask) {
       toast("存在しない履歴です")
       return
     }
+
+    const taskNanoid =
+      imageGenerationTask && "nanoid" in imageGenerationTask
+        ? imageGenerationTask.nanoid
+        : null
+
+    if (taskNanoid === null || typeof taskNanoid !== "string") {
+      toast("存在しない履歴です")
+      return
+    }
+
     await deleteTask({
       variables: {
         input: {
-          nanoid: imageGenerationTask.nanoid,
+          nanoid: taskNanoid,
         },
       },
     })
@@ -207,14 +244,18 @@ export function GenerationTaskSheetView(props: Props) {
   )
 
   const toggleProtectedImage = async () => {
-    if (props.task.nanoid === null) {
+    const taskNanoid =
+      props.task && "nanoid" in props.task ? props.task.nanoid : null
+
+    if (taskNanoid === null || typeof taskNanoid !== "string") {
       toast("存在しない履歴です")
       return
     }
+
     await protectTask({
       variables: {
         input: {
-          nanoid: props.task.nanoid,
+          nanoid: taskNanoid,
           isProtected: !isProtected,
         },
       },
@@ -307,17 +348,11 @@ export function GenerationTaskSheetView(props: Props) {
     modelName: props.task.model?.name ?? "",
   }
 
-  if (props.task.status === "IN_PROGRESS") {
-    return <InProgressImageGenerationTaskResult task={props.task} />
-  }
-
+  // Always call hooks at the top level
   const userNanoid = context.user?.nanoid ?? null
-  if (userNanoid === null) return
-
   const cachedImage = useCachedImageGenerationTask(
     context.config.viewTaskId ?? "",
   )
-
   const cachedResultImage = useCachedImageGenerationResult(
     context.config.viewTaskId ?? "",
   )
@@ -330,9 +365,16 @@ export function GenerationTaskSheetView(props: Props) {
   useEffect(() => {
     if (imageGenerationTask && imageGenerationTask.status !== "IN_PROGRESS") {
       setRating(imageGenerationTask?.rating ?? 0)
-      setIsProtected(imageGenerationTask.isProtected ?? false)
+      setIsProtected(imageGenerationTask?.isProtected ?? false)
     }
   }, [imageGenerationTask])
+
+  // Early returns after hooks
+  if (props.task.status === "IN_PROGRESS") {
+    return <InProgressImageGenerationTaskResult task={props.task} />
+  }
+
+  if (userNanoid === null) return null
 
   if (!imageGenerationTask) return null
 
@@ -342,7 +384,7 @@ export function GenerationTaskSheetView(props: Props) {
       isScroll={props.isScroll ?? false}
       isDisplayImageListButton={true}
       isListFullSize={false}
-      showInPaintDialog={showInPaintDialog}
+      showAiModificationDialog={showAiModificationDialog}
       userNanoid={userNanoid}
       generationSize={generationSize}
       rating={rating}
@@ -360,7 +402,7 @@ export function GenerationTaskSheetView(props: Props) {
       onChangeRating={onChangeRating}
       toggleProtectedImage={toggleProtectedImage}
       setRating={setRating}
-      setShowInPaintDialog={setShowInPaintChange}
+      setShowAiModificationDialog={setShowInPaintChange}
       saveGenerationImage={saveGenerationImage}
       copyGeneration={copyGeneration}
       copyUrl={copyUrl}

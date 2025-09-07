@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from "~/components/ui/dialog"
-import { InPaintingDialog } from "~/routes/($lang).generation._index/components/submission-view/in-painting-dialog"
+import { AiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/ai-image-modification-dialog"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
 import {
@@ -34,7 +34,8 @@ type Props = {
 export function GenerationTaskDialogButton(props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
-  const [showInPaintDialog, setShowInPaintDialog] = useState(false)
+  const [showAiModificationDialog, setShowAiModificationDialog] =
+    useState(false)
 
   const context = useGenerationContext()
 
@@ -68,25 +69,18 @@ export function GenerationTaskDialogButton(props: Props) {
           onCancel={props.onCancel}
           onDelete={props.onDelete}
         />
-        {showInPaintDialog &&
+        {showAiModificationDialog &&
           props.userToken &&
           props.task.imageUrl &&
           userNanoid && (
-            <InPaintingDialog
-              isOpen={showInPaintDialog}
-              onClose={() => setShowInPaintDialog(false)}
+            <AiImageModificationDialog
+              isOpen={showAiModificationDialog}
+              onClose={() => setShowAiModificationDialog(false)}
               taskId={props.task.id}
               token={props.userToken}
               imageUrl={props.task.imageUrl}
               userNanoid={userNanoid}
-              configSeed={props.task.seed}
-              configSteps={props.task.steps}
-              configSampler={props.task.sampler}
-              configSizeType={props.task.sizeType}
-              configModel={props.task.model?.name}
-              configVae={props.task.vae}
-              configScale={props.task.scale}
-              configClipSkip={props.task.clipSkip}
+              originalPrompt={props.task.prompt || ""}
             />
           )}
         <Dialog
@@ -108,8 +102,8 @@ export function GenerationTaskDialogButton(props: Props) {
               isScroll={true}
               task={props.task}
               isReferenceLink={false}
-              setShowInPaintDialog={(value) => {
-                setShowInPaintDialog(value)
+              setShowAiModificationDialog={(value) => {
+                setShowAiModificationDialog(value)
                 if (value) {
                   setIsOpen(false)
                 } else {

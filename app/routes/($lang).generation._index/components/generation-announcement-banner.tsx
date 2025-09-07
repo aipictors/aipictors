@@ -77,14 +77,6 @@ export function GenerationAnnouncementBanner() {
     }
   }, [announcementData])
 
-  // デバッグ用ログ
-  console.log("GenerationAnnouncementBanner Debug:", {
-    loading,
-    error,
-    announcementData,
-    isAnnouncementVisible,
-  })
-
   const navigateToExternal = (url: string) => {
     window.open(url, "_blank", "noreferrer")
   }

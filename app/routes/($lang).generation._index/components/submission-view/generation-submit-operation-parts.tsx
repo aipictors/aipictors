@@ -51,6 +51,7 @@ export function getSubmitButtonLabel(
   seed: number,
   inProgressImageGenerationTasksCount: number,
 ) {
+  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   const t = useTranslation()
 
   const seedLabel = seed === -1 ? "" : t("(Seed固定)", "(Seed fixed)")
@@ -115,12 +116,11 @@ export function GenerationSubmitOperationParts(props: Props) {
       <div className="flex items-center">
         <div className="flex items-center md:hidden">
           <DropdownMenu>
-            <DropdownMenuTrigger className="block md:hidden">
+            <DropdownMenuTrigger asChild>
               <Button
-                className="mr-2"
+                className="mr-2 block md:hidden"
                 size={"icon"}
                 variant={"ghost"}
-                onClick={onMinusButtonClick}
               >
                 <SettingsIcon className="m-auto" />
               </Button>
@@ -170,6 +170,7 @@ export function GenerationSubmitOperationParts(props: Props) {
         {(!authContext.isLoggedIn || context.user === null) && (
           <>
             <div className="mr-2 flex w-56 items-center space-x-2 md:w-48">
+              {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
               <Switch
                 onClick={() => {
                   context.changeUpscaleSize(
@@ -295,6 +296,7 @@ export function GenerationSubmitOperationParts(props: Props) {
               <DialogTrigger asChild>
                 <div className="flex w-full items-center space-x-4">
                   <div className="flex w-48 items-center md:w-40">
+                    {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
                     <Switch
                       onClick={() => {
                         context.changeUpscaleSize(

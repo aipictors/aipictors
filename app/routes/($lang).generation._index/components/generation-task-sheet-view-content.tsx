@@ -25,11 +25,7 @@ import { ErrorBoundary } from "react-error-boundary"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { GenerationTaskError } from "~/routes/($lang).generation._index/components/task-view/generation-task-error"
 import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
-import {
-  InPaintingDialog,
-  InPaintingImageDialogFragment,
-  InPaintingImageDialogTaskFragment,
-} from "~/routes/($lang).generation._index/components/submission-view/in-painting-dialog"
+import { AiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/ai-image-modification-dialog"
 import { CopyButton } from "~/routes/($lang).generation._index/components/copy-button"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql, type FragmentOf } from "gql.tada"
@@ -45,7 +41,7 @@ type Props = {
   isScroll: boolean
   isDisplayImageListButton: boolean
   isListFullSize: boolean
-  showInPaintDialog: boolean
+  showAiModificationDialog: boolean
   userNanoid: string
   generationSize: GenerationSize
   rating: number
@@ -62,7 +58,7 @@ type Props = {
   onNextTask(): void
   onPrevTask(): void
   setRating: (value: number) => void
-  setShowInPaintDialog: (value: boolean) => void
+  setShowAiModificationDialog: (value: boolean) => void
   saveGenerationImage(fileName: string): void
   toggleProtectedImage(taskId: string): void
   copyGeneration(generationParameters: GenerationParameters): void
@@ -128,8 +124,6 @@ export function GenerationTaskSheetViewContent(props: Props) {
   const height = props.generationSize.height * upscaleSize
 
   const userToken = context.config.currentUserToken
-
-  console.log(props.task.promptsText)
 
   return (
     <>
@@ -316,11 +310,11 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 <div className="ml-auto">
                   <GenerationMenuButton
                     title={t(
-                      "インペイント機能で一部分を再生成して修正する",
-                      "Inpaint to regenerate part of the image",
+                      "AIで画像を修正(5枚消費)する",
+                      "Modify image with AI",
                     )}
                     onClick={props.onInPaint}
-                    text={t("部分修正", "Inpaint")}
+                    text={t("AI修正", "AI Modify")}
                     icon={PenIcon}
                   />
                 </div>
@@ -460,21 +454,14 @@ export function GenerationTaskSheetViewContent(props: Props) {
         </div>
       </ScrollArea>
       {props.task.imageUrl && userToken && (
-        <InPaintingDialog
-          isOpen={props.showInPaintDialog}
-          onClose={() => props.setShowInPaintDialog(false)}
+        <AiImageModificationDialog
+          isOpen={props.showAiModificationDialog}
+          onClose={() => props.setShowAiModificationDialog(false)}
           taskId={props.task.id}
           token={userToken}
           imageUrl={props.task.imageUrl}
           userNanoid={props.userNanoid}
-          configSeed={props.task.seed}
-          configSteps={props.task.steps}
-          configSampler={props.task.sampler}
-          configSizeType={props.task.sizeType}
-          configModel={props.task.model?.name}
-          configVae={props.task.vae}
-          configScale={props.task.scale}
-          configClipSkip={props.task.clipSkip}
+          originalPrompt={props.task.prompt || ""}
         />
       )}
     </>
@@ -483,18 +470,60 @@ export function GenerationTaskSheetViewContent(props: Props) {
 
 export const GenerationImageResultSheetContentFragment = graphql(
   `fragment GenerationImageResultSheetContent on ImageGenerationResultNode @_unmask {
+    id
+    nanoid
+    prompt
+    promptsText
+    negativePrompt
+    upscaleSize
+    seed
+    steps
+    scale
+    sampler
+    clipSkip
+    imageUrl
+    sizeType
+    vae
+    controlNetModule
+    controlNetWeight
+    thumbnailUrl
+    status
+    completedAt
     rating
     isProtected
-    ...InPaintingImageDialog
+    model {
+      id
+      name
+    }
   }`,
-  [InPaintingImageDialogFragment],
 )
 
 export const GenerationImageResultSheetContentTaskFragment = graphql(
   `fragment GenerationImageResultSheetContentTask on ImageGenerationTaskNode @_unmask {
+    id
+    nanoid
+    prompt
+    promptsText
+    negativePrompt
+    upscaleSize
+    seed
+    steps
+    scale
+    sampler
+    clipSkip
+    imageUrl
+    sizeType
+    vae
+    controlNetModule
+    controlNetWeight
+    thumbnailUrl
+    status
+    completedAt
     rating
     isProtected
-    ...InPaintingImageDialogTask
+    model {
+      id
+      name
+    }
   }`,
-  [InPaintingImageDialogTaskFragment],
 )
