@@ -266,7 +266,12 @@ export function GenerationDemoSubmissionView(props: Props) {
         ? "IMAGE_TO_IMAGE"
         : "TEXT_TO_IMAGE"
 
-    if (context.config.i2iImageBase64 && !isLiteOrStandardOrPremium) {
+    // GEMINIはのぞく
+    if (
+      context.config.i2iImageBase64 &&
+      !isLiteOrStandardOrPremium &&
+      context.config.modelType !== "GEMINI"
+    ) {
       toast("img2imgはLITE以上のプランでご利用いただけます。")
       return
     }
