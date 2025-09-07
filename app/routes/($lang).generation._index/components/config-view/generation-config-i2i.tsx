@@ -47,6 +47,24 @@ export function GenerationConfigI2i() {
           isTargetBlank={true}
         />
       </div>
+      {context.config.modelType === "GEMINI" && !context.currentPass?.type && (
+        <div className="rounded-md border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-3 dark:border-blue-800 dark:from-blue-950 dark:to-purple-950">
+          <div className="text-blue-800 text-sm dark:text-blue-200">
+            <div className="mb-1 font-medium">
+              {t(
+                "✨ Geminiモデルでは画像から生成が無料でご利用いただけます！",
+                "✨ With Gemini models, you can use image-to-image generation for free!",
+              )}
+            </div>
+            <div className="text-xs opacity-80">
+              {t(
+                "全モデルで画像から生成を利用できるのはLITEプラン以上です。",
+                "For more features, please consider our various plans",
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <CropImageField
         isHidePreviewImage={context.config.i2iImageBase64 === ""}
         cropWidth={size.width}
@@ -54,35 +72,36 @@ export function GenerationConfigI2i() {
         onDeleteImage={onDeleteImage}
         onCrop={onCrop}
       />
-      {context.config.i2iImageBase64 !== "" && (
-        <div className="flex items-center gap-x-2">
-          <div className="flex w-20 items-center">
-            <span className="w-12 whitespace-nowrap text-nowrap text-sm">
-              {t("変更度", "Change rate")}
-            </span>
-            <CrossPlatformTooltip
-              text={t(
-                "変更度が小さいほど元の画像が残ります。推奨値は0.5~0.6です。",
-                "The smaller the change, the more the original image remains. The recommended value is 0.5 to 0.6.",
-              )}
+      {context.config.i2iImageBase64 !== "" &&
+        context.config.modelType !== "GEMINI" && (
+          <div className="flex items-center gap-x-2">
+            <div className="flex w-20 items-center">
+              <span className="w-12 whitespace-nowrap text-nowrap text-sm">
+                {t("変更度", "Change rate")}
+              </span>
+              <CrossPlatformTooltip
+                text={t(
+                  "変更度が小さいほど元の画像が残ります。推奨値は0.5~0.6です。",
+                  "The smaller the change, the more the original image remains. The recommended value is 0.5 to 0.6.",
+                )}
+              />
+            </div>
+            <Slider
+              className="color-pink w-full"
+              aria-label="slider-ex-2"
+              min={0.1}
+              max={1.0}
+              step={0.01}
+              value={[context.config.i2iDenoisingStrengthSize]}
+              onValueChange={(value) =>
+                context.changeI2iDenoisingStrengthSize(value[0])
+              }
             />
+            <span className="font-bold">
+              {context.config.i2iDenoisingStrengthSize.toFixed(2)}
+            </span>
           </div>
-          <Slider
-            className="color-pink w-full"
-            aria-label="slider-ex-2"
-            min={0.1}
-            max={1.0}
-            step={0.01}
-            value={[context.config.i2iDenoisingStrengthSize]}
-            onValueChange={(value) =>
-              context.changeI2iDenoisingStrengthSize(value[0])
-            }
-          />
-          <span className="font-bold">
-            {context.config.i2iDenoisingStrengthSize.toFixed(2)}
-          </span>
-        </div>
-      )}
+        )}
     </div>
   )
 }

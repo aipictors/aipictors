@@ -1,5 +1,6 @@
 import { AppFixedContent } from "~/components/app/app-fixed-content"
 import { uploadImage } from "~/utils/upload-image"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
@@ -41,6 +42,15 @@ const convertToGeminiImageSize = (sizeType: string): GeminiImageSize => {
   }
 }
 
+const ViewerTokenQuery = graphql(
+  `query ViewerTokenQuery {
+    viewer {
+      id
+      token
+    }
+  }`,
+)
+
 type Props = {
   termsText: string
 }
@@ -55,6 +65,8 @@ export function GenerationDemoSubmissionView(props: Props) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
+
+  const { data: tokenData } = useQuery(ViewerTokenQuery)
 
   const { data: pass, refetch: refetchPass } = useQuery(
     viewerCurrentPassQuery,
@@ -97,6 +109,14 @@ export function GenerationDemoSubmissionView(props: Props) {
   }>(createGeminiImageGenerationTaskMutation, {
     refetchQueries: [viewerCurrentPassQuery],
     awaitRefetchQueries: true,
+    onCompleted(data) {
+      // Geminiタスク作成後の成功メッセージ
+      if (data?.createGeminiImageGenerationTask) {
+        toast("Geminiタスクが作成されました。完了後に結果が表示されます。", {
+          position: isDesktop ? "bottom-right" : "top-center",
+        })
+      }
+    },
     onError(error) {
       if (isDesktop) {
         toast.error(error.message)
@@ -262,11 +282,12 @@ export function GenerationDemoSubmissionView(props: Props) {
      * 生成種別
      */
     const generationType =
-      context.config.i2iImageBase64 && isLiteOrStandardOrPremium
+      context.config.i2iImageBase64 &&
+      (isLiteOrStandardOrPremium || context.config.modelType === "GEMINI")
         ? "IMAGE_TO_IMAGE"
         : "TEXT_TO_IMAGE"
 
-    // GEMINIはのぞく
+    // GEMINIの場合は画像から生成をプラン関係なく利用可能
     if (
       context.config.i2iImageBase64 &&
       !isLiteOrStandardOrPremium &&
@@ -418,11 +439,27 @@ export function GenerationDemoSubmissionView(props: Props) {
 
       if (generationType === "IMAGE_TO_IMAGE") {
         const i2iFileName = `${createRandomString(30)}_img2img_src.png`
-        const i2iFileUrl = await uploadImage(
-          context.config.i2iImageBase64,
-          i2iFileName,
-          userNanoid,
-        )
+        let i2iFileUrl: string
+
+        // Geminiモデルの場合はuploadPublicImageを使用
+        if (context.config.modelType === "GEMINI") {
+          const viewerToken = tokenData?.viewer?.token
+          if (!viewerToken) {
+            toast("認証エラーが発生しました。ログインし直してください。")
+            return
+          }
+          i2iFileUrl = await uploadPublicImage(
+            context.config.i2iImageBase64,
+            viewerToken,
+          )
+        } else {
+          i2iFileUrl = await uploadImage(
+            context.config.i2iImageBase64,
+            i2iFileName,
+            userNanoid,
+          )
+        }
+
         if (i2iFileUrl === "") {
           toast("画像のアップロードに失敗しました")
           return
@@ -575,6 +612,7 @@ export function GenerationDemoSubmissionView(props: Props) {
               input: {
                 prompt: promptsTexts[i],
                 size: convertToGeminiImageSize(context.config.sizeType),
+                imageUrl: i2iFileUrl || null,
               },
             },
           })
