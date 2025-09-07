@@ -193,6 +193,14 @@ export function GenerationDemoTaskListView(props: Props) {
     context.changeTaskListThumbnailType(value)
   }
 
+  /**
+   * 履歴一覧を更新する
+   */
+  const onRefresh = async () => {
+    await taskRefetch()
+    await resultRefetch()
+  }
+
   return (
     <GenerationViewCard>
       <GenerationDemoTaskListActions
@@ -220,6 +228,7 @@ export function GenerationDemoTaskListView(props: Props) {
         onChangeTaskContentPositionType={changeShowTaskPositionType}
         onSelectAll={onSelectAllTasks}
         onCancelAll={onCancelAllTasks}
+        onRefresh={onRefresh}
       />
       {tasks !== undefined && results !== undefined && (
         <GenerationTaskList

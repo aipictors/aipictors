@@ -58,9 +58,16 @@ export function GenerationConfigI2i() {
             </div>
             <div className="text-xs opacity-80">
               {t(
-                "全モデルで画像から生成を利用できるのはLITEプラン以上です。",
-                "For more features, please consider our various plans",
+                "全モデルで画像から生成を利用できるのは",
+                "Image-to-image generation for all models is available with",
               )}
+              <a
+                href="/plus"
+                className="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              >
+                {t("LITEプラン以上", "LITE plan or higher")}
+              </a>
+              {t("です。", ".")}
             </div>
           </div>
         </div>

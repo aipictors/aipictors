@@ -13,8 +13,8 @@ import type { TaskContentPositionType } from "~/routes/($lang).generation._index
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { MaximizeIcon, MinimizeIcon } from "lucide-react"
-import { useState } from "react"
+import { MaximizeIcon, MinimizeIcon, RefreshCwIcon } from "lucide-react"
+import { useState, useCallback } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -42,6 +42,7 @@ type Props = {
   onTogglePreviewMode(): void
   onSelectAll(): void
   onCancelAll(): void
+  onRefresh?(): void
 }
 
 /**
@@ -52,12 +53,32 @@ export function GenerationTaskListActions(props: Props) {
   const t = useTranslation()
 
   const [isAllSelected, setIsAllSelected] = useState(false)
+  const [isRefreshDisabled, setIsRefreshDisabled] = useState(false)
 
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })
 
   const [isDeletedLoading, setIsDeletedLoading] = useState(false)
+
+  /**
+   * 更新ボタンクリック時の処理（連打防止機能付き）
+   */
+  const handleRefresh = useCallback(async () => {
+    if (isRefreshDisabled || !props.onRefresh) return
+    
+    // 連打防止のため3秒間ボタンを無効化
+    setIsRefreshDisabled(true)
+    
+    try {
+      await props.onRefresh()
+    } finally {
+      // 3秒後にボタンを再有効化
+      setTimeout(() => {
+        setIsRefreshDisabled(false)
+      }, 3000)
+    }
+  }, [props.onRefresh, isRefreshDisabled])
 
   const onTrashTasks = async () => {
     try {
@@ -161,6 +182,20 @@ export function GenerationTaskListActions(props: Props) {
                 <MaximizeIcon className="w-4" />
               )}
             </Toggle>
+          </div>
+        )}
+        {/* 更新ボタン */}
+        {props.onRefresh && (
+          <div className="hidden md:block">
+            <Button
+              onClick={handleRefresh}
+              variant={"outline"}
+              size={"icon"}
+              disabled={isRefreshDisabled}
+              title={t("履歴一覧を更新", "Refresh history list")}
+            >
+              <RefreshCwIcon className={`w-4 ${isRefreshDisabled ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
         )}
       </div>
