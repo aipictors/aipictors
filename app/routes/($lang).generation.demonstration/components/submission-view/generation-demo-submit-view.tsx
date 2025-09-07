@@ -63,6 +63,24 @@ export function GenerationDemoSubmissionView(props: Props) {
     },
   })
 
+  const [createGeminiTask] = useMutation<{
+    createGeminiImageGenerationTask: {
+      id: string
+      nanoid: string
+      status: string
+    }
+  }>(createGeminiImageGenerationTaskMutation, {
+    refetchQueries: [viewerCurrentPassQuery],
+    awaitRefetchQueries: true,
+    onError(error) {
+      if (isDesktop) {
+        toast.error(error.message)
+      } else {
+        toast.error(error.message, { position: "top-center" })
+      }
+    },
+  })
+
   const [createReservedTask] = useMutation(
     createImageGenerationTaskReservedMutation,
     {
@@ -516,6 +534,20 @@ export function GenerationDemoSubmissionView(props: Props) {
               },
             },
           })
+        } else if (
+          modelName === "Gemini 2.5" ||
+          context.config.modelType === "SD5" ||
+          context.config.modelType === "GEMINI"
+        ) {
+          // Gemini 2.5モデル、SD5タイプ、またはGEMINIタイプの場合はGeminiタスクとして作成
+          createGeminiTask({
+            variables: {
+              input: {
+                prompt: promptsTexts[i],
+                size: "SQUARE_1024",
+              },
+            },
+          })
         } else {
           createTask({
             variables: {
@@ -698,6 +730,16 @@ const createFluxImageGenerationTaskMutation = graphql(
   `mutation CreateDemoFluxImageGenerationTask($input: CreateFluxImageGenerationTaskInput!) {
     createDemoFluxImageGenerationTask(input: $input) {
       id
+    }
+  }`,
+)
+
+const createGeminiImageGenerationTaskMutation = graphql(
+  `mutation CreateGeminiImageGenerationTask($input: CreateGeminiImageGenerationTaskInput!) {
+    createGeminiImageGenerationTask(input: $input) {
+      id
+      nanoid
+      status
     }
   }`,
 )

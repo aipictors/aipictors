@@ -931,6 +931,14 @@ export class GenerationConfigAction {
       return "negativeXL_D"
     }
 
+    if (isDefaultPrompt && modelType === "GEMINI") {
+      return ""
+    }
+
+    if (isDefaultPrompt && modelType === "SD5") {
+      return ""
+    }
+
     return negativePromptText
   }
 
@@ -1059,6 +1067,14 @@ export class GenerationConfigAction {
       return "SD3_1024_1024"
     }
 
+    if (modelType === "GEMINI") {
+      return "SD3_1024_1024"
+    }
+
+    if (modelType === "SD5") {
+      return "SD3_1024_1024"
+    }
+
     return "SD3_1024_1024"
   }
 
@@ -1074,6 +1090,12 @@ export class GenerationConfigAction {
     }
     if (modelType === "FLUX") {
       return "sdxl_vae"
+    }
+    if (modelType === "GEMINI") {
+      return ""
+    }
+    if (modelType === "SD5") {
+      return ""
     }
     return "vae-ft-mse-840000-ema-pruned"
   }

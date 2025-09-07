@@ -114,6 +114,7 @@ export function GenerationAnnouncementBanner() {
       <div className="relative w-full px-4 py-3">
         <div className="flex items-center gap-3 pr-10">
           {/* Close button */}
+          {/** biome-ignore lint/a11y/useButtonType: <explanation> */}
           <button
             onClick={handleClose}
             className="-translate-y-1/2 absolute top-1/2 right-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
@@ -130,6 +131,7 @@ export function GenerationAnnouncementBanner() {
           {/* Content */}
           {announcementData.emergencyAnnouncements.url &&
           announcementData.emergencyAnnouncements.url.length > 0 ? (
+            // biome-ignore lint/a11y/useButtonType: <explanation>
             <button
               onClick={() =>
                 announcementData.emergencyAnnouncements.url.startsWith("http")
@@ -144,6 +146,7 @@ export function GenerationAnnouncementBanner() {
                 <span className="font-medium text-slate-700 text-sm dark:text-slate-200">
                   {announcementData.emergencyAnnouncements.content}
                 </span>
+                {/** biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
                 <svg
                   className="h-3 w-3 text-slate-400"
                   fill="none"

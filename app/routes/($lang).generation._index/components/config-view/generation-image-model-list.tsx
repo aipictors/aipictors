@@ -96,8 +96,19 @@ export function ImageModelsList(props: Props) {
         return showNewModels ? model.isNew : true
       })
       .filter((model) => {
-        // SD2モデルを非表示にする
-        return model.type !== "SD2"
+        // SD2モデルを非表示にする（ただし"Gemini"名前を含むモデルやSD5タイプは表示する）
+        if (model.type === "SD2") {
+          // Geminiを含むモデル名の場合は表示
+          if (model.displayName?.toLowerCase().includes("gemini")) {
+            return true
+          }
+          return false
+        }
+        // SD5タイプは常に表示（Gemini等のため）
+        if (model.type === "SD5") {
+          return true
+        }
+        return true
       })
       .filter((model) => {
         // 検索テキストが空の場合は全てのモデルを表示

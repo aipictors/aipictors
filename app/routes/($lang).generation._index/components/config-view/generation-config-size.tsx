@@ -121,6 +121,21 @@ export function GenerationConfigSize(props: Props) {
                 {t("【横長】1152x896", "【Square】1152x896")}
               </SelectItem>
             )}
+            {(props.modelType === "SD5" || props.modelType === "GEMINI") && (
+              <SelectItem value={"SD3_1024_1024"}>
+                {t("【正方形】1024x1024", "【Square】1024x1024")}
+              </SelectItem>
+            )}
+            {(props.modelType === "SD5" || props.modelType === "GEMINI") && (
+              <SelectItem value={"SD3_832_1216"}>
+                {t("【縦長】832x1216", "【Vertical】832x1216")}
+              </SelectItem>
+            )}
+            {(props.modelType === "SD5" || props.modelType === "GEMINI") && (
+              <SelectItem value={"SD3_1216_832"}>
+                {t("【横長】1216x832", "【Horizontal】1216x832")}
+              </SelectItem>
+            )}
           </SelectContent>
         </SelectGroup>
       </Select>

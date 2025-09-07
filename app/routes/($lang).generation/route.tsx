@@ -54,6 +54,8 @@ export default function GenerationLayout() {
 
   const data = useLoaderData<typeof loader>()
 
+  console.log("GenerationLayout data", data)
+
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) {

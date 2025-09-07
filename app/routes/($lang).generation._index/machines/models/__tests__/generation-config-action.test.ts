@@ -218,6 +218,20 @@ describe("ImageGenerationAction", () => {
       const result = imageGenerationAction.getModelSizeType(sizeType, modelType)
       expect(result).toBe("SD3_1024_1024")
     })
+
+    test("should return the correct size type for SD5 model type", () => {
+      const sizeType = "SD1_512_512"
+      const modelType = "SD5"
+      const result = imageGenerationAction.getModelSizeType(sizeType, modelType)
+      expect(result).toBe("SD3_1024_1024")
+    })
+
+    test("should return the correct size type for GEMINI model type", () => {
+      const sizeType = "SD1_512_512"
+      const modelType = "GEMINI"
+      const result = imageGenerationAction.getModelSizeType(sizeType, modelType)
+      expect(result).toBe("SD3_1024_1024")
+    })
   })
 })
 

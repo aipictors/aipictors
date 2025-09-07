@@ -1,10 +1,10 @@
 // AI画像生成とサイズの型定義
 export type GeminiImageSize =
-  | "512x512"
-  | "768x768"
-  | "1024x1024"
-  | "1280x720"
-  | "720x1280"
+  | "LANDSCAPE"
+  | "PORTRAIT"
+  | "SQUARE_512"
+  | "SQUARE_768"
+  | "SQUARE_1024"
 
 export type CreateGeminiImageGenerationTaskInput = {
   prompt: string
@@ -12,5 +12,4 @@ export type CreateGeminiImageGenerationTaskInput = {
   imageUrl?: string | null
   mimeType?: string | null
   size: GeminiImageSize
-  isModification?: boolean | null
 }

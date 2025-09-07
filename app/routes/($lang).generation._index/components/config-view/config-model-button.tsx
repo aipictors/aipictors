@@ -23,8 +23,7 @@ export function ConfigModelButton(props: Props) {
         disabled={props.isDisabled}
         variant={props.isSelected ? "default" : "secondary"}
         className={
-          // biome-ignore lint/nursery/useSortedClasses: <explanation>
-          // biome-ignore lint/style/useTemplate: <explanation>
+          // biome-ignore lint/style/useTemplate: concatenation needed for conditional styling
           "h-auto w-full overflow-y-hidden p-2 " +
           (props.isSelected
             ? "bg-zinc-300 text-black hover:bg-zinc-300 dark:bg-zinc-700 dark:text-white dark:hover:bg-zinc-700"
@@ -74,6 +73,20 @@ export function ConfigModelButton(props: Props) {
                   {props.name === "flux.1 pro" && (
                     <Badge className="text-xs opacity-50">
                       {t("高速生成", "super fast generation")}
+                    </Badge>
+                  )}
+                  {props.name === "Gemini 2.5" && (
+                    <Badge className="text-xs opacity-50">
+                      {t("5枚分消費", "cost of 5")}
+                    </Badge>
+                  )}
+                  {(props.name?.toLowerCase().includes("gemini") ||
+                    props.type === "SD5") && (
+                    <Badge
+                      className="text-xs opacity-50"
+                      variant={"destructive"}
+                    >
+                      {props.type || "GEMINI"}
                     </Badge>
                   )}
                 </div>
