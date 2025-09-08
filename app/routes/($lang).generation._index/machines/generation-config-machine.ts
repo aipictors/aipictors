@@ -51,6 +51,7 @@ export const generationConfigMachine = createMachine({
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
       },
     },
 
@@ -65,6 +66,7 @@ export const generationConfigMachine = createMachine({
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -83,6 +85,7 @@ export const generationConfigMachine = createMachine({
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -100,6 +103,7 @@ export const generationConfigMachine = createMachine({
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -118,6 +122,7 @@ export const generationConfigMachine = createMachine({
         CHANGE_FULL_WORK_LIST: "WORK_LIST_FULL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -137,6 +142,7 @@ export const generationConfigMachine = createMachine({
         OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -152,6 +158,7 @@ export const generationConfigMachine = createMachine({
         OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -170,6 +177,7 @@ export const generationConfigMachine = createMachine({
         OPEN_FULL_WORK_LIST: "WORKS_FROM_MODEL",
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -185,6 +193,7 @@ export const generationConfigMachine = createMachine({
         CLOSE: "PROMPT_VIEW",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -196,6 +205,25 @@ export const generationConfigMachine = createMachine({
     LINKS: {
       description: "リンク画面",
 
+      on: {
+        CLOSE: "PROMPT_VIEW",
+        CLOSE_PREVIEW: "PROMPT_VIEW",
+        OPEN_WORK_PREVIEW: "WORK_PREVIEW",
+        OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
+        OPEN_COMMUNICATION: "COMMUNICATION",
+        OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
+        OPEN_LINKS: "LINKS",
+        OPEN_LOGS: "LOGS",
+        UPDATE_CONFIG: {
+          actions: assign((props) => {
+            return props.event.value
+          }),
+        },
+      },
+    },
+
+    LOGS: {
+      description: "診断ログ画面",
       on: {
         CLOSE: "PROMPT_VIEW",
         CLOSE_PREVIEW: "PROMPT_VIEW",

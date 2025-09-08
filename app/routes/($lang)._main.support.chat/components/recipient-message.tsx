@@ -44,7 +44,7 @@ export function RecipientMessage(props: Props) {
         <AvatarImage src={props.recipientIconImageURL} alt="avatar" />
         <AvatarFallback />
       </Avatar>
-      <div className="flex max-w-sm flex-col gap-y-2">
+      <div className="flex max-w-[90%] flex-col gap-y-2 md:max-w-[80%]">
         <Card className="rounded-tl-sm rounded-tr-xl rounded-br-xl rounded-bl-xl border-gray-300 bg-gray-100 px-4 py-3 text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
           <p className="overflow-hidden whitespace-pre-wrap break-words text-sm leading-relaxed">
             {parseTextWithLinks(props.message.text ?? "")}

@@ -27,6 +27,7 @@ import { GenerationFormFooter } from "~/routes/($lang).generation._index/compone
 import { SettingLanguageUsedForPromptView } from "~/routes/($lang).generation._index/components/setting-language-used-for-prompt-view/setting-language-used-for-prompt-view"
 import { config } from "~/config"
 import type { HeadersFunction } from "@remix-run/cloudflare"
+import { GenerationLogsTab } from "~/routes/($lang).generation._index/components/generation-side-tabs-view/generation-logs-tab"
 
 /**
  * 画像生成
@@ -114,6 +115,7 @@ export default function GenerationPage() {
           workListFromModel={<GenerationWorkListModelView />}
           communication={<GenerationCommunicationView />}
           links={<GenerationLinksView />}
+          logs={<GenerationLogsTab />}
         />
       }
       menu={<GenerationConfigView />}

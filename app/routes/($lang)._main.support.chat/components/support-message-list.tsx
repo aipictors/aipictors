@@ -30,7 +30,7 @@ export function SupportMessageList(props: Props) {
 
   return (
     <div
-      className="mb-16 h-full max-h-[50vh] flex-1 space-y-4 overflow-x-auto md:max-h-[100%]"
+      className="mb-16 h-full max-h-[50vh] flex-1 space-y-4 overflow-x-hidden md:max-h-[100%]"
       ref={containerRef}
     >
       {messages.map((message) =>

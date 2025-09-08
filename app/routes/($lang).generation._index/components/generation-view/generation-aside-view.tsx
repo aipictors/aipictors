@@ -28,6 +28,10 @@ type Props = {
    * リンク
    */
   links: React.ReactNode
+  /**
+   * ログ
+   */
+  logs: React.ReactNode
 }
 
 /**
@@ -79,6 +83,10 @@ export function GenerationAsideView(props: Props) {
 
   if (state === "LINKS") {
     return <>{props.links}</>
+  }
+
+  if (state === "LOGS") {
+    return <>{props.logs}</>
   }
 
   if (state === "HISTORY_LIST_FULL") {

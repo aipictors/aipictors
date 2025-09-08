@@ -54,10 +54,7 @@ export const GenerationCommunicationView = () => {
 
   return (
     <GenerationViewCard>
-      <ScrollArea
-        type="always"
-        className="relative flex flex-col overflow-y-auto p-4"
-      >
+      <ScrollArea type="always" className="min-h-0 flex-1 overflow-y-auto p-4">
         <SupportMessageList
           messages={messages}
           recipientIconImageURL={adminAvatarURL}

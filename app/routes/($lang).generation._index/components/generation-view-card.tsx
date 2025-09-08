@@ -46,7 +46,10 @@ export function GenerationViewCard(props: Props) {
             )}
           </div>
         </div>
-        {props.children}
+        {/* 子要素領域を伸縮可能にして内部スクロールを有効化 */}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          {props.children}
+        </div>
       </Card>
     </>
   )

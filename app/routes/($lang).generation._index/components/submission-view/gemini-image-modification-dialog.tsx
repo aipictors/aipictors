@@ -13,6 +13,12 @@ import { toast } from "sonner"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { Loader2Icon } from "lucide-react"
+import {
+  logInfo,
+  logWarn,
+  logError,
+} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
+import type { GeminiImageSize } from "~/types/gemini-image-generation"
 
 type AiTaskResult = {
   id: string
@@ -34,7 +40,7 @@ type Props = {
 /**
  * 画像の縦横比に基づいて適切なImageSizeを決定する
  */
-const getOptimalImageSize = (imageUrl: string): Promise<string> => {
+const getOptimalImageSize = (imageUrl: string): Promise<GeminiImageSize> => {
   return new Promise((resolve) => {
     const img = new Image()
     img.onload = () => {
@@ -67,36 +73,131 @@ const getOptimalImageSize = (imageUrl: string): Promise<string> => {
  * - サーバーが外部画像URLへアクセスできないユーザー環境向けのフォールバック
  */
 const fetchImageAsBase64 = async (props: { imageUrl: string }) => {
+  logInfo({
+    source: "GeminiImageModification",
+    message: "Fallback fetch start",
+    details: { imageUrl: props.imageUrl },
+  })
   console.info("[GeminiImageModification] Fallback fetch start", {
     imageUrl: props.imageUrl,
   })
-  const response = await fetch(props.imageUrl, {
-    // 認証付きの同一オリジン画像など、必要に応じてクッキー同送
-    credentials: "include",
-  })
-  console.info("[GeminiImageModification] Fallback fetch response", {
-    ok: response.ok,
-    status: response.status,
-    statusText: response.statusText,
-  })
-  if (!response.ok) {
-    throw new Error(`Failed to fetch image: ${response.status}`)
+
+  // 1回目: 資格情報なしでフェッチ（CORS要件を緩和）
+  let response: Response | null = null
+  try {
+    response = await fetch(props.imageUrl, { credentials: "omit" })
+    logInfo({
+      source: "GeminiImageModification",
+      message: "Fallback fetch #1 (omit) response",
+      details: {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+      },
+    })
+    console.info(
+      "[GeminiImageModification] Fallback fetch #1 (omit) response",
+      {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+      },
+    )
+  } catch (e) {
+    logWarn({
+      source: "GeminiImageModification",
+      message: "Fallback fetch #1 (omit) threw",
+      details: e,
+    })
+    console.warn("[GeminiImageModification] Fallback fetch #1 (omit) threw", e)
   }
+
+  // 2回目: 同一オリジンや認証が必要な場合を考慮してクッキー同送
+  if (!response || !response.ok) {
+    try {
+      const res2 = await fetch(props.imageUrl, { credentials: "include" })
+      logInfo({
+        source: "GeminiImageModification",
+        message: "Fallback fetch #2 (include) response",
+        details: {
+          ok: res2.ok,
+          status: res2.status,
+          statusText: res2.statusText,
+        },
+      })
+      console.info(
+        "[GeminiImageModification] Fallback fetch #2 (include) response",
+        { ok: res2.ok, status: res2.status, statusText: res2.statusText },
+      )
+      response = res2
+    } catch (e) {
+      logWarn({
+        source: "GeminiImageModification",
+        message: "Fallback fetch #2 (include) threw",
+        details: e,
+      })
+      console.warn(
+        "[GeminiImageModification] Fallback fetch #2 (include) threw",
+        e,
+      )
+    }
+  }
+
+  if (!response || !response.ok) {
+    const status = response
+      ? `${response.status} ${response.statusText}`
+      : "no-response"
+    logError({
+      source: "GeminiImageModification",
+      message: "Failed to fetch image",
+      details: { status },
+    })
+    throw new Error(`Failed to fetch image (${status})`)
+  }
+
   const blob = await response.blob()
   const mimeType = blob.type || "image/png"
-  console.info("[GeminiImageModification] Blob info", { mimeType, size: blob.size })
+  logInfo({
+    source: "GeminiImageModification",
+    message: "Blob info",
+    details: { mimeType, size: blob.size },
+  })
+  console.info("[GeminiImageModification] Blob info", {
+    mimeType,
+    size: blob.size,
+  })
 
   // FileReaderでBase64(Data URL)へ変換
   const base64 = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => {
-      const result = reader.result as string
+      const result = reader.result
+      if (typeof result !== "string") {
+        logError({
+          source: "GeminiImageModification",
+          message: "Unexpected FileReader result",
+        })
+        reject(new Error("Unexpected FileReader result"))
+        return
+      }
       // "data:mime;base64,xxxxx" からカンマ以降を抽出
       const commaIndex = result.indexOf(",")
       resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result)
     }
-    reader.onerror = () => reject(reader.error)
+    reader.onerror = () => {
+      logError({
+        source: "GeminiImageModification",
+        message: "FileReader error",
+        details: reader.error ?? undefined,
+      })
+      reject(reader.error ?? new Error("FileReader error"))
+    }
     reader.readAsDataURL(blob)
+  })
+  logInfo({
+    source: "GeminiImageModification",
+    message: "Base64 ready",
+    details: { length: base64.length },
   })
   console.info("[GeminiImageModification] Base64 ready", {
     length: base64.length,
@@ -125,8 +226,13 @@ const extractGraphQLErrors = (
   for (const item of gql) {
     if (!isRecord(item)) continue
     const message = safeString(item["message"]) ?? undefined
-    const extensions = isRecord(item["extensions"]) ? item["extensions"] : undefined
-    const code = extensions && safeString(extensions["code"]) ? (extensions["code"] as string) : undefined
+    const extensions = isRecord(item["extensions"])
+      ? item["extensions"]
+      : undefined
+    const code =
+      extensions && safeString(extensions["code"])
+        ? (extensions["code"] as string)
+        : undefined
     list.push({ message, code })
   }
   return list.length > 0 ? list : undefined
@@ -143,8 +249,14 @@ const extractNetworkErrorMessage = (error: unknown): string | undefined => {
 const summarizeError = (error: unknown) => {
   const gql = extractGraphQLErrors(error)
   const net = extractNetworkErrorMessage(error)
-  const name = isRecord(error) && typeof error["name"] === "string" ? (error["name"] as string) : undefined
-  const message = isRecord(error) && typeof error["message"] === "string" ? (error["message"] as string) : undefined
+  const name =
+    isRecord(error) && typeof error["name"] === "string"
+      ? (error["name"] as string)
+      : undefined
+  const message =
+    isRecord(error) && typeof error["message"] === "string"
+      ? (error["message"] as string)
+      : undefined
   return { name, message, graphQLErrors: gql, networkErrorMessage: net }
 }
 
@@ -180,6 +292,15 @@ export function GeminiImageModificationDialog(props: Props) {
     } catch {
       imageUrlOrigin = undefined
     }
+    logInfo({
+      source: "GeminiImageModification",
+      message: "Submit start",
+      details: {
+        imageUrl: props.imageUrl,
+        imageUrlOrigin,
+        promptLength: prompt.length,
+      },
+    })
     console.info("[GeminiImageModification] Submit start", {
       imageUrl: props.imageUrl,
       imageUrlOrigin,
@@ -190,7 +311,14 @@ export function GeminiImageModificationDialog(props: Props) {
 
     try {
       // 画像サイズを動的に決定
-      const optimalSize = await getOptimalImageSize(props.imageUrl)
+      const optimalSize: GeminiImageSize = await getOptimalImageSize(
+        props.imageUrl,
+      )
+      logInfo({
+        source: "GeminiImageModification",
+        message: "Decided size",
+        details: { optimalSize },
+      })
       console.info("[GeminiImageModification] Decided size", { optimalSize })
 
       // まずはimageUrlで作成を試行
@@ -201,6 +329,11 @@ export function GeminiImageModificationDialog(props: Props) {
           size: optimalSize,
         },
       }
+      logInfo({
+        source: "GeminiImageModification",
+        message: "Attempt #1 (imageUrl)",
+        details: { hasImageUrl: Boolean(props.imageUrl), size: optimalSize },
+      })
       console.info("[GeminiImageModification] Attempt #1 (imageUrl)", {
         hasImageUrl: Boolean(props.imageUrl),
         size: optimalSize,
@@ -208,6 +341,15 @@ export function GeminiImageModificationDialog(props: Props) {
 
       try {
         const result = await createAiTask({ variables: variablesFirst })
+        logInfo({
+          source: "GeminiImageModification",
+          message: "Attempt #1 success",
+          details: {
+            id: result.data?.createGeminiImageGenerationTask?.id,
+            status: result.data?.createGeminiImageGenerationTask?.status,
+            nanoid: result.data?.createGeminiImageGenerationTask?.nanoid,
+          },
+        })
         console.info("[GeminiImageModification] Attempt #1 success", {
           id: result.data?.createGeminiImageGenerationTask?.id,
           status: result.data?.createGeminiImageGenerationTask?.status,
@@ -232,6 +374,11 @@ export function GeminiImageModificationDialog(props: Props) {
         return
       } catch (error) {
         const details = summarizeError(error)
+        logWarn({
+          source: "GeminiImageModification",
+          message: "Attempt #1 failed",
+          details,
+        })
         console.warn("[GeminiImageModification] Attempt #1 failed", details)
       }
 
@@ -239,6 +386,11 @@ export function GeminiImageModificationDialog(props: Props) {
       try {
         const { base64, mimeType } = await fetchImageAsBase64({
           imageUrl: props.imageUrl,
+        })
+        logInfo({
+          source: "GeminiImageModification",
+          message: "Attempt #2 (base64)",
+          details: { mimeType, base64Length: base64.length, size: optimalSize },
         })
         console.info("[GeminiImageModification] Attempt #2 (base64)", {
           mimeType,
@@ -254,6 +406,15 @@ export function GeminiImageModificationDialog(props: Props) {
               mimeType: mimeType,
               size: optimalSize,
             },
+          },
+        })
+        logInfo({
+          source: "GeminiImageModification",
+          message: "Attempt #2 success",
+          details: {
+            id: result.data?.createGeminiImageGenerationTask?.id,
+            status: result.data?.createGeminiImageGenerationTask?.status,
+            nanoid: result.data?.createGeminiImageGenerationTask?.nanoid,
           },
         })
         console.info("[GeminiImageModification] Attempt #2 success", {
@@ -278,6 +439,11 @@ export function GeminiImageModificationDialog(props: Props) {
         props.onClose()
       } catch (error) {
         const details = summarizeError(error)
+        logError({
+          source: "GeminiImageModification",
+          message: "Attempt #2 failed",
+          details,
+        })
         console.error("[GeminiImageModification] Attempt #2 failed", details)
 
         const code = details.graphQLErrors?.[0]?.code

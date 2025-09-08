@@ -17,6 +17,12 @@ import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
 import type { GeminiImageSize } from "~/types/gemini-image-generation"
+// 追加: 診断ログ
+import {
+  logInfo,
+  logWarn,
+  logError,
+} from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 
 /**
  * UIサイズタイプをGeminiImageSizeに変換する
@@ -78,7 +84,18 @@ export function GenerationSubmissionView(props: Props) {
     {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
+      onCompleted() {
+        logInfo({
+          source: "GenerationSubmit",
+          message: "createImageGenerationTask completed",
+        })
+      },
       onError(error) {
+        logError({
+          source: "GenerationSubmit",
+          message: "createImageGenerationTask error",
+          details: { name: error.name, message: error.message },
+        })
         if (isDesktop) {
           toast.error(error.message)
         } else {
@@ -91,7 +108,18 @@ export function GenerationSubmissionView(props: Props) {
   const [createFluxTask] = useMutation(createFluxImageGenerationTaskMutation, {
     refetchQueries: [viewerCurrentPassQuery],
     awaitRefetchQueries: true,
+    onCompleted() {
+      logInfo({
+        source: "GenerationSubmit",
+        message: "createFluxTask completed",
+      })
+    },
     onError(error) {
+      logError({
+        source: "GenerationSubmit",
+        message: "createFluxTask error",
+        details: { name: error.name, message: error.message },
+      })
       if (isDesktop) {
         toast.error(error.message)
       } else {
@@ -110,14 +138,27 @@ export function GenerationSubmissionView(props: Props) {
     refetchQueries: [viewerCurrentPassQuery],
     awaitRefetchQueries: true,
     onCompleted(data) {
-      // Geminiタスク作成後の成功メッセージ
       if (data?.createGeminiImageGenerationTask) {
+        logInfo({
+          source: "GenerationSubmit",
+          message: "createGeminiTask completed",
+          details: {
+            id: data.createGeminiImageGenerationTask.id,
+            status: data.createGeminiImageGenerationTask.status,
+            nanoid: data.createGeminiImageGenerationTask.nanoid,
+          },
+        })
         toast("Geminiタスクが作成されました。完了後に結果が表示されます。", {
           position: isDesktop ? "bottom-right" : "top-center",
         })
       }
     },
     onError(error) {
+      logError({
+        source: "GenerationSubmit",
+        message: "createGeminiTask error",
+        details: { name: error.name, message: error.message },
+      })
       if (isDesktop) {
         toast.error(error.message)
       } else {
@@ -131,7 +172,18 @@ export function GenerationSubmissionView(props: Props) {
     {
       refetchQueries: [viewerCurrentPassQuery],
       awaitRefetchQueries: true,
+      onCompleted() {
+        logInfo({
+          source: "GenerationSubmit",
+          message: "createReservedTask completed",
+        })
+      },
       onError(error) {
+        logError({
+          source: "GenerationSubmit",
+          message: "createReservedTask error",
+          details: { name: error.name, message: error.message },
+        })
         if (isDesktop) {
           toast.error(error.message)
         } else {
@@ -254,6 +306,23 @@ export function GenerationSubmissionView(props: Props) {
    * タスクを作成ボタンを押したときのコールバック
    */
   const onCreateTask = async () => {
+    // 送信開始ログ
+    logInfo({
+      source: "GenerationSubmit",
+      message: "Submit start",
+      details: {
+        plan: context.currentPass?.type ?? null,
+        modelId: context.config.modelId,
+        modelType: context.config.modelType,
+        sizeType: context.config.sizeType,
+        promptLength: context.config.promptText.length,
+        negativePromptLength: context.config.negativePromptText.length,
+        generationCount: context.config.generationCount,
+        hasI2iImage: Boolean(context.config.i2iImageBase64),
+        upscaleSize: context.config.upscaleSize,
+      },
+    })
+
     const isStandardOrPremium =
       context.currentPass?.type === "STANDARD" ||
       context.currentPass?.type === "PREMIUM"
@@ -270,6 +339,11 @@ export function GenerationSubmissionView(props: Props) {
       generatedCount >= 10 &&
       !isExistedPreviousPass
     ) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: verification required",
+        details: { generatedCount },
+      })
       await refetchPass()
       if (!pass?.viewer?.currentPass?.type) {
         toast("本人確認が完了していません。本人確認を完了してください。")
@@ -287,23 +361,43 @@ export function GenerationSubmissionView(props: Props) {
         ? "IMAGE_TO_IMAGE"
         : "TEXT_TO_IMAGE"
 
+    logInfo({
+      source: "GenerationSubmit",
+      message: "Decided generationType",
+      details: { generationType },
+    })
+
     // GEMINIの場合は画像から生成をプラン関係なく利用可能
     if (
       context.config.i2iImageBase64 &&
       !isLiteOrStandardOrPremium &&
       context.config.modelType !== "GEMINI"
     ) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: IMG2IMG requires LITE+",
+      })
       toast("img2imgはLITE以上のプランでご利用いただけます。")
       return
     }
 
     if (context.config.generationCount > 1 && !isStandardOrPremium) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: multi-count requires STANDARD+",
+        details: { count: context.config.generationCount },
+      })
       toast("STANDARD以上のプランで2枚以上を同時指定可能です。")
       return
     }
 
     // 生成中かつスタンダード、プレミアム以外ならサブスクに誘導
     if (inProgressImageGenerationTasksCount !== 0 && !isStandardOrPremium) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: concurrent generation requires STANDARD+",
+        details: { inProgressImageGenerationTasksCount },
+      })
       toast("STANDARD以上のプランで複数枚同時生成可能です。")
       return
     }
@@ -314,6 +408,15 @@ export function GenerationSubmissionView(props: Props) {
       inProgressImageGenerationTasksCount + context.config.generationCount >
         maxTasksCount
     ) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: IMG2IMG concurrent limit",
+        details: {
+          inProgress: inProgressImageGenerationTasksCount,
+          requestCount: context.config.generationCount,
+          maxTasksCount,
+        },
+      })
       toast("同時生成枚数の上限です。")
       return
     }
@@ -322,6 +425,10 @@ export function GenerationSubmissionView(props: Props) {
       context.config.generationCount > 1 &&
       context.config.controlNetImageBase64 !== null
     ) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: ControlNet with multi-count not allowed",
+      })
       toast("ControlNetを使用する場合は1枚ずつ生成下さい。")
       return
     }
@@ -330,6 +437,10 @@ export function GenerationSubmissionView(props: Props) {
       context.config.modelType === "FLUX" &&
       context.config.controlNetImageBase64 !== null
     ) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: FLUX with ControlNet",
+      })
       if (isDesktop) {
         toast("FLUXモデルはControlNetを使用できません。")
         return
@@ -341,6 +452,10 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (context.config.modelType === "FLUX" && context.config.i2iImageBase64) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: FLUX with IMG2IMG",
+      })
       if (isDesktop) {
         toast(
           "FLUXモデルは画像から生成を一時的に停止しています、申し訳ございません",
@@ -357,6 +472,10 @@ export function GenerationSubmissionView(props: Props) {
     }
 
     if (context.config.upscaleSize === 2 && context.config.i2iImageBase64) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: HighRes with IMG2IMG",
+      })
       if (isDesktop) {
         toast(
           "高解像度とi2iの組み合わせは現在一時停止しております、申し訳ございません",
@@ -377,6 +496,10 @@ export function GenerationSubmissionView(props: Props) {
       (context.config.controlNetWeight === null ||
         context.config.controlNetModule === null)
     ) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: ControlNet settings incomplete",
+      })
       toast(
         "ControlNetの画像が設定されていますが、詳細設定が完了していません。画像を消すか、設定を完了して下さい。",
       )
@@ -385,11 +508,13 @@ export function GenerationSubmissionView(props: Props) {
 
     const userId = context.user?.id ?? null
     if (userId === null) {
+      logWarn({ source: "GenerationSubmit", message: "Blocked: no userId" })
       return null
     }
 
     const userNanoid = context.user?.nanoid ?? null
     if (userNanoid === null) {
+      logWarn({ source: "GenerationSubmit", message: "Blocked: no userNanoid" })
       navigate("/new/profile")
       return null
     }
@@ -399,6 +524,10 @@ export function GenerationSubmissionView(props: Props) {
     })
 
     if (typeof model === "undefined") {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: model not found",
+      })
       toast("モデルが見つかりません、再度モデルを選択しなおしてください。")
       return
     }
@@ -407,26 +536,14 @@ export function GenerationSubmissionView(props: Props) {
       (model.name === "flux.1 schnell" || model.name === "flux.1 pro") &&
       !isStandardOrPremium
     ) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: flux.1 requires STANDARD+",
+        details: { model: model.name },
+      })
       toast("flux.1は、STANDARD以上のプランで生成可能です。")
       return
     }
-
-    // const ng = await checkNgPrompts(
-    //   context.config.promptText,
-    //   `${context.config.negativePromptText}, nsfw, nude`,
-    //   model.name,
-    //   userId,
-    // )
-    // if (ng.hit_words.length > 0) {
-    //   toast(`プロンプトにNGワードが含まれています: ${ng.hit_words}`)
-    //   return
-    // }
-    // if (ng.hit_negative_words.length > 0) {
-    //   toast(
-    //     `ネガティブプロンプトにNGワードが含まれています: ${ng.hit_negative_words}`,
-    //   )
-    //   return
-    // }
 
     // 生成リクエストしたい回数分生成リクエストを行う
     // もし通常の連続生成を超過したら予約生成に切り替える
@@ -434,6 +551,10 @@ export function GenerationSubmissionView(props: Props) {
       if (
         checkSameBeforeRequestAndToast(model.name, generationType, "") === true
       ) {
+        logWarn({
+          source: "GenerationSubmit",
+          message: "Blocked: same parameters as previous",
+        })
         return
       }
 
@@ -445,14 +566,28 @@ export function GenerationSubmissionView(props: Props) {
         if (context.config.modelType === "GEMINI") {
           const viewerToken = tokenData?.viewer?.token
           if (!viewerToken) {
+            logError({
+              source: "GenerationSubmit",
+              message: "Viewer token missing for Gemini upload",
+            })
             toast("認証エラーが発生しました。ログインし直してください。")
             return
           }
+          logInfo({
+            source: "GenerationSubmit",
+            message: "Uploading IMG2IMG (public)",
+            details: { size: context.config.i2iImageBase64?.length ?? 0 },
+          })
           i2iFileUrl = await uploadPublicImage(
             context.config.i2iImageBase64,
             viewerToken,
           )
         } else {
+          logInfo({
+            source: "GenerationSubmit",
+            message: "Uploading IMG2IMG (private)",
+            details: { size: context.config.i2iImageBase64?.length ?? 0 },
+          })
           i2iFileUrl = await uploadImage(
             context.config.i2iImageBase64,
             i2iFileName,
@@ -461,9 +596,23 @@ export function GenerationSubmissionView(props: Props) {
         }
 
         if (i2iFileUrl === "") {
+          logError({ source: "GenerationSubmit", message: "Upload failed" })
           toast("画像のアップロードに失敗しました")
           return
         }
+        logInfo({
+          source: "GenerationSubmit",
+          message: "Upload success",
+          details: {
+            urlOrigin: (() => {
+              try {
+                return new URL(i2iFileUrl).origin
+              } catch {
+                return undefined
+              }
+            })(),
+          },
+        })
         await createTaskCore(
           context.config.generationCount,
           model.name,
@@ -480,190 +629,14 @@ export function GenerationSubmissionView(props: Props) {
       }
     } catch (error) {
       if (error instanceof Error) {
+        logError({
+          source: "GenerationSubmit",
+          message: "onCreateTask threw",
+          details: { name: error.name, message: error.message },
+        })
         toast(error.message)
       }
     }
-  }
-
-  /**
-   * 生成APIを使って生成を開始する
-   * @param taskCount
-   * @param modelName
-   * @param generationType
-   * @param i2iFileUrl
-   * @returns
-   */
-  const createTaskCore = async (
-    taskCount: number,
-    modelName: string,
-    generationType: string,
-    i2iFileUrl: string,
-  ) => {
-    const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
-
-    // シードを設定する、連続生成のときはSeedは連番にする
-    const seeds: number[] = []
-
-    taskCounts.map((i) => {
-      if (context.config.seed === -1) {
-        seeds.push(-1)
-      } else {
-        seeds.push(context.config.seed + i)
-      }
-    })
-
-    // プロンプトが設定されていない場合はランダムなプロンプトを使用する
-    const promptsTexts: string[] = []
-
-    taskCounts.map((_i) => {
-      if (context.config.promptText) {
-        promptsTexts.push(context.config.promptText)
-      } else {
-        promptsTexts.push(
-          config.generationFeature.randomPrompts[
-            Math.floor(
-              Math.random() * config.generationFeature.randomPrompts.length,
-            )
-          ],
-        )
-      }
-    })
-
-    const controlNetImageUrl = await getControlNetImageUrl(
-      context.config.controlNetImageBase64,
-    )
-
-    const nowGeneratingCount = inProgressImageGenerationTasksCost // 生成中枚数
-    const promises = taskCounts.map((i) => {
-      if (i2iFileUrl !== "" && i + 1 + nowGeneratingCount > maxTasksCount) {
-        // i2iの場合は通常の連続生成の枚数を超過していたら何もしない
-        return
-      }
-      if (i + 1 + nowGeneratingCount > maxTasksCount) {
-        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
-          // flux.1は予約生成に対応していない
-          return
-        }
-        createReservedTask({
-          variables: {
-            input: {
-              count: 1,
-              model: modelName,
-              vae: context.config.vae ?? "",
-              prompt: context.config.promptText,
-              isPromptGenerationEnabled:
-                context.config.languageUsedForPrompt === "jp",
-              negativePrompt: context.config.negativePromptText,
-              seed: seeds[i],
-              steps:
-                context.config.steps >
-                  config.generationFeature.imageGenerationMaxSteps ||
-                context.config.steps < 9
-                  ? config.generationFeature.imageGenerationMaxSteps
-                  : context.config.steps,
-              scale: context.config.scale,
-              sampler: context.config.sampler,
-              clipSkip: context.config.clipSkip,
-              sizeType: context.config
-                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-              type: "TEXT_TO_IMAGE",
-              controlNetImageUrl: controlNetImageUrl,
-              controlNetWeight: context.config.controlNetWeight
-                ? Number(context.config.controlNetWeight)
-                : null,
-              controlNetModel: context.config.controlNetModel,
-              controlNetModule: context.config.controlNetModule,
-              upscaleSize: context.config.upscaleSize,
-            },
-          },
-        })
-      } else {
-        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
-          createFluxTask({
-            variables: {
-              input: {
-                count: 1,
-                prompt: promptsTexts[i],
-                isPromptGenerationEnabled:
-                  context.config.languageUsedForPrompt === "jp",
-                negativePrompt: context.config.negativePromptText,
-                seed: seeds[i],
-                steps:
-                  context.config.steps >
-                    config.generationFeature.imageGenerationMaxSteps ||
-                  context.config.steps < 9
-                    ? config.generationFeature.imageGenerationMaxSteps
-                    : context.config.steps,
-                scale: context.config.scale,
-                sizeType: context.config
-                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-                modelName: modelName,
-              },
-            },
-          })
-        } else if (
-          modelName === "Gemini 2.5" ||
-          context.config.modelType === "SD5" ||
-          context.config.modelType === "GEMINI"
-        ) {
-          // Gemini 2.5モデル、SD5タイプ、またはGEMINIタイプの場合はGeminiタスクとして作成
-          createGeminiTask({
-            variables: {
-              input: {
-                prompt: promptsTexts[i],
-                size: convertToGeminiImageSize(context.config.sizeType),
-                imageUrl: i2iFileUrl || null,
-              },
-            },
-          })
-        } else {
-          createTask({
-            variables: {
-              input: {
-                count: 1,
-                model: modelName,
-                vae: context.config.vae ?? "",
-                prompt: promptsTexts[i],
-                isPromptGenerationEnabled:
-                  context.config.languageUsedForPrompt === "jp",
-                negativePrompt: context.config.negativePromptText,
-                seed: seeds[i],
-                steps:
-                  context.config.steps >
-                    config.generationFeature.imageGenerationMaxSteps ||
-                  context.config.steps < 9
-                    ? config.generationFeature.imageGenerationMaxSteps
-                    : context.config.steps,
-                scale: context.config.scale,
-                sampler: context.config.sampler,
-                clipSkip: context.config.clipSkip,
-                sizeType: context.config
-                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
-                type: generationType as IntrospectionEnum<"ImageGenerationType">,
-                t2tImageUrl: i2iFileUrl,
-                t2tDenoisingStrengthSize:
-                  context.config.i2iDenoisingStrengthSize.toString(),
-                controlNetImageUrl: controlNetImageUrl,
-                controlNetWeight: context.config.controlNetWeight
-                  ? Number(context.config.controlNetWeight)
-                  : null,
-                controlNetModel: context.config.controlNetModel,
-                controlNetModule: context.config.controlNetModule,
-                upscaleSize: context.config.upscaleSize,
-              },
-            },
-          })
-        }
-      }
-    })
-    // タスクの作成後も呼び出す必要がある
-    toast("タスク作成をリクエストしました", { position: "top-center" })
-    await Promise.all(promises)
-    if (typeof context.user?.nanoid !== "string") {
-      toast("画面更新して再度お試し下さい。")
-      return
-    }
-    // await activeImageGeneration({ nanoid: context.user.nanoid })
   }
 
   /**
@@ -709,6 +682,235 @@ export function GenerationSubmissionView(props: Props) {
   const subscription = pass?.viewer?.currentPass?.type
 
   const isExistedPreviousPass = pass?.viewer?.isExistedPreviousPass
+
+  // 移動: createTaskCore をコンポーネント内に配置（スコープ修正）
+  const createTaskCore = async (
+    taskCount: number,
+    modelName: string,
+    generationType: string,
+    i2iFileUrl: string,
+  ) => {
+    logInfo({
+      source: "GenerationSubmit",
+      message: "createTaskCore start",
+      details: {
+        taskCount,
+        modelName,
+        generationType,
+        hasI2iFileUrl: i2iFileUrl !== "",
+      },
+    })
+    const taskCounts = Array.from({ length: taskCount }, (_, i) => i)
+
+    // シードを設定する、連続生成のときはSeedは連番にする
+    const seeds: number[] = []
+
+    taskCounts.map((i) => {
+      if (context.config.seed === -1) {
+        seeds.push(-1)
+      } else {
+        seeds.push(context.config.seed + i)
+      }
+    })
+
+    // プロンプトが設定されていない場合はランダムなプロンプトを使用する
+    const promptsTexts: string[] = []
+
+    taskCounts.map((_i) => {
+      if (context.config.promptText) {
+        promptsTexts.push(context.config.promptText)
+      } else {
+        promptsTexts.push(
+          config.generationFeature.randomPrompts[
+            Math.floor(
+              Math.random() * config.generationFeature.randomPrompts.length,
+            )
+          ],
+        )
+      }
+    })
+
+    const controlNetImageUrl = await getControlNetImageUrl(
+      context.config.controlNetImageBase64,
+    )
+
+    const nowGeneratingCount = inProgressImageGenerationTasksCost // 生成中枚数
+    const promises = taskCounts.map((i) => {
+      if (i2iFileUrl !== "" && i + 1 + nowGeneratingCount > maxTasksCount) {
+        logWarn({
+          source: "GenerationSubmit",
+          message: "Skip one: IMG2IMG beyond maxTasksCount",
+          details: { index: i, nowGeneratingCount, maxTasksCount },
+        })
+        // i2iの場合は通常の連続生成の枚数を超過していたら何もしない
+        return
+      }
+      if (i + 1 + nowGeneratingCount > maxTasksCount) {
+        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
+          logWarn({
+            source: "GenerationSubmit",
+            message: "Skip reserved: flux does not support reservation",
+            details: { index: i },
+          })
+          // flux.1は予約生成に対応していない
+          return
+        }
+        logInfo({
+          source: "GenerationSubmit",
+          message: "Create reserved task",
+          details: { index: i },
+        })
+        createReservedTask({
+          variables: {
+            input: {
+              count: 1,
+              model: modelName,
+              vae: context.config.vae ?? "",
+              prompt: context.config.promptText,
+              isPromptGenerationEnabled:
+                context.config.languageUsedForPrompt === "jp",
+              negativePrompt: context.config.negativePromptText,
+              seed: seeds[i],
+              steps:
+                context.config.steps >
+                  config.generationFeature.imageGenerationMaxSteps ||
+                context.config.steps < 9
+                  ? config.generationFeature.imageGenerationMaxSteps
+                  : context.config.steps,
+              scale: context.config.scale,
+              sampler: context.config.sampler,
+              clipSkip: context.config.clipSkip,
+              sizeType: context.config
+                .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+              type: "TEXT_TO_IMAGE",
+              controlNetImageUrl: controlNetImageUrl,
+              controlNetWeight: context.config.controlNetWeight
+                ? Number(context.config.controlNetWeight)
+                : null,
+              controlNetModel: context.config.controlNetModel,
+              controlNetModule: context.config.controlNetModule,
+              upscaleSize: context.config.upscaleSize,
+            },
+          },
+        })
+      } else {
+        if (modelName === "flux.1 schnell" || modelName === "flux.1 pro") {
+          logInfo({
+            source: "GenerationSubmit",
+            message: "Create FLUX task",
+            details: { index: i, promptLength: promptsTexts[i]?.length ?? 0 },
+          })
+          createFluxTask({
+            variables: {
+              input: {
+                count: 1,
+                prompt: promptsTexts[i],
+                isPromptGenerationEnabled:
+                  context.config.languageUsedForPrompt === "jp",
+                negativePrompt: context.config.negativePromptText,
+                seed: seeds[i],
+                steps:
+                  context.config.steps >
+                    config.generationFeature.imageGenerationMaxSteps ||
+                  context.config.steps < 9
+                    ? config.generationFeature.imageGenerationMaxSteps
+                    : context.config.steps,
+                scale: context.config.scale,
+                sizeType: context.config
+                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+                modelName: modelName,
+              },
+            },
+          })
+        } else if (
+          modelName === "Gemini 2.5" ||
+          context.config.modelType === "SD5" ||
+          context.config.modelType === "GEMINI"
+        ) {
+          // Gemini 2.5モデル、SD5タイプ、またはGEMINIタイプの場合はGeminiタスクとして作成
+          logInfo({
+            source: "GenerationSubmit",
+            message: "Create Gemini task",
+            details: {
+              index: i,
+              promptLength: promptsTexts[i]?.length ?? 0,
+              hasImageUrl: Boolean(i2iFileUrl),
+              size: convertToGeminiImageSize(context.config.sizeType),
+            },
+          })
+          createGeminiTask({
+            variables: {
+              input: {
+                prompt: promptsTexts[i],
+                size: convertToGeminiImageSize(context.config.sizeType),
+                imageUrl: i2iFileUrl || null,
+              },
+            },
+          })
+        } else {
+          logInfo({
+            source: "GenerationSubmit",
+            message: "Create SD task",
+            details: {
+              index: i,
+              promptLength: promptsTexts[i]?.length ?? 0,
+              generationType,
+              hasI2i: i2iFileUrl !== "",
+            },
+          })
+          createTask({
+            variables: {
+              input: {
+                count: 1,
+                model: modelName,
+                vae: context.config.vae ?? "",
+                prompt: promptsTexts[i],
+                isPromptGenerationEnabled:
+                  context.config.languageUsedForPrompt === "jp",
+                negativePrompt: context.config.negativePromptText,
+                seed: seeds[i],
+                steps:
+                  context.config.steps >
+                    config.generationFeature.imageGenerationMaxSteps ||
+                  context.config.steps < 9
+                    ? config.generationFeature.imageGenerationMaxSteps
+                    : context.config.steps,
+                scale: context.config.scale,
+                sampler: context.config.sampler,
+                clipSkip: context.config.clipSkip,
+                sizeType: context.config
+                  .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
+                type: generationType as IntrospectionEnum<"ImageGenerationType">,
+                t2tImageUrl: i2iFileUrl,
+                t2tDenoisingStrengthSize:
+                  context.config.i2iDenoisingStrengthSize.toString(),
+                controlNetImageUrl: controlNetImageUrl,
+                controlNetWeight: context.config.controlNetWeight
+                  ? Number(context.config.controlNetWeight)
+                  : null,
+                controlNetModel: context.config.controlNetModel,
+                controlNetModule: context.config.controlNetModule,
+                upscaleSize: context.config.upscaleSize,
+              },
+            },
+          })
+        }
+      }
+    })
+    // タスクの作成後も呼び出す必要がある
+    toast("タスク作成をリクエストしました", { position: "top-center" })
+    logInfo({ source: "GenerationSubmit", message: "Requested task creations" })
+    await Promise.all(promises)
+    if (typeof context.user?.nanoid !== "string") {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Missing user nanoid after tasks",
+      })
+      toast("画面更新して再度お試し下さい。")
+      return
+    }
+    // await activeImageGeneration({ nanoid: context.user.nanoid })
+  }
 
   return (
     <>

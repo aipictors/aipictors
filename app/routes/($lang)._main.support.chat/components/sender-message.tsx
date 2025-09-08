@@ -37,7 +37,7 @@ export function SenderMessage(props: Props) {
 
   return (
     <div className="flex justify-end">
-      <div className="flex max-w-sm flex-col gap-y-2">
+      <div className="flex max-w-[90%] flex-col gap-y-2 md:max-w-[80%]">
         <Card
           className={
             "rounded-tl-xl rounded-tr-sm rounded-br-xl rounded-bl-xl border-blue-500 bg-blue-500 px-4 py-3 text-white"

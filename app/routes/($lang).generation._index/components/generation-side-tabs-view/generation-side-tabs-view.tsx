@@ -21,83 +21,85 @@ export function GenerationSideTabsView() {
     <>
       {state === "HISTORY_LIST_FULL" || state === "WORK_LIST_FULL" ? (
         <Tabs value={state.toString()} defaultValue={"HISTORY_LIST_FULL"}>
-          <TabsList>
-            <TabsTrigger
-              onClick={() => {
-                send({ type: "CHANGE_FULL_HISTORY_LIST" })
-                context.updateSearchWorksModelIdAndName(null, null)
-              }}
-              className="w-full"
-              value="HISTORY_LIST_FULL"
-            >
-              {t("履歴", "History")}
-            </TabsTrigger>
-            <TabsTrigger
-              onClick={() => {
-                send({ type: "CHANGE_FULL_WORK_LIST" })
-                context.updateSearchWorksModelIdAndName(null, null)
-              }}
-              className="w-full"
-              value="WORK_LIST_FULL"
-            >
-              {t("検索", "Search")}
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto">
+            <TabsList className="justify-start gap-1 whitespace-nowrap">
+              <TabsTrigger
+                onClick={() => {
+                  send({ type: "CHANGE_FULL_HISTORY_LIST" })
+                  context.updateSearchWorksModelIdAndName(null, null)
+                }}
+                className="flex-none"
+                value="HISTORY_LIST_FULL"
+              >
+                {t("履歴", "History")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  send({ type: "CHANGE_FULL_WORK_LIST" })
+                  context.updateSearchWorksModelIdAndName(null, null)
+                }}
+                className="flex-none"
+                value="WORK_LIST_FULL"
+              >
+                {t("検索", "Search")}
+              </TabsTrigger>
+            </TabsList>
+          </div>
         </Tabs>
       ) : (
         <Tabs value={state.toString()} defaultValue={"PROMPT_VIEW"}>
-          <TabsList>
-            <TabsTrigger
-              onClick={() => {
-                send({ type: "CLOSE" })
-              }}
-              className="w-full"
-              value="PROMPT_VIEW"
-            >
-              {t("履歴", "History")}
-            </TabsTrigger>
-            <TabsTrigger
-              onClick={() => {
-                send({ type: "OPEN_WORKS_FROM_MODEL" })
-              }}
-              className="w-full"
-              value="WORKS_FROM_MODEL"
-            >
-              {t("作品検索", "Search posts")}
-            </TabsTrigger>
-            <TabsTrigger
-              onClick={() => {
-                send({ type: "OPEN_COMMUNICATION" })
-              }}
-              className="w-full"
-              value="COMMUNICATION"
-            >
-              {t("ご意見", "Feedback")}
-            </TabsTrigger>
-            <TabsTrigger
-              onClick={() => {
-                send({ type: "OPEN_LINKS" })
-              }}
-              className="w-full"
-              value="LINKS"
-            >
-              {t("アンケート", "Survey")}
-            </TabsTrigger>
-            <TabsTrigger
-              onClick={() => {
-                if (typeof document !== "undefined") {
-                  window.location.href =
-                    "https://legacy.aipictors.com/generate/"
-                }
-              }}
-              className="w-full"
-              value="OLD_LINK"
-            >
-              {t("旧版", "Old")}
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto">
+            <TabsList className="justify-start gap-1 whitespace-nowrap">
+              <TabsTrigger
+                onClick={() => {
+                  send({ type: "CLOSE" })
+                }}
+                className="flex-none"
+                value="PROMPT_VIEW"
+              >
+                {t("履歴", "History")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  send({ type: "OPEN_WORKS_FROM_MODEL" })
+                }}
+                className="flex-none"
+                value="WORKS_FROM_MODEL"
+              >
+                {t("作品検索", "Search posts")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  send({ type: "OPEN_COMMUNICATION" })
+                }}
+                className="flex-none"
+                value="COMMUNICATION"
+              >
+                {t("ご意見", "Feedback")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  send({ type: "OPEN_LINKS" })
+                }}
+                className="flex-none"
+                value="LINKS"
+              >
+                {t("アンケート", "Survey")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  send({ type: "OPEN_LOGS" })
+                }}
+                className="flex-none"
+                value="LOGS"
+              >
+                {t("ログ", "Logs")}
+              </TabsTrigger>
+            </TabsList>
+          </div>
         </Tabs>
       )}
+      {/* ログ内容は aside 側で表示するため、ここでは描画しない */}
     </>
   )
 }
