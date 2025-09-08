@@ -244,6 +244,7 @@ export function GenerationTaskList(props: Props) {
               isActiveButtonStyle={true}
               allowExtendedPagination={true}
               maxPages={getMaxPagesByPlan(queryData.currentPass?.type)}
+              disableScrollToTop={true}
             />
             <PlanUpgradePrompt currentPlan={queryData.currentPass?.type} />
           </>

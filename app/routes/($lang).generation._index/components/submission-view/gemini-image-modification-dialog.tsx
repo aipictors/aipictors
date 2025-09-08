@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "~/components/ui/button"
 import { Textarea } from "~/components/ui/textarea"
 import {
@@ -19,6 +19,12 @@ import {
   logError,
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import type { GeminiImageSize } from "~/types/gemini-image-generation"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "~/components/ui/sheet"
 
 type AiTaskResult = {
   id: string
@@ -270,6 +276,52 @@ export function GeminiImageModificationDialog(props: Props) {
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const t = useTranslation()
 
+  // ------- モバイル判定とキーボード回避 -------
+  const [isMobile, setIsMobile] = useState(false)
+  const [bottomInset, setBottomInset] = useState(0)
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+
+  useEffect(() => {
+    // クライアントでのみ実行
+    const mq = typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 767px)")
+      : null
+    const update = () => setIsMobile(Boolean(mq?.matches))
+    update()
+    mq?.addEventListener("change", update)
+    return () => mq?.removeEventListener("change", update)
+  }, [])
+
+  useEffect(() => {
+    if (!isMobile || !props.isOpen) return
+    const vv: VisualViewport | undefined =
+      typeof window !== "undefined" ? window.visualViewport ?? undefined : undefined
+    if (!vv) return
+
+    const onResize = () => {
+      try {
+        // キーボード表示時に下部が隠れる分の高さを推定
+        const keyboardHeight = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop))
+        setBottomInset(Math.ceil(keyboardHeight))
+      } catch {
+        // ignore
+      }
+    }
+    onResize()
+    vv.addEventListener("resize", onResize)
+    vv.addEventListener("scroll", onResize)
+    return () => {
+      vv.removeEventListener("resize", onResize)
+      vv.removeEventListener("scroll", onResize)
+    }
+  }, [isMobile, props.isOpen])
+
+  const handleTextareaFocus = () => {
+    // テキストエリアを見える位置にスクロール
+    textareaRef.current?.scrollIntoView({ block: "center", behavior: "smooth" })
+  }
+
   const [createAiTask] = useMutation<{
     createGeminiImageGenerationTask: AiTaskResult
   }>(createGeminiImageGenerationTaskMutation)
@@ -475,6 +527,72 @@ export function GeminiImageModificationDialog(props: Props) {
     } finally {
       setIsCreatingTask(false)
     }
+  }
+
+  // ------- モバイルでは下部シート、デスクトップは従来のダイアログ -------
+  if (isMobile) {
+    return (
+      <Sheet open={props.isOpen} onOpenChange={(open) => !open && props.onClose()}>
+        <SheetContent side="bottom" className="h-[100svh] max-h-[100svh] w-full p-0">
+          <div className="flex h-full flex-col">
+            <SheetHeader className="border-b p-4">
+              <SheetTitle>{t("AI画像修正", "AI Image Modification")}</SheetTitle>
+            </SheetHeader>
+            <div
+              ref={scrollRef}
+              className="flex-1 overflow-y-auto p-4"
+              style={{ paddingBottom: bottomInset ? bottomInset + 24 : undefined }}
+            >
+              {/* 元画像プレビュー */}
+              <div className="mb-4 flex justify-center">
+                <img
+                  src={props.imageUrl}
+                  alt="Generated content"
+                  className="max-h-64 max-w-full rounded-lg border"
+                />
+              </div>
+
+              {/* 修正指示入力 */}
+              <div className="space-y-2">
+                <Label htmlFor="modification-prompt">
+                  {t("修正内容", "Modification Instructions")}
+                </Label>
+                {/* biome-ignore lint/nursery/useUniqueElementIds: false positive */}
+                <Textarea
+                  id="modification-prompt"
+                  ref={textareaRef}
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onFocus={handleTextareaFocus}
+                  placeholder={t(
+                    "どのように画像を修正(5枚消費)したいかを詳しく説明してください...",
+                    "Please describe in detail how you want to modify the image...",
+                  )}
+                  className="min-h-32 scroll-mb-24"
+                  maxLength={2000}
+                />
+                <div className="text-right text-muted-foreground text-sm">
+                  {prompt.length} / 2000
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 border-t p-4">
+              <Button variant="outline" onClick={props.onClose} disabled={isCreatingTask}>
+                {t("キャンセル", "Cancel")}
+              </Button>
+              <Button onClick={handleSubmit} disabled={isCreatingTask || !prompt.trim()}>
+                {isCreatingTask && (
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {isCreatingTask
+                  ? t("修正中...", "Modifying...")
+                  : t("画像を修正(5枚消費)", "Modify Image")}
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    )
   }
 
   return (
