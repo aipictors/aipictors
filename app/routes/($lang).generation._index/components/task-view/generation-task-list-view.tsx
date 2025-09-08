@@ -248,6 +248,7 @@ export function GenerationTaskListView(props: Props) {
           setHidedTaskIds={setHidedTaskIds}
           setSelectedTaskIds={setSelectedTaskIds}
           thumbnailSize={thumbnailSize()}
+          onRefresh={onRefresh}
         />
       )}
       {/* </Suspense> */}

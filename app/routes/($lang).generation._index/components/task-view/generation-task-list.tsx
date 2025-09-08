@@ -19,6 +19,7 @@ import { graphql, type FragmentOf } from "gql.tada"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { toast } from "sonner"
+import { MobilePullToRefresh } from "~/routes/($lang).generation._index/components/task-view/mobile-pull-to-refresh"
 
 type Props = {
   rating: number
@@ -38,6 +39,7 @@ type Props = {
   setSelectedTaskIds: (selectedTaskIds: string[]) => void
   onCancel?(): void
   setHidedTaskIds: (hidedTaskIds: string[]) => void
+  onRefresh?: () => Promise<void> | void
 }
 
 /**
@@ -159,56 +161,70 @@ export function GenerationTaskList(props: Props) {
     .filter((task) => task.status === "DONE" && task.nanoid)
     .map((task) => task.id)
 
+  const Grid = (
+    <div
+      className={cn("grid gap-2 pt-0 md:max-h-[calc(72vh-128px)]", {
+        "grid-cols-0": props.thumbnailSize === 10,
+        "grid-cols-1": props.thumbnailSize === 9,
+        "grid-cols-2": props.thumbnailSize === 8,
+        "grid-cols-3": props.thumbnailSize === 7,
+        "grid-cols-4": props.thumbnailSize === 6,
+        "grid-cols-5": props.thumbnailSize === 5,
+        "grid-cols-6": props.thumbnailSize === 4,
+        "grid-cols-7": props.thumbnailSize === 3,
+        "grid-cols-8": props.thumbnailSize === 2,
+        "grid-cols-9": props.thumbnailSize === 1,
+        "grid-cols-10": props.thumbnailSize === 10,
+      })}
+    >
+      {combinedTasks.map((task) => (
+        <ErrorBoundary key={task.id} fallback={<ErrorResultCard />}>
+          <Suspense fallback={<FallbackTaskCard />}>
+            <GenerationTaskCard
+              task={task}
+              taskIds={taskIdList}
+              taskContentPositionType={props.taskContentPositionType}
+              isEditMode={props.isEditMode}
+              isPreviewByHover={props.isPreviewMode}
+              isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
+              sizeType={props.thumbnailSize}
+              isDialog={state === "HISTORY_LIST_FULL"}
+              rating={props.rating}
+              selectedTaskIds={props.selectedTaskIds}
+              userToken={props.userToken}
+              onClick={() => onSelectTask(task.nanoid, task.status)}
+              onCancel={props.onCancel}
+              onRestore={onRestore}
+              onSelectTask={onSelectTask}
+              onDelete={onDelete}
+            />
+          </Suspense>
+        </ErrorBoundary>
+      ))}
+    </div>
+  )
+
   return (
     <>
-      <ScrollArea type="always" className="md:px-4">
-        {/* <Suspense fallback={<AppLoadingPage />}> */}
-        <div
-          className={cn(
-            "grid gap-2 pt-0",
-            {
-              "grid-cols-0": props.thumbnailSize === 10,
-              "grid-cols-1": props.thumbnailSize === 9,
-              "grid-cols-2": props.thumbnailSize === 8,
-              "grid-cols-3": props.thumbnailSize === 7,
-              "grid-cols-4": props.thumbnailSize === 6,
-              "grid-cols-5": props.thumbnailSize === 5,
-              "grid-cols-6": props.thumbnailSize === 4,
-              "grid-cols-7": props.thumbnailSize === 3,
-              "grid-cols-8": props.thumbnailSize === 2,
-              "grid-cols-9": props.thumbnailSize === 1,
-              "grid-cols-10": props.thumbnailSize === 10,
-            },
-            "max-h-96 md:max-h-[calc(72vh-128px)]",
-          )}
+      {/* モバイル: プル・トゥ・リフレッシュ付きスクロール */}
+      <div className="md:hidden">
+        <MobilePullToRefresh
+          onRefresh={props.onRefresh}
+          scrollContainerClassName="max-h-96 px-2"
         >
-          {combinedTasks.map((task) => (
-            <ErrorBoundary key={task.id} fallback={<ErrorResultCard />}>
-              <Suspense fallback={<FallbackTaskCard />}>
-                <GenerationTaskCard
-                  task={task}
-                  taskIds={taskIdList}
-                  taskContentPositionType={props.taskContentPositionType}
-                  isEditMode={props.isEditMode}
-                  isPreviewByHover={props.isPreviewMode}
-                  isSelected={props.selectedTaskIds.includes(task.nanoid ?? "")}
-                  sizeType={props.thumbnailSize}
-                  isDialog={state === "HISTORY_LIST_FULL"}
-                  rating={props.rating}
-                  selectedTaskIds={props.selectedTaskIds}
-                  userToken={props.userToken}
-                  onClick={() => onSelectTask(task.nanoid, task.status)}
-                  onCancel={props.onCancel}
-                  onRestore={onRestore}
-                  onSelectTask={onSelectTask}
-                  onDelete={onDelete}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          ))}
-        </div>
-        {/* </Suspense> */}
-      </ScrollArea>
+          {Grid}
+        </MobilePullToRefresh>
+      </div>
+
+      {/* デスクトップ: 既存の ScrollArea */}
+      <div className="hidden md:block">
+        <ScrollArea type="always" className="md:px-4">
+          {/* <Suspense fallback={<AppLoadingPage />}> */}
+          {Grid}
+          {/* </Suspense> */}
+        </ScrollArea>
+      </div>
+
       <div className="space-y-3 p-2 pb-4 md:pb-4">
         {props.protect !== 1 && (
           <>
