@@ -25,7 +25,7 @@ import { ErrorBoundary } from "react-error-boundary"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { GenerationTaskError } from "~/routes/($lang).generation._index/components/task-view/generation-task-error"
 import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
-import { AiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/ai-image-modification-dialog"
+import { GeminiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/gemini-image-modification-dialog"
 import { CopyButton } from "~/routes/($lang).generation._index/components/copy-button"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql, type FragmentOf } from "gql.tada"
@@ -454,7 +454,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
         </div>
       </ScrollArea>
       {props.task.imageUrl && userToken && (
-        <AiImageModificationDialog
+        <GeminiImageModificationDialog
           isOpen={props.showAiModificationDialog}
           onClose={() => props.setShowAiModificationDialog(false)}
           taskId={props.task.id}

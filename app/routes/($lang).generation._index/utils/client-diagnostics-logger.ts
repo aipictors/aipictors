@@ -28,7 +28,9 @@ const sanitizeEntry = (entry: LogEntry): LogEntry => {
     return {
       ...entry,
       details:
-        typeof entry.details === "undefined" ? undefined : redact(entry.details),
+        typeof entry.details === "undefined"
+          ? undefined
+          : redact(entry.details),
     }
   } catch {
     return { ...entry, details: undefined }

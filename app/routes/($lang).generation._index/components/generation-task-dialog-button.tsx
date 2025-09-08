@@ -1,5 +1,5 @@
 import { Dialog, DialogContent } from "~/components/ui/dialog"
-import { AiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/ai-image-modification-dialog"
+import { GeminiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/gemini-image-modification-dialog"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
 import {
@@ -73,7 +73,7 @@ export function GenerationTaskDialogButton(props: Props) {
           props.userToken &&
           props.task.imageUrl &&
           userNanoid && (
-            <AiImageModificationDialog
+            <GeminiImageModificationDialog
               isOpen={showAiModificationDialog}
               onClose={() => setShowAiModificationDialog(false)}
               taskId={props.task.id}
