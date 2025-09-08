@@ -22,6 +22,19 @@ const redact = (value: unknown): unknown => {
   return redactDiagnostics(value)
 }
 
+// localStorageから読み出したエントリを安全化
+const sanitizeEntry = (entry: LogEntry): LogEntry => {
+  try {
+    return {
+      ...entry,
+      details:
+        typeof entry.details === "undefined" ? undefined : redact(entry.details),
+    }
+  } catch {
+    return { ...entry, details: undefined }
+  }
+}
+
 const loadInitial = () => {
   try {
     const raw =
@@ -31,7 +44,7 @@ const loadInitial = () => {
     if (!raw) return
     const data = JSON.parse(raw) as LogEntry[]
     if (Array.isArray(data)) {
-      logs = data
+      logs = data.map(sanitizeEntry)
     }
   } catch {
     // noop
@@ -46,7 +59,7 @@ const syncFromStorage = () => {
     if (!raw) return
     const data = JSON.parse(raw) as LogEntry[]
     if (Array.isArray(data)) {
-      logs = data
+      logs = data.map(sanitizeEntry)
     }
   } catch {
     // noop
