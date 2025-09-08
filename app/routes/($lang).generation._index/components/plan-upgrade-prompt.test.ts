@@ -42,7 +42,7 @@ const mockPlanUpgradePrompt = ({
 
 test("無料プランの場合、ライトプランへのアップグレードを促すメッセージが表示される", () => {
   const result = mockPlanUpgradePrompt({ currentPlan: null })
-  
+
   expect(result.planName).toBe("無料")
   expect(result.upgradeMessage).toBe("ライトで30ページまで")
   expect(result.shouldShow).toBe(true)
@@ -50,7 +50,7 @@ test("無料プランの場合、ライトプランへのアップグレード�
 
 test("ライトプランの場合、スタンダードプランへのアップグレードを促すメッセージが表示される", () => {
   const result = mockPlanUpgradePrompt({ currentPlan: "LITE" })
-  
+
   expect(result.planName).toBe("ライト")
   expect(result.upgradeMessage).toBe("スタンダードで50ページまで")
   expect(result.shouldShow).toBe(true)
@@ -58,7 +58,7 @@ test("ライトプランの場合、スタンダードプランへのアップ�
 
 test("スタンダードプランの場合、プレミアムプランへのアップグレードを促すメッセージが表示される", () => {
   const result = mockPlanUpgradePrompt({ currentPlan: "STANDARD" })
-  
+
   expect(result.planName).toBe("スタンダード")
   expect(result.upgradeMessage).toBe("プレミアムで100ページまで")
   expect(result.shouldShow).toBe(true)
