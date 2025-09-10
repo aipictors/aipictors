@@ -1,3 +1,5 @@
+import { truncateText } from "~/utils/truncate-text"
+
 export interface PNGChunk {
   keyword: string
   text: string
@@ -135,13 +137,29 @@ const extractInfoFromPNG = (file: File): Promise<PNGChunk[]> => {
 const getPngInfo = (chunks: PNGChunk[]): string => {
   // 一つの文字列にする
   const info = chunks.map((e) => `${e.keyword}: ${e.text}`).join("\n")
+  
+  // 10000文字を超える場合は省略
+  if (info.length > 10000) {
+    return `${info.substring(0, 10000)}...`
+  }
+  
   return info
 }
 
 const exchangeFromPNGItem = (item: PNGItem): ImageParameters => {
+  // 文字列を10000文字で省略する関数
+  const truncateText = (
+    text: string | undefined,
+    maxLength = 10000,
+  ): string => {
+    if (!text) return ""
+    if (text.length <= maxLength) return text
+    return `${text.substring(0, maxLength)}...`
+  }
+
   const parameters: ImageParameters = {
-    prompt: item.prompt ?? "",
-    negativePrompt: item.negativePrompt ?? "",
+    prompt: truncateText(item.prompt),
+    negativePrompt: truncateText(item.negativePrompt),
     seed: item.seed ?? "",
     steps: item.steps ?? "",
     strength: item.strength ?? "",
@@ -278,7 +296,14 @@ const objectToText = (obj: Record<string, string | number>): string => {
     )
     .join("\n")
 
-  return `${text}\n`
+  const result = `${text}\n`
+  
+  // 10000文字を超える場合は省略
+  if (result.length > 10000) {
+    return `${result.substring(0, 10000)}...`
+  }
+
+  return result
 }
 
 const controlCodeToSpace = (str: string): string => {
