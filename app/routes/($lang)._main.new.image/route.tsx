@@ -61,6 +61,7 @@ export default function NewImage() {
 
   const { data: viewerData, loading } = useQuery(ViewerQuery, {
     skip: !authContext.isLoggedIn,
+    fetchPolicy: "cache-and-network", // お題データの最新状態を取得するためキャッシュを無効化
     variables: {
       offset: 0,
       limit: 128,
