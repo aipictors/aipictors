@@ -185,7 +185,7 @@ simple background, white background,ahoge, full body, gravure pose, looking at v
             <div className="mt-4">
               <Button asChild className="bg-purple-600 hover:bg-purple-700">
                 <a
-                  href="https://discord.gg/MhZn9daW"
+                  href="https://discord.gg/7jA2MmtvtR"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
