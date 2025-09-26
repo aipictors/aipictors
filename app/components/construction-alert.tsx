@@ -45,7 +45,7 @@ export function ConstructionAlert(props: Props) {
               {t("旧バージョンへ", "Go to the old version")}
             </Button>
           </Link>
-          <Link to="https://discord.gg/Dxsx2mSc">
+          <Link to="https://discord.gg/7jA2MmtvtR">
             <Button size="sm" variant="secondary">
               {t("不具合報告", "Report a bug")}
             </Button>

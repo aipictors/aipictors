@@ -502,7 +502,7 @@ export function WakiAiAiEventPage() {
                   </Button>
                 </a>
                 <a
-                  href="https://discord.gg/Z5UPtTSwmV"
+                  href="https://discord.gg/7jA2MmtvtR"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

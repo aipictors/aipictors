@@ -30,7 +30,11 @@ export function GenerationLinksView() {
             />
           </Link>
         )}
-        <Link to="https://discord.gg/Dxsx2mSc" target="_blank" rel="noreferrer">
+        <Link
+          to="https://discord.gg/7jA2MmtvtR"
+          target="_blank"
+          rel="noreferrer"
+        >
           <img
             src="https://assets.aipictors.com/aipictors-link-banner-discord.webp"
             alt="discord"

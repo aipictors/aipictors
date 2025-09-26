@@ -790,7 +790,7 @@ export function HelpArticle() {
                     </ul>
                     <div className="mt-3">
                       <a
-                        href="https://discord.gg/Dxsx2mSc"
+                        href="https://discord.gg/7jA2MmtvtR"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-sm text-white transition-colors hover:bg-blue-700"
