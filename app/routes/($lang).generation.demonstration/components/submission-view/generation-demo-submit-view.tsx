@@ -17,6 +17,7 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { graphql } from "gql.tada"
 import { GenerationDemoSubmitOperationParts } from "~/routes/($lang).generation.demonstration/components/submission-view/generation-demo-submit-operation-parts"
 import type { GeminiImageSize } from "~/types/gemini-image-generation"
+import { useIpAddress } from "~/hooks/use-ip-address"
 
 /**
  * UIサイズタイプをGeminiImageSizeに変換する
@@ -67,6 +68,9 @@ export function GenerationDemoSubmissionView(props: Props) {
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
   const { data: tokenData } = useQuery(ViewerTokenQuery)
+
+  // IPアドレス取得（バックエンド側でスキーマ更新後に有効化）
+  const { ipInfo } = useIpAddress()
 
   const { data: pass, refetch: refetchPass } = useQuery(
     viewerCurrentPassQuery,
@@ -613,6 +617,7 @@ export function GenerationDemoSubmissionView(props: Props) {
                 prompt: promptsTexts[i],
                 size: convertToGeminiImageSize(context.config.sizeType),
                 imageUrl: i2iFileUrl || null,
+                ipaddress: ipInfo?.ip || null,
               },
             },
           })

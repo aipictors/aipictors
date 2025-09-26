@@ -21,6 +21,7 @@ import { toast } from "sonner"
 import { Loader2, Sparkles } from "lucide-react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { CREATE_CHARACTER_EXPRESSION } from "../queries"
+import { useIpAddress } from "~/hooks/use-ip-address"
 
 type Character = {
   id: string
@@ -88,6 +89,9 @@ export function AddExpressionDialog({
     "SQUARE_512" | "SQUARE_768" | "SQUARE_1024" | "LANDSCAPE" | "PORTRAIT"
   >("SQUARE_512")
 
+  // IPアドレス取得
+  const { ipInfo } = useIpAddress()
+
   const [createExpression, { loading }] = useMutation(
     CREATE_CHARACTER_EXPRESSION,
     {
@@ -124,6 +128,8 @@ export function AddExpressionDialog({
           characterId: character.nanoid,
           expressionName: expressionName.trim(),
           size: size,
+          // TODO: IPアドレスを追加（GraphQL スキーマ更新後に有効化）
+          ipaddress: ipInfo?.ip || null,
         },
       },
     } as never)

@@ -19,6 +19,7 @@ import { CREATE_EXPRESSIONS_FROM_IMAGE } from "../queries"
 import { toast } from "sonner"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { X, Upload, Sparkles } from "lucide-react"
+import { useIpAddress } from "~/hooks/use-ip-address"
 
 type Props = {
   userToken?: string | null
@@ -61,6 +62,9 @@ export function CharacterGenerationForm(props: Props) {
   const [size, setSize] = useState<ExpressionSize>("SQUARE_512")
   const [backgroundColor, setBackgroundColor] = useState<string | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+
+  // IPアドレス取得
+  const { ipInfo } = useIpAddress()
 
   const [createExpressions] = useMutation(CREATE_EXPRESSIONS_FROM_IMAGE)
 
@@ -142,6 +146,7 @@ export function CharacterGenerationForm(props: Props) {
             expressions: selectedExpressions,
             size: size,
             backgroundColor: backgroundColor,
+            ipaddress: ipInfo?.ip || null,
           },
         },
       } as Parameters<typeof createExpressions>[0])

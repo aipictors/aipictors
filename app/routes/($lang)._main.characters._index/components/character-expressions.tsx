@@ -18,6 +18,7 @@ import {
   CHARACTER_WITH_EXPRESSIONS,
   CREATE_CHARACTER_EXPRESSION,
 } from "../queries"
+import { useIpAddress } from "~/hooks/use-ip-address"
 
 type Props = {
   characterId: string
@@ -74,6 +75,9 @@ export function CharacterExpressions(props: Props) {
   const [newExpressionsFound, setNewExpressionsFound] = useState(0)
   const [showSuccessBanner, setShowSuccessBanner] = useState(false)
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  // IPアドレス取得
+  const { ipInfo } = useIpAddress()
 
   // キャラクター詳細を取得するクエリ（ポーリング用）
   const { refetch: refetchCharacter } = useQuery(CHARACTER_WITH_EXPRESSIONS, {
@@ -166,6 +170,7 @@ export function CharacterExpressions(props: Props) {
             characterId: character.id,
             expressionName: newExpressionName.trim(),
             size: selectedSize,
+            ipaddress: ipInfo?.ip || null,
           },
         },
       })

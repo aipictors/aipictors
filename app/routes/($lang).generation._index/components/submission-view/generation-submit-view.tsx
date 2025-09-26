@@ -23,6 +23,7 @@ import {
   logWarn,
   logError,
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
+import { useIpAddress } from "~/hooks/use-ip-address"
 
 /**
  * UIサイズタイプをGeminiImageSizeに変換する
@@ -73,6 +74,9 @@ export function GenerationSubmissionView(props: Props) {
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
 
   const { data: tokenData } = useQuery(ViewerTokenQuery)
+
+  // IPアドレス取得
+  const { ipInfo } = useIpAddress()
 
   const { data: pass, refetch: refetchPass } = useQuery(
     viewerCurrentPassQuery,
@@ -790,6 +794,7 @@ export function GenerationSubmissionView(props: Props) {
               controlNetModel: context.config.controlNetModel,
               controlNetModule: context.config.controlNetModule,
               upscaleSize: context.config.upscaleSize,
+              ipaddress: ipInfo?.ip || null,
             },
           },
         })
@@ -819,6 +824,7 @@ export function GenerationSubmissionView(props: Props) {
                 sizeType: context.config
                   .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
                 modelName: modelName,
+                ipaddress: ipInfo?.ip || null,
               },
             },
           })
@@ -844,6 +850,7 @@ export function GenerationSubmissionView(props: Props) {
                 prompt: promptsTexts[i],
                 size: convertToGeminiImageSize(context.config.sizeType),
                 imageUrl: i2iFileUrl || null,
+                ipaddress: ipInfo?.ip || null,
               },
             },
           })
@@ -891,6 +898,7 @@ export function GenerationSubmissionView(props: Props) {
                 controlNetModel: context.config.controlNetModel,
                 controlNetModule: context.config.controlNetModule,
                 upscaleSize: context.config.upscaleSize,
+                ipaddress: ipInfo?.ip || null,
               },
             },
           })

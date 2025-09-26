@@ -13,6 +13,7 @@ import { toast } from "sonner"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 import { Loader2Icon } from "lucide-react"
+import { useIpAddress } from "~/hooks/use-ip-address"
 
 type AiTaskResult = {
   id: string
@@ -93,6 +94,9 @@ export function AiImageModificationDialog(props: Props) {
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const t = useTranslation()
 
+  // IPアドレス取得（バックエンド側でスキーマ更新後に有効化）
+  const { ipInfo } = useIpAddress()
+
   const [createAiTask] = useMutation<{
     createGeminiImageGenerationTask: AiTaskResult
   }>(createAiImageGenerationTaskMutation)
@@ -120,6 +124,7 @@ export function AiImageModificationDialog(props: Props) {
             prompt: prompt,
             imageUrl: props.imageUrl,
             size: optimalSize,
+            ipaddress: ipInfo?.ip || null,
           },
         },
       })
