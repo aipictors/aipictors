@@ -94,4 +94,4 @@ README 以外にも、[docs](/docs)ディレクトリにドキュメントがあ
 # 📣 不具合 / ご意見ご要望
 
 不具合の報告は[こちらから](https://github.com/aipictors/aipictors/issues/new/choose)(GitHub アカウントが必要)。
-その他、ご意見ご要望は[Discord](https://discord.gg/hcQggQEYfn)で受け付けています。
+その他、ご意見ご要望は[Discord](https://discord.gg/Dxsx2mSc)で受け付けています。
