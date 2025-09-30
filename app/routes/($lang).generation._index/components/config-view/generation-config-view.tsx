@@ -8,6 +8,9 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { config } from "~/config"
+import { Link } from "@remix-run/react"
+import { Button } from "~/components/ui/button"
+import { Sparkles } from "lucide-react"
 import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/components/config-view/generation-config-clip-skip"
 import { GenerationConfigControlNet } from "~/routes/($lang).generation._index/components/config-view/generation-config-control-net"
 import { GenerationConfigCount } from "~/routes/($lang).generation._index/components/config-view/generation-config-count"
@@ -180,6 +183,17 @@ export function GenerationConfigView() {
           <GenerationConfigUpscale />
           <Separator />
           <GenerationConfigI2i />
+          <Separator />
+          {/* キャラクター表情生成へのリンク */}
+          <Link to="/characters" className="block">
+            <Button
+              variant="outline"
+              className="w-full justify-start border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 text-primary hover:border-primary/30 hover:from-primary/10 hover:to-secondary/10"
+            >
+              <Sparkles className="mr-2 h-4 w-4" />
+              {t("キャラクター表情生成", "Character Expression Generation")}
+            </Button>
+          </Link>
           <Separator />
           <GenerationConfigControlNet />
           <Separator />
