@@ -1,4 +1,11 @@
-import { Download, Image, Plus, ArrowLeft, CheckCircle } from "lucide-react"
+import {
+  Download,
+  Image,
+  Plus,
+  ArrowLeft,
+  CheckCircle,
+  FolderDown,
+} from "lucide-react"
 import { useState, useEffect, useRef } from "react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
@@ -17,8 +24,10 @@ import { useQuery, useMutation } from "@apollo/client/index"
 import {
   CHARACTER_WITH_EXPRESSIONS,
   CREATE_CHARACTER_EXPRESSION,
+  VIEWER_CURRENT_PASS,
 } from "../queries"
 import { useIpAddress } from "~/hooks/use-ip-address"
+import JSZip from "jszip"
 
 type Props = {
   characterId: string
@@ -74,10 +83,14 @@ export function CharacterExpressions(props: Props) {
   )
   const [newExpressionsFound, setNewExpressionsFound] = useState(0)
   const [showSuccessBanner, setShowSuccessBanner] = useState(false)
+  const [isBulkDownloading, setIsBulkDownloading] = useState(false)
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // IPアドレス取得
   const { ipInfo } = useIpAddress()
+
+  // 残り生成枚数取得
+  const { data: passData } = useQuery(VIEWER_CURRENT_PASS)
 
   // キャラクター詳細を取得するクエリ（ポーリング用）
   const { refetch: refetchCharacter } = useQuery(CHARACTER_WITH_EXPRESSIONS, {
@@ -191,7 +204,7 @@ export function CharacterExpressions(props: Props) {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `${character.name}_${expression.expressionName}.jpg`
+      a.download = `${character.name}_${expression.expressionName}.png`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -201,6 +214,55 @@ export function CharacterExpressions(props: Props) {
     } catch (error) {
       console.error("Download failed:", error)
       alert("画像のダウンロードに失敗しました")
+    }
+  }
+
+  const handleBulkDownload = async () => {
+    const expressionsWithImages = expressions.filter((expr) => expr.imageUrl)
+
+    if (expressionsWithImages.length === 0) {
+      alert("ダウンロードできる画像がありません")
+      return
+    }
+
+    setIsBulkDownloading(true)
+
+    try {
+      const zip = new JSZip()
+
+      // 各表情画像をZIPに追加
+      for (const expression of expressionsWithImages) {
+        if (expression.imageUrl) {
+          try {
+            const response = await fetch(expression.imageUrl)
+            const blob = await response.blob()
+            zip.file(`${expression.expressionName}.png`, blob)
+          } catch (error) {
+            console.error(
+              `Failed to download ${expression.expressionName}:`,
+              error,
+            )
+          }
+        }
+      }
+
+      // ZIPファイルを生成してダウンロード
+      const zipBlob = await zip.generateAsync({ type: "blob" })
+      const url = window.URL.createObjectURL(zipBlob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `${character.name}_expressions.zip`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+
+      alert(`${character.name}の表情画像をまとめてダウンロードしました`)
+    } catch (error) {
+      console.error("Bulk download failed:", error)
+      alert("一括ダウンロードに失敗しました")
+    } finally {
+      setIsBulkDownloading(false)
     }
   }
 
@@ -227,6 +289,18 @@ export function CharacterExpressions(props: Props) {
             </div>
           </div>
         </div>
+
+        {/* 一括ダウンロードボタン */}
+        {expressions.filter((expr) => expr.imageUrl).length > 0 && (
+          <Button
+            onClick={handleBulkDownload}
+            variant="outline"
+            disabled={isBulkDownloading}
+          >
+            <FolderDown className="mr-2 h-4 w-4" />
+            {isBulkDownloading ? "ダウンロード中..." : "一括ダウンロード"}
+          </Button>
+        )}
       </div>
 
       {/* キャラクター基本情報 */}
@@ -289,6 +363,24 @@ export function CharacterExpressions(props: Props) {
                   <span className="mt-1 text-center text-muted-foreground text-xs">
                     (サブスク:3枚/無料:4枚消費)
                   </span>
+                  {passData?.viewer?.currentPass &&
+                    typeof (
+                      passData.viewer.currentPass as {
+                        remainingImageGenerations?: number
+                      }
+                    ).remainingImageGenerations === "number" && (
+                      <span className="mt-1 text-center font-medium text-primary text-xs">
+                        残り
+                        {
+                          (
+                            passData.viewer.currentPass as {
+                              remainingImageGenerations: number
+                            }
+                          ).remainingImageGenerations
+                        }
+                        枚
+                      </span>
+                    )}
                 </div>
               </CardContent>
             </Card>
@@ -348,12 +440,32 @@ export function CharacterExpressions(props: Props) {
                 >
                   キャンセル
                 </Button>
-                <Button
-                  onClick={handleCreateExpression}
-                  disabled={creating || !newExpressionName.trim()}
-                >
-                  {creating ? "作成中..." : "表情を作成"}
-                </Button>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={handleCreateExpression}
+                    disabled={creating || !newExpressionName.trim()}
+                  >
+                    {creating ? "作成中..." : "表情を作成"}
+                  </Button>
+                  {passData?.viewer?.currentPass &&
+                    typeof (
+                      passData.viewer.currentPass as {
+                        remainingImageGenerations?: number
+                      }
+                    ).remainingImageGenerations === "number" && (
+                      <div className="text-center text-muted-foreground text-xs">
+                        残り生成可能枚数:{" "}
+                        {
+                          (
+                            passData.viewer.currentPass as {
+                              remainingImageGenerations: number
+                            }
+                          ).remainingImageGenerations
+                        }
+                        枚
+                      </div>
+                    )}
+                </div>
               </div>
             </div>
           </DialogContent>

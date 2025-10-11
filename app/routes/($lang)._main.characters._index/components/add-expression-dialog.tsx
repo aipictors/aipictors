@@ -16,11 +16,11 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { useState } from "react"
-import { useMutation } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { Loader2, Sparkles } from "lucide-react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
-import { CREATE_CHARACTER_EXPRESSION } from "../queries"
+import { CREATE_CHARACTER_EXPRESSION, VIEWER_CURRENT_PASS } from "../queries"
 import { useIpAddress } from "~/hooks/use-ip-address"
 
 type Character = {
@@ -91,6 +91,9 @@ export function AddExpressionDialog({
 
   // IPアドレス取得
   const { ipInfo } = useIpAddress()
+
+  // 残り生成枚数取得
+  const { data: passData } = useQuery(VIEWER_CURRENT_PASS)
 
   const [createExpression, { loading }] = useMutation(
     CREATE_CHARACTER_EXPRESSION,
@@ -233,13 +236,33 @@ export function AddExpressionDialog({
             <Button variant="outline" onClick={handleClose} disabled={loading}>
               キャンセル
             </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={loading || !expressionName.trim()}
-            >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              表情を生成
-            </Button>
+            <div className="flex flex-col items-end gap-1">
+              <Button
+                onClick={handleSubmit}
+                disabled={loading || !expressionName.trim()}
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                表情を生成
+              </Button>
+              {passData?.viewer?.currentPass &&
+                typeof (
+                  passData.viewer.currentPass as {
+                    remainingImageGenerations?: number
+                  }
+                ).remainingImageGenerations === "number" && (
+                  <div className="text-muted-foreground text-xs">
+                    残り:{" "}
+                    {
+                      (
+                        passData.viewer.currentPass as {
+                          remainingImageGenerations: number
+                        }
+                      ).remainingImageGenerations
+                    }
+                    枚
+                  </div>
+                )}
+            </div>
           </div>
         </div>
       </DialogContent>

@@ -13,9 +13,9 @@ import {
 import { Badge } from "~/components/ui/badge"
 import { useTranslation } from "~/hooks/use-translation"
 import { CropImageField } from "~/components/crop-image-field"
-import { useMutation } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { useState, useCallback } from "react"
-import { CREATE_EXPRESSIONS_FROM_IMAGE } from "../queries"
+import { CREATE_EXPRESSIONS_FROM_IMAGE, VIEWER_CURRENT_PASS } from "../queries"
 import { toast } from "sonner"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { X, Upload, Sparkles } from "lucide-react"
@@ -65,6 +65,9 @@ export function CharacterGenerationForm(props: Props) {
 
   // IPアドレス取得
   const { ipInfo } = useIpAddress()
+
+  // 残り生成枚数取得
+  const { data: passData } = useQuery(VIEWER_CURRENT_PASS)
 
   const [createExpressions] = useMutation(CREATE_EXPRESSIONS_FROM_IMAGE)
 
@@ -328,27 +331,47 @@ export function CharacterGenerationForm(props: Props) {
         </div>
 
         {/* 生成ボタン */}
-        <Button
-          onClick={handleGenerate}
-          disabled={
-            isGenerating || !baseImage || selectedExpressions.length === 0
-          }
-          className="w-full"
-          size="lg"
-        >
-          {isGenerating ? (
-            <>
-              <Upload className="mr-2 h-4 w-4 animate-spin" />
-              {t("生成中...", "Generating...")}
-            </>
-          ) : (
-            <>
-              <Sparkles className="mr-2 h-4 w-4" />
-              {t("表情を生成する", "Generate Expressions")} ({totalCost}{" "}
-              {t("枚", "points")})
-            </>
-          )}
-        </Button>
+        <div className="space-y-2">
+          <Button
+            onClick={handleGenerate}
+            disabled={
+              isGenerating || !baseImage || selectedExpressions.length === 0
+            }
+            className="w-full"
+            size="lg"
+          >
+            {isGenerating ? (
+              <>
+                <Upload className="mr-2 h-4 w-4 animate-spin" />
+                {t("生成中...", "Generating...")}
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-2 h-4 w-4" />
+                {t("表情を生成する", "Generate Expressions")} ({totalCost}{" "}
+                {t("枚", "points")})
+              </>
+            )}
+          </Button>
+          {passData?.viewer?.currentPass &&
+            typeof (
+              passData.viewer.currentPass as {
+                remainingImageGenerations?: number
+              }
+            ).remainingImageGenerations === "number" && (
+              <div className="text-center text-muted-foreground text-sm">
+                残り生成可能枚数:{" "}
+                {
+                  (
+                    passData.viewer.currentPass as {
+                      remainingImageGenerations: number
+                    }
+                  ).remainingImageGenerations
+                }
+                枚
+              </div>
+            )}
+        </div>
       </CardContent>
     </Card>
   )
