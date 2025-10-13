@@ -816,6 +816,21 @@ export const workArticleFragment =
   monthlyRanking
   relatedUrl
   nanoid
+  isBotGradingEnabled
+  isBotGradingPublic
+  botEvaluation {
+    cutenessScore
+    coolnessScore
+    beautyScore
+    originalityScore
+    compositionScore
+    colorScore
+    detailScore
+    consistencyScore
+    overallScore
+    comment
+    personality
+  }
 }`)
 
 export const WorkCommentFragment =
