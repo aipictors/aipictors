@@ -28,7 +28,6 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
-  mode?: "dialog" | "page"
 }
 
 /**
@@ -114,10 +113,7 @@ export function DraftWorkArticle(props: Props) {
         />
       )}
       {props.work.type === "VIDEO" && (
-        <WorkVideoView 
-          videoUrl={props.work.url ?? ""} 
-          mode={props.mode}
-        />
+        <WorkVideoView videoUrl={props.work.url ?? ""} />
       )}
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView
