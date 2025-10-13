@@ -15,6 +15,7 @@ import { WorkArticle } from "~/routes/($lang)._main.posts.$post._index/component
 import { WorkCommentSectionEnhanced } from "~/components/work/work-comment-section-final"
 import { WorkCommentInputFixed } from "~/components/work/work-comment-input-fixed"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
+import { AiEvaluationDisplay } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-display"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 // Note: Linkコンポーネントは使用しない（Portal内でReact Routerコンテキストが使用できないため）
 

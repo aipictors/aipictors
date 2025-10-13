@@ -32,6 +32,7 @@ import type { userSensitiveSettingFragment } from "~/routes/($lang)._main.r.post
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
   userSetting?: FragmentOf<typeof userSensitiveSettingFragment>
+  mode?: "dialog" | "page"
 }
 
 /**
@@ -117,7 +118,10 @@ export function SensitiveWorkArticle(props: Props) {
         />
       )}
       {props.work.type === "VIDEO" && (
-        <WorkVideoView videoUrl={props.work.url ?? ""} />
+        <WorkVideoView 
+          videoUrl={props.work.url ?? ""} 
+          mode={props.mode}
+        />
       )}
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView

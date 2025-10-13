@@ -120,7 +120,10 @@ export function WorkArticle(props: Props) {
         />
       )}
       {props.work.type === "VIDEO" && (
-        <WorkVideoView videoUrl={props.work.url ?? ""} />
+        <WorkVideoView 
+          videoUrl={props.work.url ?? ""} 
+          mode={props.mode}
+        />
       )}
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView
