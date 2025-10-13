@@ -9,8 +9,43 @@ import {
 } from "~/components/ui/carousel"
 import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 
+export const HomeBannerWorkFragment = graphql(
+  `fragment HomeBannerWork on WorkNode {
+    ...HomeGenerationBannerWork
+  }`,
+  [HomeGenerationBannerWorkFragment],
+)
+
+export const HomeOngoingEventFragment = graphql(
+  `fragment HomeOngoingEvent on AppEventNode {
+    id
+    title
+    slug
+    thumbnailImageUrl
+    startAt
+    endAt
+  }`,
+)
+
+type Banner = {
+  href: string
+  src: string
+  title?: string
+  blank?: boolean
+}
+
+type EventData = {
+  id: string
+  title: string
+  slug: string
+  thumbnailImageUrl: string
+  startAt: number
+  endAt: number
+}
+
 type Props = {
   works: FragmentOf<typeof HomeBannerWorkFragment>[]
+  ongoingEvents?: EventData[]
   onSelect?: (index: string) => void
 }
 
@@ -18,14 +53,13 @@ type Props = {
  * ホームのバナー
  */
 export function HomeBanners(props: Props) {
-  const banners = [
+  console.log("props.ongoingEvents:", props.ongoingEvents)
+
+  // 既存の固定バナー
+  const staticBanners: Banner[] = [
     {
       href: "/events/wakiaiai4",
       src: "https://assets.aipictors.com/cc52625d-887c-46f4-afbc-757b7655797f.webp",
-    },
-    {
-      href: "https://www.aipictors.com/events/2025-event-rainbow",
-      src: "https://assets.aipictors.com/rainbow-banner-2025.webp",
     },
     {
       href: "/generation",
@@ -38,46 +72,94 @@ export function HomeBanners(props: Props) {
     },
   ]
 
+  const banners = [...staticBanners]
+
   return (
     <Carousel opts={{ dragFree: true, loop: true, align: "start" }}>
       <CarouselContent className="flex gap-x-4">
-        {banners.map(({ href, src, blank }, i) => (
-          <CarouselItem key={i.toString()} className="flex-none">
+        {/* イベントバナー */}
+        {props.ongoingEvents?.map((event) => (
+          <CarouselItem
+            key={`event-${event.id}`}
+            className="flex-none basis-auto"
+          >
             {props.onSelect ? (
               <button
                 type="button"
-                className="block h-full w-full overflow-hidden rounded"
-                onClick={() => props.onSelect?.(i.toString())}
+                className="relative block overflow-hidden rounded"
+                onClick={() => props.onSelect?.(`event-${event.id}`)}
               >
                 <img
-                  src={src}
-                  alt={`home_banner_${i + 1}`}
-                  className="h-40 w-auto md:h-48"
+                  src={event.thumbnailImageUrl}
+                  alt={event.title}
+                  className="h-40 w-auto rounded object-cover md:h-48"
+                  onError={() => {
+                    console.error(
+                      `Failed to load event banner image: ${event.thumbnailImageUrl}`,
+                    )
+                    console.error("Event data:", event)
+                  }}
                 />
               </button>
             ) : (
-              <Link to={href} target={blank ? "_blank" : undefined}>
+              <Link to={`/events/${event.slug}`} className="relative block">
                 <img
-                  src={src}
-                  alt={`home_banner_${i + 1}`}
-                  className="h-40 w-auto md:h-48"
+                  src={event.thumbnailImageUrl}
+                  alt={event.title}
+                  className="h-40 w-auto rounded object-cover md:h-48"
+                  onError={() => {
+                    console.error(
+                      `Failed to load event banner image: ${event.thumbnailImageUrl}`,
+                    )
+                    console.error("Event data:", event)
+                  }}
+                />
+              </Link>
+            )}
+          </CarouselItem>
+        ))}
+        {/* 固定バナー */}
+        {banners.map((banner, i) => (
+          <CarouselItem key={i.toString()} className="flex-none basis-auto">
+            {props.onSelect ? (
+              <button
+                type="button"
+                className="relative block overflow-hidden rounded"
+                onClick={() => props.onSelect?.(i.toString())}
+              >
+                <img
+                  src={banner.src}
+                  alt={banner.title || `home_banner_${i + 1}`}
+                  className="h-40 w-auto rounded object-cover md:h-48"
+                  onError={() => {
+                    console.error(`Failed to load banner image: ${banner.src}`)
+                    console.error("Banner data:", banner)
+                  }}
+                />
+              </button>
+            ) : (
+              <Link
+                to={banner.href}
+                target={banner.blank ? "_blank" : undefined}
+                className="relative block"
+              >
+                <img
+                  src={banner.src}
+                  alt={banner.title || `home_banner_${i + 1}`}
+                  className="h-40 w-auto rounded object-cover md:h-48"
+                  onError={() => {
+                    console.error(`Failed to load banner image: ${banner.src}`)
+                    console.error("Banner data:", banner)
+                  }}
                 />
               </Link>
             )}
           </CarouselItem>
         ))}
       </CarouselContent>
-
       {/* ナビゲーションボタン */}
       <CarouselPrevious className="-translate-y-1/2 absolute top-1/2 left-0" />
       <CarouselNext className="-translate-y-1/2 absolute top-1/2 right-0" />
     </Carousel>
   )
 }
-
-export const HomeBannerWorkFragment = graphql(
-  `fragment HomeBannerWork on WorkNode {
-    ...HomeGenerationBannerWork
-  }`,
-  [HomeGenerationBannerWorkFragment],
-)

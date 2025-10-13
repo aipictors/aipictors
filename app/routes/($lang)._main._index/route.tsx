@@ -6,6 +6,7 @@ import {
 import {
   HomeBanners,
   HomeBannerWorkFragment,
+  HomeOngoingEventFragment,
 } from "~/routes/($lang)._main._index/components/home-banners"
 import {
   HomeTagList,
@@ -676,6 +677,7 @@ export default function Index() {
           {data.adWorks && data.adWorks.length > 0 && (
             <HomeBanners
               works={data.adWorks}
+              ongoingEvents={data.latestEvent ? [data.latestEvent] : []}
               onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
             />
           )}
@@ -1534,9 +1536,16 @@ const query = graphql(
     ) {
       ...HomeNewComments
     }
+    latestEvent: appEvents(
+      offset: 0,
+      limit: 1
+    ) {
+      ...HomeOngoingEvent
+    }
   }`,
   [
     HomeBannerWorkFragment,
+    HomeOngoingEventFragment,
     HomePromotionWorkFragment,
     HomeTagListItemFragment,
     HomeWorkAwardFragment,
