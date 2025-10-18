@@ -259,7 +259,7 @@ export function CharacterList(props: Props) {
       {showCampaignBanner && (
         <Alert className="border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50">
           <Sparkles className="h-4 w-4 text-yellow-600" />
-          <div className="flex items-center justify-between w-full">
+          <div className="flex w-full items-center justify-between">
             <AlertDescription className="flex-1 text-yellow-800">
               <strong>🎉 キャンペーン中！</strong>{" "}
               キャラクター表情生成が1回3クレジット消費で利用できます！

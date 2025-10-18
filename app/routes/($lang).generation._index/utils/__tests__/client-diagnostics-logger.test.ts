@@ -63,8 +63,7 @@ test("イベント発火で購読者が更新される", async () => {
 })
 
 test("機密情報やURLのクエリはマスクされる", () => {
-  const dataUrl =
-    "data:image/png;base64," + btoa("x".repeat(64)) // 適当なBase64
+  const dataUrl = `data:image/png;base64,${btoa("x".repeat(64))}` // 適当なBase64
   logInfo({
     source: "Test",
     message: "masking",
@@ -75,8 +74,7 @@ test("機密情報やURLのクエリはマスクされる", () => {
       url: "https://example.com/path?q=1#hash",
       dataUrl,
       jwt: "aaa.bbb.ccc",
-      longBase64:
-        "Q".repeat(300), // Base64風長文
+      longBase64: "Q".repeat(300), // Base64風長文
     },
   })
 

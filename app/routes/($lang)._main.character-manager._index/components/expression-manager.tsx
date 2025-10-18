@@ -205,14 +205,14 @@ export function ExpressionManager(props: Props) {
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 {expression.description}
               </p>
 
               <div>
                 <Label className="text-xs">プロンプト修飾子</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <code className="flex-1 p-2 text-xs bg-muted rounded font-mono">
+                <div className="mt-1 flex items-center gap-2">
+                  <code className="flex-1 rounded bg-muted p-2 font-mono text-xs">
                     {expression.promptModifier}
                   </code>
                   <Button

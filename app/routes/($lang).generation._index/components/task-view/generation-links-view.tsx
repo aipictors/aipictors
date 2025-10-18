@@ -17,7 +17,7 @@ export function GenerationLinksView() {
       <div className="min-h-96">
         {/* キャラクター表情生成へのリンク */}
         <Link to="/characters">
-          <div className="mb-4 rounded-md border-2 border-dashed border-primary/30 bg-gradient-to-r from-primary/5 to-secondary/5 p-4 transition-colors hover:border-primary/50 hover:from-primary/10 hover:to-secondary/10">
+          <div className="mb-4 rounded-md border-2 border-primary/30 border-dashed bg-gradient-to-r from-primary/5 to-secondary/5 p-4 transition-colors hover:border-primary/50 hover:from-primary/10 hover:to-secondary/10">
             <div className="flex items-center space-x-3">
               <div className="rounded-full bg-primary/20 p-2">
                 <span className="text-2xl">😊</span>

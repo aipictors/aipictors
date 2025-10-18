@@ -361,7 +361,10 @@ function applyBlurFilter(canvas: HTMLCanvasElement, intensity: number): void {
 /**
  * ガウシアンぼかしを適用
  */
-function applyGaussianBlur(canvas: HTMLCanvasElement, intensity: number): void {
+function _applyGaussianBlur(
+  canvas: HTMLCanvasElement,
+  intensity: number,
+): void {
   const ctx = canvas.getContext("2d")
   if (!ctx) return
 
@@ -489,7 +492,7 @@ function applyConvolutionFilter(
 /**
  * 広角補正フィルターを適用
  */
-function applyWideAngleCorrection(
+function _applyWideAngleCorrection(
   canvas: HTMLCanvasElement,
   intensity: number,
 ): void {
@@ -542,7 +545,7 @@ function applyWideAngleCorrection(
 /**
  * Camera Rawフィルターを適用
  */
-function applyCameraRawFilter(
+function _applyCameraRawFilter(
   data: Uint8ClampedArray,
   intensity: number,
 ): void {
@@ -570,7 +573,7 @@ function applyCameraRawFilter(
 /**
  * レンズ補正フィルターを適用
  */
-function applyLensCorrection(
+function _applyLensCorrection(
   canvas: HTMLCanvasElement,
   intensity: number,
 ): void {
@@ -621,7 +624,7 @@ function applyLensCorrection(
 /**
  * ゆがみフィルターを適用
  */
-function applyDistortionFilter(
+function _applyDistortionFilter(
   canvas: HTMLCanvasElement,
   intensity: number,
 ): void {
@@ -668,7 +671,7 @@ function applyDistortionFilter(
 /**
  * Vanishing Pointフィルターを適用
  */
-function applyVanishingPointFilter(
+function _applyVanishingPointFilter(
   canvas: HTMLCanvasElement,
   intensity: number,
 ): void {
@@ -717,7 +720,7 @@ function applyVanishingPointFilter(
 /**
  * 3Dフィルターを適用
  */
-function apply3DFilter(data: Uint8ClampedArray, intensity: number): void {
+function _apply3DFilter(data: Uint8ClampedArray, intensity: number): void {
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i]
     const g = data[i + 1]

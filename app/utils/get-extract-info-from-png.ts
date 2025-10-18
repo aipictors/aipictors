@@ -1,5 +1,3 @@
-import { truncateText } from "~/utils/truncate-text"
-
 export interface PNGChunk {
   keyword: string
   text: string
@@ -137,12 +135,12 @@ const extractInfoFromPNG = (file: File): Promise<PNGChunk[]> => {
 const getPngInfo = (chunks: PNGChunk[]): string => {
   // 一つの文字列にする
   const info = chunks.map((e) => `${e.keyword}: ${e.text}`).join("\n")
-  
+
   // 10000文字を超える場合は省略
   if (info.length > 10000) {
     return `${info.substring(0, 10000)}...`
   }
-  
+
   return info
 }
 
@@ -297,7 +295,7 @@ const objectToText = (obj: Record<string, string | number>): string => {
     .join("\n")
 
   const result = `${text}\n`
-  
+
   // 10000文字を超える場合は省略
   if (result.length > 10000) {
     return `${result.substring(0, 10000)}...`

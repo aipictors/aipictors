@@ -43,13 +43,17 @@ export async function loader(props: LoaderFunctionArgs) {
   // mode パラメータを追加
   const mode = url.searchParams.get("mode") || "pagination"
 
-  const worksResp = await loaderClient.query({
+  const tagName = decodeURIComponent(props.params.tag)
+  console.log("Loading tag page for:", tagName, "isSensitive:", isSensitive)
+
+  // 全年齢作品を検索
+  const generalWorksResp = await loaderClient.query({
     query: tagWorksQuery,
     variables: {
       offset: page * 32,
       limit: 32,
       where: {
-        tagNames: [decodeURIComponent(props.params.tag)],
+        tagNames: [tagName],
         orderBy: orderBy,
         sort: sort,
         ratings: ["G", "R15"],
@@ -61,23 +65,64 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  console.log("General works found:", generalWorksResp.data.tagWorks.length)
+
+  // 全年齢作品が見つからず、R18検索がまだ実行されていない場合、R18作品を検索
+  let worksResp = generalWorksResp
+  let shouldShowR18 = false
+
+  if (generalWorksResp.data.tagWorks.length === 0 && !isSensitive) {
+    console.log("No general works found, searching R18 works...")
+    const r18WorksResp = await loaderClient.query({
+      query: tagWorksQuery,
+      variables: {
+        offset: page * 32,
+        limit: 32,
+        where: {
+          tagNames: [tagName],
+          orderBy: orderBy,
+          sort: sort,
+          ratings: ["R18", "R18G"],
+          isSensitive: true,
+          isNowCreatedAt: true,
+        },
+      },
+    })
+
+    console.log("R18 works found:", r18WorksResp.data.tagWorks.length)
+
+    if (r18WorksResp.data.tagWorks.length > 0) {
+      worksResp = r18WorksResp
+      shouldShowR18 = true
+      console.log("Using R18 works as fallback")
+    }
+  }
+
   const tagWorksCountResp = await loaderClient.query({
     query: tagWorksCountQuery,
     variables: {
       where: {
-        tagName: decodeURIComponent(props.params.tag),
-        ratings: ["G", "R15"],
+        tagName: tagName,
+        ratings: shouldShowR18 ? ["R18", "R18G"] : ["G", "R15"],
       },
     },
   })
 
+  console.log(
+    "Final result - shouldShowR18:",
+    shouldShowR18,
+    "worksCount:",
+    tagWorksCountResp.data.tagWorksCount,
+  )
+
   return {
-    tag: decodeURIComponent(props.params.tag),
+    tag: tagName,
     works: worksResp.data.tagWorks,
     worksCount: tagWorksCountResp.data.tagWorksCount,
     page: page,
-    isSensitive: isSensitive,
+    isSensitive: shouldShowR18 || isSensitive,
     mode: mode, // mode を追加
+    shouldShowR18: shouldShowR18, // R18作品を表示すべきかのフラグ
   }
 }
 
@@ -260,6 +305,7 @@ export default function Tag() {
         hasPrompt={hasPrompt}
         mode={mode}
         setMode={setMode}
+        shouldShowR18={data.shouldShowR18}
         onClickTitleSortButton={onClickTitleSortButton}
         onClickLikeSortButton={onClickLikeSortButton}
         onClickBookmarkSortButton={onClickBookmarkSortButton}

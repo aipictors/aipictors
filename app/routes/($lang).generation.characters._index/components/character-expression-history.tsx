@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
 import { Skeleton } from "~/components/ui/skeleton"
-import { History, Download, Trash2, RefreshCw } from "lucide-react"
+import { History, Download, RefreshCw } from "lucide-react"
 import { useCharacterExpressionContext } from "../contexts/character-expression-context"
 import { useToast } from "~/components/ui/use-toast"
 import { toDateTimeText } from "~/utils/to-date-time-text"
@@ -31,7 +31,7 @@ export function CharacterExpressionHistory() {
         title: "更新完了",
         description: "履歴を更新しました。",
       })
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "更新エラー",
         description: "履歴の更新に失敗しました。",

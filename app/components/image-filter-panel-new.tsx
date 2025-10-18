@@ -378,7 +378,7 @@ export function ImageFilterPanel(props: Props) {
                 <h3 className="mb-3 font-semibold">適用済みフィルター</h3>
                 <div className="max-h-32 space-y-2 overflow-y-auto">
                   {props.currentFilters.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       フィルターが適用されていません
                     </p>
                   ) : (
@@ -413,13 +413,13 @@ export function ImageFilterPanel(props: Props) {
                 <div className="space-y-4">
                   <h3 className="font-semibold">フィルター設定</h3>
                   <div>
-                    <p className="mb-2 text-sm text-muted-foreground">
+                    <p className="mb-2 text-muted-foreground text-sm">
                       選択中: {getFilterDisplayName(selectedFilter)}
                     </p>
                   </div>
 
                   <div>
-                    <div className="mb-2 text-sm font-medium">
+                    <div className="mb-2 font-medium text-sm">
                       強度: {filterIntensity}%
                     </div>
                     <Slider
@@ -450,7 +450,7 @@ export function ImageFilterPanel(props: Props) {
                       className="max-h-full max-w-full object-contain"
                     />
                   ) : (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       画像データがありません
                     </p>
                   )}

@@ -227,18 +227,16 @@ const extractGraphQLErrors = (
   error: unknown,
 ): Array<{ message?: string; code?: string }> | undefined => {
   if (!isRecord(error)) return undefined
-  const gql = error["graphQLErrors"]
+  const gql = error.graphQLErrors
   if (!Array.isArray(gql)) return undefined
   const list: Array<{ message?: string; code?: string }> = []
   for (const item of gql) {
     if (!isRecord(item)) continue
-    const message = safeString(item["message"]) ?? undefined
-    const extensions = isRecord(item["extensions"])
-      ? item["extensions"]
-      : undefined
+    const message = safeString(item.message) ?? undefined
+    const extensions = isRecord(item.extensions) ? item.extensions : undefined
     const code =
-      extensions && safeString(extensions["code"])
-        ? (extensions["code"] as string)
+      extensions && safeString(extensions.code)
+        ? (extensions.code as string)
         : undefined
     list.push({ message, code })
   }
@@ -247,9 +245,9 @@ const extractGraphQLErrors = (
 
 const extractNetworkErrorMessage = (error: unknown): string | undefined => {
   if (!isRecord(error)) return undefined
-  const net = error["networkError"]
+  const net = error.networkError
   if (!isRecord(net)) return undefined
-  const msg = net["message"]
+  const msg = net.message
   return typeof msg === "string" ? msg : undefined
 }
 
@@ -257,12 +255,12 @@ const summarizeError = (error: unknown) => {
   const gql = extractGraphQLErrors(error)
   const net = extractNetworkErrorMessage(error)
   const name =
-    isRecord(error) && typeof error["name"] === "string"
-      ? (error["name"] as string)
+    isRecord(error) && typeof error.name === "string"
+      ? (error.name as string)
       : undefined
   const message =
-    isRecord(error) && typeof error["message"] === "string"
-      ? (error["message"] as string)
+    isRecord(error) && typeof error.message === "string"
+      ? (error.message as string)
       : undefined
   return { name, message, graphQLErrors: gql, networkErrorMessage: net }
 }

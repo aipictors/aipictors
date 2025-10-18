@@ -1,4 +1,4 @@
-import { useState, useId } from "react"
+import { useState } from "react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
@@ -56,7 +56,7 @@ export function CharacterDetail(props: Props) {
       {/* 基本情報 */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">基本情報</h3>
+          <h3 className="font-semibold text-lg">基本情報</h3>
           {!isEditing ? (
             <Button
               variant="outline"

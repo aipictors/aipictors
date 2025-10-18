@@ -1261,7 +1261,7 @@ export function PaintCanvas(props: Props) {
               {/* キャンバス群 */}
               {props.isMosaicMode && props.imageUrl && (
                 <MosaicCanvas
-                  className="absolute left-0 top-0"
+                  className="absolute top-0 left-0"
                   imageUrl={props.imageUrl}
                   mosaicSize={10}
                   width={props.width}
@@ -1279,7 +1279,7 @@ export function PaintCanvas(props: Props) {
                   ref={backgroundCanvasRef}
                   width={props.width}
                   height={props.height}
-                  className="absolute left-0 top-0"
+                  className="absolute top-0 left-0"
                   style={{
                     backgroundColor: backgroundColor,
                     top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
@@ -1293,7 +1293,7 @@ export function PaintCanvas(props: Props) {
                   ref={imageCanvasRef}
                   width={props.width}
                   height={props.height}
-                  className="absolute left-0 top-0"
+                  className="absolute top-0 left-0"
                   style={{
                     top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
                     left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
@@ -1305,7 +1305,7 @@ export function PaintCanvas(props: Props) {
                 ref={brushCanvasRef}
                 width={props.width}
                 height={props.height}
-                className="absolute left-0 top-0"
+                className="absolute top-0 left-0"
                 style={{
                   top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
                   left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
@@ -1316,7 +1316,7 @@ export function PaintCanvas(props: Props) {
                 ref={assistedCanvasRef}
                 width={props.width}
                 height={props.height}
-                className="absolute left-0 top-0 opacity-50"
+                className="absolute top-0 left-0 opacity-50"
                 style={{
                   top: `${props.imageUrl ? (-1 * canvasHeight) / 2 : 0}px`,
                   left: `${props.imageUrl ? (-1 * canvasWidth) / 2 : 0}px`,
@@ -1329,7 +1329,7 @@ export function PaintCanvas(props: Props) {
           <div className="hidden w-80 flex-col bg-gray-800 p-4 md:flex">
             {/* プレビューエリア */}
             <div className="mb-6">
-              <h3 className="mb-3 text-sm font-bold text-gray-300">
+              <h3 className="mb-3 font-bold text-gray-300 text-sm">
                 プレビュー
               </h3>
               <div className="aspect-square w-full overflow-hidden rounded-lg border border-gray-600 bg-gray-700">
@@ -1346,7 +1346,7 @@ export function PaintCanvas(props: Props) {
             {isFilterPanelOpen && (
               <div className="space-y-4">
                 <div>
-                  <div className="mb-2 text-xs text-gray-400">
+                  <div className="mb-2 text-gray-400 text-xs">
                     明度: {brightness}%
                   </div>
                   <Slider
@@ -1360,7 +1360,7 @@ export function PaintCanvas(props: Props) {
                 </div>
 
                 <div>
-                  <div className="mb-2 text-xs text-gray-400">
+                  <div className="mb-2 text-gray-400 text-xs">
                     コントラスト: {contrast}%
                   </div>
                   <Slider
@@ -1374,7 +1374,7 @@ export function PaintCanvas(props: Props) {
                 </div>
 
                 <div>
-                  <div className="mb-2 text-xs text-gray-400">
+                  <div className="mb-2 text-gray-400 text-xs">
                     彩度: {saturation}%
                   </div>
                   <Slider
@@ -1388,7 +1388,7 @@ export function PaintCanvas(props: Props) {
                 </div>
 
                 <div>
-                  <div className="mb-2 text-xs text-gray-400">色相: {hue}°</div>
+                  <div className="mb-2 text-gray-400 text-xs">色相: {hue}°</div>
                   <Slider
                     value={[hue]}
                     onValueChange={(value) => setHue(value[0])}
@@ -1438,7 +1438,7 @@ export function PaintCanvas(props: Props) {
             {/* ブラシサイズ調整 */}
             {(tool === "brush" || tool === "eraser") && (
               <div className="mt-6">
-                <div className="mb-2 text-xs text-gray-400">
+                <div className="mb-2 text-gray-400 text-xs">
                   ブラシサイズ: {brushSize}px
                 </div>
                 <Slider
@@ -1459,7 +1459,7 @@ export function PaintCanvas(props: Props) {
           <div className="fixed bottom-0 left-0 z-50 flex w-full gap-1 bg-gray-900 p-2">
             {/* キャンセルボタン */}
             <Button
-              className="h-14 flex-1 rounded-lg bg-gray-600 text-lg font-bold text-white shadow-lg hover:bg-gray-700"
+              className="h-14 flex-1 rounded-lg bg-gray-600 font-bold text-lg text-white shadow-lg hover:bg-gray-700"
               onClick={() => {
                 // まずonCloseを呼び出す
                 if (props.onClose) {
@@ -1482,7 +1482,7 @@ export function PaintCanvas(props: Props) {
 
             {/* 決定ボタン */}
             <Button
-              className="h-14 flex-1 rounded-lg bg-blue-600 text-lg font-bold text-white shadow-lg hover:bg-blue-700"
+              className="h-14 flex-1 rounded-lg bg-blue-600 font-bold text-lg text-white shadow-lg hover:bg-blue-700"
               onClick={() => {
                 if (props.onSubmit) {
                   const compositeCanvas = document.createElement("canvas")

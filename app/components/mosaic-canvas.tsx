@@ -57,13 +57,13 @@ const MosaicCanvas = ({
 
     image.onload = () => {
       if (!context) return
-      
+
       // アスペクト比を保持してcanvasサイズを設定
       if (width && height) {
         // 指定されたwidth, heightがある場合、アスペクト比を保持して調整
         const imageAspectRatio = image.width / image.height
         const canvasAspectRatio = width / height
-        
+
         if (imageAspectRatio > canvasAspectRatio) {
           // 画像が横長の場合、widthを基準に調整
           canvas.width = width
@@ -83,7 +83,7 @@ const MosaicCanvas = ({
       const effectiveMosaicSize = Math.ceil(
         Math.max(canvas.width, canvas.height) / 100,
       )
-      
+
       // 画像をcanvasサイズに合わせて描画
       context.drawImage(image, 0, 0, canvas.width, canvas.height)
 

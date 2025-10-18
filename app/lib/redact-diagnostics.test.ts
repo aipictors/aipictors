@@ -5,7 +5,7 @@ import { redactDiagnostics } from "./redact-diagnostics"
 // ルール: testのタイトルは日本語
 
 test("文字列: data URLは長さのみ残す", () => {
-  const input = "data:image/png;base64," + "a".repeat(300)
+  const input = `data:image/png;base64,${"a".repeat(300)}`
   const out = redactDiagnostics(input)
   expect(typeof out).toBe("string")
   expect(String(out)).toContain("<redacted length=300>")

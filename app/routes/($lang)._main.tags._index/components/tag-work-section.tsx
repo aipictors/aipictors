@@ -60,6 +60,7 @@ type Props = {
   orderBy: IntrospectionEnum<"WorkOrderBy">
   hasPrompt: number
   mode: "feed" | "pagination"
+  shouldShowR18?: boolean
   setPage: (page: number) => void
   setMode: (mode: "feed" | "pagination") => void
   setAccessType?: (accessType: IntrospectionEnum<"AccessType"> | null) => void
@@ -182,10 +183,13 @@ export function TagWorkSection(props: Props) {
       ],
       orderBy: props.orderBy,
       sort: props.sort,
-      ratings: ["G", "R15"] as ("G" | "R15" | "R18" | "R18G")[],
+      ratings: props.shouldShowR18
+        ? ["R18", "R18G"]
+        : (["G", "R15"] as ("G" | "R15" | "R18" | "R18G")[]),
       hasPrompt: props.hasPrompt === 1 ? true : undefined,
       isPromptPublic: props.hasPrompt === 1 ? true : undefined,
       isNowCreatedAt: true,
+      ...(props.shouldShowR18 && { isSensitive: true }),
     }
 
     // 自分の作品のみフィルタ
@@ -667,6 +671,14 @@ export function TagWorkSection(props: Props) {
                 {props.worksCount}
                 {t("件の作品が見つかりました", " works found")}
               </p>
+              {props.shouldShowR18 && (
+                <p className="font-medium text-orange-600 text-sm dark:text-orange-400">
+                  {t(
+                    "全年齢作品が見つからないため、R18作品を表示しています",
+                    "No general works found. Displaying R18 works instead.",
+                  )}
+                </p>
+              )}
             </div>
           </div>
         </div>
