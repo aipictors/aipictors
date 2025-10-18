@@ -47,6 +47,12 @@ const viewerFollowedTagsQuery = graphql(
   }`,
 )
 
+const tagWorksCountQuery = graphql(
+  `query TagWorksCount($where: TagWorksCountWhereInput!) {
+    tagWorksCount(where: $where)
+  }`,
+)
+
 // ──────────────────────────────────────────────────────────────────────────────
 // Component
 // ──────────────────────────────────────────────────────────────────────────────
@@ -141,6 +147,9 @@ export function TagWorkSection(props: Props) {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadingRef = useRef<HTMLDivElement>(null)
+
+  // 動的R18フォールバック状態
+  const [isDynamicR18Fallback, setIsDynamicR18Fallback] = useState(false)
 
   // 初期データが設定されたかどうかのフラグ
   const [isInitialDataSet, setIsInitialDataSet] = useState(false)
@@ -271,22 +280,56 @@ export function TagWorkSection(props: Props) {
     variables: { offset: 0, limit: 32 },
   })
 
-  // co ────────────────────
+  // R18作品数を取得（動的フォールバック時に使用）
+  const { data: r18WorksCountData } = useQuery(tagWorksCountQuery, {
+    skip:
+      authContext.isLoading ||
+      (!isDynamicR18Fallback && !props.shouldShowR18) ||
+      authContext.isNotLoggedIn,
+    variables: {
+      where: {
+        tagName: props.tag,
+        ratings: ["R18", "R18G"],
+      },
+    },
+  })
+
+  // R18フォールバック機能付きのページネーション用クエリ
   const { data: paginationResp, loading: paginationLoading } = useQuery(
     tagWorksQuery,
     {
-      skip:
-        !isPagination ||
-        !isInitialized ||
-        authContext.isLoading ||
-        authContext.isNotLoggedIn,
+      skip: !isPagination || !isInitialized || authContext.isLoading,
       variables: {
         offset: props.page * 32,
         limit: 32,
         where: getFilteredWhereCondition(),
       },
       notifyOnNetworkStatusChange: true,
-      fetchPolicy: "cache-and-network", // フィルタ変更時に再フェッチを確実に行う
+      fetchPolicy: "cache-and-network",
+    },
+  )
+
+  // R18フォールバック用ページネーションクエリ
+  const { data: r18PaginationResp, loading: r18PaginationLoading } = useQuery(
+    tagWorksQuery,
+    {
+      skip:
+        !isPagination ||
+        !isInitialized ||
+        authContext.isLoading ||
+        props.shouldShowR18 || // 既にR18を表示している場合はスキップ
+        (paginationResp?.tagWorks && paginationResp.tagWorks.length > 0), // 全年齢作品が見つかった場合はスキップ
+      variables: {
+        offset: props.page * 32,
+        limit: 32,
+        where: {
+          ...getFilteredWhereCondition(),
+          ratings: ["R18", "R18G"],
+          isSensitive: true,
+        },
+      },
+      notifyOnNetworkStatusChange: true,
+      fetchPolicy: "cache-and-network",
     },
   )
 
@@ -297,19 +340,66 @@ export function TagWorkSection(props: Props) {
     fetchMore,
     refetch: refetchInfinite,
   } = useQuery(tagWorksQuery, {
-    skip:
-      isPagination ||
-      !isInitialized ||
-      authContext.isLoading ||
-      authContext.isNotLoggedIn,
+    skip: isPagination || !isInitialized || authContext.isLoading,
     variables: {
       offset: 0,
       limit: 32,
       where: getFilteredWhereCondition(),
     },
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "cache-and-network", // フィルタ変更時に再フェッチを確実に行う
+    fetchPolicy: "cache-and-network",
   })
+
+  // R18フォールバック用無限スクロールクエリ
+  const {
+    data: r18InfiniteResp,
+    loading: r18InfiniteLoading,
+    fetchMore: r18FetchMore,
+    refetch: r18RefetchInfinite,
+  } = useQuery(tagWorksQuery, {
+    skip:
+      isPagination ||
+      !isInitialized ||
+      authContext.isLoading ||
+      props.shouldShowR18 || // 既にR18を表示している場合はスキップ
+      (infiniteResp?.tagWorks && infiniteResp.tagWorks.length > 0), // 全年齢作品が見つかった場合はスキップ
+    variables: {
+      offset: 0,
+      limit: 32,
+      where: {
+        ...getFilteredWhereCondition(),
+        ratings: ["R18", "R18G"],
+        isSensitive: true,
+      },
+    },
+    notifyOnNetworkStatusChange: true,
+    fetchPolicy: "cache-and-network",
+  })
+
+  // データ統合: 全年齢作品が見つからない場合はR18作品を使用
+  const finalPaginationData = useMemo(() => {
+    if (paginationResp?.tagWorks && paginationResp.tagWorks.length > 0) {
+      return paginationResp
+    }
+    if (r18PaginationResp?.tagWorks && r18PaginationResp.tagWorks.length > 0) {
+      console.log("Using R18 pagination fallback data")
+      setIsDynamicR18Fallback(true)
+      return r18PaginationResp
+    }
+    return paginationResp
+  }, [paginationResp, r18PaginationResp])
+
+  const finalInfiniteData = useMemo(() => {
+    if (infiniteResp?.tagWorks && infiniteResp.tagWorks.length > 0) {
+      return infiniteResp
+    }
+    if (r18InfiniteResp?.tagWorks && r18InfiniteResp.tagWorks.length > 0) {
+      console.log("Using R18 infinite fallback data")
+      setIsDynamicR18Fallback(true)
+      return r18InfiniteResp
+    }
+    return infiniteResp
+  }, [infiniteResp, r18InfiniteResp])
 
   // フィルタ適用時の処理
   const handleFiltersApply = useCallback(() => {
@@ -330,8 +420,11 @@ export function TagWorkSection(props: Props) {
       if (!isPagination && refetchInfinite) {
         refetchInfinite()
       }
+      if (!isPagination && r18RefetchInfinite) {
+        r18RefetchInfinite()
+      }
     }, 0)
-  }, [isPagination, props, refetchInfinite])
+  }, [isPagination, props, refetchInfinite, r18RefetchInfinite])
 
   // props.mode の変更を監視して内部状態を同期
   useEffect(() => {
@@ -363,17 +456,17 @@ export function TagWorkSection(props: Props) {
     }
   }, [props.works, isPagination, isInitialDataSet, stateKey, props.page])
 
-  // フィルタが変更された時にインフィニットクエリを再実行
+  // フィルタが変更された時にインフィニットクエリを再実行（R18フォールバック対応）
   useEffect(() => {
-    if (isInitialized && !isPagination && infiniteResp) {
-      // フィルタ変更後の初回データを取得
-      const newData = infiniteResp.tagWorks
+    if (isInitialized && !isPagination && finalInfiniteData) {
+      // フィルタ変更後の初回データを取得（R18フォールバック機能付き）
+      const newData = finalInfiniteData.tagWorks
       if (newData) {
         setInfinitePages([newData])
         setHasNextPage(newData.length === 32)
       }
     }
-  }, [infiniteResp, isInitialized, isPagination])
+  }, [finalInfiniteData, isInitialized, isPagination])
 
   // ────────────────────　スクロール位置復元 (ページネーション) ────────────────────
   useEffect(() => {
@@ -433,6 +526,7 @@ export function TagWorkSection(props: Props) {
     if (isInitialized) {
       setIsInitialDataSet(false)
       setIsInitialized(false)
+      setIsDynamicR18Fallback(false) // 動的R18フォールバック状態もリセット
       if (!isPagination) {
         setInfinitePages([])
         setHasNextPage(true)
@@ -449,7 +543,7 @@ export function TagWorkSection(props: Props) {
     stateKey,
   ])
 
-  // 無限スクロール読み込み
+  // 無限スクロール読み込み（R18フォールバック機能付き）
   const loadMore = useCallback(async () => {
     if (isLoadingMore || !hasNextPage || isPagination || !isInitialized) return
 
@@ -458,13 +552,46 @@ export function TagWorkSection(props: Props) {
     try {
       const whereCondition = getFilteredWhereCondition()
       console.log("Loading more with filter condition:", whereCondition)
-      const result = await fetchMore({
+
+      // まず通常のクエリを実行
+      let result = await fetchMore({
         variables: {
           offset: flatWorks.length,
           limit: 32,
           where: whereCondition,
         },
       })
+
+      // 通常クエリで結果が見つからず、R18フォールバックが可能な場合
+      if (
+        (!result.data?.tagWorks || result.data.tagWorks.length === 0) &&
+        !props.shouldShowR18 &&
+        !whereCondition.ratings?.includes("R18")
+      ) {
+        console.log("No more general works, trying R18 fallback...")
+
+        try {
+          const r18Result = await r18FetchMore({
+            variables: {
+              offset: flatWorks.length,
+              limit: 32,
+              where: {
+                ...whereCondition,
+                ratings: ["R18", "R18G"],
+                isSensitive: true,
+              },
+            },
+          })
+
+          if (r18Result.data?.tagWorks && r18Result.data.tagWorks.length > 0) {
+            result = r18Result
+            console.log("Using R18 fallback for infinite scroll")
+          }
+        } catch (r18Error) {
+          console.log("R18 fallback failed:", r18Error)
+        }
+      }
+
       if (result.data?.tagWorks) {
         const newWorks = result.data.tagWorks
         setInfinitePages((prev) => [...prev, newWorks])
@@ -481,8 +608,10 @@ export function TagWorkSection(props: Props) {
     isPagination,
     infinitePages,
     fetchMore,
+    r18FetchMore,
     getFilteredWhereCondition,
     isInitialized,
+    props.shouldShowR18,
   ])
 
   // Intersection Observer
@@ -511,9 +640,9 @@ export function TagWorkSection(props: Props) {
     }
 
     if (isPagination) {
-      // ページネーションモード: フィルタが適用されている場合はpaginationRespを優先
-      if (paginationResp?.tagWorks) {
-        return paginationResp.tagWorks
+      // ページネーションモード: R18フォールバック機能付きのデータを優先
+      if (finalPaginationData?.tagWorks) {
+        return finalPaginationData.tagWorks
       }
       // 初回はprops.works、フィルタ未適用時
       return props.works
@@ -525,9 +654,9 @@ export function TagWorkSection(props: Props) {
       return flat
     }
 
-    // infiniteRespがある場合（フィルタ適用後の初回データ）
-    if (infiniteResp?.tagWorks) {
-      return infiniteResp.tagWorks
+    // R18フォールバック機能付きのデータを使用
+    if (finalInfiniteData?.tagWorks) {
+      return finalInfiniteData.tagWorks
     }
 
     // フォールバック
@@ -536,9 +665,9 @@ export function TagWorkSection(props: Props) {
     isInitialized,
     isPagination,
     props.works,
-    paginationResp,
+    finalPaginationData,
     infinitePages,
-    infiniteResp,
+    finalInfiniteData,
   ])
 
   // 一覧の最初の作品（バナー用）
@@ -607,30 +736,26 @@ export function TagWorkSection(props: Props) {
       return true
     }
 
-    // 未ログインの場合はローディングを表示しない
-    if (authContext.isNotLoggedIn) {
-      return false
-    }
-
     // 初期化が完了していない場合
     if (!isInitialized) {
       return true
     }
 
     if (isPagination) {
-      // ページネーションモード: クエリがローディング中の場合
-      return paginationLoading
+      // ページネーションモード: 通常クエリまたはR18フォールバッククエリがローディング中の場合
+      return paginationLoading || r18PaginationLoading
     }
 
-    // フィードモード: クエリがローディング中で無限ページが空の場合
-    return infiniteLoading && infinitePages.length === 0
+    // フィードモード: 通常クエリまたはR18フォールバッククエリがローディング中で無限ページが空の場合
+    return (infiniteLoading || r18InfiniteLoading) && infinitePages.length === 0
   }, [
     authContext.isLoading,
-    authContext.isNotLoggedIn,
     isInitialized,
     isPagination,
     paginationLoading,
+    r18PaginationLoading,
     infiniteLoading,
+    r18InfiniteLoading,
     infinitePages.length,
   ])
 
@@ -668,10 +793,12 @@ export function TagWorkSection(props: Props) {
                 {t("の作品", " works")}
               </h2>
               <p className="text-muted-foreground text-sm">
-                {props.worksCount}
+                {isDynamicR18Fallback || props.shouldShowR18
+                  ? (r18WorksCountData?.tagWorksCount ?? 0)
+                  : props.worksCount}
                 {t("件の作品が見つかりました", " works found")}
               </p>
-              {props.shouldShowR18 && (
+              {(props.shouldShowR18 || isDynamicR18Fallback) && (
                 <p className="font-medium text-orange-600 text-sm dark:text-orange-400">
                   {t(
                     "全年齢作品が見つからないため、R18作品を表示しています",
@@ -842,7 +969,11 @@ export function TagWorkSection(props: Props) {
           <div className="h-4" /> {/* スペース確保用 */}
           <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-[backdrop-filter]:bg-background/80">
             <ResponsivePagination
-              maxCount={Number(props.worksCount)}
+              maxCount={Number(
+                isDynamicR18Fallback || props.shouldShowR18
+                  ? (r18WorksCountData?.tagWorksCount ?? 0)
+                  : props.worksCount,
+              )}
               perPage={32}
               currentPage={props.page}
               onPageChange={(p: number) => {

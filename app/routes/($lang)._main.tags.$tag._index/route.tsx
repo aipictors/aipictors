@@ -44,7 +44,27 @@ export async function loader(props: LoaderFunctionArgs) {
   const mode = url.searchParams.get("mode") || "pagination"
 
   const tagName = decodeURIComponent(props.params.tag)
+
   console.log("Loading tag page for:", tagName, "isSensitive:", isSensitive)
+
+  // ログイン状態を確認するためにviewerを取得
+  let isLoggedIn = false
+  try {
+    const viewerResp = await loaderClient.query({
+      query: viewerQuery,
+      variables: {},
+    })
+    isLoggedIn = !!viewerResp.data.viewer
+    console.log(
+      "User logged in:",
+      isLoggedIn,
+      "User ID:",
+      viewerResp.data.viewer?.id,
+    )
+  } catch (error) {
+    console.log("Not logged in or viewer query failed:", error)
+    isLoggedIn = false
+  }
 
   // 全年齢作品を検索
   const generalWorksResp = await loaderClient.query({
@@ -73,6 +93,8 @@ export async function loader(props: LoaderFunctionArgs) {
 
   if (generalWorksResp.data.tagWorks.length === 0 && !isSensitive) {
     console.log("No general works found, searching R18 works...")
+    console.log("User is logged in:", isLoggedIn)
+
     const r18WorksResp = await loaderClient.query({
       query: tagWorksQuery,
       variables: {
@@ -95,7 +117,15 @@ export async function loader(props: LoaderFunctionArgs) {
       worksResp = r18WorksResp
       shouldShowR18 = true
       console.log("Using R18 works as fallback")
+    } else {
+      console.log("No R18 works found either")
     }
+  } else if (generalWorksResp.data.tagWorks.length > 0) {
+    console.log("General works found, no need for R18 fallback")
+  } else if (isSensitive) {
+    console.log(
+      "Already searching with isSensitive=true, skipping R18 fallback",
+    )
   }
 
   const tagWorksCountResp = await loaderClient.query({
@@ -340,3 +370,12 @@ const tagWorksCountQuery = graphql(
     tagWorksCount(where: $where)
   }`,
 )
+
+const viewerQuery = graphql(`
+  query Viewer {
+    viewer {
+      id
+      login
+    }
+  }
+`)
