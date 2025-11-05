@@ -85,7 +85,6 @@ export function HomeBanners(props: Props) {
   return (
     <Carousel opts={{ dragFree: true, loop: true, align: "start" }}>
       <CarouselContent className="flex gap-x-4">
-        {/* イベントバナー */}
         {props.ongoingEvents?.map((event) => (
           <CarouselItem
             key={`event-${event.id}`}
