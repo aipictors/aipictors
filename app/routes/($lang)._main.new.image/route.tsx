@@ -113,7 +113,7 @@ export default function NewImage() {
     imageInformation: null,
     imageStyle: "ILLUSTRATION",
     link: "",
-    ratingRestriction: null,
+    ratingRestriction: "G",
     reservationDate: null,
     reservationTime: null,
     tags: [],
@@ -498,7 +498,10 @@ export default function NewImage() {
       return
     }
 
-    if (inputState.ratingRestriction === null) {
+    if (
+      inputState.ratingRestriction === null ||
+      inputState.ratingRestriction === undefined
+    ) {
       toast(t("年齢制限を選択してください", "Please select an age restriction"))
       return
     }
@@ -510,6 +513,9 @@ export default function NewImage() {
 
     const performPost = async (retryCount = 0): Promise<void> => {
       try {
+        console.log(
+          `[投稿処理] リトライ回数: ${retryCount}, rating: ${inputState.ratingRestriction}`,
+        )
         dispatch({ type: "SET_PROGRESS", payload: 10 })
 
         const smallThumbnail = state.isThumbnailLandscape
@@ -639,11 +645,7 @@ export default function NewImage() {
               entitle: formResult.output.enTitle,
               explanation: formResult.output.caption,
               enExplanation: formResult.output.enCaption,
-              rating: inputState.ratingRestriction as
-                | "G"
-                | "R15"
-                | "R18"
-                | "R18G",
+              rating: inputState.ratingRestriction || "G",
               prompt: inputState.imageInformation?.params.prompt ?? null,
               negativePrompt:
                 inputState.imageInformation?.params.negativePrompt ?? null,

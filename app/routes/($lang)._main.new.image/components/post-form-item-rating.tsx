@@ -6,7 +6,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useId } from "react"
 
 type Props = {
-  rating?: IntrospectionEnum<"Rating">
+  rating: IntrospectionEnum<"Rating">
   setRating: (value: IntrospectionEnum<"Rating">) => void
 }
 
@@ -24,7 +24,7 @@ export function PostFormItemRating(props: Props) {
           {t("年齢制限（必須）", "Age Restriction")}
         </p>
         <RadioGroup
-          value={props.rating ?? undefined}
+          value={props.rating || "G"}
           onValueChange={(value) => {
             props.setRating(value as IntrospectionEnum<"Rating">)
           }}

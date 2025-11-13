@@ -32,7 +32,7 @@ export const vPostImageFormInputState = object({
   imageInformation: nullable(vImageInformation),
   imageStyle: vPostImageStyle,
   link: string(),
-  ratingRestriction: nullable(vPostRating),
+  ratingRestriction: vPostRating,
   reservationDate: nullable(string()),
   reservationTime: nullable(string()),
   tags: array(vTag),
