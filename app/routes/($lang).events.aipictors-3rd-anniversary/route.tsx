@@ -6,7 +6,12 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { Link, useLoaderData } from "@remix-run/react"
+import {
+  Link,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from "@remix-run/react"
 import {
   CalendarIcon,
   TrophyIcon,
@@ -30,14 +35,29 @@ import {
   EventAwardWorkList,
 } from "~/routes/($lang).events.$event._index/components/event-award-work-list"
 import { config } from "~/config"
-import { useState } from "react"
+import { useState, useId } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/components/ui/carousel"
+import { Switch } from "~/components/ui/switch"
+import { Label } from "~/components/ui/label"
 
 export async function loader(props: LoaderFunctionArgs) {
   const urlParams = new URL(props.request.url).searchParams
   const pageParam = urlParams.get("page")
   const page = pageParam ? Number(pageParam) : 0
+
+  // R18表示の判定
+  const isSensitive = urlParams.get("sensitive") === "true"
+  const ratings = isSensitive
+    ? (["G", "R15", "R18", "R18G"] as const)
+    : (["G", "R15"] as const)
 
   // 3周年記念イベント作品取得
   const anniversaryEventResp = await loaderClient.query({
@@ -47,9 +67,11 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 64,
       slug: "aipictors-3rd-anniversary",
       where: {
-        ratings: ["G", "R15"],
+        ratings: [...ratings],
         isNowCreatedAt: true,
+        isSensitive: isSensitive,
       },
+      isSensitive: isSensitive,
     },
   })
 
@@ -61,9 +83,11 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: 0,
       slug: "before3rd",
       where: {
-        ratings: ["G", "R15"],
+        ratings: [...ratings],
         isNowCreatedAt: true,
+        isSensitive: isSensitive,
       },
+      isSensitive: isSensitive,
     },
   })
 
@@ -74,11 +98,12 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: 0,
       limit: 20,
       where: {
-        ratings: ["G", "R15"],
+        ratings: [...ratings],
         orderBy: "LIKES_COUNT",
         sort: "DESC",
         createdAtAfter: "2025-01-01T00:00:00Z",
         beforeCreatedAt: "2025-12-31T23:59:59Z",
+        isSensitive: isSensitive,
       },
     },
   })
@@ -101,6 +126,7 @@ export async function loader(props: LoaderFunctionArgs) {
       totalWorks: statsResp.data.worksCount ?? 0,
     },
     page,
+    isSensitive,
   }
 }
 
@@ -113,14 +139,28 @@ export const meta: MetaFunction = () => {
     title: "Aipictors 3周年記念",
     description:
       "Aipictorsが3周年を迎えました！これまでの軌跡と感謝を込めて、記念イベントを開催。皆様の素晴らしい作品とともに3年間の歩みを振り返ります。",
+    url: "https://assets.aipictors.com/keito055_httpss.mj.runREr0OjkftZc_A_cheerful_anime-style_girl_9c340b92-0236-4e69-b4d7-a7ee4a0541e2_0.webp",
   })
 }
 
 export default function Aipictors3rdAnniversary() {
   const data = useLoaderData<typeof loader>()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [selectedTab, setSelectedTab] = useState<
     "anniversary" | "before3rd" | "ranking"
   >("anniversary")
+  const r18ToggleId = useId()
+
+  const handleR18Toggle = (checked: boolean) => {
+    const params = new URLSearchParams(searchParams)
+    if (checked) {
+      params.set("sensitive", "true")
+    } else {
+      params.delete("sensitive")
+    }
+    navigate(`?${params.toString()}`, { replace: true })
+  }
 
   return (
     <div className="min-h-screen">
@@ -154,11 +194,11 @@ export default function Aipictors3rdAnniversary() {
             </h1>
 
             <p className="mb-8 text-xl leading-relaxed drop-shadow-md md:text-2xl">
-              2022年の誕生から3年。
+              2022年から3年、みんなで作り上げてきたこの場所。
               <br />
-              AI画像生成の世界を共に歩んできた全てのクリエイターの皆様へ
+              作品を投稿してくれたクリエイターの皆様、
               <br />
-              心からの感謝を込めて
+              本当にありがとうございます。
             </p>
 
             <div className="mb-4 text-center text-sm opacity-80">
@@ -225,12 +265,12 @@ export default function Aipictors3rdAnniversary() {
               <div className="space-y-8">
                 <div className="text-center">
                   <h3 className="mb-4 font-bold text-2xl text-purple-700">
-                    Aipictorsとは
+                    Aipictorsについて
                   </h3>
                   <p className="mx-auto max-w-3xl text-lg leading-relaxed">
-                    Aipictorsは、AI画像生成技術の発展とともに成長してきたクリエイティブコミュニティです。
-                    誰もが自由に創作活動を楽しみ、作品を共有し、互いに刺激し合える場所として、
-                    2022年にスタートしました。
+                    2022年から始まった、画像生成AIを使った作品を投稿・共有できる場所です。
+                    みんなの作品が集まって、刺激を受けたり交流したり。
+                    そんな日常が3年間続いてきました。
                   </p>
                 </div>
 
@@ -246,8 +286,8 @@ export default function Aipictors3rdAnniversary() {
                     </CardHeader>
                     <CardContent className="text-center">
                       <p className="text-muted-foreground">
-                        AI画像生成の黎明期、クリエイターたちが集まる場所として誕生。
-                        新しい表現の可能性を求めて、多くの作品が投稿されました。
+                        画像生成AIが話題になり始めた時期。
+                        作品を投稿できる場所として、Aipictorsがスタート。
                       </p>
                     </CardContent>
                   </Card>
@@ -258,13 +298,13 @@ export default function Aipictors3rdAnniversary() {
                         <TrendingUpIcon className="h-6 w-6 text-pink-600" />
                       </div>
                       <CardTitle className="text-center text-lg">
-                        2023年 - 成長
+                        2023年 - 広がり
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">
                       <p className="text-muted-foreground">
-                        コミュニティが急成長。様々なコンテストやイベントを開催し、
-                        クリエイター同士の交流が活発化。新機能も続々追加されました。
+                        ユーザーが増えて、色んなイベントも開催。
+                        交流する場面が増えて、賑やかになってきた1年。
                       </p>
                     </CardContent>
                   </Card>
@@ -275,14 +315,13 @@ export default function Aipictors3rdAnniversary() {
                         <StarIcon className="h-6 w-6 text-orange-600" />
                       </div>
                       <CardTitle className="text-center text-lg">
-                        2024年 - 進化
+                        2024年 - 定着
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">
                       <p className="text-muted-foreground">
-                        AI技術の進化とともにAipictorsも進化。
-                        画像生成機能の強化、イベントの多様化など、
-                        さらなる可能性を追求し続けています。
+                        機能を充実させながら、日常的に作品投稿や
+                        画像生成を楽しむ場所として定着してきました。
                       </p>
                     </CardContent>
                   </Card>
@@ -363,23 +402,25 @@ export default function Aipictors3rdAnniversary() {
             <CardContent className="p-8 text-center">
               <HeartIcon className="mx-auto mb-4 h-12 w-12 text-pink-600" />
               <h3 className="mb-6 font-bold text-2xl text-pink-700">
-                クリエイターの皆様へ
+                みなさんへ
               </h3>
               <div className="mx-auto max-w-3xl space-y-4 text-left text-lg leading-relaxed">
                 <p>
-                  Aipictorsが3周年を迎えることができたのは、日々素晴らしい作品を投稿し、
-                  コミュニティを盛り上げてくださる全てのクリエイターの皆様のおかげです。
+                  3年続けてこられたのは、作品を投稿してくれたり、
+                  いいねやコメントをしてくれたり、
+                  イベントに参加してくれた皆さんのおかげです。
                 </p>
                 <p>
-                  AI画像生成技術は日々進化を続けていますが、それを使いこなし、
-                  感動的な作品を生み出すのは、紛れもなくクリエイターの皆様の創造力と情熱です。
+                  技術は進化していますが、それを使って作品を生み出すのは、
+                  やっぱり一人ひとりの工夫や想いです。
                 </p>
                 <p>
-                  これからもAipictorsは、皆様の創作活動を支え、新しい表現の可能性を追求し続けます。
-                  4年目、5年目、そしてその先も、一緒に素晴らしい作品を生み出していきましょう。
+                  これからも、作品を投稿したり見たり、
+                  気軽に楽しめる場所であり続けたいと思っています。
+                  4年目もよろしくお願いします。
                 </p>
                 <p className="pt-4 text-center font-bold text-pink-700 text-xl">
-                  本当にありがとうございます！
+                  本当にありがとうございます
                 </p>
               </div>
             </CardContent>
@@ -388,34 +429,48 @@ export default function Aipictors3rdAnniversary() {
 
         {/* タブ切り替え */}
         <section>
-          <div className="mb-6 flex flex-wrap justify-center gap-4">
-            <Button
-              size="lg"
-              variant={selectedTab === "anniversary" ? "default" : "outline"}
-              onClick={() => setSelectedTab("anniversary")}
-              className="font-bold"
-            >
-              <AwardIcon className="mr-2 h-5 w-5" />
-              3周年記念作品
-            </Button>
-            <Button
-              size="lg"
-              variant={selectedTab === "before3rd" ? "default" : "outline"}
-              onClick={() => setSelectedTab("before3rd")}
-              className="font-bold"
-            >
-              <GiftIcon className="mr-2 h-5 w-5" />
-              事前開催お祝い作品
-            </Button>
-            <Button
-              size="lg"
-              variant={selectedTab === "ranking" ? "default" : "outline"}
-              onClick={() => setSelectedTab("ranking")}
-              className="font-bold"
-            >
-              <TrophyIcon className="mr-2 h-5 w-5" />
-              人気作品ランキング
-            </Button>
+          <div className="mb-6 space-y-4">
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button
+                size="lg"
+                variant={selectedTab === "anniversary" ? "default" : "outline"}
+                onClick={() => setSelectedTab("anniversary")}
+                className="font-bold"
+              >
+                <AwardIcon className="mr-2 h-5 w-5" />
+                3周年記念作品
+              </Button>
+              <Button
+                size="lg"
+                variant={selectedTab === "before3rd" ? "default" : "outline"}
+                onClick={() => setSelectedTab("before3rd")}
+                className="font-bold"
+              >
+                <GiftIcon className="mr-2 h-5 w-5" />
+                事前開催お祝い作品
+              </Button>
+              <Button
+                size="lg"
+                variant={selectedTab === "ranking" ? "default" : "outline"}
+                onClick={() => setSelectedTab("ranking")}
+                className="font-bold"
+              >
+                <TrophyIcon className="mr-2 h-5 w-5" />
+                人気作品ランキング
+              </Button>
+            </div>
+
+            {/* R18切り替え */}
+            <div className="flex items-center justify-center gap-2">
+              <Switch
+                id={r18ToggleId}
+                checked={data.isSensitive}
+                onCheckedChange={handleR18Toggle}
+              />
+              <Label htmlFor={r18ToggleId} className="cursor-pointer">
+                R18作品を表示
+              </Label>
+            </div>
           </div>
 
           {/* 3周年記念作品 */}
@@ -482,22 +537,72 @@ export default function Aipictors3rdAnniversary() {
                     事前開催お祝い作品
                   </CardTitle>
                   <p className="text-center text-muted-foreground">
-                    3周年を前に投稿されたお祝いの作品たち
+                    3周年前に投稿されたお祝い作品
                   </p>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  {data.before3rdEvent.awardWorks && (
-                    <div className="mb-8">
-                      <h3 className="mb-4 font-bold text-xl">
-                        <StarIcon className="mr-2 inline-block h-6 w-6 text-yellow-500" />
-                        受賞作品
-                      </h3>
-                      <EventAwardWorkList
-                        works={data.before3rdEvent.awardWorks}
-                        slug={data.before3rdEvent.slug ?? ""}
-                      />
-                    </div>
-                  )}
+                  {/* スライド表示 */}
+                  {data.before3rdEvent.works &&
+                    data.before3rdEvent.works.length > 0 && (
+                      <div className="mb-8">
+                        <h3 className="mb-4 font-bold text-xl">
+                          <GiftIcon className="mr-2 inline-block h-6 w-6 text-orange-500" />
+                          ピックアップ作品
+                        </h3>
+                        <Carousel
+                          opts={{
+                            align: "start",
+                            loop: true,
+                          }}
+                          className="w-full"
+                        >
+                          <CarouselContent>
+                            {data.before3rdEvent.works
+                              .slice(0, 12)
+                              .map((work) => (
+                                <CarouselItem
+                                  key={work.id}
+                                  className="md:basis-1/2 lg:basis-1/3"
+                                >
+                                  <Link
+                                    to={`/works/${work.id}`}
+                                    className="block"
+                                  >
+                                    <div className="overflow-hidden rounded-lg">
+                                      <img
+                                        src={work.smallThumbnailImageURL}
+                                        alt={work.title}
+                                        className="h-64 w-full object-cover transition-transform hover:scale-105"
+                                      />
+                                      <div className="p-2">
+                                        <p className="truncate font-medium text-sm">
+                                          {work.title}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </Link>
+                                </CarouselItem>
+                              ))}
+                          </CarouselContent>
+                          <CarouselPrevious />
+                          <CarouselNext />
+                        </Carousel>
+                      </div>
+                    )}
+
+                  {data.before3rdEvent.awardWorks &&
+                    data.before3rdEvent.awardWorks.length > 0 && (
+                      <div className="mb-8">
+                        <h3 className="mb-4 font-bold text-xl">
+                          <StarIcon className="mr-2 inline-block h-6 w-6 text-yellow-500" />
+                          受賞作品
+                        </h3>
+                        <EventAwardWorkList
+                          works={data.before3rdEvent.awardWorks}
+                          slug={data.before3rdEvent.slug ?? ""}
+                        />
+                      </div>
+                    )}
                   {data.before3rdEvent.works && (
                     <EventWorkList
                       works={data.before3rdEvent.works}
@@ -581,26 +686,26 @@ export default function Aipictors3rdAnniversary() {
         <section>
           <h2 className="mb-8 text-center font-bold text-3xl">
             <SparklesIcon className="mb-2 inline-block h-8 w-8" />
-            これからのAipictors
+            これから
           </h2>
           <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
             <CardContent className="p-8">
               <div className="space-y-6">
                 <p className="text-center text-lg">
-                  4年目を迎えるAipictorsは、さらなる進化を目指します
+                  4年目も、使いやすく楽しい場所を目指していきます
                 </p>
                 <div className="grid gap-6 md:grid-cols-2">
                   <Card className="border-blue-200">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <SparklesIcon className="h-5 w-5 text-blue-600" />
-                        新機能の開発
+                        機能の改善
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground text-sm">
-                        最新のAI技術を活用した新しい画像生成機能や、
-                        クリエイターの創作活動をより快適にする機能を開発中です。
+                        画像生成機能や投稿機能など、
+                        使いやすくなるよう改善を続けていきます。
                       </p>
                     </CardContent>
                   </Card>
@@ -608,13 +713,13 @@ export default function Aipictors3rdAnniversary() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <UsersIcon className="h-5 w-5 text-purple-600" />
-                        コミュニティの拡大
+                        交流の場
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground text-sm">
-                        より多くのクリエイターが交流し、刺激し合える場を提供。
-                        国内外のクリエイターとの繋がりを強化していきます。
+                        作品を見たり、コメントしたり、
+                        気軽に交流できる雰囲気を大切にします。
                       </p>
                     </CardContent>
                   </Card>
@@ -622,13 +727,13 @@ export default function Aipictors3rdAnniversary() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <TrophyIcon className="h-5 w-5 text-pink-600" />
-                        イベントの充実
+                        イベント
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground text-sm">
-                        季節のイベントやコンテストをさらに充実させ、
-                        クリエイターの皆様に楽しんでいただける企画を展開します。
+                        季節のイベントなど、参加して楽しめる
+                        企画を続けていきます。
                       </p>
                     </CardContent>
                   </Card>
@@ -636,13 +741,12 @@ export default function Aipictors3rdAnniversary() {
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <HeartIcon className="h-5 w-5 text-orange-600" />
-                        創作支援
+                        創作のサポート
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <p className="text-muted-foreground text-sm">
-                        クリエイターの創作活動を支援する仕組みを強化し、
-                        より多くの方が創作を続けられる環境を整えます。
+                        創作を続けやすい環境づくりを これからも考えていきます。
                       </p>
                     </CardContent>
                   </Card>
@@ -658,12 +762,11 @@ export default function Aipictors3rdAnniversary() {
             <CardContent className="p-8 text-center">
               <GiftIcon className="mx-auto mb-4 h-12 w-12 text-purple-600" />
               <h3 className="mb-6 font-bold text-2xl">
-                3周年記念イベントに参加しませんか？
+                記念イベントに参加してみませんか
               </h3>
               <p className="mx-auto mb-8 max-w-2xl text-lg">
-                あなたの作品でAipictorsの3周年をお祝いしてください。
-                記念イベントでは、素晴らしい作品を投稿してくださった方に
-                特別な称号やバッジを贈呈予定です！
+                3周年記念イベントに作品を投稿してくれた方には、
+                特別な称号やバッジをプレゼント予定です。
               </p>
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                 <Link to="/new/image">
