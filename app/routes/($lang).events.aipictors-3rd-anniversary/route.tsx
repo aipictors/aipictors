@@ -165,15 +165,15 @@ export default function Aipictors3rdAnniversary() {
   return (
     <div className="min-h-screen">
       {/* ヒーローセクション */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
+      <div className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 dark:from-purple-800 dark:via-pink-700 dark:to-orange-600">
         <div
-          className="absolute inset-0 bg-center bg-cover opacity-20"
+          className="absolute inset-0 bg-center bg-cover opacity-20 dark:opacity-30"
           style={{
             backgroundImage:
               "url('https://assets.aipictors.com/keito055_httpss.mj.runREr0OjkftZc_A_cheerful_anime-style_girl_9c340b92-0236-4e69-b4d7-a7ee4a0541e2_0.webp')",
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent dark:from-black/80" />
 
         <div className="container relative mx-auto px-4 py-24 md:py-32">
           <div className="mx-auto max-w-4xl text-center text-white">
@@ -231,24 +231,6 @@ export default function Aipictors3rdAnniversary() {
                 <div className="text-sm">スタンプ数</div>
               </div>
             </div>
-
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Button
-                size="lg"
-                className="w-full border-2 border-white bg-white px-8 py-6 font-bold text-lg text-purple-600 shadow-xl hover:bg-white/90 sm:w-auto"
-              >
-                <GiftIcon className="mr-2 h-5 w-5" />
-                記念イベントに参加
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full border-2 border-white bg-transparent px-8 py-6 font-bold text-lg text-white backdrop-blur-sm hover:bg-white/20 sm:w-auto"
-              >
-                <HeartIcon className="mr-2 h-5 w-5" />
-                お祝いメッセージを見る
-              </Button>
-            </div>
           </div>
         </div>
       </div>
@@ -256,18 +238,18 @@ export default function Aipictors3rdAnniversary() {
       <div className="container mx-auto space-y-16 px-4 py-12">
         {/* 3年間の軌跡 */}
         <section>
-          <h2 className="mb-8 text-center font-bold text-3xl">
+          <h2 className="mb-8 text-center font-bold text-3xl dark:text-white">
             <SparklesIcon className="mb-2 inline-block h-8 w-8" />
             3年間の軌跡
           </h2>
-          <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50">
+          <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 dark:border-purple-700 dark:from-purple-950 dark:to-pink-950">
             <CardContent className="p-8">
               <div className="space-y-8">
                 <div className="text-center">
-                  <h3 className="mb-4 font-bold text-2xl text-purple-700">
+                  <h3 className="mb-4 font-bold text-2xl text-purple-700 dark:text-purple-300">
                     Aipictorsについて
                   </h3>
-                  <p className="mx-auto max-w-3xl text-lg leading-relaxed">
+                  <p className="mx-auto max-w-3xl text-lg leading-relaxed dark:text-gray-200">
                     2022年から始まった、画像生成AIを使った作品を投稿・共有できる場所です。
                     みんなの作品が集まって、刺激を受けたり交流したり。
                     そんな日常が3年間続いてきました。
@@ -275,51 +257,51 @@ export default function Aipictors3rdAnniversary() {
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-3">
-                  <Card className="border-purple-200 bg-white/80">
+                  <Card className="border-purple-200 bg-white/80 dark:border-purple-700 dark:bg-purple-950/50">
                     <CardHeader>
-                      <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                        <CalendarIcon className="h-6 w-6 text-purple-600" />
+                      <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-800">
+                        <CalendarIcon className="h-6 w-6 text-purple-600 dark:text-purple-200" />
                       </div>
-                      <CardTitle className="text-center text-lg">
+                      <CardTitle className="text-center text-lg dark:text-purple-300">
                         2022年 - 創設
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground dark:text-gray-300">
                         画像生成AIが話題になり始めた時期。
                         作品を投稿できる場所として、Aipictorsがスタート。
                       </p>
                     </CardContent>
                   </Card>
 
-                  <Card className="border-pink-200 bg-white/80">
+                  <Card className="border-pink-200 bg-white/80 dark:border-pink-700 dark:bg-pink-950/50">
                     <CardHeader>
-                      <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
-                        <TrendingUpIcon className="h-6 w-6 text-pink-600" />
+                      <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-pink-100 dark:bg-pink-800">
+                        <TrendingUpIcon className="h-6 w-6 text-pink-600 dark:text-pink-200" />
                       </div>
-                      <CardTitle className="text-center text-lg">
+                      <CardTitle className="text-center text-lg dark:text-pink-300">
                         2023年 - 広がり
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground dark:text-gray-300">
                         ユーザーが増えて、色んなイベントも開催。
                         交流する場面が増えて、賑やかになってきた1年。
                       </p>
                     </CardContent>
                   </Card>
 
-                  <Card className="border-orange-200 bg-white/80">
+                  <Card className="border-orange-200 bg-white/80 dark:border-orange-700 dark:bg-orange-950/50">
                     <CardHeader>
-                      <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
-                        <StarIcon className="h-6 w-6 text-orange-600" />
+                      <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-800">
+                        <StarIcon className="h-6 w-6 text-orange-600 dark:text-orange-200" />
                       </div>
-                      <CardTitle className="text-center text-lg">
+                      <CardTitle className="text-center text-lg dark:text-orange-300">
                         2024年 - 定着
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="text-center">
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground dark:text-gray-300">
                         機能を充実させながら、日常的に作品投稿や
                         画像生成を楽しむ場所として定着してきました。
                       </p>
@@ -327,64 +309,76 @@ export default function Aipictors3rdAnniversary() {
                   </Card>
                 </div>
 
-                <div className="rounded-lg border-2 border-purple-200 bg-white/60 p-6">
-                  <h4 className="mb-4 text-center font-bold text-purple-800 text-xl">
+                <div className="rounded-lg border-2 border-purple-200 bg-white/60 p-6 dark:border-purple-700 dark:bg-purple-900/30">
+                  <h4 className="mb-4 text-center font-bold text-purple-800 text-xl dark:text-purple-300">
                     これまでの主な実績
                   </h4>
-                  <p className="mb-4 text-center text-muted-foreground text-sm">
+                  <p className="mb-4 text-center text-muted-foreground text-sm dark:text-gray-400">
                     ※2025年11月21日時点
                   </p>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="flex items-start gap-3">
-                      <ImageIcon className="mt-1 h-5 w-5 text-purple-600" />
+                      <ImageIcon className="mt-1 h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <div>
-                        <div className="font-semibold">作品投稿</div>
-                        <div className="text-muted-foreground text-sm">
+                        <div className="font-semibold dark:text-white">
+                          作品投稿
+                        </div>
+                        <div className="text-muted-foreground text-sm dark:text-gray-300">
                           累計452,347作品が投稿され、多様な創作活動が展開されています
                         </div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <UsersIcon className="mt-1 h-5 w-5 text-purple-600" />
+                      <UsersIcon className="mt-1 h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <div>
-                        <div className="font-semibold">クリエイター</div>
-                        <div className="text-muted-foreground text-sm">
+                        <div className="font-semibold dark:text-white">
+                          クリエイター
+                        </div>
+                        <div className="text-muted-foreground text-sm dark:text-gray-300">
                           160,174名のユーザーが登録し、日々新しい作品を生み出しています
                         </div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <HeartIcon className="mt-1 h-5 w-5 text-purple-600" />
+                      <HeartIcon className="mt-1 h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <div>
-                        <div className="font-semibold">いいね</div>
-                        <div className="text-muted-foreground text-sm">
+                        <div className="font-semibold dark:text-white">
+                          いいね
+                        </div>
+                        <div className="text-muted-foreground text-sm dark:text-gray-300">
                           累計5,166,842のいいねで、クリエイター同士が互いを称え合っています
                         </div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <SparklesIcon className="mt-1 h-5 w-5 text-purple-600" />
+                      <SparklesIcon className="mt-1 h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <div>
-                        <div className="font-semibold">画像生成</div>
-                        <div className="text-muted-foreground text-sm">
+                        <div className="font-semibold dark:text-white">
+                          画像生成
+                        </div>
+                        <div className="text-muted-foreground text-sm dark:text-gray-300">
                           12,543,758枚の画像が生成され、AI創作活動を支援しています
                         </div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <TrophyIcon className="mt-1 h-5 w-5 text-purple-600" />
+                      <TrophyIcon className="mt-1 h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <div>
-                        <div className="font-semibold">コメント</div>
-                        <div className="text-muted-foreground text-sm">
+                        <div className="font-semibold dark:text-white">
+                          コメント
+                        </div>
+                        <div className="text-muted-foreground text-sm dark:text-gray-300">
                           2,104,489件のコメントで、活発な交流が行われています
                         </div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <GiftIcon className="mt-1 h-5 w-5 text-purple-600" />
+                      <GiftIcon className="mt-1 h-5 w-5 text-purple-600 dark:text-purple-400" />
                       <div>
-                        <div className="font-semibold">スタンプ</div>
-                        <div className="text-muted-foreground text-sm">
+                        <div className="font-semibold dark:text-white">
+                          スタンプ
+                        </div>
+                        <div className="text-muted-foreground text-sm dark:text-gray-300">
                           22,635個のスタンプが作成され、表現の幅を広げています
                         </div>
                       </div>
@@ -398,28 +392,28 @@ export default function Aipictors3rdAnniversary() {
 
         {/* 感謝のメッセージ */}
         <section>
-          <Card className="border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-purple-50">
+          <Card className="border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-purple-50 dark:border-pink-700 dark:from-pink-950 dark:to-purple-950">
             <CardContent className="p-8 text-center">
-              <HeartIcon className="mx-auto mb-4 h-12 w-12 text-pink-600" />
-              <h3 className="mb-6 font-bold text-2xl text-pink-700">
+              <HeartIcon className="mx-auto mb-4 h-12 w-12 text-pink-600 dark:text-pink-400" />
+              <h3 className="mb-6 font-bold text-2xl text-pink-700 dark:text-pink-300">
                 みなさんへ
               </h3>
               <div className="mx-auto max-w-3xl space-y-4 text-left text-lg leading-relaxed">
-                <p>
+                <p className="dark:text-gray-200">
                   3年続けてこられたのは、作品を投稿してくれたり、
                   いいねやコメントをしてくれたり、
                   イベントに参加してくれた皆さんのおかげです。
                 </p>
-                <p>
+                <p className="dark:text-gray-200">
                   技術は進化していますが、それを使って作品を生み出すのは、
                   やっぱり一人ひとりの工夫や想いです。
                 </p>
-                <p>
+                <p className="dark:text-gray-200">
                   これからも、作品を投稿したり見たり、
                   気軽に楽しめる場所であり続けたいと思っています。
                   4年目もよろしくお願いします。
                 </p>
-                <p className="pt-4 text-center font-bold text-pink-700 text-xl">
+                <p className="pt-4 text-center font-bold text-pink-700 text-xl dark:text-pink-300">
                   本当にありがとうございます
                 </p>
               </div>
@@ -435,7 +429,7 @@ export default function Aipictors3rdAnniversary() {
                 size="lg"
                 variant={selectedTab === "anniversary" ? "default" : "outline"}
                 onClick={() => setSelectedTab("anniversary")}
-                className="font-bold"
+                className="font-bold dark:border-purple-600 dark:text-white"
               >
                 <AwardIcon className="mr-2 h-5 w-5" />
                 3周年記念作品
@@ -444,7 +438,7 @@ export default function Aipictors3rdAnniversary() {
                 size="lg"
                 variant={selectedTab === "before3rd" ? "default" : "outline"}
                 onClick={() => setSelectedTab("before3rd")}
-                className="font-bold"
+                className="font-bold dark:border-purple-600 dark:text-white"
               >
                 <GiftIcon className="mr-2 h-5 w-5" />
                 事前開催お祝い作品
@@ -453,7 +447,7 @@ export default function Aipictors3rdAnniversary() {
                 size="lg"
                 variant={selectedTab === "ranking" ? "default" : "outline"}
                 onClick={() => setSelectedTab("ranking")}
-                className="font-bold"
+                className="font-bold dark:border-purple-600 dark:text-white"
               >
                 <TrophyIcon className="mr-2 h-5 w-5" />
                 人気作品ランキング
@@ -467,7 +461,10 @@ export default function Aipictors3rdAnniversary() {
                 checked={data.isSensitive}
                 onCheckedChange={handleR18Toggle}
               />
-              <Label htmlFor={r18ToggleId} className="cursor-pointer">
+              <Label
+                htmlFor={r18ToggleId}
+                className="cursor-pointer dark:text-gray-200"
+              >
                 R18作品を表示
               </Label>
             </div>
@@ -476,20 +473,20 @@ export default function Aipictors3rdAnniversary() {
           {/* 3周年記念作品 */}
           {selectedTab === "anniversary" && data.anniversaryEvent && (
             <div className="space-y-6">
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
-                  <CardTitle className="text-center text-2xl">
+              <Card className="dark:border-purple-700 dark:bg-gray-900/50">
+                <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
+                  <CardTitle className="text-center text-2xl dark:text-white">
                     3周年記念イベント作品
                   </CardTitle>
-                  <p className="text-center text-muted-foreground">
+                  <p className="text-center text-muted-foreground dark:text-gray-300">
                     Aipictors3周年を記念して投稿された作品の数々
                   </p>
                 </CardHeader>
                 <CardContent className="pt-6">
                   {data.anniversaryEvent.awardWorks && (
                     <div className="mb-8">
-                      <h3 className="mb-4 font-bold text-xl">
-                        <StarIcon className="mr-2 inline-block h-6 w-6 text-yellow-500" />
+                      <h3 className="mb-4 font-bold text-xl dark:text-white">
+                        <StarIcon className="mr-2 inline-block h-6 w-6 text-yellow-500 dark:text-yellow-400" />
                         受賞作品
                       </h3>
                       <EventAwardWorkList
@@ -531,12 +528,12 @@ export default function Aipictors3rdAnniversary() {
           {/* 事前開催作品 */}
           {selectedTab === "before3rd" && data.before3rdEvent && (
             <div className="space-y-6">
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-orange-50 to-yellow-50">
-                  <CardTitle className="text-center text-2xl">
+              <Card className="dark:border-orange-700 dark:bg-gray-900/50">
+                <CardHeader className="bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-950 dark:to-yellow-950">
+                  <CardTitle className="text-center text-2xl dark:text-white">
                     事前開催お祝い作品
                   </CardTitle>
-                  <p className="text-center text-muted-foreground">
+                  <p className="text-center text-muted-foreground dark:text-gray-300">
                     3周年前に投稿されたお祝い作品
                   </p>
                 </CardHeader>
@@ -545,8 +542,8 @@ export default function Aipictors3rdAnniversary() {
                   {data.before3rdEvent.works &&
                     data.before3rdEvent.works.length > 0 && (
                       <div className="mb-8">
-                        <h3 className="mb-4 font-bold text-xl">
-                          <GiftIcon className="mr-2 inline-block h-6 w-6 text-orange-500" />
+                        <h3 className="mb-4 font-bold text-xl dark:text-white">
+                          <GiftIcon className="mr-2 inline-block h-6 w-6 text-orange-500 dark:text-orange-400" />
                           ピックアップ作品
                         </h3>
                         <Carousel
@@ -575,7 +572,7 @@ export default function Aipictors3rdAnniversary() {
                                         className="h-64 w-full object-cover transition-transform hover:scale-105"
                                       />
                                       <div className="p-2">
-                                        <p className="truncate font-medium text-sm">
+                                        <p className="truncate font-medium text-sm dark:text-white">
                                           {work.title}
                                         </p>
                                       </div>
@@ -593,8 +590,8 @@ export default function Aipictors3rdAnniversary() {
                   {data.before3rdEvent.awardWorks &&
                     data.before3rdEvent.awardWorks.length > 0 && (
                       <div className="mb-8">
-                        <h3 className="mb-4 font-bold text-xl">
-                          <StarIcon className="mr-2 inline-block h-6 w-6 text-yellow-500" />
+                        <h3 className="mb-4 font-bold text-xl dark:text-white">
+                          <StarIcon className="mr-2 inline-block h-6 w-6 text-yellow-500 dark:text-yellow-400" />
                           受賞作品
                         </h3>
                         <EventAwardWorkList
