@@ -630,6 +630,43 @@ export default function Index() {
 
   return (
     <>
+      {/* 3周年記念バナー - タブの影響を受けないよう外に配置 */}
+      <Link
+        to="/events/aipictors-3rd-anniversary"
+        className="group relative mb-6 block overflow-hidden rounded-xl"
+      >
+        <div className="relative h-32 w-full overflow-hidden bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 md:h-40">
+          <div
+            className="absolute inset-0 bg-center bg-cover opacity-20 transition-opacity group-hover:opacity-30"
+            style={{
+              backgroundImage:
+                "url('https://assets.aipictors.com/keito055_httpss.mj.runREr0OjkftZc_A_cheerful_anime-style_girl_9c340b92-0236-4e69-b4d7-a7ee4a0541e2_0.webp')",
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="relative flex h-full items-center justify-center px-4">
+            <div className="text-center text-white">
+              <div className="mb-2 flex items-center justify-center gap-2">
+                <span className="animate-bounce text-2xl">🎉</span>
+                <span className="rounded-full bg-white/20 px-4 py-1 font-bold text-sm backdrop-blur-sm md:text-base">
+                  Special Anniversary
+                </span>
+                <span className="animate-bounce text-2xl">🎊</span>
+              </div>
+              <h2 className="mb-1 font-bold text-2xl drop-shadow-lg md:text-4xl">
+                Aipictors{" "}
+                <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                  3周年記念
+                </span>
+              </h2>
+              <p className="text-sm drop-shadow-md md:text-base">
+                みんなで作り上げた3年間に感謝を込めて ✨
+              </p>
+            </div>
+          </div>
+        </div>
+      </Link>
+
       <Tabs
         value={currentTab}
         defaultValue="home"
@@ -666,43 +703,6 @@ export default function Index() {
         </div>
         {/* ---------------------- タブ: ホーム ---------------------- */}
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
-          {/* 3周年記念バナー */}
-          <Link
-            to="/events/aipictors-3rd-anniversary"
-            className="group relative block overflow-hidden rounded-xl"
-          >
-            <div className="relative h-32 w-full overflow-hidden bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 md:h-40">
-              <div
-                className="absolute inset-0 bg-center bg-cover opacity-20 transition-opacity group-hover:opacity-30"
-                style={{
-                  backgroundImage:
-                    "url('https://assets.aipictors.com/keito055_httpss.mj.runREr0OjkftZc_A_cheerful_anime-style_girl_9c340b92-0236-4e69-b4d7-a7ee4a0541e2_0.webp')",
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="relative flex h-full items-center justify-center px-4">
-                <div className="text-center text-white">
-                  <div className="mb-2 flex items-center justify-center gap-2">
-                    <span className="animate-bounce text-2xl">🎉</span>
-                    <span className="rounded-full bg-white/20 px-4 py-1 font-bold text-sm backdrop-blur-sm md:text-base">
-                      Special Anniversary
-                    </span>
-                    <span className="animate-bounce text-2xl">🎊</span>
-                  </div>
-                  <h2 className="mb-1 font-bold text-2xl drop-shadow-lg md:text-4xl">
-                    Aipictors{" "}
-                    <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
-                      3周年記念
-                    </span>
-                  </h2>
-                  <p className="text-sm drop-shadow-md md:text-base">
-                    みんなで作り上げた3年間に感謝を込めて ✨
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Link>
-
           {data.dailyTheme && (
             <div>
               <HomeTagList
