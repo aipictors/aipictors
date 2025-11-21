@@ -38,13 +38,6 @@ import { config } from "~/config"
 import { useState, useId } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { META } from "~/config"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "~/components/ui/carousel"
 import { Switch } from "~/components/ui/switch"
 import { Label } from "~/components/ui/label"
 
@@ -390,6 +383,47 @@ export default function Aipictors3rdAnniversary() {
           </Card>
         </section>
 
+        {/* 事前お祝い作品ピックアップ */}
+        {data.before3rdEvent?.works && data.before3rdEvent.works.length > 0 && (
+          <section>
+            <h2 className="mb-8 text-center font-bold text-3xl dark:text-white">
+              <GiftIcon className="mb-2 inline-block h-8 w-8 text-orange-500 dark:text-orange-400" />
+              みんなのお祝い作品
+            </h2>
+            <p className="mb-8 text-center text-muted-foreground dark:text-gray-300">
+              3周年を記念して、事前に投稿いただいたお祝い作品をご紹介
+            </p>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[...data.before3rdEvent.works]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 8)
+                .map((work) => (
+                  <Link
+                    key={work.id}
+                    to={`/works/${work.id}`}
+                    className="group block"
+                  >
+                    <Card className="overflow-hidden transition-all hover:shadow-xl dark:border-orange-700 dark:bg-gray-900/50">
+                      <div className="relative aspect-square overflow-hidden">
+                        <img
+                          src={work.smallThumbnailImageURL}
+                          alt={work.title}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                      </div>
+                      <CardContent className="p-4">
+                        <p className="line-clamp-2 font-medium text-sm dark:text-white">
+                          {work.title}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+            </div>
+          </section>
+        )}
+
         {/* 感謝のメッセージ */}
         <section>
           <Card className="border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-purple-50 dark:border-pink-700 dark:from-pink-950 dark:to-purple-950">
@@ -534,59 +568,10 @@ export default function Aipictors3rdAnniversary() {
                     事前開催お祝い作品
                   </CardTitle>
                   <p className="text-center text-muted-foreground dark:text-gray-300">
-                    3周年前に投稿されたお祝い作品
+                    3周年前に投稿されたお祝い作品の一覧
                   </p>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  {/* スライド表示 */}
-                  {data.before3rdEvent.works &&
-                    data.before3rdEvent.works.length > 0 && (
-                      <div className="mb-8">
-                        <h3 className="mb-4 font-bold text-xl dark:text-white">
-                          <GiftIcon className="mr-2 inline-block h-6 w-6 text-orange-500 dark:text-orange-400" />
-                          ピックアップ作品
-                        </h3>
-                        <Carousel
-                          opts={{
-                            align: "start",
-                            loop: true,
-                          }}
-                          className="w-full"
-                        >
-                          <CarouselContent>
-                            {data.before3rdEvent.works
-                              .slice(0, 12)
-                              .map((work) => (
-                                <CarouselItem
-                                  key={work.id}
-                                  className="md:basis-1/2 lg:basis-1/3"
-                                >
-                                  <Link
-                                    to={`/works/${work.id}`}
-                                    className="block"
-                                  >
-                                    <div className="overflow-hidden rounded-lg">
-                                      <img
-                                        src={work.smallThumbnailImageURL}
-                                        alt={work.title}
-                                        className="h-64 w-full object-cover transition-transform hover:scale-105"
-                                      />
-                                      <div className="p-2">
-                                        <p className="truncate font-medium text-sm dark:text-white">
-                                          {work.title}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </Link>
-                                </CarouselItem>
-                              ))}
-                          </CarouselContent>
-                          <CarouselPrevious />
-                          <CarouselNext />
-                        </Carousel>
-                      </div>
-                    )}
-
                   {data.before3rdEvent.awardWorks &&
                     data.before3rdEvent.awardWorks.length > 0 && (
                       <div className="mb-8">
@@ -779,7 +764,7 @@ export default function Aipictors3rdAnniversary() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="w-full border-2 border-purple-600 px-8 py-6 font-bold text-lg text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-300 dark:hover:bg-purple-950 sm:w-auto"
+                    className="w-full border-2 border-purple-600 px-8 py-6 font-bold text-lg text-purple-600 hover:bg-purple-50 sm:w-auto dark:border-purple-400 dark:text-purple-300 dark:hover:bg-purple-950"
                   >
                     トップページへ
                   </Button>
