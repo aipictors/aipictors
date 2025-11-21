@@ -396,7 +396,7 @@ export default function Aipictors3rdAnniversary() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {[...data.before3rdEvent.works]
                 .sort(() => Math.random() - 0.5)
-                .slice(0, 8)
+                .slice(0, 16)
                 .map((work) => (
                   <Link
                     key={work.id}
@@ -424,6 +424,65 @@ export default function Aipictors3rdAnniversary() {
           </section>
         )}
 
+        {/* 3年間の成長ストーリー */}
+        <section>
+          <h2 className="mb-8 text-center font-bold text-3xl dark:text-white">
+            <CalendarIcon className="mb-2 inline-block h-8 w-8" />
+            3年間で変わったこと
+          </h2>
+          <div className="grid gap-8 lg:grid-cols-2">
+            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-50 dark:border-blue-700 dark:from-blue-950 dark:to-cyan-950">
+              <CardContent className="p-8">
+                <h3 className="mb-6 flex items-center gap-2 font-bold text-2xl text-blue-700 dark:text-blue-300">
+                  <UsersIcon className="h-6 w-6" />
+                  コミュニティの成長
+                </h3>
+                <div className="space-y-4 text-base leading-relaxed dark:text-gray-200">
+                  <p>
+                    2022年、画像生成AIという新しい技術に魅了された人たちが集まり、Aipictorsは始まりました。
+                    最初は小さなコミュニティでしたが、クリエイターたちが互いの作品に刺激を受け、
+                    技術を共有し合うことで、徐々に活気づいていきました。
+                  </p>
+                  <p>
+                    2023年には、様々なイベントが開催されるようになり、クリエイター同士の交流も活発に。
+                    コンテストや季節のイベントを通じて、新しい表現方法や技術が次々と生まれました。
+                  </p>
+                  <p>
+                    そして2024年、Aipictorsは日常的に作品を投稿し、交流する場所として多くの方に利用いただけるようになりました。
+                    毎日何百もの作品が投稿され、それぞれの作品に温かいコメントやいいねが寄せられています。
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 dark:border-purple-700 dark:from-purple-950 dark:to-pink-950">
+              <CardContent className="p-8">
+                <h3 className="mb-6 flex items-center gap-2 font-bold text-2xl text-purple-700 dark:text-purple-300">
+                  <SparklesIcon className="h-6 w-6" />
+                  技術の進化
+                </h3>
+                <div className="space-y-4 text-base leading-relaxed dark:text-gray-200">
+                  <p>
+                    この3年間で、画像生成AI技術は驚くほどの進化を遂げました。
+                    より高品質な画像、多様なスタイル、細かな表現まで可能になり、
+                    クリエイターの表現の幅は大きく広がりました。
+                  </p>
+                  <p>
+                    Aipictorsでも、最新の画像生成機能を導入し、
+                    プロンプトの自動翻訳、画像のアップスケール、
+                    様々な生成モデルへの対応など、使いやすさを追求してきました。
+                  </p>
+                  <p>
+                    技術の進化とともに、Aipictorsも進化し続けています。
+                    これからも、クリエイターの皆様が創作活動に専念できるよう、
+                    新しい機能の開発と改善を続けていきます。
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
         {/* 感謝のメッセージ */}
         <section>
           <Card className="border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-purple-50 dark:border-pink-700 dark:from-pink-950 dark:to-purple-950">
@@ -439,8 +498,14 @@ export default function Aipictors3rdAnniversary() {
                   イベントに参加してくれた皆さんのおかげです。
                 </p>
                 <p className="dark:text-gray-200">
+                  一つ一つの作品に込められた創意工夫、
+                  コメント欄での温かい交流、 イベントへの積極的な参加。
+                  これら全てが、Aipictorsというコミュニティを作り上げてきました。
+                </p>
+                <p className="dark:text-gray-200">
                   技術は進化していますが、それを使って作品を生み出すのは、
                   やっぱり一人ひとりの工夫や想いです。
+                  皆様の創造性と情熱が、このコミュニティを特別な場所にしています。
                 </p>
                 <p className="dark:text-gray-200">
                   これからも、作品を投稿したり見たり、
@@ -453,6 +518,77 @@ export default function Aipictors3rdAnniversary() {
               </div>
             </CardContent>
           </Card>
+        </section>
+
+        {/* コミュニティの声 */}
+        <section>
+          <h2 className="mb-8 text-center font-bold text-3xl dark:text-white">
+            <HeartIcon className="mb-2 inline-block h-8 w-8" />
+            クリエイターの声
+          </h2>
+          <p className="mb-8 text-center text-muted-foreground dark:text-gray-300">
+            Aipictorsを利用してくださっているクリエイターの皆様の想い
+          </p>
+          <div className="grid gap-6 md:grid-cols-3">
+            <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-yellow-50 dark:border-orange-700 dark:from-orange-950 dark:to-yellow-950">
+              <CardContent className="p-6">
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-200 dark:bg-orange-800">
+                    <ImageIcon className="h-5 w-5 text-orange-600 dark:text-orange-300" />
+                  </div>
+                  <div>
+                    <div className="font-bold dark:text-white">
+                      創作の楽しさ
+                    </div>
+                  </div>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed dark:text-gray-300">
+                  「毎日新しいアイデアを試せる場所。
+                  他のクリエイターの作品を見て刺激を受けたり、
+                  自分の作品にコメントをもらえたり。
+                  創作活動がもっと楽しくなりました。」
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 dark:border-green-700 dark:from-green-950 dark:to-emerald-950">
+              <CardContent className="p-6">
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-200 dark:bg-green-800">
+                    <UsersIcon className="h-5 w-5 text-green-600 dark:text-green-300" />
+                  </div>
+                  <div>
+                    <div className="font-bold dark:text-white">
+                      仲間との出会い
+                    </div>
+                  </div>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed dark:text-gray-300">
+                  「同じ趣味を持つ仲間と出会えたことが一番の収穫。
+                  イベントで一緒に参加したり、 お互いの作品を見せ合ったり。
+                  創作仲間ができて本当に良かった。」
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-sky-50 dark:border-blue-700 dark:from-blue-950 dark:to-sky-950">
+              <CardContent className="p-6">
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-200 dark:bg-blue-800">
+                    <TrophyIcon className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+                  </div>
+                  <div>
+                    <div className="font-bold dark:text-white">成長の実感</div>
+                  </div>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed dark:text-gray-300">
+                  「最初は思うような作品が作れなかったけど、
+                  他の人の作品を見たり、技術を学んだりして、
+                  少しずつ上達してきました。 自分の成長を実感できる場所です。」
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </section>
 
         {/* タブ切り替え */}
@@ -664,18 +800,125 @@ export default function Aipictors3rdAnniversary() {
           )}
         </section>
 
+        {/* 数字で見る3年間 */}
+        <section>
+          <h2 className="mb-8 text-center font-bold text-3xl dark:text-white">
+            <TrendingUpIcon className="mb-2 inline-block h-8 w-8" />
+            数字で見る3年間の成長
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="border-2 border-indigo-200 bg-gradient-to-br from-indigo-50 to-blue-50 dark:border-indigo-700 dark:from-indigo-950 dark:to-blue-950">
+              <CardContent className="p-6 text-center">
+                <div className="mb-2 font-bold text-4xl text-indigo-600 dark:text-indigo-400">
+                  452,347
+                </div>
+                <div className="mb-4 font-semibold text-lg dark:text-white">
+                  投稿作品数
+                </div>
+                <p className="text-muted-foreground text-sm dark:text-gray-300">
+                  3年間で45万作品以上が投稿され、
+                  多様なジャンルの創作活動が展開されています
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-rose-200 bg-gradient-to-br from-rose-50 to-pink-50 dark:border-rose-700 dark:from-rose-950 dark:to-pink-950">
+              <CardContent className="p-6 text-center">
+                <div className="mb-2 font-bold text-4xl text-rose-600 dark:text-rose-400">
+                  5.1M+
+                </div>
+                <div className="mb-4 font-semibold text-lg dark:text-white">
+                  いいね総数
+                </div>
+                <p className="text-muted-foreground text-sm dark:text-gray-300">
+                  516万以上のいいねが贈られ、
+                  クリエイター同士が互いの作品を称え合っています
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 dark:border-amber-700 dark:from-amber-950 dark:to-orange-950">
+              <CardContent className="p-6 text-center">
+                <div className="mb-2 font-bold text-4xl text-amber-600 dark:text-amber-400">
+                  160,174
+                </div>
+                <div className="mb-4 font-semibold text-lg dark:text-white">
+                  クリエイター数
+                </div>
+                <p className="text-muted-foreground text-sm dark:text-gray-300">
+                  16万人以上のクリエイターが登録し、
+                  日々新しい作品を生み出しています
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 dark:border-violet-700 dark:from-violet-950 dark:to-purple-950">
+              <CardContent className="p-6 text-center">
+                <div className="mb-2 font-bold text-4xl text-violet-600 dark:text-violet-400">
+                  12.5M+
+                </div>
+                <div className="mb-4 font-semibold text-lg dark:text-white">
+                  生成画像数
+                </div>
+                <p className="text-muted-foreground text-sm dark:text-gray-300">
+                  1,254万枚以上の画像が生成され、
+                  クリエイターの創作活動を支援しています
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-cyan-50 dark:border-teal-700 dark:from-teal-950 dark:to-cyan-950">
+              <CardContent className="p-6 text-center">
+                <div className="mb-2 font-bold text-4xl text-teal-600 dark:text-teal-400">
+                  2.1M+
+                </div>
+                <div className="mb-4 font-semibold text-lg dark:text-white">
+                  コメント数
+                </div>
+                <p className="text-muted-foreground text-sm dark:text-gray-300">
+                  210万件以上のコメントで、
+                  活発な交流とフィードバックが行われています
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-fuchsia-200 bg-gradient-to-br from-fuchsia-50 to-pink-50 dark:border-fuchsia-700 dark:from-fuchsia-950 dark:to-pink-950">
+              <CardContent className="p-6 text-center">
+                <div className="mb-2 font-bold text-4xl text-fuchsia-600 dark:text-fuchsia-400">
+                  22,635
+                </div>
+                <div className="mb-4 font-semibold text-lg dark:text-white">
+                  スタンプ数
+                </div>
+                <p className="text-muted-foreground text-sm dark:text-gray-300">
+                  2万個以上のスタンプが作成され、
+                  コミュニケーションの幅を広げています
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
         {/* これからの展望 */}
         <section>
           <h2 className="mb-8 text-center font-bold text-3xl dark:text-white">
             <SparklesIcon className="mb-2 inline-block h-8 w-8" />
-            これから
+            これからのAipictors
           </h2>
           <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 dark:border-blue-700 dark:from-blue-950 dark:to-purple-950">
             <CardContent className="p-8">
               <div className="space-y-6">
-                <p className="text-center text-lg dark:text-gray-200">
-                  4年目も、使いやすく楽しい場所を目指していきます
-                </p>
+                <div className="text-center">
+                  <p className="mb-4 font-bold text-xl dark:text-white">
+                    4年目も、使いやすく楽しい場所を目指していきます
+                  </p>
+                  <p className="mx-auto max-w-3xl text-base leading-relaxed dark:text-gray-200">
+                    3年間で築き上げてきたコミュニティをさらに発展させ、
+                    より多くのクリエイターが創作活動を楽しめる環境を整えていきます。
+                    皆様からのフィードバックを大切にしながら、
+                    新しい機能の追加や既存機能の改善を続けていきます。
+                  </p>
+                </div>
                 <div className="grid gap-6 md:grid-cols-2">
                   <Card className="border-blue-200 dark:border-blue-700 dark:bg-blue-950/50">
                     <CardHeader>
