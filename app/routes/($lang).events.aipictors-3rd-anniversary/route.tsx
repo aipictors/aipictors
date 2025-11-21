@@ -633,13 +633,13 @@ export default function Aipictors3rdAnniversary() {
           {/* ランキング */}
           {selectedTab === "ranking" && (
             <div className="space-y-6">
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50">
-                  <CardTitle className="text-center text-2xl">
-                    <TrophyIcon className="mr-2 inline-block h-6 w-6 text-yellow-600" />
+              <Card className="dark:border-yellow-700 dark:bg-gray-900/50">
+                <CardHeader className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950">
+                  <CardTitle className="text-center text-2xl dark:text-white">
+                    <TrophyIcon className="mr-2 inline-block h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                     人気作品ランキング TOP20
                   </CardTitle>
-                  <p className="text-center text-muted-foreground">
+                  <p className="text-center text-muted-foreground dark:text-gray-300">
                     2025年に最も人気を集めた作品たち
                   </p>
                 </CardHeader>
@@ -669,7 +669,7 @@ export default function Aipictors3rdAnniversary() {
                       setSort={() => {}}
                     />
                   ) : (
-                    <p className="py-8 text-center text-muted-foreground">
+                    <p className="py-8 text-center text-muted-foreground dark:text-gray-300">
                       ランキングデータを読み込み中...
                     </p>
                   )}
@@ -681,68 +681,68 @@ export default function Aipictors3rdAnniversary() {
 
         {/* これからの展望 */}
         <section>
-          <h2 className="mb-8 text-center font-bold text-3xl">
+          <h2 className="mb-8 text-center font-bold text-3xl dark:text-white">
             <SparklesIcon className="mb-2 inline-block h-8 w-8" />
             これから
           </h2>
-          <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50">
+          <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-purple-50 dark:border-blue-700 dark:from-blue-950 dark:to-purple-950">
             <CardContent className="p-8">
               <div className="space-y-6">
-                <p className="text-center text-lg">
+                <p className="text-center text-lg dark:text-gray-200">
                   4年目も、使いやすく楽しい場所を目指していきます
                 </p>
                 <div className="grid gap-6 md:grid-cols-2">
-                  <Card className="border-blue-200">
+                  <Card className="border-blue-200 dark:border-blue-700 dark:bg-blue-950/50">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <SparklesIcon className="h-5 w-5 text-blue-600" />
+                      <CardTitle className="flex items-center gap-2 dark:text-white">
+                        <SparklesIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                         機能の改善
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-muted-foreground text-sm dark:text-gray-300">
                         画像生成機能や投稿機能など、
                         使いやすくなるよう改善を続けていきます。
                       </p>
                     </CardContent>
                   </Card>
-                  <Card className="border-purple-200">
+                  <Card className="border-purple-200 dark:border-purple-700 dark:bg-purple-950/50">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <UsersIcon className="h-5 w-5 text-purple-600" />
+                      <CardTitle className="flex items-center gap-2 dark:text-white">
+                        <UsersIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                         交流の場
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-muted-foreground text-sm dark:text-gray-300">
                         作品を見たり、コメントしたり、
                         気軽に交流できる雰囲気を大切にします。
                       </p>
                     </CardContent>
                   </Card>
-                  <Card className="border-pink-200">
+                  <Card className="border-pink-200 dark:border-pink-700 dark:bg-pink-950/50">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <TrophyIcon className="h-5 w-5 text-pink-600" />
+                      <CardTitle className="flex items-center gap-2 dark:text-white">
+                        <TrophyIcon className="h-5 w-5 text-pink-600 dark:text-pink-400" />
                         イベント
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-muted-foreground text-sm dark:text-gray-300">
                         季節のイベントなど、参加して楽しめる
                         企画を続けていきます。
                       </p>
                     </CardContent>
                   </Card>
-                  <Card className="border-orange-200">
+                  <Card className="border-orange-200 dark:border-orange-700 dark:bg-orange-950/50">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <HeartIcon className="h-5 w-5 text-orange-600" />
+                      <CardTitle className="flex items-center gap-2 dark:text-white">
+                        <HeartIcon className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                         創作のサポート
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-muted-foreground text-sm dark:text-gray-300">
                         創作を続けやすい環境づくりを これからも考えていきます。
                       </p>
                     </CardContent>
@@ -755,13 +755,13 @@ export default function Aipictors3rdAnniversary() {
 
         {/* 参加を呼びかけ */}
         <section>
-          <Card className="border-2 border-purple-500 bg-gradient-to-br from-purple-100 to-pink-100">
+          <Card className="border-2 border-purple-500 bg-gradient-to-br from-purple-100 to-pink-100 dark:border-purple-600 dark:from-purple-900 dark:to-pink-900">
             <CardContent className="p-8 text-center">
-              <GiftIcon className="mx-auto mb-4 h-12 w-12 text-purple-600" />
-              <h3 className="mb-6 font-bold text-2xl">
+              <GiftIcon className="mx-auto mb-4 h-12 w-12 text-purple-600 dark:text-purple-400" />
+              <h3 className="mb-6 font-bold text-2xl dark:text-white">
                 記念イベントに参加してみませんか
               </h3>
-              <p className="mx-auto mb-8 max-w-2xl text-lg">
+              <p className="mx-auto mb-8 max-w-2xl text-lg dark:text-gray-200">
                 3周年記念イベントに作品を投稿してくれた方には、
                 特別な称号やバッジをプレゼント予定です。
               </p>
@@ -779,7 +779,7 @@ export default function Aipictors3rdAnniversary() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="w-full border-2 border-purple-600 px-8 py-6 font-bold text-lg text-purple-600 hover:bg-purple-50 sm:w-auto"
+                    className="w-full border-2 border-purple-600 px-8 py-6 font-bold text-lg text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-300 dark:hover:bg-purple-950 sm:w-auto"
                   >
                     トップページへ
                   </Button>
