@@ -441,6 +441,40 @@ export function GeminiImageModificationDialog(props: Props) {
           details,
         })
         console.warn("[GeminiImageModification] Attempt #1 failed", details)
+
+        // ネットワークエラー以外の場合は再試行せずに終了
+        // タスクが既に作成されている可能性があるため、二重実行を防ぐ
+        const code = details.graphQLErrors?.[0]?.code
+        const isNetworkError = details.networkErrorMessage !== undefined
+
+        // 画像取得失敗などの特定のエラーの場合のみ、base64フォールバックを試行
+        const shouldRetryWithBase64 =
+          code === "BAD_USER_INPUT" || (isNetworkError && code === undefined)
+
+        if (!shouldRetryWithBase64) {
+          const message =
+            details.graphQLErrors?.[0]?.message || details.networkErrorMessage
+          const friendly =
+            code === "UNAUTHENTICATED"
+              ? t("ログインが必要です", "Login required")
+              : code === "FORBIDDEN"
+                ? t("権限がありません", "Forbidden")
+                : code === "INSUFFICIENT_CREDITS"
+                  ? t(
+                      "残り枚数が不足しています",
+                      "Insufficient credits remaining",
+                    )
+                  : undefined
+
+          toast.error(
+            friendly ??
+              t(
+                "画像修正タスクの作成に失敗しました",
+                "Failed to create image modification task",
+              ) + (message ? `: ${message}` : ""),
+          )
+          return
+        }
       }
 
       // フォールバック: クライアントで画像をBase64化して送信
