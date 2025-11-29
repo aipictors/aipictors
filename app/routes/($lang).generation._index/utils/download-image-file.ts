@@ -24,8 +24,19 @@ export const downloadImageFile = async (
     const now = new Date()
     const formattedDate = format(now, "yyyyMMddHHmmss")
 
-    // PNGと仮定して拡張子を付与
-    linkNode.download = `${fileName}_${formattedDate}.png`
+    // BlobのMIMEタイプから適切な拡張子を決定
+    const mimeType = blob.type
+    let extension = "png" // デフォルトはPNG
+
+    if (mimeType === "image/webp") {
+      extension = "webp"
+    } else if (mimeType === "image/jpeg" || mimeType === "image/jpg") {
+      extension = "jpg"
+    } else if (mimeType === "image/png") {
+      extension = "png"
+    }
+
+    linkNode.download = `${fileName}_${formattedDate}.${extension}`
 
     document.body.appendChild(linkNode)
     linkNode.click()
