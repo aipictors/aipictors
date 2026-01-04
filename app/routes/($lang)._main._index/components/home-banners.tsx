@@ -58,12 +58,8 @@ export function HomeBanners(props: Props) {
   // 既存の固定バナー
   const staticBanners: Banner[] = [
     {
-      href: "/events/aipictors-3rd-anniversary",
-      src: "https://assets.aipictors.com/keito055_A_cheerful_anime-style_girl_with_long_twin-colored_h_592eba52-51ad-463c-bcdb-618a7c94516e_1.webp",
-    },
-    {
-      href: "/events/before3rd",
-      src: "https://assets.aipictors.com/keito055_httpss.mj.runREr0OjkftZc_A_cheerful_anime-style_girl_9c340b92-0236-4e69-b4d7-a7ee4a0541e2_0.webp",
+      href: "/events/2026-uma",
+      src: "https://files.aipictors.com/01d55891-cbc7-4696-a152-f228c3889b12",
     },
     {
       href: "/generation",
