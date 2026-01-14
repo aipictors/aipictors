@@ -81,7 +81,28 @@ export function GenerationConfigSize(props: Props) {
 
   const allSizeTypes = getAllSizeTypesSorted()
   const currentIndex = Math.max(0, allSizeTypes.indexOf(props.value))
-  const currentSizeType = allSizeTypes[currentIndex] ?? allSizeTypes[0]
+
+  const sizeMetas = allSizeTypes.map((sizeType) => {
+    const s = parseGenerationSize(sizeType)
+    const w = Math.round(s.width)
+    const h = Math.round(s.height)
+    const r = w / Math.max(1, h)
+    const area = w * h
+    return { sizeType, width: w, height: h, ratio: r, area }
+  })
+
+  const currentMeta =
+    sizeMetas[currentIndex] ??
+    (sizeMetas.length > 0
+      ? sizeMetas[0]
+      : { sizeType: props.value, width: 0, height: 0, ratio: 1, area: 0 })
+
+  const getAspectLabel = (r: number) => {
+    // ざっくりした見た目分類（ラベル用途）
+    if (r < 0.95) return t("縦", "Portrait")
+    if (r > 1.05) return t("横", "Landscape")
+    return t("正方形", "Square")
+  }
 
   const pickSizeTypeByIndex = (nextIndex: number) => {
     if (allSizeTypes.length <= 0) return
@@ -90,10 +111,9 @@ export function GenerationConfigSize(props: Props) {
     if (typeof next === "string") props.onChange(next)
   }
 
-  const size = parseGenerationSize(currentSizeType)
-  const width = Math.round(size.width)
-  const height = Math.round(size.height)
-  const ratio = width / Math.max(1, height)
+  const width = currentMeta.width
+  const height = currentMeta.height
+  const ratio = currentMeta.ratio
 
   const gcd = (a: number, b: number): number => {
     let x = Math.abs(a)
@@ -154,9 +174,62 @@ export function GenerationConfigSize(props: Props) {
         </Button>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="items-center gap-4">
+        <div className="flex flex-1 flex-col gap-3">
+          {/* One slider for all sizes */}
+          {allSizeTypes.length > 1 ? (
+            <div className="mr-4 space-y-1">
+              <div className="flex items-center justify-between">
+                <div className="text-sm">
+                  <span className="font-medium">{`${width}×${height}`}</span>
+                  <span className="text-muted-foreground">{` (${getAspectLabel(ratio)})`}</span>
+                </div>
+              </div>
+              <Slider
+                value={[currentIndex]}
+                min={0}
+                max={Math.max(0, allSizeTypes.length - 1)}
+                step={1}
+                onValueChange={(v) => {
+                  const nextIndex = v[0] ?? 0
+                  pickSizeTypeByIndex(nextIndex)
+                }}
+                className="mt-4 mb-2"
+              />
+              {/* Tick marks (clickable) */}
+              <div className="flex items-center justify-between gap-1 pt-1">
+                {sizeMetas.map((m, i) => (
+                  <button
+                    key={m.sizeType}
+                    type="button"
+                    onClick={() => pickSizeTypeByIndex(i)}
+                    className={
+                      i === currentIndex
+                        ? "h-2.5 w-2.5 rounded-full bg-primary"
+                        : "h-2.5 w-2.5 rounded-full bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                    }
+                    aria-label={`${m.width}x${m.height}`}
+                    title={`${m.width}×${m.height}`}
+                  />
+                ))}
+              </div>
+              <div className="flex justify-between text-muted-foreground text-xs">
+                <span>{t("縦", "Portrait")}</span>
+                <span>{t("正方形", "Square")}</span>
+                <span>{t("横", "Landscape")}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-muted-foreground text-xs">
+              {t(
+                "このモデルではサイズが1種類のみです",
+                "Only one size is available for this model",
+              )}
+            </div>
+          )}
+        </div>
         {/* Visual preview */}
-        <div className="flex w-36 flex-col items-center gap-2">
+        <div className="m-auto mt-4 flex w-36 flex-col items-center gap-2">
           <div className="relative flex size-32 items-center justify-center rounded-xl border bg-muted/30">
             <div className="absolute inset-3 rounded-lg border border-muted-foreground/40 border-dashed" />
             <div
@@ -169,33 +242,6 @@ export function GenerationConfigSize(props: Props) {
             </div>
           </div>
           <div className="text-muted-foreground text-xs">{`${width}×${height}`}</div>
-        </div>
-
-        <div className="flex flex-1 flex-col gap-3">
-          {/* One slider for all sizes */}
-          {allSizeTypes.length > 1 ? (
-            <div className="space-y-1">
-              <Slider
-                value={[currentIndex]}
-                min={0}
-                max={Math.max(0, allSizeTypes.length - 1)}
-                step={1}
-                onValueChange={(v) => {
-                  const nextIndex = v[0] ?? 0
-                  pickSizeTypeByIndex(nextIndex)
-                }}
-              />
-              <div className="flex justify-between text-muted-foreground text-xs">
-                <span>{t("縦", "Portrait")}</span>
-                <span>{t("正方形", "Square")}</span>
-                <span>{t("横", "Landscape")}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="text-muted-foreground text-xs">
-              {t("このモデルではサイズが1種類のみです", "Only one size is available for this model")}
-            </div>
-          )}
         </div>
       </div>
     </div>

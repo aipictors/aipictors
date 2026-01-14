@@ -148,9 +148,6 @@ export function TagWorkSection(props: Props) {
   const observerRef = useRef<IntersectionObserver | null>(null)
   const loadingRef = useRef<HTMLDivElement>(null)
 
-  // 動的R18フォールバック状態
-  const [isDynamicR18Fallback, setIsDynamicR18Fallback] = useState(false)
-
   // 初期データが設定されたかどうかのフラグ
   const [isInitialDataSet, setIsInitialDataSet] = useState(false)
   // 初期化完了フラグ
@@ -160,6 +157,13 @@ export function TagWorkSection(props: Props) {
   const stateKey = `tag-works-${props.tag}-${props.orderBy}-${props.sort}-${props.hasPrompt}`
 
   const t = useTranslation()
+
+  const hasSensitiveRatings = (
+    ratings?: Array<"G" | "R15" | "R18" | "R18G">,
+  ) => {
+    if (!ratings) return false
+    return ratings.includes("R18") || ratings.includes("R18G")
+  }
 
   // フィルタ適用時の where 条件を生成
   const getFilteredWhereCondition = useCallback(() => {
@@ -257,6 +261,14 @@ export function TagWorkSection(props: Props) {
     authContext.userId,
   ])
 
+  const filteredWhereCondition = useMemo(() => {
+    return getFilteredWhereCondition()
+  }, [getFilteredWhereCondition])
+
+  const isExplicitSensitiveFilter = hasSensitiveRatings(
+    filteredWhereCondition.ratings,
+  )
+
   console.log("Current filters:", getFilteredWhereCondition())
 
   const compactFilterValues: FilterValues = useMemo(
@@ -280,20 +292,6 @@ export function TagWorkSection(props: Props) {
     variables: { offset: 0, limit: 32 },
   })
 
-  // R18作品数を取得（動的フォールバック時に使用）
-  const { data: r18WorksCountData } = useQuery(tagWorksCountQuery, {
-    skip:
-      authContext.isLoading ||
-      (!isDynamicR18Fallback && !props.shouldShowR18) ||
-      authContext.isNotLoggedIn,
-    variables: {
-      where: {
-        tagName: props.tag,
-        ratings: ["R18", "R18G"],
-      },
-    },
-  })
-
   // R18フォールバック機能付きのページネーション用クエリ
   const { data: paginationResp, loading: paginationLoading } = useQuery(
     tagWorksQuery,
@@ -302,7 +300,7 @@ export function TagWorkSection(props: Props) {
       variables: {
         offset: props.page * 32,
         limit: 32,
-        where: getFilteredWhereCondition(),
+        where: filteredWhereCondition,
       },
       notifyOnNetworkStatusChange: true,
       fetchPolicy: "cache-and-network",
@@ -323,7 +321,7 @@ export function TagWorkSection(props: Props) {
         offset: props.page * 32,
         limit: 32,
         where: {
-          ...getFilteredWhereCondition(),
+          ...filteredWhereCondition,
           ratings: ["R18", "R18G"],
           isSensitive: true,
         },
@@ -344,7 +342,7 @@ export function TagWorkSection(props: Props) {
     variables: {
       offset: 0,
       limit: 32,
-      where: getFilteredWhereCondition(),
+      where: filteredWhereCondition,
     },
     notifyOnNetworkStatusChange: true,
     fetchPolicy: "cache-and-network",
@@ -367,7 +365,7 @@ export function TagWorkSection(props: Props) {
       offset: 0,
       limit: 32,
       where: {
-        ...getFilteredWhereCondition(),
+        ...filteredWhereCondition,
         ratings: ["R18", "R18G"],
         isSensitive: true,
       },
@@ -383,7 +381,6 @@ export function TagWorkSection(props: Props) {
     }
     if (r18PaginationResp?.tagWorks && r18PaginationResp.tagWorks.length > 0) {
       console.log("Using R18 pagination fallback data")
-      setIsDynamicR18Fallback(true)
       return r18PaginationResp
     }
     return paginationResp
@@ -395,11 +392,47 @@ export function TagWorkSection(props: Props) {
     }
     if (r18InfiniteResp?.tagWorks && r18InfiniteResp.tagWorks.length > 0) {
       console.log("Using R18 infinite fallback data")
-      setIsDynamicR18Fallback(true)
       return r18InfiniteResp
     }
     return infiniteResp
   }, [infiniteResp, r18InfiniteResp])
+
+  const isDynamicR18Fallback = useMemo(() => {
+    // そもそもR18表示中／明示的にR18フィルタ中なら「フォールバック」ではない
+    if (props.shouldShowR18 || isExplicitSensitiveFilter) return false
+
+    if (isPagination) {
+      const generalCount = paginationResp?.tagWorks?.length ?? 0
+      const r18Count = r18PaginationResp?.tagWorks?.length ?? 0
+      return generalCount === 0 && r18Count > 0
+    }
+
+    const generalCount = infiniteResp?.tagWorks?.length ?? 0
+    const r18Count = r18InfiniteResp?.tagWorks?.length ?? 0
+    return generalCount === 0 && r18Count > 0
+  }, [
+    props.shouldShowR18,
+    isExplicitSensitiveFilter,
+    isPagination,
+    paginationResp,
+    r18PaginationResp,
+    infiniteResp,
+    r18InfiniteResp,
+  ])
+
+  // R18作品数を取得（R18表示時 or 動的フォールバック時に使用）
+  const { data: r18WorksCountData } = useQuery(tagWorksCountQuery, {
+    skip:
+      authContext.isLoading ||
+      (!props.shouldShowR18 && !isDynamicR18Fallback) ||
+      authContext.isNotLoggedIn,
+    variables: {
+      where: {
+        tagName: props.tag,
+        ratings: ["R18", "R18G"],
+      },
+    },
+  })
 
   // フィルタ適用時の処理
   const handleFiltersApply = useCallback(() => {
@@ -526,7 +559,6 @@ export function TagWorkSection(props: Props) {
     if (isInitialized) {
       setIsInitialDataSet(false)
       setIsInitialized(false)
-      setIsDynamicR18Fallback(false) // 動的R18フォールバック状態もリセット
       if (!isPagination) {
         setInfinitePages([])
         setHasNextPage(true)
@@ -566,7 +598,10 @@ export function TagWorkSection(props: Props) {
       if (
         (!result.data?.tagWorks || result.data.tagWorks.length === 0) &&
         !props.shouldShowR18 &&
-        !whereCondition.ratings?.includes("R18")
+        !(
+          whereCondition.ratings?.includes("R18") ||
+          whereCondition.ratings?.includes("R18G")
+        )
       ) {
         console.log("No more general works, trying R18 fallback...")
 
@@ -798,7 +833,7 @@ export function TagWorkSection(props: Props) {
                   : props.worksCount}
                 {t("件の作品が見つかりました", " works found")}
               </p>
-              {(props.shouldShowR18 || isDynamicR18Fallback) && (
+              {isDynamicR18Fallback && (
                 <p className="font-medium text-orange-600 text-sm dark:text-orange-400">
                   {t(
                     "全年齢作品が見つからないため、R18作品を表示しています",

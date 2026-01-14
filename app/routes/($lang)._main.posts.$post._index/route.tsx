@@ -13,11 +13,14 @@ import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 import { getJstDate } from "~/utils/jst-date"
+import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
 
 export function HydrateFallback() {
   return <AppLoadingPage />
@@ -129,6 +132,10 @@ export const meta: MetaFunction = (props) => {
 
   const work = props.data as { work: FragmentOf<typeof workArticleFragment> }
 
+  const localePrefix = props.params.lang === "en" ? "/en" : ""
+  const baseUrl = `${config.siteURL}${localePrefix}`
+  const pageUrl = `${baseUrl}/posts/${encodeURIComponent(props.params.post ?? work.work.id)}`
+
   const userPart =
     props.params.lang === "en"
       ? work.work.user
@@ -158,6 +165,7 @@ export const meta: MetaFunction = (props) => {
           : work.work.description ||
             "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
       url: work.work.smallThumbnailImageURL,
+      pageUrl,
     },
     props.params.lang,
   )
@@ -184,14 +192,98 @@ export default function Work() {
     return null
   }
 
+  const localePrefix = params.lang === "en" ? "/en" : ""
+  const baseUrl = `${config.siteURL}${localePrefix}`
+  const lang = params.lang === "en" ? "en" : "ja"
+  const pageUrl = `${baseUrl}/posts/${encodeURIComponent(data.post)}`
+  const userUrl = data.work.user?.login
+    ? `${baseUrl}/users/${encodeURIComponent(data.work.user.login)}`
+    : undefined
+
+  const title =
+    lang === "en"
+      ? data.work.enTitle && data.work.enTitle.length > 0
+        ? data.work.enTitle
+        : data.work.title
+      : data.work.title
+
+  const descriptionRaw =
+    lang === "en"
+      ? data.work.enDescription || data.work.description || ""
+      : data.work.description || ""
+  const description =
+    descriptionRaw.length > 300
+      ? `${descriptionRaw.slice(0, 297)}...`
+      : descriptionRaw
+
+  const imageUrl =
+    data.work.imageURL ||
+    data.work.largeThumbnailImageURL ||
+    data.work.smallThumbnailImageURL ||
+    ""
+
+  const breadcrumb: WithContext<BreadcrumbList> = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Aipictors",
+        item: baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: lang === "en" ? "Works" : "作品",
+        item: `${baseUrl}/posts`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: title,
+        item: pageUrl,
+      },
+    ],
+  }
+
+  const artwork: WithContext<VisualArtwork> = {
+    "@context": "https://schema.org",
+    "@type": "VisualArtwork",
+    name: title,
+    description: description || undefined,
+    url: pageUrl,
+    image: imageUrl || undefined,
+    dateCreated: data.work.createdAt || undefined,
+    inLanguage: lang,
+    keywords: data.work.tagNames?.length
+      ? data.work.tagNames.join(", ")
+      : undefined,
+    author: data.work.user?.name
+      ? {
+          "@type": "Person",
+          name: data.work.user.name,
+          url: userUrl,
+        }
+      : undefined,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": pageUrl,
+    },
+  }
+
   return (
-    <WorkContainer
-      post={data.post}
-      work={data.work}
-      comments={data.workComments}
-      newComments={data.newComments}
-      awardWorks={data.awardWorks}
-    />
+    <>
+      <AppBreadcrumbScript breadcrumb={breadcrumb} />
+      <AppJsonLdScript jsonLd={artwork} />
+      <WorkContainer
+        post={data.post}
+        work={data.work}
+        comments={data.workComments}
+        newComments={data.newComments}
+        awardWorks={data.awardWorks}
+      />
+    </>
   )
 }
 

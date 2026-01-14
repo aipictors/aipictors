@@ -69,8 +69,19 @@ export function createMeta(
     { property: "og:image", content: imageUrl },
     { property: "og:site_name", content: metadata.nameJA },
     { property: "og:type", content: isTop ? "website" : "article" },
-    { property: "og:url", content: "https://www.aipictors.com" },
+    {
+      property: "og:url",
+      content: replacePlaceholders(dynamicData?.pageUrl || config.siteURL),
+    },
   ]
+
+  if (dynamicData?.pageUrl) {
+    metaTags.push({
+      tagName: "link",
+      rel: "canonical",
+      href: replacePlaceholders(dynamicData.pageUrl),
+    })
+  }
 
   return metaTags
 }

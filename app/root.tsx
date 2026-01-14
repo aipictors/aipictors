@@ -70,6 +70,11 @@ export function Layout(props: Props) {
     typeof window !== "undefined" ? location.pathname : "/",
   )
 
+  const htmlLang =
+    location.pathname === "/en" || location.pathname.startsWith("/en/")
+      ? "en"
+      : "ja"
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setKey(location.pathname)
@@ -89,7 +94,7 @@ export function Layout(props: Props) {
   }
 
   return (
-    <html lang={"ja"} suppressHydrationWarning>
+    <html lang={htmlLang} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

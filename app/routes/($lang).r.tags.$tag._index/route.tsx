@@ -15,6 +15,9 @@ import type { SortType } from "~/types/sort-type"
 import { SensitiveTagWorkSection } from "~/routes/($lang)._main.tags._index/components/sensitive-tag-work-section"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import type { BreadcrumbList, ItemList, WithContext } from "schema-dts"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 
@@ -100,6 +103,10 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 
   const tag = decodeURIComponent(props.params.tag ?? "")
 
+  const localePrefix = props.params.lang === "en" ? "/en" : ""
+  const baseUrl = `${config.siteURL}${localePrefix}`
+  const pageUrl = `${baseUrl}/r/tags/${encodeURIComponent(tag)}`
+
   return createMeta(
     META.TAGS,
     {
@@ -108,6 +115,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
       description: `${tag}のAIイラストが投稿されたR18の作品一覧ページです。`,
       enDescription: `This is a list of works where R18 AI illustrations of ${tag} are posted.`,
       url: thumbnailUrl,
+      pageUrl,
     },
     props.params.lang,
   )
@@ -242,8 +250,58 @@ export default function Tag() {
     return null
   }
 
+  const localePrefix = params.lang === "en" ? "/en" : ""
+  const baseUrl = `${config.siteURL}${localePrefix}`
+  const lang = params.lang === "en" ? "en" : "ja"
+  const tagName = decodeURIComponent(params.tag)
+  const pageUrl = `${baseUrl}/r/tags/${encodeURIComponent(tagName)}`
+
+  const breadcrumb: WithContext<BreadcrumbList> = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Aipictors",
+        item: baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: lang === "en" ? "R18" : "R18",
+        item: `${baseUrl}/r`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: tagName,
+        item: pageUrl,
+      },
+    ],
+  }
+
+  const itemList: WithContext<ItemList> = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name:
+      lang === "en" ? `R18 works tagged ${tagName}` : `${tagName}のR18作品一覧`,
+    numberOfItems: data.works?.length ?? 0,
+    itemListElement: (data.works ?? []).map((work, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `${baseUrl}/r/posts/${encodeURIComponent(work.id)}`,
+      name:
+        lang === "en" && work.enTitle && work.enTitle.length > 0
+          ? work.enTitle
+          : work.title,
+    })),
+  }
+
   return (
     <>
+      <AppBreadcrumbScript breadcrumb={breadcrumb} />
+      <AppJsonLdScript jsonLd={itemList} />
       <SensitiveTagWorkSection
         works={data.works}
         worksCount={data.worksCount}
@@ -253,7 +311,7 @@ export default function Tag() {
         setMode={setMode}
         sort={worksOrderDeskAsc}
         orderBy={WorkOrderby}
-        tag={decodeURIComponent(params.tag)}
+        tag={tagName}
         setPage={setPage}
         onClickTitleSortButton={onClickTitleSortButton}
         onClickLikeSortButton={onClickLikeSortButton}

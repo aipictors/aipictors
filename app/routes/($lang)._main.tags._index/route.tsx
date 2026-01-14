@@ -10,6 +10,9 @@ import { PopularTagsSection } from "~/routes/($lang)._main.tags._index/component
 import { TagSearchSection } from "~/routes/($lang)._main.tags._index/components/tag-search-section-new"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import type { RecommendedTag } from "~/routes/($lang)._main.tags._index/types/tag"
+import type { MetaFunction } from "@remix-run/cloudflare"
+import { config, META } from "~/config"
+import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
@@ -82,6 +85,37 @@ export async function loader(props: LoaderFunctionArgs) {
     searchTerm,
     isSensitive,
   })
+}
+
+export const meta: MetaFunction<typeof loader> = (props) => {
+  const lang = props.params.lang ?? "ja"
+  const isSensitive = props.data?.isSensitive ?? false
+  const pageUrl = `${config.siteURL}/${lang}${isSensitive ? "/r/tags" : "/tags"}`
+
+  const title = props.params.lang === "en" ? "Tags" : "タグ一覧"
+
+  const description =
+    props.params.lang === "en"
+      ? "Explore trending and popular tags to discover AI artworks."
+      : "トレンド・人気タグからAIイラストの作品を探せます。"
+
+  const thumbnailUrl =
+    props.data?.trendingTags?.[0]?.thumbnailUrl ||
+    props.data?.popularTags?.[0]?.thumbnailUrl ||
+    ""
+
+  return createMeta(
+    META.TAGS,
+    {
+      title,
+      enTitle: title,
+      description,
+      enDescription: description,
+      url: thumbnailUrl,
+      pageUrl,
+    },
+    props.params.lang,
+  )
 }
 
 export default function Tags() {

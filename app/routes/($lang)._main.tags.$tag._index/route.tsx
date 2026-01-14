@@ -15,6 +15,9 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { AppBreadcrumbScript } from "~/components/app/app-breadcrumb-script"
+import { AppJsonLdScript } from "~/components/app/app-jsonld-script"
+import type { BreadcrumbList, ItemList, WithContext } from "schema-dts"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 
@@ -173,6 +176,9 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 
   const tag = decodeURIComponent(props.params.tag ?? "")
 
+  const lang = props.params.lang ?? "ja"
+  const pageUrl = `${config.siteURL}/${lang}/tags/${encodeURIComponent(tag)}`
+
   return createMeta(
     META.TAGS,
     {
@@ -181,6 +187,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
       description: `${tag}のAIイラストが投稿された作品一覧ページです。`,
       enDescription: `This is a list of works where AI illustrations of ${tag} are posted.`,
       url: thumbnailUrl,
+      pageUrl,
     },
     props.params.lang,
   )
@@ -324,12 +331,63 @@ export default function Tag() {
     return null
   }
 
+  const lang = params.lang === "en" ? "en" : "ja"
+  const tagName = decodeURIComponent(params.tag)
+  const pageUrl = `${config.siteURL}/${lang}/tags/${encodeURIComponent(tagName)}`
+
+  const breadcrumb: WithContext<BreadcrumbList> = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Aipictors",
+        item: `${config.siteURL}/${lang}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: lang === "en" ? "Tags" : "タグ",
+        item: `${config.siteURL}/${lang}/tags`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: tagName,
+        item: pageUrl,
+      },
+    ],
+  }
+
+  const itemList: WithContext<ItemList> = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: lang === "en" ? `Works tagged ${tagName}` : `${tagName}の作品一覧`,
+    numberOfItems: data.works?.length ?? 0,
+    itemListElement: (data.works ?? []).map((work, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `${config.siteURL}/${lang}/posts/${encodeURIComponent(work.id)}`,
+      name:
+        lang === "en" && work.enTitle && work.enTitle.length > 0
+          ? work.enTitle
+          : work.title,
+    })),
+  }
+
   return (
     <>
+      {!data.isSensitive && (
+        <>
+          <AppBreadcrumbScript breadcrumb={breadcrumb} />
+          <AppJsonLdScript jsonLd={itemList} />
+        </>
+      )}
       <TagWorkSection
         works={data.works}
         worksCount={data.worksCount}
-        tag={decodeURIComponent(params.tag)}
+        tag={tagName}
         page={page}
         setPage={setPage}
         hasPrompt={hasPrompt}
