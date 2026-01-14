@@ -1,12 +1,7 @@
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select"
+import { Button } from "~/components/ui/button"
+import { Slider } from "~/components/ui/slider"
 import { useTranslation } from "~/hooks/use-translation"
+import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
 
 type Props = {
   modelType: string
@@ -17,128 +12,192 @@ type Props = {
 export function GenerationConfigSize(props: Props) {
   const t = useTranslation()
 
+  const sizeOptionsByModelType: Record<
+    string,
+    {
+      square: string[]
+      portrait: string[]
+      landscape: string[]
+    }
+  > = {
+    SD1: {
+      square: ["SD1_512_512"],
+      portrait: ["SD1_512_768", "SD1_384_960"],
+      landscape: ["SD1_768_512", "SD1_960_384"],
+    },
+    SD2: {
+      square: ["SD2_768_768"],
+      portrait: ["SD2_768_1200"],
+      landscape: ["SD2_1200_768"],
+    },
+    SDXL: {
+      square: ["SD3_1024_1024"],
+      portrait: ["SD3_832_1216", "SD3_640_1536"],
+      landscape: ["SD3_1216_832", "SD3_1536_640"],
+    },
+    FLUX: {
+      square: ["SD4_896_896"],
+      portrait: ["SD4_896_1152"],
+      landscape: ["SD4_1152_896"],
+    },
+    SD5: {
+      square: ["SD3_1024_1024"],
+      portrait: ["SD3_832_1216"],
+      landscape: ["SD3_1216_832"],
+    },
+    GEMINI: {
+      square: ["SD3_1024_1024"],
+      portrait: ["SD3_832_1216"],
+      landscape: ["SD3_1216_832"],
+    },
+  }
+
+  const options =
+    sizeOptionsByModelType[props.modelType] ?? sizeOptionsByModelType.SDXL
+
+  const getAllSizeTypesSorted = (): string[] => {
+    const all = Array.from(
+      new Set([...options.portrait, ...options.square, ...options.landscape]),
+    )
+
+    // 縦横比(横/縦)が小さいほど「縦」、大きいほど「横」に見える
+    // 同率は面積（大きさ）で安定させる
+    return all
+      .map((sizeType) => {
+        const s = parseGenerationSize(sizeType)
+        const w = Math.round(s.width)
+        const h = Math.round(s.height)
+        const r = w / Math.max(1, h)
+        const area = w * h
+        return { sizeType, ratio: r, area }
+      })
+      .sort((a, b) => {
+        if (a.ratio !== b.ratio) return a.ratio - b.ratio
+        if (a.area !== b.area) return a.area - b.area
+        return a.sizeType.localeCompare(b.sizeType)
+      })
+      .map((x) => x.sizeType)
+  }
+
+  const allSizeTypes = getAllSizeTypesSorted()
+  const currentIndex = Math.max(0, allSizeTypes.indexOf(props.value))
+  const currentSizeType = allSizeTypes[currentIndex] ?? allSizeTypes[0]
+
+  const pickSizeTypeByIndex = (nextIndex: number) => {
+    if (allSizeTypes.length <= 0) return
+    const safeIndex = Math.max(0, Math.min(nextIndex, allSizeTypes.length - 1))
+    const next = allSizeTypes[safeIndex] ?? allSizeTypes[0]
+    if (typeof next === "string") props.onChange(next)
+  }
+
+  const size = parseGenerationSize(currentSizeType)
+  const width = Math.round(size.width)
+  const height = Math.round(size.height)
+  const ratio = width / Math.max(1, height)
+
+  const gcd = (a: number, b: number): number => {
+    let x = Math.abs(a)
+    let y = Math.abs(b)
+    while (y !== 0) {
+      const temp = x % y
+      x = y
+      y = temp
+    }
+    return x
+  }
+
+  const ratioGcd = gcd(width, height)
+  const ratioText = `${Math.round(width / ratioGcd)} : ${Math.round(
+    height / ratioGcd,
+  )}`
+
+  const previewRectStyle: React.CSSProperties = (() => {
+    if (!Number.isFinite(ratio) || ratio <= 0) {
+      return { width: "100%", height: "100%" }
+    }
+    if (ratio >= 1) {
+      return { width: "100%", height: `${(1 / ratio) * 100}%` }
+    }
+    return { width: `${ratio * 100}%`, height: "100%" }
+  })()
+
+  const isDefaultSizeType = (() => {
+    // 既存のデフォルト値に合わせる（SD1の初期値）
+    if (props.modelType === "SD1") return props.value === "SD1_512_768"
+    // 他モデルは「正方形」をデフォルト扱い
+    const defaultSquare = options.square[0]
+    return props.value === defaultSquare
+  })()
+
+  const resetSizeType = () => {
+    if (props.modelType === "SD1") {
+      props.onChange("SD1_512_768")
+      return
+    }
+    const defaultSquare = options.square[0]
+    if (typeof defaultSquare === "string") props.onChange(defaultSquare)
+  }
+
   return (
     <div className="flex flex-col gap-y-2">
-      <span className="font-bold text-sm">{t("サイズ", "Size")}</span>
-      <Select value={props.value} onValueChange={props.onChange}>
-        <SelectGroup>
-          <SelectTrigger className="break-all text-start">
-            <SelectValue placeholder={t("サイズ", "Size")} />
-          </SelectTrigger>
-          <SelectContent>
-            {props.modelType === "SD1" && (
-              <SelectItem value={"SD1_512_512"}>
-                {t(
-                  "【正方形】768x768(upscale:1.5)",
-                  "【Square】768x768(upscale:1.5)",
-                )}
-              </SelectItem>
-            )}
-            {props.modelType === "SD1" && (
-              <SelectItem value={"SD1_512_768"}>
-                {t(
-                  "【縦長】768x1152(upscale:1.5)",
-                  "【Vertical】768x1152(upscale:1.5)",
-                )}
-              </SelectItem>
-            )}
-            {props.modelType === "SD1" && (
-              <SelectItem value={"SD1_768_512"}>
-                {t(
-                  "【横長】1152x768(upscale:1.5)",
-                  "【Horizontal】1152x768(upscale:1.5)",
-                )}
-              </SelectItem>
-            )}
-            {props.modelType === "SD2" && (
-              <SelectItem value={"SD2_768_768"}>
-                {t("【正方形】768×768", "【Square】768×768")}
-              </SelectItem>
-            )}
-            {props.modelType === "SD2" && (
-              <SelectItem value={"SD2_768_1200"}>
-                {t("【縦長】768×1200", "【Vertical】768×1200")}
-              </SelectItem>
-            )}
-            {props.modelType === "SD2" && (
-              <SelectItem value={"SD2_1200_768"}>
-                {t("【横長】1200×768", "【Horizontal】1200×768")}
-              </SelectItem>
-            )}
-            {props.modelType === "SD1" && (
-              <SelectItem value={"SD1_384_960"}>
-                {t(
-                  "【超縦長】576x1440(upscale:1.5)",
-                  "【Ultra Vertical】576x1440(upscale:1.5)",
-                )}
-              </SelectItem>
-            )}
-            {props.modelType === "SD1" && (
-              <SelectItem value={"SD1_960_384"}>
-                {t(
-                  "【超横長】1440x576(upscale:1.5)",
-                  "【Ultra Horizontal】1440x576(upscale:1.5)",
-                )}
-              </SelectItem>
-            )}
-            {props.modelType === "SDXL" && (
-              <SelectItem value={"SD3_1024_1024"}>
-                {t("【正方形】1024x1024", "【Square】1024x1024")}
-              </SelectItem>
-            )}
-            {props.modelType === "SDXL" && (
-              <SelectItem value={"SD3_832_1216"}>
-                {t("【縦長】832x1216", "【Vertical】832x1216")}
-              </SelectItem>
-            )}
-            {props.modelType === "SDXL" && (
-              <SelectItem value={"SD3_1216_832"}>
-                {t("【横長】1216x832", "【Horizontal】1216x832")}
-              </SelectItem>
-            )}
-            {props.modelType === "SDXL" && (
-              <SelectItem value={"SD3_640_1536"}>
-                {t("【超縦長】640x1536", "【Ultra Vertical】640x1536")}
-              </SelectItem>
-            )}
-            {props.modelType === "SDXL" && (
-              <SelectItem value={"SD3_1536_640"}>
-                {t("【超横長】1536x640", "【Ultra Horizontal】1536x640")}
-              </SelectItem>
-            )}
-            {props.modelType === "FLUX" && (
-              <SelectItem value={"SD4_896_896"}>
-                {t("【正方形】896x896", "【Square】896x896")}
-              </SelectItem>
-            )}
-            {props.modelType === "FLUX" && (
-              <SelectItem value={"SD4_896_1152"}>
-                {t("【縦長】896x1152", "【Square】896x1152")}
-              </SelectItem>
-            )}
-            {props.modelType === "FLUX" && (
-              <SelectItem value={"SD4_1152_896"}>
-                {t("【横長】1152x896", "【Square】1152x896")}
-              </SelectItem>
-            )}
-            {(props.modelType === "SD5" || props.modelType === "GEMINI") && (
-              <SelectItem value={"SD3_1024_1024"}>
-                {t("【正方形】1024x1024", "【Square】1024x1024")}
-              </SelectItem>
-            )}
-            {(props.modelType === "SD5" || props.modelType === "GEMINI") && (
-              <SelectItem value={"SD3_832_1216"}>
-                {t("【縦長】832x1216", "【Vertical】832x1216")}
-              </SelectItem>
-            )}
-            {(props.modelType === "SD5" || props.modelType === "GEMINI") && (
-              <SelectItem value={"SD3_1216_832"}>
-                {t("【横長】1216x832", "【Horizontal】1216x832")}
-              </SelectItem>
-            )}
-          </SelectContent>
-        </SelectGroup>
-      </Select>
+      <div className="flex items-center justify-between">
+        <span className="font-bold text-sm">{t("サイズ", "Size")}</span>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-8 px-2"
+          disabled={isDefaultSizeType}
+          onClick={resetSizeType}
+        >
+          {t("リセット", "Reset")}
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-4">
+        {/* Visual preview */}
+        <div className="flex w-36 flex-col items-center gap-2">
+          <div className="relative flex size-32 items-center justify-center rounded-xl border bg-muted/30">
+            <div className="absolute inset-3 rounded-lg border border-muted-foreground/40 border-dashed" />
+            <div
+              className="flex items-center justify-center rounded-md border border-muted-foreground/50 bg-background/60"
+              style={previewRectStyle}
+            >
+              <span className="font-semibold text-foreground/90 text-sm">
+                {ratioText}
+              </span>
+            </div>
+          </div>
+          <div className="text-muted-foreground text-xs">{`${width}×${height}`}</div>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-3">
+          {/* One slider for all sizes */}
+          {allSizeTypes.length > 1 ? (
+            <div className="space-y-1">
+              <Slider
+                value={[currentIndex]}
+                min={0}
+                max={Math.max(0, allSizeTypes.length - 1)}
+                step={1}
+                onValueChange={(v) => {
+                  const nextIndex = v[0] ?? 0
+                  pickSizeTypeByIndex(nextIndex)
+                }}
+              />
+              <div className="flex justify-between text-muted-foreground text-xs">
+                <span>{t("縦", "Portrait")}</span>
+                <span>{t("正方形", "Square")}</span>
+                <span>{t("横", "Landscape")}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-muted-foreground text-xs">
+              {t("このモデルではサイズが1種類のみです", "Only one size is available for this model")}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
