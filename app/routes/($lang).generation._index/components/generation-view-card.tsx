@@ -22,6 +22,7 @@ export function GenerationViewCard(props: Props) {
             <span className="font-bold">{props.title}</span>
           </div>
           <div className="flex items-center space-x-2">
+            {props.action}
             {props.tooltip && (
               <CrossPlatformTooltip
                 text={props?.tooltip}
@@ -38,6 +39,7 @@ export function GenerationViewCard(props: Props) {
             <span className="font-bold">{props.title}</span>
           </div>
           <div className="flex items-center space-x-2">
+            {props.action}
             {props.tooltip && (
               <CrossPlatformTooltip
                 text={props?.tooltip}

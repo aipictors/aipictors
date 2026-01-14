@@ -73,18 +73,11 @@ export function GenerationDemoPromptView() {
               )
         }
         action={
-          <>
-            <div className="hidden xl:block">
-              <Button variant={"secondary"} size={"sm"}>
-                {t("キーワード", "Keywords")}
-              </Button>
-            </div>
-            <div className="block xl:hidden">
-              <Button size={"icon"} variant={"ghost"}>
-                <BookTextIcon />
-              </Button>
-            </div>
-          </>
+          <div className="block">
+            <Button size={"icon"} variant={"ghost"} onClick={setTrue}>
+              <BookTextIcon />
+            </Button>
+          </div>
         }
       >
         <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">

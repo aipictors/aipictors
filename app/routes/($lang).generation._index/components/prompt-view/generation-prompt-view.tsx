@@ -53,113 +53,132 @@ export function GenerationPromptView() {
 
   const t = useTranslation()
 
+  const keywordsAction =
+    context.config.languageUsedForPrompt === null ? (
+      <DialogTrigger asChild>
+        <div>
+          <div className="block">
+            <Button size={"icon"} variant={"ghost"} onClick={setTrue}>
+              <BookTextIcon />
+            </Button>
+          </div>
+        </div>
+      </DialogTrigger>
+    ) : undefined
+
   return (
     <>
-      <GenerationViewCard
-        title={
-          context.config.languageUsedForPrompt === null
-            ? t("プロンプト", "Prompts")
-            : t("生成内容（日本語）", "Text For Generation")
-        }
-        tooltip={
-          context.config.languageUsedForPrompt === null
-            ? t(
-                "生成したいイラストの要素をキーワードから選んでください。",
-                "Select the elements you want to generate from the keywords",
-              )
-            : t(
-                "生成したいイラストを言葉で入力してください。文章からAIでプロンプトを自動生成します。",
-                "Please enter the illustration you want to generate in words.",
-              )
-        }
-        action={
-          <>
-            <div className="hidden xl:block">
-              <Button variant={"secondary"} size={"sm"}>
-                {t("キーワード", "Keywords")}
-              </Button>
-            </div>
-            <div className="block xl:hidden">
-              <Button size={"icon"} variant={"ghost"}>
-                <BookTextIcon />
-              </Button>
-            </div>
-          </>
-        }
-      >
-        <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
-          <Textarea
-            className="hidden h-full min-h-48 resize-none font-mono md:block md:min-h-16"
-            placeholder={
-              context.config.languageUsedForPrompt === null
-                ? t(
-                    "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece",
-                    "Please enter the elements you want to generate in keywords",
-                  )
-                : t(
-                    "生成したいイラストを言葉で入力してください。例: かわいい女の子",
-                    "Please enter the illustration you want to generate in words. Example: cute girl",
-                  )
-            }
-            value={context.config.promptText}
-            onChange={(event) => {
-              context.updatePrompt(event.target.value)
-            }}
-            onBlur={() => {
-              context.initPromptWithLoraModel()
-            }}
-            maxLength={20000}
-          />
-          <AutoResizeTextarea
-            className="block h-full min-h-48 resize-none font-mono md:hidden md:min-h-16"
-            placeholder={
-              context.config.languageUsedForPrompt === null
-                ? t(
-                    "生成キーワード例: 1 girl, masterpiece",
-                    "Please enter the elements you want to generate in keywords",
-                  )
-                : t(
-                    "生成キーワード例: 1 女の子, 名作",
-                    "Please input words you want to generate",
-                  )
-            }
-            value={context.config.promptText}
-            onChange={(event) => {
-              context.updatePrompt(event.target.value)
-            }}
-            onBlur={() => {
-              context.initPromptWithLoraModel()
-            }}
-            minHeight="120px"
-          />
-          {context.config.languageUsedForPrompt === null && (
-            <Dialog
-              open={value}
-              onOpenChange={(isOpen) => {
-                if (isOpen) return
-                setFalse()
-              }}
-            >
+      {context.config.languageUsedForPrompt === null ? (
+        <Dialog
+          open={value}
+          onOpenChange={(isOpen) => {
+            if (isOpen) return
+            setFalse()
+          }}
+        >
+          <GenerationViewCard
+            title={t("プロンプト", "Prompts")}
+            tooltip={t(
+              "生成したいイラストの要素をキーワードから選んでください。",
+              "Select the elements you want to generate from the keywords",
+            )}
+            action={keywordsAction}
+          >
+            <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
+              <Textarea
+                className="hidden h-full min-h-48 resize-none font-mono md:block md:min-h-16"
+                placeholder={t(
+                  "生成したいイラストの要素をキーワードで入力してください。例: 1 girl, masterpiece",
+                  "Please enter the elements you want to generate in keywords",
+                )}
+                value={context.config.promptText}
+                onChange={(event) => {
+                  context.updatePrompt(event.target.value)
+                }}
+                onBlur={() => {
+                  context.initPromptWithLoraModel()
+                }}
+                maxLength={20000}
+              />
+              <AutoResizeTextarea
+                className="block h-full min-h-48 resize-none font-mono md:hidden md:min-h-16"
+                placeholder={t(
+                  "生成キーワード例: 1 girl, masterpiece",
+                  "Please enter the elements you want to generate in keywords",
+                )}
+                value={context.config.promptText}
+                onChange={(event) => {
+                  context.updatePrompt(event.target.value)
+                }}
+                onBlur={() => {
+                  context.initPromptWithLoraModel()
+                }}
+                minHeight="120px"
+              />
+
+              {/* モバイルは下部に大きめ導線も出す */}
               <DialogTrigger asChild>
                 <Button
                   onClick={setTrue}
                   variant={"secondary"}
                   size={"sm"}
-                  className="sticky bottom-0 w-full"
+                  className="sticky bottom-0 w-full md:hidden"
                 >
                   {t("キーワードから選ぶ", "Select from keywords")}
                 </Button>
               </DialogTrigger>
+
               <PromptCategoriesDialogContent
                 selectedPromptIds={selectedPromptIds}
                 onClose={setFalse}
                 promptCategories={context.promptCategories}
                 onSelect={onSelectPromptId}
               />
-            </Dialog>
+            </div>
+          </GenerationViewCard>
+        </Dialog>
+      ) : (
+        <GenerationViewCard
+          title={t("生成内容（日本語）", "Text For Generation")}
+          tooltip={t(
+            "生成したいイラストを言葉で入力してください。文章からAIでプロンプトを自動生成します。",
+            "Please enter the illustration you want to generate in words.",
           )}
-        </div>
-      </GenerationViewCard>
+        >
+          <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
+            <Textarea
+              className="hidden h-full min-h-48 resize-none font-mono md:block md:min-h-16"
+              placeholder={t(
+                "生成したいイラストを言葉で入力してください。例: かわいい女の子",
+                "Please enter the illustration you want to generate in words. Example: cute girl",
+              )}
+              value={context.config.promptText}
+              onChange={(event) => {
+                context.updatePrompt(event.target.value)
+              }}
+              onBlur={() => {
+                context.initPromptWithLoraModel()
+              }}
+              maxLength={20000}
+            />
+            <AutoResizeTextarea
+              className="block h-full min-h-48 resize-none font-mono md:hidden md:min-h-16"
+              placeholder={t(
+                "生成キーワード例: 1 女の子, 名作",
+                "Please input words you want to generate",
+              )}
+              value={context.config.promptText}
+              onChange={(event) => {
+                context.updatePrompt(event.target.value)
+              }}
+              onBlur={() => {
+                context.initPromptWithLoraModel()
+              }}
+              minHeight="120px"
+            />
+          </div>
+        </GenerationViewCard>
+      )}
     </>
   )
 }
