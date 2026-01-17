@@ -50,12 +50,6 @@ export function GenerationConfigI2i() {
       {context.config.modelType === "GEMINI" && !context.currentPass?.type && (
         <div className="rounded-md border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-3 dark:border-blue-800 dark:from-blue-950 dark:to-purple-950">
           <div className="text-blue-800 text-sm dark:text-blue-200">
-            <div className="mb-1 font-medium">
-              {t(
-                "✨ Geminiモデルでは画像から生成が無料でご利用いただけます！",
-                "✨ With Gemini models, you can use image-to-image generation for free!",
-              )}
-            </div>
             <div className="text-xs opacity-80">
               {t(
                 "全モデルで画像から生成を利用できるのは",
