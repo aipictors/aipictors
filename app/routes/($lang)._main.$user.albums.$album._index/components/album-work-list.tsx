@@ -19,14 +19,15 @@ type Props = {
 export function AlbumWorkList(props: Props) {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // URLクエリパラメータから初期ページ番号を取得
-  const initialPage = Number(searchParams.get("page")) || 0
-  const [page, setPage] = React.useState(initialPage)
+  // URLクエリパラメータから初期ページ番号を取得（1-indexed を 0-indexed に変換）
+  const urlPage = Number(searchParams.get("page")) || 1
+  const [page, setPage] = React.useState(urlPage - 1)
 
   // ページ変更時にクエリパラメータを更新
   useEffect(() => {
     const params = new URLSearchParams(searchParams)
-    params.set("page", page.toString())
+    // 1-indexed で保存
+    params.set("page", (page + 1).toString())
     setSearchParams(params)
   }, [page, searchParams, setSearchParams])
 
