@@ -49,6 +49,10 @@ export function HomeBanners(props: Props) {
   // 既存の固定バナー
   const staticBanners: Banner[] = [
     {
+      href: "https://forms.gle/Z4sCmFwUkXfBLaCB8",
+      src: "https://assets.aipictors.com/anketaipictors.webp",
+    },
+    {
       href: "/events/2026-uma",
       src: "https://files.aipictors.com/01d55891-cbc7-4696-a152-f228c3889b12",
     },
