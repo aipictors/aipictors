@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import { MAX_VIDEO_FILE_SIZE_BYTES, formatFileSize } from "~/utils/file-size"
 
 type Props = {
   videoFile: File | null
@@ -24,7 +25,8 @@ export function PostFormItemVideo(props: Props) {
   const t = useTranslation()
 
   // ファイルの最大サイズ(バイト単位)
-  const maxSize = 32 * 1024 * 1024
+  const maxSize = MAX_VIDEO_FILE_SIZE_BYTES
+  const maxSizeLabel = formatFileSize(maxSize)
 
   // ドラッグ中して画像一覧にホバー中かどうか
   const [isHovered, setIsHovered] = useState(false)
@@ -68,11 +70,11 @@ export function PostFormItemVideo(props: Props) {
       // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
         if (file.type === "video/mp4") {
-          if (file.size > 32 * 1024 * 1024) {
+          if (file.size > maxSize) {
             toast(
               t(
-                "動画のサイズは32MB以下にしてください",
-                "Video size should be under 32MB",
+                `動画のサイズは${maxSizeLabel}以下にしてください`,
+                `Video size should be under ${maxSizeLabel}`,
               ),
             )
             return

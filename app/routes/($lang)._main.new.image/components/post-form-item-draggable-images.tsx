@@ -11,6 +11,7 @@ import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import { MAX_IMAGE_FILE_SIZE_BYTES, formatFileSize } from "~/utils/file-size"
 
 type Props = {
   indexList: number[]
@@ -41,7 +42,8 @@ export function PostFormItemDraggableImages(props: Props) {
   const [nowHeadImageBase64, setNowHeadImageBase64] = useState("")
 
   // ファイルの最大サイズ(バイト単位)
-  const maxSize = 32 * 1024 * 1024
+  const maxSize = MAX_IMAGE_FILE_SIZE_BYTES
+  const maxSizeLabel = formatFileSize(maxSize)
 
   // ドラッグ中して画像一覧にホバー中かどうか
   const [isHovered, setIsHovered] = useState(false)
@@ -122,8 +124,8 @@ export function PostFormItemDraggableImages(props: Props) {
           } else {
             toast(
               t(
-                "32MB以内の画像を貼り付けてください",
-                "Please paste an image under 32MB",
+                `${maxSizeLabel}以内の画像を貼り付けてください`,
+                `Please paste an image under ${maxSizeLabel}`,
               ),
             )
           }
@@ -356,8 +358,8 @@ export function PostFormItemDraggableImages(props: Props) {
             <p className="text-center text-sm">{"JPEG、PNG、GIF、WEBP、BMP"}</p>
             <p className="text-center text-sm">
               {t(
-                "1枚32MB以内、最大200枚",
-                "Up to 32MB per image, max 200 images",
+                `1枚${maxSizeLabel}以内、最大200枚`,
+                `Up to ${maxSizeLabel} per image, max 200 images`,
               )}
             </p>
             <p className="text-center text-sm">

@@ -12,6 +12,11 @@ import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  MAX_IMAGE_FILE_SIZE_BYTES,
+  MAX_VIDEO_FILE_SIZE_BYTES,
+  formatFileSize,
+} from "~/utils/file-size"
 
 type Props = {
   indexList: number[]
@@ -43,7 +48,9 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
   const [nowHeadImageBase64, setNowHeadImageBase64] = useState("")
 
   // ファイルの最大サイズ(バイト単位)
-  const maxSize = 32 * 1024 * 1024
+  const maxSize = MAX_IMAGE_FILE_SIZE_BYTES
+  const maxSizeLabel = formatFileSize(MAX_IMAGE_FILE_SIZE_BYTES)
+  const videoSizeLabel = formatFileSize(MAX_VIDEO_FILE_SIZE_BYTES)
 
   // ドラッグ中して画像一覧にホバー中かどうか
   const [isHovered, setIsHovered] = useState(false)
@@ -147,11 +154,11 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
       // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
         if (file.type === "video/mp4") {
-          if (file.size > 32 * 1024 * 1024) {
+          if (file.size > MAX_VIDEO_FILE_SIZE_BYTES) {
             toast(
               t(
-                "動画のサイズは32MB以下にしてください",
-                "Video size should be under 32MB",
+                `動画のサイズは${videoSizeLabel}以下にしてください`,
+                `Video size should be under ${videoSizeLabel}`,
               ),
             )
             return
@@ -358,8 +365,8 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
             </p>
             <p className="text-center text-sm">
               {t(
-                "1枚32MB以内、最大200枚、動画は32MB、12秒まで",
-                "Max 32MB per file, up to 200 files, videos under 32MB and 12 seconds",
+                `1枚${maxSizeLabel}以内、最大200枚、動画は${videoSizeLabel}、12秒まで`,
+                `Max ${maxSizeLabel} per file, up to 200 files, videos under ${videoSizeLabel} and 12 seconds`,
               )}
             </p>
           </div>
