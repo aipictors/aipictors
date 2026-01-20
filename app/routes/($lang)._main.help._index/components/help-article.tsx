@@ -552,6 +552,92 @@ export function HelpArticle() {
                   </p>
                 </div>
 
+                <div className="border-cyan-500 border-l-4 pl-4">
+                  <h3 className="mb-2 font-semibold">
+                    {t("ブロック・ミュート", "Block & Mute")}
+                  </h3>
+                  <div className="space-y-3 text-muted-foreground text-sm">
+                    <div>
+                      <p className="font-medium text-foreground">
+                        {t(
+                          "ブロックした／された場合",
+                          "When Blocked (Either Side)",
+                        )}
+                      </p>
+                      <ul className="mt-1 space-y-1">
+                        <li>
+                          •{" "}
+                          {t(
+                            "お互いの交流が完全に制限されます。",
+                            "All interactions between both parties are completely restricted.",
+                          )}
+                        </li>
+                        <li>
+                          •{" "}
+                          {t(
+                            "作品一覧に、相手の作品が表示されません。",
+                            "The other party's works will not appear in lists.",
+                          )}
+                        </li>
+                        <li>
+                          •{" "}
+                          {t(
+                            "作品ページに直接アクセスしてもいいねができません。",
+                            "Even with direct access to a work page, you cannot like it.",
+                          )}
+                        </li>
+                        <li>
+                          •{" "}
+                          {t(
+                            "コメントができません。",
+                            "Comments are not allowed.",
+                          )}
+                        </li>
+                      </ul>
+                      <p className="mt-2">
+                        {t(
+                          "※「見る・反応する」といった行為が双方ともできなくなります。",
+                          "* Both parties can neither view nor interact.",
+                        )}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">
+                        {t("ミュートした場合", "When Muted")}
+                      </p>
+                      <ul className="mt-1 space-y-1">
+                        <li>
+                          •{" "}
+                          {t(
+                            "自分の画面上だけで、表示を減らす機能です。",
+                            "This only reduces visibility on your own screen.",
+                          )}
+                        </li>
+                        <li>
+                          •{" "}
+                          {t(
+                            "ミュートしている側のみ作品一覧に、ミュートした相手の作品が表示されません。",
+                            "Only the muting user will not see the muted user's works in lists.",
+                          )}
+                        </li>
+                        <li>
+                          •{" "}
+                          {t(
+                            "ミュートされた側には影響はありません。",
+                            "There is no impact on the muted user.",
+                          )}
+                        </li>
+                      </ul>
+                      <p className="mt-2">
+                        {t(
+                          "※ 作品は通常どおり投稿・表示されます。※ いいねやコメントの制限もありません。",
+                          "* Works are posted and shown as usual. * There are no restrictions on likes or comments.",
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="border-red-500 border-l-4 pl-4">
                   <h3 className="mb-2 font-semibold">
                     {t("タグ検索", "Tag Search")}

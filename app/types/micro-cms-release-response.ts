@@ -6,6 +6,7 @@ export interface MicroCmsApiRelease {
     url: string
   }
   platform: string
+  tag?: string
   createdAt: number
 }
 

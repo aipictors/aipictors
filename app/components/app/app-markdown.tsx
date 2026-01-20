@@ -6,6 +6,7 @@ import type React from "react"
 
 type Props = Readonly<{
   className?: string
+  breaks?: boolean
   children: React.ReactNode
 }>
 
@@ -14,7 +15,9 @@ export function AppMarkdown(props: Props) {
     return <>{props.children}</>
   }
 
-  const html = marked(props.children, {})
+  const html = marked(props.children, {
+    breaks: props.breaks ?? false,
+  })
 
   return (
     <div
