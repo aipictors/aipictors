@@ -5,6 +5,7 @@ import {
 } from "~/routes/($lang)._main.stickers._index/components/sticker-list"
 import { StickerListHeader } from "~/routes/($lang)._main.stickers._index/components/sticker-list-header"
 import { StickerSearchForm } from "~/routes/($lang)._main.stickers._index/components/sticker-search-form"
+import { StickerCreator } from "~/routes/($lang)._main.stickers._index/components/sticker-creator"
 import type {
   MetaFunction,
   LoaderFunctionArgs,
@@ -102,6 +103,7 @@ export default function StickersPage() {
   return (
     <main className="flex flex-col space-y-4">
       <StickerListHeader />
+      <StickerCreator />
       <StickerSearchForm />
       <section className="flex flex-col gap-y-4">
         <h2 className="font-bold text-lg">{t("新着", "New Arrivals")}</h2>

@@ -89,11 +89,11 @@ export function GalleryHeader() {
   const isGalleryPage = location.pathname.includes("/posts/gallery")
 
   return (
-    <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <div className="sticky top-0 z-40 w-full overflow-x-clip border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+        <div className="flex min-w-0 items-center justify-between gap-2">
           {/* 左側: ロゴ、ギャラリートップボタン、メニュー */}
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-4">
             {/* ロゴ（常に表示） */}
             <Link to="/" className="flex items-center gap-2">
               <img
@@ -103,7 +103,7 @@ export function GalleryHeader() {
                 width={32}
                 height={32}
               />
-              <span className="hidden font-bold text-xl sm:inline">
+              <span className="hidden min-w-0 truncate font-bold text-xl sm:inline">
                 Aipictors
               </span>
             </Link>
@@ -166,7 +166,7 @@ export function GalleryHeader() {
           </div>
 
           {/* 右側: ツールバーと検索ボタン */}
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {/* 検索ボタン（モバイル用） */}
             <Button
               variant="ghost"

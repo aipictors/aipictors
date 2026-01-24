@@ -403,7 +403,7 @@ function HomeHeader(props: Props) {
     <AppHeader isSmallLeftPadding={props.alwaysShowTitle}>
       <div
         className={cn(
-          "flex min-w-fit items-center gap-x-2",
+          "flex min-w-0 items-center gap-x-2",
           props.alwaysShowTitle ? "" : "lg:hidden",
         )}
       >
@@ -514,7 +514,7 @@ function HomeHeader(props: Props) {
           )}
         </div>
       </div>
-      <div className="flex w-full justify-end gap-x-2">
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
         <div className="hidden w-full items-center space-x-2 md:flex">
           <div
             className={`flex w-full items-center justify-start space-x-2 font-semibold ${
@@ -529,7 +529,7 @@ function HomeHeader(props: Props) {
                 : ""
             }`}
           >
-            <div className="relative flex w-full flex-1 shrink-0 flex-col rounded-xl border border-border bg-input shadow-[0px_7px_21px_0px_rgba(51,_51,_51,_0.05)] dark:shadow-[0px_7px_21px_0px_rgba(0,_0,_0,_0.25)]">
+            <div className="relative flex w-full min-w-0 flex-1 flex-col rounded-xl border border-border bg-input">
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
