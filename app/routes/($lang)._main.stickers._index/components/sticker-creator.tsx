@@ -620,7 +620,7 @@ export function StickerCreator() {
               <button
                 key={url}
                 type="button"
-                className="rounded-lg border bg-muted/20 p-2 hover:border-primary"
+                className="rounded-lg border bg-zinc-800/60 p-2 transition-colors hover:border-primary"
                 onClick={() => void addImageLayer(url)}
               >
                 <img src={url} alt="" className="w-full" />
@@ -891,7 +891,7 @@ export function StickerCreator() {
                     <button
                       key={url}
                       type="button"
-                      className="rounded-lg border bg-muted/20 p-2 hover:border-primary"
+                      className="rounded-lg border bg-zinc-800/60 p-2 transition-colors hover:border-primary"
                       onClick={() => void addImageLayer(url)}
                     >
                       <img src={url} alt="" className="w-full" />
