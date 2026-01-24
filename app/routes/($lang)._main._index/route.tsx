@@ -55,7 +55,7 @@ import {
   HomeNewCommentsFragment,
   HomeNewCommentsSection,
 } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { useState, useEffect, Suspense, useMemo } from "react"
+import { useState, useEffect, Suspense, useMemo, useId } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
@@ -190,38 +190,123 @@ export default function Index() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
+  const checkboxId = useId()
 
   const [searchParams, _setSearchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
 
+  // URLパラメータから初期値を取得する関数（SSR対応）
+  const getInitialTabValue = () => {
+    if (typeof window === "undefined") return "home"
+    const tabParam = searchParams.get("tab")
+    return tabParam || "home"
+  }
+
+  const getInitialPageValue = () => {
+    if (typeof window === "undefined") return 0
+    const page = searchParams.get("page")
+    const pageNumber = page ? Number.parseInt(page, 10) : 0
+    return !Number.isNaN(pageNumber) && pageNumber >= 0 && pageNumber <= 100
+      ? pageNumber
+      : 0
+  }
+
+  const getInitialWorkType = () => {
+    if (typeof window === "undefined") return null
+    const wtParam = searchParams.get("workType")
+    return wtParam && wtParam !== "ALL"
+      ? (wtParam as IntrospectionEnum<"WorkType">)
+      : null
+  }
+
+  const getInitialIsPromptPublic = () => {
+    if (typeof window === "undefined") return null
+    const isPromptParam = searchParams.get("isPromptPublic")
+    if (isPromptParam === "true") return true
+    if (isPromptParam === "false") return false
+    return null
+  }
+
+  const getInitialSortType = () => {
+    if (typeof window === "undefined") return null
+    const sortTypeParam = searchParams.get("sortType")
+    if (
+      sortTypeParam === "DATE_CREATED" ||
+      sortTypeParam === "LIKES_COUNT" ||
+      sortTypeParam === "COMMENTS_COUNT"
+    ) {
+      return sortTypeParam as IntrospectionEnum<"WorkOrderBy">
+    }
+    return null
+  }
+
+  const getInitialTimeRange = () => {
+    if (typeof window === "undefined") return "ALL"
+    const tr = searchParams.get("timeRange")
+    return tr && tr !== "ALL" ? tr : "ALL"
+  }
+
+  const getInitialIsOneWorkPerUser = () => {
+    if (typeof window === "undefined") return false
+    const isOneWorkPerUserParam = searchParams.get("isOneWorkPerUser")
+    return isOneWorkPerUserParam === "true"
+  }
+
+  const getInitialWorkView = () => {
+    if (typeof window === "undefined") return "new"
+    const viewParam = searchParams.get("view")
+    return viewParam || "new"
+  }
+
+  const getInitialIsPagination = () => {
+    if (typeof window === "undefined") return true
+    const isPaginationParam = searchParams.get("isPagination")
+    if (isPaginationParam === "false") return false
+    return true
+  }
+
   const [isMounted, setIsMounted] = useState(false)
 
-  // タブ関連
-  const [newWorksPage, setNewWorksPage] = useState(0)
-  const [followUserFeedPage, setFollowUserFeedPage] = useState(0)
-  const [followTagFeedPage, setFollowTagFeedPage] = useState(0)
+  // タブ関連 - URLパラメータから初期化
+  const initialTab = getInitialTabValue()
+  const initialPage = getInitialPageValue()
+  const [newWorksPage, setNewWorksPage] = useState(
+    initialTab === "new" ? initialPage : 0,
+  )
+  const [followUserFeedPage, setFollowUserFeedPage] = useState(
+    initialTab === "follow-user" ? initialPage : 0,
+  )
+  const [followTagFeedPage, setFollowTagFeedPage] = useState(
+    initialTab === "follow-tag" ? initialPage : 0,
+  )
 
   const [workType, setWorkType] =
-    useState<IntrospectionEnum<"WorkType"> | null>(null)
-  const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(null)
+    useState<IntrospectionEnum<"WorkType"> | null>(getInitialWorkType())
+  const [isPromptPublic, setIsPromptPublic] = useState<boolean | null>(
+    getInitialIsPromptPublic(),
+  )
   const [sortType, setSortType] =
-    useState<IntrospectionEnum<"WorkOrderBy"> | null>(null)
-  const [isOneWorkPerUser, setIsOneWorkPerUser] = useState<boolean>(false)
+    useState<IntrospectionEnum<"WorkOrderBy"> | null>(getInitialSortType())
+  const [isOneWorkPerUser, setIsOneWorkPerUser] = useState<boolean>(
+    getInitialIsOneWorkPerUser(),
+  )
 
   const navigate = useNavigate()
 
-  // 期間指定の state - SSR対応のため初期値は固定値を使用
-  const [timeRange, setTimeRange] = useState<string>("ALL")
+  // 期間指定の state
+  const [timeRange, setTimeRange] = useState<string>(getInitialTimeRange())
 
   const location = useLocale()
 
-  // タブ（home / new / follow-user / follow-tag） - SSR対応のため初期値は固定値を使用
-  const [currentTab, setCurrentTab] = useState("home")
+  // タブ（home / new / follow-user / follow-tag）
+  const [currentTab, setCurrentTab] = useState(initialTab)
 
-  // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え - SSR対応のため初期値は固定値を使用
-  const [workView, setWorkView] = useState("new")
+  // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え
+  const [workView, setWorkView] = useState(getInitialWorkView())
 
-  const [internalIsPagination, setInternalIsPagination] = useState(true)
+  const [internalIsPagination, setInternalIsPagination] = useState(
+    getInitialIsPagination(),
+  )
 
   // 作品遷移モード（ダイアログ / 直接リンク）
   const [isDialogMode, setIsDialogMode] = useState(false)
@@ -261,78 +346,13 @@ export default function Index() {
   )
 
   /**
-   * マウント時に、すでに URL に入っているクエリパラメータを用いて
-   * 各 state を初期化する
+   * マウント時の初期化（状態はすでに初期値で設定済み）
    */
   useEffect(() => {
-    // 初回のみ実行
     if (!isMounted) {
-      // tab（currentTab）
-      const tabParam = searchParams.get("tab")
-      if (tabParam) {
-        setCurrentTab(tabParam)
-      }
-
-      // ページ番号
-      const page = searchParams.get("page")
-      const pageNumber = page ? Number.parseInt(page, 10) : 0
-
-      if (!Number.isNaN(pageNumber) && pageNumber >= 0 && pageNumber <= 100) {
-        const currentTabForPage = tabParam || "home"
-        if (currentTabForPage === "new") {
-          setNewWorksPage(pageNumber)
-        } else if (currentTabForPage === "follow-user") {
-          setFollowUserFeedPage(pageNumber)
-        } else if (currentTabForPage === "follow-tag") {
-          setFollowTagFeedPage(pageNumber)
-        }
-      }
-
-      // workType
-      const wtParam = searchParams.get("workType")
-      if (wtParam && wtParam !== "ALL") {
-        setWorkType(wtParam as IntrospectionEnum<"WorkType">)
-      }
-
-      // isPromptPublic
-      const isPromptParam = searchParams.get("isPromptPublic")
-      if (isPromptParam === "true") {
-        setIsPromptPublic(true)
-      } else if (isPromptParam === "false") {
-        setIsPromptPublic(false)
-      }
-
-      // sortType
-      const sortTypeParam = searchParams.get("sortType")
-      if (
-        sortTypeParam === "DATE_CREATED" ||
-        sortTypeParam === "LIKES_COUNT" ||
-        sortTypeParam === "COMMENTS_COUNT"
-      ) {
-        setSortType(sortTypeParam as IntrospectionEnum<"WorkOrderBy">)
-      }
-
-      // timeRange
-      const tr = searchParams.get("timeRange")
-      if (tr && tr !== "ALL") {
-        setTimeRange(tr)
-      }
-
-      // isOneWorkPerUser
-      const isOneWorkPerUserParam = searchParams.get("isOneWorkPerUser")
-      if (isOneWorkPerUserParam === "true") {
-        setIsOneWorkPerUser(true)
-      }
-
-      // workView
-      const viewParam = searchParams.get("view")
-      if (viewParam) {
-        setWorkView(viewParam)
-      }
-
       setIsMounted(true)
     }
-  }, [isMounted, searchParams])
+  }, [isMounted])
 
   // タブ変更時（Tabs の onValueChange）などで呼ばれる
   const handleTabChange = (tab: string) => {
@@ -636,8 +656,8 @@ export default function Index() {
         onValueChange={handleTabChange}
         className="space-y-6"
       >
-        {/* ヘッダー部分: タブとR18ボタン */}
-        <div className="-mx-1 sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
+        {/* ヘッダー部分: タブ */}
+        <div className="-mx-4 sticky top-0 z-20 border-b bg-background/98 px-4 py-2 backdrop-blur-md">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
             <div className="min-w-0 flex-1">
               <AppAnimatedTabs
@@ -651,38 +671,29 @@ export default function Index() {
                 onChange={handleTabChange}
               />
             </div>
-            {/* <div className="flex items-center gap-3">
-              {/\/r($|\/)/.test(location.pathname) && (
-                <div className="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-red-100 to-pink-100 px-3 py-1.5 sm:flex dark:from-red-900/50 dark:to-pink-900/50">
-                  <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
-                  <span className="font-semibold text-red-700 text-sm dark:text-red-300">
-                    {t("R18モード", "R18 Mode")}
-                  </span>
-                </div>
-              )}
-              <SensitiveToggle variant="compact" showStatus />
-            </div> */}
           </div>
         </div>
         {/* ---------------------- タブ: ホーム ---------------------- */}
         <TabsContent value="home" className="m-0 flex flex-col space-y-4">
-          {data.dailyTheme && (
-            <div>
-              <HomeTagList
-                themeTitle={data.dailyTheme.title}
-                hotTags={data.hotTags}
+          <Suspense fallback={<AppLoadingPage />}>
+            {data.dailyTheme && (
+              <div>
+                <HomeTagList
+                  themeTitle={data.dailyTheme.title}
+                  hotTags={data.hotTags}
+                />
+              </div>
+            )}
+            {data.adWorks && data.adWorks.length > 0 && (
+              <HomeBanners
+                works={data.adWorks}
+                ongoingEvents={data.latestEvent ? [data.latestEvent] : []}
+                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               />
-            </div>
-          )}
-          {data.adWorks && data.adWorks.length > 0 && (
-            <HomeBanners
-              works={data.adWorks}
-              ongoingEvents={data.latestEvent ? [data.latestEvent] : []}
-              onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-            />
-          )}
+            )}
+          </Suspense>
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
-            <div className="flex w-full flex-col space-y-4 overflow-hidden md:max-w-[calc(100vw_-_262px)]">
+            <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_262px)]">
               <HomeReleaseList releaseList={data.releaseList} />
               <HomeWorksUsersRecommendedSection
                 works={data.promotionWorks}
@@ -771,21 +782,23 @@ export default function Index() {
         {/* ---------------------- タブ: 新着・人気 ---------------------- */}
         <TabsContent value="new" className="flex flex-col space-y-4">
           {/* 新着 or 人気 or 新規ユーザの切り替えボタン */}
-          <div className="flex space-x-2 md:space-x-4">
+          <div className="flex flex-wrap gap-2">
             <Button
-              variant={workView === "new" ? "default" : "secondary"}
+              variant={workView === "new" ? "default" : "outline"}
               onClick={() => handleWorkViewChange("new")}
               size="sm"
+              className="font-medium shadow-sm transition-shadow hover:shadow"
             >
               {t("新着", "New")}
             </Button>
             <Button
-              variant={workView === "popular" ? "default" : "secondary"}
+              variant={workView === "popular" ? "default" : "outline"}
               onClick={() => handleWorkViewChange("popular")}
               size="sm"
+              className="font-medium shadow-sm transition-shadow hover:shadow"
             >
-              <div className="flex space-x-1 md:space-x-2">
-                <p>{t("人気", "Popular")}</p>
+              <div className="flex items-center space-x-1.5">
+                <span>{t("人気", "Popular")}</span>
                 <CrossPlatformTooltip
                   text={t(
                     "最近投稿された人気作品が表示されます",
@@ -795,15 +808,16 @@ export default function Index() {
               </div>
             </Button>
             <Button
-              variant={workView === "new-user" ? "default" : "secondary"}
+              variant={workView === "new-user" ? "default" : "outline"}
               onClick={() => handleWorkViewChange("new-user")}
               size="sm"
+              className="font-medium shadow-sm transition-shadow hover:shadow"
             >
-              <div className="flex space-x-1 md:space-x-2">
-                <p className="hidden sm:block">
+              <div className="flex items-center space-x-1.5">
+                <span className="hidden sm:inline">
                   {t("新規ユーザ", "New Users")}
-                </p>
-                <p className="block sm:hidden">{t("新規", "New")}</p>
+                </span>
+                <span className="inline sm:hidden">{t("新規", "New")}</span>
                 <CrossPlatformTooltip
                   text={t(
                     "新規登録されたユーザの作品一覧です",
@@ -817,15 +831,15 @@ export default function Index() {
           {workView === "new" && (
             <div className="space-y-4">
               {/* 絞り込み用のセレクト群 - レスポンシブレイアウト */}
-              <div className="space-y-3">
+              <div className="space-y-3 rounded-lg bg-muted/30 p-4">
                 {/* フィルター行1: 種類、プロンプト、ソート */}
-                <div className="grid grid-cols-3 gap-2 md:flex md:space-x-4">
+                <div className="grid grid-cols-3 gap-2 md:flex md:flex-wrap md:gap-3">
                   {/* 種類 */}
                   <Select
                     value={workType ? workType : ""}
                     onValueChange={handleWorkTypeChange}
                   >
-                    <SelectTrigger className="min-w-0 text-xs md:min-w-[120px] md:text-sm">
+                    <SelectTrigger className="h-10 min-w-0 font-medium text-xs md:min-w-[130px] md:text-sm">
                       <SelectValue
                         placeholder={
                           workType
@@ -863,7 +877,7 @@ export default function Index() {
                     }
                     onValueChange={handlePromptChange}
                   >
-                    <SelectTrigger className="min-w-0 text-xs md:min-w-[120px] md:text-sm">
+                    <SelectTrigger className="h-10 min-w-0 font-medium text-xs md:min-w-[130px] md:text-sm">
                       <SelectValue
                         placeholder={
                           isPromptPublic === null
@@ -890,8 +904,8 @@ export default function Index() {
                     value={sortType ? sortType : ""}
                     onValueChange={handleSortTypeChange}
                   >
-                    <SelectTrigger className="min-w-0 text-xs md:min-w-[120px] md:text-sm">
-                      <ArrowDownWideNarrow className="h-3 w-3 md:h-4 md:w-4" />
+                    <SelectTrigger className="h-10 min-w-0 font-medium text-xs md:min-w-[130px] md:text-sm">
+                      <ArrowDownWideNarrow className="h-3.5 w-3.5 md:h-4 md:w-4" />
                       <SelectValue
                         placeholder={sortType ? sortType : t("最新", "Latest")}
                       />
@@ -919,7 +933,7 @@ export default function Index() {
                       value={timeRange}
                       onValueChange={handleTimeRangeChange}
                     >
-                      <SelectTrigger className="w-full text-xs sm:w-auto sm:min-w-[120px] md:text-sm">
+                      <SelectTrigger className="h-10 w-full font-medium text-xs sm:w-auto sm:min-w-[130px] md:text-sm">
                         <SelectValue
                           placeholder={
                             timeRange === "ALL"
@@ -945,9 +959,9 @@ export default function Index() {
                     </Select>
 
                     {/* ユーザー毎に1作品フィルター */}
-                    <div className="flex items-center space-x-2 rounded-lg border bg-card px-3 py-2.5">
+                    <div className="flex items-center space-x-2 rounded-lg border bg-background px-3 py-2.5 shadow-sm transition-colors hover:bg-muted/50">
                       <Checkbox
-                        id="one-work-per-user"
+                        id={checkboxId}
                         checked={isOneWorkPerUser}
                         onCheckedChange={(checked) => {
                           const newValue = checked === true
@@ -964,7 +978,7 @@ export default function Index() {
                         }}
                       />
                       <label
-                        htmlFor="one-work-per-user"
+                        htmlFor={checkboxId}
                         className="cursor-pointer font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         {t("ユーザー毎に1作品", "One work per user")}
@@ -973,8 +987,8 @@ export default function Index() {
                   </div>
 
                   {/* 右側: 表示方式切り替え */}
-                  <div className="flex space-x-2 md:ml-auto">
-                    <div className="flex rounded-lg bg-muted p-1">
+                  <div className="flex flex-wrap gap-2 md:ml-auto">
+                    <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -984,13 +998,13 @@ export default function Index() {
                           p.set("isPagination", "false")
                           updateQueryParams(p)
                         }}
-                        className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                        className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                           !internalIsPagination
                             ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         } `}
                       >
-                        <List className="h-3 w-3" />
+                        <List className="h-3.5 w-3.5" />
                         <span className="hidden sm:inline">
                           {t("フィード", "Feed")}
                         </span>
@@ -1004,30 +1018,30 @@ export default function Index() {
                           p.set("isPagination", "true")
                           updateQueryParams(p)
                         }}
-                        className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                        className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                           internalIsPagination
                             ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         } `}
                       >
-                        <Navigation className="h-3 w-3" />
+                        <Navigation className="h-3.5 w-3.5" />
                         <span className="hidden sm:inline">
                           {t("ページ", "Pages")}
                         </span>
                       </Button>
                     </div>
-                    <div className="flex rounded-lg bg-muted p-1">
+                    <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => onChangeDialogMode(false)}
-                        className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                        className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                           !isDialogMode
                             ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         } `}
                       >
-                        <ExternalLink className="h-4 w-4" />
+                        <ExternalLink className="h-3.5 w-3.5" />
                         <span className="hidden lg:inline">
                           {t("リンク遷移", "Open page")}
                         </span>
@@ -1036,13 +1050,13 @@ export default function Index() {
                         variant="ghost"
                         size="sm"
                         onClick={() => onChangeDialogMode(true)}
-                        className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                        className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                           isDialogMode
                             ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         } `}
                       >
-                        <PlaySquare className="h-4 w-4" />
+                        <PlaySquare className="h-3.5 w-3.5" />
                         <span className="hidden lg:inline">
                           {t("ダイアログ", "Dialog")}
                         </span>
@@ -1088,33 +1102,37 @@ export default function Index() {
           {workView === "popular" && (
             <div className="space-y-4">
               {/* 表示方式切り替え */}
-              <div className="flex justify-end space-x-2 md:space-x-4">
-                <div className="flex rounded-lg bg-muted p-1">
+              <div className="flex justify-end">
+                <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsDialogMode(false)}
-                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                       !isDialogMode
                         ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     } `}
                   >
-                    <ExternalLink className="h-4 w-4" />
-                    <span>{t("リンク遷移", "Open page")}</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">
+                      {t("リンク遷移", "Open page")}
+                    </span>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsDialogMode(true)}
-                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                       isDialogMode
                         ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     } `}
                   >
-                    <PlaySquare className="h-4 w-4" />
-                    <span>{t("ダイアログ", "Dialog")}</span>
+                    <PlaySquare className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">
+                      {t("ダイアログ", "Dialog")}
+                    </span>
                   </Button>
                 </div>
               </div>
@@ -1138,8 +1156,8 @@ export default function Index() {
           {workView === "new-user" && (
             <div className="space-y-4">
               {/* 表示方式切り替え */}
-              <div className="flex justify-end space-x-2 md:space-x-4">
-                <div className="flex rounded-lg bg-muted p-1">
+              <div className="flex flex-wrap justify-end gap-2">
+                <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1149,13 +1167,13 @@ export default function Index() {
                       p.set("isPagination", "false")
                       updateQueryParams(p)
                     }}
-                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                       !internalIsPagination
                         ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
-                    <List className="h-3 w-3" />
+                    <List className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">
                       {t("フィード", "Feed")}
                     </span>
@@ -1169,44 +1187,48 @@ export default function Index() {
                       p.set("isPagination", "true")
                       updateQueryParams(p)
                     }}
-                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                       internalIsPagination
                         ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
-                    <Navigation className="h-3 w-3" />
+                    <Navigation className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">
                       {t("ページ", "Pages")}
                     </span>
                   </Button>
                 </div>
-                <div className="flex rounded-lg bg-muted p-1">
+                <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onChangeDialogMode(false)}
-                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                       !isDialogMode
                         ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     } `}
                   >
-                    <ExternalLink className="h-4 w-4" />
-                    <span>{t("リンク遷移", "Open page")}</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">
+                      {t("リンク遷移", "Open page")}
+                    </span>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onChangeDialogMode(true)}
-                    className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                    className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                       isDialogMode
                         ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     } `}
                   >
-                    <PlaySquare className="h-4 w-4" />
-                    <span>{t("ダイアログ", "Dialog")}</span>
+                    <PlaySquare className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">
+                      {t("ダイアログ", "Dialog")}
+                    </span>
                   </Button>
                 </div>
               </div>
@@ -1227,8 +1249,8 @@ export default function Index() {
         {/* ---------------------- タブ: フォロー中のユーザ ---------------------- */}
         <TabsContent value="follow-user" className="space-y-4">
           {/* Feed / Pages 切り替えボタン */}
-          <div className="flex justify-end space-x-2 md:space-x-4">
-            <div className="flex rounded-lg bg-muted p-1">
+          <div className="flex flex-wrap justify-end gap-2">
+            <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
               <Button
                 variant="ghost"
                 size="sm"
@@ -1238,13 +1260,13 @@ export default function Index() {
                   p.set("isPagination", "false")
                   updateQueryParams(p)
                 }}
-                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                   !internalIsPagination
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                <List className="h-3 w-3" />
+                <List className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">
                   {t("フィード", "Feed")}
                 </span>
@@ -1258,42 +1280,46 @@ export default function Index() {
                   p.set("isPagination", "true")
                   updateQueryParams(p)
                 }}
-                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                   internalIsPagination
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                <Navigation className="h-3 w-3" />
+                <Navigation className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
               </Button>
             </div>
-            <div className="flex rounded-lg bg-muted p-1">
+            <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsDialogMode(false)}
-                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                   !isDialogMode
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 } `}
               >
-                <ExternalLink className="h-4 w-4" />
-                <span>{t("リンク遷移", "Open page")}</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">
+                  {t("リンク遷移", "Open page")}
+                </span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsDialogMode(true)}
-                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                   isDialogMode
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 } `}
               >
-                <PlaySquare className="h-4 w-4" />
-                <span>{t("ダイアログ", "Dialog")}</span>
+                <PlaySquare className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">
+                  {t("ダイアログ", "Dialog")}
+                </span>
               </Button>
             </div>
           </div>
@@ -1315,8 +1341,8 @@ export default function Index() {
         {/* ---------------------- タブ: お気に入りタグ ---------------------- */}
         <TabsContent value="follow-tag" className="space-y-4">
           {/* Feed / Pages 切り替えボタン */}
-          <div className="flex justify-end space-x-2 md:space-x-4">
-            <div className="flex rounded-lg bg-muted p-1">
+          <div className="flex flex-wrap justify-end gap-2">
+            <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
               <Button
                 variant="ghost"
                 size="sm"
@@ -1326,13 +1352,13 @@ export default function Index() {
                   p.set("isPagination", "false")
                   updateQueryParams(p)
                 }}
-                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                   !internalIsPagination
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                <List className="h-3 w-3" />
+                <List className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">
                   {t("フィード", "Feed")}
                 </span>
@@ -1347,42 +1373,46 @@ export default function Index() {
                   p.set("isPagination", "true")
                   updateQueryParams(p)
                 }}
-                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 text-xs ${
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                   internalIsPagination
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
-                <Navigation className="h-3 w-3" />
+                <Navigation className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">{t("ページ", "Pages")}</span>
               </Button>
             </div>
-            <div className="flex rounded-lg bg-muted p-1">
+            <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onChangeDialogMode(false)}
-                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                   !isDialogMode
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 } `}
               >
-                <ExternalLink className="h-4 w-4" />
-                <span>{t("リンク遷移", "Open page")}</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">
+                  {t("リンク遷移", "Open page")}
+                </span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onChangeDialogMode(true)}
-                className={`flex items-center space-x-1 rounded-md px-3 py-1.5 font-medium text-xs transition-all ${
+                className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
                   isDialogMode
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 } `}
               >
-                <PlaySquare className="h-4 w-4" />
-                <span>{t("ダイアログ", "Dialog")}</span>
+                <PlaySquare className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">
+                  {t("ダイアログ", "Dialog")}
+                </span>
               </Button>
             </div>
           </div>
