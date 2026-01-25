@@ -60,6 +60,13 @@ type LayerBase = {
   rotate: number
   width: number
   height: number
+  flipX?: boolean
+  flipY?: boolean
+  scaleX?: number
+  scaleY?: number
+  // degrees
+  skewX?: number
+  skewY?: number
 }
 
 type ImageLayer = LayerBase & {
@@ -282,6 +289,12 @@ export function StickerCreator() {
   )
   const [colorRemovalAllBusy, setColorRemovalAllBusy] = useState(false)
 
+  const colorRemovalBusyRef = useRef<Record<string, boolean>>({})
+  const colorRemovalAllBusyRef = useRef(false)
+  const colorRemovalDebounceRef = useRef<
+    Record<string, ReturnType<typeof setTimeout> | null>
+  >({})
+
   const [leftPanelWidth, setLeftPanelWidth] = useState(320)
   const [rightPanelWidth, setRightPanelWidth] = useState(320)
 
@@ -293,6 +306,24 @@ export function StickerCreator() {
   useEffect(() => {
     layersRef.current = layers
   }, [layers])
+
+  useEffect(() => {
+    colorRemovalBusyRef.current = colorRemovalBusy
+  }, [colorRemovalBusy])
+
+  useEffect(() => {
+    colorRemovalAllBusyRef.current = colorRemovalAllBusy
+  }, [colorRemovalAllBusy])
+
+  useEffect(() => {
+    return () => {
+      for (const timer of Object.values(colorRemovalDebounceRef.current)) {
+        if (timer) {
+          clearTimeout(timer)
+        }
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const element = canvasRef.current
@@ -315,6 +346,18 @@ export function StickerCreator() {
   const clampToCanvas = (value: number) =>
     Math.max(0, Math.min(CANVAS_SIZE, value))
   const clampPanelWidth = (value: number) => Math.max(240, Math.min(520, value))
+
+  const scheduleColorRemoval = (layerId: string) => {
+    const prev = colorRemovalDebounceRef.current[layerId]
+    if (prev) {
+      clearTimeout(prev)
+    }
+    colorRemovalDebounceRef.current[layerId] = setTimeout(() => {
+      if (colorRemovalAllBusyRef.current) return
+      if (colorRemovalBusyRef.current[layerId] === true) return
+      void applyColorRemovalToLayer(layerId)
+    }, 350)
+  }
 
   const commitLayers = (next: Layer[]) => {
     setHistory((prev) => ({
@@ -350,6 +393,12 @@ export function StickerCreator() {
         rotate: 0,
         width: Math.max(24, Math.round(width * scale)),
         height: Math.max(24, Math.round(height * scale)),
+        flipX: false,
+        flipY: false,
+        scaleX: 1,
+        scaleY: 1,
+        skewX: 0,
+        skewY: 0,
         src,
         removeColorBackground: false,
         colorKey: "#ffffff",
@@ -486,6 +535,12 @@ export function StickerCreator() {
       rotate: 0,
       width: box.width,
       height: box.height,
+      flipX: false,
+      flipY: false,
+      scaleX: 1,
+      scaleY: 1,
+      skewX: 0,
+      skewY: 0,
       text: textInput.trim(),
       fontSize: 64,
       fontFamily: newTextFontFamily,
@@ -531,6 +586,25 @@ export function StickerCreator() {
     if (activeLayerId === id) {
       setActiveLayerId(next.at(-1)?.id ?? null)
     }
+  }
+
+  const duplicateLayer = (id: string) => {
+    const source = layersRef.current.find((layer) => layer.id === id)
+    if (!source) return
+
+    const nextId = crypto.randomUUID()
+    const offset = 16
+    const nextLayer: Layer = {
+      ...source,
+      id: nextId,
+      name: `${source.name} copy`,
+      locked: false,
+      x: clampToCanvas(source.x + offset),
+      y: clampToCanvas(source.y + offset),
+    }
+
+    commitLayers([...layersRef.current, nextLayer])
+    setActiveLayerId(nextId)
   }
 
   const moveLayer = (id: string, direction: "up" | "down") => {
@@ -742,7 +816,13 @@ export function StickerCreator() {
       ctx.save()
       ctx.translate(layer.x, layer.y)
       ctx.rotate((layer.rotate * Math.PI) / 180)
-      ctx.scale(layer.scale, layer.scale)
+      const sx = (layer.scaleX ?? 1) * layer.scale * (layer.flipX ? -1 : 1)
+      const sy = (layer.scaleY ?? 1) * layer.scale * (layer.flipY ? -1 : 1)
+      const skewX = ((layer.skewX ?? 0) * Math.PI) / 180
+      const skewY = ((layer.skewY ?? 0) * Math.PI) / 180
+      // shear matrix
+      ctx.transform(1, Math.tan(skewY), Math.tan(skewX), 1, 0, 0)
+      ctx.scale(sx, sy)
 
       if (layer.type === "image") {
         const img = await loadImage(layer.src)
@@ -1043,6 +1123,18 @@ export function StickerCreator() {
                 size="sm"
                 onClick={() => {
                   if (activeLayerId) {
+                    duplicateLayer(activeLayerId)
+                  }
+                }}
+                disabled={!activeLayerId}
+              >
+                複製
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  if (activeLayerId) {
                     removeLayer(activeLayerId)
                   }
                 }}
@@ -1094,7 +1186,7 @@ export function StickerCreator() {
                             : "")
                         }
                         style={{
-                          transform: `translate(-50%, -50%) rotate(${layer.rotate}deg) scale(${layer.scale})`,
+                          transform: `translate(-50%, -50%) rotate(${layer.rotate}deg) skew(${layer.skewX ?? 0}deg, ${layer.skewY ?? 0}deg) scale(${(layer.scaleX ?? 1) * layer.scale * (layer.flipX ? -1 : 1)}, ${(layer.scaleY ?? 1) * layer.scale * (layer.flipY ? -1 : 1)})`,
                           transformOrigin: "center",
                         }}
                         onPointerDown={(event) => {
@@ -1402,6 +1494,177 @@ export function StickerCreator() {
                     )}
                     {activeLayer?.type === "image" ? (
                       <div className="space-y-3">
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              commitLayerPatch(activeLayer.id, {
+                                flipX: !activeLayer.flipX,
+                              })
+                            }
+                          >
+                            左右反転
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              commitLayerPatch(activeLayer.id, {
+                                flipY: !activeLayer.flipY,
+                              })
+                            }
+                          >
+                            上下反転
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              commitLayerPatch(activeLayer.id, {
+                                rotate: 0,
+                                scale: 1,
+                                scaleX: 1,
+                                scaleY: 1,
+                                skewX: 0,
+                                skewY: 0,
+                                flipX: false,
+                                flipY: false,
+                              })
+                            }
+                          >
+                            変形リセット
+                          </Button>
+                        </div>
+
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs">横伸縮</Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="range"
+                                min={0.2}
+                                max={3}
+                                step={0.01}
+                                value={activeLayer.scaleX ?? 1}
+                                onChange={(event) =>
+                                  updateLayer(activeLayer.id, {
+                                    scaleX: Number(event.target.value),
+                                  })
+                                }
+                              />
+                              <Input
+                                type="number"
+                                min={0.2}
+                                max={3}
+                                step={0.01}
+                                value={activeLayer.scaleX ?? 1}
+                                onChange={(event) =>
+                                  updateLayer(activeLayer.id, {
+                                    scaleX: Number(event.target.value),
+                                  })
+                                }
+                                className="w-20"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label className="text-xs">縦伸縮</Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="range"
+                                min={0.2}
+                                max={3}
+                                step={0.01}
+                                value={activeLayer.scaleY ?? 1}
+                                onChange={(event) =>
+                                  updateLayer(activeLayer.id, {
+                                    scaleY: Number(event.target.value),
+                                  })
+                                }
+                              />
+                              <Input
+                                type="number"
+                                min={0.2}
+                                max={3}
+                                step={0.01}
+                                value={activeLayer.scaleY ?? 1}
+                                onChange={(event) =>
+                                  updateLayer(activeLayer.id, {
+                                    scaleY: Number(event.target.value),
+                                  })
+                                }
+                                className="w-20"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs">歪み（X）</Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="range"
+                                min={-45}
+                                max={45}
+                                step={1}
+                                value={activeLayer.skewX ?? 0}
+                                onChange={(event) =>
+                                  updateLayer(activeLayer.id, {
+                                    skewX: Number(event.target.value),
+                                  })
+                                }
+                              />
+                              <Input
+                                type="number"
+                                min={-45}
+                                max={45}
+                                step={1}
+                                value={activeLayer.skewX ?? 0}
+                                onChange={(event) =>
+                                  updateLayer(activeLayer.id, {
+                                    skewX: Number(event.target.value),
+                                  })
+                                }
+                                className="w-20"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <Label className="text-xs">歪み（Y）</Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="range"
+                                min={-45}
+                                max={45}
+                                step={1}
+                                value={activeLayer.skewY ?? 0}
+                                onChange={(event) =>
+                                  updateLayer(activeLayer.id, {
+                                    skewY: Number(event.target.value),
+                                  })
+                                }
+                              />
+                              <Input
+                                type="number"
+                                min={-45}
+                                max={45}
+                                step={1}
+                                value={activeLayer.skewY ?? 0}
+                                onChange={(event) =>
+                                  updateLayer(activeLayer.id, {
+                                    skewY: Number(event.target.value),
+                                  })
+                                }
+                                className="w-20"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             <Switch
@@ -1423,7 +1686,7 @@ export function StickerCreator() {
                             <Label className="text-xs">指定色を透過</Label>
                           </div>
                           <span className="text-muted-foreground text-xs">
-                            しきい値: {activeLayer.colorThreshold ?? 40}
+                            許容範囲: {activeLayer.colorThreshold ?? 40}
                           </span>
                         </div>
 
@@ -1455,7 +1718,7 @@ export function StickerCreator() {
                                   colorKey: picked,
                                 })
                                 if (activeLayer.removeColorBackground) {
-                                  void applyColorRemovalToLayer(activeLayer.id)
+                                  scheduleColorRemoval(activeLayer.id)
                                 }
                               }}
                               disabled={
@@ -1469,32 +1732,41 @@ export function StickerCreator() {
                         </div>
 
                         <div className="space-y-1">
-                          <Label className="text-xs">しきい値</Label>
+                          <Label className="text-xs">許容範囲</Label>
                           <div className="flex items-center gap-2">
                             <Input
                               type="range"
                               min={0}
                               max={160}
                               value={activeLayer.colorThreshold ?? 40}
-                              onChange={(event) =>
+                              onChange={(event) => {
                                 updateLayer(activeLayer.id, {
                                   colorThreshold: Number(event.target.value),
                                 })
-                              }
+                                if (activeLayer.removeColorBackground) {
+                                  scheduleColorRemoval(activeLayer.id)
+                                }
+                              }}
                             />
                             <Input
                               type="number"
                               min={0}
                               max={160}
                               value={activeLayer.colorThreshold ?? 40}
-                              onChange={(event) =>
+                              onChange={(event) => {
                                 updateLayer(activeLayer.id, {
                                   colorThreshold: Number(event.target.value),
                                 })
-                              }
+                                if (activeLayer.removeColorBackground) {
+                                  scheduleColorRemoval(activeLayer.id)
+                                }
+                              }}
                               className="w-20"
                             />
                           </div>
+                          <p className="text-muted-foreground text-xs">
+                            透明にする色との近さ（色の差）の許容範囲です。0は完全一致のみ、上げるほど近い色も透明になります。
+                          </p>
                         </div>
 
                         <div className="flex flex-wrap gap-2">
@@ -1854,6 +2126,17 @@ export function StickerCreator() {
                         variant="ghost"
                         onClick={(event) => {
                           event.stopPropagation()
+                          duplicateLayer(layer.id)
+                        }}
+                      >
+                        <span className="sr-only">Duplicate layer</span>
+                        <span className="text-xs">⧉</span>
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={(event) => {
+                          event.stopPropagation()
                           moveLayer(layer.id, "down")
                         }}
                         disabled={actualIndex === layers.length - 1}
@@ -2058,6 +2341,173 @@ export function StickerCreator() {
             )}
             {activeLayer?.type === "image" ? (
               <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      commitLayerPatch(activeLayer.id, {
+                        flipX: !activeLayer.flipX,
+                      })
+                    }
+                  >
+                    左右反転
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      commitLayerPatch(activeLayer.id, {
+                        flipY: !activeLayer.flipY,
+                      })
+                    }
+                  >
+                    上下反転
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      commitLayerPatch(activeLayer.id, {
+                        rotate: 0,
+                        scale: 1,
+                        scaleX: 1,
+                        scaleY: 1,
+                        skewX: 0,
+                        skewY: 0,
+                        flipX: false,
+                        flipY: false,
+                      })
+                    }
+                  >
+                    変形リセット
+                  </Button>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">横伸縮</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="range"
+                      min={0.2}
+                      max={3}
+                      step={0.01}
+                      value={activeLayer.scaleX ?? 1}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          scaleX: Number(event.target.value),
+                        })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={0.2}
+                      max={3}
+                      step={0.01}
+                      value={activeLayer.scaleX ?? 1}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          scaleX: Number(event.target.value),
+                        })
+                      }
+                      className="w-20"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">縦伸縮</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="range"
+                      min={0.2}
+                      max={3}
+                      step={0.01}
+                      value={activeLayer.scaleY ?? 1}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          scaleY: Number(event.target.value),
+                        })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={0.2}
+                      max={3}
+                      step={0.01}
+                      value={activeLayer.scaleY ?? 1}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          scaleY: Number(event.target.value),
+                        })
+                      }
+                      className="w-20"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">歪み（X）</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="range"
+                      min={-45}
+                      max={45}
+                      step={1}
+                      value={activeLayer.skewX ?? 0}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          skewX: Number(event.target.value),
+                        })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={-45}
+                      max={45}
+                      step={1}
+                      value={activeLayer.skewX ?? 0}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          skewX: Number(event.target.value),
+                        })
+                      }
+                      className="w-20"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">歪み（Y）</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="range"
+                      min={-45}
+                      max={45}
+                      step={1}
+                      value={activeLayer.skewY ?? 0}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          skewY: Number(event.target.value),
+                        })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={-45}
+                      max={45}
+                      step={1}
+                      value={activeLayer.skewY ?? 0}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          skewY: Number(event.target.value),
+                        })
+                      }
+                      className="w-20"
+                    />
+                  </div>
+                </div>
+
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <Switch
@@ -2077,7 +2527,7 @@ export function StickerCreator() {
                     <Label className="text-xs">指定色を透過</Label>
                   </div>
                   <span className="text-muted-foreground text-xs">
-                    しきい値: {activeLayer.colorThreshold ?? 40}
+                    許容範囲: {activeLayer.colorThreshold ?? 40}
                   </span>
                 </div>
 
@@ -2107,7 +2557,7 @@ export function StickerCreator() {
                         }
                         updateLayer(activeLayer.id, { colorKey: picked })
                         if (activeLayer.removeColorBackground) {
-                          void applyColorRemovalToLayer(activeLayer.id)
+                          scheduleColorRemoval(activeLayer.id)
                         }
                       }}
                       disabled={
@@ -2121,32 +2571,41 @@ export function StickerCreator() {
                 </div>
 
                 <div className="space-y-1">
-                  <Label className="text-xs">しきい値</Label>
+                  <Label className="text-xs">許容範囲</Label>
                   <div className="flex items-center gap-2">
                     <Input
                       type="range"
                       min={0}
                       max={160}
                       value={activeLayer.colorThreshold ?? 40}
-                      onChange={(event) =>
+                      onChange={(event) => {
                         updateLayer(activeLayer.id, {
                           colorThreshold: Number(event.target.value),
                         })
-                      }
+                        if (activeLayer.removeColorBackground) {
+                          scheduleColorRemoval(activeLayer.id)
+                        }
+                      }}
                     />
                     <Input
                       type="number"
                       min={0}
                       max={160}
                       value={activeLayer.colorThreshold ?? 40}
-                      onChange={(event) =>
+                      onChange={(event) => {
                         updateLayer(activeLayer.id, {
                           colorThreshold: Number(event.target.value),
                         })
-                      }
+                        if (activeLayer.removeColorBackground) {
+                          scheduleColorRemoval(activeLayer.id)
+                        }
+                      }}
                       className="w-20"
                     />
                   </div>
+                  <p className="text-muted-foreground text-xs">
+                    透明にする色との近さ（色の差）の許容範囲です。0は完全一致のみ、上げるほど近い色も透明になります。
+                  </p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
