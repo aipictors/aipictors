@@ -13,10 +13,6 @@ import {
   HomeNovelsWorksSection,
 } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import {
-  HomeVideosWorkListItemFragment,
-  HomeVideosWorksSection,
-} from "~/routes/($lang)._main._index/components/home-video-works-section"
-import {
   HomeWorkFragment,
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
@@ -75,13 +71,6 @@ export async function loader(props: LoaderFunctionArgs) {
       orderBy: "LIKES_COUNT",
       isNowCreatedAt: true,
     },
-    videoWhere: {
-      userId: userIdResp.data.user.id,
-      workType: "VIDEO",
-      ratings: ["R18", "R18G"],
-      orderBy: "LIKES_COUNT",
-      isNowCreatedAt: true,
-    },
   })
 
   const userResp = await loaderClient.query({
@@ -110,13 +99,6 @@ export async function loader(props: LoaderFunctionArgs) {
         orderBy: "LIKES_COUNT",
         isNowCreatedAt: true,
       },
-      videoWhere: {
-        userId: userIdResp.data.user.id,
-        workType: "VIDEO",
-        ratings: ["R18", "R18G"],
-        orderBy: "LIKES_COUNT",
-        isNowCreatedAt: true,
-      },
     },
   })
 
@@ -126,7 +108,6 @@ export async function loader(props: LoaderFunctionArgs) {
     userId: userIdResp.data.user.id,
     novelWorks: userResp.data.novelWorks,
     columnWorks: userResp.data.columnWorks,
-    videoWorks: userResp.data.videoWorks,
   }
 }
 
@@ -145,18 +126,18 @@ export default function UserLayout() {
 
   const data = useLoaderData<typeof loader>()
 
-  if (data === null || data.user === null) {
-    return null
-  }
+  const isDataReady = data !== null && data.user !== null
+
+  const userId = data?.userId ?? ""
 
   // 人気画像作品
   const { data: workRes } = useQuery(worksQuery, {
-    skip: authContext.isLoading,
+    skip: authContext.isLoading || !isDataReady,
     variables: {
       offset: 0,
       limit: 16,
       where: {
-        userId: data.userId,
+        userId: userId,
         ratings: ["R18", "R18G"],
         orderBy: "LIKES_COUNT",
         isNowCreatedAt: true,
@@ -166,12 +147,12 @@ export default function UserLayout() {
 
   // 人気小説作品
   const { data: novelWorkRes } = useQuery(worksQuery, {
-    skip: authContext.isLoading,
+    skip: authContext.isLoading || !isDataReady,
     variables: {
       offset: 0,
       limit: 16,
       where: {
-        userId: data.userId,
+        userId: userId,
         workType: "NOVEL",
         ratings: ["R18", "R18G"],
         orderBy: "LIKES_COUNT",
@@ -182,12 +163,12 @@ export default function UserLayout() {
 
   // 人気コラム作品
   const { data: columnWorkRes } = useQuery(worksQuery, {
-    skip: authContext.isLoading,
+    skip: authContext.isLoading || !isDataReady,
     variables: {
       offset: 0,
       limit: 16,
       where: {
-        userId: data.userId,
+        userId: userId,
         workType: "COLUMN",
         ratings: ["R18", "R18G"],
         orderBy: "LIKES_COUNT",
@@ -196,29 +177,15 @@ export default function UserLayout() {
     },
   })
 
-  // 人気動画作品
-  const { data: videoWorkRes } = useQuery(worksQuery, {
-    skip: authContext.isLoading,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: {
-        userId: data.userId,
-        workType: "VIDEO",
-        ratings: ["R18", "R18G"],
-        orderBy: "LIKES_COUNT",
-        isNowCreatedAt: true,
-      },
-    },
-  })
+  if (!isDataReady) {
+    return null
+  }
 
   const works = workRes?.works ?? data.works
 
   const novelWorks = novelWorkRes?.works || data.novelWorks
 
   const columnWorks = columnWorkRes?.works || data.columnWorks
-
-  const videoWorks = videoWorkRes?.works || data.videoWorks
 
   return (
     <div className="flex w-full flex-col justify-center">
@@ -244,9 +211,6 @@ export default function UserLayout() {
             {columnWorks.length !== 0 && (
               <HomeNovelsWorksSection works={columnWorks} isCropped={false} />
             )}
-            {videoWorks.length !== 0 && (
-              <HomeVideosWorksSection works={videoWorks} isCropped={false} />
-            )}
           </div>
         </div>
       </div>
@@ -269,8 +233,7 @@ const combinedUserAndWorksQuery = graphql(
     $limit: Int!,
     $portfolioWhere: WorksWhereInput!,
     $novelWhere: WorksWhereInput!,
-    $columnWhere: WorksWhereInput!,
-    $videoWhere: WorksWhereInput!
+    $columnWhere: WorksWhereInput!
   ) {
     user(id: $userId) {
       ...UserAboutCard
@@ -285,14 +248,10 @@ const combinedUserAndWorksQuery = graphql(
     columnWorks: works(offset: $offset, limit: $limit, where: $columnWhere) {
       ...HomeWork
     }
-    videoWorks: works(offset: $offset, limit: $limit, where: $videoWhere) {
-      ...HomeVideosWorkListItem
-    }
   }`,
   [
     HomeWorkFragment,
     HomeNovelsWorkListItemFragment,
-    HomeVideosWorkListItemFragment,
     UserAboutCardFragment,
     UserSensitivePickupFragment,
   ],
@@ -303,12 +262,7 @@ const worksQuery = graphql(
     works(offset: $offset, limit: $limit, where: $where) {
       ...HomeWork,
       ...HomeNovelsWorkListItem
-      ...HomeVideosWorkListItem
     }
   }`,
-  [
-    HomeWorkFragment,
-    HomeNovelsWorkListItemFragment,
-    HomeVideosWorkListItemFragment,
-  ],
+  [HomeWorkFragment, HomeNovelsWorkListItemFragment],
 )
