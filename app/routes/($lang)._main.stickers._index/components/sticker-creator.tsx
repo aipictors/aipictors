@@ -203,6 +203,28 @@ const ensureFontLoaded = async (props: {
   }
 }
 
+const getCanvasBaselineOffsetInLineBox = (props: {
+  ctx: CanvasRenderingContext2D
+  lineHeight: number
+  fontSize: number
+}) => {
+  // CSSのline-heightは (line-height - (ascent+descent)) の余白を上下に半分ずつ配る。
+  // Canvasはbaseline座標で描画できるので、line box topからのbaselineオフセットを推定する。
+  const sample = "あ"
+  const metrics = props.ctx.measureText(sample)
+  const ascent =
+    metrics.actualBoundingBoxAscent > 0
+      ? metrics.actualBoundingBoxAscent
+      : props.fontSize * 0.8
+  const descent =
+    metrics.actualBoundingBoxDescent > 0
+      ? metrics.actualBoundingBoxDescent
+      : props.fontSize * 0.2
+  const emHeight = ascent + descent
+  const leading = Math.max(0, props.lineHeight - emHeight)
+  return ascent + leading / 2
+}
+
 const drawMultilineText = (props: {
   ctx: CanvasRenderingContext2D
   text: string
@@ -224,7 +246,8 @@ const drawVerticalText = (props: {
   ctx: CanvasRenderingContext2D
   text: string
   columnAdvance: number
-  glyphAdvance: number
+  lineHeight: number
+  baselineOffset: number
   draw: (glyph: string, x: number, y: number) => void
 }) => {
   // CSS writing-mode: vertical-rl 相当
@@ -237,8 +260,8 @@ const drawVerticalText = (props: {
 
   const glyphCounts = columns.map((col) => Array.from(col).length)
   const maxGlyphs = Math.max(1, ...glyphCounts)
-  const totalHeight = (maxGlyphs - 1) * props.glyphAdvance
-  const startY = -totalHeight / 2
+  const blockHeight = maxGlyphs * props.lineHeight
+  const startTop = -blockHeight / 2
 
   for (let colIndex = 0; colIndex < columns.length; colIndex += 1) {
     const colText = columns[colIndex] ?? ""
@@ -247,7 +270,7 @@ const drawVerticalText = (props: {
 
     for (let i = 0; i < glyphs.length; i += 1) {
       const glyph = glyphs[i] ?? ""
-      const y = startY + i * props.glyphAdvance
+      const y = startTop + props.baselineOffset + i * props.lineHeight
       props.draw(glyph, x, y)
     }
   }
@@ -877,13 +900,20 @@ export function StickerCreator() {
           ctx.lineWidth = layer.strokeWidth
         }
         if (layer.vertical) {
-          const glyphAdvance = layer.fontSize * 1.1
-          const columnAdvance = layer.fontSize * 1.1
+          const lineHeight = layer.fontSize * 1.1
+          const columnAdvance = lineHeight
+          ctx.textBaseline = "alphabetic"
+          const baselineOffset = getCanvasBaselineOffsetInLineBox({
+            ctx,
+            lineHeight,
+            fontSize: layer.fontSize,
+          })
           drawVerticalText({
             ctx,
             text: layer.text,
             columnAdvance,
-            glyphAdvance,
+            lineHeight,
+            baselineOffset,
             draw: (glyph, x, y) => {
               if (layer.strokeWidth > 0) {
                 ctx.strokeText(glyph, x, y)
