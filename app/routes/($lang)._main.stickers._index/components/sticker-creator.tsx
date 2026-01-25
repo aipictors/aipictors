@@ -1,8 +1,14 @@
 import type React from "react"
 import { useEffect, useId, useMemo, useRef, useState } from "react"
+
+import "@fontsource/m-plus-rounded-1c/400.css"
+import "@fontsource/noto-sans-jp/400.css"
+import "@fontsource/noto-serif-jp/400.css"
+import "@fontsource/yomogi/400.css"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
+import { Textarea } from "~/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import {
   Select,
@@ -116,11 +122,139 @@ const fontFamilies = [
   { label: "手書き風", value: "'Yomogi', system-ui" },
 ]
 
+const splitLines = (text: string) => text.split(/\r?\n/)
+
+const toVerticalColumns = (text: string) => {
+  const lines = splitLines(text)
+  if (lines.length <= 1) return lines
+
+  // 1行=1文字（例: あ\nい\nう…）の場合は、ユーザーが期待する
+  // 「1列で縦に積む」表現として扱う（CSSだと改行が列送りになってしまうため）。
+  const isSingleGlyphLines = lines.every((line) => Array.from(line).length <= 1)
+  if (!isSingleGlyphLines) return lines
+
+  const joined = lines.map((line) => (line.length === 0 ? "　" : line)).join("")
+  return [joined]
+}
+
+const normalizeVerticalPreviewText = (text: string) => {
+  const cols = toVerticalColumns(text)
+  // 1列に正規化された場合のみ改行を除去
+  if (cols.length === 1) return cols[0] ?? ""
+  return text
+}
+
+const computeTextLayerBox = (props: {
+  text: string
+  fontSize: number
+  vertical: boolean
+}) => {
+  const fontSize = Math.max(8, props.fontSize)
+  const padding = 12
+  const lineHeight = fontSize * 1.1
+
+  if (props.vertical) {
+    const columns = toVerticalColumns(props.text)
+    const columnCount = Math.max(1, columns.length)
+    const glyphCounts = columns.map((col) => Array.from(col).length)
+    const maxGlyphs = Math.max(1, ...glyphCounts)
+
+    const width = Math.round(columnCount * lineHeight + padding)
+    const height = Math.round(maxGlyphs * lineHeight + padding)
+
+    return {
+      width: Math.max(48, Math.min(CANVAS_SIZE, width)),
+      height: Math.max(48, Math.min(CANVAS_SIZE, height)),
+    }
+  }
+
+  // 横書きは従来の箱をベースにしつつ、複数行の場合は高さだけ少し伸ばす
+  const lines = splitLines(props.text)
+  const lineCount = Math.max(1, lines.length)
+  const height = Math.round(Math.max(140, lineCount * lineHeight + padding))
+  return {
+    width: 260,
+    height: Math.max(48, Math.min(CANVAS_SIZE, height)),
+  }
+}
+
+const ensureFontLoaded = async (props: {
+  fontFamily: string
+  fontSize: number
+}) => {
+  if (typeof document === "undefined") return
+  if (!document.fonts?.load) return
+
+  const cssFont = `${Math.max(1, Math.round(props.fontSize))}px ${props.fontFamily}`
+  try {
+    await Promise.race([
+      document.fonts.load(cssFont),
+      new Promise<void>((resolve) => setTimeout(resolve, 800)),
+    ])
+  } catch {
+    // ignore
+  }
+}
+
+const drawMultilineText = (props: {
+  ctx: CanvasRenderingContext2D
+  text: string
+  lineHeight: number
+  draw: (line: string, x: number, y: number) => void
+}) => {
+  const lines = splitLines(props.text)
+  const count = lines.length
+  const totalHeight = (count - 1) * props.lineHeight
+  const startY = -totalHeight / 2
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i] ?? ""
+    props.draw(line, 0, startY + i * props.lineHeight)
+  }
+}
+
+const drawVerticalText = (props: {
+  ctx: CanvasRenderingContext2D
+  text: string
+  columnAdvance: number
+  glyphAdvance: number
+  draw: (glyph: string, x: number, y: number) => void
+}) => {
+  // CSS writing-mode: vertical-rl 相当
+  // - 改行(\n)は「列」
+  // - 列は右→左に進む
+  const columns = toVerticalColumns(props.text)
+  const columnCount = columns.length
+  const totalWidth = (columnCount - 1) * props.columnAdvance
+  const startX = totalWidth / 2
+
+  const glyphCounts = columns.map((col) => Array.from(col).length)
+  const maxGlyphs = Math.max(1, ...glyphCounts)
+  const totalHeight = (maxGlyphs - 1) * props.glyphAdvance
+  const startY = -totalHeight / 2
+
+  for (let colIndex = 0; colIndex < columns.length; colIndex += 1) {
+    const colText = columns[colIndex] ?? ""
+    const glyphs = Array.from(colText)
+    const x = startX - colIndex * props.columnAdvance
+
+    for (let i = 0; i < glyphs.length; i += 1) {
+      const glyph = glyphs[i] ?? ""
+      const y = startY + i * props.glyphAdvance
+      props.draw(glyph, x, y)
+    }
+  }
+}
+
 export function StickerCreator() {
   const [activeCategory, setActiveCategory] =
     useState<StickerAssetCategory>("japanese")
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null)
   const [textInput, setTextInput] = useState("")
+  const [newTextFontFamily, setNewTextFontFamily] = useState(
+    fontFamilies[0]?.value ?? "system-ui",
+  )
+  const [newTextVertical, setNewTextVertical] = useState(false)
 
   const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false)
   const [registerImageBase64, setRegisterImageBase64] = useState("")
@@ -334,6 +468,11 @@ export function StickerCreator() {
 
   const addTextLayer = () => {
     if (!textInput.trim()) return
+    const box = computeTextLayerBox({
+      text: textInput.trim(),
+      fontSize: 64,
+      vertical: newTextVertical,
+    })
     const id = crypto.randomUUID()
     const newLayer: TextLayer = {
       id,
@@ -345,15 +484,15 @@ export function StickerCreator() {
       y: CANVAS_SIZE / 2,
       scale: 1,
       rotate: 0,
-      width: 260,
-      height: 140,
+      width: box.width,
+      height: box.height,
       text: textInput.trim(),
       fontSize: 64,
-      fontFamily: fontFamilies[0]?.value ?? "system-ui",
+      fontFamily: newTextFontFamily,
       color: "#000000",
       strokeColor: "#ffffff",
       strokeWidth: 2,
-      vertical: false,
+      vertical: newTextVertical,
     }
     commitLayers([...layersRef.current, newLayer])
     setActiveLayerId(id)
@@ -645,6 +784,10 @@ export function StickerCreator() {
       }
 
       if (layer.type === "text") {
+        await ensureFontLoaded({
+          fontFamily: layer.fontFamily,
+          fontSize: layer.fontSize,
+        })
         ctx.fillStyle = layer.color
         ctx.font = `${layer.fontSize}px ${layer.fontFamily}`
         ctx.textAlign = "center"
@@ -654,21 +797,33 @@ export function StickerCreator() {
           ctx.lineWidth = layer.strokeWidth
         }
         if (layer.vertical) {
-          const chars = layer.text.split("")
-          const totalHeight = chars.length * layer.fontSize
-          let startY = -totalHeight / 2 + layer.fontSize / 2
-          chars.forEach((char) => {
-            if (layer.strokeWidth > 0) {
-              ctx.strokeText(char, 0, startY)
-            }
-            ctx.fillText(char, 0, startY)
-            startY += layer.fontSize
+          const glyphAdvance = layer.fontSize * 1.1
+          const columnAdvance = layer.fontSize * 1.1
+          drawVerticalText({
+            ctx,
+            text: layer.text,
+            columnAdvance,
+            glyphAdvance,
+            draw: (glyph, x, y) => {
+              if (layer.strokeWidth > 0) {
+                ctx.strokeText(glyph, x, y)
+              }
+              ctx.fillText(glyph, x, y)
+            },
           })
         } else {
-          if (layer.strokeWidth > 0) {
-            ctx.strokeText(layer.text, 0, 0)
-          }
-          ctx.fillText(layer.text, 0, 0)
+          const lineHeight = layer.fontSize * 1.1
+          drawMultilineText({
+            ctx,
+            text: layer.text,
+            lineHeight,
+            draw: (line, x, y) => {
+              if (layer.strokeWidth > 0) {
+                ctx.strokeText(line, x, y)
+              }
+              ctx.fillText(line, x, y)
+            },
+          })
         }
       }
       ctx.restore()
@@ -969,6 +1124,12 @@ export function StickerCreator() {
                               writingMode: layer.vertical
                                 ? "vertical-rl"
                                 : "horizontal-tb",
+                              textOrientation: layer.vertical
+                                ? ("upright" as const)
+                                : undefined,
+                              whiteSpace: layer.vertical
+                                ? ("nowrap" as const)
+                                : ("pre-wrap" as const),
                               textShadow:
                                 layer.strokeWidth > 0
                                   ? `0 0 ${strokeWidthPx}px ${layer.strokeColor}, 0 0 ${
@@ -983,7 +1144,9 @@ export function StickerCreator() {
                               padding: "2px",
                             }}
                           >
-                            {layer.text}
+                            {layer.vertical
+                              ? normalizeVerticalPreviewText(layer.text)
+                              : layer.text}
                           </div>
                         )}
                         {layer.id === activeLayerId && !layer.locked && (
@@ -1389,11 +1552,37 @@ export function StickerCreator() {
               <TabsContent value="text" className="mt-4">
                 <div className="space-y-3">
                   <h3 className="font-semibold text-sm">テキスト</h3>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs">追加時フォント</Label>
+                      <select
+                        className="w-full rounded-md border bg-background px-2 py-2 text-sm"
+                        value={newTextFontFamily}
+                        onChange={(event) =>
+                          setNewTextFontFamily(event.target.value)
+                        }
+                      >
+                        {fontFamilies.map((font) => (
+                          <option key={font.value} value={font.value}>
+                            {font.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2 pt-6">
+                      <Switch
+                        checked={newTextVertical}
+                        onCheckedChange={setNewTextVertical}
+                      />
+                      <Label className="text-xs">追加時は縦書き</Label>
+                    </div>
+                  </div>
                   <div className="flex flex-col gap-2 sm:flex-row">
-                    <Input
+                    <Textarea
                       value={textInput}
                       onChange={(event) => setTextInput(event.target.value)}
                       placeholder="テキストを入力"
+                      rows={3}
                     />
                     <Button onClick={addTextLayer} className="shrink-0">
                       追加
@@ -1408,9 +1597,25 @@ export function StickerCreator() {
                             type="number"
                             value={activeLayer.fontSize}
                             onChange={(event) =>
-                              updateLayer(activeLayer.id, {
-                                fontSize: Number(event.target.value),
-                              })
+                              (() => {
+                                const nextFontSize = Number(event.target.value)
+                                if (activeLayer.vertical) {
+                                  const box = computeTextLayerBox({
+                                    text: activeLayer.text,
+                                    fontSize: nextFontSize,
+                                    vertical: true,
+                                  })
+                                  updateLayer(activeLayer.id, {
+                                    fontSize: nextFontSize,
+                                    width: box.width,
+                                    height: box.height,
+                                  })
+                                  return
+                                }
+                                updateLayer(activeLayer.id, {
+                                  fontSize: nextFontSize,
+                                })
+                              })()
                             }
                           />
                         </div>
@@ -1476,7 +1681,18 @@ export function StickerCreator() {
                           <Switch
                             checked={activeLayer.vertical}
                             onCheckedChange={(value) =>
-                              updateLayer(activeLayer.id, { vertical: value })
+                              (() => {
+                                const box = computeTextLayerBox({
+                                  text: activeLayer.text,
+                                  fontSize: activeLayer.fontSize,
+                                  vertical: value,
+                                })
+                                updateLayer(activeLayer.id, {
+                                  vertical: value,
+                                  width: box.width,
+                                  height: box.height,
+                                })
+                              })()
                             }
                           />
                           <Label className="text-xs">縦書き</Label>
@@ -1680,10 +1896,38 @@ export function StickerCreator() {
           <div className="space-y-3">
             <h3 className="font-semibold text-sm">テキスト</h3>
             <div className="flex flex-col gap-2">
-              <Input
+              <div className="grid gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">追加時フォント</Label>
+                  <select
+                    className="w-full rounded-md border bg-background px-2 py-2 text-sm"
+                    value={newTextFontFamily}
+                    onChange={(event) =>
+                      setNewTextFontFamily(event.target.value)
+                    }
+                  >
+                    {fontFamilies.map((font) => (
+                      <option key={font.value} value={font.value}>
+                        {font.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={newTextVertical}
+                    onCheckedChange={setNewTextVertical}
+                  />
+                  <Label className="text-xs">追加時は縦書き</Label>
+                </div>
+              </div>
+
+              <Textarea
                 value={textInput}
                 onChange={(event) => setTextInput(event.target.value)}
                 placeholder="テキストを入力"
+                rows={3}
               />
               <Button onClick={addTextLayer}>追加</Button>
             </div>
@@ -1696,9 +1940,25 @@ export function StickerCreator() {
                     type="number"
                     value={activeLayer.fontSize}
                     onChange={(event) =>
-                      updateLayer(activeLayer.id, {
-                        fontSize: Number(event.target.value),
-                      })
+                      (() => {
+                        const nextFontSize = Number(event.target.value)
+                        if (activeLayer.vertical) {
+                          const box = computeTextLayerBox({
+                            text: activeLayer.text,
+                            fontSize: nextFontSize,
+                            vertical: true,
+                          })
+                          updateLayer(activeLayer.id, {
+                            fontSize: nextFontSize,
+                            width: box.width,
+                            height: box.height,
+                          })
+                          return
+                        }
+                        updateLayer(activeLayer.id, {
+                          fontSize: nextFontSize,
+                        })
+                      })()
                     }
                   />
                 </div>
@@ -1766,7 +2026,18 @@ export function StickerCreator() {
                     <Switch
                       checked={activeLayer.vertical}
                       onCheckedChange={(value) =>
-                        updateLayer(activeLayer.id, { vertical: value })
+                        (() => {
+                          const box = computeTextLayerBox({
+                            text: activeLayer.text,
+                            fontSize: activeLayer.fontSize,
+                            vertical: value,
+                          })
+                          updateLayer(activeLayer.id, {
+                            vertical: value,
+                            width: box.width,
+                            height: box.height,
+                          })
+                        })()
                       }
                     />
                     <Label className="text-xs">縦書き</Label>
