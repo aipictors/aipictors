@@ -56,6 +56,10 @@ type LayerBase = {
 type ImageLayer = LayerBase & {
   type: "image"
   src: string
+  removeColorBackground?: boolean
+  colorKey?: string
+  colorThreshold?: number
+  transparentSrc?: string
 }
 
 type TextLayer = LayerBase & {
@@ -129,6 +133,14 @@ export function StickerCreator() {
     future: [],
   })
 
+  const [colorRemovalBusy, setColorRemovalBusy] = useState<
+    Record<string, boolean>
+  >({})
+  const [colorRemovalError, setColorRemovalError] = useState<string | null>(
+    null,
+  )
+  const [colorRemovalAllBusy, setColorRemovalAllBusy] = useState(false)
+
   const [leftPanelWidth, setLeftPanelWidth] = useState(320)
   const [rightPanelWidth, setRightPanelWidth] = useState(320)
 
@@ -198,11 +210,118 @@ export function StickerCreator() {
         width: Math.max(24, Math.round(width * scale)),
         height: Math.max(24, Math.round(height * scale)),
         src,
+        removeColorBackground: false,
+        colorKey: "#ffffff",
+        colorThreshold: 40,
+        transparentSrc: undefined,
       }
       commitLayers([...layersRef.current, newLayer])
       setActiveLayerId(id)
     } catch (error) {
       console.error("Failed to load image", error)
+    }
+  }
+
+  const getImageLayerSrc = (layer: ImageLayer) => {
+    if (!layer.removeColorBackground) return layer.src
+    return layer.transparentSrc ?? layer.src
+  }
+
+  const applyColorRemovalToLayer = async (layerId: string) => {
+    const target = layersRef.current.find(
+      (layer): layer is ImageLayer =>
+        layer.id === layerId && layer.type === "image",
+    )
+    if (!target) return
+
+    setColorRemovalError(null)
+    setColorRemovalBusy((prev) => ({ ...prev, [layerId]: true }))
+    try {
+      const threshold = Math.max(0, Math.min(160, target.colorThreshold ?? 40))
+      const colorKey = normalizeHexColor(target.colorKey ?? "#ffffff")
+
+      // まずはUI上のON/しきい値を即反映（履歴は増やさない）
+      updateLayer(layerId, {
+        removeColorBackground: true,
+        colorKey,
+        colorThreshold: threshold,
+      })
+
+      const transparentSrc = await createColorKeyTransparentObjectUrl({
+        src: target.src,
+        colorKey,
+        threshold,
+      })
+      commitLayerPatch(layerId, {
+        removeColorBackground: true,
+        colorKey,
+        colorThreshold: threshold,
+        transparentSrc,
+      })
+    } catch (error) {
+      console.error("Failed to apply color removal", error)
+      updateLayer(layerId, { removeColorBackground: false })
+      setColorRemovalError(
+        "色透過に失敗しました（外部画像はCORS制約で処理できない場合があります）",
+      )
+    } finally {
+      setColorRemovalBusy((prev) => ({ ...prev, [layerId]: false }))
+    }
+  }
+
+  const clearColorRemovalForLayer = (layerId: string) => {
+    commitLayerPatch(layerId, { removeColorBackground: false })
+  }
+
+  const applyColorRemovalToAllImageLayers = async (props: {
+    colorKey: string
+    threshold: number
+  }) => {
+    const baseLayers = layersRef.current
+    const imageLayers = baseLayers.filter(
+      (layer): layer is ImageLayer => layer.type === "image",
+    )
+    if (imageLayers.length === 0) return
+
+    const colorKey = normalizeHexColor(props.colorKey)
+    const threshold = Math.max(0, Math.min(160, props.threshold))
+
+    setColorRemovalAllBusy(true)
+    setColorRemovalError(null)
+
+    let nextLayers: Layer[] = baseLayers
+    let failed = 0
+    for (const layer of imageLayers) {
+      try {
+        const transparentSrc = await createColorKeyTransparentObjectUrl({
+          src: layer.src,
+          colorKey,
+          threshold,
+        })
+        nextLayers = nextLayers.map((current): Layer => {
+          if (current.id !== layer.id || current.type !== "image")
+            return current
+          return {
+            ...current,
+            removeColorBackground: true,
+            colorKey,
+            colorThreshold: threshold,
+            transparentSrc,
+          }
+        })
+      } catch (error) {
+        console.error("Failed to apply color removal", error)
+        failed += 1
+      }
+    }
+
+    commitLayers(nextLayers)
+    setColorRemovalAllBusy(false)
+
+    if (failed > 0) {
+      setColorRemovalError(
+        `一部の画像で色透過に失敗しました（${failed}件）。外部画像はCORS制約で処理できない場合があります。`,
+      )
     }
   }
 
@@ -481,13 +600,41 @@ export function StickerCreator() {
 
       if (layer.type === "image") {
         const img = await loadImage(layer.src)
-        ctx.drawImage(
-          img,
-          -layer.width / 2,
-          -layer.height / 2,
-          layer.width,
-          layer.height,
-        )
+        const threshold = layer.colorThreshold ?? 40
+        const colorKey = normalizeHexColor(layer.colorKey ?? "#ffffff")
+        if (layer.removeColorBackground) {
+          try {
+            const processedCanvas = createColorKeyTransparentCanvas({
+              img,
+              colorKey,
+              threshold,
+            })
+            ctx.drawImage(
+              processedCanvas,
+              -layer.width / 2,
+              -layer.height / 2,
+              layer.width,
+              layer.height,
+            )
+          } catch (error) {
+            console.error("Failed to process image for export", error)
+            ctx.drawImage(
+              img,
+              -layer.width / 2,
+              -layer.height / 2,
+              layer.width,
+              layer.height,
+            )
+          }
+        } else {
+          ctx.drawImage(
+            img,
+            -layer.width / 2,
+            -layer.height / 2,
+            layer.width,
+            layer.height,
+          )
+        }
       }
 
       if (layer.type === "text") {
@@ -747,7 +894,7 @@ export function StickerCreator() {
                       >
                         {layer.type === "image" ? (
                           <img
-                            src={layer.src}
+                            src={getImageLayerSrc(layer)}
                             alt={layer.name}
                             className="block"
                             style={{
@@ -903,118 +1050,282 @@ export function StickerCreator() {
               <TabsContent value="layers" className="mt-4">
                 <div className="space-y-3">
                   <h3 className="font-semibold text-sm">レイヤー</h3>
+                  <p className="text-muted-foreground text-xs">
+                    上にあるほど前面に表示されます
+                  </p>
                   <div className="space-y-2">
-                    {layers.map((layer, index) => (
-                      <div
-                        key={layer.id}
-                        className={
-                          "flex items-center justify-between gap-2 rounded-lg border px-2 py-1 " +
-                          (layer.id === activeLayerId
-                            ? "border-primary"
-                            : "border-transparent")
-                        }
-                      >
-                        <div className="flex flex-1 items-center gap-2">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-10 w-10 overflow-hidden"
-                            onClick={() => setActiveLayerId(layer.id)}
-                          >
-                            <span className="sr-only">Select layer</span>
-                            {layer.type === "image" ? (
-                              <img
-                                src={layer.src}
-                                alt=""
-                                className="h-9 w-9 rounded object-cover"
-                                draggable={false}
-                              />
-                            ) : (
-                              <div
-                                // biome-ignore lint/nursery/useSortedClasses: keep order for readability
-                                className="grid h-9 w-9 place-items-center rounded bg-muted text-[10px] font-semibold"
-                              >
-                                T
-                              </div>
+                    {[...layers].reverse().map((layer, index) => {
+                      const actualIndex = layers.length - 1 - index
+                      return (
+                        <div
+                          key={layer.id}
+                          className={
+                            "flex items-center justify-between gap-2 rounded-lg border px-2 py-1 " +
+                            (layer.id === activeLayerId
+                              ? "border-primary"
+                              : "border-transparent")
+                          }
+                        >
+                          <div className="flex flex-1 items-center gap-2">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-10 w-10 overflow-hidden"
+                              onClick={() => setActiveLayerId(layer.id)}
+                            >
+                              <span className="sr-only">Select layer</span>
+                              {layer.type === "image" ? (
+                                <img
+                                  src={
+                                    layer.removeColorBackground
+                                      ? (layer.transparentSrc ?? layer.src)
+                                      : layer.src
+                                  }
+                                  alt=""
+                                  className="h-9 w-9 rounded object-cover"
+                                  draggable={false}
+                                />
+                              ) : (
+                                <div
+                                  // biome-ignore lint/nursery/useSortedClasses: keep order for readability
+                                  className="grid h-9 w-9 place-items-center rounded bg-muted text-[10px] font-semibold"
+                                >
+                                  T
+                                </div>
+                              )}
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                commitLayerPatch(layer.id, {
+                                  visible: !layer.visible,
+                                })
+                              }}
+                            >
+                              {layer.visible ? (
+                                <Eye className="h-4 w-4" />
+                              ) : (
+                                <EyeOff className="h-4 w-4" />
+                              )}
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                commitLayerPatch(layer.id, {
+                                  locked: !layer.locked,
+                                })
+                              }}
+                            >
+                              {layer.locked ? (
+                                <Lock className="h-4 w-4" />
+                              ) : (
+                                <Unlock className="h-4 w-4" />
+                              )}
+                            </Button>
+                            {layer.type === "text" && (
+                              <span className="truncate text-xs">
+                                {layer.text}
+                              </span>
                             )}
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              commitLayerPatch(layer.id, {
-                                visible: !layer.visible,
-                              })
-                            }}
-                          >
-                            {layer.visible ? (
-                              <Eye className="h-4 w-4" />
-                            ) : (
-                              <EyeOff className="h-4 w-4" />
-                            )}
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              commitLayerPatch(layer.id, {
-                                locked: !layer.locked,
-                              })
-                            }}
-                          >
-                            {layer.locked ? (
-                              <Lock className="h-4 w-4" />
-                            ) : (
-                              <Unlock className="h-4 w-4" />
-                            )}
-                          </Button>
-                          {layer.type === "text" && (
-                            <span className="truncate text-xs">
-                              {layer.text}
-                            </span>
-                          )}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                moveLayer(layer.id, "down")
+                              }}
+                              disabled={actualIndex === layers.length - 1}
+                            >
+                              <ChevronUp className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                moveLayer(layer.id, "up")
+                              }}
+                              disabled={actualIndex === 0}
+                            >
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                removeLayer(layer.id)
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              moveLayer(layer.id, "up")
-                            }}
-                            disabled={index === 0}
-                          >
-                            <ChevronUp className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              moveLayer(layer.id, "down")
-                            }}
-                            disabled={index === layers.length - 1}
-                          >
-                            <ChevronDown className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              removeLayer(layer.id)
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                     {layers.length === 0 && (
                       <p className="text-muted-foreground text-xs">
                         まだレイヤーがありません
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-4 space-y-3 rounded-lg border bg-background p-3">
+                    <h4 className="font-semibold text-sm">画像</h4>
+                    {colorRemovalError && (
+                      <p className="text-destructive text-xs">
+                        {colorRemovalError}
+                      </p>
+                    )}
+                    {activeLayer?.type === "image" ? (
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={
+                                activeLayer.removeColorBackground ?? false
+                              }
+                              onCheckedChange={(value) => {
+                                if (!value) {
+                                  clearColorRemovalForLayer(activeLayer.id)
+                                  return
+                                }
+                                void applyColorRemovalToLayer(activeLayer.id)
+                              }}
+                              disabled={
+                                colorRemovalAllBusy ||
+                                colorRemovalBusy[activeLayer.id] === true
+                              }
+                            />
+                            <Label className="text-xs">指定色を透過</Label>
+                          </div>
+                          <span className="text-muted-foreground text-xs">
+                            しきい値: {activeLayer.colorThreshold ?? 40}
+                          </span>
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label className="text-xs">透過する色</Label>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="color"
+                              value={activeLayer.colorKey ?? "#ffffff"}
+                              onChange={(event) =>
+                                updateLayer(activeLayer.id, {
+                                  colorKey: event.target.value,
+                                })
+                              }
+                              className="h-9 w-14 p-1"
+                            />
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={async () => {
+                                const picked = await pickColorWithEyeDropper()
+                                if (!picked) {
+                                  setColorRemovalError(
+                                    "スポイトが使えません（未対応ブラウザの可能性があります）",
+                                  )
+                                  return
+                                }
+                                updateLayer(activeLayer.id, {
+                                  colorKey: picked,
+                                })
+                                if (activeLayer.removeColorBackground) {
+                                  void applyColorRemovalToLayer(activeLayer.id)
+                                }
+                              }}
+                              disabled={
+                                colorRemovalAllBusy ||
+                                colorRemovalBusy[activeLayer.id] === true
+                              }
+                            >
+                              スポイト
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label className="text-xs">しきい値</Label>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="range"
+                              min={0}
+                              max={160}
+                              value={activeLayer.colorThreshold ?? 40}
+                              onChange={(event) =>
+                                updateLayer(activeLayer.id, {
+                                  colorThreshold: Number(event.target.value),
+                                })
+                              }
+                            />
+                            <Input
+                              type="number"
+                              min={0}
+                              max={160}
+                              value={activeLayer.colorThreshold ?? 40}
+                              onChange={(event) =>
+                                updateLayer(activeLayer.id, {
+                                  colorThreshold: Number(event.target.value),
+                                })
+                              }
+                              className="w-20"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              void applyColorRemovalToLayer(activeLayer.id)
+                            }
+                            disabled={
+                              colorRemovalAllBusy ||
+                              colorRemovalBusy[activeLayer.id] === true
+                            }
+                          >
+                            {colorRemovalBusy[activeLayer.id]
+                              ? "処理中…"
+                              : "適用/更新"}
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              void applyColorRemovalToAllImageLayers({
+                                colorKey: activeLayer.colorKey ?? "#ffffff",
+                                threshold: Math.max(
+                                  0,
+                                  Math.min(
+                                    160,
+                                    activeLayer.colorThreshold ?? 40,
+                                  ),
+                                ),
+                              })
+                            }
+                            disabled={colorRemovalAllBusy}
+                          >
+                            {colorRemovalAllBusy
+                              ? "全体に適用中…"
+                              : "全画像レイヤーに適用"}
+                          </Button>
+                        </div>
+
+                        <p className="text-muted-foreground text-xs">
+                          アップロード画像はOK。外部画像はCORSの都合で失敗する場合があります。
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-xs">
+                        画像レイヤーを選択すると色透過を使えます
                       </p>
                     )}
                   </div>
@@ -1174,113 +1485,123 @@ export function StickerCreator() {
         >
           <div className="space-y-3">
             <h3 className="font-semibold text-sm">レイヤー</h3>
+            <p className="text-muted-foreground text-xs">
+              上にあるほど前面に表示されます
+            </p>
             <div className="space-y-2">
-              {layers.map((layer, index) => (
-                <div
-                  key={layer.id}
-                  className={
-                    "flex items-center justify-between gap-2 rounded-lg border px-2 py-1 " +
-                    (layer.id === activeLayerId
-                      ? "border-primary"
-                      : "border-transparent")
-                  }
-                >
-                  <div className="flex flex-1 items-center gap-2">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-10 w-10 overflow-hidden"
-                      onClick={() => setActiveLayerId(layer.id)}
-                    >
-                      <span className="sr-only">Select layer</span>
-                      {layer.type === "image" ? (
-                        <img
-                          src={layer.src}
-                          alt=""
-                          className="h-9 w-9 rounded object-cover"
-                          draggable={false}
-                        />
-                      ) : (
-                        <div
-                          // biome-ignore lint/nursery/useSortedClasses: keep order for readability
-                          className="grid h-9 w-9 place-items-center rounded bg-muted text-[10px] font-semibold"
-                        >
-                          T
-                        </div>
+              {[...layers].reverse().map((layer, index) => {
+                const actualIndex = layers.length - 1 - index
+                return (
+                  <div
+                    key={layer.id}
+                    className={
+                      "flex items-center justify-between gap-2 rounded-lg border px-2 py-1 " +
+                      (layer.id === activeLayerId
+                        ? "border-primary"
+                        : "border-transparent")
+                    }
+                  >
+                    <div className="flex flex-1 items-center gap-2">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-10 w-10 overflow-hidden"
+                        onClick={() => setActiveLayerId(layer.id)}
+                      >
+                        <span className="sr-only">Select layer</span>
+                        {layer.type === "image" ? (
+                          <img
+                            src={
+                              layer.removeColorBackground
+                                ? (layer.transparentSrc ?? layer.src)
+                                : layer.src
+                            }
+                            alt=""
+                            className="h-9 w-9 rounded object-cover"
+                            draggable={false}
+                          />
+                        ) : (
+                          <div
+                            // biome-ignore lint/nursery/useSortedClasses: keep order for readability
+                            className="grid h-9 w-9 place-items-center rounded bg-muted text-[10px] font-semibold"
+                          >
+                            T
+                          </div>
+                        )}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          commitLayerPatch(layer.id, {
+                            visible: !layer.visible,
+                          })
+                        }}
+                      >
+                        {layer.visible ? (
+                          <Eye className="h-4 w-4" />
+                        ) : (
+                          <EyeOff className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          commitLayerPatch(layer.id, {
+                            locked: !layer.locked,
+                          })
+                        }}
+                      >
+                        {layer.locked ? (
+                          <Lock className="h-4 w-4" />
+                        ) : (
+                          <Unlock className="h-4 w-4" />
+                        )}
+                      </Button>
+                      {layer.type === "text" && (
+                        <span className="truncate text-xs">{layer.text}</span>
                       )}
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        commitLayerPatch(layer.id, {
-                          visible: !layer.visible,
-                        })
-                      }}
-                    >
-                      {layer.visible ? (
-                        <Eye className="h-4 w-4" />
-                      ) : (
-                        <EyeOff className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        commitLayerPatch(layer.id, {
-                          locked: !layer.locked,
-                        })
-                      }}
-                    >
-                      {layer.locked ? (
-                        <Lock className="h-4 w-4" />
-                      ) : (
-                        <Unlock className="h-4 w-4" />
-                      )}
-                    </Button>
-                    {layer.type === "text" && (
-                      <span className="truncate text-xs">{layer.text}</span>
-                    )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          moveLayer(layer.id, "down")
+                        }}
+                        disabled={actualIndex === layers.length - 1}
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          moveLayer(layer.id, "up")
+                        }}
+                        disabled={actualIndex === 0}
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          removeLayer(layer.id)
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        moveLayer(layer.id, "up")
-                      }}
-                      disabled={index === 0}
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        moveLayer(layer.id, "down")
-                      }}
-                      disabled={index === layers.length - 1}
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={(event) => {
-                        event.stopPropagation()
-                        removeLayer(layer.id)
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
               {layers.length === 0 && (
                 <p className="text-muted-foreground text-xs">
                   まだレイヤーがありません
@@ -1391,6 +1712,149 @@ export function StickerCreator() {
               </p>
             )}
           </div>
+
+          <div className="space-y-3">
+            <h3 className="font-semibold text-sm">画像</h3>
+            {colorRemovalError && (
+              <p className="text-destructive text-xs">{colorRemovalError}</p>
+            )}
+            {activeLayer?.type === "image" ? (
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={activeLayer.removeColorBackground ?? false}
+                      onCheckedChange={(value) => {
+                        if (!value) {
+                          clearColorRemovalForLayer(activeLayer.id)
+                          return
+                        }
+                        void applyColorRemovalToLayer(activeLayer.id)
+                      }}
+                      disabled={
+                        colorRemovalAllBusy ||
+                        colorRemovalBusy[activeLayer.id] === true
+                      }
+                    />
+                    <Label className="text-xs">指定色を透過</Label>
+                  </div>
+                  <span className="text-muted-foreground text-xs">
+                    しきい値: {activeLayer.colorThreshold ?? 40}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">透過する色</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="color"
+                      value={activeLayer.colorKey ?? "#ffffff"}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          colorKey: event.target.value,
+                        })
+                      }
+                      className="h-9 w-14 p-1"
+                    />
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={async () => {
+                        const picked = await pickColorWithEyeDropper()
+                        if (!picked) {
+                          setColorRemovalError(
+                            "スポイトが使えません（未対応ブラウザの可能性があります）",
+                          )
+                          return
+                        }
+                        updateLayer(activeLayer.id, { colorKey: picked })
+                        if (activeLayer.removeColorBackground) {
+                          void applyColorRemovalToLayer(activeLayer.id)
+                        }
+                      }}
+                      disabled={
+                        colorRemovalAllBusy ||
+                        colorRemovalBusy[activeLayer.id] === true
+                      }
+                    >
+                      スポイト
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">しきい値</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="range"
+                      min={0}
+                      max={160}
+                      value={activeLayer.colorThreshold ?? 40}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          colorThreshold: Number(event.target.value),
+                        })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      max={160}
+                      value={activeLayer.colorThreshold ?? 40}
+                      onChange={(event) =>
+                        updateLayer(activeLayer.id, {
+                          colorThreshold: Number(event.target.value),
+                        })
+                      }
+                      className="w-20"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      void applyColorRemovalToLayer(activeLayer.id)
+                    }
+                    disabled={
+                      colorRemovalAllBusy ||
+                      colorRemovalBusy[activeLayer.id] === true
+                    }
+                  >
+                    {colorRemovalBusy[activeLayer.id] ? "処理中…" : "適用/更新"}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() =>
+                      void applyColorRemovalToAllImageLayers({
+                        colorKey: activeLayer.colorKey ?? "#ffffff",
+                        threshold: Math.max(
+                          0,
+                          Math.min(160, activeLayer.colorThreshold ?? 40),
+                        ),
+                      })
+                    }
+                    disabled={colorRemovalAllBusy}
+                  >
+                    {colorRemovalAllBusy
+                      ? "全体に適用中…"
+                      : "全画像レイヤーに適用"}
+                  </Button>
+                </div>
+
+                <p className="text-muted-foreground text-xs">
+                  アップロード画像はOK。外部画像はCORSの都合で失敗する場合があります。
+                </p>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-xs">
+                画像レイヤーを選択すると色透過を使えます
+              </p>
+            )}
+          </div>
         </aside>
       </div>
     </section>
@@ -1412,4 +1876,127 @@ const resolveImageSize = async (src: string) => {
     width: img.naturalWidth || img.width,
     height: img.naturalHeight || img.height,
   }
+}
+
+const normalizeHexColor = (value: string) => {
+  const v = value.trim().toLowerCase()
+  if (/^#[0-9a-f]{6}$/.test(v)) return v
+  if (/^#[0-9a-f]{3}$/.test(v)) {
+    const r = v[1]
+    const g = v[2]
+    const b = v[3]
+    return `#${r}${r}${g}${g}${b}${b}`
+  }
+  return "#ffffff"
+}
+
+const hexToRgb = (hex: string) => {
+  const h = normalizeHexColor(hex)
+  const r = Number.parseInt(h.slice(1, 3), 16)
+  const g = Number.parseInt(h.slice(3, 5), 16)
+  const b = Number.parseInt(h.slice(5, 7), 16)
+  return { r, g, b }
+}
+
+const pickColorWithEyeDropper = async (): Promise<string | null> => {
+  const anyWindow = window as unknown as {
+    EyeDropper?: new () => { open: () => Promise<{ sRGBHex: string }> }
+  }
+  if (!anyWindow.EyeDropper) return null
+
+  try {
+    const dropper = new anyWindow.EyeDropper()
+    const result = await dropper.open()
+    return normalizeHexColor(result.sRGBHex)
+  } catch {
+    // user canceled / permission denied
+    return null
+  }
+}
+
+const canvasToBlob = (canvas: HTMLCanvasElement, type: string) =>
+  new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error("Failed to create blob"))
+          return
+        }
+        resolve(blob)
+      },
+      type,
+      0.95,
+    )
+  })
+
+const createColorKeyTransparentCanvas = (props: {
+  img: HTMLImageElement
+  colorKey: string
+  threshold: number
+}) => {
+  const width = props.img.naturalWidth || props.img.width
+  const height = props.img.naturalHeight || props.img.height
+  const canvas = document.createElement("canvas")
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext("2d")
+  if (!ctx) throw new Error("Canvas 2d context is not available")
+
+  ctx.drawImage(props.img, 0, 0)
+
+  let imageData: ImageData
+  try {
+    imageData = ctx.getImageData(0, 0, width, height)
+  } catch {
+    // CORSでtaintされると例外になる
+    throw new Error("CORS blocked image processing")
+  }
+
+  const data = imageData.data
+  const threshold = Math.max(0, Math.min(441, props.threshold))
+  const feather = 16
+
+  const key = hexToRgb(props.colorKey)
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i] ?? 0
+    const g = data[i + 1] ?? 0
+    const b = data[i + 2] ?? 0
+    const a = data[i + 3] ?? 255
+    if (a === 0) continue
+
+    const dr = key.r - r
+    const dg = key.g - g
+    const db = key.b - b
+    const dist = Math.sqrt(dr * dr + dg * dg + db * db)
+
+    if (dist <= threshold) {
+      data[i + 3] = 0
+      continue
+    }
+
+    if (dist <= threshold + feather) {
+      const t = (dist - threshold) / feather
+      const nextA = Math.round(a * Math.max(0, Math.min(1, t)))
+      data[i + 3] = nextA
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0)
+  return canvas
+}
+
+const createColorKeyTransparentObjectUrl = async (props: {
+  src: string
+  colorKey: string
+  threshold: number
+}) => {
+  const img = await loadImage(props.src)
+  const canvas = createColorKeyTransparentCanvas({
+    img,
+    colorKey: props.colorKey,
+    threshold: props.threshold,
+  })
+  const blob = await canvasToBlob(canvas, "image/png")
+  return URL.createObjectURL(blob)
 }
