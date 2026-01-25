@@ -290,8 +290,6 @@ export const config = {
     privateImage:
       "https://legacy.aipictors.com/wp-content/themes/AISite/private-image-direct.php",
     www4: "https://www4.aipictors.com/index.php",
-    uploadPrivateImage:
-      "https://legacy.aipictors.com/wp-content/themes/AISite/upload-private-image.php",
     deleteUploadedImage:
       "https://legacy.aipictors.com/wp-content/themes/AISite/delete-public-image.php",
     generationCheck:

@@ -1,11 +1,10 @@
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
-import { uploadImage } from "~/utils/upload-image"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 import { InPaintingSetting } from "~/routes/($lang).generation._index/components/submission-view/in-painting-setting"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
-import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
 import { useMutation } from "@apollo/client/index"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -62,24 +61,8 @@ export function InPaintingImageForm(props: Props) {
       return null
     }
 
-    const controlNetImageFileName = `${createRandomString(
-      30,
-    )}_control_net_image.png`
-
-    if (props.userNanoid === null) {
-      toast("画面更新して再度お試し下さい。")
-      return null
-    }
-
-    const controlNetImageUrl = await uploadImage(
-      base64,
-      controlNetImageFileName,
-      props.userNanoid,
-    )
-
-    if (controlNetImageUrl === "") return null
-
-    return controlNetImageUrl
+    const controlNetImageUrl = await uploadPublicImage(base64, props.token)
+    return controlNetImageUrl || null
   }
 
   const onCreateTask = async () => {
@@ -103,24 +86,14 @@ export function InPaintingImageForm(props: Props) {
         )
         return
       }
-      const srcFileName = `${createRandomString(30)}_img2img_src.png`
-      const srcImageURL = await uploadImage(
-        srcImageBase64,
-        srcFileName,
-        props.userNanoid,
-      )
+      const srcImageURL = await uploadPublicImage(srcImageBase64, props.token)
       if (srcImageURL === "" || srcImageURL === undefined) {
         toast(
           "画像の読み込みに失敗しました、しばらくしてから再度実行してください。",
         )
         return
       }
-      const maskFileName = `${createRandomString(30)}_inpaint_mask_src.png`
-      const maskImageURL = await uploadImage(
-        maskImageBase64,
-        maskFileName,
-        props.userNanoid,
-      )
+      const maskImageURL = await uploadPublicImage(maskImageBase64, props.token)
       if (maskImageURL === "") return
 
       const controlNetImageUrl = await getControlNetImageUrl(

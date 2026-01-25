@@ -1,11 +1,9 @@
 import { AppFixedContent } from "~/components/app/app-fixed-content"
-import { uploadImage } from "~/utils/upload-image"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
-import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
@@ -276,15 +274,17 @@ export function GenerationSubmissionView(props: Props) {
       return null
     }
 
-    const controlNetImageFileName = `${createRandomString(
-      30,
-    )}_control_net_image.png`
+    const viewerToken = tokenData?.viewer?.token
+    if (!viewerToken) {
+      logError({
+        source: "GenerationSubmit",
+        message: "Viewer token missing for ControlNet upload",
+      })
+      toast("認証エラーが発生しました。ログインし直してください。")
+      return null
+    }
 
-    const controlNetImageUrl = await uploadImage(
-      base64,
-      controlNetImageFileName,
-      userNanoid,
-    )
+    const controlNetImageUrl = await uploadPublicImage(base64, viewerToken)
 
     if (controlNetImageUrl === "") return null
 
@@ -563,45 +563,30 @@ export function GenerationSubmissionView(props: Props) {
       }
 
       if (generationType === "IMAGE_TO_IMAGE") {
-        const i2iFileName = `${createRandomString(30)}_img2img_src.png`
-        let i2iFileUrl: string
-
-        // Geminiモデルの場合はuploadPublicImageを使用
-        if (context.config.modelType === "GEMINI") {
+        const i2iFileUrl = await (async () => {
           const viewerToken = tokenData?.viewer?.token
           if (!viewerToken) {
             logError({
               source: "GenerationSubmit",
-              message: "Viewer token missing for Gemini upload",
+              message: "Viewer token missing for IMG2IMG upload",
             })
             toast("認証エラーが発生しました。ログインし直してください。")
-            return
+            return ""
           }
+
           logInfo({
             source: "GenerationSubmit",
             message: "Uploading IMG2IMG (public)",
             details: { size: context.config.i2iImageBase64?.length ?? 0 },
           })
-          i2iFileUrl = await uploadPublicImage(
-            context.config.i2iImageBase64,
-            viewerToken,
-          )
-        } else {
-          logInfo({
-            source: "GenerationSubmit",
-            message: "Uploading IMG2IMG (private)",
-            details: { size: context.config.i2iImageBase64?.length ?? 0 },
-          })
-          i2iFileUrl = await uploadImage(
-            context.config.i2iImageBase64,
-            i2iFileName,
-            userNanoid,
-          )
-        }
+          return uploadPublicImage(context.config.i2iImageBase64, viewerToken)
+        })()
 
         if (i2iFileUrl === "") {
-          logError({ source: "GenerationSubmit", message: "Upload failed" })
-          toast("画像のアップロードに失敗しました")
+          logError({
+            source: "GenerationSubmit",
+            message: "Upload failed (token missing or upload error)",
+          })
           return
         }
         logInfo({

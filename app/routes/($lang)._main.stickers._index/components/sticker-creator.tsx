@@ -2,8 +2,29 @@ import type React from "react"
 import { useEffect, useId, useMemo, useRef, useState } from "react"
 
 import "@fontsource/m-plus-rounded-1c/400.css"
+import "@fontsource/m-plus-rounded-1c/100.css"
+import "@fontsource/m-plus-rounded-1c/300.css"
+import "@fontsource/m-plus-rounded-1c/500.css"
+import "@fontsource/m-plus-rounded-1c/700.css"
+import "@fontsource/m-plus-rounded-1c/800.css"
+import "@fontsource/m-plus-rounded-1c/900.css"
 import "@fontsource/noto-sans-jp/400.css"
+import "@fontsource/noto-sans-jp/100.css"
+import "@fontsource/noto-sans-jp/200.css"
+import "@fontsource/noto-sans-jp/300.css"
+import "@fontsource/noto-sans-jp/500.css"
+import "@fontsource/noto-sans-jp/600.css"
+import "@fontsource/noto-sans-jp/700.css"
+import "@fontsource/noto-sans-jp/800.css"
+import "@fontsource/noto-sans-jp/900.css"
 import "@fontsource/noto-serif-jp/400.css"
+import "@fontsource/noto-serif-jp/200.css"
+import "@fontsource/noto-serif-jp/300.css"
+import "@fontsource/noto-serif-jp/500.css"
+import "@fontsource/noto-serif-jp/600.css"
+import "@fontsource/noto-serif-jp/700.css"
+import "@fontsource/noto-serif-jp/800.css"
+import "@fontsource/noto-serif-jp/900.css"
 import "@fontsource/yomogi/400.css"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
@@ -83,6 +104,7 @@ type TextLayer = LayerBase & {
   text: string
   fontSize: number
   fontFamily: string
+  fontWeight: number
   color: string
   strokeColor: string
   strokeWidth: number
@@ -122,12 +144,64 @@ type HistoryState = {
   future: Layer[][]
 }
 
-const fontFamilies = [
-  { label: "丸み", value: "'M PLUS Rounded 1c', system-ui" },
-  { label: "ゴシック", value: "'Noto Sans JP', system-ui" },
-  { label: "明朝", value: "'Noto Serif JP', serif" },
-  { label: "手書き風", value: "'Yomogi', system-ui" },
+type FontFamilyOption = {
+  label: string
+  value: string
+  weights: number[]
+}
+
+const fontFamilies: FontFamilyOption[] = [
+  {
+    label: "丸み",
+    value: "'M PLUS Rounded 1c', system-ui",
+    weights: [400, 700, 900],
+  },
+  {
+    label: "ゴシック",
+    value: "'Noto Sans JP', system-ui",
+    weights: [400, 700, 900],
+  },
+  {
+    label: "明朝",
+    value: "'Noto Serif JP', serif",
+    weights: [400, 700, 900],
+  },
+  { label: "手書き風", value: "'Yomogi', system-ui", weights: [400] },
 ]
+
+const DEFAULT_TEXT_FONT_WEIGHT = 400
+
+const getFontWeightsForFamily = (fontFamily: string) => {
+  return (
+    fontFamilies.find((f) => f.value === fontFamily)?.weights ?? [
+      DEFAULT_TEXT_FONT_WEIGHT,
+    ]
+  )
+}
+
+const normalizeFontWeightForFamily = (props: {
+  fontFamily: string
+  fontWeight: number
+}) => {
+  const weights = getFontWeightsForFamily(props.fontFamily)
+  if (weights.length === 0) return DEFAULT_TEXT_FONT_WEIGHT
+  if (weights.includes(props.fontWeight)) return props.fontWeight
+
+  // 近いウェイトへスナップ（スライダー100刻みでもフォント側が未対応の値があり得るため）
+  let nearest = weights[0] ?? DEFAULT_TEXT_FONT_WEIGHT
+  let nearestDiff = Math.abs(nearest - props.fontWeight)
+  for (const weight of weights) {
+    const diff = Math.abs(weight - props.fontWeight)
+    if (diff < nearestDiff) {
+      nearest = weight
+      nearestDiff = diff
+    }
+  }
+  return nearest
+}
+
+const clampFontWeight = (weight: number) =>
+  Math.max(100, Math.min(900, Math.round(weight / 100) * 100))
 
 const splitLines = (text: string) => text.split(/\r?\n/)
 
@@ -188,11 +262,15 @@ const computeTextLayerBox = (props: {
 const ensureFontLoaded = async (props: {
   fontFamily: string
   fontSize: number
+  fontWeight: number
 }) => {
   if (typeof document === "undefined") return
   if (!document.fonts?.load) return
 
-  const cssFont = `${Math.max(1, Math.round(props.fontSize))}px ${props.fontFamily}`
+  const cssFont = `${Math.max(1, Math.round(props.fontWeight))} ${Math.max(
+    1,
+    Math.round(props.fontSize),
+  )}px ${props.fontFamily}`
   try {
     await Promise.race([
       document.fonts.load(cssFont),
@@ -283,6 +361,9 @@ export function StickerCreator() {
   const [textInput, setTextInput] = useState("")
   const [newTextFontFamily, setNewTextFontFamily] = useState(
     fontFamilies[0]?.value ?? "system-ui",
+  )
+  const [newTextFontWeight, setNewTextFontWeight] = useState<number>(
+    DEFAULT_TEXT_FONT_WEIGHT,
   )
   const [newTextVertical, setNewTextVertical] = useState(false)
 
@@ -546,6 +627,10 @@ export function StickerCreator() {
       vertical: newTextVertical,
     })
     const id = crypto.randomUUID()
+    const fontWeight = normalizeFontWeightForFamily({
+      fontFamily: newTextFontFamily,
+      fontWeight: newTextFontWeight,
+    })
     const newLayer: TextLayer = {
       id,
       type: "text",
@@ -567,6 +652,7 @@ export function StickerCreator() {
       text: textInput.trim(),
       fontSize: 64,
       fontFamily: newTextFontFamily,
+      fontWeight,
       color: "#000000",
       strokeColor: "#ffffff",
       strokeWidth: 2,
@@ -890,9 +976,10 @@ export function StickerCreator() {
         await ensureFontLoaded({
           fontFamily: layer.fontFamily,
           fontSize: layer.fontSize,
+          fontWeight: layer.fontWeight,
         })
         ctx.fillStyle = layer.color
-        ctx.font = `${layer.fontSize}px ${layer.fontFamily}`
+        ctx.font = `${Math.max(1, Math.round(layer.fontWeight))} ${layer.fontSize}px ${layer.fontFamily}`
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
         if (layer.strokeWidth > 0) {
@@ -1242,7 +1329,7 @@ export function StickerCreator() {
                               height: `${toCanvasPx(layer.height)}px`,
                               fontSize: `${toCanvasPx(layer.fontSize)}px`,
                               fontFamily: layer.fontFamily,
-                              fontWeight: 400,
+                              fontWeight: layer.fontWeight,
                               color: layer.color,
                               writingMode: layer.vertical
                                 ? "vertical-rl"
@@ -1868,7 +1955,16 @@ export function StickerCreator() {
                         className="w-full rounded-md border bg-background px-2 py-2 text-sm"
                         value={newTextFontFamily}
                         onChange={(event) =>
-                          setNewTextFontFamily(event.target.value)
+                          (() => {
+                            const nextFamily = event.target.value
+                            setNewTextFontFamily(nextFamily)
+                            setNewTextFontWeight((prev) =>
+                              normalizeFontWeightForFamily({
+                                fontFamily: nextFamily,
+                                fontWeight: prev,
+                              }),
+                            )
+                          })()
                         }
                       >
                         {fontFamilies.map((font) => (
@@ -1877,6 +1973,39 @@ export function StickerCreator() {
                           </option>
                         ))}
                       </select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">
+                        追加時太さ（{newTextFontWeight}）
+                      </Label>
+                      <input
+                        type="range"
+                        min={100}
+                        max={900}
+                        step={100}
+                        value={newTextFontWeight}
+                        disabled={
+                          getFontWeightsForFamily(newTextFontFamily).length <= 1
+                        }
+                        onChange={(event) => {
+                          const next = clampFontWeight(
+                            Number(event.currentTarget.value),
+                          )
+                          setNewTextFontWeight(
+                            normalizeFontWeightForFamily({
+                              fontFamily: newTextFontFamily,
+                              fontWeight: next,
+                            }),
+                          )
+                        }}
+                        className="w-full"
+                      />
+                      {getFontWeightsForFamily(newTextFontFamily).length <=
+                        1 && (
+                        <p className="text-muted-foreground text-xs">
+                          このフォントは太さ変更に対応していません
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 pt-6">
                       <Switch
@@ -1934,9 +2063,16 @@ export function StickerCreator() {
                             className="w-full rounded-md border bg-background px-2 py-2 text-sm"
                             value={activeLayer.fontFamily}
                             onChange={(event) =>
-                              updateLayer(activeLayer.id, {
-                                fontFamily: event.target.value,
-                              })
+                              (() => {
+                                const nextFamily = event.target.value
+                                updateLayer(activeLayer.id, {
+                                  fontFamily: nextFamily,
+                                  fontWeight: normalizeFontWeightForFamily({
+                                    fontFamily: nextFamily,
+                                    fontWeight: activeLayer.fontWeight,
+                                  }),
+                                })
+                              })()
                             }
                           >
                             {fontFamilies.map((font) => (
@@ -1946,6 +2082,40 @@ export function StickerCreator() {
                             ))}
                           </select>
                         </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">
+                          太さ（{activeLayer.fontWeight}）
+                        </Label>
+                        <input
+                          type="range"
+                          min={100}
+                          max={900}
+                          step={100}
+                          value={activeLayer.fontWeight}
+                          disabled={
+                            getFontWeightsForFamily(activeLayer.fontFamily)
+                              .length <= 1
+                          }
+                          onChange={(event) => {
+                            const next = clampFontWeight(
+                              Number(event.currentTarget.value),
+                            )
+                            updateLayer(activeLayer.id, {
+                              fontWeight: normalizeFontWeightForFamily({
+                                fontFamily: activeLayer.fontFamily,
+                                fontWeight: next,
+                              }),
+                            })
+                          }}
+                          className="w-full"
+                        />
+                        {getFontWeightsForFamily(activeLayer.fontFamily)
+                          .length <= 1 && (
+                          <p className="text-muted-foreground text-xs">
+                            このフォントは太さ変更に対応していません
+                          </p>
+                        )}
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div className="space-y-1">
@@ -2223,7 +2393,16 @@ export function StickerCreator() {
                     className="w-full rounded-md border bg-background px-2 py-2 text-sm"
                     value={newTextFontFamily}
                     onChange={(event) =>
-                      setNewTextFontFamily(event.target.value)
+                      (() => {
+                        const nextFamily = event.target.value
+                        setNewTextFontFamily(nextFamily)
+                        setNewTextFontWeight((prev) =>
+                          normalizeFontWeightForFamily({
+                            fontFamily: nextFamily,
+                            fontWeight: prev,
+                          }),
+                        )
+                      })()
                     }
                   >
                     {fontFamilies.map((font) => (
@@ -2232,6 +2411,39 @@ export function StickerCreator() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">
+                    追加時太さ（{newTextFontWeight}）
+                  </Label>
+                  <input
+                    type="range"
+                    min={100}
+                    max={900}
+                    step={100}
+                    value={newTextFontWeight}
+                    disabled={
+                      getFontWeightsForFamily(newTextFontFamily).length <= 1
+                    }
+                    onChange={(event) => {
+                      const next = clampFontWeight(
+                        Number(event.currentTarget.value),
+                      )
+                      setNewTextFontWeight(
+                        normalizeFontWeightForFamily({
+                          fontFamily: newTextFontFamily,
+                          fontWeight: next,
+                        }),
+                      )
+                    }}
+                    className="w-full"
+                  />
+                  {getFontWeightsForFamily(newTextFontFamily).length <= 1 && (
+                    <p className="text-muted-foreground text-xs">
+                      このフォントは太さ変更に対応していません
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -2289,9 +2501,16 @@ export function StickerCreator() {
                     className="w-full rounded-md border bg-background px-2 py-2 text-sm"
                     value={activeLayer.fontFamily}
                     onChange={(event) =>
-                      updateLayer(activeLayer.id, {
-                        fontFamily: event.target.value,
-                      })
+                      (() => {
+                        const nextFamily = event.target.value
+                        updateLayer(activeLayer.id, {
+                          fontFamily: nextFamily,
+                          fontWeight: normalizeFontWeightForFamily({
+                            fontFamily: nextFamily,
+                            fontWeight: activeLayer.fontWeight,
+                          }),
+                        })
+                      })()
                     }
                   >
                     {fontFamilies.map((font) => (
@@ -2300,6 +2519,41 @@ export function StickerCreator() {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-xs">
+                    太さ（{activeLayer.fontWeight}）
+                  </Label>
+                  <input
+                    type="range"
+                    min={100}
+                    max={900}
+                    step={100}
+                    value={activeLayer.fontWeight}
+                    disabled={
+                      getFontWeightsForFamily(activeLayer.fontFamily).length <=
+                      1
+                    }
+                    onChange={(event) => {
+                      const next = clampFontWeight(
+                        Number(event.currentTarget.value),
+                      )
+                      updateLayer(activeLayer.id, {
+                        fontWeight: normalizeFontWeightForFamily({
+                          fontFamily: activeLayer.fontFamily,
+                          fontWeight: next,
+                        }),
+                      })
+                    }}
+                    className="w-full"
+                  />
+                  {getFontWeightsForFamily(activeLayer.fontFamily).length <=
+                    1 && (
+                    <p className="text-muted-foreground text-xs">
+                      このフォントは太さ変更に対応していません
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">

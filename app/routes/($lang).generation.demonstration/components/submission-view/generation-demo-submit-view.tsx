@@ -1,10 +1,8 @@
 import { AppFixedContent } from "~/components/app/app-fixed-content"
-import { uploadImage } from "~/utils/upload-image"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
-import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
@@ -218,21 +216,13 @@ export function GenerationDemoSubmissionView(props: Props) {
       return null
     }
 
-    const userNanoid = context.user?.nanoid ?? null
-    if (userNanoid === null) {
-      navigate("/new/profile")
+    const viewerToken = tokenData?.viewer?.token
+    if (!viewerToken) {
+      toast("認証エラーが発生しました。ログインし直してください。")
       return null
     }
 
-    const controlNetImageFileName = `${createRandomString(
-      30,
-    )}_control_net_image.png`
-
-    const controlNetImageUrl = await uploadImage(
-      base64,
-      controlNetImageFileName,
-      userNanoid,
-    )
+    const controlNetImageUrl = await uploadPublicImage(base64, viewerToken)
 
     if (controlNetImageUrl === "") return null
 
@@ -442,32 +432,16 @@ export function GenerationDemoSubmissionView(props: Props) {
       }
 
       if (generationType === "IMAGE_TO_IMAGE") {
-        const i2iFileName = `${createRandomString(30)}_img2img_src.png`
-        let i2iFileUrl: string
-
-        // Geminiモデルの場合はuploadPublicImageを使用
-        if (context.config.modelType === "GEMINI") {
-          const viewerToken = tokenData?.viewer?.token
-          if (!viewerToken) {
-            toast("認証エラーが発生しました。ログインし直してください。")
-            return
-          }
-          i2iFileUrl = await uploadPublicImage(
-            context.config.i2iImageBase64,
-            viewerToken,
-          )
-        } else {
-          i2iFileUrl = await uploadImage(
-            context.config.i2iImageBase64,
-            i2iFileName,
-            userNanoid,
-          )
-        }
-
-        if (i2iFileUrl === "") {
-          toast("画像のアップロードに失敗しました")
+        const viewerToken = tokenData?.viewer?.token
+        if (!viewerToken) {
+          toast("認証エラーが発生しました。ログインし直してください。")
           return
         }
+
+        const i2iFileUrl = await uploadPublicImage(
+          context.config.i2iImageBase64,
+          viewerToken,
+        )
         await createTaskCore(
           context.config.generationCount,
           model.name,
