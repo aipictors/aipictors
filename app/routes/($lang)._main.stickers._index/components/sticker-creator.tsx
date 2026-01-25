@@ -1212,6 +1212,7 @@ export function StickerCreator() {
                               height: `${toCanvasPx(layer.height)}px`,
                               fontSize: `${toCanvasPx(layer.fontSize)}px`,
                               fontFamily: layer.fontFamily,
+                              fontWeight: 400,
                               color: layer.color,
                               writingMode: layer.vertical
                                 ? "vertical-rl"
@@ -1222,11 +1223,17 @@ export function StickerCreator() {
                               whiteSpace: layer.vertical
                                 ? ("nowrap" as const)
                                 : ("pre-wrap" as const),
-                              textShadow:
+                              WebkitTextStrokeWidth:
                                 layer.strokeWidth > 0
-                                  ? `0 0 ${strokeWidthPx}px ${layer.strokeColor}, 0 0 ${
-                                      strokeWidthPx * 2
-                                    }px ${layer.strokeColor}`
+                                  ? `${strokeWidthPx}px`
+                                  : undefined,
+                              WebkitTextStrokeColor:
+                                layer.strokeWidth > 0
+                                  ? layer.strokeColor
+                                  : undefined,
+                              paintOrder:
+                                layer.strokeWidth > 0
+                                  ? ("stroke fill" as const)
                                   : undefined,
                               display: "flex",
                               alignItems: "center",
