@@ -19,6 +19,7 @@ import {
   Download,
   Eye,
   EyeOff,
+  Loader2,
   Lock,
   MoveDiagonal2,
   Plus,
@@ -30,10 +31,12 @@ import {
   Upload,
   X,
 } from "lucide-react"
+import { toast } from "sonner"
 import {
   stickerAssets,
   type StickerAssetCategory,
 } from "~/routes/($lang)._main.stickers._index/components/sticker-assets"
+import { AddStickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-dialog"
 
 const CANVAS_SIZE = 512
 
@@ -118,6 +121,10 @@ export function StickerCreator() {
     useState<StickerAssetCategory>("japanese")
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null)
   const [textInput, setTextInput] = useState("")
+
+  const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false)
+  const [registerImageBase64, setRegisterImageBase64] = useState("")
+  const [isRegisterPreparing, setIsRegisterPreparing] = useState(false)
   const [backgroundEnabled, setBackgroundEnabled] = useState(false)
   const [backgroundColor, setBackgroundColor] = useState("#ffffff")
   const [isOpen, setIsOpen] = useState(false)
@@ -578,12 +585,12 @@ export function StickerCreator() {
     }
   }, [])
 
-  const exportCanvas = async (format: "png" | "webp") => {
+  const createExportCanvas = async () => {
     const canvas = document.createElement("canvas")
     canvas.width = CANVAS_SIZE
     canvas.height = CANVAS_SIZE
     const ctx = canvas.getContext("2d")
-    if (!ctx) return
+    if (!ctx) return null
 
     if (backgroundEnabled) {
       ctx.fillStyle = backgroundColor
@@ -667,6 +674,13 @@ export function StickerCreator() {
       ctx.restore()
     }
 
+    return canvas
+  }
+
+  const exportCanvas = async (format: "png" | "webp") => {
+    const canvas = await createExportCanvas()
+    if (!canvas) return
+
     canvas.toBlob(
       (blob) => {
         if (!blob) return
@@ -680,6 +694,25 @@ export function StickerCreator() {
       `image/${format}`,
       0.95,
     )
+  }
+
+  const openRegisterDialog = async () => {
+    setIsRegisterPreparing(true)
+    try {
+      const canvas = await createExportCanvas()
+      if (!canvas) {
+        toast("登録用画像の生成に失敗しました")
+        return
+      }
+      const base64 = canvas.toDataURL("image/png")
+      setRegisterImageBase64(base64)
+      setIsRegisterDialogOpen(true)
+    } catch (error) {
+      console.error(error)
+      toast("登録用画像の生成に失敗しました")
+    } finally {
+      setIsRegisterPreparing(false)
+    }
   }
 
   if (!isOpen) {
@@ -704,6 +737,16 @@ export function StickerCreator() {
 
   return (
     <section className="space-y-4 rounded-xl border bg-background p-4 shadow-sm">
+      <AddStickerDialog
+        open={isRegisterDialogOpen}
+        onOpenChange={(open) => {
+          setIsRegisterDialogOpen(open)
+          if (!open) {
+            setRegisterImageBase64("")
+          }
+        }}
+        defaultImageBase64={registerImageBase64}
+      />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-col gap-1">
           <h2 className="font-bold text-lg">スタンプ作成ツール</h2>
@@ -757,7 +800,6 @@ export function StickerCreator() {
                 <SelectItem value="hudemoji">Hudemoji</SelectItem>
                 <SelectItem value="english">English</SelectItem>
                 <SelectItem value="effect">Effect</SelectItem>
-                <SelectItem value="parts">Parts</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -805,6 +847,19 @@ export function StickerCreator() {
               >
                 <Download className="mr-1 h-4 w-4" />
                 保存
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => void openRegisterDialog()}
+                disabled={isRegisterPreparing || layers.length === 0}
+              >
+                {isRegisterPreparing ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="mr-1 h-4 w-4" />
+                )}
+                登録
               </Button>
               <Separator
                 orientation="vertical"
@@ -1028,7 +1083,6 @@ export function StickerCreator() {
                       <SelectItem value="hudemoji">Hudemoji</SelectItem>
                       <SelectItem value="english">English</SelectItem>
                       <SelectItem value="effect">Effect</SelectItem>
-                      <SelectItem value="parts">Parts</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -1463,6 +1517,19 @@ export function StickerCreator() {
                     >
                       <Download className="mr-1 h-4 w-4" />
                       保存
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => void openRegisterDialog()}
+                      disabled={isRegisterPreparing || layers.length === 0}
+                    >
+                      {isRegisterPreparing ? (
+                        <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                      ) : (
+                        <Upload className="mr-1 h-4 w-4" />
+                      )}
+                      登録
                     </Button>
                   </div>
                 </div>

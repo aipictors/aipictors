@@ -4,13 +4,14 @@ import { Card } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { ArrowUpFromLineIcon, XIcon } from "lucide-react"
-import { useCallback, useState, useRef } from "react"
+import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   isHidePreviewImage: boolean
   cropWidth: number
   cropHeight: number
+  defaultCroppedImage?: string
   fileExtension?: string
   onDeleteImage: () => void
   onCrop?: (croppedImage: string) => void
@@ -22,12 +23,25 @@ type Props = {
  * 指定した画像ファイルの切り抜き開始領域
  */
 export function CropImageField(props: Props) {
+  const t = useTranslation()
+
   const [image, setImage] = useState<string | undefined>(undefined)
-  const [croppedImage, setCroppedImage] = useState<string>("")
+  const [croppedImage, setCroppedImage] = useState<string>(
+    props.defaultCroppedImage ?? "",
+  )
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const inputId = useId()
+
   const cropperClassName = "react-easy-crop-container"
+
+  useEffect(() => {
+    if (!props.defaultCroppedImage) return
+    setCroppedImage((prev) =>
+      prev === "" ? (props.defaultCroppedImage ?? "") : prev,
+    )
+  }, [props.defaultCroppedImage])
 
   /**
    * ファイル選択後の処理
@@ -91,19 +105,15 @@ export function CropImageField(props: Props) {
     props.onDeleteImage()
   }
 
-  const handleChildrenClick = () => {
-    fileInputRef.current?.click()
-  }
-
   if (croppedImage && !props.isHidePreviewImage) {
     return (
       <>
         {props.children ? (
           <>
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-            <div onClick={handleChildrenClick}>{props.children}</div>
+            <label htmlFor={inputId}>{props.children}</label>
             <Input
               hidden
+              id={inputId}
               ref={fileInputRef}
               type="file"
               accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
@@ -119,6 +129,7 @@ export function CropImageField(props: Props) {
               src={croppedImage}
             />
             <Input
+              id={inputId}
               ref={fileInputRef}
               type="file"
               accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
@@ -152,15 +163,13 @@ export function CropImageField(props: Props) {
     )
   }
 
-  const t = useTranslation()
-
   return (
     <>
       {props.children ? (
         <>
-          {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-          <div onClick={handleChildrenClick}>{props.children}</div>
+          <label htmlFor={inputId}>{props.children}</label>
           <Input
+            id={inputId}
             ref={fileInputRef}
             type="file"
             accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
@@ -177,6 +186,7 @@ export function CropImageField(props: Props) {
             </div>
           </div>
           <Input
+            id={inputId}
             ref={fileInputRef}
             type="file"
             accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"

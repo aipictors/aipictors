@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useId, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { toast } from "sonner"
 import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
@@ -26,7 +26,10 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   onAddedSicker?: () => void
-  children: React.ReactNode
+  defaultImageBase64?: string
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  children?: React.ReactNode
 }
 
 /**
@@ -37,7 +40,7 @@ export function AddStickerDialog(props: Props) {
 
   const t = useTranslation()
 
-  const [imageBase64, setImageBase64] = useState("")
+  const [imageBase64, setImageBase64] = useState(props.defaultImageBase64 ?? "")
 
   const [title, setTitle] = useState("")
 
@@ -45,11 +48,35 @@ export function AddStickerDialog(props: Props) {
 
   const [tag, setTag] = useState("")
 
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [internalOpen, setInternalOpen] = useState<boolean>(false)
+
+  const isControlled = props.open !== undefined
+  const isOpen = isControlled ? (props.open ?? false) : internalOpen
+
+  const setIsOpen = (next: boolean) => {
+    if (isControlled) {
+      props.onOpenChange?.(next)
+      return
+    }
+    setInternalOpen(next)
+  }
 
   const [isPublic, setIsPublic] = useState(false)
 
-  const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+  const id = useId()
+  const publicStickerId = `${id}-public-sticker`
+  const personId = `${id}-person-check`
+  const animalId = `${id}-animal-check`
+  const machineId = `${id}-machine-check`
+  const backgroundId = `${id}-background-check`
+  const objectId = `${id}-object-check`
+  const happyId = `${id}-happy-check`
+  const enjoyId = `${id}-enjoy-check`
+  const celebrationId = `${id}-celebration-check`
+  const sadId = `${id}-sad-check`
+  const otherId = `${id}-other-check`
+
+  const { data: token } = useQuery(viewerTokenQuery)
 
   const [createSticker, { loading: isLoading }] = useMutation(
     createStickerMutation,
@@ -66,11 +93,23 @@ export function AddStickerDialog(props: Props) {
 
   const onClose = () => {
     setIsOpen(false)
+    setImageBase64("")
+    setTitle("")
+    setGenre("CHARACTER")
+    setTag("")
+    setIsPublic(false)
   }
 
   const onDeleteImage = () => {
     setImageBase64("")
   }
+
+  useEffect(() => {
+    if (!isOpen) return
+    if (!props.defaultImageBase64) return
+    if (imageBase64 !== "") return
+    setImageBase64(props.defaultImageBase64)
+  }, [imageBase64, isOpen, props.defaultImageBase64])
 
   const uploadSticker = async () => {
     if (imageBase64 === "") {
@@ -145,17 +184,27 @@ export function AddStickerDialog(props: Props) {
   return (
     <Dialog
       open={isOpen}
-      onOpenChange={(isOpen) => {
-        setIsOpen((prev) => (prev !== isOpen ? isOpen : prev))
+      onOpenChange={(nextOpen) => {
+        setIsOpen(nextOpen)
+        if (!nextOpen) {
+          setImageBase64("")
+          setTitle("")
+          setGenre("CHARACTER")
+          setTag("")
+          setIsPublic(false)
+        }
       }}
     >
-      <DialogTrigger asChild>{props.children}</DialogTrigger>
+      {props.children ? (
+        <DialogTrigger asChild>{props.children}</DialogTrigger>
+      ) : null}
       <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
         <DialogHeader>
           <DialogTitle>{t("スタンプ追加", "Add Sticker")}</DialogTitle>
         </DialogHeader>
         <CropImageField
           isHidePreviewImage={imageBase64 === ""}
+          defaultCroppedImage={props.defaultImageBase64}
           cropWidth={240}
           cropHeight={240}
           fileExtension={"webp"}
@@ -169,10 +218,10 @@ export function AddStickerDialog(props: Props) {
               onCheckedChange={() => {
                 setIsPublic((prev) => !prev)
               }}
-              id="public-sticker"
+              id={publicStickerId}
             />
             <label
-              htmlFor="public-sticker"
+              htmlFor={publicStickerId}
               className="ml-2 font-medium text-sm"
             >
               {t(
@@ -200,33 +249,33 @@ export function AddStickerDialog(props: Props) {
                 className="flex items-center space-x-2"
               >
                 <div className="items-center space-x-2">
-                  <label htmlFor="person-check">
+                  <label htmlFor={personId}>
                     {t("人物", "Character")}
-                    <RadioGroupItem value="CHARACTER" id="person-check" />
+                    <RadioGroupItem value="CHARACTER" id={personId} />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <label htmlFor="animal-check">
+                  <label htmlFor={animalId}>
                     {t("動物", "Animal")}
-                    <RadioGroupItem value="ANIMAL" id="animal-check" />
+                    <RadioGroupItem value="ANIMAL" id={animalId} />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <label htmlFor="machine-check">
+                  <label htmlFor={machineId}>
                     {t("機械", "Machine")}
-                    <RadioGroupItem value="MACHINE" id="machine-check" />
+                    <RadioGroupItem value="MACHINE" id={machineId} />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <label htmlFor="background-check">
+                  <label htmlFor={backgroundId}>
                     {t("背景", "Background")}
-                    <RadioGroupItem value="BACKGROUND" id="background-check" />
+                    <RadioGroupItem value="BACKGROUND" id={backgroundId} />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <label htmlFor="object-check">
+                  <label htmlFor={objectId}>
                     {t("物", "Object")}
-                    <RadioGroupItem value="OBJECT" id="object-check" />
+                    <RadioGroupItem value="OBJECT" id={objectId} />
                   </label>
                 </div>
               </RadioGroup>
@@ -239,33 +288,33 @@ export function AddStickerDialog(props: Props) {
                 className="flex items-center space-x-2"
               >
                 <div className="items-center space-x-2">
-                  <label htmlFor="happy-check">
+                  <label htmlFor={happyId}>
                     {t("楽しい", "Fun")}
-                    <RadioGroupItem value="楽しい" id="happy-check" />
+                    <RadioGroupItem value="楽しい" id={happyId} />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <label htmlFor="enjoy-check">
+                  <label htmlFor={enjoyId}>
                     {t("嬉しい", "Happy")}
-                    <RadioGroupItem value="嬉しい" id="enjoy-check" />
+                    <RadioGroupItem value="嬉しい" id={enjoyId} />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <label htmlFor="celebration-check">
+                  <label htmlFor={celebrationId}>
                     {t("お祝い", "Celebration")}
-                    <RadioGroupItem value="お祝い" id="celebration-check" />
+                    <RadioGroupItem value="お祝い" id={celebrationId} />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <label htmlFor="sad-check">
+                  <label htmlFor={sadId}>
                     {t("悲しい", "Sad")}
-                    <RadioGroupItem value="悲しい" id="sad-check" />
+                    <RadioGroupItem value="悲しい" id={sadId} />
                   </label>
                 </div>
                 <div className="items-center space-x-2">
-                  <label htmlFor="other-check">
+                  <label htmlFor={otherId}>
                     {t("その他", "Other")}
-                    <RadioGroupItem value="その他" id="other-check" />
+                    <RadioGroupItem value="その他" id={otherId} />
                   </label>
                 </div>
               </RadioGroup>
