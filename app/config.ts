@@ -282,23 +282,6 @@ export const config = {
      */
     offsetMax: 64 * 24,
   },
-  /**
-   * ワードプレスエンドポイント
-   */
-  wordpressEndpoint: {
-    siteURL: "https://legacy.aipictors.com",
-    privateImage:
-      "https://legacy.aipictors.com/wp-content/themes/AISite/private-image-direct.php",
-    www4: "https://www4.aipictors.com/index.php",
-    deleteUploadedImage:
-      "https://legacy.aipictors.com/wp-content/themes/AISite/delete-public-image.php",
-    generationCheck:
-      "https://legacy.aipictors.com/wp-content/themes/AISite/generation-check.php",
-    getRecommendedWorkIdsByWorkId:
-      "https://legacy.aipictors.com/wp-content/themes/AISite/cooperative-ids.php",
-    getRecommendedIds:
-      "https://legacy.aipictors.com/wp-content/themes/AISite/recommended-ids.php",
-  },
   uploader: {
     uploadImage: env.VITE_WORKERS_UPLOADER,
     uploadText: env.VITE_WORKERS_TEXT_UPLOADER,
@@ -308,12 +291,6 @@ export const config = {
    */
   wordpressLink: {
     top: "https://legacy.aipictors.com",
-  },
-  /**
-   * 汎用APIエンドポイント
-   */
-  internalApiEndpoint: {
-    promptsCheck: "https://internal.api.aipictors.com/prompts/check/index.php",
   },
   /**
    * サイトのURL

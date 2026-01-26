@@ -405,23 +405,6 @@ export function GenerationDemoSubmissionView(props: Props) {
       return
     }
 
-    // const ng = await checkNgPrompts(
-    //   context.config.promptText,
-    //   `${context.config.negativePromptText}, nsfw, nude`,
-    //   model.name,
-    //   userId,
-    // )
-    // if (ng.hit_words.length > 0) {
-    //   toast(`プロンプトにNGワードが含まれています: ${ng.hit_words}`)
-    //   return
-    // }
-    // if (ng.hit_negative_words.length > 0) {
-    //   toast(
-    //     `ネガティブプロンプトにNGワードが含まれています: ${ng.hit_negative_words}`,
-    //   )
-    //   return
-    // }
-
     // 生成リクエストしたい回数分生成リクエストを行う
     // もし通常の連続生成を超過したら予約生成に切り替える
     try {
@@ -639,7 +622,6 @@ export function GenerationDemoSubmissionView(props: Props) {
       toast("画面更新して再度お試し下さい。")
       return
     }
-    // await activeImageGeneration({ nanoid: context.user.nanoid })
   }
 
   /**

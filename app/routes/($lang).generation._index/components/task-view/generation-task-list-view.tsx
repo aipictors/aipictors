@@ -13,7 +13,7 @@ import type { TaskContentPositionType } from "~/routes/($lang).generation._index
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 type Props = {
   rating: number
@@ -98,6 +98,18 @@ export function GenerationTaskListView(props: Props) {
 
   const queryData = useGenerationQuery()
 
+  const autoRefreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(
+    null,
+  )
+  const autoRefreshInitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  )
+  const autoRefreshRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  )
+  const autoRefreshBaselineTasksCountRef = useRef<number>(0)
+  const isAutoRefreshingRef = useRef(false)
+
   useEffect(() => {
     taskRefetch()
     resultRefetch()
@@ -105,6 +117,22 @@ export function GenerationTaskListView(props: Props) {
     queryData.userStatus?.inProgressImageGenerationTasksCount ||
       queryData.userStatus?.inProgressImageGenerationReservedTasksCount,
   ])
+
+  const stopAutoRefresh = useCallback(() => {
+    isAutoRefreshingRef.current = false
+    if (autoRefreshInitTimerRef.current) {
+      clearTimeout(autoRefreshInitTimerRef.current)
+      autoRefreshInitTimerRef.current = null
+    }
+    if (autoRefreshRetryTimerRef.current) {
+      clearTimeout(autoRefreshRetryTimerRef.current)
+      autoRefreshRetryTimerRef.current = null
+    }
+    if (autoRefreshTimerRef.current) {
+      clearInterval(autoRefreshTimerRef.current)
+      autoRefreshTimerRef.current = null
+    }
+  }, [])
 
   /**
    * レーティングを変更する
@@ -200,6 +228,83 @@ export function GenerationTaskListView(props: Props) {
     await taskRefetch()
     await resultRefetch()
   }
+
+  const refreshAndMaybeStop = useCallback(async () => {
+    const taskResult = await taskRefetch()
+    await resultRefetch()
+
+    const latestTasksCount =
+      taskResult.data?.viewer?.imageGenerationTasks?.length ?? 0
+    const inProgressCount =
+      queryData.userStatus?.inProgressImageGenerationTasksCount ?? 0
+    const reservedCount =
+      queryData.userStatus?.inProgressImageGenerationReservedTasksCount ?? 0
+
+    if (
+      latestTasksCount === 0 &&
+      inProgressCount === 0 &&
+      reservedCount === 0
+    ) {
+      stopAutoRefresh()
+    }
+    return latestTasksCount
+  }, [queryData.userStatus, resultRefetch, stopAutoRefresh, taskRefetch])
+
+  const startAutoRefresh = useCallback(() => {
+    stopAutoRefresh()
+    isAutoRefreshingRef.current = true
+    autoRefreshBaselineTasksCountRef.current =
+      tasks?.viewer?.imageGenerationTasks?.length ?? 0
+
+    // 1秒後くらいに更新（生成タスクが反映されるまで少し待つ）
+    autoRefreshInitTimerRef.current = setTimeout(async () => {
+      if (!isAutoRefreshingRef.current) return
+      const firstCount = await refreshAndMaybeStop()
+      if (!isAutoRefreshingRef.current) return
+
+      // その1秒後増えてなかったらもう一回
+      let secondCount = firstCount
+      if (firstCount <= autoRefreshBaselineTasksCountRef.current) {
+        secondCount = await refreshAndMaybeStop()
+      }
+      if (!isAutoRefreshingRef.current) return
+
+      // さらに増えてなかったら2秒後に再度取得
+      if (secondCount <= autoRefreshBaselineTasksCountRef.current) {
+        autoRefreshRetryTimerRef.current = setTimeout(async () => {
+          if (!isAutoRefreshingRef.current) return
+          await refreshAndMaybeStop()
+        }, 2000)
+      }
+
+      // 以降は5秒間隔で最新一覧を追い続ける（生成中/予約中がなくなったら停止）
+      autoRefreshTimerRef.current = setInterval(() => {
+        if (!isAutoRefreshingRef.current) return
+        refreshAndMaybeStop()
+      }, 5000)
+    }, 1000)
+  }, [
+    refreshAndMaybeStop,
+    stopAutoRefresh,
+    tasks?.viewer?.imageGenerationTasks,
+  ])
+
+  useEffect(() => {
+    const onRequested = () => {
+      startAutoRefresh()
+    }
+    if (typeof window === "undefined") return
+    window.addEventListener("generation:task-requested", onRequested)
+    return () => {
+      window.removeEventListener("generation:task-requested", onRequested)
+    }
+  }, [startAutoRefresh])
+
+  useEffect(() => {
+    return () => {
+      stopAutoRefresh()
+    }
+  }, [stopAutoRefresh])
 
   return (
     <GenerationViewCard>

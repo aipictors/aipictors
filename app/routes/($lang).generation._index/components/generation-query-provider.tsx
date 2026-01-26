@@ -1,6 +1,5 @@
 import { AuthContext } from "~/contexts/auth-context"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
-import { checkInGenerationProgressStatus } from "~/utils/check-in-generation-progress-status"
 import {
   ControlNetCategoryContextFragment,
   CurrentPassContextFragment,
@@ -60,30 +59,50 @@ export function GenerationQueryProvider(props: Props) {
   const inProgressImageGenerationTasksCount =
     userStatus?.inProgressImageGenerationTasksCount ?? 0
 
-  const imageGenerationWaitCount = userStatus?.imageGenerationWaitCount ?? 0
+  const inProgressImageGenerationReservedTasksCount =
+    userStatus?.inProgressImageGenerationReservedTasksCount ?? 0
 
   useEffect(() => {
-    const time = setInterval(async () => {
+    // 生成開始時に明示的に更新をかけるためのイベント
+    const onRequested = () => {
+      if (isTimeout) return
+      startTransition(() => {
+        refetch()
+      })
+    }
+    if (typeof window !== "undefined") {
+      window.addEventListener("generation:task-requested", onRequested)
+      return () => {
+        window.removeEventListener("generation:task-requested", onRequested)
+      }
+    }
+    return
+  }, [isTimeout])
+
+  useEffect(() => {
+    // 生成中/予約中の間だけ定期的にステータスを更新する
+    const time = setInterval(() => {
       if (isTimeout) {
         return
       }
-      if (authContext.userId !== null) {
-        const needFetch = await checkInGenerationProgressStatus(
-          authContext.userId,
-          inProgressImageGenerationTasksCount.toString(),
-          imageGenerationWaitCount.toString(),
-        )
-        if (needFetch) {
-          startTransition(() => {
-            refetch()
-          })
-        }
+      const hasInProgress =
+        inProgressImageGenerationTasksCount > 0 ||
+        inProgressImageGenerationReservedTasksCount > 0
+      if (!hasInProgress) {
+        return
       }
-    }, 2000)
+      startTransition(() => {
+        refetch()
+      })
+    }, 5000)
     return () => {
       clearInterval(time)
     }
-  }, [inProgressImageGenerationTasksCount, imageGenerationWaitCount])
+  }, [
+    isTimeout,
+    inProgressImageGenerationTasksCount,
+    inProgressImageGenerationReservedTasksCount,
+  ])
 
   useEffect(() => {
     startTransition(() => {

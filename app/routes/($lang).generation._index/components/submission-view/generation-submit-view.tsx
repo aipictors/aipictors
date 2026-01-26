@@ -892,6 +892,13 @@ export function GenerationSubmissionView(props: Props) {
     })
     // タスクの作成後も呼び出す必要がある
     toast("タスク作成をリクエストしました", { position: "top-center" })
+    if (typeof window !== "undefined") {
+      try {
+        window.dispatchEvent(new CustomEvent("generation:task-requested"))
+      } catch {
+        // noop
+      }
+    }
     logInfo({ source: "GenerationSubmit", message: "Requested task creations" })
     await Promise.all(promises)
     if (typeof context.user?.nanoid !== "string") {
@@ -902,7 +909,6 @@ export function GenerationSubmissionView(props: Props) {
       toast("画面更新して再度お試し下さい。")
       return
     }
-    // await activeImageGeneration({ nanoid: context.user.nanoid })
   }
 
   return (
