@@ -1,4 +1,6 @@
 import { format } from "date-fns"
+import { fetchPublic } from "~/utils/fetch-public"
+import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
 
 export const downloadImageFile = async (
   fileName: string,
@@ -10,13 +12,26 @@ export const downloadImageFile = async (
   }
 
   try {
-    // 画像URLからBlobを取得
-    const response = await fetch(imageUrl)
+    // 画像URLからBlobを取得（クロスオリジンは同一オリジンプロキシ経由）
+    const response = await fetchPublic(getDownloadProxyUrl(imageUrl))
     if (!response.ok) {
       throw new Error("画像の取得に失敗しました")
     }
 
     const blob = await response.blob()
+
+    const contentType = response.headers.get("content-type") ?? blob.type ?? ""
+    if (!contentType.toLowerCase().startsWith("image/")) {
+      let head = ""
+      try {
+        head = (await blob.text()).slice(0, 120)
+      } catch {
+        head = ""
+      }
+      throw new Error(
+        `画像形式ではありません (content-type: ${contentType || "unknown"}) ${head}`,
+      )
+    }
 
     const linkNode = document.createElement("a")
     linkNode.href = URL.createObjectURL(blob)

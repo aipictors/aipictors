@@ -83,10 +83,9 @@ export const onRequest: PagesFunction = async (ctx) => {
     try {
       const res = await executeWithTimeout(remix(ctx))
 
-      if (res.body) {
-        const text = await res.text()
-        return new Response(text, res)
-      }
+      // IMPORTANT:
+      // Do not consume the body (e.g. res.text()), otherwise binary responses
+      // like images/zip will be corrupted.
       return res
     } catch (err) {
       console.error(`Request attempt ${attempt + 1}/${maxRetry} failed:`, err)

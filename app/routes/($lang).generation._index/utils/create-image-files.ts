@@ -1,6 +1,18 @@
+import { fetchPublic } from "~/utils/fetch-public"
+import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+
 interface FileObject {
   name: string
   data: Uint8Array
+}
+
+function getImageExtensionFromMimeType(
+  mimeType: string,
+): "png" | "webp" | "jpg" {
+  const lower = mimeType.toLowerCase()
+  if (lower.includes("image/webp")) return "webp"
+  if (lower.includes("image/jpeg") || lower.includes("image/jpg")) return "jpg"
+  return "png"
 }
 
 type Props = {
@@ -44,7 +56,7 @@ export async function createImageFiles(props: Props) {
         continue
       }
 
-      const response = await fetch(dataName)
+      const response = await fetchPublic(getDownloadProxyUrl(dataName))
 
       if (!response.ok) {
         throw new Error(`画像の取得に失敗しました: ${dataName}`)
@@ -52,9 +64,28 @@ export async function createImageFiles(props: Props) {
 
       const blob = await response.blob()
 
+      const contentType =
+        response.headers.get("content-type") ?? blob.type ?? ""
+      if (!contentType.toLowerCase().startsWith("image/")) {
+        let head = ""
+        try {
+          head = (await blob.text()).slice(0, 120)
+        } catch {
+          head = ""
+        }
+        throw new Error(
+          `画像形式ではありません: ${dataName} (content-type: ${contentType || "unknown"}) ${head}`,
+        )
+      }
+
+      const extension = getImageExtensionFromMimeType(contentType)
+
       const arrayBuffer = await blob.arrayBuffer()
 
-      files.push({ name: `${imageId}.png`, data: new Uint8Array(arrayBuffer) })
+      files.push({
+        name: `${imageId}.${extension}`,
+        data: new Uint8Array(arrayBuffer),
+      })
     }
 
     return files

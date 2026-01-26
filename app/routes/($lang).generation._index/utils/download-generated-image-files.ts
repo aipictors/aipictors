@@ -1,30 +1,34 @@
-import { config } from "~/config"
-import { createImageFiles } from "~/routes/($lang).generation._index/utils/create-image-files"
-import { downloadZipFile } from "~/routes/($lang).generation._index/utils/download-zip-file"
+import { submitZipDownloadForm } from "~/routes/($lang).generation._index/utils/submit-zip-download-form"
 
 /**
  * 画像ファイルをZip形式でダウンロードする
  * @param imageIds
  */
 export async function downloadGeneratedImageFiles(imageIds: string[]) {
-  if (config.isDevelopmentMode) {
-    await new Promise((resolve) => setTimeout(resolve, 4000))
+  const urls: string[] = []
+
+  for (const imageId of imageIds) {
+    const imageElement = document.querySelector<HTMLElement>(
+      `.generation-image-${imageId}`,
+    )
+
+    const rawUrl =
+      imageElement?.dataset.original ??
+      (imageElement instanceof HTMLImageElement ? imageElement.src : undefined)
+
+    if (rawUrl) {
+      const absoluteUrl = new URL(rawUrl, window.location.href).toString()
+      urls.push(absoluteUrl)
+    }
   }
 
-  /**
-   * 画像ファイル
-   */
-  const files = await createImageFiles({
-    imageIds: imageIds,
-    toSelector(id) {
-      return `.generation-image-${id}`
-    },
-    dataName: "original",
-  })
+  if (urls.length === 0) {
+    throw new Error("画像が存在しません")
+  }
 
-  // 画像を圧縮してダウンロードする
-  await downloadZipFile({
-    files: files,
+  // User-gesture friendly download: submit a form POST so the browser downloads the response.
+  submitZipDownloadForm({
+    urls,
     name: "images",
   })
 }

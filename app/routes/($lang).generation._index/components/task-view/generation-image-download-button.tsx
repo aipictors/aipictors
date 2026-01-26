@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { downloadGeneratedImageFiles } from "~/routes/($lang).generation._index/utils/download-generated-image-files"
-import { useMutation } from "@tanstack/react-query"
+import { useState } from "react"
 import { ArrowDownToLine, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -18,24 +18,26 @@ type Props = {
 export function GenerationImageDownloadButton(props: Props) {
   const _context = useGenerationContext()
 
-  const { status, mutateAsync } = useMutation({
-    mutationFn: downloadGeneratedImageFiles,
-    onError(error) {
-      toast.error(error.message)
-    },
-    onSuccess() {
-      toast.success("画像をダウンロードしました")
-    },
-  })
+  const [isLoading, setIsLoading] = useState(false)
 
-  const onClick = async () => {
-    await mutateAsync(props.selectedTaskIds)
+  const onClick = () => {
+    // Keep the download trigger directly under user gesture (click)
+    setIsLoading(true)
+    downloadGeneratedImageFiles(props.selectedTaskIds)
+      .then(() => {
+        toast.success("ダウンロードを開始しました")
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Error) {
+          toast.error(error.message)
+          return
+        }
+        toast.error("ダウンロードに失敗しました")
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
-
-  /**
-   * 処理中
-   */
-  const isLoading = status === "pending"
 
   return props.isEnable ? (
     <Button

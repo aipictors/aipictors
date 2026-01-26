@@ -1,3 +1,6 @@
+import { fetchPublic } from "~/utils/fetch-public"
+import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+
 interface FileObject {
   name: string
   data: Uint8Array
@@ -24,9 +27,11 @@ type Props = {
  * 画像ファイルを作成する
  * @param props URLやファイル名などの設定
  */
-export async function createImageFileFromUrl(props: Props) {
+export async function createImageFileFromUrl(
+  props: Props,
+): Promise<FileObject> {
   try {
-    const response = await fetch(props.url)
+    const response = await fetchPublic(getDownloadProxyUrl(props.url))
 
     const blob = await response.blob()
 
