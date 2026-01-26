@@ -33,6 +33,7 @@ import { toDateTimeText } from "~/utils/to-date-time-text"
 import { useTranslation } from "~/hooks/use-translation"
 import { GenerationTaskPostConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-post-confirm-dialog"
 import { GenerationTaskDeleteMemoConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-delete-memo-confirm-dialog"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 type Props = {
   task:
@@ -71,6 +72,13 @@ type Props = {
 export function GenerationTaskSheetViewContent(props: Props) {
   const context = useGenerationContext()
   const t = useTranslation()
+
+  const normalizedImageUrl = props.task.imageUrl
+    ? normalizeGenerativeFileUrl(props.task.imageUrl)
+    : props.task.imageUrl
+  const normalizedThumbnailUrl = props.task.thumbnailUrl
+    ? normalizeGenerativeFileUrl(props.task.thumbnailUrl)
+    : props.task.thumbnailUrl
 
   /**
    * カンマ前までの文字列を取得
@@ -174,15 +182,15 @@ export function GenerationTaskSheetViewContent(props: Props) {
                       <GenerationImageDialogButton
                         taskId={props.task.id}
                         userToken={userToken}
-                        imageUrl={props.task.imageUrl}
-                        thumbnailUrl={props.task.thumbnailUrl}
+                        imageUrl={normalizedImageUrl ?? ""}
+                        thumbnailUrl={normalizedThumbnailUrl ?? ""}
                       >
                         <img
                           className={"m-auto max-h-96"}
                           src={
                             context.config.taskListThumbnailType === "light"
-                              ? props.task.thumbnailUrl
-                              : props.task.imageUrl
+                              ? (normalizedThumbnailUrl ?? "")
+                              : (normalizedImageUrl ?? "")
                           }
                           alt={"-"}
                         />
@@ -208,8 +216,8 @@ export function GenerationTaskSheetViewContent(props: Props) {
                             `generation-image-${props.task.id}`,
                           )}
                           alt={"-"}
-                          src={props.task.imageUrl}
-                          data-original={props.task.imageUrl}
+                          src={normalizedImageUrl ?? ""}
+                          data-original={normalizedImageUrl ?? ""}
                         />
                       )}
                   </Suspense>
@@ -459,7 +467,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
           onClose={() => props.setShowAiModificationDialog(false)}
           taskId={props.task.id}
           token={userToken}
-          imageUrl={props.task.imageUrl}
+          imageUrl={normalizeGenerativeFileUrl(props.task.imageUrl)}
           userNanoid={props.userNanoid}
           originalPrompt={props.task.prompt || ""}
         />

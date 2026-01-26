@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
 import { GenerationTaskContentImagePlaceHolder } from "~/routes/($lang).generation._index/components/generation-task-content-image-place-holder"
 import { Suspense } from "react"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 type Props = {
   taskId: string
@@ -15,6 +16,8 @@ type Props = {
  * 生成画像のダイアログのボタン
  */
 export function GenerationImageDialogButton(props: Props) {
+  const normalizedImageUrl = normalizeGenerativeFileUrl(props.imageUrl)
+
   return (
     <Dialog>
       <DialogTrigger
@@ -37,7 +40,7 @@ export function GenerationImageDialogButton(props: Props) {
           <img
             className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
             alt={"-"}
-            src={props.imageUrl}
+            src={normalizedImageUrl}
           />
         </Suspense>
       </DialogContent>

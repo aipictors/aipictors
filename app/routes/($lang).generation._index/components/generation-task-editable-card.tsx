@@ -16,6 +16,7 @@ import {
   GenerationResultProtectButtonTaskFragment,
 } from "~/routes/($lang).generation._index/components/generation-task-protected-button"
 import { graphql, type FragmentOf } from "gql.tada"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -176,6 +177,11 @@ export function GenerationTaskEditableCard(props: Props) {
     )
   }
 
+  const normalizedImageUrl = normalizeGenerativeFileUrl(props.task.imageUrl)
+  const normalizedThumbnailUrl = props.task.thumbnailUrl
+    ? normalizeGenerativeFileUrl(props.task.thumbnailUrl)
+    : props.task.thumbnailUrl
+
   return (
     <div
       className="relative grid h-full overflow-hidden rounded bg-card p-0"
@@ -204,10 +210,10 @@ export function GenerationTaskEditableCard(props: Props) {
             className={cn(`generation-image-${props.taskNanoid}`, "m-auto")}
             src={
               context.config.taskListThumbnailType === "light"
-                ? props.task.thumbnailUrl
-                : props.task.imageUrl
+                ? (normalizedThumbnailUrl ?? "")
+                : normalizedImageUrl
             }
-            data-original={props.task.imageUrl}
+            data-original={normalizedImageUrl}
             alt={"-"}
           />
         ) : (
@@ -221,8 +227,8 @@ export function GenerationTaskEditableCard(props: Props) {
           token={props.userToken}
           size={optionButtonSize(props.optionButtonSize)}
           setIsHovered={setIsHovered}
-          imageUrl={props.task.imageUrl}
-          thumbnailUrl={props.task.thumbnailUrl}
+          imageUrl={normalizedImageUrl}
+          thumbnailUrl={normalizedThumbnailUrl ?? ""}
         />
       )}
       {/* お気に入りボタン */}

@@ -1,4 +1,5 @@
 import { config } from "~/config"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 function isSameOriginUrl(url: string): boolean {
   try {
@@ -19,29 +20,31 @@ function toCorsDownloadWorkerUrl(targetUrl: string): string {
 export function getDownloadProxyUrl(originalUrl: string): string {
   if (!originalUrl) return originalUrl
 
-  if (originalUrl.startsWith("blob:") || originalUrl.startsWith("data:")) {
-    return originalUrl
+  const normalizedUrl = normalizeGenerativeFileUrl(originalUrl)
+
+  if (normalizedUrl.startsWith("blob:") || normalizedUrl.startsWith("data:")) {
+    return normalizedUrl
   }
 
   // already proxied
-  if (originalUrl.startsWith(config.downloader.corsDownload)) {
-    return originalUrl
+  if (normalizedUrl.startsWith(config.downloader.corsDownload)) {
+    return normalizedUrl
   }
 
-  if (originalUrl.startsWith("/api/download-image")) {
-    return originalUrl
+  if (normalizedUrl.startsWith("/api/download-image")) {
+    return normalizedUrl
   }
 
-  if (isSameOriginUrl(originalUrl)) {
-    return originalUrl
+  if (isSameOriginUrl(normalizedUrl)) {
+    return normalizedUrl
   }
 
   // Prefer the dedicated Worker proxy for cross-origin URLs.
   try {
-    const absolute = new URL(originalUrl, window.location.href).toString()
+    const absolute = new URL(normalizedUrl, window.location.href).toString()
     return toCorsDownloadWorkerUrl(absolute)
   } catch {
     // Fallback to the legacy same-origin proxy.
-    return `/api/download-image?url=${encodeURIComponent(originalUrl)}`
+    return `/api/download-image?url=${encodeURIComponent(normalizedUrl)}`
   }
 }

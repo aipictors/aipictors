@@ -5,6 +5,7 @@ import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useContext } from "react"
 import { cn } from "~/lib/utils"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 /**
  * タスクプレビュー内容
@@ -14,21 +15,15 @@ export function GenerationTaskContentPreview() {
 
   const authContext = useContext(AuthContext)
 
-  if (
-    authContext === null ||
-    context.config.previewTaskId === null ||
-    context.config.previewTaskId === undefined
-  ) {
+  const previewTaskId = context.config.previewTaskId ?? ""
+
+  const imageGenerationTask = useCachedImageGenerationTask(previewTaskId)
+
+  const imageGenerationResult = useCachedImageGenerationResult(previewTaskId)
+
+  if (authContext === null || !context.config.previewTaskId) {
     return null
   }
-
-  const imageGenerationTask = useCachedImageGenerationTask(
-    context.config.previewTaskId,
-  )
-
-  const imageGenerationResult = useCachedImageGenerationResult(
-    context.config.previewTaskId,
-  )
 
   const userToken = context.config.currentUserToken
 
@@ -36,7 +31,7 @@ export function GenerationTaskContentPreview() {
     <>
       <Card className="flex h-[100vh] w-auto flex-col">
         {imageGenerationTask?.imageUrl &&
-        imageGenerationTask.thumbnailUrl &&
+        imageGenerationTask?.thumbnailUrl &&
         userToken ? (
           <div className="m-auto max-h-[100vh]">
             <img
@@ -46,10 +41,12 @@ export function GenerationTaskContentPreview() {
               )}
               src={
                 context.config.taskListThumbnailType === "light"
-                  ? imageGenerationTask.thumbnailUrl
-                  : imageGenerationTask.imageUrl
+                  ? normalizeGenerativeFileUrl(imageGenerationTask.thumbnailUrl)
+                  : normalizeGenerativeFileUrl(imageGenerationTask.imageUrl)
               }
-              data-original={imageGenerationTask.imageUrl}
+              data-original={normalizeGenerativeFileUrl(
+                imageGenerationTask.imageUrl,
+              )}
               alt={"-"}
             />
             <div className="m-auto mb-1">
@@ -62,7 +59,7 @@ export function GenerationTaskContentPreview() {
         )}
 
         {imageGenerationResult?.imageUrl &&
-        imageGenerationResult.thumbnailUrl &&
+        imageGenerationResult?.thumbnailUrl &&
         userToken ? (
           <div className="m-auto max-h-[100vh]">
             <img
@@ -72,10 +69,14 @@ export function GenerationTaskContentPreview() {
               )}
               src={
                 context.config.taskListThumbnailType === "light"
-                  ? imageGenerationResult.thumbnailUrl
-                  : imageGenerationResult.imageUrl
+                  ? normalizeGenerativeFileUrl(
+                      imageGenerationResult.thumbnailUrl,
+                    )
+                  : normalizeGenerativeFileUrl(imageGenerationResult.imageUrl)
               }
-              data-original={imageGenerationResult.imageUrl}
+              data-original={normalizeGenerativeFileUrl(
+                imageGenerationResult.imageUrl,
+              )}
               alt={"-"}
             />
             <div className="m-auto mb-1">

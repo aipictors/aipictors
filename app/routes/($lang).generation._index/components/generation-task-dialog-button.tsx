@@ -15,6 +15,7 @@ import {
 import { useState } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { graphql, type FragmentOf } from "gql.tada"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 type Props = {
   task:
@@ -78,7 +79,7 @@ export function GenerationTaskDialogButton(props: Props) {
               onClose={() => setShowAiModificationDialog(false)}
               taskId={props.task.id}
               token={props.userToken}
-              imageUrl={props.task.imageUrl}
+              imageUrl={normalizeGenerativeFileUrl(props.task.imageUrl)}
               userNanoid={userNanoid}
               originalPrompt={props.task.prompt || ""}
             />

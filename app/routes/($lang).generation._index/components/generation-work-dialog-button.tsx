@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { GenerationTaskContentImagePlaceHolder } from "~/routes/($lang).generation._index/components/generation-task-content-image-place-holder"
 import { Suspense } from "react"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 type Props = {
   imageUrl: string
@@ -14,6 +15,8 @@ type Props = {
  */
 export function GenerationWorkDialogButton(props: Props) {
   const _context = useGenerationContext()
+
+  const normalizedImageUrl = normalizeGenerativeFileUrl(props.imageUrl)
 
   return (
     <Dialog>
@@ -36,7 +39,7 @@ export function GenerationWorkDialogButton(props: Props) {
         >
           <img
             className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
-            src={props.imageUrl}
+            src={normalizedImageUrl}
             alt={"作品プレビュー"}
           />
         </Suspense>

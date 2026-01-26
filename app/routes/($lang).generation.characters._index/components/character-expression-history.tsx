@@ -9,6 +9,7 @@ import { History, Download, RefreshCw } from "lucide-react"
 import { useCharacterExpressionContext } from "../contexts/character-expression-context"
 import { useToast } from "~/components/ui/use-toast"
 import { toDateTimeText } from "~/utils/to-date-time-text"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 export function CharacterExpressionHistory() {
   const { user } = useCharacterExpressionContext()
@@ -44,7 +45,7 @@ export function CharacterExpressionHistory() {
 
   const handleDownload = (imageUrl: string, filename: string) => {
     const link = document.createElement("a")
-    link.href = imageUrl
+    link.href = normalizeGenerativeFileUrl(imageUrl)
     link.download = filename
     document.body.appendChild(link)
     link.click()
@@ -71,8 +72,8 @@ export function CharacterExpressionHistory() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex space-x-4">
+          {["a", "b", "c"].map((key) => (
+            <div key={key} className="flex space-x-4">
               <Skeleton className="h-20 w-20 rounded" />
               <div className="flex-1 space-y-2">
                 <Skeleton className="h-4 w-3/4" />
@@ -122,7 +123,9 @@ export function CharacterExpressionHistory() {
               >
                 {result.imageUrl && (
                   <img
-                    src={result.thumbnailUrl || result.imageUrl}
+                    src={normalizeGenerativeFileUrl(
+                      result.thumbnailUrl || result.imageUrl,
+                    )}
                     alt="Generated expression"
                     className="h-20 w-20 rounded object-cover"
                   />
@@ -157,12 +160,13 @@ export function CharacterExpressionHistory() {
                   <div className="flex gap-2">
                     {result.imageUrl && result.status === "DONE" && (
                       <Button
-                        onClick={() =>
+                        onClick={() => {
+                          if (!result.imageUrl) return
                           handleDownload(
-                            result.imageUrl!,
+                            result.imageUrl,
                             `character_expression_${result.id}.png`,
                           )
-                        }
+                        }}
                         variant="outline"
                         size="sm"
                       >

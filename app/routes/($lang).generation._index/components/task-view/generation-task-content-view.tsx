@@ -6,6 +6,7 @@ import { skipToken } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { cn } from "~/lib/utils"
+import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 /**
  * タスク内容
@@ -13,23 +14,25 @@ import { cn } from "~/lib/utils"
 export function GenerationTaskContentPreview() {
   const context = useGenerationContext()
 
-  if (context.config.previewTaskId === null) {
-    return null
-  }
-
   const authContext = useContext(AuthContext)
+
+  const previewTaskId = context.config.previewTaskId
 
   const { data } = useSuspenseQuery(
     imageGenerationTaskQuery,
-    authContext.isLoggedIn
+    authContext.isLoggedIn && previewTaskId
       ? {
           variables: {
-            id: context.config.previewTaskId,
+            id: previewTaskId,
           },
           fetchPolicy: "cache-first",
         }
       : skipToken,
   )
+
+  if (previewTaskId === null) {
+    return null
+  }
 
   const imageGenerationTask = data?.imageGenerationTask
 
@@ -55,7 +58,7 @@ export function GenerationTaskContentPreview() {
                   `generation-image-${imageGenerationTask.id}`,
                   "max-h-[72vh]",
                 )}
-                src={imageGenerationTask.imageUrl}
+                src={normalizeGenerativeFileUrl(imageGenerationTask.imageUrl)}
                 alt="-"
               />
             )}
