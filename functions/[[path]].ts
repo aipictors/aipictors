@@ -126,6 +126,8 @@ type MaintenanceStatusDebug = {
     status?: number
     error?: string
     hasGraphqlErrors?: boolean
+    firstGraphqlErrorCode?: string
+    firstGraphqlErrorNumber?: number
   }
 }
 
@@ -223,23 +225,54 @@ const getMaintenanceStatus = async (
     }
 
     const json = (await res.json()) as {
-      errors?: unknown[]
+      errors?: Array<{
+        message?: string
+        extensions?: { code?: string; number?: number }
+      }>
       data?: {
         maintenanceStatus?: {
           isMaintenanceModeWeb?: boolean
           maintenanceMessageWeb?: string | null
         } | null
+      } | null
+    }
+
+    const hasGraphqlErrors =
+      Array.isArray(json.errors) && json.errors.length > 0
+    if (debug) {
+      debug.fetch.hasGraphqlErrors = hasGraphqlErrors
+      const first = hasGraphqlErrors ? json.errors?.[0] : undefined
+      if (first?.extensions?.code) {
+        debug.fetch.firstGraphqlErrorCode = first.extensions.code
+      }
+      if (typeof first?.extensions?.number === "number") {
+        debug.fetch.firstGraphqlErrorNumber = first.extensions.number
       }
     }
 
-    if (debug) {
-      debug.fetch.hasGraphqlErrors =
-        Array.isArray(json.errors) && json.errors.length > 0
+    // GraphQLが200でも errors/data:null が返る場合がある。
+    // その場合は「判定不能」なので、キャッシュがあればそれを使い、無ければ
+    // サービス不調としてメンテ表示にフェイルオープンする。
+    const status = json.data?.maintenanceStatus ?? null
+    if (hasGraphqlErrors || !status) {
+      if (staleFallback) {
+        return {
+          isMaintenance: staleFallback.isMaintenance,
+          message: staleFallback.message,
+          debug,
+        }
+      }
+
+      return {
+        isMaintenance: true,
+        message:
+          "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
+        debug,
+      }
     }
 
-    const isMaintenance =
-      json.data?.maintenanceStatus?.isMaintenanceModeWeb === true
-    const message = json.data?.maintenanceStatus?.maintenanceMessageWeb ?? null
+    const isMaintenance = status.isMaintenanceModeWeb === true
+    const message = status.maintenanceMessageWeb ?? null
 
     const payload = { isMaintenance, message, cachedAt: Date.now() }
     try {
