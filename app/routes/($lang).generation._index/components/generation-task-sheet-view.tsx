@@ -83,19 +83,24 @@ export function GenerationTaskSheetView(props: Props) {
    * 生成履歴の画像を保存する
    * @param token
    */
-  const saveGenerationImage = async (_fileName: string) => {
-    // Type-safe property access
-    const taskImageUrl =
-      props.task && "imageUrl" in props.task ? props.task.imageUrl : null
-
-    if (!taskImageUrl || typeof taskImageUrl !== "string") {
+  const saveGenerationImage = async (taskId: string, imageUrl: string) => {
+    if (!imageUrl || typeof imageUrl !== "string") {
       toast("画像が存在しません")
       return
     }
 
+    const selector = `.generation-image-${taskId}`
+    const imageElement = document.querySelector<HTMLImageElement>(selector)
+
+    const isFallback = imageElement?.dataset.generativeFallback === "true"
+    const resolvedUrl =
+      imageElement?.dataset.original ?? imageElement?.src ?? imageUrl
+
     const name = `${new Date().toISOString().replace(/[^0-9]/g, "")}`
 
-    downloadImageFile(name, taskImageUrl)
+    downloadImageFile(name, resolvedUrl, {
+      skipGenerativeNormalization: isFallback,
+    })
   }
 
   const context = useGenerationContext()

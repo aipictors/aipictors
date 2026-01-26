@@ -56,10 +56,27 @@ export async function createImageFiles(props: Props) {
         continue
       }
 
-      const response = await fetchPublic(getDownloadProxyUrl(dataName))
+      const originalRaw = imageElement.dataset.originalRaw
+
+      const tryFetch = async (url: string, skip: boolean) => {
+        return fetchPublic(
+          getDownloadProxyUrl(url, {
+            skipGenerativeNormalization: skip,
+          }),
+        )
+      }
+
+      const isFallback = imageElement.dataset.generativeFallback === "true"
+      let response = await tryFetch(dataName, isFallback)
+
+      if (!response.ok && originalRaw && originalRaw !== dataName) {
+        response = await tryFetch(originalRaw, true)
+      }
 
       if (!response.ok) {
-        throw new Error(`画像の取得に失敗しました: ${dataName}`)
+        throw new Error(
+          `画像の取得に失敗しました: ${dataName}${originalRaw ? ` (fallback: ${originalRaw})` : ""}`,
+        )
       }
 
       const blob = await response.blob()

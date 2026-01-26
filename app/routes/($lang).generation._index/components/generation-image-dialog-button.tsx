@@ -41,6 +41,17 @@ export function GenerationImageDialogButton(props: Props) {
             className={"m-auto h-[auto] max-h-[88vh] max-w-[88vw]"}
             alt={"-"}
             src={normalizedImageUrl}
+            data-generative-raw={props.imageUrl}
+            onError={(event) => {
+              const img = event.currentTarget
+              const raw = img.dataset.generativeRaw
+              if (!raw) return
+              if (img.dataset.generativeFallback === "true") {
+                return
+              }
+              img.dataset.generativeFallback = "true"
+              img.src = raw
+            }}
           />
         </Suspense>
       </DialogContent>

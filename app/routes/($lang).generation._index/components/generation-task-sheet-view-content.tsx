@@ -60,7 +60,7 @@ type Props = {
   onPrevTask(): void
   setRating: (value: number) => void
   setShowAiModificationDialog: (value: boolean) => void
-  saveGenerationImage(fileName: string): void
+  saveGenerationImage(taskId: string, imageUrl: string): void
   toggleProtectedImage(taskId: string): void
   copyGeneration(generationParameters: GenerationParameters): void
   copyUrl(nanoid: string): void
@@ -73,12 +73,15 @@ export function GenerationTaskSheetViewContent(props: Props) {
   const context = useGenerationContext()
   const t = useTranslation()
 
-  const normalizedImageUrl = props.task.imageUrl
-    ? normalizeGenerativeFileUrl(props.task.imageUrl)
-    : props.task.imageUrl
-  const normalizedThumbnailUrl = props.task.thumbnailUrl
-    ? normalizeGenerativeFileUrl(props.task.thumbnailUrl)
-    : props.task.thumbnailUrl
+  const originalImageUrl = props.task.imageUrl ?? ""
+  const originalThumbnailUrl = props.task.thumbnailUrl ?? ""
+
+  const normalizedImageUrl = originalImageUrl
+    ? normalizeGenerativeFileUrl(originalImageUrl)
+    : originalImageUrl
+  const normalizedThumbnailUrl = originalThumbnailUrl
+    ? normalizeGenerativeFileUrl(originalThumbnailUrl)
+    : originalThumbnailUrl
 
   /**
    * カンマ前までの文字列を取得
@@ -182,16 +185,47 @@ export function GenerationTaskSheetViewContent(props: Props) {
                       <GenerationImageDialogButton
                         taskId={props.task.id}
                         userToken={userToken}
-                        imageUrl={normalizedImageUrl ?? ""}
-                        thumbnailUrl={normalizedThumbnailUrl ?? ""}
+                        imageUrl={originalImageUrl}
+                        thumbnailUrl={originalThumbnailUrl}
                       >
                         <img
                           className={"m-auto max-h-96"}
                           src={
                             context.config.taskListThumbnailType === "light"
-                              ? (normalizedThumbnailUrl ?? "")
-                              : (normalizedImageUrl ?? "")
+                              ? normalizedThumbnailUrl
+                              : normalizedImageUrl
                           }
+                          data-generative-raw={
+                            context.config.taskListThumbnailType === "light"
+                              ? originalThumbnailUrl
+                              : originalImageUrl
+                          }
+                          onError={(event) => {
+                            const img = event.currentTarget
+                            const raw = img.dataset.generativeRaw
+                            if (!raw) return
+                            if (img.dataset.generativeFallback === "true") {
+                              return
+                            }
+                            img.dataset.generativeFallback = "true"
+                            img.src = raw
+
+                            // Download should also use the fallback URL.
+                            const downloadTarget =
+                              document.querySelector<HTMLImageElement>(
+                                `.generation-image-${props.task.id}`,
+                              )
+                            if (downloadTarget) {
+                              downloadTarget.dataset.generativeFallback = "true"
+                              const downloadRaw =
+                                downloadTarget.dataset.originalRaw ??
+                                originalImageUrl
+                              if (downloadRaw) {
+                                downloadTarget.dataset.original = downloadRaw
+                                downloadTarget.src = downloadRaw
+                              }
+                            }
+                          }}
                           alt={"-"}
                         />
                       </GenerationImageDialogButton>
@@ -216,8 +250,20 @@ export function GenerationTaskSheetViewContent(props: Props) {
                             `generation-image-${props.task.id}`,
                           )}
                           alt={"-"}
-                          src={normalizedImageUrl ?? ""}
-                          data-original={normalizedImageUrl ?? ""}
+                          src={normalizedImageUrl}
+                          data-original={normalizedImageUrl}
+                          data-original-raw={originalImageUrl}
+                          onError={(event) => {
+                            const img = event.currentTarget
+                            const raw = img.dataset.originalRaw
+                            if (!raw) return
+                            if (img.dataset.generativeFallback === "true") {
+                              return
+                            }
+                            img.dataset.generativeFallback = "true"
+                            img.src = raw
+                            img.dataset.original = raw
+                          }}
                         />
                       )}
                   </Suspense>
@@ -285,7 +331,10 @@ export function GenerationTaskSheetViewContent(props: Props) {
                     title={t("画像を保存する", "Save image")}
                     onClick={() =>
                       userToken &&
-                      props.saveGenerationImage(props.task.imageUrl ?? "")
+                      props.saveGenerationImage(
+                        props.task.id,
+                        props.task.imageUrl ?? "",
+                      )
                     }
                     icon={ArrowDownToLine}
                   />

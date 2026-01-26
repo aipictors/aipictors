@@ -47,6 +47,21 @@ export function GenerationTaskContentPreview() {
               data-original={normalizeGenerativeFileUrl(
                 imageGenerationTask.imageUrl,
               )}
+              data-generative-raw={
+                context.config.taskListThumbnailType === "light"
+                  ? imageGenerationTask.thumbnailUrl
+                  : imageGenerationTask.imageUrl
+              }
+              onError={(event) => {
+                const img = event.currentTarget
+                const raw = img.dataset.generativeRaw
+                if (!raw) return
+                if (img.dataset.generativeFallback === "true") {
+                  return
+                }
+                img.dataset.generativeFallback = "true"
+                img.src = raw
+              }}
               alt={"-"}
             />
             <div className="m-auto mb-1">
@@ -77,6 +92,21 @@ export function GenerationTaskContentPreview() {
               data-original={normalizeGenerativeFileUrl(
                 imageGenerationResult.imageUrl,
               )}
+              data-generative-raw={
+                context.config.taskListThumbnailType === "light"
+                  ? imageGenerationResult.thumbnailUrl
+                  : imageGenerationResult.imageUrl
+              }
+              onError={(event) => {
+                const img = event.currentTarget
+                const raw = img.dataset.generativeRaw
+                if (!raw) return
+                if (img.dataset.generativeFallback === "true") {
+                  return
+                }
+                img.dataset.generativeFallback = "true"
+                img.src = raw
+              }}
               alt={"-"}
             />
             <div className="m-auto mb-1">

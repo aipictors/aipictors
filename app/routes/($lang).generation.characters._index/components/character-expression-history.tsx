@@ -126,6 +126,17 @@ export function CharacterExpressionHistory() {
                     src={normalizeGenerativeFileUrl(
                       result.thumbnailUrl || result.imageUrl,
                     )}
+                    data-generative-raw={result.thumbnailUrl || result.imageUrl}
+                    onError={(event) => {
+                      const img = event.currentTarget
+                      const raw = img.dataset.generativeRaw
+                      if (!raw) return
+                      if (img.dataset.generativeFallback === "true") {
+                        return
+                      }
+                      img.dataset.generativeFallback = "true"
+                      img.src = raw
+                    }}
                     alt="Generated expression"
                     className="h-20 w-20 rounded object-cover"
                   />

@@ -1,6 +1,14 @@
 import { config } from "~/config"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
+type Options = {
+  /**
+   * 正規化URLがエラーになり元URLへフォールバックした場合など、
+   * 生成物URLの正規化（generative-files への変換）を行わずにダウンロードする。
+   */
+  skipGenerativeNormalization?: boolean
+}
+
 function isSameOriginUrl(url: string): boolean {
   try {
     const resolved = new URL(url, window.location.href)
@@ -17,10 +25,15 @@ function toCorsDownloadWorkerUrl(targetUrl: string): string {
   return downloadUrl.toString()
 }
 
-export function getDownloadProxyUrl(originalUrl: string): string {
+export function getDownloadProxyUrl(
+  originalUrl: string,
+  options?: Options,
+): string {
   if (!originalUrl) return originalUrl
 
-  const normalizedUrl = normalizeGenerativeFileUrl(originalUrl)
+  const normalizedUrl = options?.skipGenerativeNormalization
+    ? originalUrl
+    : normalizeGenerativeFileUrl(originalUrl)
 
   if (normalizedUrl.startsWith("blob:") || normalizedUrl.startsWith("data:")) {
     return normalizedUrl

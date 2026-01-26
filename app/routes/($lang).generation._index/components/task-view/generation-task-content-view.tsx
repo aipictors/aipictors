@@ -59,6 +59,17 @@ export function GenerationTaskContentPreview() {
                   "max-h-[72vh]",
                 )}
                 src={normalizeGenerativeFileUrl(imageGenerationTask.imageUrl)}
+                data-generative-raw={imageGenerationTask.imageUrl}
+                onError={(event) => {
+                  const img = event.currentTarget
+                  const raw = img.dataset.generativeRaw
+                  if (!raw) return
+                  if (img.dataset.generativeFallback === "true") {
+                    return
+                  }
+                  img.dataset.generativeFallback = "true"
+                  img.src = raw
+                }}
                 alt="-"
               />
             )}

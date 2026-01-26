@@ -177,10 +177,13 @@ export function GenerationTaskEditableCard(props: Props) {
     )
   }
 
-  const normalizedImageUrl = normalizeGenerativeFileUrl(props.task.imageUrl)
-  const normalizedThumbnailUrl = props.task.thumbnailUrl
-    ? normalizeGenerativeFileUrl(props.task.thumbnailUrl)
-    : props.task.thumbnailUrl
+  const originalImageUrl = props.task.imageUrl
+  const originalThumbnailUrl = props.task.thumbnailUrl ?? ""
+
+  const normalizedImageUrl = normalizeGenerativeFileUrl(originalImageUrl)
+  const normalizedThumbnailUrl = originalThumbnailUrl
+    ? normalizeGenerativeFileUrl(originalThumbnailUrl)
+    : originalThumbnailUrl
 
   return (
     <div
@@ -210,10 +213,32 @@ export function GenerationTaskEditableCard(props: Props) {
             className={cn(`generation-image-${props.taskNanoid}`, "m-auto")}
             src={
               context.config.taskListThumbnailType === "light"
-                ? (normalizedThumbnailUrl ?? "")
+                ? normalizedThumbnailUrl
                 : normalizedImageUrl
             }
             data-original={normalizedImageUrl}
+            data-original-raw={originalImageUrl}
+            data-generative-raw={
+              context.config.taskListThumbnailType === "light"
+                ? originalThumbnailUrl
+                : originalImageUrl
+            }
+            onError={(event) => {
+              const img = event.currentTarget
+              const raw = img.dataset.generativeRaw
+              if (!raw) return
+              if (img.dataset.generativeFallback === "true") {
+                return
+              }
+              img.dataset.generativeFallback = "true"
+              img.src = raw
+
+              // If we fell back for display, also prefer raw for download.
+              const downloadRaw = img.dataset.originalRaw
+              if (downloadRaw) {
+                img.dataset.original = downloadRaw
+              }
+            }}
             alt={"-"}
           />
         ) : (
@@ -227,8 +252,8 @@ export function GenerationTaskEditableCard(props: Props) {
           token={props.userToken}
           size={optionButtonSize(props.optionButtonSize)}
           setIsHovered={setIsHovered}
-          imageUrl={normalizedImageUrl}
-          thumbnailUrl={normalizedThumbnailUrl ?? ""}
+          imageUrl={originalImageUrl}
+          thumbnailUrl={originalThumbnailUrl}
         />
       )}
       {/* お気に入りボタン */}
