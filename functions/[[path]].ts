@@ -37,6 +37,15 @@ const getGraphqlEndpoint = (
   return remixEndpoint ?? browserEndpoint ?? null
 }
 
+const getEnvKeys = (ctx: Parameters<PagesFunction>[0]): string[] => {
+  try {
+    const env = ctx.env as unknown as Record<string, unknown>
+    return Object.keys(env).sort().slice(0, 50)
+  } catch {
+    return []
+  }
+}
+
 const isHtmlNavigationRequest = (request: Request): boolean => {
   const method = request.method.toUpperCase()
   if (method !== "GET" && method !== "HEAD") return false
@@ -328,14 +337,24 @@ export const onRequest: PagesFunction = async (ctx) => {
 
     // 本番切り分け用: ?__maintenance_debug=1 で判定材料をJSONで返す
     if (url.searchParams.get("__maintenance_debug") === "1") {
+      const env = ctx.env as unknown as Record<string, unknown>
+      const hasViteGraphqlEndpointRemix =
+        typeof env["VITE_GRAPHQL_ENDPOINT_REMIX"] === "string"
+      const hasViteGraphqlEndpoint =
+        typeof env["VITE_GRAPHQL_ENDPOINT"] === "string"
+
       const result = await getMaintenanceStatus(ctx, { debug: true })
       return new Response(
         JSON.stringify(
           {
             method: ctx.request.method,
             pathname: url.pathname,
+            host: url.host,
             accept: ctx.request.headers.get("accept"),
             isHtmlNavigation: isHtmlNavigationRequest(ctx.request),
+            envKeys: getEnvKeys(ctx),
+            hasViteGraphqlEndpointRemix,
+            hasViteGraphqlEndpoint,
             ...result,
           },
           null,

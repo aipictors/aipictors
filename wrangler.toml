@@ -3,5 +3,10 @@ compatibility_date = "2024-11-11"
 main = "./build/worker/index.js"
 assets = { directory = "./build/client" }
 
+# Pages Functions 実行時の ctx.env に渡す環境変数（ローカル: wrangler pages dev など）
+[vars]
+VITE_GRAPHQL_ENDPOINT = "https://aipics.fly.dev"
+VITE_GRAPHQL_ENDPOINT_REMIX = "https://aipics.fly.dev"
+
 [observability]
 enabled = true
