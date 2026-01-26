@@ -6,6 +6,204 @@ const remix = createPagesFunctionHandler({
   build,
 })
 
+const MAINTENANCE_STATUS_QUERY = `query MaintenanceStatus {
+  maintenanceStatus {
+    isMaintenanceModeWeb
+    maintenanceMessageWeb
+  }
+}`
+
+const escapeHtml = (value: string): string => {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;")
+}
+
+const getGraphqlEndpoint = (
+  ctx: Parameters<PagesFunction>[0],
+): string | null => {
+  const env = ctx.env as unknown as Record<string, unknown>
+  const remixEndpoint =
+    typeof env["VITE_GRAPHQL_ENDPOINT_REMIX"] === "string"
+      ? (env["VITE_GRAPHQL_ENDPOINT_REMIX"] as string)
+      : null
+  const browserEndpoint =
+    typeof env["VITE_GRAPHQL_ENDPOINT"] === "string"
+      ? (env["VITE_GRAPHQL_ENDPOINT"] as string)
+      : null
+  return remixEndpoint ?? browserEndpoint ?? null
+}
+
+const isHtmlNavigationRequest = (request: Request): boolean => {
+  const method = request.method.toUpperCase()
+  if (method !== "GET" && method !== "HEAD") return false
+  const accept = request.headers.get("accept") ?? ""
+  // ブラウザの通常ナビゲーションを主対象にする
+  return accept.includes("text/html") || accept.includes("*/*")
+}
+
+const getTimeoutSignal = (ms: number): AbortSignal | undefined => {
+  const maybe = AbortSignal as unknown as {
+    timeout?: (timeoutMs: number) => AbortSignal
+  }
+  return typeof maybe.timeout === "function" ? maybe.timeout(ms) : undefined
+}
+
+const createMaintenanceHtml = (message: string | null): string => {
+  const safeMessage = escapeHtml(
+    message && message.trim().length > 0
+      ? message
+      : "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
+  )
+
+  return `<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <title>メンテナンス中 | Aipictors</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0b1220;
+        color: #e2e8f0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      }
+      .wrap {
+        width: min(720px, 92vw);
+        padding: 24px;
+        text-align: center;
+      }
+      img {
+        width: min(360px, 78vw);
+        height: auto;
+        display: block;
+        margin: 0 auto 18px;
+      }
+      .msg {
+        white-space: pre-wrap;
+        font-size: 16px;
+        line-height: 1.7;
+        opacity: 0.95;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <img src="https://assets.aipictors.com/sorrypictorchan.webp" alt="maintenance" />
+      <div class="msg">${safeMessage}</div>
+    </main>
+  </body>
+</html>`
+}
+
+const getMaintenanceStatus = async (
+  ctx: Parameters<PagesFunction>[0],
+): Promise<{ isMaintenance: boolean; message: string | null }> => {
+  // キャッシュ（短時間）でGraphQLへの負荷を下げる
+  // NOTE: Cache API の put はTTLが効かず永続化しやすいので、payload内のcachedAtで期限判定する。
+  const cacheTtlMs = 30_000
+  const cacheKey = new Request(
+    "https://edge-cache.aipictors.invalid/maintenance-status-web",
+    { method: "GET" },
+  )
+  let staleFallback: { isMaintenance: boolean; message: string | null } | null =
+    null
+  try {
+    const cached = await caches.default.match(cacheKey)
+    if (cached) {
+      try {
+        const data = (await cached.json()) as {
+          isMaintenance: boolean
+          message: string | null
+          cachedAt?: number
+        }
+        staleFallback = {
+          isMaintenance: data.isMaintenance,
+          message: data.message,
+        }
+        if (typeof data.cachedAt === "number") {
+          const age = Date.now() - data.cachedAt
+          if (age >= 0 && age < cacheTtlMs) {
+            return { isMaintenance: data.isMaintenance, message: data.message }
+          }
+        }
+      } catch {
+        // ignore cache parse error
+      }
+    }
+  } catch {
+    // ignore cache access error
+  }
+
+  const endpoint = getGraphqlEndpoint(ctx)
+  if (!endpoint) {
+    return { isMaintenance: false, message: null }
+  }
+
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        provider: "aipictors",
+        platform: "web",
+      },
+      signal: getTimeoutSignal(3000),
+      body: JSON.stringify({ query: MAINTENANCE_STATUS_QUERY, variables: {} }),
+    })
+
+    if (!res.ok) {
+      return { isMaintenance: false, message: null }
+    }
+
+    const json = (await res.json()) as {
+      data?: {
+        maintenanceStatus?: {
+          isMaintenanceModeWeb?: boolean
+          maintenanceMessageWeb?: string | null
+        } | null
+      }
+    }
+
+    const isMaintenance =
+      json.data?.maintenanceStatus?.isMaintenanceModeWeb === true
+    const message = json.data?.maintenanceStatus?.maintenanceMessageWeb ?? null
+
+    const payload = { isMaintenance, message, cachedAt: Date.now() }
+    try {
+      ctx.waitUntil(
+        caches.default.put(
+          cacheKey,
+          new Response(JSON.stringify(payload), {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+            },
+          }),
+        ),
+      )
+    } catch {
+      // ignore cache put error
+    }
+
+    return payload
+  } catch {
+    return staleFallback ?? { isMaintenance: false, message: null }
+  }
+}
+
 export const onRequest: PagesFunction = async (ctx) => {
   const maxRetry = 5 // リトライ回数を増加
   const baseDelay = 300 // 基本遅延時間を若干増加
@@ -31,6 +229,40 @@ export const onRequest: PagesFunction = async (ctx) => {
         status: 400,
         headers: {
           "Content-Type": "application/json",
+        },
+      },
+    )
+  }
+
+  // メンテナンスモード時はSEOに配慮して 503 を返す（noindex + Retry-After）
+  // NOTE: リダイレクトではなく同一URLでメンテ表示することで、検索エンジンへ
+  // 「一時的な停止」であることを正しく伝えやすくする。
+  const { isMaintenance, message } = await getMaintenanceStatus(ctx)
+  if (isMaintenance) {
+    if (isHtmlNavigationRequest(ctx.request)) {
+      return new Response(createMaintenanceHtml(message), {
+        status: 503,
+        headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store",
+          "Retry-After": "300",
+          "X-Robots-Tag": "noindex, nofollow, noarchive",
+        },
+      })
+    }
+
+    return new Response(
+      JSON.stringify({
+        error: "MAINTENANCE",
+        message: message,
+      }),
+      {
+        status: 503,
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
+          "Retry-After": "300",
+          "X-Robots-Tag": "noindex, nofollow, noarchive",
         },
       },
     )
