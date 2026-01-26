@@ -1,4 +1,4 @@
-import { object, string, parse } from "valibot"
+import { object, string, parse, optional } from "valibot"
 
 const envSchema = object({
   VITE_APP_URL: string(),
@@ -14,6 +14,7 @@ const envSchema = object({
   VITE_SENTRY_VERSION: string(),
   VITE_WORKERS_UPLOADER: string(),
   VITE_WORKERS_TEXT_UPLOADER: string(),
+  VITE_WORKERS_CORS_DOWNLOAD: optional(string()),
   VITE_MICRO_CMS_API_KEY: string(),
 })
 

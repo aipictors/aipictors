@@ -1,9 +1,7 @@
-import { format } from "date-fns"
-import { fetchPublic } from "~/utils/fetch-public"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
 
 export const downloadImageFile = async (
-  fileName: string,
+  _fileName: string,
   imageUrl: string,
 ): Promise<void> => {
   if (!imageUrl) {
@@ -12,52 +10,18 @@ export const downloadImageFile = async (
   }
 
   try {
-    // 画像URLからBlobを取得（クロスオリジンは同一オリジンプロキシ経由）
-    const response = await fetchPublic(getDownloadProxyUrl(imageUrl))
-    if (!response.ok) {
-      throw new Error("画像の取得に失敗しました")
-    }
+    const downloadUrl = getDownloadProxyUrl(imageUrl)
 
-    const blob = await response.blob()
-
-    const contentType = response.headers.get("content-type") ?? blob.type ?? ""
-    if (!contentType.toLowerCase().startsWith("image/")) {
-      let head = ""
-      try {
-        head = (await blob.text()).slice(0, 120)
-      } catch {
-        head = ""
-      }
-      throw new Error(
-        `画像形式ではありません (content-type: ${contentType || "unknown"}) ${head}`,
-      )
-    }
-
+    // Let the proxy set Content-Disposition (timestamp naming). Using an <a> click keeps it
+    // closer to a user gesture and avoids buffering large blobs in memory.
     const linkNode = document.createElement("a")
-    linkNode.href = URL.createObjectURL(blob)
-
-    const now = new Date()
-    const formattedDate = format(now, "yyyyMMddHHmmss")
-
-    // BlobのMIMEタイプから適切な拡張子を決定
-    const mimeType = blob.type
-    let extension = "png" // デフォルトはPNG
-
-    if (mimeType === "image/webp") {
-      extension = "webp"
-    } else if (mimeType === "image/jpeg" || mimeType === "image/jpg") {
-      extension = "jpg"
-    } else if (mimeType === "image/png") {
-      extension = "png"
-    }
-
-    linkNode.download = `${fileName}_${formattedDate}.${extension}`
+    linkNode.href = downloadUrl
+    linkNode.download = ""
+    linkNode.rel = "noopener"
 
     document.body.appendChild(linkNode)
     linkNode.click()
     document.body.removeChild(linkNode)
-
-    URL.revokeObjectURL(linkNode.href)
   } catch (error) {
     console.error(error)
     // 必要に応じてUI上のエラーメッセージ表示

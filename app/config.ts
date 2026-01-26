@@ -286,6 +286,11 @@ export const config = {
     uploadImage: env.VITE_WORKERS_UPLOADER,
     uploadText: env.VITE_WORKERS_TEXT_UPLOADER,
   },
+  downloader: {
+    corsDownload:
+      env.VITE_WORKERS_CORS_DOWNLOAD ??
+      "https://aipictors-cors-download.aipictors.workers.dev",
+  },
   /**
    * ワードプレスリンク
    */

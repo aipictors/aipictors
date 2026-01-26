@@ -17,7 +17,7 @@ type Props = {
  */
 export const downloadZipFile = async (props: Props): Promise<void> => {
   try {
-    if (props.files.length < 0) {
+    if (props.files.length <= 0) {
       throw new Error("No valid images found to download.")
     }
 
@@ -26,7 +26,10 @@ export const downloadZipFile = async (props: Props): Promise<void> => {
       {},
     )
 
-    const zipBlob = new Blob([data], { type: "application/zip" })
+    // Ensure the result is a standard Uint8Array (ArrayBuffer-backed) for BlobPart typing.
+    const safeData = new Uint8Array(data)
+
+    const zipBlob = new Blob([safeData], { type: "application/zip" })
 
     const linkNode = document.createElement("a")
 
