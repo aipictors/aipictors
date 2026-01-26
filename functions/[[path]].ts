@@ -107,9 +107,32 @@ const createMaintenanceHtml = (message: string | null): string => {
 </html>`
 }
 
+type MaintenanceStatusPayload = {
+  isMaintenance: boolean
+  message: string | null
+}
+
+type MaintenanceStatusDebug = {
+  endpoint: string | null
+  cache: {
+    hit: boolean
+    cachedAt?: number
+    ageMs?: number
+    used: boolean
+  }
+  fetch: {
+    attempted: boolean
+    ok?: boolean
+    status?: number
+    error?: string
+    hasGraphqlErrors?: boolean
+  }
+}
+
 const getMaintenanceStatus = async (
   ctx: Parameters<PagesFunction>[0],
-): Promise<{ isMaintenance: boolean; message: string | null }> => {
+  options?: { debug?: boolean },
+): Promise<MaintenanceStatusPayload & { debug?: MaintenanceStatusDebug }> => {
   // キャッシュ（短時間）でGraphQLへの負荷を下げる
   // NOTE: Cache API の put はTTLが効かず永続化しやすいので、payload内のcachedAtで期限判定する。
   const cacheTtlMs = 30_000
@@ -119,6 +142,15 @@ const getMaintenanceStatus = async (
   )
   let staleFallback: { isMaintenance: boolean; message: string | null } | null =
     null
+
+  const debug: MaintenanceStatusDebug | undefined = options?.debug
+    ? {
+        endpoint: null,
+        cache: { hit: false, used: false },
+        fetch: { attempted: false },
+      }
+    : undefined
+
   try {
     const cached = await caches.default.match(cacheKey)
     if (cached) {
@@ -132,10 +164,24 @@ const getMaintenanceStatus = async (
           isMaintenance: data.isMaintenance,
           message: data.message,
         }
+
+        if (debug) {
+          debug.cache.hit = true
+          debug.cache.cachedAt = data.cachedAt
+          if (typeof data.cachedAt === "number") {
+            debug.cache.ageMs = Date.now() - data.cachedAt
+          }
+        }
+
         if (typeof data.cachedAt === "number") {
           const age = Date.now() - data.cachedAt
           if (age >= 0 && age < cacheTtlMs) {
-            return { isMaintenance: data.isMaintenance, message: data.message }
+            if (debug) debug.cache.used = true
+            return {
+              isMaintenance: data.isMaintenance,
+              message: data.message,
+              debug,
+            }
           }
         }
       } catch {
@@ -148,8 +194,11 @@ const getMaintenanceStatus = async (
 
   const endpoint = getGraphqlEndpoint(ctx)
   if (!endpoint) {
-    return { isMaintenance: false, message: null }
+    if (debug) debug.endpoint = null
+    return { isMaintenance: false, message: null, debug }
   }
+
+  if (debug) debug.endpoint = endpoint
 
   try {
     const res = await fetch(endpoint, {
@@ -163,17 +212,29 @@ const getMaintenanceStatus = async (
       body: JSON.stringify({ query: MAINTENANCE_STATUS_QUERY, variables: {} }),
     })
 
+    if (debug) {
+      debug.fetch.attempted = true
+      debug.fetch.ok = res.ok
+      debug.fetch.status = res.status
+    }
+
     if (!res.ok) {
-      return { isMaintenance: false, message: null }
+      return { isMaintenance: false, message: null, debug }
     }
 
     const json = (await res.json()) as {
+      errors?: unknown[]
       data?: {
         maintenanceStatus?: {
           isMaintenanceModeWeb?: boolean
           maintenanceMessageWeb?: string | null
         } | null
       }
+    }
+
+    if (debug) {
+      debug.fetch.hasGraphqlErrors =
+        Array.isArray(json.errors) && json.errors.length > 0
     }
 
     const isMaintenance =
@@ -198,9 +259,22 @@ const getMaintenanceStatus = async (
       // ignore cache put error
     }
 
-    return payload
-  } catch {
-    return staleFallback ?? { isMaintenance: false, message: null }
+    return {
+      isMaintenance: payload.isMaintenance,
+      message: payload.message,
+      debug,
+    }
+  } catch (error) {
+    if (debug) {
+      debug.fetch.attempted = true
+      debug.fetch.error = error instanceof Error ? error.message : String(error)
+    }
+    const fallback = staleFallback ?? { isMaintenance: false, message: null }
+    return {
+      isMaintenance: fallback.isMaintenance,
+      message: fallback.message,
+      debug,
+    }
   }
 }
 
@@ -218,6 +292,32 @@ export const onRequest: PagesFunction = async (ctx) => {
 
     const url = new URL(ctx.request.url)
     console.log(`Processing request: ${ctx.request.method} ${url.pathname}`)
+
+    // 本番切り分け用: ?__maintenance_debug=1 で判定材料をJSONで返す
+    if (url.searchParams.get("__maintenance_debug") === "1") {
+      const result = await getMaintenanceStatus(ctx, { debug: true })
+      return new Response(
+        JSON.stringify(
+          {
+            method: ctx.request.method,
+            pathname: url.pathname,
+            accept: ctx.request.headers.get("accept"),
+            isHtmlNavigation: isHtmlNavigationRequest(ctx.request),
+            ...result,
+          },
+          null,
+          2,
+        ),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store",
+            "X-Robots-Tag": "noindex, nofollow, noarchive",
+          },
+        },
+      )
+    }
   } catch (healthCheckError) {
     console.error("Health check failed:", healthCheckError)
     return new Response(
