@@ -326,6 +326,12 @@ export const onRequest: PagesFunction = async (ctx) => {
   const maxDelay = 8000 // 最大遅延時間を増加
   const timeoutMs = 45000 // 45秒のタイムアウトに延長
 
+  // NOTE: メンテナンス表示を一時的に無効化
+  // メンテON/OFF直後にエッジキャッシュやGraphQL取得失敗時のフェイルオープンで
+  // 「表示されたりされなかったり」が起きやすいので、実装側では常に通常表示に寄せる。
+  // （戻す場合は false に戻すだけでOK）
+  const MAINTENANCE_PAGE_DISABLED = true
+
   // 基本的な健全性チェック
   try {
     if (!ctx || !ctx.request) {
@@ -389,7 +395,9 @@ export const onRequest: PagesFunction = async (ctx) => {
   // メンテナンスモード時はSEOに配慮して 503 を返す（noindex + Retry-After）
   // NOTE: リダイレクトではなく同一URLでメンテ表示することで、検索エンジンへ
   // 「一時的な停止」であることを正しく伝えやすくする。
-  const { isMaintenance, message } = await getMaintenanceStatus(ctx)
+  const { isMaintenance: rawIsMaintenance, message } =
+    await getMaintenanceStatus(ctx)
+  const isMaintenance = MAINTENANCE_PAGE_DISABLED ? false : rawIsMaintenance
   if (isMaintenance) {
     if (isHtmlNavigationRequest(ctx.request)) {
       return new Response(createMaintenanceHtml(message), {
