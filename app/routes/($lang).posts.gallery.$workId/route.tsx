@@ -37,7 +37,7 @@ import { LikeButton } from "~/components/like-button"
 import { FollowButton } from "~/components/button/follow-button"
 import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/components/work-action-copy-url"
 import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
-import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
+import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils/download-image-file-as-png"
 import { GalleryHeader } from "~/components/gallery-header"
 import { GalleryTagList } from "~/components/tag/gallery-tag"
 
@@ -229,9 +229,9 @@ function WorkDetailContent(props: {
   const { work, data } = props
 
   // ダウンロード機能
-  const onDownload = () => {
+  const onDownload = async () => {
     if (!work.largeThumbnailImageURL) return
-    downloadImageFile(work.id, work.largeThumbnailImageURL)
+    await downloadImageFileAsPng(work.id, work.largeThumbnailImageURL)
   }
 
   return (

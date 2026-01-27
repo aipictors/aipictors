@@ -3,7 +3,7 @@ import { SharePopover } from "./work-action-share"
 import { LikeButton } from "~/components/like-button"
 import { DialogLikeButton } from "~/components/work/dialog-like-button"
 import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
-import { downloadImageFile } from "~/routes/($lang).generation._index/utils/download-image-file"
+import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils/download-image-file-as-png"
 import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post._index/components/work-editor-button"
 import { Suspense, useContext } from "react"
 import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post._index/components/work-action-bookmark"
@@ -40,11 +40,15 @@ type Props = {
 export function WorkAction(props: Props) {
   const appContext = useContext(AuthContext)
 
+  const stripFileExtension = (name: string): string => {
+    return name.replace(/\.[^./\\]+$/, "")
+  }
+
   const onDownload = async () => {
     if (!props.currentImageUrl) {
       return
     }
-    downloadImageFile(props.targetWorkId, props.currentImageUrl)
+    await downloadImageFileAsPng(props.targetWorkId, props.currentImageUrl)
   }
 
   const onZipAllDownload = async () => {
@@ -55,9 +59,13 @@ export function WorkAction(props: Props) {
           if (!fileName) {
             throw new Error("ファイル名が取得できませんでした")
           }
+
+          const baseName = stripFileExtension(fileName)
+
           return await createImageFileFromUrl({
             url: url,
-            name: fileName,
+            name: baseName,
+            extension: "png",
           })
         }),
       )
