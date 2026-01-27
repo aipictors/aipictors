@@ -14,7 +14,7 @@ import {
 } from "~/routes/($lang).generation._index/contexts/generation-query-context"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql, readFragment, type ResultOf } from "gql.tada"
-import { startTransition, useContext, useEffect } from "react"
+import { startTransition, useContext, useEffect, useRef } from "react"
 
 type Props = {
   children: React.ReactNode
@@ -62,13 +62,35 @@ export function GenerationQueryProvider(props: Props) {
   const inProgressImageGenerationReservedTasksCount =
     userStatus?.inProgressImageGenerationReservedTasksCount ?? 0
 
+  const requestedStatusRefetchTimeoutsRef = useRef<
+    Array<ReturnType<typeof setTimeout>>
+  >([])
+
+  const scheduleStatusRefetchBurst = () => {
+    // 直前のバーストをクリア（連打時の無駄なrefetchを抑える）
+    for (const timeoutId of requestedStatusRefetchTimeoutsRef.current) {
+      clearTimeout(timeoutId)
+    }
+    requestedStatusRefetchTimeoutsRef.current = []
+
+    // すぐの refetch はバックエンド反映前で古い値が返ることがあるため、
+    // 数回バーストで再取得してUIを追従させる。
+    const delays = [0, 1500, 4000, 8000]
+    for (const delay of delays) {
+      const timeoutId = setTimeout(() => {
+        if (isTimeout) return
+        startTransition(() => {
+          refetch()
+        })
+      }, delay)
+      requestedStatusRefetchTimeoutsRef.current.push(timeoutId)
+    }
+  }
+
   useEffect(() => {
     // 生成開始時に明示的に更新をかけるためのイベント
     const onRequested = () => {
-      if (isTimeout) return
-      startTransition(() => {
-        refetch()
-      })
+      scheduleStatusRefetchBurst()
     }
     if (typeof window !== "undefined") {
       window.addEventListener("generation:task-requested", onRequested)
@@ -77,7 +99,7 @@ export function GenerationQueryProvider(props: Props) {
       }
     }
     return
-  }, [isTimeout])
+  }, [isTimeout, refetch])
 
   useEffect(() => {
     // 生成中/予約中の間だけ定期的にステータスを更新する
@@ -102,6 +124,7 @@ export function GenerationQueryProvider(props: Props) {
     isTimeout,
     inProgressImageGenerationTasksCount,
     inProgressImageGenerationReservedTasksCount,
+    refetch,
   ])
 
   useEffect(() => {
@@ -109,6 +132,15 @@ export function GenerationQueryProvider(props: Props) {
       refetch()
     })
   }, [authContext.isLoggedIn])
+
+  useEffect(() => {
+    return () => {
+      for (const timeoutId of requestedStatusRefetchTimeoutsRef.current) {
+        clearTimeout(timeoutId)
+      }
+      requestedStatusRefetchTimeoutsRef.current = []
+    }
+  }, [])
 
   return (
     <GenerationQueryContext.Provider

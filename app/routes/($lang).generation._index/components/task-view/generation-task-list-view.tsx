@@ -109,6 +109,7 @@ export function GenerationTaskListView(props: Props) {
   )
   const autoRefreshBaselineTasksCountRef = useRef<number>(0)
   const isAutoRefreshingRef = useRef(false)
+  const autoRefreshRequestedAtRef = useRef<number>(0)
 
   useEffect(() => {
     taskRefetch()
@@ -245,7 +246,13 @@ export function GenerationTaskListView(props: Props) {
       inProgressCount === 0 &&
       reservedCount === 0
     ) {
-      stopAutoRefresh()
+      // 生成要求直後はバックエンド反映が遅れることがあるため、
+      // 一定時間は tasks が 0 でも停止しない。
+      const elapsed = Date.now() - autoRefreshRequestedAtRef.current
+      const graceMs = 15_000
+      if (elapsed > graceMs) {
+        stopAutoRefresh()
+      }
     }
     return latestTasksCount
   }, [queryData.userStatus, resultRefetch, stopAutoRefresh, taskRefetch])
@@ -253,6 +260,7 @@ export function GenerationTaskListView(props: Props) {
   const startAutoRefresh = useCallback(() => {
     stopAutoRefresh()
     isAutoRefreshingRef.current = true
+    autoRefreshRequestedAtRef.current = Date.now()
     autoRefreshBaselineTasksCountRef.current =
       tasks?.viewer?.imageGenerationTasks?.length ?? 0
 

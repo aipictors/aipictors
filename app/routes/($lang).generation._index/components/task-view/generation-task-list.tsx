@@ -205,7 +205,7 @@ export function GenerationTaskList(props: Props) {
   )
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       {/* モバイル: プル・トゥ・リフレッシュ付きスクロール */}
       <div className="md:hidden">
         <MobilePullToRefresh
@@ -216,16 +216,16 @@ export function GenerationTaskList(props: Props) {
         </MobilePullToRefresh>
       </div>
 
-      {/* デスクトップ: 既存の ScrollArea */}
-      <div className="hidden md:block">
-        <ScrollArea type="always" className="md:px-4">
+      {/* デスクトップ: グリッドだけをスクロールし、ページングは常に表示 */}
+      <div className="hidden min-h-0 flex-1 flex-col md:flex">
+        <ScrollArea type="always" className="min-h-0 flex-1 md:px-4">
           {/* <Suspense fallback={<AppLoadingPage />}> */}
           {Grid}
           {/* </Suspense> */}
         </ScrollArea>
       </div>
 
-      <div className="space-y-3 p-2 pb-4 md:pb-4">
+      <div className="shrink-0 space-y-3 p-2 pb-4 md:p-4 md:pt-2 md:pb-4">
         {props.protect !== 1 && (
           <>
             <ResponsivePagination
@@ -250,7 +250,7 @@ export function GenerationTaskList(props: Props) {
           </>
         )}
       </div>
-    </>
+    </div>
   )
 }
 
