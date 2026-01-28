@@ -69,12 +69,124 @@ const CANVAS_SIZE = 512
 
 type LayerType = "image" | "text"
 
+type LayerSparkleEffect = {
+  enabled?: boolean
+  intensity?: number
+}
+
+type LayerEffects = {
+  blur?: number
+  invert?: boolean
+  sparkle?: LayerSparkleEffect
+}
+
+const clampNumber = (value: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, value))
+
+const normalizeLayerEffects = (effects?: LayerEffects) => {
+  const blur = clampNumber(effects?.blur ?? 0, 0, 20)
+  const invert = effects?.invert ?? false
+  const sparkleEnabled = effects?.sparkle?.enabled ?? false
+  const sparkleIntensity = clampNumber(effects?.sparkle?.intensity ?? 0.6, 0, 1)
+  return {
+    blur,
+    invert,
+    sparkle: {
+      enabled: sparkleEnabled,
+      intensity: sparkleIntensity,
+    },
+  }
+}
+
+const buildCssFilter = (effects?: LayerEffects) => {
+  const e = normalizeLayerEffects(effects)
+  const parts: string[] = []
+  if (e.blur > 0) parts.push(`blur(${e.blur}px)`)
+  if (e.invert) parts.push("invert(1)")
+  return parts.length === 0 ? undefined : parts.join(" ")
+}
+
+const hashStringToUint32 = (value: string) => {
+  // FNV-1a
+  let hash = 2166136261
+  for (let i = 0; i < value.length; i += 1) {
+    hash ^= value.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return hash >>> 0
+}
+
+const mulberry32 = (seed: number) => {
+  let a = seed >>> 0
+  return () => {
+    a |= 0
+    a = (a + 0x6d2b79f5) | 0
+    let t = Math.imul(a ^ (a >>> 15), 1 | a)
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+const drawSparklesOnCanvas = (props: {
+  ctx: CanvasRenderingContext2D
+  width: number
+  height: number
+  layerId: string
+  intensity: number
+}) => {
+  const intensity = clampNumber(props.intensity, 0, 1)
+  if (intensity <= 0) return
+
+  const rand = mulberry32(hashStringToUint32(props.layerId))
+  const area = Math.max(1, props.width * props.height)
+  const normalizedArea = area / (CANVAS_SIZE * CANVAS_SIZE)
+  const count = Math.round((8 + intensity * 28) * normalizedArea)
+  if (count <= 0) return
+
+  const ctx = props.ctx
+  const prevComposite = ctx.globalCompositeOperation
+  ctx.globalCompositeOperation = "lighter"
+
+  const minSide = Math.max(1, Math.min(props.width, props.height))
+  const baseSize = minSide * (0.03 + 0.05 * intensity)
+
+  const drawStar = (x: number, y: number, size: number, alpha: number) => {
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.rotate(rand() * Math.PI)
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`
+    ctx.beginPath()
+    ctx.moveTo(0, -size)
+    ctx.lineTo(size * 0.35, -size * 0.35)
+    ctx.lineTo(size, 0)
+    ctx.lineTo(size * 0.35, size * 0.35)
+    ctx.lineTo(0, size)
+    ctx.lineTo(-size * 0.35, size * 0.35)
+    ctx.lineTo(-size, 0)
+    ctx.lineTo(-size * 0.35, -size * 0.35)
+    ctx.closePath()
+    ctx.fill()
+    ctx.restore()
+  }
+
+  for (let i = 0; i < count; i += 1) {
+    const x = (rand() - 0.5) * props.width
+    const y = (rand() - 0.5) * props.height
+    const size = baseSize * (0.4 + rand() * 0.9)
+    const alpha = 0.15 + 0.45 * intensity * rand()
+    drawStar(x, y, size, alpha)
+  }
+
+  ctx.globalCompositeOperation = prevComposite
+}
+
 type LayerBase = {
   id: string
   type: LayerType
   name: string
   visible: boolean
   locked: boolean
+  effects?: LayerEffects
   x: number
   y: number
   scale: number
@@ -112,6 +224,60 @@ type TextLayer = LayerBase & {
 }
 
 type Layer = ImageLayer | TextLayer
+
+function LayerSparkleOverlay(props: { layerId: string; intensity: number }) {
+  const intensity = clampNumber(props.intensity, 0, 1)
+  const sparkles = useMemo(() => {
+    if (intensity <= 0) return []
+    const rand = mulberry32(hashStringToUint32(props.layerId))
+    const count = Math.round(6 + intensity * 22)
+    const items: Array<{
+      x: number
+      y: number
+      size: number
+      rot: number
+      opacity: number
+    }> = []
+    for (let i = 0; i < count; i += 1) {
+      items.push({
+        x: rand() * 100,
+        y: rand() * 100,
+        size: 6 + rand() * 14,
+        rot: rand() * 360,
+        opacity: 0.2 + rand() * 0.45,
+      })
+    }
+    return items
+  }, [props.layerId, intensity])
+
+  if (sparkles.length === 0) return null
+
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+      style={{ mixBlendMode: "screen" }}
+    >
+      {sparkles.map((s, i) => (
+        <span
+          // biome-ignore lint/suspicious/noArrayIndexKey: stable by seed; index is fine here
+          key={i}
+          className="absolute"
+          style={{
+            left: `${s.x}%`,
+            top: `${s.y}%`,
+            width: `${s.size}px`,
+            height: `${s.size}px`,
+            transform: `translate(-50%, -50%) rotate(${s.rot}deg)`,
+            backgroundColor: `rgba(255,255,255,${s.opacity})`,
+            clipPath:
+              "polygon(50% 0%, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0% 50%, 38% 38%)",
+            filter: "drop-shadow(0 0 6px rgba(255,255,255,0.55))",
+          }}
+        />
+      ))}
+    </div>
+  )
+}
 
 type DragMode = "move" | "scale" | "rotate"
 
@@ -491,6 +657,11 @@ export function StickerCreator() {
         name: "image",
         visible: true,
         locked: false,
+        effects: {
+          blur: 0,
+          invert: false,
+          sparkle: { enabled: false, intensity: 0.6 },
+        },
         x: CANVAS_SIZE / 2,
         y: CANVAS_SIZE / 2,
         scale: 1,
@@ -637,6 +808,11 @@ export function StickerCreator() {
       name: "text",
       visible: true,
       locked: false,
+      effects: {
+        blur: 0,
+        invert: false,
+        sparkle: { enabled: false, intensity: 0.6 },
+      },
       x: CANVAS_SIZE / 2,
       y: CANVAS_SIZE / 2,
       scale: 1,
@@ -678,6 +854,32 @@ export function StickerCreator() {
       ...prev,
       present: next,
     }))
+  }
+
+  const updateLayerEffects = (id: string, patch: Partial<LayerEffects>) => {
+    const current = layersRef.current.find((l) => l.id === id)
+    const nextEffects: LayerEffects = {
+      ...(current?.effects ?? {}),
+      ...patch,
+      sparkle: {
+        ...(current?.effects?.sparkle ?? {}),
+        ...(patch.sparkle ?? {}),
+      },
+    }
+    updateLayer(id, { effects: nextEffects })
+  }
+
+  const commitLayerEffects = (id: string, patch: Partial<LayerEffects>) => {
+    const current = layersRef.current.find((l) => l.id === id)
+    const nextEffects: LayerEffects = {
+      ...(current?.effects ?? {}),
+      ...patch,
+      sparkle: {
+        ...(current?.effects?.sparkle ?? {}),
+        ...(patch.sparkle ?? {}),
+      },
+    }
+    commitLayerPatch(id, { effects: nextEffects })
   }
 
   const commitLayerPatch = (id: string, patch: Partial<Layer>) => {
@@ -933,6 +1135,9 @@ export function StickerCreator() {
       ctx.transform(1, Math.tan(skewY), Math.tan(skewX), 1, 0, 0)
       ctx.scale(sx, sy)
 
+      const normalizedEffects = normalizeLayerEffects(layer.effects)
+      const layerFilter = buildCssFilter(layer.effects) ?? "none"
+
       if (layer.type === "image") {
         const img = await loadImage(layer.src)
         const threshold = layer.colorThreshold ?? 40
@@ -944,6 +1149,7 @@ export function StickerCreator() {
               colorKey,
               threshold,
             })
+            ctx.filter = layerFilter
             ctx.drawImage(
               processedCanvas,
               -layer.width / 2,
@@ -953,6 +1159,7 @@ export function StickerCreator() {
             )
           } catch (error) {
             console.error("Failed to process image for export", error)
+            ctx.filter = layerFilter
             ctx.drawImage(
               img,
               -layer.width / 2,
@@ -962,6 +1169,7 @@ export function StickerCreator() {
             )
           }
         } else {
+          ctx.filter = layerFilter
           ctx.drawImage(
             img,
             -layer.width / 2,
@@ -969,6 +1177,18 @@ export function StickerCreator() {
             layer.width,
             layer.height,
           )
+        }
+
+        // Sparkle overlay (not affected by blur/invert)
+        ctx.filter = "none"
+        if (normalizedEffects.sparkle.enabled) {
+          drawSparklesOnCanvas({
+            ctx,
+            width: layer.width,
+            height: layer.height,
+            layerId: layer.id,
+            intensity: normalizedEffects.sparkle.intensity,
+          })
         }
       }
 
@@ -978,6 +1198,8 @@ export function StickerCreator() {
           fontSize: layer.fontSize,
           fontWeight: layer.fontWeight,
         })
+
+        ctx.filter = layerFilter
         ctx.fillStyle = layer.color
         ctx.font = `${Math.max(1, Math.round(layer.fontWeight))} ${layer.fontSize}px ${layer.fontFamily}`
         ctx.textAlign = "center"
@@ -1020,6 +1242,18 @@ export function StickerCreator() {
               }
               ctx.fillText(line, x, y)
             },
+          })
+        }
+
+        // Sparkle overlay (not affected by blur/invert)
+        ctx.filter = "none"
+        if (normalizedEffects.sparkle.enabled) {
+          drawSparklesOnCanvas({
+            ctx,
+            width: layer.width,
+            height: layer.height,
+            layerId: layer.id,
+            intensity: normalizedEffects.sparkle.intensity,
           })
         }
       }
@@ -1285,6 +1519,8 @@ export function StickerCreator() {
                 .map((layer) => {
                   const strokeWidthPx =
                     layer.type === "text" ? layer.strokeWidth * canvasScale : 0
+                  const normalizedEffects = normalizeLayerEffects(layer.effects)
+                  const cssFilter = buildCssFilter(layer.effects)
                   return (
                     <div
                       key={layer.id}
@@ -1311,60 +1547,70 @@ export function StickerCreator() {
                           handlePointerDown(event, layer, "move")
                         }}
                       >
-                        {layer.type === "image" ? (
-                          <img
-                            src={getImageLayerSrc(layer)}
-                            alt={layer.name}
-                            className="block"
-                            style={{
-                              width: `${toCanvasPx(layer.width)}px`,
-                              height: `${toCanvasPx(layer.height)}px`,
-                            }}
-                            draggable={false}
-                          />
-                        ) : (
-                          <div
-                            style={{
-                              width: `${toCanvasPx(layer.width)}px`,
-                              height: `${toCanvasPx(layer.height)}px`,
-                              fontSize: `${toCanvasPx(layer.fontSize)}px`,
-                              fontFamily: layer.fontFamily,
-                              fontWeight: layer.fontWeight,
-                              color: layer.color,
-                              writingMode: layer.vertical
-                                ? "vertical-rl"
-                                : "horizontal-tb",
-                              textOrientation: layer.vertical
-                                ? ("upright" as const)
-                                : undefined,
-                              whiteSpace: layer.vertical
-                                ? ("nowrap" as const)
-                                : ("pre-wrap" as const),
-                              WebkitTextStrokeWidth:
-                                layer.strokeWidth > 0
-                                  ? `${strokeWidthPx}px`
+                        <div className="relative">
+                          {layer.type === "image" ? (
+                            <img
+                              src={getImageLayerSrc(layer)}
+                              alt={layer.name}
+                              className="block"
+                              style={{
+                                width: `${toCanvasPx(layer.width)}px`,
+                                height: `${toCanvasPx(layer.height)}px`,
+                                filter: cssFilter,
+                              }}
+                              draggable={false}
+                            />
+                          ) : (
+                            <div
+                              style={{
+                                width: `${toCanvasPx(layer.width)}px`,
+                                height: `${toCanvasPx(layer.height)}px`,
+                                fontSize: `${toCanvasPx(layer.fontSize)}px`,
+                                fontFamily: layer.fontFamily,
+                                fontWeight: layer.fontWeight,
+                                color: layer.color,
+                                writingMode: layer.vertical
+                                  ? "vertical-rl"
+                                  : "horizontal-tb",
+                                textOrientation: layer.vertical
+                                  ? ("upright" as const)
                                   : undefined,
-                              WebkitTextStrokeColor:
-                                layer.strokeWidth > 0
-                                  ? layer.strokeColor
-                                  : undefined,
-                              paintOrder:
-                                layer.strokeWidth > 0
-                                  ? ("stroke fill" as const)
-                                  : undefined,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              textAlign: "center",
-                              lineHeight: "1.1",
-                              padding: "2px",
-                            }}
-                          >
-                            {layer.vertical
-                              ? normalizeVerticalPreviewText(layer.text)
-                              : layer.text}
-                          </div>
-                        )}
+                                whiteSpace: layer.vertical
+                                  ? ("nowrap" as const)
+                                  : ("pre-wrap" as const),
+                                WebkitTextStrokeWidth:
+                                  layer.strokeWidth > 0
+                                    ? `${strokeWidthPx}px`
+                                    : undefined,
+                                WebkitTextStrokeColor:
+                                  layer.strokeWidth > 0
+                                    ? layer.strokeColor
+                                    : undefined,
+                                paintOrder:
+                                  layer.strokeWidth > 0
+                                    ? ("stroke fill" as const)
+                                    : undefined,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                lineHeight: "1.1",
+                                padding: "2px",
+                                filter: cssFilter,
+                              }}
+                            >
+                              {layer.vertical
+                                ? normalizeVerticalPreviewText(layer.text)
+                                : layer.text}
+                            </div>
+                          )}
+                          {normalizedEffects.sparkle.enabled && (
+                            <LayerSparkleOverlay
+                              layerId={layer.id}
+                              intensity={normalizedEffects.sparkle.intensity}
+                            />
+                          )}
+                        </div>
                         {layer.id === activeLayerId && !layer.locked && (
                           <>
                             <button
@@ -1939,6 +2185,164 @@ export function StickerCreator() {
                     ) : (
                       <p className="text-muted-foreground text-xs">
                         画像レイヤーを選択すると色透過を使えます
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-4 space-y-3 rounded-lg border bg-background p-3">
+                    <h4 className="font-semibold text-sm">エフェクト</h4>
+                    {activeLayer ? (
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap gap-2">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              commitLayerPatch(activeLayer.id, {
+                                flipX: !(activeLayer.flipX ?? false),
+                              })
+                            }
+                          >
+                            左右反転
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              commitLayerPatch(activeLayer.id, {
+                                flipY: !(activeLayer.flipY ?? false),
+                              })
+                            }
+                          >
+                            上下反転
+                          </Button>
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label className="text-xs">
+                            ブラー（{normalizeLayerEffects(activeLayer.effects).blur}px）
+                          </Label>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="range"
+                              min={0}
+                              max={20}
+                              step={1}
+                              value={normalizeLayerEffects(activeLayer.effects).blur}
+                              onChange={(event) =>
+                                updateLayerEffects(activeLayer.id, {
+                                  blur: Number(event.target.value),
+                                })
+                              }
+                            />
+                            <Input
+                              type="number"
+                              min={0}
+                              max={20}
+                              step={1}
+                              value={normalizeLayerEffects(activeLayer.effects).blur}
+                              onChange={(event) =>
+                                updateLayerEffects(activeLayer.id, {
+                                  blur: Number(event.target.value),
+                                })
+                              }
+                              className="w-20"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={
+                                normalizeLayerEffects(activeLayer.effects).invert
+                              }
+                              onCheckedChange={(value) =>
+                                commitLayerEffects(activeLayer.id, {
+                                  invert: value,
+                                })
+                              }
+                            />
+                            <Label className="text-xs">色反転</Label>
+                          </div>
+                          <span className="text-muted-foreground text-xs">
+                            画像/文字にフィルタ適用
+                          </span>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <Switch
+                                checked={
+                                  normalizeLayerEffects(activeLayer.effects)
+                                    .sparkle.enabled
+                                }
+                                onCheckedChange={(value) =>
+                                  commitLayerEffects(activeLayer.id, {
+                                    sparkle: {
+                                      enabled: value,
+                                      intensity:
+                                        normalizeLayerEffects(activeLayer.effects)
+                                          .sparkle.intensity,
+                                    },
+                                  })
+                                }
+                              />
+                              <Label className="text-xs">キラキラ</Label>
+                            </div>
+                            <span className="text-muted-foreground text-xs">
+                              強さ: {Math.round(
+                                normalizeLayerEffects(activeLayer.effects)
+                                  .sparkle.intensity * 100,
+                              )}
+                            </span>
+                          </div>
+                          {normalizeLayerEffects(activeLayer.effects).sparkle
+                            .enabled && (
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="range"
+                                min={0}
+                                max={1}
+                                step={0.05}
+                                value={
+                                  normalizeLayerEffects(activeLayer.effects)
+                                    .sparkle.intensity
+                                }
+                                onChange={(event) =>
+                                  updateLayerEffects(activeLayer.id, {
+                                    sparkle: {
+                                      intensity: Number(event.target.value),
+                                    },
+                                  })
+                                }
+                              />
+                              <Input
+                                type="number"
+                                min={0}
+                                max={1}
+                                step={0.05}
+                                value={
+                                  normalizeLayerEffects(activeLayer.effects)
+                                    .sparkle.intensity
+                                }
+                                onChange={(event) =>
+                                  updateLayerEffects(activeLayer.id, {
+                                    sparkle: {
+                                      intensity: Number(event.target.value),
+                                    },
+                                  })
+                                }
+                                className="w-20"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground text-xs">
+                        レイヤーを選択するとエフェクトを使えます
                       </p>
                     )}
                   </div>
