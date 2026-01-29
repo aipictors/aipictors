@@ -31,8 +31,12 @@ const convertToGeminiImageSize = (sizeType: string): GeminiImageSize => {
     case "SD3_1024_1024":
     case "SD5_1024_1024":
       return "SQUARE_1024"
+    case "SD3_1216_832":
+      return "LANDSCAPE"
     case "SD3_1280_720":
       return "LANDSCAPE"
+    case "SD3_832_1216":
+      return "PORTRAIT"
     case "SD3_720_1280":
     case "SD5_720_1280":
       return "PORTRAIT"
