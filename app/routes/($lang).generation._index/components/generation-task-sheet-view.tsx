@@ -100,7 +100,7 @@ export function GenerationTaskSheetView(props: Props) {
 
     downloadImageFile(name, resolvedUrl, {
       skipGenerativeNormalization: isFallback,
-      convertJpegToPng: true,
+      convertToPng: true,
     })
   }
 

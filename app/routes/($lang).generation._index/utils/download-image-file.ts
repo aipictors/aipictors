@@ -4,8 +4,12 @@ import { fetchPublic } from "~/utils/fetch-public"
 type Options = {
   skipGenerativeNormalization?: boolean
   /**
-   * JPEG の場合のみ PNG に変換してダウンロードする。
+   * 画像を PNG に変換してダウンロードする。
    * 変換には fetch + Canvas を使うため、環境やCORSによって失敗する場合は通常ダウンロードへフォールバックする。
+   */
+  convertToPng?: boolean
+  /**
+   * 互換用（旧オプション名）。convertToPng と同義。
    */
   convertJpegToPng?: boolean
 }
@@ -58,11 +62,54 @@ async function convertJpegBlobToPngBlob(blob: Blob): Promise<Blob> {
   return canvasToBlob(canvas, "image/png")
 }
 
-function extensionFromMimeType(mimeType: string): string {
-  if (mimeType === "image/png") return "png"
-  if (mimeType === "image/webp") return "webp"
-  if (mimeType === "image/jpeg") return "jpg"
-  return "bin"
+async function convertImageBlobToPngBlob(blob: Blob): Promise<Blob> {
+  // Prefer createImageBitmap for performance; fallback to <img> if needed.
+  try {
+    const bitmap = await createImageBitmap(blob)
+
+    if (typeof OffscreenCanvas !== "undefined") {
+      const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
+      const ctx = canvas.getContext("2d")
+      if (!ctx) throw new Error("Canvas の初期化に失敗しました。")
+      ctx.drawImage(bitmap, 0, 0)
+      return canvas.convertToBlob({ type: "image/png" })
+    }
+
+    const canvas = document.createElement("canvas")
+    canvas.width = bitmap.width
+    canvas.height = bitmap.height
+    const ctx = canvas.getContext("2d")
+    if (!ctx) throw new Error("Canvas の初期化に失敗しました。")
+    ctx.drawImage(bitmap, 0, 0)
+    return canvasToBlob(canvas, "image/png")
+  } catch {
+    // Fallback path (Safari edge cases etc.)
+    const objectUrl = URL.createObjectURL(blob)
+    try {
+      const img = document.createElement("img")
+      img.decoding = "async"
+      img.src = objectUrl
+      await img.decode()
+
+      if (typeof OffscreenCanvas !== "undefined") {
+        const canvas = new OffscreenCanvas(img.naturalWidth, img.naturalHeight)
+        const ctx = canvas.getContext("2d")
+        if (!ctx) throw new Error("Canvas の初期化に失敗しました。")
+        ctx.drawImage(img, 0, 0)
+        return canvas.convertToBlob({ type: "image/png" })
+      }
+
+      const canvas = document.createElement("canvas")
+      canvas.width = img.naturalWidth
+      canvas.height = img.naturalHeight
+      const ctx = canvas.getContext("2d")
+      if (!ctx) throw new Error("Canvas の初期化に失敗しました。")
+      ctx.drawImage(img, 0, 0)
+      return canvasToBlob(canvas, "image/png")
+    } finally {
+      URL.revokeObjectURL(objectUrl)
+    }
+  }
 }
 
 export const downloadImageFile = async (
@@ -78,15 +125,24 @@ export const downloadImageFile = async (
   try {
     const downloadUrl = getDownloadProxyUrl(imageUrl, options)
 
-    if (options?.convertJpegToPng) {
+    const shouldConvertToPng =
+      options?.convertToPng === true || options?.convertJpegToPng === true
+
+    if (shouldConvertToPng) {
       const safeBaseName = sanitizeFileName(_fileName || "file")
 
-      // Prefer HEAD to avoid buffering non-JPEG files.
+      // Prefer HEAD to avoid buffering already-PNG files.
       try {
         const headResponse = await fetchPublic(downloadUrl, { method: "HEAD" })
-        const contentType = headResponse.headers.get("content-type") ?? ""
-        if (!contentType.toLowerCase().startsWith("image/jpeg")) {
-          const linkNode = createDownloadLink(downloadUrl)
+        const contentType = (headResponse.headers.get("content-type") ?? "")
+          .toLowerCase()
+          .trim()
+
+        if (contentType.startsWith("image/png")) {
+          const linkNode = createDownloadLink(
+            downloadUrl,
+            `${safeBaseName}.png`,
+          )
           document.body.appendChild(linkNode)
           linkNode.click()
           document.body.removeChild(linkNode)
@@ -99,8 +155,25 @@ export const downloadImageFile = async (
       const response = await fetchPublic(downloadUrl)
       const blob = await response.blob()
 
-      if ((blob.type || "").toLowerCase().startsWith("image/jpeg")) {
-        const pngBlob = await convertJpegBlobToPngBlob(blob)
+      const mime = (blob.type || "").toLowerCase().trim()
+
+      // Already PNG: just download with .png filename
+      if (mime.startsWith("image/png")) {
+        const objectUrl = URL.createObjectURL(blob)
+        const linkNode = createDownloadLink(objectUrl, `${safeBaseName}.png`)
+        document.body.appendChild(linkNode)
+        linkNode.click()
+        document.body.removeChild(linkNode)
+        URL.revokeObjectURL(objectUrl)
+        return
+      }
+
+      // Convert common raster images (jpeg/webp/others) into PNG
+      if (mime.startsWith("image/")) {
+        const pngBlob = mime.startsWith("image/jpeg")
+          ? await convertJpegBlobToPngBlob(blob)
+          : await convertImageBlobToPngBlob(blob)
+
         const objectUrl = URL.createObjectURL(pngBlob)
         const linkNode = createDownloadLink(objectUrl, `${safeBaseName}.png`)
         document.body.appendChild(linkNode)
@@ -110,14 +183,11 @@ export const downloadImageFile = async (
         return
       }
 
-      // Non-JPEG: download as-is (fallback path when HEAD was unavailable)
-      const ext = extensionFromMimeType(blob.type)
-      const objectUrl = URL.createObjectURL(blob)
-      const linkNode = createDownloadLink(objectUrl, `${safeBaseName}.${ext}`)
+      // Unexpected content: fallback to default download (Content-Disposition)
+      const linkNode = createDownloadLink(downloadUrl)
       document.body.appendChild(linkNode)
       linkNode.click()
       document.body.removeChild(linkNode)
-      URL.revokeObjectURL(objectUrl)
       return
     }
 
