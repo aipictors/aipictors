@@ -1,14 +1,7 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql, type FragmentOf } from "gql.tada"
 import { useSearchParams, useNavigate, useLocation } from "@remix-run/react"
-import {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useContext,
-  useRef,
-} from "react"
+import { useState, useEffect, useMemo, useCallback, useContext, useRef } from "react"
 import {
   ResponsivePhotoWorksAlbum,
   PhotoAlbumWorkFragment,
@@ -54,11 +47,18 @@ type Props = {
   initialWorks?: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   models?: AiModel[]
   showLatestWorks?: boolean
+  /**
+   * explore: 探索トップ用（検索窓＋即グリッドを主役にする）
+   * default: 従来の検索結果UI
+   */
+  mode?: "default" | "explore"
 }
 
 export const SearchResults = ({
+  initialWorks = [],
   models = [],
   showLatestWorks = false,
+  mode = "default",
 }: Props) => {
   const t = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -105,15 +105,35 @@ export const SearchResults = ({
     searchParams.get("orderBy") ||
     (showLatestWorks ? "DATE_CREATED" : "LIKES_COUNT")
 
+  const isExplore = mode === "explore"
+  const hasAnyUserSearch = Boolean(
+    searchWordsParam ||
+      ratingParam ||
+      periodParam ||
+      modelParam ||
+      dateFromParam ||
+      dateToParam ||
+      myWorksOnlyParam ||
+      isOneWorkPerUserParam ||
+      navigateToTagPage ||
+      aiUsageParam !== "all" ||
+      promptPublicParam !== "all",
+  )
+
   // Initialize dialog mode from URL
   useEffect(() => {
     setIsDialogMode(dialogModeParam)
   }, [dialogModeParam])
 
-  // Initialize view mode from URL
+  // Initialize view mode
   useEffect(() => {
+    if (isExplore) {
+      // 探索トップはページングで迷わず進める
+      setViewMode("pagination")
+      return
+    }
     setViewMode(viewModeParam === "infinite" ? "infinite" : "pagination")
-  }, [viewModeParam])
+  }, [viewModeParam, isExplore])
 
   // Sort state
   const [sortOrder, setSortOrder] = useState<SortType>(sortParam as SortType)
@@ -231,6 +251,15 @@ export const SearchResults = ({
     workModelId: modelParam, // modelパラメータをworkModelIdとして使用
     navigateToTagPage,
   })
+
+  // URLパラメータ変更（SearchHeaderなど）をフィルタ状態へ同期する
+  useEffect(() => {
+    setFilterValues((prev) => ({
+      ...prev,
+      selectedModelId: modelParam,
+      workModelId: modelParam,
+    }))
+  }, [modelParam])
 
   // Create GraphQL where condition
   const where = useMemo(() => {
@@ -402,7 +431,6 @@ export const SearchResults = ({
       lastPageLength: lastPage.length,
       PER_PAGE,
       hasMoreData,
-      flatLength: flat.length,
     })
 
     return hasMoreData
@@ -640,6 +668,18 @@ export const SearchResults = ({
       pagesLength: pages.length,
     })
 
+    // 探索トップ（ページ0）は、SSR(loader)で取った作品を優先して即表示する
+    if (
+      isExplore &&
+      !hasAnyUserSearch &&
+      viewMode === "pagination" &&
+      currentPage === 0 &&
+      initialWorks.length > 0
+    ) {
+      if (data?.works?.length) return data.works
+      return initialWorks
+    }
+
     if (viewMode === "infinite") {
       // In infinite mode, prioritize flat data if available and non-empty
       if (flat.length > 0) {
@@ -657,7 +697,16 @@ export const SearchResults = ({
 
     // For pagination mode, always use data.works
     return data?.works || []
-  }, [viewMode, flat, data?.works, pages.length])
+  }, [
+    viewMode,
+    flat,
+    data?.works,
+    pages.length,
+    isExplore,
+    hasAnyUserSearch,
+    initialWorks,
+    currentPage,
+  ])
   const totalCount = countData?.worksCount || 0
   const totalPages = Math.ceil(totalCount / PER_PAGE)
 
@@ -722,141 +771,126 @@ export const SearchResults = ({
     return filters
   }, [filterValues, models, t, searchWords])
 
-  // Track previous where condition to detect changes
-  const [previousWhere, setPreviousWhere] = useState<string>("")
-
-  // Reset pagination when filters, sort, or search change
-  useEffect(() => {
-    const currentWhereString = JSON.stringify(where)
-
-    if (
-      viewMode === "pagination" &&
-      currentPage > 0 &&
-      previousWhere !== "" &&
-      previousWhere !== currentWhereString
-    ) {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.set("page", "0")
-      setSearchParams(newParams, { replace: true })
-    }
-
-    setPreviousWhere(currentWhereString)
-  }, [where, viewMode, setSearchParams])
-
   return (
     <div className="space-y-6">
-      {/* モデル検索時の専用タグ表示 */}
-      {filterValues.workModelId && (
-        <div className="flex flex-wrap gap-2">
-          <Badge
-            variant="secondary"
-            className="flex items-center gap-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-          >
-            <span>
-              {t("モデル", "Model")}:{" "}
-              {models.find((m) => m.workModelId === filterValues.workModelId)
-                ?.displayName || filterValues.workModelId}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-4 w-4 p-0 hover:bg-blue-200 dark:hover:bg-blue-800"
-              onClick={handleModelTagRemove}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </Badge>
-        </div>
-      )}
-
-      {/* Filter Section */}
-      <CompactFilter
-        filters={filterValues}
-        onFiltersChange={handleFilterChange}
-        onApplyFilters={() => {}}
-        isLoading={loading}
-      />
-
-      {/* Active Filters Display */}
-      {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {activeFilters.map((filter) => (
-            <Badge key={filter} variant="secondary" className="text-xs">
-              {filter}
-            </Badge>
-          ))}
-        </div>
-      )}
-
-      {/* Dialog Mode Notice */}
-      {isDialogMode && (
-        <div className="rounded-lg bg-blue-50 p-3 text-blue-700 text-sm dark:bg-blue-950 dark:text-blue-300">
-          {t(
-            "ダイアログモードが有効です。作品をクリックするとダイアログで表示されます。",
-            "Dialog mode is enabled. Clicking on works will open them in a dialog.",
+      {!isExplore ? (
+        <>
+          {/* モデル検索時の専用タグ表示 */}
+          {filterValues.workModelId && (
+            <div className="flex flex-wrap gap-2">
+              <Badge
+                variant="secondary"
+                className="flex items-center gap-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+              >
+                <span>
+                  {t("モデル", "Model")}:{" "}
+                  {models.find(
+                    (m) => m.workModelId === filterValues.workModelId,
+                  )?.displayName || filterValues.workModelId}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-4 w-4 p-0 hover:bg-blue-200 dark:hover:bg-blue-800"
+                  onClick={handleModelTagRemove}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </Badge>
+            </div>
           )}
-        </div>
+
+          {/* Filter Section */}
+          <CompactFilter
+            filters={filterValues}
+            onFiltersChange={handleFilterChange}
+            onApplyFilters={() => {}}
+            isLoading={loading}
+          />
+
+          {/* Active Filters Display */}
+          {activeFilters.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {activeFilters.map((filter) => (
+                <Badge key={filter} variant="secondary" className="text-xs">
+                  {filter}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* Dialog Mode Notice */}
+          {isDialogMode && (
+            <div className="rounded-lg bg-blue-50 p-3 text-blue-700 text-sm dark:bg-blue-950 dark:text-blue-300">
+              {t(
+                "ダイアログモードが有効です。作品をクリックするとダイアログで表示されます。",
+                "Dialog mode is enabled. Clicking on works will open them in a dialog.",
+              )}
+            </div>
+          )}
+          <div className="flex items-center gap-4">
+            <SearchWorksSortableSetting
+              nowSort={sortOrder}
+              allOrderBy={[
+                "LIKES_COUNT",
+                "BOOKMARKS_COUNT",
+                "COMMENTS_COUNT",
+                "VIEWS_COUNT",
+                "NAME",
+                "DATE_CREATED",
+              ]}
+              nowOrderBy={orderBy}
+              setSort={setSortOrder}
+              onClickTitleSortButton={handleTitleSort}
+              onClickLikeSortButton={handleLikesSort}
+              onClickBookmarkSortButton={handleBookmarksSort}
+              onClickCommentSortButton={handleCommentsSort}
+              onClickViewSortButton={handleViewsSort}
+              onClickDateSortButton={handleDateCreatedSort}
+            />
+            <div className="mx-2 h-6 w-px bg-border" />
+            <Button
+              variant={isDialogMode ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleDialogModeChange(!isDialogMode)}
+              className="flex items-center gap-1"
+            >
+              <Eye className="h-4 w-4" />
+              {t("ダイアログ", "Dialog Mode")}
+            </Button>
+            <div className="flex items-center gap-2 text-muted-foreground text-sm">
+              <Eye className="h-4 w-4" />
+              {t("", "")}
+              {totalCount}
+              {t("件", " works")}
+            </div>
+          </div>
+          {/* View Mode Toggle */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === "pagination" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleViewModeChange("pagination")}
+                className="flex items-center gap-1"
+              >
+                <List className="h-4 w-4" />
+                {t("ページ送り", "Pagination")}
+              </Button>
+              <Button
+                variant={viewMode === "infinite" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleViewModeChange("infinite")}
+                className="flex items-center gap-1"
+              >
+                <Grid className="h-4 w-4" />
+                {t("フィード", "Infinite Scroll")}
+              </Button>
+            </div>
+          </div>
+        </>
       )}
-      <div className="flex items-center gap-4">
-        <SearchWorksSortableSetting
-          nowSort={sortOrder}
-          allOrderBy={[
-            "LIKES_COUNT",
-            "BOOKMARKS_COUNT",
-            "COMMENTS_COUNT",
-            "VIEWS_COUNT",
-            "NAME",
-            "DATE_CREATED",
-          ]}
-          nowOrderBy={orderBy}
-          setSort={setSortOrder}
-          onClickTitleSortButton={handleTitleSort}
-          onClickLikeSortButton={handleLikesSort}
-          onClickBookmarkSortButton={handleBookmarksSort}
-          onClickCommentSortButton={handleCommentsSort}
-          onClickViewSortButton={handleViewsSort}
-          onClickDateSortButton={handleDateCreatedSort}
-        />
-        <div className="mx-2 h-6 w-px bg-border" />
-        <Button
-          variant={isDialogMode ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleDialogModeChange(!isDialogMode)}
-          className="flex items-center gap-1"
-        >
-          <Eye className="h-4 w-4" />
-          {t("ダイアログ", "Dialog Mode")}
-        </Button>
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
-          <Eye className="h-4 w-4" />
-          {t("", "")}
-          {totalCount}
-          {t("件", " works")}
-        </div>
-      </div>
-      {/* View Mode Toggle */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            variant={viewMode === "pagination" ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleViewModeChange("pagination")}
-            className="flex items-center gap-1"
-          >
-            <List className="h-4 w-4" />
-            {t("ページ送り", "Pagination")}
-          </Button>
-          <Button
-            variant={viewMode === "infinite" ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleViewModeChange("infinite")}
-            className="flex items-center gap-1"
-          >
-            <Grid className="h-4 w-4" />
-            {t("フィード", "Infinite Scroll")}
-          </Button>
-        </div>
-      </div>
+
       {/* Results */}
       {loading && currentWorks.length === 0 ? (
         <div className="flex items-center justify-center py-12">
@@ -882,13 +916,12 @@ export const SearchResults = ({
             isShowProfile={true}
           />
 
-          {/* Infinite scroll sentinel */}
-          {viewMode === "infinite" && hasNext && (
+          {/* Infinite scroll UI は探索トップでは使わない */}
+          {!isExplore && viewMode === "infinite" && hasNext && (
             <div ref={sentinelRef} className="h-1" />
           )}
 
-          {/* Loading indicator for infinite scroll */}
-          {viewMode === "infinite" && isLoadingMore && (
+          {!isExplore && viewMode === "infinite" && isLoadingMore && (
             <div className="flex items-center justify-center py-6">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               <span className="ml-2 text-muted-foreground">

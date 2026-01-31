@@ -26,6 +26,38 @@ type Props = {
   popularModels: AiModel[]
 }
 
+function TagGrid(props: {
+  tags: PopularTag[]
+  onTagClick: (name: string) => void
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      {props.tags.map((tag) => (
+        // biome-ignore lint/a11y/noStaticElementInteractions: thumb grid uses div for overlay
+        // biome-ignore lint/a11y/useKeyWithClickEvents: thumb grid uses click handler
+        <div
+          key={tag.id}
+          className="group relative cursor-pointer overflow-hidden rounded-md"
+          onClick={() => props.onTagClick(tag.name)}
+        >
+          {tag.thumbnailUrl ? (
+            <img
+              className="h-[120px] w-full bg-white object-cover object-center transition-transform duration-200 ease-in-out group-hover:scale-105"
+              src={tag.thumbnailUrl}
+              alt={tag.name}
+            />
+          ) : (
+            <div className="h-[120px] w-full bg-gradient-to-br from-purple-400 to-pink-400" />
+          )}
+          <div className="absolute right-0 bottom-0 left-0 box-border flex h-12 flex-col justify-end bg-gradient-to-t from-black to-transparent p-2 opacity-88">
+            <p className="truncate font-medium text-white text-xs">{`#${tag.name}`}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function SearchHints(props: Props) {
   const navigate = useNavigate()
   const t = useTranslation()
@@ -39,43 +71,142 @@ export function SearchHints(props: Props) {
   }
 
   const handleModelClick = (modelId: string) => {
-    navigate(`/search?workModelId=${encodeURIComponent(modelId)}`)
+    navigate(`/search?model=${encodeURIComponent(modelId)}`)
   }
+
+  const getModelBlurb = (modelName: string) => {
+    const name = modelName.toLowerCase()
+
+    if (name.includes("flux")) {
+      return t("写実寄り・高精細", "Photorealistic, high-detail")
+    }
+    if (name.includes("animagine")) {
+      return t("高密度なアニメ調", "Dense anime style")
+    }
+    if (name.includes("anything")) {
+      return t("王道アニメ調", "Classic anime style")
+    }
+    if (name.includes("sdxl") || name.includes("stable diffusion")) {
+      return t("汎用・バランス型", "General-purpose, balanced")
+    }
+    if (name.includes("pony")) {
+      return t("二次元寄り・表情豊か", "2D leaning, expressive")
+    }
+
+    return t("画風の違いで探す", "Browse by style")
+  }
+
+  const classifyTag = (tagName: string) => {
+    const normalized = tagName.replace(/^#/, "").trim().toLowerCase()
+
+    // トレンドっぽい（年号/イベントっぽい）
+    if (/20\d\d|\d{4}/.test(normalized) || normalized.includes("トレンド")) {
+      return "trend" as const
+    }
+
+    // 定番っぽい雰囲気
+    const classic = new Set([
+      "かわいい",
+      "美少女",
+      "イケメン",
+      "かっこいい",
+      "エモい",
+      "ふわふわ",
+      "クール",
+      "制服",
+      "ロリ",
+      "メイド",
+    ])
+    if (classic.has(tagName) || classic.has(normalized)) {
+      return "classic" as const
+    }
+
+    // それ以外はジャンル扱い
+    return "genre" as const
+  }
+
+  const groupedTags = (() => {
+    const groups: Record<"genre" | "trend" | "classic", PopularTag[]> = {
+      genre: [],
+      trend: [],
+      classic: [],
+    }
+
+    for (const tag of props.popularTags) {
+      const group = classifyTag(tag.name)
+      groups[group].push(tag)
+    }
+
+    // どこかが空なら、人気順のスライスで埋める（データが分類できない場合の保険）
+    const fallback = props.popularTags
+    if (groups.genre.length === 0 && fallback.length > 0) {
+      groups.genre = fallback.slice(0, 5)
+    }
+    if (groups.trend.length === 0 && fallback.length > 5) {
+      groups.trend = fallback.slice(5, 10)
+    }
+    if (groups.classic.length === 0 && fallback.length > 10) {
+      groups.classic = fallback.slice(10, 15)
+    }
+
+    return {
+      genre: groups.genre.slice(0, 10),
+      trend: groups.trend.slice(0, 10),
+      classic: groups.classic.slice(0, 10),
+    }
+  })()
 
   return (
     <div className="space-y-6">
-      {/* 人気タグ */}
+      {/* タグ（意味をつけて探索しやすく） */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Tag className="size-5" />
-            {t("人気タグ", "Popular Tags")}
+            {t("似た雰囲気を探す", "Find Similar Vibes")}
           </CardTitle>
+          <p className="text-muted-foreground text-sm">
+            {t(
+              "雰囲気・題材・定番などから、次の一枚を見つけやすくします",
+              "Find the next piece by vibe, theme, and evergreen picks",
+            )}
+          </p>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {props.popularTags.map((tag) => (
-              // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
-              // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-              <div
-                key={tag.id}
-                className="group relative cursor-pointer overflow-hidden rounded-md"
-                onClick={() => handleTagClick(tag.name)}
-              >
-                {tag.thumbnailUrl ? (
-                  <img
-                    className="h-[120px] w-full bg-white object-cover object-center transition-transform duration-200 ease-in-out group-hover:scale-105"
-                    src={tag.thumbnailUrl}
-                    alt={tag.name}
-                  />
-                ) : (
-                  <div className="h-[120px] w-full bg-gradient-to-br from-purple-400 to-pink-400" />
-                )}
-                <div className="absolute right-0 bottom-0 left-0 box-border flex h-12 flex-col justify-end bg-gradient-to-t from-black to-transparent p-2 opacity-88">
-                  <p className="truncate font-medium text-white text-xs">{`#${tag.name}`}</p>
-                </div>
-              </div>
-            ))}
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <h3 className="font-semibold text-sm">
+                {t("人気ジャンル", "Popular Genres")}
+              </h3>
+              <p className="text-muted-foreground text-xs">
+                {t("題材・世界観で探す", "Find by theme")}
+              </p>
+            </div>
+            <TagGrid tags={groupedTags.genre} onTagClick={handleTagClick} />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <h3 className="font-semibold text-sm">
+                {t("最近流行っている", "Trending Now")}
+              </h3>
+              <p className="text-muted-foreground text-xs">
+                {t("最近よく見られるタグ", "Currently popular")}
+              </p>
+            </div>
+            <TagGrid tags={groupedTags.trend} onTagClick={handleTagClick} />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between">
+              <h3 className="font-semibold text-sm">
+                {t("定番テーマ", "Evergreen")}
+              </h3>
+              <p className="text-muted-foreground text-xs">
+                {t("雰囲気・好みで探す", "Find by vibe")}
+              </p>
+            </div>
+            <TagGrid tags={groupedTags.classic} onTagClick={handleTagClick} />
           </div>
         </CardContent>
       </Card>
@@ -85,7 +216,7 @@ export function SearchHints(props: Props) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <TrendingUp className="size-5" />
-            {t("トレンドキーワード", "Trending Keywords")}
+            {t("いま人気のキーワード", "Trending Keywords")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -111,8 +242,14 @@ export function SearchHints(props: Props) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Cpu className="size-5" />
-            {t("人気のAIモデル", "Popular AI Models")}
+            {t("モデル一覧", "Models")}
           </CardTitle>
+          <p className="text-muted-foreground text-sm">
+            {t(
+              "押すと、そのモデルで投稿された作品一覧を表示します",
+              "Tap to show works posted with that model",
+            )}
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -120,19 +257,24 @@ export function SearchHints(props: Props) {
               <Button
                 key={model.id}
                 variant="outline"
-                className="flex h-auto flex-col p-3"
+                className="flex h-auto items-start gap-3 p-3 text-left"
                 onClick={() => handleModelClick(model.workModelId)}
               >
                 {model.thumbnailImageURL && (
                   <img
                     src={model.thumbnailImageURL}
                     alt={model.name}
-                    className="mb-2 size-12 rounded object-cover"
+                    className="size-12 rounded object-cover"
                   />
                 )}
-                <span className="text-center font-medium text-xs">
-                  {model.displayName}
-                </span>
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-xs">
+                    {model.displayName}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-muted-foreground text-xs leading-snug">
+                    {getModelBlurb(model.displayName)}
+                  </p>
+                </div>
               </Button>
             ))}
           </div>

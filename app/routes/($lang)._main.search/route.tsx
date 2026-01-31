@@ -10,7 +10,7 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { config } from "~/config"
-import { useSearchParams } from "@remix-run/react"
+import { useNavigate, useSearchParams } from "@remix-run/react"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -24,11 +24,13 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const tag = url.searchParams.get("tag")
   const q = url.searchParams.get("q")
-  const model = url.searchParams.get("model")
+  const model =
+    url.searchParams.get("workModelId") ?? url.searchParams.get("model")
 
   // Build where condition
   const whereCondition: Record<string, unknown> = {
-    ratings: ["G"],
+    // /search は基本的に G + R15 を表示（SearchResults のデフォルトと合わせる）
+    ratings: ["G", "R15"],
     orderBy: "LIKES_COUNT",
   }
 
@@ -127,6 +129,7 @@ export const headers: HeadersFunction = () => ({
 export default function Search() {
   const data = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
 
   if (data === null) {
     return null
@@ -134,31 +137,146 @@ export default function Search() {
 
   const searchQuery = searchParams.get("q")
   const tagQuery = searchParams.get("tag")
-  const modelQuery = searchParams.get("workModelId")
-
-  console.log("modelQuery:", modelQuery)
+  const modelQuery =
+    searchParams.get("workModelId") ?? searchParams.get("model")
 
   const hasAnySearchQuery = Boolean(searchQuery || tagQuery || modelQuery)
 
+  const orderLabel = (() => {
+    const orderBy = searchParams.get("orderBy")
+    const sort = searchParams.get("sort")
+
+    const base = (() => {
+      switch (orderBy) {
+        case "DATE_CREATED":
+          return "新着順"
+        case "VIEWS_COUNT":
+          return "閲覧数順"
+        case "COMMENTS_COUNT":
+          return "コメント順"
+        case "BOOKMARKS_COUNT":
+          return "ブックマーク順"
+        case "NAME":
+          return "タイトル順"
+        case "LIKES_COUNT":
+        default:
+          return "人気順（いいね）"
+      }
+    })()
+
+    if (sort === "ASC") return `${base}（昇順）`
+    return base
+  })()
+
+  const modelLabel = (() => {
+    if (!modelQuery) return null
+    const m = data.models.find(
+      (x) => x.workModelId === modelQuery || x.id === modelQuery,
+    )
+
+    return m?.displayName ?? modelQuery
+  })()
+
+  const stateLabel = (() => {
+    // 🏷 タグクリック時
+    if (tagQuery) {
+      const tags = tagQuery
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+      if (tags.length >= 2) {
+        return `🏷 #${tags[0]} × #${tags[1]} の作品一覧（${orderLabel}）`
+      }
+      return `🏷 #${tagQuery} の作品一覧（${orderLabel}）`
+    }
+
+    // 🔍 キーワード検索時
+    if (searchQuery) {
+      return modelLabel
+        ? `🔍 「${searchQuery}」の検索結果（${orderLabel}・${modelLabel}）`
+        : `🔍 「${searchQuery}」の検索結果（${orderLabel}）`
+    }
+
+    // 🎨 AIモデルのみ
+    if (modelQuery) {
+      return modelLabel
+        ? `${modelLabel} の作品一覧（${orderLabel}）`
+        : `モデルの作品一覧（${orderLabel}）`
+    }
+
+    // 🔰 初期表示
+    return "⭐ おすすめ作品（Aipictorsピック）"
+  })()
+
+  const beginnerChips = [
+    "かわいい",
+    "ファンタジー",
+    "SF",
+    "アニメ風",
+    "写実",
+    "風景",
+    "ポートレート",
+    "サイバーパンク",
+    "魔法使い",
+    "青髪",
+  ]
+
+  const onChipClick = (chip: string) => {
+    const params = new URLSearchParams()
+    params.set("q", chip)
+    navigate(`/search?${params.toString()}`)
+  }
+
   return (
     <>
-      <div className="m-auto md:max-w-96">
+      <div className="mx-auto max-w-4xl px-4 pt-4">
         <SearchHeader models={data.models} />
+
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-sm">
+          <span className="font-medium text-foreground">{stateLabel}</span>
+        </div>
+
+        {/* 入力しなくても使える：初心者向けタグチップ */}
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-2">
+          {beginnerChips.map((chip) => (
+            <button
+              key={chip}
+              type="button"
+              onClick={() => onChipClick(chip)}
+              className="shrink-0 rounded-full border bg-background px-3 py-1 text-sm hover:bg-muted"
+            >
+              {`#${chip}`}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* 検索クエリがない場合は検索ヒントを表示 */}
-      {!hasAnySearchQuery ? (
-        <div className="mx-auto max-w-4xl px-4 py-6">
-          <SearchHints
-            popularTags={data.popularTags}
-            popularKeywords={data.popularKeywords}
-            popularModels={data.popularModels}
-          />
+      {/* 直下に即グリッド（初期状態でも必ず作品が見える） */}
+      <div className="mx-auto max-w-6xl px-4 py-4">
+        <SearchResults
+          models={data.models}
+          initialWorks={data.workResp}
+          mode="explore"
+        />
+
+        {/* 下層：ヒント（情報は出しすぎず、必要なら深掘り） */}
+        <div className="mt-6">
+          <details>
+            <summary className="cursor-pointer text-muted-foreground text-sm">
+              {hasAnySearchQuery
+                ? "さらに探す（雰囲気・トレンド・画風）"
+                : "さらに探す（雰囲気・トレンド・画風）"}
+            </summary>
+            <div className="mt-4">
+              <SearchHints
+                popularTags={data.popularTags}
+                popularKeywords={data.popularKeywords}
+                popularModels={data.popularModels}
+              />
+            </div>
+          </details>
         </div>
-      ) : (
-        /* 検索結果を表示 */
-        <SearchResults models={data.models} />
-      )}
+      </div>
     </>
   )
 }

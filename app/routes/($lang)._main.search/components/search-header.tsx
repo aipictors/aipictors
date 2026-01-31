@@ -1,11 +1,17 @@
-import type { CheckedState } from "@radix-ui/react-checkbox"
-import { Search, User, X } from "lucide-react" // ← X アイコンを追加
-import { useState, useEffect, useRef } from "react" // ← useRef を追加
+import { Cpu, Search, SlidersHorizontal, User, X } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 import { useSearchParams, useNavigate } from "@remix-run/react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet"
+import { ScrollArea } from "~/components/ui/scroll-area"
 import { useTranslation } from "~/hooks/use-translation"
 
 type AiModel = {
@@ -20,7 +26,7 @@ type Props = {
   models?: AiModel[]
 }
 
-export function SearchHeader(_props: Props) {
+export function SearchHeader(props: Props) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const t = useTranslation()
@@ -30,57 +36,74 @@ export function SearchHeader(_props: Props) {
 
   // URLパラメータから初期値を取得
   const [searchText, setSearchText] = useState(searchParams.get("q") || "")
-  const [searchType, setSearchType] = useState(
-    searchParams.get("type") || "works",
-  )
-  const [isR18, setIsR18] = useState(searchParams.get("rating") === "R18")
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [userSearchText, setUserSearchText] = useState("")
 
   // URLパラメータの変更を監視
   useEffect(() => {
     setSearchText(searchParams.get("q") || "")
-    setSearchType(searchParams.get("type") || "works")
-    setIsR18(searchParams.get("rating") === "R18")
 
     // modelパラメータがある場合は検索テキストを空にする
-    if (searchParams.get("model")) {
+    if (searchParams.get("model") || searchParams.get("workModelId")) {
       setSearchText("")
     }
   }, [searchParams])
 
-  // 検索実行
-  const onSearch = () => {
-    const trimmedText = searchText.trim()
+  const validateQuery = (rawText: string) => {
+    const trimmedText = rawText.trim()
     const sanitizedText = trimmedText.replace(/#/g, "")
     const invalidChars = ["%", "/", "¥"]
 
     if (invalidChars.some((c) => sanitizedText.includes(c))) {
       toast("入力された検索文字列には使用できない文字が含まれています。")
-      return
+      return null
     }
-
-    if (trimmedText !== "") {
-      const newParams = new URLSearchParams()
-      newParams.set("q", trimmedText)
-
-      if (searchType === "users") {
-        navigate(`/users?${newParams.toString()}`)
-      } else {
-        if (isR18) newParams.set("rating", "R18")
-        const path = isR18 ? "/r/search" : "/search"
-        navigate(`${path}?${newParams.toString()}`)
-      }
-    } else {
+    if (trimmedText === "") {
       toast(t("検索ワードを入力してください", "Please enter a search word"))
+      return null
     }
+    return trimmedText
+  }
+
+  // 作品検索（主導線）
+  const onSearchWorks = () => {
+    const trimmedText = searchText.trim()
+    const validated = validateQuery(trimmedText)
+    if (validated) {
+      const newParams = new URLSearchParams()
+      newParams.set("q", validated)
+      navigate(`/search?${newParams.toString()}`)
+    }
+  }
+
+  // ユーザー検索（補助）
+  const onSearchUsers = () => {
+    const validated = validateQuery(userSearchText)
+    if (!validated) return
+    const newParams = new URLSearchParams()
+    newParams.set("q", validated)
+    navigate(`/users?${newParams.toString()}`)
+    setIsFilterOpen(false)
+  }
+
+  const onSelectModel = (modelId: string) => {
+    const newParams = new URLSearchParams()
+    newParams.set("workModelId", modelId)
+    navigate(`/search?${newParams.toString()}`)
+    setIsFilterOpen(false)
   }
 
   // クリア処理
   const onClear = () => {
     setSearchText("")
 
-    // 現在のクエリから q を削除
+    // 現在のクエリから検索系パラメータを削除
     const params = new URLSearchParams(location.search)
     params.delete("q")
+    params.delete("tag")
+    params.delete("model")
+    params.delete("workModelId")
+    params.delete("page")
 
     // ? が空なら取り除く
     const nextUrl = params.toString()
@@ -94,40 +117,27 @@ export function SearchHeader(_props: Props) {
     inputRef.current?.focus()
   }
 
-  const _handleR18Change = (checked: CheckedState) => {
-    setIsR18(checked === true)
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") onSearchWorks()
   }
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") onSearch()
+  const getModelButtonLabel = (displayName: string) => {
+    const trimmed = displayName.trim()
+    if (trimmed !== "") return trimmed
+    return t("モデル", "Model")
   }
 
   return (
-    <div className="space-y-4">
-      {/* 検索タイプ選択 */}
-      <Tabs value={searchType} onValueChange={setSearchType} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="works" className="flex items-center gap-2">
-            <Search className="h-4 w-4" />
-            {t("作品を検索", "Search Works")}
-          </TabsTrigger>
-          <TabsTrigger value="users" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            {t("ユーザーを検索", "Search Users")}
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-
-      {/* 検索入力 + ボタン群 */}
+    <div className="space-y-2">
+      {/* 検索入力 + ボタン群（探索トップはこれが主役） */}
       <div className="flex gap-2">
         <div className="flex-1">
           <Input
-            ref={inputRef} // ← ref を渡す
-            placeholder={
-              searchType === "users"
-                ? t("ユーザー名で検索", "Search by username")
-                : t("タグ・キーワードで検索", "Search by tag or keyword")
-            }
+            ref={inputRef}
+            placeholder={t(
+              "タグ・雰囲気・キャラ名で探す",
+              "Search by tags, vibe, or character",
+            )}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -135,40 +145,117 @@ export function SearchHeader(_props: Props) {
           />
         </div>
 
-        {/* クリアボタン */}
         <Button
           onClick={onClear}
           size="icon"
           variant="ghost"
           disabled={searchText === ""}
+          aria-label={t("検索をクリア", "Clear search")}
         >
           <X className="h-4 w-4" />
         </Button>
 
-        {/* 検索ボタン */}
-        <Button onClick={onSearch} size="icon" variant="default">
+        <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+          <SheetTrigger asChild>
+            <Button
+              size="icon"
+              variant="outline"
+              aria-label={t("フィルタを開く", "Open filters")}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent className="p-0" side="right">
+            <ScrollArea className="h-full p-4">
+              <div className="space-y-8">
+                <SheetHeader>
+                  <SheetTitle>{t("絞り込み条件", "Filters")}</SheetTitle>
+                  <p className="text-muted-foreground text-xs">
+                    {t(
+                      "見たい作品の雰囲気に近づけます（おすすめがデフォルト）",
+                      "Narrow by vibe (defaults are recommended)",
+                    )}
+                  </p>
+                </SheetHeader>
+
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 font-semibold text-sm">
+                    <User className="h-4 w-4" />
+                    {t("ユーザー検索", "User search")}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder={t(
+                        "ユーザー名 / ID で検索",
+                        "Search by username / id",
+                      )}
+                      value={userSearchText}
+                      onChange={(e) => setUserSearchText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") onSearchUsers()
+                      }}
+                    />
+                    <Button size="icon" onClick={onSearchUsers}>
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </section>
+
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 font-semibold text-sm">
+                    <Cpu className="h-4 w-4" />
+                    {t("モデル一覧", "Models")}
+                  </div>
+                  <p className="text-muted-foreground text-xs">
+                    {t(
+                      "押すと、そのモデルで投稿された作品一覧を表示します",
+                      "Tap to show works posted with that model",
+                    )}
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(props.models ?? []).slice(0, 12).map((model) =>
+                      (() => {
+                        const label = getModelButtonLabel(model.displayName)
+                        return (
+                          <Button
+                            key={model.id}
+                            type="button"
+                            variant="outline"
+                            className="h-auto justify-start px-3 py-2 text-left"
+                            onClick={() => onSelectModel(model.workModelId)}
+                          >
+                            <div className="min-w-0">
+                              <div className="truncate font-medium text-sm">
+                                {label}
+                              </div>
+                            </div>
+                          </Button>
+                        )
+                      })(),
+                    )}
+                  </div>
+                </section>
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+
+        <Button
+          onClick={onSearchWorks}
+          size="icon"
+          variant="default"
+          aria-label={t("検索", "Search")}
+        >
           <Search className="h-4 w-4" />
         </Button>
       </div>
 
-      {/* 検索のヒント */}
-      <div className="mb-4 text-muted-foreground text-xs">
-        {searchType === "works" ? (
-          <p>
-            {t(
-              "タグやキーワードで作品を検索できます。複数のタグはスペースで区切ってください。",
-              "You can search for works by tags or keywords. Separate multiple tags with spaces.",
-            )}
-          </p>
-        ) : (
-          <p>
-            {t(
-              "ユーザー名やユーザーIDで検索できます。",
-              "You can search by username or user ID.",
-            )}
-          </p>
+      <p className="text-muted-foreground text-xs">
+        {t(
+          "例：魔法使い 青髪 ファンタジー（Enterで検索 / そのまま眺めてもOK）",
+          "Example: wizard blue hair fantasy (Press Enter / or just browse)",
         )}
-      </div>
+      </p>
     </div>
   )
 }

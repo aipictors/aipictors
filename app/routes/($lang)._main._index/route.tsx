@@ -657,7 +657,7 @@ export default function Index() {
         className="space-y-6"
       >
         {/* ヘッダー部分: タブ */}
-        <div className="-mx-4 sticky top-0 z-20 border-b bg-background/98 px-4 py-2 backdrop-blur-md">
+        <div className="-mx-4 border-b bg-background/98 px-4 py-2">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
             <div className="min-w-0 flex-1">
               <AppAnimatedTabs

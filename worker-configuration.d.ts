@@ -1,4 +1,4 @@
-type Env = {
+export type Env = {
   /**
    * SSR/Functions 側で使う GraphQL エンドポイント
    * (Vite の import.meta.env と同名で Pages の環境変数にも設定される想定)

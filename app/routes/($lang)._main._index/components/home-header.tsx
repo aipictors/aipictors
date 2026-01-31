@@ -229,6 +229,8 @@ function HomeHeader(props: Props) {
 
   const title = sensitivePath ? "Aipictors R18" : (props.title ?? "Aipictors")
 
+  const isGenerationPage = location.pathname.includes("/generation")
+
   // 画像生成画面など、特別なページではサイドバーのマージンを適用しない
   const isSpecialPage =
     location.pathname.includes("/generation") ||
@@ -388,8 +390,8 @@ function HomeHeader(props: Props) {
     // Safari/Android 向けに ref と nativeEvent の両方で判定
     if (
       composingRef.current ||
-      (e.nativeEvent as any).isComposing ||
-      (e as any).keyCode === 229
+      e.nativeEvent.isComposing ||
+      e.nativeEvent.keyCode === 229
     )
       return
 
@@ -417,14 +419,20 @@ function HomeHeader(props: Props) {
               size="icon"
               className={
                 props.showPcSheetMenu
-                  ? "block" // PC版でも表示
+                  ? undefined // PC版でも表示（Buttonのinline-flexを潰さない）
                   : "md:hidden" // PC版では非表示
               }
             >
-              <MenuIcon />
+              <MenuIcon className="size-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent className="p-0" side="left">
+          <SheetContent
+            className={cn(
+              "p-0",
+              isGenerationPage ? "w-[216px] max-w-[216px]" : "",
+            )}
+            side="left"
+          >
             <ScrollArea className="h-full p-4">
               <Suspense fallback={null}>
                 <HomeMenuRouteList onClickMenuItem={close} />
@@ -440,12 +448,11 @@ function HomeHeader(props: Props) {
               className="hidden shrink-0 items-center space-x-2 pl-4 md:flex"
               onClick={() => handleNavigate("/")}
             >
-              {navigation.state === "loading" && (
+              {navigation.state === "loading" ? (
                 <div className="flex size-8 items-center justify-center">
                   <Loader2Icon className="size-8 animate-spin" />
                 </div>
-              )}
-              {sidebarState === "minimal" && navigation.state !== "loading" && (
+              ) : (
                 <img
                   src="/icon.svg"
                   className="size-8 shrink-0 rounded-full"
@@ -454,34 +461,11 @@ function HomeHeader(props: Props) {
                   height={40}
                 />
               )}
-              {sidebarState === "minimal" && (
-                <div className="flex items-center">
-                  <span className="whitespace-nowrap font-bold text-xl">
-                    {title}
-                  </span>
-                </div>
-              )}
-              {navigation.state === "loading" && (
-                <div className="flex size-8 items-center justify-center">
-                  <Loader2Icon className="size-8 animate-spin" />
-                </div>
-              )}
-              {sidebarState !== "minimal" && navigation.state !== "loading" && (
-                <img
-                  src="/icon.svg"
-                  className="ml-8 size-8 shrink-0 rounded-full"
-                  alt="Avatar"
-                  width={40}
-                  height={40}
-                />
-              )}
-              {sidebarState !== "minimal" && (
-                <div className="flex items-center">
-                  <span className="whitespace-nowrap font-bold text-xl">
-                    {title}
-                  </span>
-                </div>
-              )}
+              <div className="flex items-center">
+                <span className="whitespace-nowrap font-bold text-xl">
+                  {title}
+                </span>
+              </div>
             </Button>
           )}
           {/* サイドバーが最小化されている場合のみロゴを表示 */}

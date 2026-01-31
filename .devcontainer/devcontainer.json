@@ -1,7 +1,7 @@
 {
   "features": {
-    "ghcr.io/devcontainers-contrib/features/node-asdf:0": {},
-    "ghcr.io/devcontainers-contrib/features/pnpm:2": {}
+    "ghcr.io/devcontainers-extra/features/node-asdf:0": {},
+    "ghcr.io/devcontainers-extra/features/pnpm:2": {}
   },
   "postCreateCommand": "pnpm i"
 }
