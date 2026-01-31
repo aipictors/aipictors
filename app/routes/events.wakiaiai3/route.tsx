@@ -9,7 +9,7 @@ import { EventWakiaiaiHeader } from "~/routes/events.wakiaiai/components/event-w
 import { config } from "~/config"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 
-export default function Route() {
+export default function Route () {
   const length = Math.floor(eventUsers.length / 3)
 
   const aUsers = eventUsers.filter((_, index) => {

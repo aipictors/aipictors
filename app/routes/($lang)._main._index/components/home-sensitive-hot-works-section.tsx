@@ -29,7 +29,7 @@ type Props = {
 /**
  * トップ画面人気作品一覧
  */
-export function HomeSensitiveHotWorksSection(props: Props) {
+export function HomeSensitiveHotWorksSection (props: Props) {
   const appContext = useContext(AuthContext)
 
   const perPageCount = props.workType === "VIDEO" ? 8 : 32

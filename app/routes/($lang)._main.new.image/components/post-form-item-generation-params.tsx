@@ -15,7 +15,7 @@ type Props = {
 /**
  * 生成パラメータ入力
  */
-export function PostFormItemGenerationParams(props: Props) {
+export function PostFormItemGenerationParams (props: Props) {
   const t = useTranslation() // 翻訳フックの使用
 
   const handleChange = (field: keyof PNGInfo["params"], value: string) => {

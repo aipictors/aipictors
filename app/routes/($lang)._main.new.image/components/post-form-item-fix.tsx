@@ -10,7 +10,7 @@ type Props = {
 /**
  * 修正内容入力
  */
-export function PostFormItemFix(props: Props) {
+export function PostFormItemFix (props: Props) {
   const isFilled = props.value.trim() !== ""
 
   return (

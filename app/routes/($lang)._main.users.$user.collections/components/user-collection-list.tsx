@@ -5,7 +5,7 @@ type Props = {
   folders: FragmentOf<typeof UserUserFoldersItemFragment>[]
 }
 
-export function UserCollectionList(props: Props) {
+export function UserCollectionList (props: Props) {
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex min-h-96 flex-col gap-y-4">

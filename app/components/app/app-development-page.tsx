@@ -5,7 +5,7 @@ import { Link } from "@remix-run/react"
  * v0 by Vercel.
  * @see https://v0.dev/t/YFhY3hdw0jD
  */
-export function AppDevelopmentPage() {
+export function AppDevelopmentPage (): React.ReactNode {
   return (
     <div className="flex h-main w-full flex-col items-center justify-center">
       <h1 className="font-bold text-9xl">503</h1>

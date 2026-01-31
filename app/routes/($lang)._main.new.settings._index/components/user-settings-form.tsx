@@ -15,7 +15,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * プロフィール設定フォーム
  */
-export function UserSettingsForm() {
+export function UserSettingsForm () {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)

@@ -42,7 +42,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function FollowingLayout() {
+export default function FollowingLayout () {
   const events = useLoaderData<typeof loader>()
 
   const t = useTranslation()

@@ -87,7 +87,7 @@ type Props = {
 /**
  * 作品コメントセクション（拡張版 - 返信機能とスタンプダウンロード対応）
  */
-export function WorkCommentSectionEnhanced(props: Props) {
+export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
   const t = useTranslation()
@@ -101,7 +101,7 @@ export function WorkCommentSectionEnhanced(props: Props) {
   const [openReplyIds, setOpenReplyIds] = useState<string[]>([])
   const [newComments, setNewComments] = useState<Comment[]>([])
   const [newReplies, setNewReplies] = useState<
-    Array<Comment["responses"][0] & { parentId: string }>
+    Array<NonNullable<Comment["responses"]>[number] & { parentId: string }>
   >([])
 
   const scrollAreaRef = useRef<HTMLDivElement>(null)

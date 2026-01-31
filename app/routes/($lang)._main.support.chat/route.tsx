@@ -26,7 +26,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.short,
 })
 
-export default function SupportChat() {
+export default function SupportChat () {
   return (
     <AppPageCenter className="pt-0 pb-0">
       <SupportChatView />

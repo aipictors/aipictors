@@ -5,7 +5,7 @@ import { ThumbsUpIcon } from "lucide-react"
 /**
  * サブスクの決済を完了した場合のページ
  */
-export default function PlusSuccess() {
+export default function PlusSuccess () {
   return (
     <>
       <div className="mx-auto w-full max-w-sm space-y-16 px-6 pt-16">

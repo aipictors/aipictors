@@ -17,7 +17,7 @@ type Props = {
 /**
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
  */
-export function DraftWorkActionContainer(props: Props) {
+export function DraftWorkActionContainer (props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data } = useQuery(workQuery, {

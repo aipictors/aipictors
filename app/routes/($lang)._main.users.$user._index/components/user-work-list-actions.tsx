@@ -2,7 +2,7 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { SearchIcon } from "lucide-react"
 
-export function UserWorkListActions() {
+export function UserWorkListActions () {
   return (
     <div className="space-y-4">
       <div className="flex space-x-4">

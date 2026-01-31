@@ -4,7 +4,7 @@ type Props = Readonly<{
   jsonLd: WithContext<Thing> | Array<WithContext<Thing>>
 }>
 
-export function AppJsonLdScript(props: Props) {
+export function AppJsonLdScript (props: Props): React.ReactNode {
   return (
     <script
       type="application/ld+json"

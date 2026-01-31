@@ -21,7 +21,7 @@ type Props = {
   onInputFiles?: (files: FileList) => void
 }
 
-export function PostTextFormUploader(props: Props) {
+export function PostTextFormUploader (props: Props) {
   const selectedFilesSizeText = () => {
     const totalBytes = props.state.items
       .map((item) => item.content)

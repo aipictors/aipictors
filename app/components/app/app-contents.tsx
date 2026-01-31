@@ -10,7 +10,7 @@ type Props = Readonly<{
 /**
  * コンテンツ
  */
-export function AppContents(props: Props) {
+export function AppContents (props: Props): React.ReactNode {
   const { sidebarState } = useSidebar()
 
   // サイドバーの状態に応じてマージンを調整

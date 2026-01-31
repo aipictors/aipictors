@@ -186,7 +186,7 @@ function useScrollRestoration(isMounted: boolean) {
   }, [isMounted])
 }
 
-export default function Index() {
+export default function Index () {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -687,7 +687,7 @@ export default function Index() {
             {data.adWorks && data.adWorks.length > 0 && (
               <HomeBanners
                 works={data.adWorks}
-                ongoingEvents={data.latestEvent ? [data.latestEvent] : []}
+                ongoingEvents={data.latestEvent ?? []}
                 onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
               />
             )}
@@ -1419,7 +1419,7 @@ export default function Index() {
 
           <Suspense fallback={<AppLoadingPage />}>
             <FollowTagsFeedContents
-              tab={currentTab}
+              _tab={currentTab}
               key={`follow-tag-${followTagFeedPage}-${currentTab}`}
               page={followTagFeedPage}
               setPage={setFollowTagFeedPage}

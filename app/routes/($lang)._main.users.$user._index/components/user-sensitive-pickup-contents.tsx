@@ -12,7 +12,7 @@ type Props = {
   userId: string
 }
 
-export function UserSensitivePickupContents(props: Props) {
+export function UserSensitivePickupContents (props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: workRes } = useQuery(userQuery, {

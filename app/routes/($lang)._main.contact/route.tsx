@@ -40,7 +40,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneMonth,
 })
 
-export default function Contact() {
+export default function Contact () {
   const t = useTranslation()
 
   return (

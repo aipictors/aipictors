@@ -16,7 +16,7 @@ type Props = {
 /**
  * 生成回数の設定
  */
-export function GenerationConfigCount(props: Props) {
+export function GenerationConfigCount (props: Props) {
   const context = useGenerationContext()
 
   const dataContext = useContext(GenerationQueryContext)

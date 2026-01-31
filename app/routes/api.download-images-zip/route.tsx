@@ -131,6 +131,6 @@ export async function action({ request }: ActionFunctionArgs) {
   })
 }
 
-export default function Route() {
+export default function Route () {
   return null
 }

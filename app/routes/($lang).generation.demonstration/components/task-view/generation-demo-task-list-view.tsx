@@ -30,7 +30,7 @@ type Props = {
 /**
  * タスク関連
  */
-export function GenerationDemoTaskListView(props: Props) {
+export function GenerationDemoTaskListView (props: Props) {
   const context = useGenerationContext()
 
   const state = GenerationConfigContext.useSelector((snap) => {

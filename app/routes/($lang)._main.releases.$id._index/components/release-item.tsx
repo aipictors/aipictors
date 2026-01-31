@@ -14,7 +14,7 @@ type Props = {
 /**
  * リリース情報アイテム
  */
-export function ReleaseItem(props: Props) {
+export function ReleaseItem (props: Props) {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp)
     const year = date.getFullYear()

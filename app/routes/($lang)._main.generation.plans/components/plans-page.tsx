@@ -21,7 +21,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * 画像生成についての説明
  */
-export function PlanPage() {
+export function PlanPage () {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 

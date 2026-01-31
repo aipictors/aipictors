@@ -6,7 +6,7 @@ import { useTranslation } from "~/hooks/use-translation"
  * v0 by Vercel.
  * @see https://v0.dev/t/YFhY3hdw0jD
  */
-export function AppNotFoundPage() {
+export function AppNotFoundPage (): React.ReactNode {
   const t = useTranslation()
 
   return (

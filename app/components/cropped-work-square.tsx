@@ -24,7 +24,7 @@ type Props = {
 /**
  * 四角形で作品をクロップして表示するコンポーネント
  */
-export function CroppedWorkSquare(props: Props) {
+export function CroppedWorkSquare (props: Props): React.ReactNode {
   // 仕様: 常に表示領域は正方形。auto は親グリッドセル幅にフィットして aspect-square。固定サイズは size-* で正方形。
   // 仕様: 短辺フィット + 長辺方向のみ translate. オーバーレイのズレ防止のためラッパーを正方形サイズそのものにする。
 

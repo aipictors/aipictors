@@ -32,7 +32,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyPosts() {
+export default function MyPosts () {
   const [searchParams, setSearchParams] = useSearchParams()
 
   // 初期値をURLパラメータから取得（一度だけ実行）

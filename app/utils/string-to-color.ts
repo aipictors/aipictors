@@ -5,7 +5,10 @@ import { hashCode } from "~/utils/hash-code"
  * @param text
  * @returns
  */
-export const stringToColor = (text: string, isDisabled: boolean) => {
+export const stringToColor: (text: string, isDisabled: boolean) => string = (
+  text: string,
+  isDisabled: boolean,
+): string => {
   if (isDisabled) {
     return "hsl(0, 0%, 50%)" // グレー色
   }

@@ -16,7 +16,7 @@ type Props = {
   page: number
 }
 
-export function AlbumWorkList(props: Props) {
+export function AlbumWorkList (props: Props) {
   const [searchParams, setSearchParams] = useSearchParams()
 
   // URLクエリパラメータから初期ページ番号を取得（1-indexed を 0-indexed に変換）

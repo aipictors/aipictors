@@ -27,7 +27,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SensitiveCollection() {
+export default function SensitiveCollection () {
   const data = useLoaderData<typeof loader>()
 
   return (

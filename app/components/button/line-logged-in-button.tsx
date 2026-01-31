@@ -7,7 +7,7 @@ type Props = {
 /**
  * LINEログインボタン
  */
-export function LineLoggedInButton(props: Props) {
+export function LineLoggedInButton (props: Props): React.ReactNode {
   const buttonText = props.text || "LINEログイン"
 
   return (

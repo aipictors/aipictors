@@ -6,7 +6,7 @@ import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 /**
  * プロンプトに使用する言語切り替えタブ
  */
-export function SettingLanguageUsedForPromptView() {
+export function SettingLanguageUsedForPromptView () {
   const context = useGenerationContext()
 
   const t = useTranslation()

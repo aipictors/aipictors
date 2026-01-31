@@ -25,7 +25,7 @@ type Props = {
 /**
  * シリーズ一覧コンテナ
  */
-export function AlbumsListContainer(props: Props) {
+export function AlbumsListContainer (props: Props) {
   const authContext = useContext(AuthContext)
 
   if (

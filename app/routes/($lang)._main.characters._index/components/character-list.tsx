@@ -68,7 +68,7 @@ type Character = {
   expressions: CharacterExpression[]
 }
 
-export function CharacterList(props: Props) {
+export function CharacterList (props: Props) {
   const t = useTranslation()
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
 
@@ -214,8 +214,11 @@ export function CharacterList(props: Props) {
               <Badge variant="secondary">{filteredCharacters.length}</Badge>
               {viewerData?.viewer?.currentPass && (
                 <Badge variant="outline" className="text-blue-600">
-                  残り{viewerData.viewer.currentPass.remainingImageGenerations}/
-                  {viewerData.viewer.currentPass.maxImageGenerations}枚
+                  残り
+                  {Number(
+                    viewerData.viewer.currentPass.remainingImageGenerations,
+                  )}
+                  /{Number(viewerData.viewer.currentPass.maxImageGenerations)}枚
                 </Badge>
               )}
             </div>

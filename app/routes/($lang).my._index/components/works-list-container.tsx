@@ -37,7 +37,7 @@ type Props = {
 /**
  * 作品一覧コンテナ
  */
-export function WorksListContainer(props: Props) {
+export function WorksListContainer (props: Props) {
   const authContext = useContext(AuthContext)
 
   // クエリ変数のメモ化で不要な再実行を防ぐ

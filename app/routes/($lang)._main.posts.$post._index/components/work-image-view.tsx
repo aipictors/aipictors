@@ -9,7 +9,7 @@ type Props = {
   mode?: "dialog" | "page"
 }
 
-export function WorkImageView(props: Props) {
+export function WorkImageView (props: Props) {
   const allImageURLs = props.workImageURL
     ? [props.workImageURL, ...props.subWorkImageURLs]
     : props.subWorkImageURLs

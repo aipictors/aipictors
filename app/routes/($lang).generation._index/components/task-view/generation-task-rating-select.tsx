@@ -16,7 +16,7 @@ type Props = {
 /**
  * お気に入り
  */
-export function GenerationTaskRatingSelect(props: Props) {
+export function GenerationTaskRatingSelect (props: Props) {
   return (
     <Select
       onValueChange={(value: string) => {

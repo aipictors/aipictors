@@ -12,7 +12,7 @@ type Props = {
   user: EventUser
 }
 
-export function EventWakiaiaiCreatorCard(props: Props) {
+export function EventWakiaiaiCreatorCard (props: Props) {
   return (
     <Card className="overflow-hidden">
       <div className="flex space-x-2">

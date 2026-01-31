@@ -41,7 +41,7 @@ import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils
 import { GalleryHeader } from "~/components/gallery-header"
 import { GalleryTagList } from "~/components/tag/gallery-tag"
 
-export function HydrateFallback() {
+export function HydrateFallback () {
   return <AppLoadingPage />
 }
 
@@ -176,7 +176,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 /**
  * ギャラリーの作品詳細ページ
  */
-export default function GalleryWorkPage() {
+export default function GalleryWorkPage () {
   const data = useLoaderData<typeof loader>()
 
   // リダイレクトレスポンスの場合は何も表示しない

@@ -26,7 +26,7 @@ type Props = {
 /**
  * シリーズ一覧
  */
-export function FoldersListTable(props: Props) {
+export function FoldersListTable (props: Props) {
   return (
     <>
       <ScrollArea className="overflow-x-auto">

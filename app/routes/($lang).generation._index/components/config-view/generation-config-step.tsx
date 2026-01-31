@@ -15,7 +15,7 @@ type Props = {
   onChange(value: number): void
 }
 
-export function GenerationConfigStep(props: Props) {
+export function GenerationConfigStep (props: Props) {
   const t = useTranslation()
 
   const minSteps = config.generationFeature.imageGenerationMinSteps

@@ -15,7 +15,7 @@ type Props = {
 /**
  * 新規コメント一覧（テキストのみに絞り込み）
  */
-export function HomeNewCommentsSection(props: Props) {
+export function HomeNewCommentsSection (props: Props) {
   const t = useTranslation()
 
   const comments = readFragment(HomeNewCommentsFragment, props.comments)

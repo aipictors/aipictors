@@ -58,7 +58,7 @@ type Props = {
   termsText: string
 }
 
-export function GenerationDemoSubmissionView(props: Props) {
+export function GenerationDemoSubmissionView (props: Props) {
   const context = useGenerationContext()
 
   const queryData = useGenerationQuery()

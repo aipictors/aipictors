@@ -14,7 +14,7 @@ type Props = {
   onSelectImage: (imageURL: string) => void
 }
 
-export function WorkImageThumbnailCarousel({
+export function WorkImageThumbnailCarousel ({
   allImageURLs,
   selectedImage,
   currentIndex,

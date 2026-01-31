@@ -45,11 +45,11 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export function HydrateFallback() {
+export function HydrateFallback () {
   return <AppLoadingPage />
 }
 
-export default function GenerationLayout() {
+export default function GenerationLayout () {
   const t = useTranslation()
 
   const data = useLoaderData<typeof loader>()

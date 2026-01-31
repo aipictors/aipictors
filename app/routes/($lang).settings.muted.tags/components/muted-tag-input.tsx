@@ -6,7 +6,7 @@ type Props = {
   setTags: (tags: Tag[]) => void
 }
 
-export function MutedTagInput(props: Props) {
+export function MutedTagInput (props: Props) {
   const [tags, setTags] = React.useState<Tag[]>(props.tags)
 
   return (

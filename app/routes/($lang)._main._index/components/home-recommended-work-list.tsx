@@ -28,7 +28,7 @@ type Props = {
   isShowProfile?: boolean
 }
 
-export function HomeRecommendedWorkList(props: Props) {
+export function HomeRecommendedWorkList (props: Props) {
   const t = useTranslation()
 
   if (props.works.length === 0) {

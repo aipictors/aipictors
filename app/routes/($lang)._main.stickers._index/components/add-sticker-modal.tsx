@@ -14,7 +14,7 @@ type Props = {
   onClose(): void
 }
 
-export function AddStickerModal(props: Props) {
+export function AddStickerModal (props: Props) {
   return (
     <Dialog
       onOpenChange={() => {

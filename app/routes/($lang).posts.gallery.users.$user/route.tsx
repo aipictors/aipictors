@@ -39,7 +39,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * ギャラリー内のユーザー専用ページ
  */
-export default function GalleryUserPage() {
+export default function GalleryUserPage () {
   const params = useParams()
 
   if (params.user === undefined) {

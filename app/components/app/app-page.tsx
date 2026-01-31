@@ -10,7 +10,7 @@ type Props = Readonly<{
 /**
  * デフォルトのページのレイアウト
  */
-export function AppPage(props: Props) {
+export function AppPage (props: Props): React.ReactNode {
   if (props.isCenter) {
     return <AppPageCenter {...props} />
   }

@@ -12,7 +12,7 @@ import { EventWakiaiaiHeader } from "~/routes/events.wakiaiai/components/event-w
 import { useTranslation } from "~/hooks/use-translation"
 import { config } from "~/config"
 
-export default function Route() {
+export default function Route () {
   const t = useTranslation()
 
   const length = Math.floor(eventUsers.length / 3)

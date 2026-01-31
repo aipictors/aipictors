@@ -43,7 +43,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function DraftWorkContainer(props: Props) {
+export function DraftWorkContainer (props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(workQuery, {
@@ -113,6 +113,21 @@ export function DraftWorkContainer(props: Props) {
     return null
   }
 
+  const albumCandidate = (work as any).album
+  const albumForArticle =
+    albumCandidate &&
+    typeof albumCandidate === "object" &&
+    "id" in albumCandidate &&
+    "title" in albumCandidate &&
+    "description" in albumCandidate
+      ? albumCandidate
+      : null
+
+  const workForArticle = {
+    ...work,
+    album: albumForArticle,
+  }
+
   return (
     <div
       className="space-y-4 overflow-hidden"
@@ -123,10 +138,10 @@ export function DraftWorkContainer(props: Props) {
       <div className="flex w-full justify-center overflow-hidden">
         <div className="flex w-full flex-col items-center overflow-hidden">
           <div className="mx-auto w-full space-y-4">
-            <DraftWorkArticle work={work} />
-            {work.user && (
+            <DraftWorkArticle work={workForArticle} />
+            {workForArticle.user && (
               <WorkRelatedList
-                works={work.user.works.map((relatedWork) => ({
+                works={workForArticle.user.works.map((relatedWork) => ({
                   smallThumbnailImageURL: relatedWork.smallThumbnailImageURL,
                   thumbnailImagePosition:
                     relatedWork.thumbnailImagePosition ?? 0,
@@ -142,44 +157,48 @@ export function DraftWorkContainer(props: Props) {
                 }))}
               />
             )}
-            {work.isCommentsEditable && (
+            {workForArticle.isCommentsEditable && (
               <WorkCommentList
-                workId={work.id}
+                workId={workForArticle.id}
                 comments={comments}
-                workOwnerIconImageURL={work.user?.iconUrl}
-                isWorkOwnerBlocked={work.user?.isBlocked ?? false}
+                workOwnerIconImageURL={workForArticle.user?.iconUrl}
+                isWorkOwnerBlocked={workForArticle.user?.isBlocked ?? false}
               />
             )}
-            {work.user && (
+            {workForArticle.user && (
               <div className="block md:mt-0 lg:hidden">
                 <WorkUser
-                  userId={work.user.id}
-                  userLogin={work.user.login}
-                  userName={work.user.name}
-                  userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                  userFollowersCount={work.user.followersCount}
-                  userBiography={work.user.biography ?? ""}
-                  userEnBiography={work.user.enBiography ?? null}
-                  userPromptonId={work.user.promptonUser?.id}
-                  userWorksCount={work.user.worksCount}
+                  userId={workForArticle.user.id}
+                  userLogin={workForArticle.user.login}
+                  userName={workForArticle.user.name}
+                  userIconImageURL={withIconUrlFallback(
+                    workForArticle.user.iconUrl,
+                  )}
+                  userFollowersCount={workForArticle.user.followersCount}
+                  userBiography={workForArticle.user.biography ?? ""}
+                  userEnBiography={workForArticle.user.enBiography ?? null}
+                  userPromptonId={workForArticle.user.promptonUser?.id}
+                  userWorksCount={workForArticle.user.worksCount}
                 />
               </div>
             )}
           </div>
         </div>
         <div className="mt-2 hidden w-full flex-col items-start space-y-4 pl-4 md:mt-0 md:flex md:max-w-80">
-          {work.user && (
+          {workForArticle.user && (
             <div className="w-full">
               <WorkUser
-                userId={work.user.id}
-                userName={work.user.name}
-                userLogin={work.user.login}
-                userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
-                userFollowersCount={work.user.followersCount}
-                userBiography={work.user.biography ?? ""}
-                userEnBiography={work.user.enBiography ?? null}
-                userPromptonId={work.user.promptonUser?.id}
-                userWorksCount={work.user.worksCount}
+                userId={workForArticle.user.id}
+                userName={workForArticle.user.name}
+                userLogin={workForArticle.user.login}
+                userIconImageURL={withIconUrlFallback(
+                  workForArticle.user.iconUrl,
+                )}
+                userFollowersCount={workForArticle.user.followersCount}
+                userBiography={workForArticle.user.biography ?? ""}
+                userEnBiography={workForArticle.user.enBiography ?? null}
+                userPromptonId={workForArticle.user.promptonUser?.id}
+                userWorksCount={workForArticle.user.worksCount}
               />
             </div>
           )}

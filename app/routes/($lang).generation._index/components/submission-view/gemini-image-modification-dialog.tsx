@@ -270,7 +270,7 @@ const summarizeError = (error: unknown) => {
 /**
  * AI画像修正ダイアログ
  */
-export function GeminiImageModificationDialog(props: Props) {
+export function GeminiImageModificationDialog (props: Props) {
   const [prompt, setPrompt] = useState("")
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const t = useTranslation()

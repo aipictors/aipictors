@@ -31,7 +31,7 @@ type Props = {
 /**
  * ログイン
  */
-export function LoginDialogButton(props: Props) {
+export function LoginDialogButton (props: Props): React.ReactNode {
   const t = useTranslation()
 
   return (

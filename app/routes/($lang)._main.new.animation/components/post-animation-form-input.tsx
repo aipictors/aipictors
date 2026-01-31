@@ -56,7 +56,7 @@ const getJSTDate = () => {
   return `${year}-${month}-${day}`
 }
 
-export function PostAnimationFormInput(props: Props) {
+export function PostAnimationFormInput (props: Props) {
   const jstDate = getJSTDate()
   const reservationDate = props.state.reservationDate || jstDate
 

@@ -7,7 +7,7 @@ type Props = {
   children: ReactNode
 }
 
-export function SidebarProvider({ children }: Props) {
+export function SidebarProvider ({ children }: Props): React.ReactNode {
   const [sidebarState, setSidebarState] = useState<SidebarState>("expanded") // デフォルトを展開状態に変更
 
   // レスポンシブ対応: 画面サイズに応じて初期状態を設定

@@ -64,7 +64,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * ある月のランキングの履歴
  */
-export default function MonthlyAwards() {
+export default function MonthlyAwards () {
   const params = useParams()
 
   if (params.year === undefined) {

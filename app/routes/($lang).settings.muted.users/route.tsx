@@ -28,7 +28,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SettingMutedUsers() {
+export default function SettingMutedUsers () {
   const t = useTranslation()
 
   return (

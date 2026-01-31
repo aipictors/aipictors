@@ -16,7 +16,7 @@ type Props = {
 /**
  * ClipSkipの設定
  */
-export function GenerationConfigClipSkip(props: Props) {
+export function GenerationConfigClipSkip (props: Props) {
   const t = useTranslation()
 
   return (

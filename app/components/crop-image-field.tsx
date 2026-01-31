@@ -22,7 +22,7 @@ type Props = {
 /**
  * 指定した画像ファイルの切り抜き開始領域
  */
-export function CropImageField(props: Props) {
+export function CropImageField (props: Props): React.ReactNode {
   const t = useTranslation()
 
   const [image, setImage] = useState<string | undefined>(undefined)

@@ -40,17 +40,10 @@ export function NewSettingsCompleted() {
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* AI生成 */}
-          <div
-            role="button"
-            tabIndex={0}
-            className="group cursor-pointer rounded-lg border border-purple-200 bg-purple-50 p-6 transition-all hover:border-purple-300 hover:bg-purple-100 dark:border-purple-600 dark:bg-purple-900/30 dark:hover:border-purple-500 dark:hover:bg-purple-900/50"
+          <button
+            type="button"
+            className="group cursor-pointer rounded-lg border border-purple-200 bg-purple-50 p-6 text-left transition-all hover:border-purple-300 hover:bg-purple-100 dark:border-purple-600 dark:bg-purple-900/30 dark:hover:border-purple-500 dark:hover:bg-purple-900/50"
             onClick={() => navigate("/generation")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault()
-                navigate("/generation")
-              }
-            }}
           >
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-purple-500 p-3">
@@ -67,26 +60,19 @@ export function NewSettingsCompleted() {
                   )}
                 </p>
                 <div className="mt-3">
-                  <Button className="group-hover:bg-purple-600">
-                    {t("生成を始める", "Start Generating")}
+                  <Button asChild className="group-hover:bg-purple-600">
+                    <span>{t("生成を始める", "Start Generating")}</span>
                   </Button>
                 </div>
               </div>
             </div>
-          </div>
+          </button>
 
           {/* 作品投稿 */}
-          <div
-            role="button"
-            tabIndex={0}
-            className="group cursor-pointer rounded-lg border border-blue-200 bg-blue-50 p-6 transition-all hover:border-blue-300 hover:bg-blue-100 dark:border-blue-600 dark:bg-blue-900/30 dark:hover:border-blue-500 dark:hover:bg-blue-900/50"
+          <button
+            type="button"
+            className="group cursor-pointer rounded-lg border border-blue-200 bg-blue-50 p-6 text-left transition-all hover:border-blue-300 hover:bg-blue-100 dark:border-blue-600 dark:bg-blue-900/30 dark:hover:border-blue-500 dark:hover:bg-blue-900/50"
             onClick={() => navigate("/new/image")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault()
-                navigate("/new/image")
-              }
-            }}
           >
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-blue-500 p-3">
@@ -103,26 +89,19 @@ export function NewSettingsCompleted() {
                   )}
                 </p>
                 <div className="mt-3">
-                  <Button className="group-hover:bg-blue-600">
-                    {t("投稿する", "Post Work")}
+                  <Button asChild className="group-hover:bg-blue-600">
+                    <span>{t("投稿する", "Post Work")}</span>
                   </Button>
                 </div>
               </div>
             </div>
-          </div>
+          </button>
 
           {/* 作品を楽しむ */}
-          <div
-            role="button"
-            tabIndex={0}
-            className="group cursor-pointer rounded-lg border border-green-200 bg-green-50 p-6 transition-all hover:border-green-300 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/30 dark:hover:border-green-500 dark:hover:bg-green-900/50"
+          <button
+            type="button"
+            className="group cursor-pointer rounded-lg border border-green-200 bg-green-50 p-6 text-left transition-all hover:border-green-300 hover:bg-green-100 dark:border-green-600 dark:bg-green-900/30 dark:hover:border-green-500 dark:hover:bg-green-900/50"
             onClick={() => navigate("/")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault()
-                navigate("/")
-              }
-            }}
           >
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-green-500 p-3">
@@ -139,26 +118,19 @@ export function NewSettingsCompleted() {
                   )}
                 </p>
                 <div className="mt-3">
-                  <Button className="group-hover:bg-green-600">
-                    {t("作品を見る", "Browse Works")}
+                  <Button asChild className="group-hover:bg-green-600">
+                    <span>{t("作品を見る", "Browse Works")}</span>
                   </Button>
                 </div>
               </div>
             </div>
-          </div>
+          </button>
 
           {/* コミュニティ */}
-          <div
-            role="button"
-            tabIndex={0}
-            className="group cursor-pointer rounded-lg border border-orange-200 bg-orange-50 p-6 transition-all hover:border-orange-300 hover:bg-orange-100 dark:border-orange-600 dark:bg-orange-900/30 dark:hover:border-orange-500 dark:hover:bg-orange-900/50"
+          <button
+            type="button"
+            className="group cursor-pointer rounded-lg border border-orange-200 bg-orange-50 p-6 text-left transition-all hover:border-orange-300 hover:bg-orange-100 dark:border-orange-600 dark:bg-orange-900/30 dark:hover:border-orange-500 dark:hover:bg-orange-900/50"
             onClick={() => navigate("/users")}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault()
-                navigate("/users")
-              }
-            }}
           >
             <div className="flex items-start gap-4">
               <div className="rounded-full bg-orange-500 p-3">
@@ -175,13 +147,13 @@ export function NewSettingsCompleted() {
                   )}
                 </p>
                 <div className="mt-3">
-                  <Button className="group-hover:bg-orange-600">
-                    {t("探してみる", "Explore")}
+                  <Button asChild className="group-hover:bg-orange-600">
+                    <span>{t("探してみる", "Explore")}</span>
                   </Button>
                 </div>
               </div>
             </div>
-          </div>
+          </button>
         </div>
       </div>
 

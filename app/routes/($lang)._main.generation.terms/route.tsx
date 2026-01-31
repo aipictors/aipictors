@@ -38,7 +38,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * 画像生成機能の利用規約
  */
-export default function GenerationTerms() {
+export default function GenerationTerms () {
   const t = useTranslation()
 
   return (

@@ -36,27 +36,15 @@ export function InPaintingSetting(props: Props) {
         </div>
         <div>
           <p>{"マスク方式："}</p>
-          <RadioGroup defaultValue="0">
+          <RadioGroup defaultValue="0" onValueChange={handleRadioChange}>
             <div className="flex">
-              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-              <div
-                className="w-48 flex-col space-x-5"
-                onClick={() => {
-                  handleRadioChange("0")
-                }}
-              >
+              <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="0" id="r1" />
                 <Label className="color-blue" htmlFor="r1">
                   {"塗りつぶし"}
                 </Label>
               </div>
-              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-              <div
-                className="w-48 flex-col space-x-5"
-                onClick={() => {
-                  handleRadioChange("1")
-                }}
-              >
+              <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="1" id="r2" />
                 <Label className="color-blue" htmlFor="r2">
                   {"もとに近い"}
@@ -64,25 +52,13 @@ export function InPaintingSetting(props: Props) {
               </div>
             </div>
             <div className="flex">
-              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-              <div
-                className="w-48 flex-col space-x-5"
-                onClick={() => {
-                  handleRadioChange("2")
-                }}
-              >
+              <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="2" id="r3" />
                 <Label className="color-blue" htmlFor="r3">
                   {"もとから大きく変更"}
                 </Label>
               </div>
-              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-              <div
-                className="w-48 flex-col space-x-5"
-                onClick={() => {
-                  handleRadioChange("3")
-                }}
-              >
+              <div className="w-48 flex-col space-x-5">
                 <RadioGroupItem value="3" id="r4" />
                 <Label className="color-blue" htmlFor="r4">
                   {"ほぼ変えない"}

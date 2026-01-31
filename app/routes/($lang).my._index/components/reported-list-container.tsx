@@ -18,7 +18,7 @@ type Props = {
   setPage: (page: number) => void
 }
 
-export function ModerationReportsContainer(_props: Props) {
+export function ModerationReportsContainer (_props: Props) {
   const t = useTranslation()
   const [page, setPage] = useState(0)
   const [statusFilter, setStatusFilter] = useState<

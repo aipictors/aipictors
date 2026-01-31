@@ -28,7 +28,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function SettingSticker() {
+export default function SettingSticker () {
   const t = useTranslation()
 
   return (

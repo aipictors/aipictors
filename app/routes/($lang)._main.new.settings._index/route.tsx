@@ -22,6 +22,6 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.NEW_SETTINGS, undefined, props.params.lang)
 }
 
-export default function NewSettingsPage() {
+export default function NewSettingsPage () {
   return <NewUserSettingsForm />
 }

@@ -4,7 +4,7 @@
  * @param ja
  * @param en
  */
-export function toLocalText(locale: string, ja: string, en: string) {
+export function toLocalText(locale: string, ja: string, en: string): string {
   if (locale === "en") {
     return en
   }

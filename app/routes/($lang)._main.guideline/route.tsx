@@ -3,6 +3,6 @@ import { GuidelineArticle } from "~/routes/($lang)._main.guideline/components/gu
 /**
  * ガイドライン
  */
-export default function Guideline() {
+export default function Guideline () {
   return <GuidelineArticle />
 }

@@ -5,7 +5,11 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
  * 作品の公開状態の文言を返す
  * @param
  */
-export const toAccessTypeText = (type: IntrospectionEnum<"AccessType">) => {
+export const toAccessTypeText: (
+  type: IntrospectionEnum<"AccessType">,
+) => string | undefined = (
+  type: IntrospectionEnum<"AccessType">,
+): string | undefined => {
   const t = useTranslation()
 
   switch (type) {

@@ -16,7 +16,7 @@ type Props = {
 /**
  * 作品の画像
  */
-export function CharacterCard(props: Props) {
+export function CharacterCard (props: Props) {
   if (!props.imageURL) {
     return null
   }

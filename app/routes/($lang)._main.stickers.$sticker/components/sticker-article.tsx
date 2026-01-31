@@ -15,7 +15,7 @@ type Props = {
   sticker: FragmentOf<typeof StickerArticleFragment>
 }
 
-export function StickerArticle(props: Props) {
+export function StickerArticle (props: Props) {
   const authContext = useContext(AuthContext)
 
   const t = useTranslation()

@@ -19,7 +19,7 @@ type Props = {
 /**
  * AI評価レーダーチャート（アニメーション付き・レスポンシブ対応）
  */
-export function AiEvaluationRadarChart(props: Props) {
+export function AiEvaluationRadarChart (props: Props) {
   const [animatedScores, setAnimatedScores] = useState(
     Object.fromEntries(Object.keys(props.scores).map((key) => [key, 0])),
   )

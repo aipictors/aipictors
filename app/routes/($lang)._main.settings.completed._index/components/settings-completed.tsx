@@ -5,7 +5,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * 設定完了ページ
  */
-export function SettingsCompleted() {
+export function SettingsCompleted () {
   const navigate = useNavigate()
   const t = useTranslation()
 

@@ -7,7 +7,7 @@ type Props = {
   works: FragmentOf<typeof UserWorkListItemFragment>[]
 }
 
-export function UserWorkList(props: Props) {
+export function UserWorkList (props: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">

@@ -10,7 +10,7 @@ type Props = {
 /**
  * タイトル入力
  */
-export function PostFormItemMd(props: Props) {
+export function PostFormItemMd (props: Props) {
   return (
     <Card>
       <CardContent className="space-y-2 p-4">

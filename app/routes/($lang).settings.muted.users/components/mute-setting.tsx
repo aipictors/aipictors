@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { Loader2Icon } from "lucide-react"
 
-export function MuteSetting() {
+export function MuteSetting () {
   const appContext = useContext(AuthContext)
 
   const { data: settingData } = useSuspenseQuery(userSettingQuery, {

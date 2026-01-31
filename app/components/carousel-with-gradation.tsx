@@ -13,7 +13,7 @@ type Props = {
 /**
  * グラデーション付きカルーセル
  */
-export function CarouselWithGradation(props: Props) {
+export function CarouselWithGradation (props: Props): React.ReactNode {
   if (props.items.length === 0) {
     return null
   }

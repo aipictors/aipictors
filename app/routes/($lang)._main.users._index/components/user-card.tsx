@@ -18,7 +18,7 @@ type Props = {
   user: FragmentOf<typeof UserCardFragment>
 }
 
-export function UserCard(props: Props) {
+export function UserCard (props: Props) {
   const user = readFragment(UserCardFragment, props.user)
 
   return (

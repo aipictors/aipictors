@@ -43,7 +43,7 @@ type Props = {
 /**
  * ピンタレスト風ギャラリービュー
  */
-export function GalleryView(props: Props) {
+export function GalleryView (props: Props) {
   const t = useTranslation()
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 

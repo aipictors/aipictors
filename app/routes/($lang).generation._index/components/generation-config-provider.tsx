@@ -13,7 +13,7 @@ type Props = {
  * エディタの設定を提供する
  * @param props
  */
-export function GenerationConfigProvider(props: Props) {
+export function GenerationConfigProvider (props: Props) {
   const modelType = config.generationFeature.defaultImageModelType
 
   const stateText =

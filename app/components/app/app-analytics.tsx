@@ -3,7 +3,7 @@ import { getAnalytics, logEvent } from "firebase/analytics"
 import { getApps } from "firebase/app"
 import { useEffect } from "react"
 
-export function AppAnalytics() {
+export function AppAnalytics (): React.ReactNode {
   const { pathname } = useLocation()
 
   const [searchParams] = useSearchParams()

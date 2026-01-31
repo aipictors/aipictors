@@ -9,7 +9,7 @@ type Props = {
 /**
  * レスポンシブ対応のスタンプ一覧
  */
-export function ResponsiveStickersList(props: Props) {
+export function ResponsiveStickersList (props: Props): React.ReactNode {
   if (props.stickers.length === 0) {
     return null
   }

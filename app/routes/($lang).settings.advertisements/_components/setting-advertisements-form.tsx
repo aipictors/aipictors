@@ -24,7 +24,7 @@ const toJST = (date: Date) => {
   return addHours(date, 9) // UTCに対して+9時間でJSTに変換
 }
 
-export function SettingAdvertisementsForm() {
+export function SettingAdvertisementsForm () {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 

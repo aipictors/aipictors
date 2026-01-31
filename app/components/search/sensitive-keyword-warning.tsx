@@ -24,13 +24,13 @@ type Props = {
 /**
  * センシティブキーワード検索時の警告ダイアログ
  */
-export function SensitiveKeywordWarning({
+export function SensitiveKeywordWarning ({
   isOpen,
   onConfirm,
   onCancel,
   keyword,
   targetUrl,
-}: Props) {
+}: Props): React.ReactNode {
   const [dontShowAgain, setDontShowAgain] = useState(false)
   const checkboxId = useId()
   const t = useTranslation()

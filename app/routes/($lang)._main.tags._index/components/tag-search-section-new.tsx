@@ -4,11 +4,12 @@ import type { FragmentOf } from "gql.tada"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 
 type Props = {
+  isSensitive?: boolean
   searchWorks?: FragmentOf<typeof PhotoAlbumWorkFragment>[] | null
   searchTerm?: string | null
 }
 
-export function TagSearchSection({ searchWorks, searchTerm }: Props) {
+export function TagSearchSection ({ searchWorks, searchTerm }: Props) {
   const t = useTranslation()
 
   // 検索結果がない場合は何も表示しない

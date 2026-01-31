@@ -9,7 +9,7 @@ type Props = {
 /**
  * ヘッダーの通知アイテム
  */
-export function HeaderNotificationItem(props: Props) {
+export function HeaderNotificationItem (props: Props) {
   return (
     <Link to={`${props.link}`}>
       <Button variant={"link"}>{props.text}</Button>

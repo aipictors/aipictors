@@ -34,7 +34,7 @@ type Props = {
   }) => void
 }
 
-export function PostImageFormUploader(props: Props) {
+export function PostImageFormUploader (props: Props) {
   const t = useTranslation()
 
   const selectedFilesSizeText = () => {

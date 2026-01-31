@@ -16,7 +16,7 @@ type Props = {
 /**
  * SNSアイコンリンク
  */
-export function SnsIconLink(props: Props) {
+export function SnsIconLink (props: Props): React.ReactNode {
   const icon = () => {
     if (props.url.includes("twitter") || props.url.includes("x.com")) {
       return <RiTwitterXLine className="size-5" />

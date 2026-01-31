@@ -36,7 +36,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneWeek,
 })
 
-export default function Terms() {
+export default function Terms () {
   const t = useTranslation()
 
   return (

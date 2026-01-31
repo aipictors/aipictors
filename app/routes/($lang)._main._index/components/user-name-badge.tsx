@@ -17,7 +17,7 @@ type Props = {
 /**
  * ユーザネームとアイコンを表示するコンポーネント
  */
-export function UserNameBadge(props: Props) {
+export function UserNameBadge (props: Props) {
   return (
     <Link
       className="flex max-w-40 flex-col gap-y-2"

@@ -145,7 +145,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * 画像生成（Imagine）- モバイル版
  */
-export default function ImaginePage() {
+export default function ImaginePage () {
   const { imageGenerationTasks: initialTasks, nextCursor } =
     useLoaderData<LoaderData>()
   const [tasks, setTasks] = useState<ImageGenerationTask[]>(initialTasks)

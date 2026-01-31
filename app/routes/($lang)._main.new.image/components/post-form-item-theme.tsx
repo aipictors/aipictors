@@ -13,7 +13,7 @@ type Props = {
 /**
  * お題入力
  */
-export function PostFormItemTheme(props: Props) {
+export function PostFormItemTheme (props: Props) {
   if (!props.titles) {
     return null
   }

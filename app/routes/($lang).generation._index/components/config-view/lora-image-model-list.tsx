@@ -24,7 +24,7 @@ type Props = {
   onSelect(name: string, triggerWord?: string): void
 }
 
-export function LoraImageModelList(props: Props) {
+export function LoraImageModelList (props: Props) {
   const [selectedGenre, setSelectedGenre] = useState<string>("all")
 
   const genres = useMemo(() => {

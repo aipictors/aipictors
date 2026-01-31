@@ -9,7 +9,7 @@ type Props = {
   onChange(value: string): void
 }
 
-export function GenerationConfigSize(props: Props) {
+export function GenerationConfigSize (props: Props) {
   const t = useTranslation()
 
   const sizeOptionsByModelType: Record<

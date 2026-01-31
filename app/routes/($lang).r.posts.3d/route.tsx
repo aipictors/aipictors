@@ -132,7 +132,7 @@ const useUpdateQueryParams = () => {
   return updateQueryParams
 }
 
-export default function Index() {
+export default function Index () {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()

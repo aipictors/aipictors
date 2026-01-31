@@ -19,7 +19,7 @@ type Props = {
   isLoadingDeleteWork: boolean
 }
 
-export function DeleteConfirmTrashDialog(props: Props) {
+export function DeleteConfirmTrashDialog (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNext = async () => {

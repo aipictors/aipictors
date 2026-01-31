@@ -59,7 +59,7 @@ type Props = {
  * 作品ダイアログ専用のコメント欄コンポーネント
  * より見やすく、アクセスしやすいUIを提供
  */
-export function WorkCommentSection(props: Props) {
+export function WorkCommentSection (props: Props): React.ReactNode {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 

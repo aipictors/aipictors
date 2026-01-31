@@ -10,7 +10,7 @@ type Props = {
 /**
  * LINEログインボタン
  */
-export function LineLoggedInWithUrlButton(props: Props) {
+export function LineLoggedInWithUrlButton (props: Props): React.ReactNode {
   const { data } = useQuery(authenticationLineAccountUrlQuery, {})
 
   const url = data?.authenticationLineAccountUrl

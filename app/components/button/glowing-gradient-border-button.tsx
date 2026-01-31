@@ -13,7 +13,7 @@ type Props = {
 /**
  * ボーダーが光るグラデーションボタン
  */
-export function GlowingGradientBorderButton(props: Props) {
+export function GlowingGradientBorderButton (props: Props): React.ReactNode {
   return (
     <button
       type="button"

@@ -16,6 +16,7 @@ import {
   ApolloClient,
   InMemoryCache,
   createHttpLink,
+  type NormalizedCacheObject,
 } from "@apollo/client/index"
 import { type ContextSetter, setContext } from "@apollo/client/link/context"
 import { getApps } from "firebase/app"
@@ -54,8 +55,9 @@ const authLink = setContext(contextSetter)
 
 const cache = new InMemoryCache({ typePolicies })
 
-export const apolloClient = new ApolloClient({
-  ssrMode: false,
-  link: authLink.concat(httpLink),
-  cache,
-})
+export const apolloClient: ApolloClient<NormalizedCacheObject> =
+  new ApolloClient({
+    ssrMode: false,
+    link: authLink.concat(httpLink),
+    cache,
+  })

@@ -24,7 +24,7 @@ type Props = {
   worksCount: number
 }
 
-export function AiModelSensitiveHeader(props: Props) {
+export function AiModelSensitiveHeader (props: Props) {
   const t = useTranslation()
   const navigate = useNavigate()
 

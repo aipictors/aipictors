@@ -58,7 +58,7 @@ export async function loader(_props: LoaderFunctionArgs) {
   }
 }
 
-export default function Milestone() {
+export default function Milestone () {
   const data = useLoaderData<typeof loader>()
 
   if (data == null) {

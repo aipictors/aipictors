@@ -11,7 +11,7 @@ type Props = {
   tags: RecommendedTag[]
 }
 
-export function PopularTagsSection({ tags }: Props) {
+export function PopularTagsSection ({ tags }: Props) {
   const t = useTranslation()
   const location = useLocation()
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")

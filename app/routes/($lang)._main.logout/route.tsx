@@ -3,6 +3,6 @@ import { AutoLogoutForm } from "~/routes/($lang)._main.logout/components/auto-lo
 /**
  * コントリビュータ一覧ページ
  */
-export default function Logout() {
+export default function Logout () {
   return <AutoLogoutForm />
 }

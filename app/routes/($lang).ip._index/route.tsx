@@ -38,7 +38,7 @@ type IpAddressInfo = {
 /**
  * IPアドレス情報表示ページ
  */
-export default function Route() {
+export default function Route () {
   const t = useTranslation()
   const [ipInfo, setIpInfo] = useState<IpAddressInfo | null>(null)
   const [isLoading, setIsLoading] = useState(true)

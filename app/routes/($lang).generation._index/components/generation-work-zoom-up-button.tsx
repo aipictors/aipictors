@@ -9,7 +9,7 @@ type Props = {
 /**
  * 画像生成作品の画像ズームアップボタン
  */
-export function GenerationWorkZoomUpButton(props: Props) {
+export function GenerationWorkZoomUpButton (props: Props) {
   return (
     <GenerationWorkDialogButton isAbsolute={true} imageUrl={props.imageUrl}>
       <div className="flex rounded-lg bg-white px-1 py-1 opacity-80">

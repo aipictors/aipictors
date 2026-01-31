@@ -123,7 +123,7 @@ const useUpdateQueryParams = () => (p: URLSearchParams) =>
   window.history.replaceState(null, "", `${location.pathname}?${p}`)
 
 // ---------- component ----------
-export default function Index() {
+export default function Index () {
   const data = useLoaderData<typeof loader>()
   const t = useTranslation()
   const locale = useLocale()

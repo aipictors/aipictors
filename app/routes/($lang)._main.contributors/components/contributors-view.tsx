@@ -9,7 +9,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * コントリビュータ一覧
  */
-export function ContributorsView() {
+export function ContributorsView () {
   const t = useTranslation()
 
   return (

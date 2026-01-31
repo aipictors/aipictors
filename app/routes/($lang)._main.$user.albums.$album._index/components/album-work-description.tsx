@@ -12,7 +12,7 @@ type Props = {
   album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
 }
 
-export function AlbumWorkDescription(props: Props) {
+export function AlbumWorkDescription (props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data = null } = useSuspenseQuery(

@@ -27,7 +27,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function AccountLogin() {
+export default function AccountLogin () {
   const t = useTranslation()
 
   return (

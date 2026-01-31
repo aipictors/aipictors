@@ -5,7 +5,7 @@ import { useParams } from "@remix-run/react"
 /**
  * 受信者とのメッセージ
  */
-export default function RecipientMessages() {
+export default function RecipientMessages () {
   const params = useParams()
 
   if (params.recipient === undefined) {

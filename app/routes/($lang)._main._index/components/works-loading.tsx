@@ -5,7 +5,7 @@ interface Props {
   hasWorks?: boolean
 }
 
-export function WorksLoading({ loading }: Props) {
+export function WorksLoading ({ loading }: Props) {
   if (!loading) return null
 
   return (

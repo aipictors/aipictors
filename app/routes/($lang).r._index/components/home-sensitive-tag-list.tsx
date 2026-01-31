@@ -14,7 +14,7 @@ type Props = {
 /**
  * ホーム上部に表示するタグ一覧
  */
-export function HomeSensitiveTagList(props: Props) {
+export function HomeSensitiveTagList (props: Props) {
   return (
     <Carousel opts={{ dragFree: true, loop: false }}>
       <CarouselContent>

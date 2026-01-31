@@ -11,7 +11,7 @@ type Props = {
 /**
  * 新規ユーザ一覧
  */
-export function HomeNewSensitiveUsersSection(props: Props) {
+export function HomeNewSensitiveUsersSection (props: Props) {
   const t = useTranslation()
 
   return (

@@ -16,7 +16,7 @@ import { graphql } from "gql.tada"
  * @param count
  */
 
-export function InPaintingImageForm(props: Props) {
+export function InPaintingImageForm (props: Props) {
   if (
     props.taskId === "" ||
     props.token === "" ||

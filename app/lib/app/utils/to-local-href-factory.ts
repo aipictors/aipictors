@@ -1,7 +1,15 @@
 import { toLocalHref } from "~/lib/app/utils/to-local-href"
 
-export function toLocalHrefFactory(locale: string) {
-  return (hashes: `/${string}` | TemplateStringsArray, ...values: string[]) => {
+export function toLocalHrefFactory(
+  locale: string,
+): (
+  hashes: `/${string}` | TemplateStringsArray,
+  ...values: string[]
+) => string {
+  return (
+    hashes: `/${string}` | TemplateStringsArray,
+    ...values: string[]
+  ): string => {
     if (typeof hashes === "string") {
       return toLocalHref(hashes, locale)
     }

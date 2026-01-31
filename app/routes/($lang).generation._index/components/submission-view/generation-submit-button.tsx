@@ -11,7 +11,7 @@ type Props = {
   onClick(): void
 }
 
-export function GenerationSubmitButton(props: Props) {
+export function GenerationSubmitButton (props: Props) {
   const [isClickDisabled, setIsClickDisabled] = useState(false)
 
   const maxGeneratingCount =

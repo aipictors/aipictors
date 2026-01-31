@@ -32,7 +32,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyLikes() {
+export default function MyLikes () {
   const [likedPage, setLikedPage] = React.useState(0)
 
   const authContext = useContext(AuthContext)

@@ -7,7 +7,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * 生成履歴詳細
  */
-export function GenerationTaskDetailsView() {
+export function GenerationTaskDetailsView () {
   const { send } = GenerationConfigContext.useActorRef()
   const t = useTranslation()
 

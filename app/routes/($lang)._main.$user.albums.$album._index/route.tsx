@@ -90,7 +90,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * シリーズの詳細
  */
-export default function albums() {
+export default function albums () {
   const data = useLoaderData<typeof loader>()
 
   if (data === null) {

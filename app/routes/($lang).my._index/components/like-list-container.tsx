@@ -17,7 +17,7 @@ type Props = {
 /**
  * いいね一覧コンテナ
  */
-export function LikeListContainer(props: Props) {
+export function LikeListContainer (props: Props) {
   const authContext = useContext(AuthContext)
 
   if (

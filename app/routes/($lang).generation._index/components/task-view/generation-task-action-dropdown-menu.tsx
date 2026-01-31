@@ -32,7 +32,7 @@ type Props = {
 /**
  * その他ボタン
  */
-export function GenerationTaskActionDropdownMenu(props: Props) {
+export function GenerationTaskActionDropdownMenu (props: Props) {
   const context = useGenerationContext()
   const t = useTranslation()
 

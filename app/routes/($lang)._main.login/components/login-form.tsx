@@ -8,7 +8,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * ログインフォーム
  */
-export function LoginForm() {
+export function LoginForm () {
   const [searchParams] = useSearchParams()
 
   const ref = searchParams.get("result")

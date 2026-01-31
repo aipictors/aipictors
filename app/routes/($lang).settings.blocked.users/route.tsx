@@ -27,7 +27,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SettingBlockedUsers() {
+export default function SettingBlockedUsers () {
   const t = useTranslation()
 
   return (

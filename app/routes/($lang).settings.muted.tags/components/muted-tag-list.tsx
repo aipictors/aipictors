@@ -8,7 +8,7 @@ import { graphql } from "gql.tada"
 import { useContext, useEffect, useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
-export function MutedTagList() {
+export function MutedTagList () {
   const appContext = useContext(AuthContext)
 
   const t = useTranslation()

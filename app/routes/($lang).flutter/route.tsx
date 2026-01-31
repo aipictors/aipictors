@@ -2,7 +2,7 @@ import { Outlet, useSearchParams } from "@remix-run/react"
 import { useTheme } from "next-themes"
 import { useEffect } from "react"
 
-export default function FlutterLayout() {
+export default function FlutterLayout () {
   const { setTheme } = useTheme()
 
   const [searchParams] = useSearchParams()

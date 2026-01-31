@@ -8,7 +8,7 @@ type Props = {
   tags: RecommendedTag[]
 }
 
-export function TagCloudSection({ tags }: Props) {
+export function TagCloudSection ({ tags }: Props) {
   const t = useTranslation()
   const location = useLocation()
   const isR18Mode = location.pathname.includes("/r/tags")

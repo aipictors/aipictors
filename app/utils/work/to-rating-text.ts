@@ -5,7 +5,11 @@ import type { IntrospectionEnum } from "~/lib/introspection-enum"
  * 作品の年齢制限の文言を返す
  * @param
  */
-export const toRatingText = (type: IntrospectionEnum<"Rating">) => {
+export const toRatingText: (
+  type: IntrospectionEnum<"Rating">,
+) => string | undefined = (
+  type: IntrospectionEnum<"Rating">,
+): string | undefined => {
   const t = useTranslation()
 
   switch (type) {

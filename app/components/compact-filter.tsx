@@ -401,7 +401,7 @@ function FilterContent({
   )
 }
 
-export function CompactFilter(props: Props) {
+export function CompactFilter (props: Props): React.ReactNode {
   const { filters, onFiltersChange, onApplyFilters, isLoading = false } = props
   const authContext = useContext(AuthContext)
   const [isDialogOpen, setIsDialogOpen] = useState(false)

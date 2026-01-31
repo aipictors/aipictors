@@ -22,7 +22,7 @@ import {
 /**
  * センシティブキーワード機能のデモンストレーション用コンポーネント
  */
-export function SensitiveKeywordDemo() {
+export function SensitiveKeywordDemo (): React.ReactNode {
   const [searchText, setSearchText] = useState("")
   const [showWarning, setShowWarning] = useState(false)
   const [pendingData, setPendingData] = useState<{

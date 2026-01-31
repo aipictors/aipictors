@@ -16,7 +16,7 @@ type Props = {
 /**
  * 保護
  */
-export function GenerationTaskProtectedSelect(props: Props) {
+export function GenerationTaskProtectedSelect (props: Props) {
   return (
     <Select
       onValueChange={(value: string) => {

@@ -33,7 +33,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * プレスキット（ロゴダウンロード）ページ
  */
-export default function Presskit() {
+export default function Presskit () {
   const t = useTranslation()
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
 

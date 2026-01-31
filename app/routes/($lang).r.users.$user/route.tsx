@@ -81,7 +81,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   )
 }
 
-export default function UserLayout() {
+export default function UserLayout () {
   const params = useParams<"user">()
 
   const authContext = useContext(AuthContext)

@@ -17,7 +17,7 @@ type Props = {
   workTitle: string
 }
 
-export function DeleteWorkConfirmDialog(props: Props) {
+export function DeleteWorkConfirmDialog (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNext = async () => {

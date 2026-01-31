@@ -8,7 +8,7 @@ import { useContext } from "react"
 /**
  * メッセージの一覧
  */
-export default function Messages() {
+export default function Messages () {
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) {

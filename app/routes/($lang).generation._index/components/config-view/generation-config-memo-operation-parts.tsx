@@ -17,7 +17,7 @@ type Props = {
 /**
  * 履歴メモ設定ダイアログ
  */
-export function GenerationConfigMemoOperationParts(props: Props) {
+export function GenerationConfigMemoOperationParts (props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const closeDialog = () => {

@@ -15,7 +15,7 @@ type Props = {
 /**
  * シリーズ一覧テーブルの項目
  */
-export function FoldersListTableRow(props: Props) {
+export function FoldersListTableRow (props: Props) {
   const [deleteFolder, { loading: isLoadingDeleteFolder }] =
     useMutation(deleteFolderMutation)
 

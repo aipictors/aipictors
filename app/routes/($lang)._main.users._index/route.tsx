@@ -8,7 +8,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UsersPage() {
+export default function UsersPage () {
   const t = useTranslation()
 
   return (

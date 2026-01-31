@@ -69,7 +69,7 @@ const postUrl = (work: {
 /**
  * スマホ向け作品一覧
  */
-export function WorksSpList(props: Props) {
+export function WorksSpList (props: Props) {
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }

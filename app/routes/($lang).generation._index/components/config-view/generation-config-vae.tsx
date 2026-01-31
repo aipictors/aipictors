@@ -23,7 +23,7 @@ type Props = {
 /**
  * VAEの設定
  */
-export function GenerationConfigVae(props: Props) {
+export function GenerationConfigVae (props: Props) {
   const t = useTranslation()
 
   // VAEが「None」の場合の警告表示判定

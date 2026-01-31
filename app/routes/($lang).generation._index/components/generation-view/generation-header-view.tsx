@@ -7,7 +7,7 @@ type Props = {
 /**
  * 画像生成画面のヘッダー部分
  */
-export function GenerationHeaderView(props: Props) {
+export function GenerationHeaderView (props: Props) {
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })

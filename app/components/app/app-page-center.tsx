@@ -8,7 +8,7 @@ type Props = Readonly<{
 /**
  * デフォルトのページのレイアウト
  */
-export function AppPageCenter(props: Props) {
+export function AppPageCenter (props: Props): React.ReactNode {
   return (
     <main className="flex w-full justify-center">
       <div

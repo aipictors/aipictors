@@ -30,7 +30,7 @@ type Props = {
 /**
  * レスポンシブ対応の作品一覧
  */
-export function ResponsivePhotoWorksAlbum(props: Props) {
+export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
   if (props.works.length <= 2) {
     return (
       <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">
@@ -176,6 +176,8 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                       className="h-full w-full overflow-hidden rounded"
                     />
                   )}
+                  {/* biome-ignore lint/a11y/noStaticElementInteractions: overlay only stops parent navigation when interacting with LikeButton */}
+                  {/* biome-ignore lint/a11y/useKeyWithClickEvents: overlay is not an actionable control; LikeButton handles keyboard/mouse interaction */}
                   <div
                     className={cn(
                       "absolute right-0 z-10",

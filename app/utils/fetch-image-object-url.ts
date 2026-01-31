@@ -3,7 +3,9 @@
  * @param imageURL 画像のURL
  * @param token トークン
  */
-export const fetchImage = async (imageURL: string) => {
+export const fetchImage: (imageURL: string) => Promise<string> = async (
+  imageURL: string,
+): Promise<string> => {
   try {
     const res = await fetch(imageURL, {
       mode: "cors",

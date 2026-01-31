@@ -10,7 +10,7 @@ import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 /**
  * プライバシー・ポリシー
  */
-export default function Route() {
+export default function Route () {
   const t = useTranslation()
 
   return (

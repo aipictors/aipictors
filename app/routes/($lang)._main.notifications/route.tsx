@@ -31,7 +31,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * 通知の一覧
  */
-export default function Notifications() {
+export default function Notifications () {
   const authContext = useContext(AuthContext)
 
   return (

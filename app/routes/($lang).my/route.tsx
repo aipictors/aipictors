@@ -5,7 +5,7 @@ import { MyContents } from "~/routes/($lang).my/components/my-contents"
 import { Outlet } from "@remix-run/react"
 import { Suspense, useContext } from "react"
 
-export default function MyLayout() {
+export default function MyLayout () {
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading || authContext.isNotLoggedIn) {

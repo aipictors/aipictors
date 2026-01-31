@@ -5,7 +5,7 @@ type Props = {
   tagName: string
 }
 
-export function HomeTagsSectionItem(props: Props) {
+export function HomeTagsSectionItem (props: Props) {
   return (
     <div className="group relative overflow-hidden rounded-md">
       <Link to={`/tags/${props.tagName}`} className="rounded-md">

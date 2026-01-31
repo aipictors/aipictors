@@ -5,7 +5,7 @@ type Props = {
   message: FragmentOf<typeof ThreadLastMessageFragment>
 }
 
-export function ThreadLastMessage(props: Props) {
+export function ThreadLastMessage (props: Props) {
   return (
     <div className="flex w-full flex-col items-start gap-y-2">
       <p className="overflow-hidden text-ellipsis whitespace-pre-wrap break-words text-left">

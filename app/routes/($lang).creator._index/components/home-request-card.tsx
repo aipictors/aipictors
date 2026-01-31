@@ -10,7 +10,7 @@ type Props = {
 /**
  * 支援リクエスト
  */
-export function HomeRequestCard(props: Props) {
+export function HomeRequestCard (props: Props) {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">

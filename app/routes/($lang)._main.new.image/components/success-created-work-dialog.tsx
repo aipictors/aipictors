@@ -18,7 +18,7 @@ type Props = {
   accessType: IntrospectionEnum<"AccessType">
 }
 
-export function SuccessCreatedWorkDialog(props: Props) {
+export function SuccessCreatedWorkDialog (props: Props) {
   const t = useTranslation()
 
   const getRandomColor = () => {

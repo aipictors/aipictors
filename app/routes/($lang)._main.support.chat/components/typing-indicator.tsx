@@ -1,4 +1,4 @@
-export function TypingIndicator() {
+export function TypingIndicator () {
   return (
     <div className="flex justify-start px-4 py-2">
       <div className="flex max-w-xs items-center space-x-2 rounded-lg bg-gray-100 px-4 py-2 dark:bg-gray-800">

@@ -20,7 +20,7 @@ type Props = {
 /**
  * 認証ダイアログ
  */
-export function VerificationDialog(props: Props) {
+export function VerificationDialog (props: Props): React.ReactNode {
   const t = useTranslation()
 
   const { data: verificationUrlRet, refetch: verificationUrlRefetch } =

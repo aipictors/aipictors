@@ -20,7 +20,7 @@ type Props = {
   setThumbnailPosY(value: number): void
 }
 
-export function ThumbnailPositionAdjustDialog(props: Props) {
+export function ThumbnailPositionAdjustDialog (props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [translate, setTranslate] = useState<{ x: number; y: number }>({
     x: 0,

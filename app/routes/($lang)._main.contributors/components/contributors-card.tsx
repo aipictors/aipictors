@@ -12,7 +12,7 @@ type Props = {
 /**
  * コントリビュータのカード
  */
-export function ContributorCard(props: Props) {
+export function ContributorCard (props: Props) {
   return (
     <div className="relative">
       <Card className="relative z-10 h-full">

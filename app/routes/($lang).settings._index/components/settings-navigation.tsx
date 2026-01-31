@@ -15,7 +15,7 @@ import { useQuery } from "@apollo/client/index"
 import { useTranslation } from "~/hooks/use-translation" // useTranslation フックをインポート
 import { SettingNavigationButton } from "~/routes/($lang).settings._index/components/settings-navigation-button"
 
-export function SettingsNavigation() {
+export function SettingsNavigation () {
   const { data } = useQuery(viewerIsAdvertiserQuery)
   const t = useTranslation() // useTranslation フックを使う
 

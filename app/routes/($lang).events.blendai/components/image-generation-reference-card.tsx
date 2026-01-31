@@ -10,7 +10,7 @@ type Props = {
 /**
  * 画像生成参考カード
  */
-export function ImageGenerationReferenceCard(props: Props) {
+export function ImageGenerationReferenceCard (props: Props) {
   return (
     <Link
       className="bg-gray-100 dark:bg-gray-900"

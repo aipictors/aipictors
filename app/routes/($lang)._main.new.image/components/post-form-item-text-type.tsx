@@ -10,7 +10,7 @@ type Props = {
 /**
  * 種別入力
  */
-export function PostFormItemType(props: Props) {
+export function PostFormItemType (props: Props) {
   // 大文字に変換
   const type = props.type.toUpperCase() as IntrospectionEnum<"WorkType">
 

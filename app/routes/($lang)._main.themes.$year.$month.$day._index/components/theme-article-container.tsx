@@ -19,7 +19,7 @@ type Props = {
   dailyBeforeThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
-export function ThemeArticleContainer(props: Props) {
+export function ThemeArticleContainer (props: Props) {
   return (
     <article>
       <ThemeArticle

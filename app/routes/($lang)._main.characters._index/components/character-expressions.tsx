@@ -71,7 +71,7 @@ const imageSizeOptions: { value: ImageSize; label: string }[] = [
   { value: "PORTRAIT", label: "720x1280 (縦長)" },
 ]
 
-export function CharacterExpressions(props: Props) {
+export function CharacterExpressions (props: Props) {
   const { character, onBack, onCharacterUpdate } = props
   const t = useTranslation()
   const [isAddExpressionOpen, setIsAddExpressionOpen] = useState(false)

@@ -19,7 +19,7 @@ type Props = {
 /**
  * レスポンシブ対応の作品一覧
  */
-export function ResponsivePhotoVideoWorksAlbum(props: Props) {
+export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const [isMobile, setIsMobile] = useState(false)
 
@@ -63,14 +63,12 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
   if (props.works.length === 1) {
     return (
       <div className="relative transition-all" style={{ position: "relative" }}>
-        <div
-          className="relative inline-block h-full w-full"
-          onMouseEnter={() => handleMouseEnter(Number(props.works[0].id))}
-          onMouseLeave={() => handleMouseLeave(Number(props.works[0].id))}
-        >
+        <div className="relative inline-block h-full w-full">
           <Link
             to={`/posts/${props.works[0].id}`}
             className="max-h-32 overflow-hidden rounded"
+            onMouseEnter={() => handleMouseEnter(Number(props.works[0].id))}
+            onMouseLeave={() => handleMouseLeave(Number(props.works[0].id))}
           >
             <video
               src={props.works[0].url ?? ""}
@@ -191,14 +189,12 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props) {
                 className="relative transition-all"
                 style={{ position: "relative" }}
               >
-                <div
-                  className="relative inline-block h-full w-full"
-                  onMouseEnter={() => handleMouseEnter(context.index)}
-                  onMouseLeave={() => handleMouseLeave(context.index)}
-                >
+                <div className="relative inline-block h-full w-full">
                   <Link
                     to={`/posts/${context.photo.context.id}`}
                     className="overflow-hidden rounded"
+                    onMouseEnter={() => handleMouseEnter(context.index)}
+                    onMouseLeave={() => handleMouseLeave(context.index)}
                   >
                     <img
                       {...props}

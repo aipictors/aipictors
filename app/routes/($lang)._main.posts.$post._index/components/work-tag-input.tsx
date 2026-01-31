@@ -15,7 +15,7 @@ type Props = {
   setTagNames: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-export function WorkTagInput(props: Props) {
+export function WorkTagInput (props: Props) {
   const t = useTranslation()
 
   const [updateWorkTags, { loading: isUpdatingWorkTags }] = useMutation(

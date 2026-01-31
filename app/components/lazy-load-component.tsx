@@ -14,7 +14,7 @@ type Props = {
  * Intersection Observer を使った遅延読み込みコンポーネント
  * ビューポートに入った時にのみ子コンポーネントを読み込む
  */
-export function LazyLoadComponent(props: Props) {
+export function LazyLoadComponent (props: Props): React.ReactNode {
   // SSR安全: サーバーサイドでは常にコンテンツを表示
   const [isVisible, setIsVisible] = useState(true)
   const [isMounted, setIsMounted] = useState(false)

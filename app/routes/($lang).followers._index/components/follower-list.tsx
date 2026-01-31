@@ -24,7 +24,7 @@ import {
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 
-export function FollowerList() {
+export function FollowerList () {
   const [searchParams, setSearchParams] = useSearchParams()
 
   // URL パラメータから取得

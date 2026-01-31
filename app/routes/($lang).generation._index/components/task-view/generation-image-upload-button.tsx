@@ -14,7 +14,7 @@ type Props = {
 /**
  * 生成画像の投稿ボタン
  */
-export function GenerationImagePostButton(props: Props) {
+export function GenerationImagePostButton (props: Props) {
   const t = useTranslation()
 
   const onClick = async () => {

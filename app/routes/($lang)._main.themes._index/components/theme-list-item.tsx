@@ -8,7 +8,7 @@ type Props = {
   title: string | null
 }
 
-export function ThemeListItem(props: Props) {
+export function ThemeListItem (props: Props) {
   if (props.title === null) {
     return <div className="hidden rounded bg-[backgroundColor] p-4 lg:block" />
   }

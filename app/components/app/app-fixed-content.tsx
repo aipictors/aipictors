@@ -8,7 +8,7 @@ type Props = Readonly<{
 /**
  * 画面に固定表示するコンテンツ
  */
-export function AppFixedContent(props: Props) {
+export function AppFixedContent (props: Props): React.ReactNode {
   return (
     <div
       className={cn(

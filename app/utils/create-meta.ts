@@ -76,11 +76,8 @@ export function createMeta(
   ]
 
   if (dynamicData?.pageUrl) {
-    metaTags.push({
-      tagName: "link",
-      rel: "canonical",
-      href: replacePlaceholders(dynamicData.pageUrl),
-    })
+    // canonical は Remix の meta ではなく links で定義するのが基本。
+    // 型安全性を優先し、ここでは meta のみ返す。
   }
 
   return metaTags

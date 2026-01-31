@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-export default async function handleRequest(
+export default async function handleRequest (
   request: Request,
   loaderStatusCode: number,
   headers: Headers,

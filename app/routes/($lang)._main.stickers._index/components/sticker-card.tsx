@@ -6,7 +6,7 @@ type Props = {
   sticker: FragmentOf<typeof StickerCardFragment>
 }
 
-export function StickerCard(props: Props) {
+export function StickerCard (props: Props) {
   return (
     <article>
       <Card className="h-full">

@@ -15,7 +15,7 @@ type Props = {
 /**
  * PCとスマホの両方で使えるホバーカード
  */
-export function CrossPlatformTooltip(props: Props) {
+export function CrossPlatformTooltip (props: Props): React.ReactNode {
   return (
     <Popover>
       <PopoverTrigger asChild>

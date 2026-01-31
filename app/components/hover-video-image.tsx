@@ -22,7 +22,7 @@ type Props = {
  * スマホ: サムネイル内での動画再生（全画面表示は防ぐ）
  * Safari対応：特定の表示問題を修正
  */
-export function HoverVideoImage(props: Props) {
+export function HoverVideoImage (props: Props): React.ReactNode {
   const [isHovered, setIsHovered] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 

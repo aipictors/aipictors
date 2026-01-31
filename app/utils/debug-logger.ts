@@ -25,7 +25,16 @@ const shouldLog = (category: string): boolean => {
   return true
 }
 
-export const debugLog = {
+type DebugLog = {
+  auth: (message: string, data?: unknown) => void
+  mobile: (message: string, data?: unknown) => void
+  user: (message: string, data?: unknown) => void
+  notification: (message: string, data?: unknown) => void
+  performance: (message: string, data?: unknown) => void
+  mobileLite: (message: string) => void
+}
+
+export const debugLog: DebugLog = {
   auth: (message: string, data?: unknown) => {
     if (shouldLog("auth")) {
       console.log(`🔐 ${message}`, data)
@@ -62,7 +71,12 @@ export const debugLog = {
 /**
  * レンダリングパフォーマンス計測用ユーティリティ
  */
-export const performanceTimer = {
+type PerformanceTimer = {
+  start: (label: string) => void
+  end: (label: string) => void
+}
+
+export const performanceTimer: PerformanceTimer = {
   start: (label: string) => {
     if (isDevelopment && typeof performance !== "undefined") {
       performance.mark(`${label}-start`)

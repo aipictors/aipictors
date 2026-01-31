@@ -4,7 +4,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useId } from "react"
 
-export function GenerationConfigUpscale() {
+export function GenerationConfigUpscale () {
   const context = useGenerationContext()
 
   const t = useTranslation()

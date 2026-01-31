@@ -14,7 +14,7 @@ type Props = {
 /**
  * 投稿者への支援ボタン (Support Button for the Poster)
  */
-export function PromptonRequestColorfulButton(props: Props) {
+export function PromptonRequestColorfulButton (props: Props) {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 

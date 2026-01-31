@@ -25,7 +25,7 @@ type Props = {
  * 画像フィルターパネルコンポーネント
  * 様々なフィルターを選択・プレビュー・適用できる
  */
-export function ImageFilterPanel(props: Props) {
+export function ImageFilterPanel (props: Props): React.ReactNode {
   const {
     isOpen,
     onClose,

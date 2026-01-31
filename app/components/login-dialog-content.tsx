@@ -20,7 +20,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * ログイン
  */
-export function LoginDialogContent() {
+export function LoginDialogContent (): React.ReactNode {
   const t = useTranslation()
 
   const [mutation, { loading: isLoading }] = useMutation(

@@ -10,6 +10,6 @@ type HomeWorkDummyProps = RenderPhotoProps & {
 /**
  * ホームの作品ダミー
  */
-export function HomeWorkDummy({ width, height }: HomeWorkDummyProps) {
+export function HomeWorkDummy ({ width, height }: HomeWorkDummyProps) {
   return <Skeleton className={cn("m-2", `w-[${width}px]`, `h-[${height}px]`)} />
 }

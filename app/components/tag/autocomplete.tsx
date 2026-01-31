@@ -20,7 +20,7 @@ type AutocompleteProps = {
   children: React.ReactNode
 }
 
-export function Autocomplete({
+export function Autocomplete ({
   tags,
   setTags,
   autocompleteOptions,
@@ -28,7 +28,7 @@ export function Autocomplete({
   onTagAdd,
   allowDuplicates,
   children,
-}: AutocompleteProps) {
+}: AutocompleteProps): React.ReactNode {
   return (
     <Command className="border">
       {children}

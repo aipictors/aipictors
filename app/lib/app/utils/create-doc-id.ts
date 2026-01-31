@@ -1,7 +1,7 @@
 /**
  * 20文字のランダムな文字列を生成する
  */
-export function createDocId() {
+export function createDocId(): string {
   const text = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
   let value = ""

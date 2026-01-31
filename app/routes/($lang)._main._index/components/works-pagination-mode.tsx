@@ -30,7 +30,7 @@ interface Props {
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function WorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
+export function WorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) {
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
 

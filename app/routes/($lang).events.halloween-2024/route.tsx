@@ -58,7 +58,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneMonth,
 })
 
-export default function EventWakiaiai() {
+export default function EventWakiaiai () {
   const t = useTranslation()
 
   return (

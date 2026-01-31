@@ -33,7 +33,7 @@ type Props = {
 /**
  * シリーズ一覧テーブルの項目
  */
-export function CreateAlbumDialog(props: Props) {
+export function CreateAlbumDialog (props: Props) {
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)

@@ -37,7 +37,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function SensitiveWorkArticle(props: Props) {
+export function SensitiveWorkArticle (props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data } = useQuery(viewerBookmarkFolderIdQuery, {

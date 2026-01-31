@@ -31,7 +31,7 @@ type Props = {
 /**
  * AI評価設定フォーム
  */
-export function PostFormItemBotGrading(props: Props) {
+export function PostFormItemBotGrading (props: Props) {
   console.log("=== PostFormItemBotGrading rendered ===")
   console.log("Props:", {
     isBotGradingPublic: props.isBotGradingPublic,

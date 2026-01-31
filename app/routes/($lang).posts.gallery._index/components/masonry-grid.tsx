@@ -1,20 +1,39 @@
 import { useMemo, useState, useEffect } from "react"
-import type { FragmentOf } from "gql.tada"
 import { Link } from "@remix-run/react"
 import { Heart, Eye, Images } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { Skeleton } from "~/components/ui/skeleton"
 import { LikeButton } from "~/components/like-button"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+
+type MasonryWork = {
+  id: string
+  title: string
+  smallThumbnailImageURL: string
+  smallThumbnailImageWidth: number
+  smallThumbnailImageHeight: number
+  subWorksCount: number
+  likesCount: number
+  viewsCount: number
+  commentsCount: number
+  isLiked: boolean
+  user: {
+    id: string
+    name: string
+    iconUrl?: string | null
+  } | null
+}
 
 type Props = {
-  works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
+  works: MasonryWork[]
+  loading?: boolean
   isLoadingMore?: boolean
+  onWorkClick?: (workId: string) => void
 }
 
 type WorkItemProps = {
-  work: FragmentOf<typeof PhotoAlbumWorkFragment>
+  work: MasonryWork
+  onWorkClick?: (workId: string) => void
 }
 
 /**
@@ -71,12 +90,10 @@ const MasonryGridSkeleton = ({
 /**
  * ピンタレスト風マソンリーグリッド（改良版）
  */
-export function MasonryGrid(props: Props) {
-  const { works, isLoadingMore } = props
+export function MasonryGrid (props: Props) {
+  const { works, onWorkClick } = props
+  const isLoadingMore = props.isLoadingMore ?? props.loading
   const [columnCount, setColumnCount] = useState(6)
-
-  // デバッグログ
-  console.log("MasonryGrid - received works:", works.length, works)
 
   // レスポンシブなカラム数を設定
   useEffect(() => {
@@ -101,7 +118,7 @@ export function MasonryGrid(props: Props) {
   // 作品をカラムに分散配置（高さを考慮した最適化）
   const columns = useMemo(() => {
     const cols: Array<{
-      works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
+      works: MasonryWork[]
       totalHeight: number
     }> = Array.from({ length: columnCount }, () => ({
       works: [],
@@ -140,7 +157,7 @@ export function MasonryGrid(props: Props) {
             className="flex flex-col gap-0"
           >
             {column.works.map((work) => (
-              <WorkItem key={work.id} work={work} />
+              <WorkItem key={work.id} work={work} onWorkClick={onWorkClick} />
             ))}
           </div>
         ))}
@@ -158,18 +175,14 @@ export function MasonryGrid(props: Props) {
 /**
  * 個別の作品アイテム（<img>版）
  */
-function WorkItem({ work }: WorkItemProps) {
+function WorkItem({ work, onWorkClick }: WorkItemProps) {
   // アスペクト比を計算してカードの高さを決定
   const aspectRatio =
     work.smallThumbnailImageHeight / work.smallThumbnailImageWidth
   const imageHeight = Math.min(Math.max(aspectRatio * 240, 180), 400) // 最小180px、最大400px
 
-  return (
-    <Link
-      to={`/posts/gallery/${work.id}`}
-      className="group relative block overflow-hidden rounded-lg shadow-sm transition-all duration-200 hover:shadow-lg"
-      style={{ height: imageHeight }}
-    >
+  const content = (
+    <>
       {/* サムネイル画像 */}
       <img
         src={work.smallThumbnailImageURL}
@@ -245,6 +258,29 @@ function WorkItem({ work }: WorkItemProps) {
           </div>
         )}
       </div>
+    </>
+  )
+
+  if (onWorkClick) {
+    return (
+      <button
+        type="button"
+        className="group relative block w-full overflow-hidden rounded-lg shadow-sm transition-all duration-200 hover:shadow-lg"
+        style={{ height: imageHeight }}
+        onClick={() => onWorkClick(work.id)}
+      >
+        {content}
+      </button>
+    )
+  }
+
+  return (
+    <Link
+      to={`/posts/gallery/${work.id}`}
+      className="group relative block overflow-hidden rounded-lg shadow-sm transition-all duration-200 hover:shadow-lg"
+      style={{ height: imageHeight }}
+    >
+      {content}
     </Link>
   )
 }

@@ -48,7 +48,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UserAlbums() {
+export default function UserAlbums () {
   const params = useParams()
 
   if (params.user === undefined) {

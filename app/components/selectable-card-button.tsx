@@ -21,7 +21,7 @@ type Props = {
 /**
  * 選択可能なカード型ボタン
  */
-export function SelectableCardButton(props: Props) {
+export function SelectableCardButton (props: Props): React.ReactNode {
   return (
     <button
       type={"button"}

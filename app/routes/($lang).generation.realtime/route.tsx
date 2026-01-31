@@ -99,10 +99,6 @@ export default function GenerationLayout() {
   const [updatedGenerationImageBase64, setUpdatedGenerationImageBase64] =
     useState("")
 
-  if (authContext.isLoading) {
-    return <AppLoadingPage />
-  }
-
   // 生成中かどうか
   const [isGenerating, setIsGenerating] = React.useState(false)
 
@@ -156,6 +152,10 @@ export default function GenerationLayout() {
   }, [isDrawing])
 
   const context = useGenerationContext()
+
+  if (authContext.isLoading) {
+    return <AppLoadingPage />
+  }
 
   if (context.user === null) {
     return (

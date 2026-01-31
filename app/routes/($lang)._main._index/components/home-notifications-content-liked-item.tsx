@@ -15,7 +15,7 @@ type LikedProps = {
 /**
  * ヘッダーのいいねのお知らせ内容
  */
-export function HomeNotificationsContentLikedItem({
+export function HomeNotificationsContentLikedItem ({
   notification,
   onClick,
 }: LikedProps) {

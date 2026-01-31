@@ -12,14 +12,14 @@ import { BookTextIcon } from "lucide-react"
  * Format prompt text
  * @param text
  */
-export function formatPromptTextForKeyWord(text: string) {
+export function formatPromptTextForKeyWord (text: string) {
   return text
     .split(",")
     .filter((t) => t.length !== 0)
     .join(",")
 }
 
-export function GenerationNegativePromptView() {
+export function GenerationNegativePromptView () {
   const context = useGenerationContext()
 
   const formattedNegativePromptText = formatPromptTextForKeyWord(

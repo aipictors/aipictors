@@ -16,7 +16,7 @@ type Props = {
 /**
  * 枚数指定
  */
-export function GenerationTaskCountSelect(props: Props) {
+export function GenerationTaskCountSelect (props: Props) {
   return (
     <Select
       value={props.value.toString()}

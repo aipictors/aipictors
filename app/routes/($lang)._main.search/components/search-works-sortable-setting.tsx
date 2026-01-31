@@ -23,7 +23,7 @@ type Props = {
 /**
  * 検索結果一覧の並び順設定コンポーネント
  */
-export function SearchWorksSortableSetting(props: Props) {
+export function SearchWorksSortableSetting (props: Props) {
   const t = useTranslation()
 
   const getLabel = (nowOrderBy: IntrospectionEnum<"WorkOrderBy">) => {

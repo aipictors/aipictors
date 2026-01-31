@@ -15,7 +15,7 @@ type Props = {
 /**
  * 青グラデボタン
  */
-export function GradientBlueButton(props: Props) {
+export function GradientBlueButton (props: Props): React.ReactNode {
   return (
     <button
       onClick={props.onClick}

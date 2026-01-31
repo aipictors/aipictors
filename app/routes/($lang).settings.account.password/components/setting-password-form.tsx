@@ -7,7 +7,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
 
-export function AccountPasswordForm() {
+export function AccountPasswordForm () {
   const t = useTranslation()
 
   const [newPassword, setNewPassword] = useState("")

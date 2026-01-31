@@ -6,7 +6,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * リンク
  */
-export function GenerationLinksView() {
+export function GenerationLinksView () {
   const context = useGenerationContext()
   const t = useTranslation()
 

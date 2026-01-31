@@ -59,13 +59,13 @@ type Props = {
   style?: IntrospectionEnum<"ImageStyle">
   isPagination?: boolean
   onSelect?: (index: string) => void
-  updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
+  updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
 /**
  * トップ画面ホーム作品一覧
  */
-export function HomeSensitiveWorksSection(props: Props) {
+export function HomeSensitiveWorksSection (props: Props) {
   // const appContext = useContext(AuthContext)
 
   // const perPageCount = props.workType === "VIDEO" ? 8 : 32
@@ -108,6 +108,7 @@ export function HomeSensitiveWorksSection(props: Props) {
   const key = `${props.timeRange}-${props.workType}-${props.sortType}-${props.isPagination}`
 
   const anchorAt = useMemo(() => getAnchorAt(), [])
+  const updateWorks = props.updateWorks ?? (() => {})
 
   // useEffect(() => {
   //   if (props.updateWorks && worksResp?.works) {
@@ -125,7 +126,7 @@ export function HomeSensitiveWorksSection(props: Props) {
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}
-          updateWorks={props.updateWorks}
+          updateWorks={updateWorks}
         />
       ) : (
         <SensitiveWorksInfiniteMode
@@ -133,7 +134,7 @@ export function HomeSensitiveWorksSection(props: Props) {
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}
-          updateWorks={props.updateWorks}
+          updateWorks={updateWorks}
         />
       )}
     </div>

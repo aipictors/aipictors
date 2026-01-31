@@ -11,7 +11,7 @@ type Props = {
   character: Character
 }
 
-export function CharacterDetail(props: Props) {
+export function CharacterDetail (props: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const [editingData, setEditingData] = useState({
     name: props.character.name,

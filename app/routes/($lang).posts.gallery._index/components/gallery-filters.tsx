@@ -25,7 +25,7 @@ type Props = {
 /**
  * ギャラリー用フィルターコンポーネント
  */
-export function GalleryFilters(props: Props) {
+export function GalleryFilters (props: Props) {
   const t = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [isExpanded, setIsExpanded] = useState(false)

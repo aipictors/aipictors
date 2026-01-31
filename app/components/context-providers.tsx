@@ -65,7 +65,7 @@ function initializeFirebaseIfNeeded() {
   }
 }
 
-export function ContextProviders(props: Props) {
+export function ContextProviders (props: Props): React.ReactNode {
   // Firebase初期化を遅延実行
   if (typeof document !== "undefined") {
     initializeFirebaseIfNeeded()

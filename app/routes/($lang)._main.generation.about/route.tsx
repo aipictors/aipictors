@@ -34,6 +34,6 @@ export const headers: HeadersFunction = () => ({
 /**
  * 画像生成・LP
  */
-export default function GenerationAbout() {
+export default function GenerationAbout () {
   return <GenerationAboutPage />
 }

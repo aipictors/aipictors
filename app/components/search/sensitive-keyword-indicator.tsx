@@ -12,7 +12,7 @@ type Props = {
 /**
  * 検索テキストがセンシティブキーワードかどうかを視覚的に表示するインジケーター
  */
-export function SensitiveKeywordIndicator({ searchText, className }: Props) {
+export function SensitiveKeywordIndicator ({ searchText, className }: Props): React.ReactNode {
   const t = useTranslation()
 
   const isSensitive = useMemo(() => {
@@ -42,11 +42,11 @@ export function SensitiveKeywordIndicator({ searchText, className }: Props) {
 /**
  * 検索入力欄内に表示する小さなインジケーター
  */
-export function CompactSensitiveIndicator({
+export function CompactSensitiveIndicator ({
   searchText,
 }: {
   searchText: string
-}) {
+}): React.ReactNode {
   const isSensitive = useMemo(() => {
     if (!searchText.trim()) return false
     const sanitizedText = searchText.replace(/#/g, "").trim()

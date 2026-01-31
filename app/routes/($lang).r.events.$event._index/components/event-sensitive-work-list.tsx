@@ -39,7 +39,7 @@ type Props = {
 /**
  * イベント作品一覧
  */
-export function EventSensitiveWorkList(props: Props) {
+export function EventSensitiveWorkList (props: Props) {
   const navigate = useNavigate()
 
   const authContext = useContext(AuthContext)

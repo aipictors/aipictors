@@ -22,6 +22,6 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.HELP, undefined, props.params.lang)
 }
 
-export default function HelpPage() {
+export default function HelpPage () {
   return <HelpArticle />
 }

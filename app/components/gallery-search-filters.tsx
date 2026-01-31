@@ -31,7 +31,7 @@ type RatingType = "G" | "R15" | "R18" | "R18G"
 /**
  * ギャラリー検索フィルター
  */
-export function GallerySearchFilters() {
+export function GallerySearchFilters (): React.ReactNode {
   const [isOpen, setIsOpen] = useState(false)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()

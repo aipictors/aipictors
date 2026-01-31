@@ -10,7 +10,7 @@ type Props = {
 /**
  * 参照生成ボタン
  */
-export function ReferenceGenerationButton(props: Props) {
+export function ReferenceGenerationButton (props: Props) {
   const t = useTranslation()
 
   const handleClick = () => {

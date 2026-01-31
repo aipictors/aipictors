@@ -23,20 +23,16 @@ type Props = {
  * ドラッグ可能なアイテム
  * @param props
  */
-export function SortableItem({ item, ...props }: Props) {
-  if (!item.content) {
-    return null
-  }
-
+export function SortableItem({ item, ...props }: Props): React.ReactNode {
   const [isDeleted, _setIsDeleted] = useState(false)
-
-  if (isDeleted) {
-    return null
-  }
 
   const { attributes, isDragging, listeners, setNodeRef } = useSortable({
     id: item.id,
   })
+
+  if (!item.content || isDeleted) {
+    return null
+  }
 
   const style = {
     opacity: isDragging ? 0.5 : 1, // ドラッグ時に透明度を変更

@@ -30,7 +30,7 @@ type Props = {
  * 生成作品セクション専用のワークセクション
  * 各サムネイル下に参照生成ボタンが表示される
  */
-export function HomeGenerationWorkSection(props: Props) {
+export function HomeGenerationWorkSection (props: Props) {
   const t = useTranslation()
 
   return (

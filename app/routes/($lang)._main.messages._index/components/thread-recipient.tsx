@@ -6,7 +6,7 @@ type Props = {
   recipient: FragmentOf<typeof ThreadRecipientFragment>
 }
 
-export function ThreadRecipient(props: Props) {
+export function ThreadRecipient (props: Props) {
   return (
     <div className="flex w-full items-center gap-x-4">
       <Avatar>

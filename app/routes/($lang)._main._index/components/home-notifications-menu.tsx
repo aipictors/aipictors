@@ -47,7 +47,7 @@ type Props = {
 /**
  * ヘッダーのお知らせメニュー
  */
-export function HomeNotificationsMenu(props: Props) {
+export function HomeNotificationsMenu (props: Props) {
   const authContext = useContext(AuthContext)
 
   // "MESSAGE" タブを追加

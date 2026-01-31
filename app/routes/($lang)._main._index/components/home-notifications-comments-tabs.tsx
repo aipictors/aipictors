@@ -10,7 +10,7 @@ type Props = { onClick?: () => void }
 /**
  * ヘッダーのお知らせメニューのコメントタブ
  */
-export function HomeNotificationCommentsTabs({ onClick }: Props) {
+export function HomeNotificationCommentsTabs ({ onClick }: Props) {
   const tabValues: IntrospectionEnum<"NotificationType">[] = [
     "WORK_COMMENT",
     "COMMENT_REPLY",

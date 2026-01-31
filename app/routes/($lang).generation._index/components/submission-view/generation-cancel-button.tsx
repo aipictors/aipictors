@@ -5,7 +5,7 @@ type Props = {
   onClick(): void
 }
 
-export function GenerationCancelButton(props: Props) {
+export function GenerationCancelButton (props: Props) {
   return (
     <Button
       variant={"destructive"}

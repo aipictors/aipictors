@@ -5,11 +5,11 @@ import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 import { SettingsNavigation } from "~/routes/($lang).settings._index/components/settings-navigation"
 
-export function HydrateFallback() {
+export function HydrateFallback () {
   return <AppLoadingPage />
 }
 
-export default function SettingsLayout() {
+export default function SettingsLayout () {
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) {

@@ -9,7 +9,7 @@ type Props = {
   message: FragmentOf<typeof SenderMessageFragment>
 }
 
-export function SenderMessage(props: Props) {
+export function SenderMessage (props: Props) {
   const t = useTranslation()
 
   const parseTextWithLinks = (text: string) => {

@@ -39,7 +39,7 @@ type Props = {
   dailyBeforeThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
-export function ThemeArticle(props: Props) {
+export function ThemeArticle (props: Props) {
   const navigate = useNavigate()
 
   const [isOpenedCalender, setIsOpenedCalender] = useState(false)

@@ -1,7 +1,7 @@
 /**
  * ローカルストレージからユーザトークンを取得
  */
-export function getUserToken() {
+export function getUserToken(): string | null {
   try {
     return localStorage.getItem("login_user_token")
   } catch (error) {

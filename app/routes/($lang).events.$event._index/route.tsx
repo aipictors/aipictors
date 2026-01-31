@@ -114,7 +114,7 @@ export const meta: MetaFunction = ({ data }) => {
   })
 }
 
-export default function FollowingLayout() {
+export default function FollowingLayout () {
   const t = useTranslation()
 
   const data = useLoaderData<typeof loader>()

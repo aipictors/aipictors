@@ -16,7 +16,7 @@ type Props = {
   recipient: FragmentOf<typeof MessageThreadRecipientFragment>
 }
 
-export function ChatMessageList(props: Props) {
+export function ChatMessageList (props: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 /**
  * Cookie情報取得
  */
-export function getCookie(id: string) {
+export function getCookie(id: string): string | null {
   try {
     const texts = document.cookie.split(";")
 

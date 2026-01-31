@@ -12,7 +12,7 @@ type Props = {
   postId: string
 }
 
-export function WorkSensitiveArticleTags(props: Props) {
+export function WorkSensitiveArticleTags (props: Props) {
   const [isOpenEdit, setIsOpenEdit] = React.useState(false)
 
   const [tags, setTags] = React.useState<Tag[]>([

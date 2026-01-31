@@ -20,13 +20,14 @@ export function GoogleAdsense(props: Props) {
 
   const currentPass = data.viewer?.currentPass
 
-  if (currentPass?.type === "PREMIUM" || currentPass?.type === "STANDARD")
-    return null
-
   const { pathname } = useLocation()
+
+  const isSubscribed =
+    currentPass?.type === "PREMIUM" || currentPass?.type === "STANDARD"
 
   useEffect(() => {
     try {
+      if (isSubscribed) return
       if (typeof document === "undefined") return
       if (window.adsbygoogle === undefined) {
         window.adsbygoogle = []
@@ -36,6 +37,8 @@ export function GoogleAdsense(props: Props) {
       // captureException(error)
     }
   }, [pathname])
+
+  if (isSubscribed) return null
 
   return (
     <div key={pathname}>

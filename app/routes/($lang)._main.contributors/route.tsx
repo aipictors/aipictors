@@ -28,6 +28,6 @@ export const headers: HeadersFunction = () => ({
 /**
  * コントリビュータ一覧ページ
  */
-export default function Contributors() {
+export default function Contributors () {
   return <ContributorsView />
 }

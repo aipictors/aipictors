@@ -29,7 +29,7 @@ type Props = {
 /**
  * モデル一覧を表示するボタン
  */
-export function GenerationModelListButton(props: Props) {
+export function GenerationModelListButton (props: Props) {
   const context = useGenerationContext()
   const { value, setTrue, setFalse } = useBoolean()
   const t = useTranslation()

@@ -6,7 +6,7 @@ type Props = {
   albums: FragmentOf<typeof UserAlbumListItemFragment>[]
 }
 
-export function UserAlbumList(props: Props) {
+export function UserAlbumList (props: Props) {
   return (
     <div className="flex min-h-96 flex-col gap-y-4">
       <div className="flex flex-wrap gap-2">

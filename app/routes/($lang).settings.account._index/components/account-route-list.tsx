@@ -7,7 +7,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 
-export function AccountRouteList() {
+export function AccountRouteList () {
   const t = useTranslation()
 
   return (

@@ -97,7 +97,7 @@ export const meta: MetaFunction = (props) => {
   )
 }
 
-export default function Release() {
+export default function Release () {
   const t = useTranslation()
   const data = useLoaderData<typeof loader>()
 

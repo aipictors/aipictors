@@ -7,7 +7,7 @@ import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 /**
  * アプリの紹介ページ
  */
-export default function Route() {
+export default function Route () {
   return (
     <>
       <AppAboutHeader />

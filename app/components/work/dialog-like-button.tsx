@@ -23,7 +23,7 @@ type Props = {
 /**
  * ダイアログ専用のいいねボタン - 幅いっぱいクリックできる領域
  */
-export function DialogLikeButton(props: Props) {
+export function DialogLikeButton (props: Props): React.ReactNode {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 

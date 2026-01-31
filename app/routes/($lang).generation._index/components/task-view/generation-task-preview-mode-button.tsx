@@ -9,7 +9,7 @@ type Props = {
 /**
  * 履歴プレビューモード切替ボタン
  */
-export function GenerationTaskPreviewModeButton(props: Props) {
+export function GenerationTaskPreviewModeButton (props: Props) {
   return (
     <Toggle
       title="カーソルを当てたときに左画面にプレビュー表示する"

@@ -78,7 +78,7 @@ const IMAGE_SIZE_OPTIONS = [
   { value: "PORTRAIT", label: "720x1280 (縦長)" },
 ] as const
 
-export function AddExpressionDialog({
+export function AddExpressionDialog ({
   isOpen,
   onClose,
   onComplete,

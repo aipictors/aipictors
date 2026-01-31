@@ -25,7 +25,7 @@ const stickerSizeClasses = {
 /**
  * ヘッダーのコメントのお知らせ内容
  */
-export function HomeNotificationsContentCommentedItem(props: Props) {
+export function HomeNotificationsContentCommentedItem (props: Props) {
   const t = useTranslation()
 
   const stickerClass = props.stickerSize

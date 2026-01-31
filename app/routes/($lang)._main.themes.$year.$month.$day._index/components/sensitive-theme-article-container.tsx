@@ -17,7 +17,7 @@ type Props = {
   dailyBeforeThemes: FragmentOf<typeof ThemeListItemFragment>[]
 }
 
-export function SensitiveThemeArticleContainer(props: Props) {
+export function SensitiveThemeArticleContainer (props: Props) {
   return (
     <article>
       <SensitiveThemeArticle

@@ -19,7 +19,7 @@ type Props = {
 /**
  * コメント削除の確認ダイアログ
  */
-export function DeleteCommentConfirmDialog(props: Props) {
+export function DeleteCommentConfirmDialog (props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

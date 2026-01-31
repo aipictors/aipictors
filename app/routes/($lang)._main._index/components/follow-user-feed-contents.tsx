@@ -60,7 +60,7 @@ function chunkPosts(arr: PostItem[], size: number): PostItem[][] {
   return res
 }
 
-export function FollowUserFeedContents(props: Props) {
+export function FollowUserFeedContents (props: Props) {
   const [internalIsPagination, setInternalIsPagination] = useState(
     props.isPagination ?? false,
   )

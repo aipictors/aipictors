@@ -14,7 +14,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * 新しいユーザー設定フォーム
  */
-export function NewUserSettingsForm() {
+export function NewUserSettingsForm () {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()

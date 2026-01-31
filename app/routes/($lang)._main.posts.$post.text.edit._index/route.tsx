@@ -70,7 +70,7 @@ function getReservationDetails(createdAt: number) {
   }
 }
 
-export default function EditText() {
+export default function EditText () {
   const authContext = useContext(AuthContext)
 
   const data = useLoaderData<typeof loader>()
@@ -238,14 +238,13 @@ export default function EditText() {
     selectedImageGenerationIds: [],
     thumbnailBase64: work?.largeThumbnailImageURL ?? "",
     thumbnailPosX:
-      (work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0))
+      (work?.smallThumbnailImageWidth ?? 0) >
+      (work?.smallThumbnailImageHeight ?? 0)
         ? (work?.thumbnailImagePosition ?? 0)
         : 0,
     thumbnailPosY:
-      (work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0) ??
-      0)
+      (work?.smallThumbnailImageWidth ?? 0) >
+      (work?.smallThumbnailImageHeight ?? 0)
         ? 0
         : (work?.thumbnailImagePosition ?? 0),
     uploadedWorkId: null,

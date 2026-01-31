@@ -11,7 +11,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * ログイン画面
  */
-export default function Login() {
+export default function Login () {
   return (
     <div className="container">
       <Card>

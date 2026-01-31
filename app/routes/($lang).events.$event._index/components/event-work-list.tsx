@@ -40,7 +40,7 @@ type Props = {
 /**
  * イベント作品一覧
  */
-export function EventWorkList(props: Props) {
+export function EventWorkList (props: Props) {
   const navigate = useNavigate()
 
   const authContext = useContext(AuthContext)

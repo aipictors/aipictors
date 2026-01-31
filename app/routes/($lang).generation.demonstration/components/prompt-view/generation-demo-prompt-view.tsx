@@ -13,14 +13,14 @@ import { useTranslation } from "~/hooks/use-translation"
  * Format prompt text
  * @param text
  */
-export function formatPromptTextForKeyWord(text: string) {
+export function formatPromptTextForKeyWord (text: string) {
   return text
     .split(",")
     .filter((t) => t.length !== 0)
     .join(",")
 }
 
-export function GenerationDemoPromptView() {
+export function GenerationDemoPromptView () {
   const context = useGenerationContext()
 
   const formattedPromptText = formatPromptTextForKeyWord(

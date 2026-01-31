@@ -21,7 +21,7 @@ type Props = {
  * 常に表示されるスタンプパネル
  * アイコンメニューを押さなくてもスタンプ一覧が見えるコンポーネント
  */
-export function PersistentStickerPanel(props: Props) {
+export function PersistentStickerPanel(props: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 
@@ -139,15 +139,21 @@ export function PersistentStickerPanel(props: Props) {
         <div className="flex items-center justify-center p-2">
           <div className="flex space-x-1">
             {userStickers.slice(0, 3).map((sticker) => (
-              <img
+              <button
                 key={sticker.id}
-                src={sticker.imageUrl ?? ""}
-                alt={sticker.title}
-                className="h-8 w-8 cursor-pointer rounded border transition-transform hover:scale-110"
+                type="button"
+                className="h-8 w-8 rounded border transition-transform hover:scale-110"
+                aria-label={sticker.title}
                 onClick={() =>
                   handleStickerClick(sticker.id, sticker.imageUrl ?? "")
                 }
-              />
+              >
+                <img
+                  src={sticker.imageUrl ?? ""}
+                  alt={sticker.title}
+                  className="h-full w-full rounded object-cover"
+                />
+              </button>
             ))}
             {userStickers.length > 3 && (
               <div className="flex h-8 w-8 items-center justify-center rounded border bg-muted text-xs">

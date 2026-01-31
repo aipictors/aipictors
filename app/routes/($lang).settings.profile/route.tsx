@@ -32,7 +32,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * プロフィール設定ページ
  */
-export default function SettingNotification() {
+export default function SettingNotification () {
   const t = useTranslation()
 
   return (

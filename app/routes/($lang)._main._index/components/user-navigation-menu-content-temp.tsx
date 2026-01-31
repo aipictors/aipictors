@@ -42,7 +42,7 @@ type Props = {
 /**
  * ヘッダーのナビゲーションメニューの内容部分（アイコン部分を除く）
  */
-export function UserNavigationMenuContent(props: Props) {
+export function UserNavigationMenuContent (props: Props) {
   const authContext = useContext(AuthContext)
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
@@ -71,7 +71,7 @@ export function UserNavigationMenuContent(props: Props) {
             <Avatar className="h-10 w-10">
               <AvatarImage
                 src={withIconUrlFallback(user?.iconUrl ?? "")}
-                alt={user?.name ?? authContext.displayName}
+                alt={user?.name ?? authContext.displayName ?? undefined}
               />
               <AvatarFallback>
                 {(user?.name ?? authContext.displayName ?? "U").charAt(0)}

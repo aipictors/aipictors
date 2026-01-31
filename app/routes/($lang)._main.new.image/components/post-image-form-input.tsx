@@ -88,7 +88,7 @@ const getJSTDate = () => {
   return `${year}-${month}-${day}`
 }
 
-export function PostImageFormInput(props: Props) {
+export function PostImageFormInput (props: Props) {
   const t = useTranslation() // 翻訳対応
   const jstDate = getJSTDate()
   const reservationDate = props.state.reservationDate || jstDate

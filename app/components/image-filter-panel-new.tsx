@@ -68,7 +68,7 @@ type Props = {
 /**
  * 画像フィルターパネルコンポーネント
  */
-export function ImageFilterPanel(props: Props) {
+export function ImageFilterPanel (props: Props): React.ReactNode {
   const [selectedFilter, setSelectedFilter] = useState<FilterType | null>(null)
   const [filterIntensity, setFilterIntensity] = useState<number>(100)
   const [previewFilter, setPreviewFilter] = useState<FilterType | null>(null)

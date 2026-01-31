@@ -19,7 +19,7 @@ const notificationTypes = [
   { value: "WORK_AWARD", label: "ランキング" },
 ]
 
-export function NotificationListSetting(props: Props) {
+export function NotificationListSetting (props: Props) {
   const location = useLocation()
   const navigate = useNavigate()
 

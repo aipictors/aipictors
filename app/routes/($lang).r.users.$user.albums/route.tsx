@@ -45,7 +45,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UserAlbums() {
+export default function UserAlbums () {
   const data = useLoaderData<typeof loader>()
 
   if (data.albums === null) {

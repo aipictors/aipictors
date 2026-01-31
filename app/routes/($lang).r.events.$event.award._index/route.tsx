@@ -16,9 +16,9 @@ import React, { useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 
-const toEventDateTimeText = (time: number) => {
-  const t = useTranslation()
+type Translate = (ja: string, en: string) => string
 
+const toEventDateTimeText = (t: Translate, time: number) => {
   // UTC時間から日本時間（UTC+9）に変換
   const date = new Date(time * 1000)
   const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
@@ -74,12 +74,8 @@ export const headers: HeadersFunction = () => ({
 export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
+  const t = useTranslation()
   const navigate = useNavigate()
-
-  if (!("works" in data) || data.works === null) {
-    return null
-  }
-
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [workType, setWorkType] =
@@ -169,6 +165,10 @@ export default function FollowingLayout() {
 
   const [worksMaxCount, _setWorksMaxCount] = React.useState(0)
 
+  if (data.works === null) {
+    return null
+  }
+
   return (
     <div className="flex flex-col space-y-4">
       <Card className="m-auto w-full">
@@ -181,12 +181,12 @@ export default function FollowingLayout() {
           <div className="m-auto flex max-w-96 flex-col items-center text-left">
             <div
               className="mb-2 text-left text-sm"
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted CMS HTML
               dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
             />
             <div className="mr-auto text-sm">
-              {toEventDateTimeText(data.appEvent.startAt)}～
-              {toEventDateTimeText(data.appEvent.endAt)}
+              {toEventDateTimeText(t, data.appEvent.startAt)}～
+              {toEventDateTimeText(t, data.appEvent.endAt)}
             </div>
             <div className="mt-2 mr-auto text-sm">
               応募作品数: {data.appEvent.worksCount?.toString() ?? "0"}

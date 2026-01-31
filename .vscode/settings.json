@@ -2,6 +2,12 @@
   "terminal.integrated.env.windows": {
     "PSExecutionPolicyPreference": "RemoteSigned"
   },
+  "editor.defaultFormatter": "biomejs.biome",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "always",
+    "source.organizeImports.biome": "always"
+  },
   "cSpell.words": [
     "adsbygoogle",
     "adsense",
@@ -23,13 +29,32 @@
     "usehooks",
     "xstate"
   ],
-  "[typescript][typescriptreact][json][jsonc][css]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "biomejs.biome",
-    "editor.codeActionsOnSave": {
-      "source.organizeImports.biome": "always",
-      "quickfix.biome": "explicit"
-    }
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "[markdownreact]": {
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "files.associations": {
     "*.svg": "html",
@@ -55,6 +80,7 @@
     "public": true
   },
   "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
   "typescript.preferences.autoImportFileExcludePatterns": [
     "@emotion",
     "@radix-ui",

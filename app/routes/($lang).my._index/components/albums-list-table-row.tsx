@@ -15,7 +15,7 @@ type Props = {
 /**
  * シリーズ一覧テーブルの項目
  */
-export function AlbumsListTableRow(props: Props) {
+export function AlbumsListTableRow (props: Props) {
   const [deleteAlbum, { loading: isLoadingDeleteAlbum }] =
     useMutation(deleteAlbumMutation)
 

@@ -4,7 +4,7 @@ type Props = {
   headerImageUrl?: string
 }
 
-export function UserProfileHeader(props: Props) {
+export function UserProfileHeader (props: Props) {
   return (
     <AspectRatio ratio={1500 / 500}>
       {props.headerImageUrl ? (

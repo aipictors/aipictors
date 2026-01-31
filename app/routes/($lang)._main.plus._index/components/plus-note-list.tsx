@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 
-export function PlusNoteList() {
+export function PlusNoteList () {
   const t = useTranslation()
 
   return (

@@ -30,7 +30,7 @@ import { useState, useContext, useEffect, useId } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { userBasicSettingQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
 
-export function HomeHeaderR18Button() {
+export function HomeHeaderR18Button () {
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
   const location = useLocation()

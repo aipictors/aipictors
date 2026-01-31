@@ -13,7 +13,7 @@ type Props = {
 
 /**
  */
-export function ChatMessageView(props: Props) {
+export function ChatMessageView (props: Props) {
   const [createMessage, { loading: isLoading }] = useMutation(
     createMessageMutation,
   )

@@ -35,7 +35,7 @@ type Props = {
 /**
  * スタンプ追加ダイアログ
  */
-export function AddStickerDialog(props: Props) {
+export function AddStickerDialog (props: Props) {
   const authContext = useContext(AuthContext)
 
   const t = useTranslation()

@@ -31,7 +31,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyRecommended() {
+export default function MyRecommended () {
   const { data: pass } = useQuery(viewerCurrentPassQuery, {})
 
   const passData = pass?.viewer?.currentPass

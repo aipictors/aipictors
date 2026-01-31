@@ -10,10 +10,11 @@ import {
 } from "~/components/ui/tooltip"
 
 type Props = {
-  href: string
-  icon: LucideIcon
+  href?: string
+  icon?: LucideIcon
   children: ReactNode
   onClick?: () => void
+  isDisabled?: boolean
 }
 
 /**
@@ -23,35 +24,53 @@ type Props = {
  * md   (768-1023) : 非表示（hidden）
  * lg-  (>=1024 px): 再表示（inline）
  */
-export function HomeNavigationButton({
+export function HomeNavigationButton ({
   href,
   icon: Icon,
   children,
   onClick,
+  isDisabled,
 }: Props) {
   const { pathname } = useLocation()
-  const active = pathname === href || pathname.startsWith(`${href}/`)
+  const active = href
+    ? pathname === href || pathname.startsWith(`${href}/`)
+    : false
 
   return (
     <TooltipProvider delayDuration={300}>
       <Tooltip>
         {/* ボタン本体 */}
         <TooltipTrigger asChild>
-          <Link
-            to={href}
-            onClick={onClick}
-            className={clsx(
-              "flex items-center rounded-md px-3 py-2 font-medium text-sm transition-colors",
-              active
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted/20 hover:text-foreground",
-              // xs-sm 左寄せ → md 中央寄せ → lg- 左寄せ
-              "justify-start md:justify-center lg:justify-start",
-            )}
-          >
-            <Icon className="size-5 shrink-0" />
-            <span className="ml-3 hidden lg:inline">{children}</span>
-          </Link>
+          {isDisabled || !href ? (
+            <div
+              aria-disabled="true"
+              className={clsx(
+                "flex items-center rounded-md px-3 py-2 font-medium text-sm",
+                "cursor-not-allowed opacity-50",
+                // xs-sm 左寄せ → md 中央寄せ → lg- 左寄せ
+                "justify-start md:justify-center lg:justify-start",
+              )}
+            >
+              {Icon ? <Icon className="size-5 shrink-0" /> : null}
+              <span className="ml-3 hidden lg:inline">{children}</span>
+            </div>
+          ) : (
+            <Link
+              to={href}
+              onClick={onClick}
+              className={clsx(
+                "flex items-center rounded-md px-3 py-2 font-medium text-sm transition-colors",
+                active
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted/20 hover:text-foreground",
+                // xs-sm 左寄せ → md 中央寄せ → lg- 左寄せ
+                "justify-start md:justify-center lg:justify-start",
+              )}
+            >
+              {Icon ? <Icon className="size-5 shrink-0" /> : null}
+              <span className="ml-3 hidden lg:inline">{children}</span>
+            </Link>
+          )}
         </TooltipTrigger>
 
         {/* ラベルが非表示になる md 幅だけツールチップを出す */}

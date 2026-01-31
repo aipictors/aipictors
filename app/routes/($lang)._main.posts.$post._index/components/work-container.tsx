@@ -43,7 +43,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function WorkContainer(props: Props) {
+export function WorkContainer (props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: workRet } = useQuery(workQuery, {

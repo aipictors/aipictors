@@ -10,7 +10,7 @@ type Props = {
 /**
  * 角丸の淡い色のボタン
  */
-export function RoundedLightButton(props: Props) {
+export function RoundedLightButton (props: Props): React.ReactNode {
   return (
     <button
       onClick={props.onClick}

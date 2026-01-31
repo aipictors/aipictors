@@ -26,7 +26,7 @@ type Props = {
 /**
  * 作品一覧の並び順設定コンポーネント
  */
-export function EventWorksListSortableSetting(props: Props) {
+export function EventWorksListSortableSetting (props: Props) {
   const t = useTranslation()
 
   /**

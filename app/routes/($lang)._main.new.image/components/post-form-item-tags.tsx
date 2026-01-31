@@ -60,7 +60,7 @@ const GenerateImageContentMutation = graphql(
 /**
  * タグ入力
  */
-export function PostFormItemTags(props: Props) {
+export function PostFormItemTags (props: Props) {
   const t = useTranslation()
   const whiteListTags = props.whiteListTags
   const [isGenerating, setIsGenerating] = useState(false)

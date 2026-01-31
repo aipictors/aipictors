@@ -4,7 +4,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * 画像生成
  */
-export function GenerationFormFooter() {
+export function GenerationFormFooter () {
   const t = useTranslation()
 
   return (

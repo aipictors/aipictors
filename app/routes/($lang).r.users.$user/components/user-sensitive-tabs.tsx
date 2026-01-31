@@ -10,7 +10,7 @@ type Props = {
   user: FragmentOf<typeof UserSensitiveTabsFragment>
 }
 
-export function UserSensitiveTabs(props: Props) {
+export function UserSensitiveTabs (props: Props) {
   const user = readFragment(UserSensitiveTabsFragment, props.user)
 
   const location = useLocation()
@@ -32,7 +32,6 @@ export function UserSensitiveTabs(props: Props) {
     hasPublicStickers: user.hasPublicStickers,
     hasBadges: user.hasBadges,
     lang: locale,
-    showGallery: true, // ギャラリータブを表示
   })
 
   const activeTab = getActiveTab()

@@ -15,7 +15,7 @@ type Props = {
 /**
  * 作品編集ボタン
  */
-export function WorkEditorButton(props: Props) {
+export function WorkEditorButton (props: Props) {
   const authContext = useContext(AuthContext)
 
   const t = useTranslation()

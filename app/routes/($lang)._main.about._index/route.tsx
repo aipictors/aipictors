@@ -41,7 +41,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * サイトについて
  */
-export default function About() {
+export default function About () {
   const t = useTranslation()
 
   const sections = [

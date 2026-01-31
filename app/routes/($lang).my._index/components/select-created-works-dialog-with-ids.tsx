@@ -42,6 +42,60 @@ type Props = {
   limit?: number
 }
 
+type SortableItemProps = {
+  work: FragmentOf<typeof DialogWorkFragment>
+  isDragMode: boolean
+  selectedWorkIds: string[]
+  setSelectedWorkIds: (workIds: string[]) => void
+  truncateTitle: (title: string, maxLength: number) => string
+}
+
+function SortableItem(props: SortableItemProps) {
+  // drag/drop の動作管理
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: props.work.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <button
+      type="button"
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      // 「並び替えモード」でないときはクリックで"選択解除"
+      onClick={
+        !props.isDragMode
+          ? () => {
+              const newIds = props.selectedWorkIds.filter(
+                (id) => id !== props.work.id,
+              )
+              props.setSelectedWorkIds(newIds)
+            }
+          : undefined
+      }
+      className={
+        props.isDragMode
+          ? "relative m-2 cursor-grab bg-transparent p-0" // 並び替えON: grabカーソル
+          : "relative m-2 cursor-pointer bg-transparent p-0" // 並び替えOFF: クリック解除用
+      }
+    >
+      <img
+        className="size-24 rounded-md object-cover"
+        src={props.work.smallThumbnailImageURL}
+        alt=""
+      />
+      <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
+        {props.truncateTitle(props.work.title, 8)}
+      </div>
+    </button>
+  )
+}
+
 /**
  * 作成済みの作品選択ダイアログ
  */
@@ -149,9 +203,9 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   ) => {
     return worksToRender.map((work) => (
       <div key={work.id}>
-        {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-        <div
-          className="relative m-2 size-24 cursor-pointer"
+        <button
+          type="button"
+          className="relative m-2 size-24 cursor-pointer bg-transparent p-0"
           onClick={() => handleWorkClick(work)}
         >
           <img
@@ -168,7 +222,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
               <CheckIcon className="p-1 text-white dark:text-black" />
             </div>
           )}
-        </div>
+        </button>
       </div>
     ))
   }
@@ -208,56 +262,6 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     setActiveDragItem(null)
   }
 
-  // ソート可能アイテム
-  function SortableItem({
-    work,
-  }: {
-    work: FragmentOf<typeof DialogWorkFragment>
-  }) {
-    // drag/drop の動作管理
-    const { attributes, listeners, setNodeRef, transform, transition } =
-      useSortable({ id: work.id })
-
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    }
-
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-        // 「並び替えモード」でないときはクリックで"選択解除"
-        onClick={
-          !isDragMode
-            ? () => {
-                const newIds = props.selectedWorkIds.filter(
-                  (id) => id !== work.id,
-                )
-                props.setSelectedWorkIds(newIds)
-              }
-            : undefined
-        }
-        className={
-          isDragMode
-            ? "relative m-2 cursor-grab" // 並び替えON: grabカーソル
-            : "relative m-2 cursor-pointer" // 並び替えOFF: クリック解除用
-        }
-      >
-        <img
-          className="size-24 rounded-md object-cover"
-          src={work.smallThumbnailImageURL}
-          alt=""
-        />
-        <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
-          {truncateTitle(work.title, 8)}
-        </div>
-      </div>
-    )
-  }
-
   // 選択中タブの描画
   const renderSelectedWorksDnD = () => {
     return (
@@ -273,7 +277,14 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         >
           <div className="flex flex-wrap">
             {sortedSelectedWorks.map((work) => (
-              <SortableItem key={work.id} work={work} />
+              <SortableItem
+                key={work.id}
+                work={work}
+                isDragMode={isDragMode}
+                selectedWorkIds={props.selectedWorkIds}
+                setSelectedWorkIds={props.setSelectedWorkIds}
+                truncateTitle={truncateTitle}
+              />
             ))}
           </div>
         </SortableContext>
@@ -309,16 +320,16 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     <>
       {/* 「すべて見る」リンク：選択中が7件を超えたら表示例 */}
       {props.selectedWorkIds.length > 7 && (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-        <p
+        <button
+          type="button"
           onClick={() => setIsOpen(true)}
-          className="m-2 cursor-pointer text-right text-sm opacity-80"
+          className="m-2 w-full cursor-pointer bg-transparent p-0 text-right text-sm opacity-80"
         >
           {t(
             `すべて見る(${props.selectedWorkIds.length})`,
             `View All (${props.selectedWorkIds.length})`,
           )}
-        </p>
+        </button>
       )}
 
       {/* ダイアログ外では先頭3件だけサムネ表示 */}

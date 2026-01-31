@@ -1,7 +1,7 @@
 /**
  * Cookieからログイン情報を取得する
  */
-export function getCookieLoginToken() {
+export function getCookieLoginToken(): string | null {
   try {
     const texts = document.cookie.split(";")
 

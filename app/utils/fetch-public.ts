@@ -21,7 +21,10 @@ function isSameOriginUrl(url: string): boolean {
  * - Cross-origin: `credentials: "omit"` (prevents cookie/credential CORS failures)
  * - Same-origin: `credentials: "same-origin"`
  */
-export function fetchPublic(url: string, options: FetchPublicOptions = {}) {
+export function fetchPublic(
+  url: string,
+  options: FetchPublicOptions = {},
+): Promise<Response> {
   const credentials =
     options.credentials ?? (isSameOriginUrl(url) ? "same-origin" : "omit")
 

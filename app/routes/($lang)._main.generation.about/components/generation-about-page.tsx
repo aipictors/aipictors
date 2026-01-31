@@ -24,7 +24,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * 画像生成についての説明
  */
-export function GenerationAboutPage() {
+export function GenerationAboutPage () {
   const t = useTranslation()
 
   return (

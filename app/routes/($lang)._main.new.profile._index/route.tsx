@@ -22,6 +22,6 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.NEW_PROFILE, undefined, props.params.lang)
 }
 
-export default function NewProfilePage() {
+export default function NewProfilePage () {
   return <NewProfileEditorForm />
 }

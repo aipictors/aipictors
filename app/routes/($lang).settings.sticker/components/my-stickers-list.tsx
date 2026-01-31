@@ -22,7 +22,7 @@ import {
 import { StickerChangeAccessTypeActionDialog } from "~/routes/($lang).settings.sticker/components/sticker-change-access-type-action-dialog"
 import { PlusIcon } from "lucide-react"
 
-export function MyStickersList() {
+export function MyStickersList () {
   const authContext = useContext(AuthContext)
   const t = useTranslation() // 翻訳フックの使用
 

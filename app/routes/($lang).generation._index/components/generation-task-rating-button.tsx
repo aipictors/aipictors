@@ -15,7 +15,7 @@ type Props = {
 /**
  * 画像生成の履歴のレーティングボタン
  */
-export function GenerationTaskRatingButton(props: Props) {
+export function GenerationTaskRatingButton (props: Props) {
   const [mutation, { loading: isLoading }] = useMutation(
     updateRatingImageGenerationResultMutation,
   )

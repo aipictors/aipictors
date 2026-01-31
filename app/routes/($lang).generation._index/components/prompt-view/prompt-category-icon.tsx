@@ -15,7 +15,7 @@ import {
 
 type Props = { name: string }
 
-export function PromptCategoryIcon(props: Props) {
+export function PromptCategoryIcon (props: Props) {
   const categoryIcons = new Map([
     ["性別", ScanFaceIcon],
     ["髪型", BabyIcon],

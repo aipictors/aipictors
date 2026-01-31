@@ -7,7 +7,7 @@ import { Suspense } from "react"
 /**
  * サブスクリプション案内ダイアログ内容
  */
-export function SubscriptionDialogContent() {
+export function SubscriptionDialogContent () {
   return (
     <div>
       <Link className="pt-2 text-center font-bold" to="/plus">

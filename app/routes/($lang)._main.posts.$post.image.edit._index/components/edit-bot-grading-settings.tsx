@@ -16,7 +16,7 @@ type Props = {
  * 編集画面用AI評価設定フォーム
  * AI評価が有効な場合のみ、公開設定とランキング参加設定を表示
  */
-export function EditBotGradingSettings(props: Props) {
+export function EditBotGradingSettings (props: Props) {
   const t = useTranslation()
   const botGradingPublicId = useId()
   const botGradingRankingId = useId()

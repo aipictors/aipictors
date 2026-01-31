@@ -12,7 +12,7 @@ type Props = {
   tag: string
 }
 
-export function SensitiveTagActionOther(props: Props) {
+export function SensitiveTagActionOther (props: Props) {
   const navigate = useNavigate()
   const location = useLocation()
   const t = useTranslation()

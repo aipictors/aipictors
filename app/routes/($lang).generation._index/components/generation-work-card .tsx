@@ -15,7 +15,7 @@ type Props = {
 /**
  * 画像作品カード
  */
-export function GenerationWorkCard(props: Props) {
+export function GenerationWorkCard (props: Props) {
   const [isHovered, setIsHovered] = useState(false)
 
   const context = useGenerationContext()

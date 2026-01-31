@@ -8,7 +8,7 @@ type Props = {
 /**
  * 支援リクエスト
  */
-export function UserSupport(props: Props) {
+export function UserSupport (props: Props) {
   return (
     <div className="flex justify-center">
       <div className="flex flex-col items-center space-y-2">

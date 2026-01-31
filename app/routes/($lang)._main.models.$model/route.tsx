@@ -115,7 +115,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * モデルの詳細
  */
-export default function ModelPage() {
+export default function ModelPage () {
   const params = useParams()
 
   if (params.model === undefined) {

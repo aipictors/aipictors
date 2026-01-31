@@ -25,7 +25,7 @@ import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/ho
 import { SensitiveWorkContainer } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
 
-export function HydrateFallback() {
+export function HydrateFallback () {
   return <AppLoadingPage />
 }
 
@@ -162,7 +162,7 @@ export const meta: MetaFunction = (props) => {
   )
 }
 
-export default function Work() {
+export default function Work () {
   const params = useParams()
 
   if (params.post === undefined) {
@@ -235,7 +235,9 @@ export default function Work() {
     description: description || undefined,
     url: pageUrl,
     image: config.defaultSensitiveOgpImageUrl,
-    dateCreated: data.work.createdAt || undefined,
+    dateCreated: data.work.createdAt
+      ? new Date(data.work.createdAt).toISOString()
+      : undefined,
     inLanguage: lang,
     keywords: data.work.tagNames?.length
       ? data.work.tagNames.join(", ")

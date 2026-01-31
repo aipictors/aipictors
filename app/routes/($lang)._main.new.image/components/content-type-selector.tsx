@@ -12,7 +12,7 @@ type Props = {
 /**
  * コンテンツ生成タイプ選択コンポーネント
  */
-export function ContentTypeSelector(props: Props) {
+export function ContentTypeSelector (props: Props) {
   const t = useTranslation()
 
   const contentTypes: Array<{

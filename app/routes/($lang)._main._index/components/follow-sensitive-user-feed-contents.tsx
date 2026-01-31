@@ -59,7 +59,7 @@ function chunkPosts(arr: PostItem[], size: number): PostItem[][] {
   return res
 }
 
-export function FollowSensitiveUserFeedContents(props: Props) {
+export function FollowSensitiveUserFeedContents (props: Props) {
   const [internalIsPagination, setInternalIsPagination] = useState(
     props.isPagination ?? false,
   )

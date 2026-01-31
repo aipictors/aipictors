@@ -23,7 +23,7 @@ type Props = {
 /**
  * フォルダ一覧コンテナ
  */
-export function FoldersListContainer(props: Props) {
+export function FoldersListContainer (props: Props) {
   const authContext = useContext(AuthContext)
 
   if (

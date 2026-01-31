@@ -74,7 +74,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneMonth,
 })
 
-export default function EventHalloween2025() {
+export default function EventHalloween2025 () {
   const data = useLoaderData<typeof loader>()
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
   const participationMethodsId = useId()

@@ -27,7 +27,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SettingMutedTags() {
+export default function SettingMutedTags () {
   const t = useTranslation()
 
   return (

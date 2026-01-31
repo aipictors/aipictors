@@ -46,7 +46,7 @@ type Props = {
   themeId: number
 }
 
-export function SensitiveThemeContainer(props: Props) {
+export function SensitiveThemeContainer (props: Props) {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()

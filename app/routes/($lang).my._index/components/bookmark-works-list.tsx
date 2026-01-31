@@ -15,7 +15,7 @@ type Props = {
 /**
  * 推薦作品一覧
  */
-export function BookmarkWorksList(props: Props) {
+export function BookmarkWorksList (props: Props) {
   return (
     <>
       <div className="hidden md:block">

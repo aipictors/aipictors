@@ -9,7 +9,7 @@ type Props = {
   onClose?(): void
 }
 
-export function PrivateImagePaintCanvas(props: Props) {
+export function PrivateImagePaintCanvas (props: Props) {
   const [base64Image, setBase64Image] = useState<string>("")
 
   useEffect(() => {

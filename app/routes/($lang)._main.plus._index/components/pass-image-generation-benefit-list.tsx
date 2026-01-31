@@ -5,7 +5,7 @@ type Props = {
   passType: IntrospectionEnum<"PassType">
 }
 
-export function PassImageGenerationBenefitList(props: Props) {
+export function PassImageGenerationBenefitList (props: Props) {
   const features = toPassFeatures(props.passType)
 
   return (

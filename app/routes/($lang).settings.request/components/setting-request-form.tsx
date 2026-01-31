@@ -11,7 +11,7 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useTranslation } from "~/hooks/use-translation"
 
-export function SettingRequestForm() {
+export function SettingRequestForm () {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 

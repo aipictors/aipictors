@@ -30,7 +30,7 @@ const stickerSizeClasses = {
 /**
  * 返信のお知らせ内容をテーブル行として表示
  */
-export function NotificationListReplyItemDetail(props: Props) {
+export function NotificationListReplyItemDetail (props: Props) {
   const stickerClass = props.stickerSize
     ? stickerSizeClasses[props.stickerSize]
     : stickerSizeClasses.md

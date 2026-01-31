@@ -5,7 +5,7 @@ import { LoginDialogButton } from "~/components/login-dialog-button"
 import { LogoutDialogButton } from "~/components/logout-dialog-button"
 import { AuthContext } from "~/contexts/auth-context"
 
-export function CreatorHeader() {
+export function CreatorHeader () {
   const authContext = useContext(AuthContext)
 
   return (

@@ -5,7 +5,7 @@ import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
 import { Link } from "@remix-run/react"
 
-export function HelpArticle() {
+export function HelpArticle () {
   const t = useTranslation()
 
   return (

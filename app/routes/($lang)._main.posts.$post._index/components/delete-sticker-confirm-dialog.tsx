@@ -20,7 +20,7 @@ type Props = {
   onDelete: () => void
 }
 
-export function DeleteStickerConfirmDialog(props: Props) {
+export function DeleteStickerConfirmDialog (props: Props) {
   const t = useTranslation()
 
   const [isOpen, setIsOpen] = useState(false)

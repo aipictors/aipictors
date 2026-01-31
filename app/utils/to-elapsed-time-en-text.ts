@@ -10,7 +10,9 @@ import {
  * 経過した時間を表す文字列を返す (Returns the elapsed time string)
  * @param createdAt
  */
-export const toElapsedTimeEnText = (createdAt: number) => {
+export const toElapsedTimeEnText: (createdAt: number) => string = (
+  createdAt: number,
+): string => {
   const dateLeft = new Date()
 
   const dateRight = new Date(createdAt * 1000)

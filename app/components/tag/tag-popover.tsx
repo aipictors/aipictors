@@ -13,12 +13,12 @@ type TagPopoverProps = {
   customTagRenderer?: (tag: TagType) => React.ReactNode
 } & TagListProps
 
-export function TagPopover({
+export function TagPopover ({
   children,
   tags,
   customTagRenderer,
   ...tagProps
-}: TagPopoverProps) {
+}: TagPopoverProps): React.ReactNode {
   return (
     <Popover>
       <PopoverTrigger asChild>{children}</PopoverTrigger>

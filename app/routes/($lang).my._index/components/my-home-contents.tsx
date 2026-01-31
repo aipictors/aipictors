@@ -18,7 +18,7 @@ import {
   PhotoAlbumWorkFragment,
 } from "~/components/responsive-photo-works-album"
 
-export function DashboardHomeContents() {
+export function DashboardHomeContents () {
   const t = useTranslation()
   const appContext = useContext(AuthContext)
 
@@ -226,14 +226,14 @@ export function DashboardHomeContents() {
         </div>
 
         {/* 最新作品セクション */}
-        {latestWorks?.length > 0 && (
+        {(latestWorks?.length ?? 0) > 0 && (
           <div className="w-full">
             <DashboardHomeContentContainer
               title={t("最新作品", "Latest Works")}
             >
               <div className="rounded-md">
                 <ResponsivePhotoWorksAlbum
-                  works={latestWorks}
+                  works={latestWorks ?? []}
                   targetRowHeight={140}
                   isShowProfile={false}
                 />

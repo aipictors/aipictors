@@ -13,7 +13,7 @@ type Props = {
 /**
  * タイトル入力
  */
-export function PostFormItemTitle(props: Props) {
+export function PostFormItemTitle (props: Props) {
   const [localValue, setLocalValue] = useState(props.value || "")
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)

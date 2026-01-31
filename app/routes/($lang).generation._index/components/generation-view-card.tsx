@@ -13,7 +13,7 @@ type Props = {
  * レイアウトで使用するカード
  * @param props
  */
-export function GenerationViewCard(props: Props) {
+export function GenerationViewCard (props: Props) {
   return (
     <>
       <div className="block md:hidden">

@@ -29,7 +29,7 @@ type Props = {
 /**
  * 返信コメント入力欄（作品ダイアログ用）
  */
-export function WorkCommentInput(props: Props) {
+export function WorkCommentInput (props: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
   const t = useTranslation()

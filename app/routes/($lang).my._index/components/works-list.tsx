@@ -31,7 +31,7 @@ type Props = {
 /**
  * 作品一覧
  */
-export function WorksList(props: Props) {
+export function WorksList (props: Props) {
   return (
     <>
       <div className="hidden md:block">

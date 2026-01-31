@@ -58,7 +58,7 @@ type Props = {
   initialComments: Comment[]
 }
 
-export function NewCommentsPageContent(props: Props) {
+export function NewCommentsPageContent (props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 

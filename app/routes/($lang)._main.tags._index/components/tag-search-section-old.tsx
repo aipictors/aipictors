@@ -14,7 +14,7 @@ type Props = {
   searchTerm?: string | null
 }
 
-export function TagSearchSection({ searchWorks, searchTerm }: Props) {
+export function TagSearchSection ({ searchWorks, searchTerm }: Props) {
   const t = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const [searchValue, setSearchValue] = useState(

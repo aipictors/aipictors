@@ -5,7 +5,7 @@ import { Suspense } from "react"
 /**
  * 作品一覧ページ
  */
-export default function Works() {
+export default function Works () {
   return (
     <Suspense fallback={<AppLoadingPage />}>
       <AppPlaceholder>{"作品の一覧"}</AppPlaceholder>

@@ -9,7 +9,7 @@ type Props = {
 /**
  * スタンプ追加ボタン
  */
-export function AddStickerButton(props: Props) {
+export function AddStickerButton (props: Props) {
   return (
     <AddStickerDialog onAddedSicker={props.onAddedSicker}>
       <div className="border-2 border-transparent p-1">

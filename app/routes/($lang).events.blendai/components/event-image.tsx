@@ -3,7 +3,7 @@ type Props = {
   imageURL: string
 }
 
-export function EventImage(props: Props) {
+export function EventImage (props: Props) {
   return (
     <div className="relative">
       <img

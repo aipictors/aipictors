@@ -11,7 +11,7 @@ type Props = {
   isBlocked: boolean
 } & Pick<ButtonProps, "variant">
 
-export function UserBlockButton(props: Props) {
+export function UserBlockButton (props: Props) {
   const t = useTranslation()
   const [block, { loading: isBlockLoading }] = useMutation(blockUserMutation)
   const [unBlock, { loading: isUnBlockLoading }] =

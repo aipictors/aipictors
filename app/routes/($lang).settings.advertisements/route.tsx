@@ -25,6 +25,6 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SettingAdvertisements() {
+export default function SettingAdvertisements () {
   return <SettingAdvertisementsForm />
 }

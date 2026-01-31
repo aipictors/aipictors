@@ -36,7 +36,7 @@ const stickerSizeClasses = {
 /**
  * コメントのお知らせ内容をテーブル行として表示
  */
-export function NotificationListItemDetail(props: Props) {
+export function NotificationListItemDetail (props: Props) {
   const t = useTranslation()
 
   const stickerClass = props.stickerSize

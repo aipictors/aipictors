@@ -32,7 +32,7 @@ type Props = {
  * ファストローディング用のシンプルなユーザーナビゲーションメニュー
  * 認証情報から最低限のUIを表示し、詳細情報は遅延読み込み
  */
-export function FastUserNavigationMenu(props: Props) {
+export function FastUserNavigationMenu (props: Props) {
   const authContext = useContext(AuthContext)
   const [isOpen, setIsOpen] = useState(false)
 

@@ -5,7 +5,7 @@ import { useParams } from "@remix-run/react"
 /**
  * 小説の詳細
  */
-export default function Novels() {
+export default function Novels () {
   const params = useParams()
 
   if (params.novel === undefined) {

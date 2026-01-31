@@ -1,7 +1,7 @@
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { config } from "~/config"
 
-export default function FlutterSctaPage() {
+export default function FlutterSctaPage () {
   return (
     <div className="py-8">
       <div className="flex justify-between">

@@ -81,7 +81,7 @@ export type TagProps = {
   onRemoveTag: (id: string) => void
 } & Pick<TagInputProps, "direction" | "onTagClick" | "draggable">
 
-export function Tag({
+export function Tag ({
   tagObj,
   direction,
   draggable,
@@ -95,7 +95,7 @@ export function Tag({
   interaction,
   animation,
   textStyle,
-}: TagProps) {
+}: TagProps): React.ReactNode {
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
     <span

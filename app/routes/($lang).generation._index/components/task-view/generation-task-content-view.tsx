@@ -11,7 +11,7 @@ import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-ur
 /**
  * タスク内容
  */
-export function GenerationTaskContentPreview() {
+export function GenerationTaskContentPreview () {
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)

@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react"
 import { Button } from "~/components/ui/button"
 
-export function EventWakiaiaiFooter() {
+export function EventWakiaiaiFooter () {
   return (
     <footer className="container-shadcn-ui pt-4 pb-4">
       <div className="flex flex-col-reverse items-center justify-between gap-4 md:flex-row">

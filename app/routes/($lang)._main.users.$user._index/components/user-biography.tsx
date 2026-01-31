@@ -4,7 +4,7 @@ type Props = {
   text: string
 }
 
-export function UserBiography(props: Props) {
+export function UserBiography (props: Props) {
   // URLを検出する正規表現
   const urlPattern = /https?:\/\/[^\s]+/g
   const parts: string[] = props.text.split(urlPattern)

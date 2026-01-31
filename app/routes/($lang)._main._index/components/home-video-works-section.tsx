@@ -17,7 +17,7 @@ type Props = {
 /**
  * 動画作品一覧
  */
-export function HomeVideosWorksSection(props: Props) {
+export function HomeVideosWorksSection (props: Props) {
   if (props.works.length === 0) {
     return null
   }

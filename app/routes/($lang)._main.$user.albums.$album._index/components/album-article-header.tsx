@@ -18,7 +18,7 @@ type Props = {
   album: FragmentOf<typeof AlbumArticleHeaderFragment>
 }
 
-export function AlbumArticleHeader(props: Props) {
+export function AlbumArticleHeader (props: Props) {
   const authContext = useContext(AuthContext)
 
   return (

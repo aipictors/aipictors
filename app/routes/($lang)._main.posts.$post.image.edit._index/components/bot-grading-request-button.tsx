@@ -61,7 +61,7 @@ const RequestWorkBotGradingMutation = graphql(
  * Bot評価リクエストボタンコンポーネント
  * 作品の編集画面でBot評価をリクエストできる
  */
-export function BotGradingRequestButton(props: Props) {
+export function BotGradingRequestButton (props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 

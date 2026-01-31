@@ -23,7 +23,7 @@ type Props = {
   userNanoid: string
 }
 
-export function AlbumArticleEditorDialog(props: Props) {
+export function AlbumArticleEditorDialog (props: Props) {
   const t = useTranslation()
 
   const [selectedWorks, setSelectedWorks] = useState<string[]>(

@@ -20,7 +20,7 @@ import { useEffect } from "react"
 import React from "react"
 import { useLoaderData } from "@remix-run/react"
 
-export default function EventAiIdolProject() {
+export default function EventAiIdolProject () {
   const t = useTranslation()
 
   const data = useLoaderData<typeof loader>()

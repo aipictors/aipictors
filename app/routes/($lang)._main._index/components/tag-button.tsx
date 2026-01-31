@@ -11,7 +11,7 @@ type Props = {
   border?: boolean
 }
 
-export function TagButton(props: Props) {
+export function TagButton (props: Props) {
   const isSelected = props.border
 
   const buttonContent = (

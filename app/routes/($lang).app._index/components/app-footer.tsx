@@ -3,7 +3,7 @@ import { Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import { SnsIconLink } from "~/components/sns-icon"
 
-export function AppFooter() {
+export function AppFooter () {
   const t = useTranslation()
 
   return (

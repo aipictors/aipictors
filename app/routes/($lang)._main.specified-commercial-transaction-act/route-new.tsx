@@ -129,8 +129,8 @@ export default function SpecifiedCommercialTransactionActPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.company.map((item, itemIndex) => (
-                  <TableRow key={`company-${itemIndex}`}>
+                {data.company.map((item) => (
+                  <TableRow key={item.title}>
                     <TableCell className="font-medium">{item.title}</TableCell>
                     <TableCell>{item.content}</TableCell>
                     <TableCell className="text-muted-foreground">

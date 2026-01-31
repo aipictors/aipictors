@@ -45,7 +45,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.MODELS, undefined, props.params.lang)
 }
 
-export default function ModelsPage() {
+export default function ModelsPage () {
   const data = useLoaderData<typeof loader>()
 
   if (data == null) {

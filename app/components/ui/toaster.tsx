@@ -8,7 +8,7 @@ import {
   ToastViewport,
 } from "~/components/ui/toast"
 
-export function Toaster() {
+export function Toaster (): React.ReactNode {
   const { toasts } = useToast()
 
   return (

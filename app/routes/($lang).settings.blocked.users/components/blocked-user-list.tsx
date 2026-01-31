@@ -11,7 +11,7 @@ type BlockedUserType = {
   iconUrl: string | null
 }
 
-export function BlockedUserList() {
+export function BlockedUserList () {
   const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery(viewerBlockedUsersQuery, {

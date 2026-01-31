@@ -24,7 +24,7 @@ type Props = {
   videoWorks: FragmentOf<typeof HomeVideosWorkListItemFragment>[]
 }
 
-export function UserPortfolio(props: Props) {
+export function UserPortfolio (props: Props) {
   const authContext = useContext(AuthContext)
 
   // 人気画像作品

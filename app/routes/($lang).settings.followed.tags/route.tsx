@@ -27,7 +27,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SettingFollowedTags() {
+export default function SettingFollowedTags () {
   const t = useTranslation()
 
   return (

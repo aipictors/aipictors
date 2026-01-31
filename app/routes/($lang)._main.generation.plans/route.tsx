@@ -28,6 +28,6 @@ export const headers: HeadersFunction = () => ({
 /**
  * 画像生成プラン
  */
-export default function GenerationPlans() {
+export default function GenerationPlans () {
   return <PlanPage />
 }

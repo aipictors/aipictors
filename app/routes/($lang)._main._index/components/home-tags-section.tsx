@@ -14,7 +14,7 @@ type Props = {
   onSelect?: (index: string) => void
 }
 
-export function HomeTagsSection(props: Props) {
+export function HomeTagsSection (props: Props) {
   const plugin = React.useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true }),
   )

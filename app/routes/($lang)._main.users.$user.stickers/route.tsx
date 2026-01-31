@@ -61,7 +61,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function UserPosts() {
+export default function UserPosts () {
   const params = useParams()
 
   if (params.user === undefined) {

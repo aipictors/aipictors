@@ -19,7 +19,7 @@ type Props = {
   title: string
 }
 
-export function GenerationUpdateSettingConfirmDialog(props: Props) {
+export function GenerationUpdateSettingConfirmDialog (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNext = () => {

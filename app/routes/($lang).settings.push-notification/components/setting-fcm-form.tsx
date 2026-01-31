@@ -15,13 +15,6 @@ import { useTranslation } from "~/hooks/use-translation" // 翻訳フックを�
 export function SettingFcmForm() {
   const t = useTranslation() // 翻訳フックを使用
 
-  if (!("Notification" in window)) {
-    return t(
-      "PCブラウザに対応しています。スマートフォンのブラウザには対応していません。",
-      "Supported on PC browsers only. Not supported on smartphone browsers.",
-    )
-  }
-
   const [mutation, { loading: isLoading }] = useMutation(
     updateAccountWebFcmTokenMutation,
   )
@@ -33,6 +26,16 @@ export function SettingFcmForm() {
 
   const [webFcmToken, setWebFcmToken] = useState(data?.viewer?.user.webFcmToken)
   const [isLoadingNotifySetting, setIsLoadingNotifySetting] = useState(false)
+
+  const isNotificationSupported =
+    typeof window !== "undefined" && "Notification" in window
+
+  if (!isNotificationSupported) {
+    return t(
+      "PCブラウザに対応しています。スマートフォンのブラウザには対応していません。",
+      "Supported on PC browsers only. Not supported on smartphone browsers.",
+    )
+  }
 
   const onClick = async () => {
     try {

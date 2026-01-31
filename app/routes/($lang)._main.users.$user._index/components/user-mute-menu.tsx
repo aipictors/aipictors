@@ -1,6 +1,6 @@
 import { Button } from "~/components/ui/button"
 
-export function UserMuteMenu() {
+export function UserMuteMenu () {
   return (
     <div>
       <div>

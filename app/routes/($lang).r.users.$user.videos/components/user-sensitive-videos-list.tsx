@@ -12,7 +12,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserSensitiveVideoList(props: Props) {
+export function UserSensitiveVideoList (props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId = props.works[0]?.user?.id ?? ""

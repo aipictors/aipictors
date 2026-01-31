@@ -15,7 +15,7 @@ type Props = {
 /**
  * 画像生成の一括削除ボタン
  */
-export function GenerationTasksDeleteButton(props: Props) {
+export function GenerationTasksDeleteButton (props: Props) {
   const t = useTranslation()
 
   if (props.isDeletedLoading) {

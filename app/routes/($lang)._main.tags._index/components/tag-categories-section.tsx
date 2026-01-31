@@ -91,7 +91,7 @@ const categories = [
   },
 ]
 
-export function TagCategoriesSection({ tags }: Props) {
+export function TagCategoriesSection ({ tags }: Props) {
   const t = useTranslation()
   const location = useLocation()
   const isR18Mode = location.pathname.includes("/r/tags")

@@ -11,7 +11,7 @@ type Props = {
 /**
  * 公開モード入力
  */
-export function PostFormItemView(props: Props) {
+export function PostFormItemView (props: Props) {
   const t = useTranslation()
 
   return (

@@ -36,7 +36,7 @@ type Props = {
 /**
  * 画像生成タスク
  */
-export function GenerationTaskCard(props: Props) {
+export function GenerationTaskCard (props: Props) {
   return (
     <>
       {props.isEditMode && (

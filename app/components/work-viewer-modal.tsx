@@ -17,7 +17,7 @@ type Props = {
   onClose: () => void
 }
 
-export function WorkViewerModal({ works, startIndex, onClose }: Props) {
+export function WorkViewerModal ({ works, startIndex, onClose }: Props): React.ReactNode {
   const [index, setIndex] = useState(startIndex)
   const work = works[index]
 

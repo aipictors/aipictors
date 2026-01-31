@@ -13,7 +13,7 @@ type Props = {
 /**
  * シリーズ一覧テーブルのカラム
  */
-export function FoldersListColumn(props: Props) {
+export function FoldersListColumn (props: Props) {
   return (
     <>
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}

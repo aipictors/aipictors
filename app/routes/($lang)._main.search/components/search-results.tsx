@@ -773,7 +773,34 @@ export const SearchResults = ({
 
   return (
     <div className="space-y-6">
-      {!isExplore ? (
+      {isExplore ? (
+        <div className="flex items-center justify-between gap-3">
+          <SearchWorksSortableSetting
+            nowSort={sortOrder}
+            allOrderBy={[
+              "LIKES_COUNT",
+              "BOOKMARKS_COUNT",
+              "COMMENTS_COUNT",
+              "VIEWS_COUNT",
+              "NAME",
+              "DATE_CREATED",
+            ]}
+            nowOrderBy={orderBy}
+            setSort={setSortOrder}
+            onClickTitleSortButton={handleTitleSort}
+            onClickLikeSortButton={handleLikesSort}
+            onClickBookmarkSortButton={handleBookmarksSort}
+            onClickCommentSortButton={handleCommentsSort}
+            onClickViewSortButton={handleViewsSort}
+            onClickDateSortButton={handleDateCreatedSort}
+          />
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            <Eye className="h-4 w-4" />
+            {totalCount}
+            {t("件", " works")}
+          </div>
+        </div>
+      ) : (
         <>
           {/* モデル検索時の専用タグ表示 */}
           {filterValues.workModelId && (

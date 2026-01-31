@@ -5,7 +5,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 /**
  * サイドコンテンツ切替タブ
  */
-export function GenerationDemoSideTabsView() {
+export function GenerationDemoSideTabsView () {
   const _context = useGenerationContext()
 
   const { send } = GenerationConfigContext.useActorRef()

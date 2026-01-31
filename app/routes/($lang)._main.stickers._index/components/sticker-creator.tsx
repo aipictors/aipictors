@@ -528,7 +528,7 @@ const drawVerticalText = (props: {
   }
 }
 
-export function StickerCreator() {
+export function StickerCreator () {
   const [activeCategory, setActiveCategory] =
     useState<StickerAssetCategory>("japanese")
   const [activeLayerId, setActiveLayerId] = useState<string | null>(null)

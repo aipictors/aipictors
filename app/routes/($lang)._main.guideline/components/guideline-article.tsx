@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from "~/components/ui/alert"
 import { AlertTriangle, CheckCircle, XCircle, Info } from "lucide-react"
 import { Separator } from "~/components/ui/separator"
 
-export function GuidelineArticle() {
+export function GuidelineArticle () {
   const t = useTranslation()
 
   return (

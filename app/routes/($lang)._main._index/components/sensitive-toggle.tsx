@@ -26,7 +26,7 @@ type Props = {
   showStatus?: boolean
 }
 
-export function SensitiveToggle({
+export function SensitiveToggle ({
   variant = "compact",
   className,
   showStatus = false,

@@ -15,7 +15,7 @@ type Props = {
 /**
  * スマホ向けシリーズ一覧のアイテム
  */
-export function FoldersSpListItem(props: Props) {
+export function FoldersSpListItem (props: Props) {
   const [deleteFolder, { loading: isLoadingDeleteFolder }] =
     useMutation(deleteFolderMutation)
 

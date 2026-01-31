@@ -15,7 +15,7 @@ type Props = {
   scrollContainerClassName?: string
 }
 
-export function MobilePullToRefresh(props: Props) {
+export function MobilePullToRefresh (props: Props) {
   const thresholdPx = props.thresholdPx ?? 64
   const maxPullPx = props.maxPullPx ?? 96
 

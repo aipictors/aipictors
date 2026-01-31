@@ -10,7 +10,7 @@ type Props = {
   isLoading: boolean
 }
 
-export function PasswordLoginForm(props: Props) {
+export function PasswordLoginForm (props: Props): React.ReactNode {
   const [username, setUsername] = useState("")
 
   const [password, setPassword] = useState("")

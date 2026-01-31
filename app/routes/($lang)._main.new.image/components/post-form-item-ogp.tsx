@@ -11,7 +11,7 @@ type Props = {
 /**
  * OGPフォーム
  */
-export function PostFormItemOgp(props: Props) {
+export function PostFormItemOgp (props: Props) {
   const defaultImageUrl =
     "https://pub-c8b482e79e9f4e7ab4fc35d3eb5ecda8.r2.dev/none-select-og.jpg"
 

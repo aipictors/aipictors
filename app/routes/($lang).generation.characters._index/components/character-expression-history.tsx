@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -6,13 +6,14 @@ import { Button } from "~/components/ui/button"
 import { Badge } from "~/components/ui/badge"
 import { Skeleton } from "~/components/ui/skeleton"
 import { History, Download, RefreshCw } from "lucide-react"
-import { useCharacterExpressionContext } from "../contexts/character-expression-context"
-import { useToast } from "~/components/ui/use-toast"
+import { AuthContext } from "~/contexts/auth-context"
+import { useToast } from "~/hooks/use-toast"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
-export function CharacterExpressionHistory() {
-  const { user } = useCharacterExpressionContext()
+export function CharacterExpressionHistory () {
+  const authContext = useContext(AuthContext)
+  const isLoggedIn = !authContext.isLoading && !authContext.isNotLoggedIn
   const { toast } = useToast()
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -21,7 +22,7 @@ export function CharacterExpressionHistory() {
       limit: 20,
       offset: 0,
     },
-    skip: !user,
+    skip: !isLoggedIn,
   })
 
   const handleRefresh = async () => {
@@ -52,7 +53,7 @@ export function CharacterExpressionHistory() {
     document.body.removeChild(link)
   }
 
-  if (!user) {
+  if (!isLoggedIn) {
     return (
       <Card>
         <CardContent className="flex h-64 items-center justify-center">

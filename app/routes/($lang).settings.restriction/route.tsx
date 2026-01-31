@@ -27,7 +27,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function SettingRestriction() {
+export default function SettingRestriction () {
   const t = useTranslation()
 
   return (

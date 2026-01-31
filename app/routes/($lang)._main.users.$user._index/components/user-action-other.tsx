@@ -16,7 +16,7 @@ type Props = {
   isBlocked?: boolean
 }
 
-export function UserActionOther(props: Props) {
+export function UserActionOther (props: Props) {
   const authContext = useContext(AuthContext)
 
   if (

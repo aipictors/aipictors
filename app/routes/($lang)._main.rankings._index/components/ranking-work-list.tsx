@@ -16,7 +16,7 @@ type Props = {
   weekIndex: number | null
 }
 
-export function RankingWorkList(props: Props) {
+export function RankingWorkList (props: Props) {
   const appContext = useContext(AuthContext)
 
   const works = props.awards

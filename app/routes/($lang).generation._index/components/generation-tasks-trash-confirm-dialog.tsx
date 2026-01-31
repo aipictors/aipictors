@@ -20,7 +20,7 @@ type Props = {
   disabled: boolean
 }
 
-export function GenerationTasksTrashConfirmDialog(props: Props) {
+export function GenerationTasksTrashConfirmDialog (props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

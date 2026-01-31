@@ -38,7 +38,7 @@ export function scrollItemIntoVerticalCenter(
   container: HTMLElement,
   item: HTMLElement,
   smooth = true,
-) {
+): void {
   const containerMiddle = container.clientHeight / 2
   const itemMiddle = item.offsetTop + item.clientHeight / 2
   const newTop = itemMiddle - containerMiddle
@@ -57,7 +57,7 @@ export function WorkViewerDialog({
   hasNextPage = false,
   isLoadingMore = false,
   startWorkId,
-}: Props) {
+}: Props): React.ReactNode {
   // ────────── State / Refs ──────────
   const initialIndex = useMemo(() => {
     if (startWorkId) {
@@ -398,48 +398,30 @@ export function WorkViewerDialog({
               </div>
               <DialogTitle className="truncate font-bold text-lg">
                 {/* タイトルはデスクトップのみ */}
-                <span
-                  className="hidden cursor-pointer text-left transition-colors hover:text-primary md:inline"
+                <button
+                  type="button"
+                  className="hidden cursor-pointer bg-transparent p-0 text-left transition-colors hover:text-primary md:inline"
                   onClick={() => {
                     // Portal内でReact Routerが使用できないため、直接ナビゲーション
                     if (typeof window !== "undefined") {
                       window.location.href = `/posts/${currentWork.id}`
                     }
                   }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault()
-                      if (typeof window !== "undefined") {
-                        window.location.href = `/posts/${currentWork.id}`
-                      }
-                    }
-                  }}
                 >
                   {currentWork.title}
-                </span>
+                </button>
                 {/* モバイル用簡潔タイトル */}
                 <span className="truncate md:hidden">{currentWork.title}</span>
               </DialogTitle>
               <div className="mt-2">
-                <span
+                <button
+                  type="button"
                   onClick={() => {
                     if (typeof window !== "undefined") {
                       window.location.href = `/users/${currentWork.user?.login}`
                     }
                   }}
-                  className="flex cursor-pointer items-center space-x-2 transition-colors hover:text-primary"
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault()
-                      if (typeof window !== "undefined") {
-                        window.location.href = `/users/${currentWork.user?.login}`
-                      }
-                    }
-                  }}
+                  className="flex cursor-pointer items-center space-x-2 bg-transparent p-0 text-left transition-colors hover:text-primary"
                 >
                   <Avatar className="size-6">
                     <AvatarImage
@@ -450,7 +432,7 @@ export function WorkViewerDialog({
                   <span className="font-medium text-sm">
                     {currentWork.user?.name}
                   </span>
-                </span>
+                </button>
               </div>
             </DialogHeader>
 
@@ -471,6 +453,20 @@ export function WorkViewerDialog({
                   <WorkArticle
                     work={{
                       ...currentWork,
+                      isBotGradingEnabled:
+                        (
+                          currentWork as unknown as {
+                            isBotGradingEnabled?: boolean
+                          }
+                        ).isBotGradingEnabled ?? false,
+                      isBotGradingPublic:
+                        (
+                          currentWork as unknown as {
+                            isBotGradingPublic?: boolean
+                          }
+                        ).isBotGradingPublic ?? false,
+                      botEvaluation: ((currentWork as any).botEvaluation ??
+                        null) as any,
                       user: currentWork.user
                         ? { ...currentWork.user, works: [] }
                         : null,

@@ -13,11 +13,31 @@ import { OptimizedImage } from "~/components/optimized-image"
 import { LikeButton } from "~/components/like-button"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
-import type { FragmentOf } from "gql.tada"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+
+type WorkDetailWork = {
+  id: string
+  title: string
+  smallThumbnailImageURL: string
+  smallThumbnailImageWidth: number
+  smallThumbnailImageHeight: number
+  largeThumbnailImageURL: string
+  largeThumbnailImageWidth: number
+  largeThumbnailImageHeight: number
+  subWorksCount: number
+  likesCount: number
+  commentsCount: number
+  viewsCount: number
+  isLiked: boolean
+  user: {
+    id: string
+    login?: string | null
+    name: string
+    iconUrl?: string | null
+  } | null
+}
 
 type Props = {
-  work: FragmentOf<typeof PhotoAlbumWorkFragment>
+  work: WorkDetailWork
   open: boolean
   onClose: () => void
 }
@@ -25,7 +45,7 @@ type Props = {
 /**
  * 作品詳細ダイアログ
  */
-export function WorkDetailDialog(props: Props) {
+export function WorkDetailDialog (props: Props) {
   const t = useTranslation()
   const { work } = props
 
@@ -80,7 +100,7 @@ export function WorkDetailDialog(props: Props) {
               {/* ユーザー情報 */}
               {work.user && (
                 <Link
-                  to={`/posts/gallery/users/${work.user.login}`}
+                  to={`/posts/gallery/users/${work.user.login ?? work.user.id}`}
                   className="flex items-center gap-3 transition-colors hover:text-primary"
                 >
                   <Avatar className="size-10">

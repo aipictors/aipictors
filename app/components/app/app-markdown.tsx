@@ -10,7 +10,7 @@ type Props = Readonly<{
   children: React.ReactNode
 }>
 
-export function AppMarkdown(props: Props) {
+export function AppMarkdown (props: Props): React.ReactNode {
   if (typeof props.children !== "string") {
     return <>{props.children}</>
   }

@@ -7,7 +7,7 @@ type Props = {
   releaseList: MicroCmsApiReleaseResponse
 }
 
-export function HomeReleaseList({ releaseList }: Props) {
+export function HomeReleaseList ({ releaseList }: Props) {
   const navigate = useNavigate()
 
   const onMore = () => {

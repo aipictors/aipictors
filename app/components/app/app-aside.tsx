@@ -9,7 +9,7 @@ type Props = Readonly<{
  * ナビゲーション
  * ヘッダーのアイコンと同じ位置になるように左に余白を追加してます
  */
-export function AppAside(props: Props) {
+export function AppAside (props: Props): React.ReactNode {
   return (
     <>
       {props.isOpen && (

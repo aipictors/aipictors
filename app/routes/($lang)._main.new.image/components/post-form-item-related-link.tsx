@@ -10,7 +10,7 @@ type Props = {
 /**
  * 関連リンク入力
  */
-export function PostFormItemRelatedLink(props: Props) {
+export function PostFormItemRelatedLink (props: Props) {
   const t = useTranslation()
 
   return (

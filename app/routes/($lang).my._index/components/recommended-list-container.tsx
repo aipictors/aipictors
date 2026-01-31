@@ -10,7 +10,7 @@ import { graphql } from "gql.tada"
 /**
  * 推薦一覧コンテナ
  */
-export function RecommendedListContainer() {
+export function RecommendedListContainer () {
   const authContext = useContext(AuthContext)
 
   if (

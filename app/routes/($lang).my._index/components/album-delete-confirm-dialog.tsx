@@ -16,7 +16,7 @@ type Props = {
   seriesTitle: string
 }
 
-export function AlbumDeleteConfirmDialog(props: Props) {
+export function AlbumDeleteConfirmDialog (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNext = async () => {

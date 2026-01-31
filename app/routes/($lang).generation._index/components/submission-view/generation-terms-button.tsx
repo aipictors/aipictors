@@ -23,7 +23,7 @@ type Props = {
 /**
  * 画像生成の利用規約のダイアログ
  */
-export function GenerationTermsButton(props: Props) {
+export function GenerationTermsButton (props: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

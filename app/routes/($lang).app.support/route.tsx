@@ -1,7 +1,7 @@
 import { config } from "~/config"
 import { AppFooter } from "~/routes/($lang).app._index/components/app-footer"
 
-export default function Route() {
+export default function Route () {
   return (
     <>
       <div className="flex min-h-screen justify-center py-8">

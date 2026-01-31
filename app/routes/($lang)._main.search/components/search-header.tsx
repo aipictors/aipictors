@@ -26,7 +26,7 @@ type Props = {
   models?: AiModel[]
 }
 
-export function SearchHeader(props: Props) {
+export function SearchHeader (props: Props) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const t = useTranslation()

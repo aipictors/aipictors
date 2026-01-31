@@ -1,6 +1,13 @@
 import { parse } from "cookie"
 
-export function checkLocaleRedirect(request: Request) {
+export type LocaleRedirect = {
+  status: number
+  headers: {
+    Location: string
+  }
+}
+
+export function checkLocaleRedirect(request: Request): LocaleRedirect | null {
   const cookieHeader = request.headers.get("Cookie")
   const cookies = cookieHeader ? parse(cookieHeader) : {}
 

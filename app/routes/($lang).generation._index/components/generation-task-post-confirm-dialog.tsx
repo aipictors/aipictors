@@ -18,7 +18,7 @@ type Props = {
   onPost: () => void
 }
 
-export function GenerationTaskPostConfirmDialog(props: Props) {
+export function GenerationTaskPostConfirmDialog (props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const cookieKey = "generation_post"

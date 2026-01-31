@@ -15,7 +15,7 @@ type Props = {
 /**
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
  */
-export function WorkActionBookmark(props: Props) {
+export function WorkActionBookmark (props: Props) {
   const [isBookmarked, setIsBookmarked] = useState(props.defaultBookmarked)
   const t = useTranslation()
 

@@ -14,7 +14,7 @@ type Props = {
   name: string
 }
 
-export function UserActionShare(props: Props) {
+export function UserActionShare (props: Props) {
   const t = useTranslation()
 
   const currentUrl = `${"https://www.aipictors.com/users/"}${props.login}`

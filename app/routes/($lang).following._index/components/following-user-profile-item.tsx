@@ -7,7 +7,7 @@ type Props = {
   user: FragmentOf<typeof FolloweeListItemFragment>
 }
 
-export function FollowingUserProfileItem(props: Props) {
+export function FollowingUserProfileItem (props: Props) {
   const MAX_LENGTH = 40 // Set your desired maximum length
 
   const truncateText = (text: string, maxLength: number) => {

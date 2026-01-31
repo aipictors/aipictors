@@ -5,7 +5,7 @@ import { LoginDialogContent } from "~/components/login-dialog-content"
 /**
  * ログインページ
  */
-export function LoginPage() {
+export function LoginPage (): React.ReactNode {
   return (
     <div className="flex w-full flex-col items-center justify-center pt-4 md:pt-0 lg:h-full lg:flex-row lg:items-start">
       <div className="flex h-full w-full flex-1 flex-col items-center">

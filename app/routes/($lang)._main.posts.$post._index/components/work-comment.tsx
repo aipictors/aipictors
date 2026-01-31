@@ -59,7 +59,7 @@ type Props = {
 /**
  * 作品へのコメント
  */
-export function WorkComment(props: Props) {
+export function WorkComment (props: Props) {
   const t = useTranslation()
 
   const [deleteMutation, { loading: isDeleteLoading }] = useMutation(

@@ -51,7 +51,7 @@ function setCookie(name: string, value: string, days: number) {
 /**
  * スタンプ送信ダイアログ（作品ダイアログ用）
  */
-export function StickerDialog(props: Props) {
+export function StickerDialog (props: Props): React.ReactNode {
   const appContext = useContext(AuthContext)
 
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)

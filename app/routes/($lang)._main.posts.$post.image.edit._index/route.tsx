@@ -75,7 +75,7 @@ function getReservationDetails(createdAt: number) {
   }
 }
 
-export default function EditImage() {
+export default function EditImage () {
   const authContext = useContext(AuthContext)
 
   const t = useTranslation()
@@ -146,13 +146,13 @@ export default function EditImage() {
             },
           },
           thumbnailPosX:
-            (work?.smallThumbnailImageWidth ??
-            0 > (work?.smallThumbnailImageHeight ?? 0))
+            (work?.smallThumbnailImageWidth ?? 0) >
+            (work?.smallThumbnailImageHeight ?? 0)
               ? (work?.thumbnailImagePosition ?? 0)
               : 0,
           thumbnailPosY:
-            (work?.smallThumbnailImageWidth ??
-            0 > (work?.smallThumbnailImageHeight ?? 0))
+            (work?.smallThumbnailImageWidth ?? 0) >
+            (work?.smallThumbnailImageHeight ?? 0)
               ? 0
               : (work?.thumbnailImagePosition ?? 0),
           isSelectedGenerationImage: work?.isGeneration ?? false,
@@ -262,14 +262,13 @@ export default function EditImage() {
     selectedImageGenerationIds: [],
     thumbnailBase64: work?.largeThumbnailImageURL ?? "",
     thumbnailPosX:
-      (work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0))
+      (work?.smallThumbnailImageWidth ?? 0) >
+      (work?.smallThumbnailImageHeight ?? 0)
         ? (work?.thumbnailImagePosition ?? 0)
         : 0,
     thumbnailPosY:
-      (work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0) ??
-      0)
+      (work?.smallThumbnailImageWidth ?? 0) >
+      (work?.smallThumbnailImageHeight ?? 0)
         ? 0
         : (work?.thumbnailImagePosition ?? 0),
     uploadedWorkId: null,
@@ -290,7 +289,7 @@ export default function EditImage() {
     imageInformation: null,
     imageStyle: "ILLUSTRATION",
     link: "",
-    ratingRestriction: null,
+    ratingRestriction: "G",
     reservationDate: null,
     reservationTime: null,
     tags: [],

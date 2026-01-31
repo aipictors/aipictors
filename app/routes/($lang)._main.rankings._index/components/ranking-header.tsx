@@ -31,7 +31,7 @@ type Props = {
   onRankingTypeChange?: (type: "works" | "users") => void
 }
 
-export function RankingHeader(props: Props) {
+export function RankingHeader (props: Props) {
   const t = useTranslation()
 
   const year = props.year

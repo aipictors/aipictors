@@ -26,7 +26,7 @@ type Props = {
 /**
  * イベントランキング作品一覧
  */
-export function EventAwardSensitiveWorkList(props: Props) {
+export function EventAwardSensitiveWorkList (props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: resp } = useQuery(appAwardEventQuery, {

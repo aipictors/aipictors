@@ -22,7 +22,7 @@ type Props = {
   onSelect(id: string): void
 }
 
-export function NegativePromptsDialogContent(props: Props) {
+export function NegativePromptsDialogContent (props: Props) {
   const defaultOpenCategories = props.negativePromptCategories
     .filter((category) =>
       category.prompts.some((prompt) =>

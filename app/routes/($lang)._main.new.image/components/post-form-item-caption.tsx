@@ -11,7 +11,7 @@ type Props = {
 /**
  * キャプション入力
  */
-export function PostFormItemCaption(props: Props) {
+export function PostFormItemCaption (props: Props) {
   const [localCaption, setLocalCaption] = useState(props.caption || "")
 
   const isFilled = localCaption.trim() !== ""

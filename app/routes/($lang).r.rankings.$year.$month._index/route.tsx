@@ -69,7 +69,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * ある月のランキングの履歴
  */
-export default function SensitiveMonthAward() {
+export default function SensitiveMonthAward () {
   const params = useParams()
 
   if (params.year === undefined) {

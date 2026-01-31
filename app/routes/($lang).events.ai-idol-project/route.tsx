@@ -7,7 +7,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { LoaderFunctionArgs } from "react-router-dom"
 import { config } from "~/config"
 
-export default function EventAiIdolProject() {
+export default function EventAiIdolProject () {
   const t = useTranslation()
 
   const imageUrls = [

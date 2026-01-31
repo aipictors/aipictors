@@ -13,7 +13,7 @@ type Props = {
 /**
  * ヘッダーのアイコンと名前の部分
  */
-export function UserProfileNameIcon(props: Props) {
+export function UserProfileNameIcon (props: Props) {
   const user = readFragment(UserProfileIconFragment, props.user)
 
   const t = useTranslation()

@@ -12,7 +12,7 @@ import {
 } from "~/utils/sensitive-keyword-helpers"
 import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
 
-export function TagsHeader() {
+export function TagsHeader () {
   const t = useTranslation()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()

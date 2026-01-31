@@ -7,7 +7,7 @@ type UserProfileAvatarProps = {
   size?: "sm" | "md" | "lg" | "auto"
 }
 
-export function UserProfileAvatar({
+export function UserProfileAvatar ({
   alt,
   src,
   size = "md",

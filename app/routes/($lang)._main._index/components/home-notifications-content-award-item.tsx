@@ -15,7 +15,7 @@ type Props = {
 /**
  * ヘッダーのランキングのお知らせ内容
  */
-export function HomeNotificationsContentAwardItem({
+export function HomeNotificationsContentAwardItem ({
   notification,
   onClick,
 }: Props) {

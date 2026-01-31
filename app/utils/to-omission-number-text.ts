@@ -4,10 +4,12 @@ import { useTranslation } from "~/hooks/use-translation"
  * 数字を省略表記に変換する
  * @param value 数値
  */
-export const toOmissionNumberText = (value: number) => {
+export const toOmissionNumberText: (value: number) => string = (
+  value: number,
+): string => {
   const t = useTranslation() // 翻訳フックを使用
 
-  const formatNumber = (num: number) =>
+  const formatNumber = (num: number): string =>
     num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 
   if (value < 10000) {

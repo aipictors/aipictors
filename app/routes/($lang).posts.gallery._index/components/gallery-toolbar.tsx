@@ -5,7 +5,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * ギャラリー用ツールバー
  */
-export function GalleryToolbar() {
+export function GalleryToolbar () {
   const t = useTranslation()
 
   return (

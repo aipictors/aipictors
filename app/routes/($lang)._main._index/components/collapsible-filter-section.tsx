@@ -15,7 +15,7 @@ interface CollapsibleFilterSectionProps {
   className?: string
 }
 
-export function CollapsibleFilterSection({
+export function CollapsibleFilterSection ({
   title,
   children,
   defaultOpen = true,

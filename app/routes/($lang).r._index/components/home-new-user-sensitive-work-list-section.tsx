@@ -31,7 +31,7 @@ type Props = {
 /**
  * トップ画面人気作品一覧
  */
-export function HomeNewUsersSensitiveWorkListSection(props: Props) {
+export function HomeNewUsersSensitiveWorkListSection (props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {

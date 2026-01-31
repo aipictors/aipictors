@@ -3,7 +3,7 @@ import { NoteCard } from "~/routes/($lang)._main.notes._index/components/note-ca
 /**
  * コラムの一覧
  */
-export default function Notes() {
+export default function Notes () {
   return (
     <div>
       <NoteCard />

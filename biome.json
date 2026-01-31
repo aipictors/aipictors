@@ -18,8 +18,12 @@
     "rules": {
       "recommended": true,
       "correctness": {
+        "useHookAtTopLevel": "warn",
         "useExhaustiveDependencies": "off",
         "noUnusedImports": "error"
+      },
+      "a11y": {
+        "noStaticElementInteractions": "warn"
       },
       "nursery": {
         "useSortedClasses": {
@@ -28,7 +32,8 @@
             "attributes": ["className"],
             "functions": ["cn"]
           }
-        }
+        },
+        "useUniqueElementIds": "warn"
       },
       "style": {
         "noParameterAssign": "error",
@@ -48,7 +53,7 @@
     "indentStyle": "space",
     "lineEnding": "lf"
   },
-  "assist": { "actions": { "source": { "organizeImports": "off" } } },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "javascript": {
     "formatter": {
       "semicolons": "asNeeded"

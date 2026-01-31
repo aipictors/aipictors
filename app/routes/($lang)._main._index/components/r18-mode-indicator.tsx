@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
-export function R18ModeIndicator() {
+export function R18ModeIndicator () {
   const location = useLocation()
   const t = useTranslation()
 

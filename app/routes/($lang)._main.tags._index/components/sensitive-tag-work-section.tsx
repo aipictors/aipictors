@@ -56,7 +56,7 @@ type LocalFilterValues = {
   myWorksOnly?: boolean
 }
 
-export function SensitiveTagWorkSection(props: Props) {
+export function SensitiveTagWorkSection (props: Props) {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 

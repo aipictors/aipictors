@@ -18,7 +18,7 @@ import {
   BadgeIcon,
 } from "lucide-react"
 
-export function WakiAiAiEventPage() {
+export function WakiAiAiEventPage () {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
   const participationMethodsId = useId()
 

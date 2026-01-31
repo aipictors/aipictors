@@ -8,7 +8,7 @@ type Props = {
 /**
  * ヘッダーのいいね集計のお知らせ内容
  */
-export function HomeNotificationsContentSumLikedItem(props: Props) {
+export function HomeNotificationsContentSumLikedItem (props: Props) {
   return (
     <>
       <div className="flex items-center p-1 transition-all">

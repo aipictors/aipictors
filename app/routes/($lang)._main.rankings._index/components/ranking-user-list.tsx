@@ -46,7 +46,7 @@ type Props = {
 /**
  * ユーザランキング一覧
  */
-export function RankingUserList(_props: Props) {
+export function RankingUserList (_props: Props) {
   const t = useTranslation()
 
   console.log(
@@ -69,7 +69,7 @@ export function RankingUserList(_props: Props) {
 
   // データを50位以下でフィルタリングしてから順位の昇順でソート（1位、2位、3位...の順）
   const userRankings = (
-    (data?.userRankings || []) as Array<{
+    (data?.userRankings || []) as unknown as Array<{
       id: string
       rank: number
       avgLikes: number

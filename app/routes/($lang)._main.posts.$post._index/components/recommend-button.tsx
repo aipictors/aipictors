@@ -13,7 +13,7 @@ type Props = {
   isRecommended: boolean
 }
 
-export function RecommendButton(props: Props) {
+export function RecommendButton (props: Props) {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)

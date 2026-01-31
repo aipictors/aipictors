@@ -11,7 +11,7 @@ type Props = {
 /**
  * 推薦作品一覧テーブルの項目
  */
-export function RecommendedWorksListTableRow(props: Props) {
+export function RecommendedWorksListTableRow (props: Props) {
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }

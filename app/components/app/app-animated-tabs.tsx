@@ -12,12 +12,12 @@ interface AnimatedTabsProps {
   className?: string
 }
 
-export function AppAnimatedTabs({
+export function AppAnimatedTabs ({
   tabs,
   value,
   onChange,
   className = "",
-}: AnimatedTabsProps) {
+}: AnimatedTabsProps): React.ReactNode {
   const selectedIndex = tabs.findIndex((tab) => tab.value === value)
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 })

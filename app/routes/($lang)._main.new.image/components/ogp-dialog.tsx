@@ -7,7 +7,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export function OgpDialog(props: Props) {
+export function OgpDialog (props: Props) {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const [cropDimensions, setCropDimensions] = useState<{

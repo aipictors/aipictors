@@ -13,7 +13,7 @@ type Props = {
   }
 }
 
-export function RankingCard(props: Props) {
+export function RankingCard (props: Props) {
   return (
     <Card>
       <img src={props.imageURL ?? ""} alt={props.title ?? "no title"} />

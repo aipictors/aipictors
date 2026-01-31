@@ -52,7 +52,7 @@ type Props = {
 /**
  * 改良された作品ダイアログ専用コメントセクション
  */
-export function WorkCommentSection(props: Props) {
+export function WorkCommentSection (props: Props): React.ReactNode {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 

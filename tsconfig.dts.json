@@ -1,0 +1,38 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "app/lib/utils.ts",
+    "app/lib/app/utils/**/*.ts",
+    "app/utils/**/*.ts",
+    "app/types/**/*.d.ts",
+    "functions/**/*.ts",
+    "load-context.ts",
+    "types.ts",
+    "worker-configuration.d.ts",
+    "remix.env.d.ts",
+    "@types/**/*.d.ts"
+  ],
+  "exclude": [
+    "build/**",
+    "node_modules/**",
+    ".storybook/**",
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "**/*.test.ts",
+    "**/__tests__/**",
+    "app/components/**",
+    "app/routes/**",
+    "app/hooks/**",
+    "app/contexts/**",
+    "app/config.ts",
+    "app/env.ts",
+    "app/routes.ts",
+    "app/lib/client.ts",
+    "app/lib/loader-client.ts",
+    "app/utils/create-meta.ts",
+    "app/utils/upload-public-image.ts",
+    "app/utils/upload-public-video.ts",
+    "app/utils/upload-text-file.ts",
+    "vite.config.ts"
+  ]
+}

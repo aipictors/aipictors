@@ -27,7 +27,7 @@ type Props = {
 /**
  * レスポンシブ対応の作品一覧
  */
-export function ResponsivePhotoWorksAlbum(props: Props) {
+export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
   if (props.works.length <= 2) {
     return (
       <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">
@@ -120,40 +120,57 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
               image: { loading: "lazy" },
             }}
             render={{
-              photo: ({ photo, imageProps }) => (
+              image: (imageProps, { photo }) => (
                 <div className="relative h-full w-full overflow-hidden rounded">
                   {props.onSelect ? (
-                    <div
+                    <button
+                      type="button"
                       className="block h-full w-full cursor-pointer overflow-hidden rounded"
                       onClick={() => props.onSelect?.(photo.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault()
-                          props.onSelect?.(photo.id)
-                        }
-                      }}
-                      tabIndex={0}
-                      role="button"
                       aria-label={`Open ${photo.context.title}`}
                     >
                       <OptimizedImage
-                        {...imageProps}
+                        src={imageProps.src}
                         alt={photo.context.title}
+                        width={
+                          typeof imageProps.width === "string"
+                            ? Number.parseInt(imageProps.width)
+                            : imageProps.width
+                        }
+                        height={
+                          typeof imageProps.height === "string"
+                            ? Number.parseInt(imageProps.height)
+                            : imageProps.height
+                        }
+                        loading={imageProps.loading as "lazy" | "eager"}
                         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
                       />
-                    </div>
+                    </button>
                   ) : (
                     <Link
                       className="block h-full w-full overflow-hidden rounded"
                       to={`/posts/${photo.context.id}`}
                     >
                       <OptimizedImage
-                        {...imageProps}
+                        src={imageProps.src}
                         alt={photo.context.title}
+                        width={
+                          typeof imageProps.width === "string"
+                            ? Number.parseInt(imageProps.width)
+                            : imageProps.width
+                        }
+                        height={
+                          typeof imageProps.height === "string"
+                            ? Number.parseInt(imageProps.height)
+                            : imageProps.height
+                        }
+                        loading={imageProps.loading as "lazy" | "eager"}
                         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
                       />
                     </Link>
                   )}
+                  {/* biome-ignore lint/a11y/noStaticElementInteractions: overlay only stops parent navigation when interacting with LikeButton */}
+                  {/* biome-ignore lint/a11y/useKeyWithClickEvents: overlay is not an actionable control; LikeButton handles keyboard/mouse interaction */}
                   <div
                     className={cn(
                       "absolute right-0 z-10",
@@ -194,26 +211,19 @@ export function ResponsivePhotoWorksAlbum(props: Props) {
                   {props.isShowProfile && (
                     <div className="mt-2 flex flex-col space-y-2 overflow-hidden text-ellipsis">
                       {props.onSelect ? (
-                        <div
-                          className="w-48 cursor-pointer font-bold"
+                        <button
+                          type="button"
+                          className="w-48 cursor-pointer border-0 bg-transparent p-0 text-left font-bold"
                           onClick={(e) => {
                             e.stopPropagation()
                             props.onSelect?.(photo.context.id.toString())
                           }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault()
-                              props.onSelect?.(photo.context.id.toString())
-                            }
-                          }}
-                          tabIndex={0}
-                          role="button"
                           aria-label={`Open ${photo.context.title}`}
                         >
                           <p className="overflow-hidden text-ellipsis text-nowrap text-left text-sm">
                             {photo.context.title}
                           </p>
-                        </div>
+                        </button>
                       ) : (
                         <Link
                           className="w-48 font-bold"

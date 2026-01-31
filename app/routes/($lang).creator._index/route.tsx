@@ -12,7 +12,7 @@ import { createMeta } from "~/utils/create-meta"
 /**
  * 支援リクエスト
  */
-export default function Route() {
+export default function Route () {
   const data = useLoaderData<typeof loader>()
 
   if (data === null) {

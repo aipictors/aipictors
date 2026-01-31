@@ -28,7 +28,7 @@ type Props = {
   onSelect?: (index: string) => void
 }
 
-export function HomeWorkSection(props: Props) {
+export function HomeWorkSection (props: Props) {
   const t = useTranslation()
 
   return (

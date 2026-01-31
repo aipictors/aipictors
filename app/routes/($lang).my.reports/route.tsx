@@ -32,7 +32,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyViews() {
+export default function MyViews () {
   const [ViewedPage, setViewedPage] = React.useState(0)
 
   const authContext = useContext(AuthContext)

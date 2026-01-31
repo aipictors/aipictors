@@ -26,7 +26,7 @@ type Props = {
   isTargetUserBlocked?: boolean
 }
 
-export function LikeButton(props: Props) {
+export function LikeButton (props: Props): React.ReactNode {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)

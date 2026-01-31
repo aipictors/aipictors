@@ -4,7 +4,7 @@ import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/u
 /**
  * 作品プレビュー内容
  */
-export function GenerationWorkContentPreview() {
+export function GenerationWorkContentPreview () {
   const context = useGenerationContext()
 
   const previewImageURL = context.config.previewImageURL ?? ""

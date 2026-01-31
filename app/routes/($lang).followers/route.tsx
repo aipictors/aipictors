@@ -6,7 +6,7 @@ export const meta: MetaFunction = () => {
   return [{ name: "robots", content: "noindex" }, { title: "-" }]
 }
 
-export default function FollowerLayout() {
+export default function FollowerLayout () {
   return (
     <>
       <AppCommonLayout outlet={<Outlet />} />

@@ -36,7 +36,7 @@ type Props = {
 /**
  * Report Dialog for a post
  */
-export function ReportDialog(props: Props) {
+export function ReportDialog (props: Props) {
   const [reason, setReason] = useState("")
   const [comment, setComment] = useState("")
   const [mutation, { loading: isLoading }] = useMutation(reportWorkMutation)

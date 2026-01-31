@@ -17,7 +17,7 @@ import { Button } from "~/components/ui/button"
 /**
  * ログアウト
  */
-export function LogoutDialogButton() {
+export function LogoutDialogButton (): React.ReactNode {
   const onLogout = async () => {
     await signOut(getAuth())
     resetCookieLoginToken()

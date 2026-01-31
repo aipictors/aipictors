@@ -10,7 +10,7 @@ type Props = {
 /**
  * 作品バナー
  */
-export function PostAccessTypeBanner(props: Props) {
+export function PostAccessTypeBanner (props: Props) {
   const t = useTranslation()
 
   const accessTypeText = () => {

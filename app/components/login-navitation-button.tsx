@@ -14,7 +14,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * ログイン
  */
-export function LoginNavigationButton() {
+export function LoginNavigationButton (): React.ReactNode {
   const t = useTranslation()
 
   return (

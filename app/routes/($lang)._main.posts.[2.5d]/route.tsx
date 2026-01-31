@@ -40,7 +40,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * セミリアルの作品一覧画面
  */
-export default function Works25d() {
+export default function Works25d () {
   const data = useLoaderData<typeof loader>()
 
   return (

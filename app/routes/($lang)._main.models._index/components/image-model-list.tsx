@@ -7,7 +7,7 @@ type Props = {
   imageModels: FragmentOf<typeof imageModelCardFragment>[]
 }
 
-export function ImageModelList(props: Props) {
+export function ImageModelList (props: Props) {
   const t = useTranslation()
 
   return (

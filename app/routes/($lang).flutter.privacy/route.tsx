@@ -4,7 +4,7 @@ import { AppMarkdown } from "~/components/app/app-markdown"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { config } from "~/config"
 
-export default function FlutterPrivacyPage() {
+export default function FlutterPrivacyPage () {
   return (
     <div className="py-8">
       <AppMarkdown>{text}</AppMarkdown>

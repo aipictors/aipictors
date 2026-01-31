@@ -12,7 +12,7 @@ type Props = {
 /**
  * 画面全体へ表示するためのコンテナー
  */
-export function FullScreenContainer(props: Props) {
+export function FullScreenContainer (props: Props): React.ReactNode {
   /**
    * Escキーで閉じる
    */

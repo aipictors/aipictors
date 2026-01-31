@@ -11,7 +11,7 @@ type Props = {
 /**
  * 検索フォーム
  */
-export function StickerSearchForm(props: Props) {
+export function StickerSearchForm (props: Props) {
   const t = useTranslation() // 翻訳フックの使用
   const [searchTerm, setSearchTerm] = useState(props.text || "")
 

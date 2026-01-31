@@ -20,7 +20,7 @@ type FollowProps = {
 /**
  * ヘッダーのフォロー通知内容
  */
-export function HomeNotificationsContentFollowedItem({
+export function HomeNotificationsContentFollowedItem ({
   notification,
   onClick,
 }: FollowProps) {

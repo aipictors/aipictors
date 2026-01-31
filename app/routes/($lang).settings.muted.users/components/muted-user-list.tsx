@@ -5,7 +5,7 @@ import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
-export function MutedUserList() {
+export function MutedUserList () {
   const appContext = useContext(AuthContext)
 
   const { data = null, refetch } = useSuspenseQuery(viewerMutedUsersQuery, {

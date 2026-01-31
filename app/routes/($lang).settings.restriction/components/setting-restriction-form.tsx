@@ -15,7 +15,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * 表示するコンテンツの年齢設定制限フォーム
  */
-export function SettingRestrictionForm() {
+export function SettingRestrictionForm () {
   const [showR15InNormalMode, setShowR15InNormalMode] = React.useState(false)
   const [showSensitiveModeToggle, setShowSensitiveModeToggle] =
     React.useState(false)

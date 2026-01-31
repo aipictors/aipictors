@@ -2,6 +2,7 @@ import {
   ApolloClient,
   InMemoryCache,
   createHttpLink,
+  type NormalizedCacheObject,
 } from "@apollo/client/index"
 import { type ContextSetter, setContext } from "@apollo/client/link/context"
 import { config } from "~/config"
@@ -27,8 +28,9 @@ const contextSetter: ContextSetter = async (_, context) => {
 
 const authLink = setContext(contextSetter)
 
-export const loaderClient = new ApolloClient({
-  ssrMode: false,
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache({}),
-})
+export const loaderClient: ApolloClient<NormalizedCacheObject> =
+  new ApolloClient({
+    ssrMode: false,
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache({}),
+  })

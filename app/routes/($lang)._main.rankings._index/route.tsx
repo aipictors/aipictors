@@ -75,7 +75,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * ランキングの履歴
  */
-export default function Rankings() {
+export default function Rankings () {
   const data = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()
 

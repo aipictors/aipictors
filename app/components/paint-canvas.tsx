@@ -51,7 +51,7 @@ interface CanvasState {
 /**
  * ペイント機能を提供する、ツールバーも提供する
  */
-export function PaintCanvas(props: Props) {
+export function PaintCanvas (props: Props): React.ReactNode {
   const imageCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const brushCanvasRef = useRef<HTMLCanvasElement | null>(null)
   const assistedCanvasRef = useRef<HTMLCanvasElement | null>(null)

@@ -18,7 +18,7 @@ type Props = {
 /**
  * 新規コメント一覧（テキストのみに絞り込み）
  */
-export function HomeNewSensitiveCommentsSection(props: Props) {
+export function HomeNewSensitiveCommentsSection (props: Props) {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)

@@ -9,7 +9,7 @@ type Props = {
 /**
  * 設定画面のヘッダー
  */
-export function SettingsHeader(props: Props) {
+export function SettingsHeader (props: Props) {
   return (
     <Card className="h-16">
       <CardContent className="relative flex h-16 w-full items-center p-2 text-center">

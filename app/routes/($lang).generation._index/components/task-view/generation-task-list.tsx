@@ -45,7 +45,7 @@ type Props = {
 /**
  * 画像生成履歴の一覧
  */
-export function GenerationTaskList(props: Props) {
+export function GenerationTaskList (props: Props) {
   const context = useGenerationContext()
 
   const queryData = useGenerationQuery()

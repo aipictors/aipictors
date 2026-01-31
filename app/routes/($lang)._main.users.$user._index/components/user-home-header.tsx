@@ -11,7 +11,7 @@ type Props = {
 /**
  * マイページのヘッダー
  */
-export function UserHomeHeader(props: Props) {
+export function UserHomeHeader (props: Props) {
   const user = readFragment(UserHomeHeaderFragment, props.user)
 
   // ヘッダー画像がない場合

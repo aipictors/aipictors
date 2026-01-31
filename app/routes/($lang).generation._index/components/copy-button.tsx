@@ -9,7 +9,7 @@ type Props = {
   disabled?: boolean
 }
 
-export function CopyButton(props: Props) {
+export function CopyButton (props: Props) {
   const t = useTranslation()
 
   const copyToClipboard = () => {

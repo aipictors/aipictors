@@ -6,7 +6,7 @@ import { load } from "@l4ph/nsfwts"
 const modelUrl = "./nsfwjs.onnx"
 const isDevelopmentMode = config.isDevelopmentMode
 
-export default function CheckNsfw() {
+export default function CheckNsfw () {
   const [image, setImage] = useState<string | null>(null)
   const [predictions, setPredictions] = useState<Record<string, number> | null>(
     null,

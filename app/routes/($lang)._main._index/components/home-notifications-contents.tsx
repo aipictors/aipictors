@@ -24,7 +24,7 @@ type Props = {
   onItemSelect?: () => void
 }
 
-export function HomeNotificationsContents({ type, onItemSelect }: Props) {
+export function HomeNotificationsContents ({ type, onItemSelect }: Props) {
   const { data } = useSuspenseQuery(ViewerNotificationsQuery, {
     variables: { offset: 0, limit: 40, where: { type } },
     fetchPolicy: "cache-first",

@@ -1,6 +1,6 @@
 import { RelatedModelCard } from "~/routes/($lang)._main.search/components/related-model-card"
 
-export function RelatedModelList() {
+export function RelatedModelList () {
   return (
     // <div>
     //   <Splide

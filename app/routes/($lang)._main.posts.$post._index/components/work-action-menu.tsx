@@ -26,7 +26,7 @@ type Props = {
 /**
  * 作品のポップオーバーメニュー
  */
-export function WorkActionMenu(props: Props) {
+export function WorkActionMenu (props: Props) {
   const [deleteWork, { loading: isLoadingDeleteAlbum }] =
     useMutation(DeleteWorkMutation)
   const [_isDeleted, setIsDeleted] = useState(false)

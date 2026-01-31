@@ -25,7 +25,7 @@ type Props = {
 /**
  * アルバム設定
  */
-export function AlbumsSetting(props: Props) {
+export function AlbumsSetting (props: Props) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const [maxHeight, setMaxHeight] = useState("0px")

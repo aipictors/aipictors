@@ -7,7 +7,7 @@ import {
   TooltipProvider,
 } from "~/components/ui/tooltip"
 
-export function DarkModeButton() {
+export function DarkModeButton () {
   const { theme, setTheme } = useTheme()
 
   const modeText = theme === "dark" ? "画面を明るく" : "画面を暗く"

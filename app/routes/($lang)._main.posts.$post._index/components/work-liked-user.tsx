@@ -12,7 +12,7 @@ type Props = {
 /**
  * 作品にいいねしたユーザ
  */
-export function WorkLikedUser(props: Props) {
+export function WorkLikedUser (props: Props) {
   return (
     <Link to={`/users/${props.login}`}>
       <Card className="p-4">

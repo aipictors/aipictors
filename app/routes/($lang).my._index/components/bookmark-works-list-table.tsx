@@ -20,7 +20,7 @@ type Props = {
 /**
  * ブックマーク作品一覧
  */
-export function BookmarkWorksListTable(props: Props) {
+export function BookmarkWorksListTable (props: Props) {
   const t = useTranslation()
 
   return (

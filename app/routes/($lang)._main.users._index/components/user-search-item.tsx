@@ -9,7 +9,7 @@ type Props = {
   works: FragmentOf<typeof UserSearchListItemWorkFragment>[]
 }
 
-export function UserSearchItem(props: Props) {
+export function UserSearchItem (props: Props) {
   const MAX_LENGTH = 40 // Set your desired maximum length
 
   const truncateText = (text: string, maxLength: number) => {

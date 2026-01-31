@@ -2,7 +2,7 @@ import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData } from "@remix-run/react"
 import { useState, useContext } from "react"
 import { useQuery, useMutation } from "@apollo/client/index"
-import { Button } from "~/components/ui/button"
+import { Button, buttonVariants } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import {
   Card,
@@ -93,7 +93,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json<LoaderData>({ searchUserId: searchUserId || undefined })
 }
 
-export default function AdminUsersPage() {
+export default function AdminUsersPage () {
   const { searchUserId } = useLoaderData<typeof loader>()
   const authContext = useContext(AuthContext)
   const [inputUserId, setInputUserId] = useState(searchUserId || "")
@@ -408,9 +408,11 @@ export default function AdminUsersPage() {
                       <AlertDialogCancel>キャンセル</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleBanToggle("toggleCommentBan")}
-                        variant={
-                          user.isCommentBanned ? "default" : "destructive"
-                        }
+                        className={buttonVariants({
+                          variant: user.isCommentBanned
+                            ? "default"
+                            : "destructive",
+                        })}
                       >
                         {user.isCommentBanned ? "BAN解除" : "BAN設定"}
                       </AlertDialogAction>
@@ -448,7 +450,11 @@ export default function AdminUsersPage() {
                       <AlertDialogCancel>キャンセル</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleBanToggle("togglePostBan")}
-                        variant={user.isPostBanned ? "default" : "destructive"}
+                        className={buttonVariants({
+                          variant: user.isPostBanned
+                            ? "default"
+                            : "destructive",
+                        })}
                       >
                         {user.isPostBanned ? "BAN解除" : "BAN設定"}
                       </AlertDialogAction>

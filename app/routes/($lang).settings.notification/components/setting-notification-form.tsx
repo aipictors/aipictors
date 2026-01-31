@@ -13,7 +13,7 @@ import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/comp
 /**
  * 通知設定フォーム
  */
-export function SettingNotificationForm() {
+export function SettingNotificationForm () {
   const authContext = useContext(AuthContext)
   const t = useTranslation() // 翻訳フックを使用
 

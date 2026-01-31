@@ -13,7 +13,7 @@ type Props = {
 /**
  * 宣伝作品かどうか入力
  */
-export function PostFormItemAdvertising(props: Props) {
+export function PostFormItemAdvertising (props: Props) {
   const t = useTranslation()
 
   return (

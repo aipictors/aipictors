@@ -34,7 +34,7 @@ type Props = {
  * ページ総数が30で、現在ページが28の場合:
  * [Prev] [1] ... [28] [29] ... [30] [Next]
  */
-export function ResponsivePagination({
+export function ResponsivePagination ({
   maxCount,
   perPage,
   currentPage,
@@ -43,7 +43,7 @@ export function ResponsivePagination({
   disableScrollToTop = false,
   allowExtendedPagination = false,
   maxPages,
-}: Props) {
+}: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
 
   // 100ページ制限を適用する場合の最大アイテム数

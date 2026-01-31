@@ -25,7 +25,7 @@ type Props = {
 /**
  * その他ボタン
  */
-export function GenerationWorkActionDropdownMenu(props: Props) {
+export function GenerationWorkActionDropdownMenu (props: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

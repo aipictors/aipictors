@@ -23,7 +23,7 @@ type Props = {
   postId: string
 }
 
-export function DeleteWorkConfirmDialog(props: Props) {
+export function DeleteWorkConfirmDialog (props: Props) {
   const t = useTranslation()
 
   const [deleteWork, { loading: isLoadingDeleteAlbum }] =

@@ -27,7 +27,7 @@ export async function loader(_props: LoaderFunctionArgs) {
   })
 }
 
-export default function NewCommentsPage() {
+export default function NewCommentsPage () {
   const data = useLoaderData<typeof loader>()
 
   if (!data) {

@@ -10,7 +10,7 @@ type Props = {
   hidden?: boolean
 }
 
-export function ExpansionTransition(props: Props) {
+export function ExpansionTransition (props: Props): React.ReactNode {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [hasExpanded, setHasExpanded] = useState(false) // 追加: 展開済みフラグ
   const [maxHeight, setMaxHeight] = useState("0px")

@@ -56,15 +56,11 @@ const addDismissedAnnouncement = (contentHash: string): void => {
 /**
  * 緊急お知らせバナー
  */
-export function AppAnnouncementBanner() {
+export function AppAnnouncementBanner(): React.ReactNode {
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true)
   const location = useLocation()
 
-  const {
-    data: announcementData,
-    loading,
-    error,
-  } = useQuery(emergencyAnnouncementsQuery, {})
+  const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
 
   // 表示対象のパスを判定（トップ画面専用）
   const isAnnouncementPath = location.pathname === "/"
@@ -120,6 +116,7 @@ export function AppAnnouncementBanner() {
         <div className="flex items-center gap-3 pr-10">
           {/* Close button */}
           <button
+            type="button"
             onClick={handleClose}
             className="-translate-y-1/2 absolute top-1/2 right-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
             aria-label="お知らせを閉じる"
@@ -136,6 +133,7 @@ export function AppAnnouncementBanner() {
           {announcementData.emergencyAnnouncements.url &&
           announcementData.emergencyAnnouncements.url.length > 0 ? (
             <button
+              type="button"
               onClick={() =>
                 announcementData.emergencyAnnouncements.url.startsWith("http")
                   ? navigateToExternal(
@@ -151,6 +149,7 @@ export function AppAnnouncementBanner() {
                 </span>
                 <svg
                   className="h-3 w-3 text-slate-400"
+                  aria-hidden="true"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

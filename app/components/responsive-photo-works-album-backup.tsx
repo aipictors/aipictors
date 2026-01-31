@@ -27,7 +27,7 @@ type Props = {
 /**
  * レスポンシブ対応の作品一覧
  */
-export function ResponsivePhotoWorksAlbum(props: Props) {
+export function ResponsivePhotoWorksAlbum (props: Props): React.ReactNode {
   if (props.works.length <= 2) {
     return (
       <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">

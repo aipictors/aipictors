@@ -19,7 +19,7 @@ type Props = {
   weekIndex: number | null
 }
 
-export function RankingSensitiveUserList(props: Props) {
+export function RankingSensitiveUserList (props: Props) {
   const appContext = useContext(AuthContext)
   const t = useTranslation()
 

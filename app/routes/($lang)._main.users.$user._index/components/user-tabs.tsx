@@ -11,7 +11,7 @@ type Props = {
   user: FragmentOf<typeof UserTabsFragment>
 }
 
-export function UserTabs(props: Props) {
+export function UserTabs (props: Props) {
   const user = readFragment(UserTabsFragment, props.user)
 
   const location = useLocation()

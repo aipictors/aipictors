@@ -5,7 +5,7 @@ import { FrownIcon } from "lucide-react"
 /**
  * サブスクの決済をキャンセルした場合のページ
  */
-export default function PlusCancel() {
+export default function PlusCancel () {
   return (
     <>
       <div className="mx-auto w-full max-w-sm space-y-16 px-6 pt-16">

@@ -26,15 +26,25 @@ export type FilterType =
   | "deep_yellow"
   // 環境フィルター
   | "underwater"
+  // レンズ補正（UIに存在するが、未実装のため現状はdefaultでno-op）
+  | "wide_angle_correction"
+  | "camera_raw"
+  | "lens_correction"
+  | "distortion"
+  | "vanishing_point"
+  | "three_d"
   // 画質調整
   | "sharpen"
   | "noise"
   | "pixelate"
+  | "video"
   // ぼかし
   | "blur"
+  | "blur_gallery"
   // 表現手法
   | "artistic"
   | "sketch"
+  | "transform"
 
 /**
  * フィルターをキャンバスに適用する
@@ -765,17 +775,28 @@ export function getFilterDisplayName(filterType: FilterType): string {
     deep_yellow: "ディープイエロー",
     underwater: "水中",
 
+    // レンズ補正（UIに存在）
+    wide_angle_correction: "広角補正",
+    camera_raw: "Camera Raw フィルター",
+    lens_correction: "レンズ補正",
+    distortion: "ゆがみ",
+    vanishing_point: "Vanishing Point",
+    three_d: "3D",
+
     // 画質調整
     sharpen: "シャープ",
     noise: "ノイズ",
     pixelate: "ピクセレート",
+    video: "ビデオ",
 
     // ぼかし
     blur: "ぼかし",
+    blur_gallery: "ぼかしギャラリー",
 
     // 表現手法
     artistic: "表現手法",
     sketch: "描画",
+    transform: "変形",
   }
 
   return names[filterType] || filterType

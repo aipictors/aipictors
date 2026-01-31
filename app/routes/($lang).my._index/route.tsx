@@ -30,7 +30,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyHome() {
+export default function MyHome () {
   const authContext = useContext(AuthContext)
 
   // ローディング中は専用ページを表示

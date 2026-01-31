@@ -9,7 +9,7 @@ type Props = {
 /**
  * スマホ向けシリーズ一覧
  */
-export function FoldersSpList(props: Props) {
+export function FoldersSpList (props: Props) {
   return (
     <>
       {props.folders.map((folder, _index) => (

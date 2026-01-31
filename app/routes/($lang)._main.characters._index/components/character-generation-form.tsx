@@ -51,7 +51,7 @@ const EXPRESSION_OPTIONS = [
   "安らぎ",
 ]
 
-export function CharacterGenerationForm(props: Props) {
+export function CharacterGenerationForm (props: Props) {
   const t = useTranslation()
   console.log("CharacterGenerationForm props:", props)
   console.log("CharacterGenerationForm userToken:", props.userToken)

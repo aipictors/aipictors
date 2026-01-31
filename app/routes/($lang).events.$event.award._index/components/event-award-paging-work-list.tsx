@@ -18,7 +18,7 @@ type Props = {
 /**
  * イベント作品一覧
  */
-export function EventAwardPagingWorkList(props: Props) {
+export function EventAwardPagingWorkList (props: Props) {
   const _navigate = useNavigate()
   const authContext = useContext(AuthContext)
 

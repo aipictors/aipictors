@@ -34,7 +34,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyFolders() {
+export default function MyFolders () {
   const authContext = useContext(AuthContext)
 
   const [folderPage, setFolderPage] = React.useState(0)

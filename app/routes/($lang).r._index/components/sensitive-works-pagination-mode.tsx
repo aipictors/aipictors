@@ -34,7 +34,7 @@ interface Props {
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function SensitiveWorksPaginationMode({
+export function SensitiveWorksPaginationMode ({
   anchorAt,
   onSelect,
   ...rest

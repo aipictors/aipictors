@@ -22,7 +22,7 @@ type Props = {
 
 type Claims = ParsedToken
 
-export function AuthContextProvider(props: Props) {
+export function AuthContextProvider (props: Props): React.ReactNode {
   const [isLoading, setLoadingState] = useState(() => {
     return true
   })

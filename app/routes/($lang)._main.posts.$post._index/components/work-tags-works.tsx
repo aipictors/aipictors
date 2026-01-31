@@ -45,7 +45,7 @@ type Props = {
   rating: "G" | "R15" | "R18" | "R18G"
 }
 
-export function WorkTagsWorks({ tagName, rating }: Props) {
+export function WorkTagsWorks ({ tagName, rating }: Props) {
   const auth = useContext(AuthContext)
   const [pages, setPages] = useState<
     FragmentOf<typeof PhotoAlbumWorkFragment>[][]

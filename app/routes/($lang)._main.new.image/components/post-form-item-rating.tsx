@@ -10,7 +10,7 @@ type Props = {
   setRating: (value: IntrospectionEnum<"Rating">) => void
 }
 
-export function PostFormItemRating(props: Props) {
+export function PostFormItemRating (props: Props) {
   const t = useTranslation()
   const gId = useId()
   const r15Id = useId()

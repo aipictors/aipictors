@@ -17,7 +17,7 @@ type Props = {
   onReset: () => void
 }
 
-export function GenerationConfigResetConfirmDialog(props: Props) {
+export function GenerationConfigResetConfirmDialog (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNext = () => {

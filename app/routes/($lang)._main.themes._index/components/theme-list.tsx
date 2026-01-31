@@ -14,7 +14,7 @@ type Props = {
 /**
  * お題カレンダーのセル一覧を作成する
  */
-export function ThemeList(props: Props) {
+export function ThemeList (props: Props) {
   const navigate = useNavigate()
 
   // カレンダーセルを生成

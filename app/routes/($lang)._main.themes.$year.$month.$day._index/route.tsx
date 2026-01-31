@@ -163,7 +163,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function SensitiveDayThemePage() {
+export default function SensitiveDayThemePage () {
   const data = useLoaderData<typeof loader>()
 
   return (

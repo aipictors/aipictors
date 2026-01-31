@@ -136,7 +136,7 @@ export const meta: MetaFunction = () => {
   })
 }
 
-export default function Aipictors3rdAnniversary() {
+export default function Aipictors3rdAnniversary () {
   const data = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()

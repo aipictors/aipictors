@@ -37,7 +37,7 @@ type Props = {
 /**
  * 画像生成画面のサイド部分
  */
-export function GenerationAsideView(props: Props) {
+export function GenerationAsideView (props: Props) {
   const context = useGenerationContext()
 
   const state = GenerationConfigContext.useSelector((snap) => {

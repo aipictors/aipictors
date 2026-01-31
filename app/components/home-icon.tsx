@@ -5,7 +5,7 @@ import { Avatar, AvatarImage } from "~/components/ui/avatar"
 /**
  * フッター
  */
-export function HomeIcon() {
+export function HomeIcon (): React.ReactNode {
   const navigation = useNavigation()
 
   return (

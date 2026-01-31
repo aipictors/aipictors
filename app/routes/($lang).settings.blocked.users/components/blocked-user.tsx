@@ -11,7 +11,7 @@ type Props = {
   onClick(): void
 }
 
-export function BlockedUser(props: Props) {
+export function BlockedUser (props: Props) {
   const t = useTranslation()
 
   return (

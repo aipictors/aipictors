@@ -19,7 +19,7 @@ type Props = {
 /**
  * シリーズ一覧
  */
-export function FoldersList(props: Props) {
+export function FoldersList (props: Props) {
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }

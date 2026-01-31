@@ -5,6 +5,7 @@ import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infin
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
 import { MasonryGrid } from "./masonry-grid"
 import { Loader2Icon } from "lucide-react"
+import { WorkDetailDialog } from "./work-detail-dialog"
 
 type Props = {
   rating: "G" | "R15" | "R18" | "R18G"
@@ -12,6 +13,8 @@ type Props = {
   sort: "DATE_CREATED" | "LIKES_COUNT" | "VIEWS_COUNT" | "COMMENTS_COUNT"
   style: "ILLUSTRATION" | "PHOTO" | "SEMI_REAL" | null
   isSensitive: boolean
+  selectedWorkId?: string | null
+  onWorkSelect?: (workId: string | null) => void
 }
 
 const PER_PAGE = 40
@@ -58,7 +61,7 @@ const WorksQuery = graphql(
 /**
  * ピンタレスト風ギャラリービュー
  */
-export function GalleryView(props: Props) {
+export function GalleryView (props: Props) {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   // GraphQLクエリの条件を構築
@@ -144,13 +147,13 @@ export function GalleryView(props: Props) {
   // 作品選択のハンドラー
   const handleWorkClick = useCallback(
     (workId: string) => {
-      props.onWorkSelect(workId)
+      props.onWorkSelect?.(workId)
     },
     [props.onWorkSelect],
   )
 
   const handleCloseDialog = useCallback(() => {
-    props.onWorkSelect(null)
+    props.onWorkSelect?.(null)
   }, [props.onWorkSelect])
 
   // 選択された作品の詳細を取得

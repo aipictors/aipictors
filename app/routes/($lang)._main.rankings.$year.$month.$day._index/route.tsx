@@ -73,7 +73,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * ある日のランキングの履歴
  */
-export default function DayAwards() {
+export default function DayAwards () {
   const params = useParams()
   const data = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()

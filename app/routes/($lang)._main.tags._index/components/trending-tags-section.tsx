@@ -8,7 +8,7 @@ type Props = {
   tags: RecommendedTag[]
 }
 
-export function TrendingTagsSection({ tags }: Props) {
+export function TrendingTagsSection ({ tags }: Props) {
   const t = useTranslation()
   const location = useLocation()
   // 現在のページが/r/tagsかどうかを判定

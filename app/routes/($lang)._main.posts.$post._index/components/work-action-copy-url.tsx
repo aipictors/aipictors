@@ -9,7 +9,7 @@ type Props = {
   currentUrl: string
 }
 
-export function CopyWorkUrlButton({ currentUrl }: Props) {
+export function CopyWorkUrlButton ({ currentUrl }: Props) {
   const t = useTranslation()
 
   const handleCopyUrl = async () => {

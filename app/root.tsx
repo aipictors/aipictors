@@ -39,7 +39,7 @@ export const links: LinksFunction = () => {
   ]
 }
 
-export function ErrorBoundary() {
+export function ErrorBoundary (): React.ReactNode {
   const error = useRouteError()
 
   if (isRouteErrorResponse(error) && error.status === 404) {
@@ -64,7 +64,7 @@ type Props = Readonly<{
 /**
  * https://remix.run/docs/en/main/file-conventions/root#layout-export
  */
-export function Layout(props: Props) {
+export function Layout (props: Props): React.ReactNode {
   const location = useLocation()
   const [_key, setKey] = useState(
     typeof window !== "undefined" ? location.pathname : "/",
@@ -147,7 +147,7 @@ export function Layout(props: Props) {
   )
 }
 
-export default function App() {
+export default function App (): React.ReactNode {
   const [isMounted, setIsMounted] = useState(false)
 
   // クライアントサイドのみでパフォーマンス監視を有効にする

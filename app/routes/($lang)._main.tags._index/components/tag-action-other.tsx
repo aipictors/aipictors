@@ -12,7 +12,7 @@ type Props = {
   tag: string
 }
 
-export function TagActionOther(props: Props) {
+export function TagActionOther (props: Props) {
   const location = useLocation()
 
   // センシティブページかどうかを判定

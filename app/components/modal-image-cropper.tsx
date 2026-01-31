@@ -21,7 +21,7 @@ type Props = {
 /**
  * モーダル画像クロップ
  */
-export function ImageCropperModal(props: Props) {
+export function ImageCropperModal (props: Props): React.ReactNode {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
 
   const [zoom, setZoom] = useState(1)

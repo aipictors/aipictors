@@ -8,7 +8,7 @@ type Props = {
   onClick(): void
 }
 
-export function MutedUser(props: Props) {
+export function MutedUser (props: Props) {
   return (
     <div className="flex justify-between">
       <Link className="flex items-center" to={`/users/${props.login}`}>

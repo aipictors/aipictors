@@ -9,7 +9,7 @@ type Props = {
 /**
  * 投稿者への支援ボタン (Support Button for the Poster)
  */
-export function PromptonRequestButton({ promptonId, ...rest }: Props) {
+export function PromptonRequestButton ({ promptonId, ...rest }: Props) {
   const t = useTranslation()
 
   const onClick = () => {

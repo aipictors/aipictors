@@ -49,7 +49,7 @@ export async function loader(props: LoaderFunctionArgs) {
 /**
  * ピンタレスト風ギャラリーページ
  */
-export default function GalleryPage() {
+export default function GalleryPage () {
   const data = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
 

@@ -41,6 +41,6 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function WakiAiAi4Event() {
+export default function WakiAiAi4Event () {
   return <WakiAiAiEventPage />
 }

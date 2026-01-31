@@ -9,7 +9,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * i2i向け画像設定
  */
-export function GenerationConfigI2i() {
+export function GenerationConfigI2i () {
   const context = useGenerationContext()
 
   const size = parseGenerationSize(context.config.sizeType)

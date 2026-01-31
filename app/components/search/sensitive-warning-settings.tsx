@@ -19,7 +19,7 @@ import {
 /**
  * センシティブキーワード警告の設定管理コンポーネント
  */
-export function SensitiveWarningSettings() {
+export function SensitiveWarningSettings (): React.ReactNode {
   const [skipWarning, setSkipWarning] = useState(false)
   const skipWarningId = useId()
   const t = useTranslation()

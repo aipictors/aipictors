@@ -11,7 +11,7 @@ import {
 import { ShieldCheckIcon, InfoIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 
-export default function Privacy() {
+export default function Privacy () {
   const t = useTranslation()
 
   return (

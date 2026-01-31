@@ -25,7 +25,7 @@ interface Props {
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function HotWorksPaginationMode({ anchorAt, onSelect, ...rest }: Props) {
+export function HotWorksPaginationMode ({ anchorAt, onSelect, ...rest }: Props) {
   const { isLoading: authLoading } = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()

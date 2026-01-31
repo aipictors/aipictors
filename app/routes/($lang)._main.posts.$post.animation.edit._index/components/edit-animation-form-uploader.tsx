@@ -12,7 +12,7 @@ type Props = {
   previewVideoUrl?: string
 }
 
-export function EditAnimationFormUploader(props: Props) {
+export function EditAnimationFormUploader (props: Props) {
   return (
     <div className="space-y-2">
       <div className="rounded-md">

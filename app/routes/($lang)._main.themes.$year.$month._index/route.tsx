@@ -154,7 +154,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * その月のテーマ一覧
  */
-export default function MonthThemes() {
+export default function MonthThemes () {
   const params = useParams()
 
   if (params.year === undefined) {

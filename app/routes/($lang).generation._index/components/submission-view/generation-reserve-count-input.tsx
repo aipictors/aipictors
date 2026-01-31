@@ -7,7 +7,7 @@ type Props = {
   disabled?: boolean
 }
 
-export function GenerationReserveCountInput(props: Props) {
+export function GenerationReserveCountInput (props: Props) {
   return (
     <Input
       disabled={props.disabled}

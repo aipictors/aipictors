@@ -47,7 +47,7 @@ const GenerateImageContentMutation = graphql(
 /**
  * 画像から自動でタイトル、説明文、タグを生成するボタン
  */
-export function GenerateContentFromImageButton(props: Props) {
+export function GenerateContentFromImageButton (props: Props) {
   const t = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
 

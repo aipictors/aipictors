@@ -10,6 +10,6 @@ export const meta: MetaFunction = (props) => {
 /**
  * アカウント
  */
-export default function Account() {
+export default function Account () {
   return <AccountNavigation />
 }

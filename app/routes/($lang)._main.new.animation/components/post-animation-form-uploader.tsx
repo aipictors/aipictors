@@ -11,7 +11,7 @@ type Props = {
   state: PostAnimationFormState
 }
 
-export function PostAnimationFormUploader(props: Props) {
+export function PostAnimationFormUploader (props: Props) {
   return (
     <div className="space-y-4">
       <div className="rounded-md">

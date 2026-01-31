@@ -7,7 +7,7 @@ import { XIcon } from "lucide-react"
 /**
  * 広告（× で閉じると再表示しない）
  */
-export function GenerationAdvertisementView() {
+export function GenerationAdvertisementView () {
   const t = useTranslation()
   const [hidden, setHidden] = useState(false)
 

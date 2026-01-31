@@ -11,7 +11,7 @@ type Props = {
   isShowCheckbox?: boolean
 }
 
-export function GenerationExtrasToggleButton(props: Props) {
+export function GenerationExtrasToggleButton (props: Props) {
   // ボタンのスタイルを動的に変更するためのクラス名を決定する
   const buttonClass = props.isChecked
     ? "bg-linear-to-r from-cyan-500 to-blue-500 text-white"

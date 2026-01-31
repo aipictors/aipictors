@@ -9,7 +9,7 @@ import { config, META } from "~/config"
 /**
  * 利用規約
  */
-export default function Route() {
+export default function Route () {
   const t = useTranslation()
 
   return (

@@ -7,7 +7,7 @@ import { Copy, Download, ExternalLink, Heart, Star } from "lucide-react"
 import { useToast } from "~/hooks/use-toast"
 import { Link } from "@remix-run/react"
 
-export function PictorChanProfile() {
+export function PictorChanProfile () {
   const t = useTranslation()
   const { toast } = useToast()
 

@@ -126,7 +126,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function Search() {
+export default function Search () {
   const data = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()

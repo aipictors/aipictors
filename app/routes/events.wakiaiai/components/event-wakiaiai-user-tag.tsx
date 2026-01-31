@@ -5,7 +5,7 @@ type Props = {
   type: EventUserType
 }
 
-export function EventWakiaiaiUserTag(props: Props) {
+export function EventWakiaiaiUserTag (props: Props) {
   if (props.type === "SPONSOR") {
     return (
       <div className="flex items-center">

@@ -5,7 +5,7 @@ type Props = {
   displayDuration?: number // 新しい変数で表示時間を指定
 }
 
-export function ImageSliderAnimation(props: Props) {
+export function ImageSliderAnimation (props: Props) {
   if (!props.imageURLs || props.imageURLs.length === 0) {
     return null
   }

@@ -89,7 +89,7 @@ const getOptimalImageSize = (imageUrl: string): Promise<string> => {
 /**
  * AI画像修正ダイアログ
  */
-export function AiImageModificationDialog(props: Props) {
+export function AiImageModificationDialog (props: Props) {
   const [prompt, setPrompt] = useState("")
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const t = useTranslation()

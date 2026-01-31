@@ -18,7 +18,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export default function CharactersIndex() {
+export default function CharactersIndex () {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 

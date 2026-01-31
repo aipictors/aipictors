@@ -6,7 +6,7 @@ type Props = Readonly<{
   breadcrumb: WithContext<BreadcrumbList>
 }>
 
-export function AppBreadcrumb(props: Props) {
+export function AppBreadcrumb (props: Props): React.ReactNode {
   if (!Array.isArray(props.breadcrumb.itemListElement)) {
     return null
   }

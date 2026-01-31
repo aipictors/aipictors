@@ -28,7 +28,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.short,
 })
 
-export default function FollowingLayout() {
+export default function FollowingLayout () {
   const authContext = useContext(AuthContext)
 
   return (

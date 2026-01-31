@@ -1,7 +1,7 @@
 import { useApolloClient } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 
-export function useCachedImageGenerationTask(id: string) {
+export function useCachedImageGenerationTask (id: string) {
   const client = useApolloClient()
 
   const data = client.cache.readFragment({

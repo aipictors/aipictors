@@ -63,7 +63,7 @@ function getReservationDetails(createdAt: number) {
   }
 }
 
-export default function EditImage() {
+export default function EditImage () {
   const authContext = useContext(AuthContext)
 
   const data = useLoaderData<typeof loader>()
@@ -166,14 +166,13 @@ export default function EditImage() {
     progress: 0,
     thumbnailBase64: work?.largeThumbnailImageURL ?? "",
     thumbnailPosX:
-      (work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0))
+      (work?.smallThumbnailImageWidth ?? 0) >
+      (work?.smallThumbnailImageHeight ?? 0)
         ? (work?.thumbnailImagePosition ?? 0)
         : 0,
     thumbnailPosY:
-      (work?.smallThumbnailImageWidth ??
-      0 > (work?.smallThumbnailImageHeight ?? 0) ??
-      0)
+      (work?.smallThumbnailImageWidth ?? 0) >
+      (work?.smallThumbnailImageHeight ?? 0)
         ? 0
         : (work?.thumbnailImagePosition ?? 0),
     uploadedWorkId: null,

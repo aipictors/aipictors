@@ -169,12 +169,18 @@ export function CharacterExpressionCard(props: Props) {
             {/* 画像 */}
             <div className="flex-shrink-0">
               {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt={expressionName}
-                  className="h-16 w-16 cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-80"
+                <button
+                  type="button"
+                  className="h-16 w-16 cursor-pointer bg-transparent p-0"
                   onClick={() => setIsPreviewOpen(true)}
-                />
+                  aria-label="Open preview"
+                >
+                  <img
+                    src={imageUrl}
+                    alt={expressionName}
+                    className="h-16 w-16 rounded-lg object-cover transition-opacity hover:opacity-80"
+                  />
+                </button>
               ) : (
                 <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-muted">
                   <Eye className="h-6 w-6 text-muted-foreground" />
@@ -266,12 +272,18 @@ export function CharacterExpressionCard(props: Props) {
         <div className="relative aspect-square">
           {imageUrl ? (
             <>
-              <img
-                src={imageUrl}
-                alt={expressionName}
-                className="h-full w-full cursor-pointer object-cover transition-transform hover:scale-105"
+              <button
+                type="button"
+                className="h-full w-full cursor-pointer bg-transparent p-0"
                 onClick={() => setIsPreviewOpen(true)}
-              />
+                aria-label="Open preview"
+              >
+                <img
+                  src={imageUrl}
+                  alt={expressionName}
+                  className="h-full w-full object-cover transition-transform hover:scale-105"
+                />
+              </button>
               {/* オーバーレイ */}
               <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-colors group-hover:bg-black/20 group-hover:opacity-100">
                 <div className="flex gap-2">
@@ -371,6 +383,7 @@ export function CharacterExpressionCard(props: Props) {
       {/* プレビューダイアログ */}
       {isPreviewOpen && imageUrl && (
         <button
+          type="button"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
           onClick={() => setIsPreviewOpen(false)}
           onKeyDown={(e) => e.key === "Escape" && setIsPreviewOpen(false)}

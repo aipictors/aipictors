@@ -18,7 +18,7 @@ type Props = RenderPhotoProps & {
   subWorksCount?: number
 }
 
-export function HomeWorkAlbum(props: Props) {
+export function HomeWorkAlbum (props: Props) {
   return (
     <div
       className="cursor overflow-hidden rounded transition-all"

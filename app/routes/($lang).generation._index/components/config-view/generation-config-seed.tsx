@@ -14,7 +14,7 @@ type Props = {
   onChange(value: number): void
 }
 
-export function GenerationConfigSeed(props: Props) {
+export function GenerationConfigSeed (props: Props) {
   const t = useTranslation()
 
   return (

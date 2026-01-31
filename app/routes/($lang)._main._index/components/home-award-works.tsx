@@ -15,7 +15,7 @@ type Props = {
 /**
  * ランキング一覧
  */
-export function HomeAwardWorksSection(props: Props) {
+export function HomeAwardWorksSection (props: Props) {
   const t = useTranslation()
 
   return (

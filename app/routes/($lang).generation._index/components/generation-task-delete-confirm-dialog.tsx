@@ -17,7 +17,7 @@ type Props = {
   onDelete: () => void
 }
 
-export function GenerationTaskDeleteConfirmDialog(props: Props) {
+export function GenerationTaskDeleteConfirmDialog (props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

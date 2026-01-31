@@ -62,7 +62,7 @@ const RequestWorkBotGradingMutation = graphql(
   }`,
 )
 
-export function AiEvaluationSection(props: Props) {
+export function AiEvaluationSection (props: Props) {
   console.log("=== AiEvaluationSection rendered ===")
   console.log("Props:", {
     currentBotGradingPublic: props.currentBotGradingPublic,

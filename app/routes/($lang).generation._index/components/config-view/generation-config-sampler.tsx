@@ -20,7 +20,7 @@ type Props = {
   onChange(value: string): void
 }
 
-export function GenerationConfigSampler(props: Props) {
+export function GenerationConfigSampler (props: Props) {
   const t = useTranslation()
 
   return (

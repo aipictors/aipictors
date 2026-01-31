@@ -69,7 +69,7 @@ type Props = {
 /**
  * 履歴一覧の履歴シートの中に表示する履歴内容
  */
-export function GenerationTaskSheetViewContent(props: Props) {
+export function GenerationTaskSheetViewContent (props: Props) {
   const context = useGenerationContext()
   const t = useTranslation()
 

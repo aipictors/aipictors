@@ -62,7 +62,7 @@ type Props = {
 /**
  * 作品のコメントへの返信
  */
-export function WorkCommentResponse(props: Props) {
+export function WorkCommentResponse (props: Props) {
   const t = useTranslation()
 
   const [deleteMutation, { loading: isDeleteLoading }] = useMutation(

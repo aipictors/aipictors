@@ -11,7 +11,7 @@ import { useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { toast } from "sonner"
 
-export function PlusForm() {
+export function PlusForm () {
   const [mutation, { loading: isLoading }] = useMutation(
     createCustomerPortalSessionMutation,
   )

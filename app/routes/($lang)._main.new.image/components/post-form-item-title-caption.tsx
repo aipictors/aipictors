@@ -62,7 +62,7 @@ type Props = {
 /**
  * タイトル（必須）・キャプション統合入力コンポーネント
  */
-export function PostFormItemTitleCaption(props: Props) {
+export function PostFormItemTitleCaption (props: Props) {
   const t = useTranslation()
   const [localTitle, setLocalTitle] = useState(props.title || "")
   const [localCaption, setLocalCaption] = useState(props.caption || "")

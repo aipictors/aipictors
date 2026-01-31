@@ -48,7 +48,7 @@ type Props = {
 /**
  * 履歴の操作
  */
-export function GenerationTaskListActions(props: Props) {
+export function GenerationTaskListActions (props: Props) {
   const [deleteTask] = useMutation(deleteImageGenerationResultMutation)
   const t = useTranslation()
 

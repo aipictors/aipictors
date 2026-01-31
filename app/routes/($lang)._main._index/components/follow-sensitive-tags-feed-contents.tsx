@@ -157,7 +157,7 @@ export type FollowTagsFeedContentsProps = {
 /* -----------------------------------------------------------------
  * Root component
  * -----------------------------------------------------------------*/
-export function FollowSensitiveTagsFeedContents({
+export function FollowSensitiveTagsFeedContents ({
   page,
   setPage,
   isPagination,

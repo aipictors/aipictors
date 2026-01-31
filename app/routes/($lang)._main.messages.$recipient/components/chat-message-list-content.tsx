@@ -14,7 +14,7 @@ type Props = {
 
 /**
  */
-export function ChatMessageListContent(props: Props) {
+export function ChatMessageListContent (props: Props) {
   const { data, refetch } = useSuspenseQuery(MessagesQuery, {
     variables: {
       threadId: props.recipientId,

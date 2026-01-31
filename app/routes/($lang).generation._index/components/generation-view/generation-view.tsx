@@ -23,7 +23,7 @@ type Props = {
 /**
  * 画像生成画面
  */
-export function GenerationView(props: Props) {
+export function GenerationView (props: Props) {
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })

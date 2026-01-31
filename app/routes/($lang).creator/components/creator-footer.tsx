@@ -1,7 +1,7 @@
 import { Link } from "@remix-run/react"
 import { SnsIconLink } from "~/components/sns-icon"
 
-export function CreatorFooter() {
+export function CreatorFooter () {
   return (
     <div className="container-shadcn-ui flex flex-col items-start gap-y-3 py-8 sm:flex-row sm:items-center sm:gap-y-0">
       <div className="flex flex-1 gap-x-4">

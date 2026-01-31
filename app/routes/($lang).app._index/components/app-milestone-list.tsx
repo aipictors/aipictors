@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 
-export function AppMilestoneList() {
+export function AppMilestoneList () {
   const { data: milestones } = useSuspenseQuery(milestonesQuery, {
     variables: { repository: "app" },
   })

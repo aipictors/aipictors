@@ -2,7 +2,7 @@ import { AppCanvas } from "~/routes/($lang).app._index/components/app-canvas"
 import { Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 
-export function AppAboutHeader() {
+export function AppAboutHeader () {
   const t = useTranslation()
 
   return (

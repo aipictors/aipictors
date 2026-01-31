@@ -11,7 +11,7 @@ type Props = {
 /**
  * スマホ向けシリーズ一覧
  */
-export function AlbumsSpList(props: Props) {
+export function AlbumsSpList (props: Props) {
   return (
     <>
       {props.albums.map((album, _index) => (

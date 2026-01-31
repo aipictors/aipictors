@@ -8,7 +8,7 @@ type Props = {
   user: FragmentOf<typeof UserAboutCardFragment>
 }
 
-export function UserAboutCard(props: Props) {
+export function UserAboutCard (props: Props) {
   const t = useTranslation()
 
   return (

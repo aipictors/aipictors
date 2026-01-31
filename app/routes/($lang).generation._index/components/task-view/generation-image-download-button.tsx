@@ -15,7 +15,7 @@ type Props = {
 /**
  * 生成画像のZip形式のダウンロードボタン
  */
-export function GenerationImageDownloadButton(props: Props) {
+export function GenerationImageDownloadButton (props: Props) {
   const _context = useGenerationContext()
 
   const [isLoading, setIsLoading] = useState(false)

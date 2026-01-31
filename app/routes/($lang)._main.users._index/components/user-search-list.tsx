@@ -20,7 +20,7 @@ import {
   UserSearchListItemWorkFragment,
 } from "~/routes/($lang)._main.users._index/components/user-search-item"
 
-export function UserSearchList() {
+export function UserSearchList () {
   const t = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const hasWorksFilterId = useId()

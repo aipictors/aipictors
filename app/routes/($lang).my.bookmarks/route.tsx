@@ -32,7 +32,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyBookmarks() {
+export default function MyBookmarks () {
   const [bookmarkPage, setBookmarkPage] = React.useState(0)
 
   const authContext = useContext(AuthContext)

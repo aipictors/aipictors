@@ -1,6 +1,6 @@
 import { TagCard } from "~/routes/($lang)._main.tags._index/components/tag-card"
 
-export function RelatedTagList() {
+export function RelatedTagList () {
   return (
     // <div>
     //   <Splide

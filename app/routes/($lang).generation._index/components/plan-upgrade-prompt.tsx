@@ -11,7 +11,7 @@ type Props = {
 /**
  * プランアップグレードを促すさりげないUIコンポーネント
  */
-export function PlanUpgradePrompt({ currentPlan, className }: Props) {
+export function PlanUpgradePrompt ({ currentPlan, className }: Props) {
   const getUpgradeMessage = (plan?: IntrospectionEnum<"PassType"> | null) => {
     switch (plan) {
       case "LITE":

@@ -101,6 +101,12 @@ export const config = {
     maxImageCount: 200,
   },
   /**
+   * 内部API（未設定の場合は空文字）
+   */
+  internalApiEndpoint: {
+    promptsCheck: "",
+  },
+  /**
    * ログイベント
    */
   logEvent: {
@@ -341,6 +347,11 @@ export interface MetaData {
   image?: string | null
   isIndex?: boolean
   isTop?: boolean
+  ogp?: {
+    title?: string
+    description?: string
+    image?: string | null
+  }
 }
 
 /**

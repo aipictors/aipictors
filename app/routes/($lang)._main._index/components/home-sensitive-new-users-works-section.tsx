@@ -16,7 +16,7 @@ type Props = {
 /**
  * 新規ユーザの作品
  */
-export function HomeSensitiveNewUsersWorksSection(props: Props) {
+export function HomeSensitiveNewUsersWorksSection (props: Props) {
   const appContext = useContext(AuthContext)
 
   // 新規ユーザ作品

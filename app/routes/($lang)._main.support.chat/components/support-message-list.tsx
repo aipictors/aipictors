@@ -14,7 +14,7 @@ type Props = {
   recipientIconImageURL: string
 }
 
-export function SupportMessageList(props: Props) {
+export function SupportMessageList (props: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

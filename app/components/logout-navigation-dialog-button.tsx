@@ -23,7 +23,7 @@ type Props = {
 /**
  * ログアウトする
  */
-export function NavigationLogoutDialogButton(props: Props) {
+export function NavigationLogoutDialogButton (props: Props): React.ReactNode {
   const t = useTranslation()
 
   const handleLogout = async () => {
@@ -35,7 +35,7 @@ export function NavigationLogoutDialogButton(props: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <HomeNavigationButton icon={LogOutIcon} href={""} children={undefined}>
+        <HomeNavigationButton icon={LogOutIcon}>
           {props.text ?? t("ログアウト", "Logout")}
         </HomeNavigationButton>
       </AlertDialogTrigger>

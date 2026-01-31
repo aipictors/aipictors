@@ -67,7 +67,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * スタンプの詳細
  */
-export default function Sticker() {
+export default function Sticker () {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()

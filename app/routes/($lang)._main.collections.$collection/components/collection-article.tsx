@@ -14,10 +14,6 @@ type Props = {
 }
 
 export function CollectionArticle(props: Props) {
-  if (!props.collection.user) {
-    return null
-  }
-
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [page, setPage] = React.useState(Number(searchParams.get("page")) || 0)
@@ -28,7 +24,11 @@ export function CollectionArticle(props: Props) {
     params.set("page", String(page))
 
     setSearchParams(params)
-  }, [page])
+  }, [page, setSearchParams])
+
+  if (!props.collection.user) {
+    return null
+  }
 
   return (
     <div className="flex flex-col">

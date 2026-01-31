@@ -16,7 +16,7 @@ type Props = {
   state: PostTextFormState
 }
 
-export function EditTextFormUploader(props: Props) {
+export function EditTextFormUploader (props: Props) {
   const selectedFilesSizeText = () => {
     const totalBytes = props.state.items
       .map((item) => item.content)

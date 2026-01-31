@@ -20,7 +20,7 @@ type Props = {
   disabled: boolean
 }
 
-export function GenerationImageUploadConfirmDialog(props: Props) {
+export function GenerationImageUploadConfirmDialog (props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

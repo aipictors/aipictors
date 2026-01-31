@@ -28,7 +28,7 @@ const setBannerDismissed = (): void => {
 /**
  * キャラクター表情生成の案内バナー
  */
-export function CharacterExpressionBanner() {
+export function CharacterExpressionBanner () {
   const [isVisible, setIsVisible] = useState(true)
   const t = useTranslation()
 

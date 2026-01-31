@@ -10,7 +10,7 @@ type Props = Readonly<{
 /**
  * エラー時に .data URL を検知してリダイレクトする
  */
-export function AppErrorPage(props: Props) {
+export function AppErrorPage (props: Props): React.ReactNode {
   const t = useTranslation()
 
   const message = useAppErrorMessage(props.message)

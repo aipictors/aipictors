@@ -5,7 +5,7 @@ import { SnsIconLink } from "~/components/sns-icon"
 /**
  * フッター
  */
-export function HomeFooter() {
+export function HomeFooter (): React.ReactNode {
   return (
     <footer className={cn("container max-w-none", "space-y-2 border-t py-4")}>
       <div className="flex flex-col gap-x-2 gap-y-2 md:flex-row">

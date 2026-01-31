@@ -48,7 +48,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function Work() {
+export default function Work () {
   const params = useParams()
 
   if (params.post === undefined) {

@@ -16,7 +16,7 @@ type Props = {
 /**
  * プロフィール編集ダイアログ
  */
-export function ProfileEditDialog(props: Props) {
+export function ProfileEditDialog (props: Props) {
   const [open, setOpen] = useState(false)
 
   return (

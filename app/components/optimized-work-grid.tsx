@@ -74,26 +74,33 @@ export const OptimizedWorkGrid = memo((props: Props) => {
 
   return (
     <div className="space-y-4">
-      {chunkedWorks.map((chunk, chunkIndex) => (
-        <LazyLoadComponent
-          key={chunkIndex}
-          threshold={0.1}
-          rootMargin="200px"
-          disableOnServer={true} // SSR対応でチカチカ防止
-          fallback={null} // fallbackは表示せずチカチカを防ぐ
-        >
-          <div className={gridClass}>
-            {chunk.map((work) => (
-              <WorkItem
-                key={work.id}
-                work={work}
-                itemHeight={itemHeight}
-                onClick={() => debouncedClick(work.id)}
-              />
-            ))}
-          </div>
-        </LazyLoadComponent>
-      ))}
+      {chunkedWorks.map((chunk) => {
+        const chunkKey =
+          chunk.length > 0
+            ? `${chunk[0].id}-${chunk[chunk.length - 1].id}`
+            : "empty"
+
+        return (
+          <LazyLoadComponent
+            key={chunkKey}
+            threshold={0.1}
+            rootMargin="200px"
+            disableOnServer={true} // SSR対応でチカチカ防止
+            fallback={null} // fallbackは表示せずチカチカを防ぐ
+          >
+            <div className={gridClass}>
+              {chunk.map((work) => (
+                <WorkItem
+                  key={work.id}
+                  work={work}
+                  itemHeight={itemHeight}
+                  onClick={() => debouncedClick(work.id)}
+                />
+              ))}
+            </div>
+          </LazyLoadComponent>
+        )
+      })}
     </div>
   )
 })

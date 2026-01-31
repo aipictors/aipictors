@@ -17,7 +17,7 @@ type Props = {
   folderTitle: string
 }
 
-export function DeleteFolderConfirmDialog(props: Props) {
+export function DeleteFolderConfirmDialog (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNext = async () => {

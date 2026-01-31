@@ -43,7 +43,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * コレクションの詳細
  */
-export default function Collections() {
+export default function Collections () {
   const params = useParams()
 
   if (params.collection === undefined) {

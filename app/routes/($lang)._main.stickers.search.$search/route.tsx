@@ -50,7 +50,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * スタンプの検索画面
  */
-export default function Stickers() {
+export default function Stickers () {
   const params = useParams()
 
   if (params.search === undefined) {

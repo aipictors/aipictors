@@ -1,5 +1,11 @@
 import { useMutation } from "@apollo/client/index"
-import { useContext, useEffect, useState } from "react"
+import {
+  cloneElement,
+  isValidElement,
+  useContext,
+  useEffect,
+  useState,
+} from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { cn } from "~/lib/utils"
@@ -16,10 +22,48 @@ type Props = {
   unFollowTriggerChildren?: React.ReactNode
 }
 
+function enhanceTriggerNode(
+  node: React.ReactNode,
+  props: {
+    disabled: boolean
+    onPress?: () => void
+  },
+) {
+  if (!isValidElement(node)) {
+    return (
+      <button type="button" disabled={props.disabled} onClick={props.onPress}>
+        {node}
+      </button>
+    )
+  }
+
+  const originalOnClick = node.props.onClick as
+    | ((event: React.MouseEvent) => void)
+    | undefined
+
+  const onClick = props.onPress
+    ? (event: React.MouseEvent) => {
+        originalOnClick?.(event)
+        if (event.defaultPrevented) return
+        if (props.disabled) {
+          event.preventDefault()
+          event.stopPropagation()
+          return
+        }
+        props.onPress?.()
+      }
+    : originalOnClick
+
+  return cloneElement(node, {
+    disabled: props.disabled,
+    onClick,
+  })
+}
+
 /**
  * タグお気に入り登録
  */
-export function TagFollowButton(props: Props) {
+export function TagFollowButton(props: Props): React.ReactNode {
   const t = useTranslation() // 翻訳フック
   const authContext = useContext(AuthContext)
 
@@ -120,30 +164,26 @@ export function TagFollowButton(props: Props) {
         )}
       />
       {isFollow ? (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <div
-          onClick={() => {
-            if (isFollowing || isUnFollowing) return
-            onUnFollow()
-          }}
           className={cn(
             isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
           )}
         >
-          {unFollowTriggerNode}
+          {enhanceTriggerNode(unFollowTriggerNode, {
+            disabled: isFollowing || isUnFollowing,
+            onPress: onUnFollow,
+          })}
         </div>
       ) : (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
         <div
-          onClick={() => {
-            if (isFollowing || isUnFollowing) return
-            onFollow()
-          }}
           className={cn(
             isFollowing || isUnFollowing ? "w-full opacity-80" : " w-full",
           )}
         >
-          {triggerNode}
+          {enhanceTriggerNode(triggerNode, {
+            disabled: isFollowing || isUnFollowing,
+            onPress: onFollow,
+          })}
         </div>
       )}
     </div>

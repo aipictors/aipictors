@@ -48,7 +48,7 @@ type Props = {
  * ヘッダーのナビゲーションメニューの内容部分（アイコン部分を除く）
  * HomeUserNavigationMenuから分離された最新の実装
  */
-export function UserNavigationMenuContent(props: Props) {
+export function UserNavigationMenuContent (props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data, refetch } = useQuery(viewerUserQuery, {

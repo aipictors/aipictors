@@ -34,6 +34,6 @@ export const headers: HeadersFunction = () => ({
 /**
  * 開発ロードマップページ
  */
-export default function Roadmap() {
+export default function Roadmap () {
   return <RoadmapPage />
 }

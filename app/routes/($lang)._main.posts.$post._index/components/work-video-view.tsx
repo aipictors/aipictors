@@ -2,7 +2,7 @@ type Props = {
   videoUrl: string
 }
 
-export function WorkVideoView({ videoUrl }: Props) {
+export function WorkVideoView ({ videoUrl }: Props) {
   return (
     <div className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900">
       <video

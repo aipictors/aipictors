@@ -1,7 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 
-export function CollectionsHeader() {
+export function CollectionsHeader () {
   return (
     <div className="flex flex-col">
       <p>{"コレクション一覧"}</p>

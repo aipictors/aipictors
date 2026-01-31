@@ -14,7 +14,7 @@ type Props = {
  * 作品のメディア種別やプロンプト公開状態を示すバッジ
  * 参照生成ボタンがある場合は位置を調整します
  */
-export function WorkMediaBadge(props: Props) {
+export function WorkMediaBadge (props: Props): React.ReactNode {
   const {
     isPromptPublic = false,
     hasVideoUrl = false,

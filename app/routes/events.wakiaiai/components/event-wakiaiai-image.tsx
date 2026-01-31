@@ -9,7 +9,7 @@ type Props = {
   linkTitle?: string
 }
 
-export function EventWakiaiaiImage(props: Props) {
+export function EventWakiaiaiImage (props: Props) {
   return (
     <div className="relative">
       <img

@@ -71,7 +71,7 @@ const MasonryGridSkeleton = ({
 /**
  * 共通のマソンリーグリッド
  */
-export function MasonryWorkGrid(props: Props) {
+export function MasonryWorkGrid (props: Props): React.ReactNode {
   const { works, isLoadingMore, baseUrl = "posts/gallery" } = props
   const [columnCount, setColumnCount] = useState(6)
 

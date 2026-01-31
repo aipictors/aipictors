@@ -21,7 +21,7 @@ type Props = {
 /**
  * 参照生成ダイアログ
  */
-export function GenerationReferenceDialog(props: Props) {
+export function GenerationReferenceDialog (props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

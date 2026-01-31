@@ -17,7 +17,7 @@ type Props = {
 /**
  * テイスト入力
  */
-export function PostFormItemTaste(props: Props) {
+export function PostFormItemTaste (props: Props) {
   const t = useTranslation()
 
   return (

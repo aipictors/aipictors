@@ -15,7 +15,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserSensitiveNovelList(props: Props) {
+export function UserSensitiveNovelList (props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId =

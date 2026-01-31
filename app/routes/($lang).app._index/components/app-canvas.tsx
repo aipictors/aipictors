@@ -1,7 +1,7 @@
 import { runAnimation } from "~/routes/($lang).app._index/utils/run-animation"
 import { useEffect, useRef } from "react"
 
-export function AppCanvas() {
+export function AppCanvas () {
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {

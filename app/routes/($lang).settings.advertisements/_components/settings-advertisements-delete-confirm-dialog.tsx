@@ -17,7 +17,7 @@ type Props = {
   onDelete: () => Promise<void>
 }
 
-export function SettingsAdvertisementsDeleteConfirmDialog(props: Props) {
+export function SettingsAdvertisementsDeleteConfirmDialog (props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

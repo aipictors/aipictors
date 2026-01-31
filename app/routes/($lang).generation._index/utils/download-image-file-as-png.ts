@@ -22,7 +22,9 @@ export const downloadImageFileAsPng = async (
       extension: "png",
     })
 
-    const blob = new Blob([file.data], { type: "image/png" })
+    const copied = new Uint8Array(file.data.byteLength)
+    copied.set(file.data)
+    const blob = new Blob([copied], { type: "image/png" })
 
     const linkNode = document.createElement("a")
     linkNode.href = URL.createObjectURL(blob)

@@ -103,7 +103,7 @@ export const vPostAnimationFormInputAction = union([
   }),
   object({
     type: literal("SET_AI_MODEL_ID"),
-    payload: string(),
+    payload: nullable(string()),
   }),
   object({
     type: literal("SET_RESERVATION_DATE"),

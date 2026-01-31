@@ -7,7 +7,7 @@ import { useContext } from "react"
 /**
  * メッセージの一覧
  */
-export default function PlusLayout() {
+export default function PlusLayout () {
   const authContext = useContext(AuthContext)
 
   if (authContext.isLoading) {

@@ -11,7 +11,7 @@ type Props = {
 /**
  * イベントアイテム
  */
-export function AppEventCard(props: Props) {
+export function AppEventCard (props: Props) {
   const appEvent = readFragment(AppEventItemFragment, props.appEvent)
 
   const now = getJstDate(new Date())

@@ -27,7 +27,7 @@ type Props = {
 /**
  * 作成済みの作品選択ダイアログ
  */
-export function SelectCreatedWorksDialog(props: Props) {
+export function SelectCreatedWorksDialog (props: Props) {
   const t = useTranslation()
 
   const appContext = useContext(AuthContext)

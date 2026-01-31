@@ -38,7 +38,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { loaderClient } from "~/lib/loader-client"
 
-export default function NewAnimation() {
+export default function NewAnimation () {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()

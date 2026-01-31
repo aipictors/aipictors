@@ -20,7 +20,7 @@ type Props = {
   setModel: (value: string | null) => void
 }
 
-export function PostFormItemModel({ model, models, setModel }: Props) {
+export function PostFormItemModel ({ model, models, setModel }: Props) {
   const [searchTerm, setSearchTerm] = useState("")
 
   const t = useTranslation()

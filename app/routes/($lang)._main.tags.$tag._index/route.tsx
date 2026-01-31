@@ -193,7 +193,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   )
 }
 
-export default function Tag() {
+export default function Tag () {
   const params = useParams()
   const authContext = useContext(AuthContext)
 

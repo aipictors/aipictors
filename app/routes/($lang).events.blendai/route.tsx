@@ -11,7 +11,7 @@ import { ImageGenerationReferenceCard } from "~/routes/($lang).events.blendai/co
 import { useTranslation } from "~/hooks/use-translation"
 import { config } from "~/config"
 
-export default function BlendAi() {
+export default function BlendAi () {
   const t = useTranslation()
 
   return (

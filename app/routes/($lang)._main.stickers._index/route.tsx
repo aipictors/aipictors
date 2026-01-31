@@ -78,7 +78,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function StickersPage() {
+export default function StickersPage () {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()

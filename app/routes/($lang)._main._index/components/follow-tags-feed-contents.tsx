@@ -158,7 +158,7 @@ export type FollowTagsFeedContentsProps = {
 /* -----------------------------------------------------------------
  * Root component
  * -----------------------------------------------------------------*/
-export function FollowTagsFeedContents({
+export function FollowTagsFeedContents ({
   _tab,
   page,
   setPage,

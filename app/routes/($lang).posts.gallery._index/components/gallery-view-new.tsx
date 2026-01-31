@@ -58,7 +58,7 @@ const WorksQuery = graphql(
 /**
  * ピンタレスト風ギャラリービュー
  */
-export function GalleryView(props: Props) {
+export function GalleryView (props: Props) {
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   // GraphQLクエリの条件を構築

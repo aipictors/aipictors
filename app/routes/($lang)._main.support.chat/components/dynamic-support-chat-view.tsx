@@ -11,7 +11,7 @@ import { useInterval } from "usehooks-ts"
 import { AuthContext } from "~/contexts/auth-context"
 import { TypingIndicator } from "~/routes/($lang)._main.support.chat/components/typing-indicator"
 
-export function SupportChatView() {
+export function SupportChatView () {
   const authContext = useContext(AuthContext)
   const [isWaitingForAiResponse, setIsWaitingForAiResponse] = useState(false)
 

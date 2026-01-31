@@ -13,7 +13,7 @@ type Props = {
  * 作品の生成ボタン
  * プロンプト情報がある作品の場合に表示され、生成ページにリダイレクトする
  */
-export function WorkGenerationButton(props: Props) {
+export function WorkGenerationButton (props: Props) {
   const t = useTranslation()
 
   // プロンプト情報がない場合は表示しない

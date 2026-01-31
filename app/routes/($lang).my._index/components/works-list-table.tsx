@@ -35,7 +35,7 @@ type Props = {
 /**
  * 作品一覧
  */
-export function WorksListTable(props: Props) {
+export function WorksListTable (props: Props) {
   const t = useTranslation()
 
   return (

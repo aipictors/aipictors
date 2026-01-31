@@ -170,6 +170,8 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                       />
                     </Link>
                   )}
+                  {/* biome-ignore lint/a11y/noStaticElementInteractions: overlay only stops parent navigation when interacting with LikeButton */}
+                  {/* biome-ignore lint/a11y/useKeyWithClickEvents: overlay is not an actionable control; LikeButton handles keyboard/mouse interaction */}
                   <div
                     className={cn(
                       "absolute right-0 z-10",

@@ -36,7 +36,7 @@ type Props = {
 /**
  * レスポンシブ対応の画像生成の履歴
  */
-export function GenerationTaskResponsiveCard(props: Props) {
+export function GenerationTaskResponsiveCard (props: Props) {
   return (
     <>
       <ErrorBoundary key={props.task.id} fallback={<ErrorResultCard />}>

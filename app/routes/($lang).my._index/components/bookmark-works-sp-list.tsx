@@ -13,7 +13,7 @@ type Props = {
 /**
  * スマホ向けブックマーク作品一覧
  */
-export function BookmarkWorksSpList(props: Props) {
+export function BookmarkWorksSpList (props: Props) {
   const truncateTitle = (title: string, maxLength: number) => {
     return title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
   }

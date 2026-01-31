@@ -1,6 +1,9 @@
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import {
+  type PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { AiModelHeader } from "~/routes/($lang)._main.models.$model/components/ai-model-header"
 import { useContext, useEffect, useState } from "react"
 import { useQuery } from "@apollo/client/index"
@@ -19,26 +22,17 @@ type Props = {
 export function AiModelSensitiveArticle(props: Props) {
   const model = readFragment(ModelSensitiveItemFragment, props.model)
 
-  if (
-    model.works === undefined ||
-    model.works === null ||
-    model.worksCount === 0
-  ) {
-    return (
-      <div className="text-center">
-        <p>作品がありません</p>
-      </div>
-    )
-  }
-
   const authContext = useContext(AuthContext)
 
   const [page, setPage] = useState(props.page)
 
   const [_searchParams, setSearchParams] = useSearchParams()
 
+  const isEmpty =
+    model.works === undefined || model.works === null || model.worksCount === 0
+
   const { data } = useQuery(aiModelQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip: isEmpty || authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       search: model.name,
       offset: 32 * page,
@@ -57,16 +51,25 @@ export function AiModelSensitiveArticle(props: Props) {
 
   const aiModel = readFragment(ModelSensitiveItemFragment, data?.aiModel)
 
-  const works = aiModel?.works ?? model.works
+  const works = isEmpty ? [] : (aiModel?.works ?? model.works)
 
   // URLパラメータの監視と更新
   useEffect(() => {
+    if (isEmpty) return
     setSearchParams({
       page: String(page),
       prompt: props.hasPrompt ? "1" : "0",
       r15: props.isMoreRatings ? "1" : "0",
     })
-  }, [page, props.hasPrompt, props.isMoreRatings, setSearchParams])
+  }, [isEmpty, page, props.hasPrompt, props.isMoreRatings, setSearchParams])
+
+  if (isEmpty) {
+    return (
+      <div className="text-center">
+        <p>作品がありません</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col space-y-4">
@@ -79,7 +82,9 @@ export function AiModelSensitiveArticle(props: Props) {
       />
       <div className="space-y-4">
         <ResponsivePhotoWorksAlbum
-          works={works}
+          works={
+            works as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]
+          }
           targetRowHeight={240}
           size="small"
           isShowProfile={true}

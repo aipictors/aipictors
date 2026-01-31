@@ -58,7 +58,7 @@ function TagGrid(props: {
   )
 }
 
-export function SearchHints(props: Props) {
+export function SearchHints (props: Props) {
   const navigate = useNavigate()
   const t = useTranslation()
 

@@ -46,7 +46,7 @@ type Props = {
   themeId: number
 }
 
-export function ThemeContainer(props: Props) {
+export function ThemeContainer (props: Props) {
   const navigate = useNavigate()
 
   const [searchParams] = useSearchParams()

@@ -5,7 +5,7 @@ type Props = {
   badges: FragmentOf<typeof UserBadgeListItemFragment>[]
 }
 
-export function SensitiveUserBadgesList(props: Props) {
+export function SensitiveUserBadgesList (props: Props) {
   return (
     <div className="flex flex-wrap gap-4">
       {props.badges.map((badge) => (

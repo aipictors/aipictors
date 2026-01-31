@@ -29,7 +29,7 @@ import { GenerationDemoView } from "~/routes/($lang).generation.demonstration/co
 /**
  * 画像生成
  */
-export default function GenerationDemonstrationPage() {
+export default function GenerationDemonstrationPage () {
   const [rating, setRating] = useState(-1)
 
   const [protect, setProtect] = useState(-1)
@@ -112,6 +112,7 @@ export default function GenerationDemonstrationPage() {
             workListFromModel={<GenerationWorkListModelView />}
             communication={<GenerationCommunicationView />}
             links={<GenerationLinksView />}
+            logs={null}
           />
         }
         menu={<GenerationDemoConfigView />}

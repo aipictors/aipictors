@@ -26,7 +26,7 @@ type Props = {
 /**
  * 履歴メモ保存コンテンツ
  */
-export function GenerationConfigMemoSavingContent(props: Props) {
+export function GenerationConfigMemoSavingContent (props: Props) {
   const context = useGenerationContext()
 
   const [title, setTitle] = useState("設定")

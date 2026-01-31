@@ -15,17 +15,15 @@ export function GenerationTaskDetails() {
 
   const authContext = useContext(AuthContext)
 
-  if (authContext === null || context.config.viewTaskId === null) {
+  const viewTaskId = context.config.viewTaskId
+
+  const imageGenerationTask = useCachedImageGenerationTask(viewTaskId ?? "")
+
+  const imageGenerationResult = useCachedImageGenerationResult(viewTaskId ?? "")
+
+  if (authContext === null || viewTaskId === null) {
     return null
   }
-
-  const imageGenerationTask = useCachedImageGenerationTask(
-    context.config.viewTaskId,
-  )
-
-  const imageGenerationResult = useCachedImageGenerationResult(
-    context.config.viewTaskId,
-  )
 
   return (
     <>

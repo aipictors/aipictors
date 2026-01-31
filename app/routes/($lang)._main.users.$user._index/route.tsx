@@ -88,7 +88,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function UserLayout() {
+export default function UserLayout () {
   const params = useParams<"user">()
 
   const authContext = useContext(AuthContext)
@@ -151,6 +151,10 @@ export default function UserLayout() {
   })
 
   if (!isDataReady) {
+    return null
+  }
+
+  if (!data.user) {
     return null
   }
 

@@ -31,7 +31,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * 設定
  */
-export default function Settings() {
+export default function Settings () {
   const t = useTranslation()
 
   return (

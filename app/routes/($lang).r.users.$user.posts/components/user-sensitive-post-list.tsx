@@ -4,7 +4,10 @@ import { useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { ResponsivePhotoWorksAlbum } from "~/components/responsive-photo-works-album"
+import {
+  type PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 
 type Props = {
   works: FragmentOf<typeof UserPostsItemFragment>[]
@@ -12,7 +15,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserSensitivePostList(props: Props) {
+export function UserSensitivePostList (props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId = props.works.length ? (props.works[0]?.user?.id ?? "") : ""
@@ -43,7 +46,12 @@ export function UserSensitivePostList(props: Props) {
     <div className="flex flex-col space-y-4">
       <div className="flex min-h-96 flex-col gap-y-4">
         <section className="relative space-y-4">
-          <ResponsivePhotoWorksAlbum works={posts} isShowProfile={true} />
+          <ResponsivePhotoWorksAlbum
+            works={
+              posts as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]
+            }
+            isShowProfile={true}
+          />
         </section>
       </div>
       <div className="h-8" />

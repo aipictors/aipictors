@@ -6,7 +6,7 @@ type Props = Readonly<{
   children: React.ReactNode
 }>
 
-export function AppColumnLayout(props: Props) {
+export function AppColumnLayout (props: Props): React.ReactNode {
   return (
     <div
       className={cn(

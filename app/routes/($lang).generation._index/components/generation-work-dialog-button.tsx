@@ -13,7 +13,7 @@ type Props = {
 /**
  * 生成作品のダイアログのボタン
  */
-export function GenerationWorkDialogButton(props: Props) {
+export function GenerationWorkDialogButton (props: Props) {
   const _context = useGenerationContext()
 
   const normalizedImageUrl = normalizeGenerativeFileUrl(props.imageUrl)

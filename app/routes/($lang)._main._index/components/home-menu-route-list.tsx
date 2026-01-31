@@ -30,7 +30,7 @@ type Props = {
   onClickMenuItem?: () => void
 }
 
-export function HomeMenuRouteList({
+export function HomeMenuRouteList ({
   title: propTitle,
   onClickMenuItem,
 }: Props) {

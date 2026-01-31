@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { graphql, type FragmentOf, readFragment } from "gql.tada"
 import { HomeGenerationBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-generation-banner"
 
 export const HomeBannerWorkFragment = graphql(
@@ -27,25 +27,16 @@ type Banner = {
   blank?: boolean
 }
 
-type EventData = {
-  id: string
-  title: string
-  slug: string
-  thumbnailImageUrl: string
-  startAt: number
-  endAt: number
-}
-
 type Props = {
   works: FragmentOf<typeof HomeBannerWorkFragment>[]
-  ongoingEvents?: EventData[]
+  ongoingEvents?: FragmentOf<typeof HomeOngoingEventFragment>[]
   onSelect?: (index: string) => void
 }
 
 /**
  * ホームのバナー
  */
-export function HomeBanners(props: Props) {
+export function HomeBanners (props: Props) {
   // 既存の固定バナー
   const staticBanners: Banner[] = [
     {
@@ -80,29 +71,33 @@ export function HomeBanners(props: Props) {
 
   return (
     <div className="flex gap-x-4 overflow-x-auto">
-      {props.ongoingEvents?.map((event) => (
-        <div key={`event-${event.id}`} className="flex-none basis-auto">
-          <Link
-            to={`/events/${event.slug}`}
-            className="relative block overflow-hidden rounded"
-            onClick={() => onSelect(`event-${event.id}`)}
-          >
-            <img
-              src={event.thumbnailImageUrl}
-              alt={event.title}
-              className="h-40 w-auto rounded object-cover md:h-48"
-              draggable={false}
-              onDragStart={(e) => e.preventDefault()}
-              onError={() => {
-                console.error(
-                  `Failed to load event banner image: ${event.thumbnailImageUrl}`,
-                )
-                console.error("Event data:", event)
-              }}
-            />
-          </Link>
-        </div>
-      ))}
+      {props.ongoingEvents?.map((event) => {
+        const eventData = readFragment(HomeOngoingEventFragment, event)
+
+        return (
+          <div key={`event-${eventData.id}`} className="flex-none basis-auto">
+            <Link
+              to={`/events/${eventData.slug}`}
+              className="relative block overflow-hidden rounded"
+              onClick={() => onSelect(`event-${eventData.id}`)}
+            >
+              <img
+                src={eventData.thumbnailImageUrl}
+                alt={eventData.title}
+                className="h-40 w-auto rounded object-cover md:h-48"
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
+                onError={() => {
+                  console.error(
+                    `Failed to load event banner image: ${eventData.thumbnailImageUrl}`,
+                  )
+                  console.error("Event data:", eventData)
+                }}
+              />
+            </Link>
+          </div>
+        )
+      })}
 
       {/* 固定バナー */}
       {banners.map((banner, i) => (

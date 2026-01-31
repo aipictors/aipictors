@@ -97,7 +97,7 @@ type LocalFilterValues = {
   isOneWorkPerUser?: boolean
 }
 
-export function TagWorkSection(props: Props) {
+export function TagWorkSection (props: Props) {
   const authContext = useContext(AuthContext)
   const _client = useApolloClient()
   const navigate = useNavigate()

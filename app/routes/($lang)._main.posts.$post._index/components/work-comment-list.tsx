@@ -89,7 +89,7 @@ const getJSTDate = () => {
 /**
  * 作品へのコメント一覧
  */
-export function WorkCommentList(props: Props) {
+export function WorkCommentList (props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const t = useTranslation()

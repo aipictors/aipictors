@@ -1,4 +1,6 @@
-export function getBreakpoint(width: number) {
+export type Breakpoint = "base" | "sm" | "md" | "lg" | "xl"
+
+export function getBreakpoint(width: number): Breakpoint {
   if (width < 640) {
     return "base" as const
   }

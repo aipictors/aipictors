@@ -13,7 +13,7 @@ type Props = {
 /**
  * 作品一覧テーブルのカラム
  */
-export function WorksListColumn(props: Props) {
+export function WorksListColumn (props: Props) {
   return (
     <>
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}

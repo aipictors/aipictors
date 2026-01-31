@@ -33,7 +33,7 @@ type Props = {
 /**
  * モデレーター向け作品の年齢種別変更ダイアログ
  */
-export function ModerationRatingReportDialog(props: Props) {
+export function ModerationRatingReportDialog (props: Props) {
   const [rating, setRating] = useState("")
 
   const [mutation, { loading: isLoading }] = useMutation(

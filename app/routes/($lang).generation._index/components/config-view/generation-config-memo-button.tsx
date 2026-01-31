@@ -8,7 +8,7 @@ type Props = {
 /**
  * 履歴のメモボタン
  */
-export function GenerationConfigMemoButton(props: Props) {
+export function GenerationConfigMemoButton (props: Props) {
   return (
     <div
       title="生成情報にメモをつけて保存、復元することができます。"

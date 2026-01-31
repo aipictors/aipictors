@@ -15,7 +15,7 @@ type Props = {
 /**
  * 生成された作品セクション
  */
-export function HomeWorksGeneratedSection(props: Props) {
+export function HomeWorksGeneratedSection (props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: resp } = useQuery(WorksQuery, {

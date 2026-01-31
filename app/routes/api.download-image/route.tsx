@@ -139,6 +139,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   })
 }
 
-export default function Route() {
+export default function Route () {
   return null
 }

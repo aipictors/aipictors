@@ -6,7 +6,7 @@ type Props = {
   onClose: () => void
 }
 
-export function NavigationDrawer(props: Props) {
+export function NavigationDrawer (props: Props): React.ReactNode {
   return (
     <Sheet>
       <SheetOverlay />

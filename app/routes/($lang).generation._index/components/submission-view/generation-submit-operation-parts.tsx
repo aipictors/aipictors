@@ -45,7 +45,7 @@ type Props = {
  * @param prompts
  * @param seed
  */
-export function getSubmitButtonLabel(
+export function getSubmitButtonLabel (
   isSetI2iImage: boolean,
   prompts: string,
   seed: number,
@@ -77,7 +77,7 @@ export function getSubmitButtonLabel(
 /**
  * 生成実行に関わる操作UI
  */
-export function GenerationSubmitOperationParts(props: Props) {
+export function GenerationSubmitOperationParts (props: Props) {
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)

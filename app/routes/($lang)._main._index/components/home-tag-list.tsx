@@ -15,7 +15,7 @@ type Props = {
 /**
  * ホーム上部に表示するタグ一覧
  */
-export function HomeTagList(props: Props) {
+export function HomeTagList (props: Props) {
   const today = getJstDate()
 
   return (

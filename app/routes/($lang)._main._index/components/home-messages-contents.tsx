@@ -14,7 +14,7 @@ type Props = { onClick?: () => void }
 /**
  * ヘッダーのメッセージ一覧内容
  */
-export function HomeMessagesContents({ onClick }: Props) {
+export function HomeMessagesContents ({ onClick }: Props) {
   const authContext = useContext(AuthContext)
 
   if (authContext.userId === null) {

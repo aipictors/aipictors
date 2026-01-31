@@ -63,7 +63,7 @@ const saveAiEvaluationHidden = (workId: string, hidden: boolean): void => {
 /**
  * AI評価表示コンポーネント（吹き出しデザイン）
  */
-export function AiEvaluationDisplay(props: Props) {
+export function AiEvaluationDisplay (props: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isHidden, setIsHidden] = useState(false)
   const [isCommentExpanded, setIsCommentExpanded] = useState(false)

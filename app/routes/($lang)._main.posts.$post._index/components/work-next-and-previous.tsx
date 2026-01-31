@@ -15,7 +15,7 @@ type Props = {
   work: FragmentOf<typeof workArticleFragment>
 }
 
-export function WorkNextAndPrevious(props: Props) {
+export function WorkNextAndPrevious (props: Props) {
   const t = useTranslation()
 
   if (props.work === null) return null

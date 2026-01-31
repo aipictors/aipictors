@@ -21,7 +21,7 @@ import { SelectCreatedSensitiveWorksDialog } from "~/routes/($lang).my._index/co
 /**
  * プロフィール設定フォーム
  */
-export function SettingProfileForm() {
+export function SettingProfileForm () {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 

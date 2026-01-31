@@ -22,7 +22,7 @@ type Props = {
 /**
  * タグ作品一覧
  */
-export function HomeSensitiveWorksTagSection(props: Props) {
+export function HomeSensitiveWorksTagSection (props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: firstTagWorksResp } = useQuery(WorksQuery, {

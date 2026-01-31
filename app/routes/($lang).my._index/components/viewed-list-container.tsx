@@ -17,7 +17,7 @@ type Props = {
 /**
  * 閲覧履歴一覧コンテナ
  */
-export function ViewedListContainer(props: Props) {
+export function ViewedListContainer (props: Props) {
   const authContext = useContext(AuthContext)
 
   if (

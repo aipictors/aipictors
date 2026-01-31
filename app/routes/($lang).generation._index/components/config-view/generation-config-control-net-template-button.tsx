@@ -18,7 +18,7 @@ type Props = {
 /**
  * ControlNet設定
  */
-export function GenerationConfigControlNetTemplateButton(props: Props) {
+export function GenerationConfigControlNetTemplateButton (props: Props) {
   return (
     <div className="flex flex-col gap-y-2">
       <Button

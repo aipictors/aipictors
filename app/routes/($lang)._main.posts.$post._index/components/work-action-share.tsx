@@ -16,7 +16,7 @@ type Props = {
   id: string
 }
 
-export function SharePopover(props: Props) {
+export function SharePopover (props: Props) {
   const t = useTranslation()
 
   const currentUrl = `https://www.aipictors.com/posts/${props.id}`

@@ -31,7 +31,7 @@ type Props = {
 /**
  * スタンプ公開状態変更ダイアログ
  */
-export function StickerChangeAccessTypeActionDialog(props: Props) {
+export function StickerChangeAccessTypeActionDialog (props: Props) {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 

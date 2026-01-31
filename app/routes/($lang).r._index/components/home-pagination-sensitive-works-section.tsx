@@ -77,7 +77,7 @@ type Props = {
 /**
  * トップ画面ホーム作品一覧（画像・小説・動画）
  */
-export function HomePaginationSensitiveWorksSection(props: Props) {
+export function HomePaginationSensitiveWorksSection (props: Props) {
   const appContext = useContext(AuthContext)
 
   // 1ページあたりの件数（映像は少なめに）

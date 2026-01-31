@@ -18,13 +18,13 @@ type Props = {
   className?: string
 }
 
-export function SidebarNavigationButton({
+export function SidebarNavigationButton ({
   href,
   icon: Icon,
   children,
   onClick,
   className,
-}: Props) {
+}: Props): React.ReactNode {
   const { pathname } = useLocation()
   const { sidebarState } = useSidebar()
   const active = pathname === href || pathname.startsWith(`${href}/`)

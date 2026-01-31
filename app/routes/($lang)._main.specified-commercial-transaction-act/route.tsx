@@ -70,7 +70,7 @@ export async function loader(_props: LoaderFunctionArgs) {
   }
 }
 
-export default function SpecifiedCommercialTransactionActPage() {
+export default function SpecifiedCommercialTransactionActPage () {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()

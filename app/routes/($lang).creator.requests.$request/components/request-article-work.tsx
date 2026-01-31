@@ -4,7 +4,7 @@ type Props = {
   work: FragmentOf<typeof RequestArticleWorkFragment>
 }
 
-export function RequestArticleWork(props: Props) {
+export function RequestArticleWork (props: Props) {
   const work = readFragment(RequestArticleWorkFragment, props.work)
 
   return <img className={"rounded"} src={work.file?.imageURL} alt={work.id} />

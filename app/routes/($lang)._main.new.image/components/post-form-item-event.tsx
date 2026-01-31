@@ -24,10 +24,6 @@ export function PostFormItemEvent(props: Props) {
 
   const isOngoing = now <= new Date(props.endAt * 1000)
 
-  if (!isOngoing) {
-    return null
-  }
-
   const [isAttending, setIsAttending] = useState(
     props.isAttending === undefined ? false : props.isAttending,
   )
@@ -52,6 +48,10 @@ export function PostFormItemEvent(props: Props) {
   useEffect(() => {
     setIsAttending(props.isAttending === undefined ? false : props.isAttending)
   }, [props.isAttending])
+
+  if (!isOngoing) {
+    return null
+  }
 
   return (
     <Card>
@@ -78,7 +78,7 @@ export function PostFormItemEvent(props: Props) {
               {props.eventDescription !== null && (
                 <div
                   className="font-medium text-xs"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: eventDescription is pre-formatted HTML content
                   dangerouslySetInnerHTML={{ __html: props.eventDescription }}
                 />
               )}

@@ -18,7 +18,7 @@ type Props = {
 /**
  * ユーザからの推薦作品
  */
-export function HomeWorksUsersSensitiveRecommendedSection(props: Props) {
+export function HomeWorksUsersSensitiveRecommendedSection (props: Props) {
   const appContext = useContext(AuthContext)
 
   // 推薦作品

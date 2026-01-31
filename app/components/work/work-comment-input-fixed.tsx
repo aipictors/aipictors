@@ -24,7 +24,7 @@ type Props = {
 /**
  * 固定コメント入力欄コンポーネント
  */
-export function WorkCommentInputFixed(props: Props) {
+export function WorkCommentInputFixed (props: Props): React.ReactNode {
   const authContext = useContext(AuthContext)
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
   const t = useTranslation()

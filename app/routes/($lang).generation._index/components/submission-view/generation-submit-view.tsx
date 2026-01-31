@@ -64,7 +64,7 @@ type Props = {
   termsText: string
 }
 
-export function GenerationSubmissionView(props: Props) {
+export function GenerationSubmissionView (props: Props) {
   const context = useGenerationContext()
 
   const queryData = useGenerationQuery()
@@ -783,7 +783,6 @@ export function GenerationSubmissionView(props: Props) {
               controlNetModel: context.config.controlNetModel,
               controlNetModule: context.config.controlNetModule,
               upscaleSize: context.config.upscaleSize,
-              ipaddress: ipInfo?.ip || null,
             },
           },
         })
@@ -813,7 +812,6 @@ export function GenerationSubmissionView(props: Props) {
                 sizeType: context.config
                   .sizeType as IntrospectionEnum<"ImageGenerationSizeType">,
                 modelName: modelName,
-                ipaddress: ipInfo?.ip || null,
               },
             },
           })
@@ -839,7 +837,6 @@ export function GenerationSubmissionView(props: Props) {
                 prompt: promptsTexts[i],
                 size: convertToGeminiImageSize(context.config.sizeType),
                 imageUrl: i2iFileUrl || null,
-                ipaddress: ipInfo?.ip || null,
               },
             },
           })
@@ -887,7 +884,6 @@ export function GenerationSubmissionView(props: Props) {
                 controlNetModel: context.config.controlNetModel,
                 controlNetModule: context.config.controlNetModule,
                 upscaleSize: context.config.upscaleSize,
-                ipaddress: ipInfo?.ip || null,
               },
             },
           })

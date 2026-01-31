@@ -40,7 +40,7 @@ type TimelineItem = {
   details?: string
 }
 
-export function RoadmapPage() {
+export function RoadmapPage () {
   const [expandedItem, setExpandedItem] = useState<string | null>(null)
 
   // 過去から未来まで統合したタイムライン

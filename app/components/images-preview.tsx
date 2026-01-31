@@ -11,7 +11,7 @@ type Props = {
   mode?: "dialog" | "page" // ダイアログモードかページモードかを指定
 }
 
-export function ImagesPreview(props: Props) {
+export function ImagesPreview (props: Props): React.ReactNode {
   const { mode = "page" } = props
   const [isOpen, setIsOpen] = useState(false)
   const [scale, setScale] = useState(1)

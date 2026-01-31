@@ -7,7 +7,9 @@ type Props = {
  * 作品の種別の文言を返す
  * @param
  */
-export const toWorkTypeText = (props: Props) => {
+export const toWorkTypeText: (props: Props) => string = (
+  props: Props,
+): string => {
   switch (props.type) {
     case "WORK":
       return props.lang === "ja" ? "画像" : "Image"

@@ -293,8 +293,8 @@ export function PostFormItemDraggableImages(props: Props) {
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
         {props.items.length === 0 && !props.isOnlyMove && (
           <>
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
-            <div
+            <button
+              type="button"
               className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
               onClick={() => {
                 const inputElement = document.getElementById(
@@ -310,7 +310,7 @@ export function PostFormItemDraggableImages(props: Props) {
               ) : (
                 <p className="font-bold">{t("画像を追加", "Add Image")}</p>
               )}
-            </div>
+            </button>
           </>
         )}
         <SortableItems
@@ -336,8 +336,8 @@ export function PostFormItemDraggableImages(props: Props) {
             props.items.length !== 0 &&
             props.items.length !== props.maxItemsCount &&
             !props.isOnlyMove && (
-              // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-              <div
+              <button
+                type="button"
                 onClick={() => {
                   const inputElement = document.getElementById(
                     "images_input",
@@ -349,7 +349,7 @@ export function PostFormItemDraggableImages(props: Props) {
                 className="flex size-32 cursor-pointer items-center justify-center rounded-md bg-zinc-600 hover:opacity-80 dark:bg-zinc-700"
               >
                 <PlusIcon className="size-12" />
-              </div>
+              </button>
             )
           }
         />

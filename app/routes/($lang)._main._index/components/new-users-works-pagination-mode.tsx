@@ -28,7 +28,7 @@ interface Props {
   setPage?: (p: number) => void
 }
 
-export function NewUsersWorksPaginationMode({ anchorAt, ...rest }: Props) {
+export function NewUsersWorksPaginationMode ({ anchorAt, ...rest }: Props) {
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
 

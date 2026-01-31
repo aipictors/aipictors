@@ -14,7 +14,7 @@ type Props = {
   disabled?: boolean
 }
 
-export function GenerationMenuButton(props: Props) {
+export function GenerationMenuButton (props: Props) {
   return props.isLoading ? (
     <Button
       title={props.title}

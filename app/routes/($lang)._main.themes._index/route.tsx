@@ -151,7 +151,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.THEMES, undefined, props.params.lang)
 }
 
-export default function Themes() {
+export default function Themes () {
   const data = useLoaderData<typeof loader>()
 
   if (data === null) {

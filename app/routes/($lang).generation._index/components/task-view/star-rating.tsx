@@ -14,7 +14,7 @@ type Props = {
 /**
  * レーティング
  */
-export function StarRating(props: Props) {
+export function StarRating (props: Props) {
   const starOneRef = useRef<HTMLButtonElement>(null)
   const starTwoRef = useRef<HTMLButtonElement>(null)
   const starThreeRef = useRef<HTMLButtonElement>(null)

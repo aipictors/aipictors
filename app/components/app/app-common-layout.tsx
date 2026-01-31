@@ -11,7 +11,7 @@ type Props = Readonly<{
 /**
  * コンテンツ
  */
-export function AppCommonLayout(props: Props) {
+export function AppCommonLayout (props: Props): React.ReactNode {
   return (
     <SidebarProvider>
       <AppContents

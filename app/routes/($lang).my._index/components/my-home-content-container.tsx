@@ -6,7 +6,7 @@ type Props = {
 /**
  * ダッシュボードホームコンテンツコンテナ
  */
-export function DashboardHomeContentContainer(props: Props) {
+export function DashboardHomeContentContainer (props: Props) {
   return (
     <>
       <div className="flex h-auto flex-col space-y-2 rounded-md">

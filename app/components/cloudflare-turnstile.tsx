@@ -7,7 +7,7 @@ type Props = {
   onStatusChange(status: Status | null): void
 }
 
-export default function CloudflareTurnstile(props: Props) {
+export default function CloudflareTurnstile (props: Props): React.ReactNode {
   const [status, setStatus] = useState<Status | null>(null)
 
   useEffect(() => {

@@ -23,7 +23,7 @@ const isValidLogin = (login: string): boolean => {
   return allowedChars.test(login) && hasAlphabet.test(login)
 }
 
-export function AccountLoginForm() {
+export function AccountLoginForm () {
   const appContext = useContext(AuthContext)
   const t = useTranslation()
 

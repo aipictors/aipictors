@@ -11,7 +11,7 @@ type Props = {
   isMuted: boolean
 } & Pick<ButtonProps, "variant">
 
-export function UserMuteButton(props: Props) {
+export function UserMuteButton (props: Props) {
   const t = useTranslation() // useTranslation フックを使う
   const [mute, { loading: isMuteLoading }] = useMutation(muteUserMutation)
 

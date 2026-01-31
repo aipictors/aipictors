@@ -8,7 +8,7 @@ type Props = {
   type: "image" | "animation" | "text"
 }
 
-export function PostFormHeader(props: Props) {
+export function PostFormHeader (props: Props) {
   const t = useTranslation()
   const location = useLocation()
 

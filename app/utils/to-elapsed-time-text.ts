@@ -11,7 +11,7 @@ import {
  * @param date - 対象の日時
  * @param roundToMinutes - 丸める分単位 (例: 10, 5, 1)
  */
-const roundToNearestMinutes = (date: Date, roundToMinutes: number) => {
+const roundToNearestMinutes = (date: Date, roundToMinutes: number): Date => {
   const msInMinute = 60000
   const roundToMs = roundToMinutes * msInMinute
   const roundedTime = Math.round(date.getTime() / roundToMs) * roundToMs
@@ -22,7 +22,9 @@ const roundToNearestMinutes = (date: Date, roundToMinutes: number) => {
  * 経過した時間を表す文字列を返す
  * @param createdAt - UNIXタイムスタンプ (秒単位)
  */
-export const toElapsedTimeText = (createdAt: number) => {
+export const toElapsedTimeText: (createdAt: number) => string = (
+  createdAt: number,
+): string => {
   const roundToMinutesUnit = 3
   const now = roundToNearestMinutes(new Date(), roundToMinutesUnit)
   const targetDate = roundToNearestMinutes(

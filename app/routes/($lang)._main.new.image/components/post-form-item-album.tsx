@@ -19,7 +19,7 @@ type Props = {
 /**
  * シリーズ入力
  */
-export function PostFormItemAlbum(props: Props) {
+export function PostFormItemAlbum (props: Props) {
   const t = useTranslation()
 
   return (

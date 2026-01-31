@@ -40,7 +40,7 @@ interface Props {
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function SensitiveWorksInfiniteMode({ anchorAt, ...rest }: Props) {
+export function SensitiveWorksInfiniteMode ({ anchorAt, ...rest }: Props) {
   const client = useApolloClient()
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)

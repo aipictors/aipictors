@@ -14,7 +14,7 @@ type Props = {
   onSearchClick(): void
 }
 
-export function ConfigModelButton(props: Props) {
+export function ConfigModelButton (props: Props) {
   const t = useTranslation()
 
   return (

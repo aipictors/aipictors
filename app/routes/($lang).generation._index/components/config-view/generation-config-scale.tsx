@@ -13,7 +13,7 @@ type Props = {
   onChange(value: number): void
 }
 
-export function GenerationConfigScale(props: Props) {
+export function GenerationConfigScale (props: Props) {
   const t = useTranslation()
 
   return (

@@ -19,7 +19,7 @@ type Props = {
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
 
-export function HomeHotWorksSection(props: Props) {
+export function HomeHotWorksSection (props: Props) {
   const anchorAt = useMemo(() => getAnchorAt(), [])
   const key = `hot-${props.workType}-${props.sortType}-${props.isPagination}`
 

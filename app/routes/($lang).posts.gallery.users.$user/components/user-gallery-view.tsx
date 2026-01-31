@@ -36,7 +36,7 @@ type Props = {
 /**
  * ギャラリー内のユーザー専用ビュー（ピンタレスト風）
  */
-export function UserGalleryView(props: Props) {
+export function UserGalleryView (props: Props) {
   const t = useTranslation()
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [searchParams] = useSearchParams()

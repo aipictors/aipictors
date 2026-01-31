@@ -10,7 +10,7 @@ type Props = {
 /**
  * ホームの生成機バナー
  */
-export function HomeGenerationBanner(props: Props) {
+export function HomeGenerationBanner (props: Props) {
   const works = props.works.map((work) => {
     return readFragment(HomeGenerationBannerWorkFragment, work)
   })

@@ -14,7 +14,7 @@ type Props = {
   pass: string
 }
 
-export function GenerationCountSelect(props: Props) {
+export function GenerationCountSelect (props: Props) {
   return (
     <Select
       value={props.selectedCount.toString()}

@@ -4,7 +4,7 @@ type Props = Readonly<{
   breadcrumb: WithContext<BreadcrumbList>
 }>
 
-export function AppBreadcrumbScript(props: Props) {
+export function AppBreadcrumbScript (props: Props): React.ReactNode {
   return (
     <script
       type="application/ld+json"

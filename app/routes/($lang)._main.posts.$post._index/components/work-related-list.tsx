@@ -24,7 +24,7 @@ type Props = {
 /**
  * 直近の作品一覧
  */
-export function WorkRelatedList(props: Props) {
+export function WorkRelatedList (props: Props) {
   return (
     <div className="relative space-y-4">
       <CarouselWithGradation

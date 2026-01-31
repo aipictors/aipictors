@@ -12,7 +12,7 @@ type Props = {
   recipientIconImageURL: string
 }
 
-export function RecipientMessage(props: Props) {
+export function RecipientMessage (props: Props) {
   const t = useTranslation()
 
   const parseTextWithLinks = (text: string) => {

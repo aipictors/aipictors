@@ -5,7 +5,7 @@ type Props = {
   onClick(): void
 }
 
-export function FollowedTag(props: Props) {
+export function FollowedTag (props: Props) {
   return (
     <div className="flex justify-between">
       <div>

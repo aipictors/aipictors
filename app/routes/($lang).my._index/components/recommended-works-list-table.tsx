@@ -20,7 +20,7 @@ type Props = {
 /**
  * 推薦作品一覧
  */
-export function RecommendedWorksListTable(props: Props) {
+export function RecommendedWorksListTable (props: Props) {
   const t = useTranslation()
 
   return (

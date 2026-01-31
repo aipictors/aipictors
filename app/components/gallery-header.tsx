@@ -24,7 +24,7 @@ const HomeMenuRouteList = lazy(() =>
 /**
  * ギャラリー用ヘッダー
  */
-export function GalleryHeader() {
+export function GalleryHeader (): React.ReactNode {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchText, setSearchText] = useState("")

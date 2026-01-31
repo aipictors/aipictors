@@ -18,7 +18,7 @@ type Props = {
  * ソーシャルログインボタン
  * Googleでログインするなど
  */
-export function SocialLoginButton(props: Props) {
+export function SocialLoginButton (props: Props): React.ReactNode {
   const [isInitializedUserProfile] = useMutation(
     isInitializedUserProfileMutation,
   )

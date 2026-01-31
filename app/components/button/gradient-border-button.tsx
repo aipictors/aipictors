@@ -15,7 +15,7 @@ type Props = {
 /**
  * ボーダーが虹色のボタン
  */
-export function GradientBorderButton(props: Props) {
+export function GradientBorderButton (props: Props): React.ReactNode {
   return (
     <button
       onClick={props.onClick}

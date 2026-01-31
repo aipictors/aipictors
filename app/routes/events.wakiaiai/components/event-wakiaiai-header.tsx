@@ -7,7 +7,7 @@ type Props = {
   noLatestEventLink?: boolean
 }
 
-export function EventWakiaiaiHeader(props: Props) {
+export function EventWakiaiaiHeader (props: Props) {
   return (
     <>
       <header className="fixed z-50 flex w-full justify-center bg-card">

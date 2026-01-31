@@ -10,7 +10,7 @@ type Props = {
   onSelect(): void
 }
 
-export function ImageModelCard(props: Props) {
+export function ImageModelCard (props: Props) {
   /**
    * v2などのバージョン情報は残した状態でモデル名のアンダーバー以降の詳細文字列を削除する
    * @param input

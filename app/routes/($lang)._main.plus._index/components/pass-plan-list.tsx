@@ -11,7 +11,7 @@ type Props = {
   onSelect(passType: IntrospectionEnum<"PassType">): Promise<void>
 }
 
-export function PassPlanList(props: Props) {
+export function PassPlanList (props: Props) {
   const { data } = useQuery(viewerCurrentPassQuery, {})
 
   // if (data.viewer === null) {

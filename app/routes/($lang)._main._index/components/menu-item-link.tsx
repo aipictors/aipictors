@@ -2,16 +2,33 @@ import { DropdownMenuItem } from "~/components/ui/dropdown-menu"
 import { Link } from "@remix-run/react"
 import { userNavigationStyles } from "~/routes/($lang)._main._index/components/user-navigation-styles"
 
-type Props = {
+type LegacyProps = {
   href: string
   icon: React.ReactNode
   label: string
 }
 
+type ChildrenProps = {
+  to: string
+  children: React.ReactNode
+}
+
+type Props = LegacyProps | ChildrenProps
+
 /**
  * メニュー項目（共通スタイル使用、レスポンシブ対応）
  */
-export function MenuItemLink(props: Props) {
+export function MenuItemLink (props: Props) {
+  if ("children" in props) {
+    return (
+      <Link to={props.to}>
+        <DropdownMenuItem className={userNavigationStyles.menuItem}>
+          {props.children}
+        </DropdownMenuItem>
+      </Link>
+    )
+  }
+
   if (!props.href) {
     return (
       <DropdownMenuItem className={userNavigationStyles.menuItem}>

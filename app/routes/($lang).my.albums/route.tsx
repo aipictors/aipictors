@@ -35,7 +35,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyAlbums() {
+export default function MyAlbums () {
   const authContext = useContext(AuthContext)
 
   const [albumPage, setAlbumPage] = React.useState(0)

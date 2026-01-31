@@ -26,7 +26,7 @@ export const meta: MetaFunction = () => {
   ]
 }
 
-export default function SensitiveLayout() {
+export default function SensitiveLayout () {
   return (
     <>
       <AppCommonLayout outlet={<Outlet />} />

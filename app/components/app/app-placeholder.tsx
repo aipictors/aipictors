@@ -5,7 +5,7 @@ type Props = Readonly<{
 /**
  * 開発用の仮のページ
  */
-export function AppPlaceholder(props: Props) {
+export function AppPlaceholder (props: Props): React.ReactNode {
   return (
     <div className="- 72px) flex h-calc(100vh w-full items-center justify-center p-4">
       <div>

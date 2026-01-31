@@ -118,7 +118,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   )
 }
 
-export default function Tags() {
+export default function Tags () {
   const data = useLoaderData<typeof loader>()
 
   return (

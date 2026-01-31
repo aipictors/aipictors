@@ -9,7 +9,7 @@ type Props = {
   passType?: IntrospectionEnum<"PassType">
 }
 
-export function UserSubscriptionIcon(props: Props) {
+export function UserSubscriptionIcon (props: Props) {
   const iconUrl = () => {
     if (props.passType === "PREMIUM") {
       return "https://assets.aipictors.com/aipictors_stainless_premium_mark.webp"

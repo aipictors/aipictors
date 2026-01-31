@@ -4,8 +4,7 @@ import { GenerationConfigMemoItem } from "~/routes/($lang).generation._index/com
 import { useEffect, useState } from "react"
 
 type Props = {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  memos: any[] | undefined
+  memos: unknown[] | undefined
   refetchMemos: () => void
 }
 
@@ -13,19 +12,27 @@ type Props = {
  * 履歴メモ一覧
  */
 export function GenerationConfigMemoList(props: Props) {
+  const [searchWord, setSearchWord] = useState("")
+
+  useEffect(() => {
+    if (props.memos === undefined) return
+    props.refetchMemos()
+  }, [props.memos, props.refetchMemos])
+
   if (props.memos === undefined) {
     return <>{"プリセットから設定を復元できます"}</>
   }
 
-  const [searchWord, setSearchWord] = useState("")
-
-  useEffect(() => {
-    props.refetchMemos()
-  }, [])
+  const memos = props.memos as Array<{
+    title?: string | null
+    explanation?: string | null
+    prompts?: string | null
+    model?: unknown
+  }>
 
   const filterModels =
     searchWord !== ""
-      ? props.memos.filter((memo) => {
+      ? memos.filter((memo) => {
           return (
             memo?.title?.toLowerCase().includes(searchWord.toLowerCase()) ||
             memo?.explanation
@@ -34,7 +41,7 @@ export function GenerationConfigMemoList(props: Props) {
             memo?.prompts?.toLowerCase().includes(searchWord.toLowerCase())
           )
         })
-      : props.memos
+      : memos
 
   return (
     <>

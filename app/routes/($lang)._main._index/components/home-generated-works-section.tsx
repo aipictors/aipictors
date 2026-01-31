@@ -20,7 +20,7 @@ type Props = {
 /**
  * 生成機能で作成された作品一覧
  */
-export function HomeGeneratedWorksSection(props: Props) {
+export function HomeGeneratedWorksSection (props: Props) {
   const appContext = useContext(AuthContext)
   const t = useTranslation()
 

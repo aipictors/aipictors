@@ -10,7 +10,7 @@ type Props = Readonly<{
   action?: React.ReactNode
 }>
 
-export function AppPageHeader(props: Props) {
+export function AppPageHeader (props: Props): React.ReactNode {
   return (
     <div className={cn("space-y-1", props.className)}>
       {props.breadcrumb && <AppBreadcrumb breadcrumb={props.breadcrumb} />}

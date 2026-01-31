@@ -4,7 +4,7 @@ import { ShareIcon } from "lucide-react"
 /**
  * 共有
  */
-export function ShareButton() {
+export function ShareButton (): React.ReactNode {
   return (
     <Button aria-label="share" size={"icon"}>
       <ShareIcon />

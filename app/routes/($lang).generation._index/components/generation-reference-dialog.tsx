@@ -19,7 +19,7 @@ type Props = {
 /**
  * 参照生成ダイアログボタン
  */
-export function GenerationReferenceDialogButton(props: Props) {
+export function GenerationReferenceDialogButton (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleReference = () => {

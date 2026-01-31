@@ -22,7 +22,7 @@ type Props = {
   state: PostImageFormState
 }
 
-export function EditImageFormUploader(props: Props) {
+export function EditImageFormUploader (props: Props) {
   const t = useTranslation()
 
   const selectedFilesSizeText = () => {

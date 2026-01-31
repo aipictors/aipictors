@@ -1,6 +1,6 @@
 import { Card } from "~/components/ui/card"
 
-export function ThemeCard() {
+export function ThemeCard () {
   return (
     <Card>
       <img

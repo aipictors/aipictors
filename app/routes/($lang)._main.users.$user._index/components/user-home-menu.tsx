@@ -18,7 +18,7 @@ type Props = {
   user: FragmentOf<typeof UserHomeMenuFragment>
 }
 
-export function UserHomeMenu(props: Props) {
+export function UserHomeMenu (props: Props) {
   const cachedUser = readFragment(UserHomeMenuFragment, props.user)
 
   const authContext = useContext(AuthContext)

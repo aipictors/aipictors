@@ -9,7 +9,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { FollowedTag } from "~/routes/($lang).settings.followed.tags/components/followed-tag"
 import { toast } from "sonner"
 
-export function FollowedTagList() {
+export function FollowedTagList () {
   const appContext = useContext(AuthContext)
 
   const t = useTranslation()

@@ -20,7 +20,7 @@ import { useTranslation } from "~/hooks/use-translation"
 /**
  * ControlNet設定
  */
-export function GenerationConfigControlNet() {
+export function GenerationConfigControlNet () {
   const context = useGenerationContext()
 
   const size = parseGenerationSize(context.config.sizeType)

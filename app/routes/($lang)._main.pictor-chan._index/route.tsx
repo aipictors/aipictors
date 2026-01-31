@@ -37,6 +37,6 @@ export const headers: HeadersFunction = () => ({
 /**
  * ぴくたーちゃん紹介ページ
  */
-export default function PictorChan() {
+export default function PictorChan () {
   return <PictorChanProfile />
 }

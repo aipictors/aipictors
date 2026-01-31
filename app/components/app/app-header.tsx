@@ -6,7 +6,7 @@ type Props = Readonly<{
   isSmallLeftPadding?: boolean
 }>
 
-export function AppHeader(props: Props) {
+export function AppHeader (props: Props): React.ReactNode {
   return (
     <>
       <header className="fixed z-30 w-full max-w-[100vw] overflow-x-clip lg:z-30">

@@ -8,7 +8,7 @@ type Props = {
   page: number
 }
 
-export function UserStickerList(props: Props) {
+export function UserStickerList (props: Props) {
   const _t = useTranslation()
 
   return (

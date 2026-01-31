@@ -50,7 +50,7 @@ type GalleryTagProps = {
  * ギャラリー専用のタグコンポーネント
  * クリック可能で検索機能と連携
  */
-export function GalleryTag(props: GalleryTagProps) {
+export function GalleryTag (props: GalleryTagProps): React.ReactNode {
   const {
     text,
     variant = "default",
@@ -102,7 +102,7 @@ type GalleryTagListProps = {
 /**
  * ギャラリー用のタグリスト
  */
-export function GalleryTagList(props: GalleryTagListProps) {
+export function GalleryTagList (props: GalleryTagListProps): React.ReactNode {
   const {
     tags,
     variant = "default",

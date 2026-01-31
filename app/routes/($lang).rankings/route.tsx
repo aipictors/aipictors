@@ -6,7 +6,7 @@ export const meta: MetaFunction = () => {
   return [{ name: "robots", content: "noindex" }, { title: "-" }]
 }
 
-export default function RankingsLayout() {
+export default function RankingsLayout () {
   return (
     <>
       <AppCommonLayout outlet={<Outlet />} />

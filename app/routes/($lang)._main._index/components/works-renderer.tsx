@@ -17,7 +17,7 @@ interface Props {
   onSelect?: (index: string) => void
 }
 
-export function WorksRenderer({ workType, works, isCropped, onSelect }: Props) {
+export function WorksRenderer ({ workType, works, isCropped, onSelect }: Props) {
   if (workType === "NOVEL" || workType === "COLUMN") {
     return (
       <HomeNovelsWorksSection

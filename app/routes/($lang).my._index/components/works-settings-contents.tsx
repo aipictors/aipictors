@@ -12,7 +12,7 @@ type Props = {
 /**
  * 作品一覧カテゴリ切替
  */
-export function WorksSettingContents(props: Props) {
+export function WorksSettingContents (props: Props) {
   const t = useTranslation()
 
   return (

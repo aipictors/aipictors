@@ -5,7 +5,10 @@ import { useTranslation } from "~/hooks/use-translation"
  * 時刻の文字列を返す
  * @param time
  */
-export const toDateTimeText = (time: number, isSimple?: boolean) => {
+export const toDateTimeText: (time: number, isSimple?: boolean) => string = (
+  time: number,
+  isSimple?: boolean,
+): string => {
   const t = useTranslation()
 
   const date = new Date(time * 1000)

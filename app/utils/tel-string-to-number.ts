@@ -1,7 +1,9 @@
 import pkg from "google-libphonenumber"
 const { PhoneNumberUtil, PhoneNumberFormat } = pkg
 
-export const telStringToNumber = (value: string) => {
+export const telStringToNumber: (value: string) => string | null = (
+  value: string,
+): string | null => {
   // 日本の国コード
   const region = "JP"
 

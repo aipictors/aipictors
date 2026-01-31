@@ -24,7 +24,7 @@ type Props = React.ComponentProps<
  * リサイザーパネルのサイズ記憶付きハンドル（クライアント専用）
  * `id` を一意に指定すると Cookie にサイズを保存 / 復元します。
  */
-export function ResizablePanelWithMemory(props: Props) {
+export function ResizablePanelWithMemory (props: Props): React.ReactNode {
   return (
     <ClientOnly fallback={null}>
       {() => (

@@ -8,7 +8,7 @@ import {
   RequestArticleWorkFragment,
 } from "~/routes/($lang).creator.requests.$request/components/request-article-work"
 
-export default function Route() {
+export default function Route () {
   const data = useLoaderData<typeof loader>()
 
   if (!data || !("data" in data) || data.data === null) {

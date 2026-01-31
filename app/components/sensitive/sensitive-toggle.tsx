@@ -27,12 +27,12 @@ type Props = {
   targetUrl?: string
 }
 
-export function SensitiveToggle({
+export function SensitiveToggle ({
   variant = "compact",
   className,
   showStatus = false,
   targetUrl,
-}: Props) {
+}: Props): React.ReactNode {
   const [isR18Mode, setIsR18Mode] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [shouldSkipDialog, setShouldSkipDialog] = useState(false)

@@ -12,7 +12,7 @@ type Props = {
   text?: string
 }
 
-export function CreatingWorkDialog(props: Props) {
+export function CreatingWorkDialog (props: Props) {
   return (
     <>
       <Dialog open={props.isOpen}>

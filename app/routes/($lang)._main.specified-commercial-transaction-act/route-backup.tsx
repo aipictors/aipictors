@@ -3,6 +3,7 @@ import { AppMarkdown } from "~/components/app/app-markdown"
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -132,8 +133,8 @@ export default function SpecifiedCommercialTransactionActPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.company.map((item, index) => (
-                  <TableRow key={index}>
+                {data.company.map((item) => (
+                  <TableRow key={item.title}>
                     <TableCell className="font-medium">{item.title}</TableCell>
                     <TableCell>{item.content}</TableCell>
                     <TableCell className="text-muted-foreground">

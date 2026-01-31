@@ -19,7 +19,7 @@ type Props = {
   weekIndex: number | null
 }
 
-export function RankingSensitiveUserListModern(props: Props) {
+export function RankingSensitiveUserListModern (props: Props) {
   const appContext = useContext(AuthContext)
   const t = useTranslation()
 
@@ -120,7 +120,7 @@ export function RankingSensitiveUserListModern(props: Props) {
                   <div className="mx-auto mb-2 flex w-fit items-center space-x-2 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 px-3 py-1 text-white">
                     <Heart className="h-4 w-4 fill-current" />
                     <span className="font-bold text-lg">
-                      {user.averageLikesCount || 0}
+                      {user.avgLikes || 0}
                     </span>
                   </div>
                   <p className="font-medium text-muted-foreground text-xs">
@@ -162,7 +162,7 @@ export function RankingSensitiveUserListModern(props: Props) {
                   </div>
                   <div className="rounded-lg bg-gradient-to-br from-green-50 to-green-100 p-3 text-center dark:from-green-900/20 dark:to-green-800/20">
                     <div className="font-bold text-green-600 text-lg dark:text-green-400">
-                      {user.totalLikesCount || 0}
+                      {user.likesCount || 0}
                     </div>
                     <div className="text-green-500 text-xs dark:text-green-300">
                       {t("総いいね", "Total Likes")}

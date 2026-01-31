@@ -19,7 +19,7 @@ type Props = {
   isDeletedLoading: boolean
 }
 
-export function GenerationTaskDeleteMemoConfirmDialog(props: Props) {
+export function GenerationTaskDeleteMemoConfirmDialog (props: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 

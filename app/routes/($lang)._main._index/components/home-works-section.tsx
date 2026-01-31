@@ -18,13 +18,14 @@ interface Props {
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
   onSelect?: (index: string) => void
-  updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
+  updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
   isOneWorkPerUser?: boolean
 }
 
-export function HomeWorksSection(props: Props) {
+export function HomeWorksSection (props: Props) {
   const anchorAt = useMemo(() => getAnchorAt(), [])
   const key = `${props.timeRange}-${props.workType}-${props.sortType}-${props.isPagination}`
+  const updateWorks = props.updateWorks ?? (() => {})
 
   return (
     <div className="space-y-4">
@@ -34,7 +35,7 @@ export function HomeWorksSection(props: Props) {
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}
-          updateWorks={props.updateWorks}
+          updateWorks={updateWorks}
         />
       ) : (
         <WorksInfiniteMode
@@ -42,7 +43,7 @@ export function HomeWorksSection(props: Props) {
           {...props}
           anchorAt={anchorAt}
           onSelect={props.onSelect}
-          updateWorks={props.updateWorks}
+          updateWorks={updateWorks}
         />
       )}
     </div>

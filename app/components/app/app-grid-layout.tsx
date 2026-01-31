@@ -5,7 +5,7 @@ type Props = Readonly<{
   children: React.ReactNode
 }>
 
-export function AppGridLayout(props: Props) {
+export function AppGridLayout (props: Props): React.ReactNode {
   return (
     <div
       className={cn(

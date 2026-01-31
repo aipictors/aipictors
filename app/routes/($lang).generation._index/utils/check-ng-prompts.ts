@@ -12,6 +12,13 @@ export const checkNgPrompts = async (
   loginUserId: string,
 ): Promise<NgWordsResponse> => {
   try {
+    if (!config.internalApiEndpoint.promptsCheck) {
+      return {
+        hit_words: "",
+        hit_negative_words: "",
+      }
+    }
+
     const formData = new FormData()
 
     formData.append("prompts", prompts)

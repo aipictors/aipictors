@@ -15,7 +15,7 @@ type Props = {
 /**
  * 生成画像のダイアログのボタン
  */
-export function GenerationImageDialogButton(props: Props) {
+export function GenerationImageDialogButton (props: Props) {
   const normalizedImageUrl = normalizeGenerativeFileUrl(props.imageUrl)
 
   return (

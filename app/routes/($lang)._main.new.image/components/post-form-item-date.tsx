@@ -13,7 +13,7 @@ type Props = {
 /**
  * 日付入力
  */
-export function PostFormItemDate(props: Props) {
+export function PostFormItemDate (props: Props) {
   const t = useTranslation()
   const hasValue = props.date || props.time
 

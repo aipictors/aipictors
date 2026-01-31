@@ -22,7 +22,7 @@ interface Props {
   setPage?: (page: number) => void
 }
 
-export function TimelineView({ feedType, userId, page = 0, setPage }: Props) {
+export function TimelineView ({ feedType, userId, page = 0, setPage }: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 

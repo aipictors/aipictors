@@ -55,7 +55,7 @@ const addDismissedAnnouncement = (contentHash: string): void => {
 /**
  * 生成画面用緊急お知らせバナー
  */
-export function GenerationAnnouncementBanner() {
+export function GenerationAnnouncementBanner () {
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true)
 
   const {

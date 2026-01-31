@@ -25,7 +25,7 @@ type Props = {
 /**
  * 画像生成の履歴
  */
-export function GenerationTaskButton(props: Props) {
+export function GenerationTaskButton (props: Props) {
   const { send } = GenerationConfigContext.useActorRef()
 
   const context = useGenerationContext()

@@ -22,7 +22,7 @@ type Props = {
   onClick(): Promise<void>
 }
 
-export function PassPlanDescription(props: Props) {
+export function PassPlanDescription (props: Props) {
   const t = useTranslation()
 
   return (

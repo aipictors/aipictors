@@ -16,7 +16,7 @@ type Props = {
   weekIndex: number | null
 }
 
-export function RankingSensitiveUserList(props: Props) {
+export function RankingSensitiveUserList (props: Props) {
   const appContext = useContext(AuthContext)
   const t = useTranslation()
 
@@ -94,15 +94,13 @@ export function RankingSensitiveUserList(props: Props) {
                 </div>
                 <div className="flex flex-col items-center space-y-1 text-center">
                   <p className="font-bold text-sm">
-                    {t("最大いいね", "Average Likes")}:{" "}
-                    {user.averageLikesCount || 0}
+                    {t("最大いいね", "Average Likes")}: {user.avgLikes || 0}
                   </p>
                   <p className="text-gray-600 text-xs">
                     {t("作品数", "Works")}: {user.worksCount || 0}
                   </p>
                   <p className="text-gray-600 text-xs">
-                    {t("合計いいね", "Total Likes")}:{" "}
-                    {user.totalLikesCount || 0}
+                    {t("合計いいね", "Total Likes")}: {user.likesCount || 0}
                   </p>
                 </div>
               </div>
@@ -137,8 +135,7 @@ export function RankingSensitiveUserList(props: Props) {
                 </div>
                 <div className="flex flex-col items-center space-y-1 text-center">
                   <p className="font-bold text-sm">
-                    {t("最大いいね", "Average Likes")}:{" "}
-                    {user.averageLikesCount || 0}
+                    {t("最大いいね", "Average Likes")}: {user.avgLikes || 0}
                   </p>
                   <p className="text-gray-600 text-xs">
                     {t("作品数", "Works")}: {user.worksCount || 0}

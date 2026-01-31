@@ -64,7 +64,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SensitiveAwardsPage() {
+export default function SensitiveAwardsPage () {
   const data = useLoaderData<typeof loader>()
   const params = useParams<"year" | "month" | "day">()
   const [searchParams, setSearchParams] = useSearchParams()

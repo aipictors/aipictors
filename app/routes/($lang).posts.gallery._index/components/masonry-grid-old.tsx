@@ -11,10 +11,12 @@ import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   loading?: boolean
+  onWorkClick?: (workId: string) => void
 }
 
 type WorkItemProps = {
   work: FragmentOf<typeof PhotoAlbumWorkFragment>
+  onWorkClick: (workId: string) => void
 }
 
 /**
@@ -61,7 +63,14 @@ const MasonryGridSkeleton = () => {
 /**
  * ピンタレスト風マソンリーグリッド
  */
-export const MasonryGrid = memo<Props>(({ works, loading }) => {
+export const MasonryGrid = memo<Props>(({ works, loading, onWorkClick }) => {
+  const handleWorkClick = useCallback(
+    (workId: string) => {
+      onWorkClick?.(workId)
+    },
+    [onWorkClick],
+  )
+
   // レスポンシブなカラム数の設定
   const getColumnCount = () => {
     if (typeof window === "undefined") return 4
@@ -101,7 +110,7 @@ export const MasonryGrid = memo<Props>(({ works, loading }) => {
           className="flex flex-col gap-4"
         >
           {column.map((work) => (
-            <WorkItem key={work.id} work={work} onWorkClick={onWorkClick} />
+            <WorkItem key={work.id} work={work} onWorkClick={handleWorkClick} />
           ))}
         </div>
       ))}

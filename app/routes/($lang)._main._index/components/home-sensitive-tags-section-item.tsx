@@ -5,7 +5,7 @@ type Props = {
   tagName: string
 }
 
-export function HomeSensitiveTagsSectionItem(props: Props) {
+export function HomeSensitiveTagsSectionItem (props: Props) {
   return (
     <div className="group relative overflow-hidden rounded-md">
       <Link to={`/r/tags/${props.tagName}`} className="rounded-md">

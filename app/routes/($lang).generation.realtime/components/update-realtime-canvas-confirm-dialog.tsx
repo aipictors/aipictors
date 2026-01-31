@@ -16,7 +16,7 @@ type Props = {
   updatedPaintCanvasBase64: () => void
 }
 
-export function UpdateRealtimeCanvasConfirmDialog(props: Props) {
+export function UpdateRealtimeCanvasConfirmDialog (props: Props) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleNext = () => {

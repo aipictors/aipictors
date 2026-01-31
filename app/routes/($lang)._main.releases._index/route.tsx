@@ -64,7 +64,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function Milestone() {
+export default function Milestone () {
   const t = useTranslation()
 
   const data = useLoaderData<typeof loader>()

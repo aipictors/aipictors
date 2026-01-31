@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { useTranslation } from "~/hooks/use-translation"
 
-export function GenerationLogsTab() {
+export function GenerationLogsTab () {
   const t = useTranslation()
   const [logs, setLogs] = useState<LogEntry[]>([])
 

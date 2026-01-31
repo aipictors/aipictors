@@ -32,7 +32,7 @@ import { GenerationLogsTab } from "~/routes/($lang).generation._index/components
 /**
  * 画像生成
  */
-export default function GenerationPage() {
+export default function GenerationPage () {
   const [rating, setRating] = useState(-1)
 
   const [protect, setProtect] = useState(-1)

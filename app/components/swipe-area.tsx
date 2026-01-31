@@ -10,7 +10,7 @@ type Props = {
  * スワイプエリア
  * childrenで指定された領域についてスマホ、PCでスワイプ操作可能にする
  */
-export function SwipeArea(props: Props) {
+export function SwipeArea (props: Props): React.ReactNode {
   const [startPosition, setStartPosition] = useState<number | null>(null)
 
   const handleTouchStart = useCallback(
