@@ -63,7 +63,7 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
             >
               {truncatedBiography}
               {!showFullBiography && biography.length > 100 && (
-                // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+                // biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only)
                 <span
                   className="cursor-pointer text-blue-500"
                   onClick={toggleBiography}

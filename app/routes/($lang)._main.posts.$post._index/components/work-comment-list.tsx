@@ -360,7 +360,6 @@ export function WorkCommentList (props: Props) {
             )}
           </div>
           <div className="flex items-center space-x-2 pl-14 opacity-30">
-            {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
             <Checkbox
               id="sensitive-checkbox"
               checked={isSensitive}

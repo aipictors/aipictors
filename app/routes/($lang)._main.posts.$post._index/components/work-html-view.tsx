@@ -12,7 +12,7 @@ export function WorkHtmlView ({ thumbnailUrl, html }: Props) {
         className="m-auto h-auto w-full max-w-96"
       />
 
-      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation> */}
+      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data */}
       <div dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   )

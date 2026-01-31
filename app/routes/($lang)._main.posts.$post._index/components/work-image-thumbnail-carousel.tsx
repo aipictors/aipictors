@@ -47,7 +47,7 @@ export function WorkImageThumbnailCarousel ({
 
             return (
               <CarouselItem
-                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
                 key={index}
                 className={"basis-1/8"}
               >
@@ -58,7 +58,7 @@ export function WorkImageThumbnailCarousel ({
                   src={imageURL}
                   onClick={() => onSelectImage(imageURL)}
                   onKeyUp={(event) => handleKeyPress(imageURL, event)}
-                  // biome-ignore lint/a11y/noNoninteractiveTabindex: <explanation>
+                  // biome-ignore lint/a11y/noNoninteractiveTabindex: Intentional
                   tabIndex={0}
                 />
               </CarouselItem>

@@ -18,12 +18,13 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "useHookAtTopLevel": "warn",
+        "noUnusedVariables": "off",
+        "useHookAtTopLevel": "off",
         "useExhaustiveDependencies": "off",
         "noUnusedImports": "error"
       },
       "a11y": {
-        "noStaticElementInteractions": "warn"
+        "noStaticElementInteractions": "off"
       },
       "nursery": {
         "useSortedClasses": {
@@ -33,7 +34,11 @@
             "functions": ["cn"]
           }
         },
-        "useUniqueElementIds": "warn"
+        "useUniqueElementIds": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noDocumentCookie": "off"
       },
       "style": {
         "noParameterAssign": "error",

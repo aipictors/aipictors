@@ -1,19 +1,19 @@
-import { Card, CardHeader, CardContent } from "~/components/ui/card"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import { format } from "date-fns"
 import { graphql } from "gql.tada"
-import { loaderClient } from "~/lib/loader-client"
 import { RefreshCcwIcon } from "lucide-react"
+import React, { useEffect } from "react"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
+import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { loaderClient } from "~/lib/loader-client"
 import {
   EventSensitiveWorkList,
   EventSensitiveWorkListItemFragment,
 } from "~/routes/($lang).r.events.$event._index/components/event-sensitive-work-list"
-import { Button } from "~/components/ui/button"
-import { format } from "date-fns"
-import { useTranslation } from "~/hooks/use-translation"
-import { config } from "~/config"
-import React, { useEffect } from "react"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
 
 const toEventDateTimeText = (time: number) => {
@@ -81,7 +81,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function FollowingLayout () {
+export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
   const navigate = useNavigate()
@@ -192,10 +192,9 @@ export default function FollowingLayout () {
         </CardHeader>
         <CardContent>
           <div className="m-auto flex max-w-96 flex-col items-center text-left">
-            {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
             <div
               className="mb-2 text-left text-sm"
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
               dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
             />
             <div className="mr-auto text-sm">

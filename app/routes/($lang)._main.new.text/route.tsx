@@ -428,9 +428,7 @@ export default function NewText () {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   useBeforeUnload(
-    // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
     React.useCallback(
       (event) => {
         if (state) {

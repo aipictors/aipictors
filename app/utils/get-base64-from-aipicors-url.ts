@@ -14,7 +14,6 @@ export const getBase64FromAipictorsUrl = async (
       body: formData,
     })
     if (response.ok) {
-      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
       const responseData = (await response.json()) as any
       if (responseData.base64) {
         return responseData.base64

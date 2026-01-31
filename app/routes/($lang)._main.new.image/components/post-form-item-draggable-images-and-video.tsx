@@ -1,22 +1,22 @@
-import type { TSortableItem } from "~/components/drag/sortable-item"
-import { SortableItems } from "~/components/drag/sortable-items"
-import { Button } from "~/components/ui/button"
-import { cn } from "~/lib/utils"
-import {
-  getExtractInfoFromPNG,
-  type PNGInfo,
-} from "~/utils/get-extract-info-from-png"
-import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
 import { PencilLineIcon, PlusIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
+import type { TSortableItem } from "~/components/drag/sortable-item"
+import { SortableItems } from "~/components/drag/sortable-items"
+import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
 import {
+  formatFileSize,
   MAX_IMAGE_FILE_SIZE_BYTES,
   MAX_VIDEO_FILE_SIZE_BYTES,
-  formatFileSize,
 } from "~/utils/file-size"
+import {
+  getExtractInfoFromPNG,
+  type PNGInfo,
+} from "~/utils/get-extract-info-from-png"
 
 type Props = {
   indexList: number[]
@@ -151,7 +151,6 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
         return
       }
 
-      // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
         if (file.type === "video/mp4") {
           if (file.size > MAX_VIDEO_FILE_SIZE_BYTES) {
@@ -249,12 +248,10 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
       ) as HTMLInputElement
       if (inputElement) {
         const fileList: File[] = []
-        // biome-ignore lint/complexity/noForEach: <explanation>
         acceptedFiles.forEach((file) => {
           fileList.push(file)
         })
         const newFileList = new DataTransfer()
-        // biome-ignore lint/complexity/noForEach: <explanation>
         fileList.forEach((file) => {
           newFileList.items.add(file)
         })
@@ -284,22 +281,20 @@ export function PostFormItemDraggableImagesAndVideo(props: Props) {
       >
         {!props.isOnlyMove && <input id="images_input" {...getInputProps()} />}
         {props.items.length === 0 && !props.isOnlyMove && (
-          <>
-            <button
-              type="button"
-              className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
-              onClick={() => {
-                const inputElement = document.getElementById(
-                  "images_input",
-                ) as HTMLInputElement
-                if (inputElement) {
-                  inputElement.click()
-                }
-              }}
-            >
-              <p className="font-bold">{t("画像を追加", "Add Image")}</p>
-            </button>
-          </>
+          <button
+            type="button"
+            className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
+            onClick={() => {
+              const inputElement = document.getElementById(
+                "images_input",
+              ) as HTMLInputElement
+              if (inputElement) {
+                inputElement.click()
+              }
+            }}
+          >
+            <p className="font-bold">{t("画像を追加", "Add Image")}</p>
+          </button>
         )}
         {props.videoFile && (
           <VideoItem

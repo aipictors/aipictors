@@ -176,7 +176,6 @@ export function CharacterExpressions (props: Props) {
     }
 
     try {
-      // biome-ignore lint/suspicious/noExplicitAny: GraphQL型生成が追いついていないため
       await (createExpression as any)({
         variables: {
           input: {
@@ -392,7 +391,6 @@ export function CharacterExpressions (props: Props) {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="expressionName">表情名</Label>
-                {/* biome-ignore lint/nursery/useUniqueElementIds: ダイアログ内のID重複は許容 */}
                 <Input
                   id="expressionName"
                   value={newExpressionName}

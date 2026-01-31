@@ -10,7 +10,6 @@ import { GenerationConfigMemoUpdateContent } from "~/routes/($lang).generation._
 import { useState } from "react"
 
 type Props = {
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   memo: any
   refetchMemos: () => void
 }

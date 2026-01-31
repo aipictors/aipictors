@@ -1,4 +1,3 @@
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
   timeFrame: number,

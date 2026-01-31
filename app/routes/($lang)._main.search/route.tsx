@@ -1,17 +1,16 @@
-import { loaderClient } from "~/lib/loader-client"
-import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
-import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
-import { SearchHints } from "~/routes/($lang)._main.search/components/search-hints"
-import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { config } from "~/config"
-import { useNavigate, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { config } from "~/config"
+import { loaderClient } from "~/lib/loader-client"
+import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
+import { SearchHints } from "~/routes/($lang)._main.search/components/search-hints"
+import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -126,7 +125,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function Search () {
+export default function Search() {
   const data = useLoaderData<typeof loader>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -158,7 +157,6 @@ export default function Search () {
           return "ブックマーク順"
         case "NAME":
           return "タイトル順"
-        case "LIKES_COUNT":
         default:
           return "人気順（いいね）"
       }

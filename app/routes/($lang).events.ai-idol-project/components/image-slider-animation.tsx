@@ -53,7 +53,7 @@ export function ImageSliderAnimation (props: Props) {
       <div className="relative m-auto my-4 h-[400px] max-h-[800px] w-auto max-w-[1600px] rounded-md border-gray-500 border-solid p-0">
         {imageURLs.map((url, index) => (
           <div
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+            // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
             key={index}
             style={{
               ...imageStyle,

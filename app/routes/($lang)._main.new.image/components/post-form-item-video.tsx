@@ -1,10 +1,10 @@
-import { cn } from "~/lib/utils"
-import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
 import { useState } from "react"
 import { useDropzone } from "react-dropzone-esm"
 import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
-import { MAX_VIDEO_FILE_SIZE_BYTES, formatFileSize } from "~/utils/file-size"
+import { cn } from "~/lib/utils"
+import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
+import { formatFileSize, MAX_VIDEO_FILE_SIZE_BYTES } from "~/utils/file-size"
 
 type Props = {
   videoFile: File | null
@@ -21,7 +21,7 @@ type Props = {
  * @param props
  * @returns
  */
-export function PostFormItemVideo (props: Props) {
+export function PostFormItemVideo(props: Props) {
   const t = useTranslation()
 
   // ファイルの最大サイズ(バイト単位)
@@ -67,7 +67,6 @@ export function PostFormItemVideo (props: Props) {
     },
     noClick: true,
     onDrop: (acceptedFiles) => {
-      // biome-ignore lint/complexity/noForEach: <explanation>
       acceptedFiles.forEach(async (file) => {
         if (file.type === "video/mp4") {
           if (file.size > maxSize) {
@@ -150,12 +149,10 @@ export function PostFormItemVideo (props: Props) {
       ) as HTMLInputElement
       if (inputElement) {
         const fileList: File[] = []
-        // biome-ignore lint/complexity/noForEach: <explanation>
         acceptedFiles.forEach((file) => {
           fileList.push(file)
         })
         const newFileList = new DataTransfer()
-        // biome-ignore lint/complexity/noForEach: <explanation>
         fileList.forEach((file) => {
           newFileList.items.add(file)
         })
@@ -187,7 +184,7 @@ export function PostFormItemVideo (props: Props) {
           props.isEnabledSelectVideo) && (
           <>
             <input id="video_input" {...getInputProps()} />
-            {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only) */}
             <div
               className="m-auto mt-4 mb-4 flex w-48 cursor-pointer flex-col items-center justify-center rounded bg-clear-bright-blue p-4 text-white"
               onClick={() => {

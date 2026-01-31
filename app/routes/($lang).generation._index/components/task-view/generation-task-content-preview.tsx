@@ -1,16 +1,16 @@
+import { useContext } from "react"
 import { Card } from "~/components/ui/card"
 import { AuthContext } from "~/contexts/auth-context"
+import { cn } from "~/lib/utils"
 import { useCachedImageGenerationResult } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-result"
 import { useCachedImageGenerationTask } from "~/routes/($lang).generation._index/hooks/use-cached-image-generation-task"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { useContext } from "react"
-import { cn } from "~/lib/utils"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
 
 /**
  * タスクプレビュー内容
  */
-export function GenerationTaskContentPreview () {
+export function GenerationTaskContentPreview() {
   const context = useGenerationContext()
 
   const authContext = useContext(AuthContext)
@@ -69,9 +69,7 @@ export function GenerationTaskContentPreview () {
               <p>{imageGenerationTask.model?.name}</p>
             </div>
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
 
         {imageGenerationResult?.imageUrl &&
         imageGenerationResult?.thumbnailUrl &&
@@ -114,9 +112,7 @@ export function GenerationTaskContentPreview () {
               <p>{imageGenerationResult.model?.name}</p>
             </div>
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </Card>
     </>
   )

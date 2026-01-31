@@ -84,7 +84,6 @@ export function CharacterDetail (props: Props) {
           <div>
             <Label htmlFor="name">キャラクター名</Label>
             {isEditing ? (
-              // biome-ignore lint/nursery/useUniqueElementIds: <explanation>
               <Input
                 id="name"
                 value={editingData.name}
@@ -100,7 +99,6 @@ export function CharacterDetail (props: Props) {
           <div>
             <Label htmlFor="description">説明</Label>
             {isEditing ? (
-              // biome-ignore lint/nursery/useUniqueElementIds: <explanation>
               <Textarea
                 id="description"
                 value={editingData.description}
@@ -122,7 +120,6 @@ export function CharacterDetail (props: Props) {
           <div>
             <Label htmlFor="promptText">プロンプトテキスト</Label>
             {isEditing ? (
-              // biome-ignore lint/nursery/useUniqueElementIds: <explanation>
               <Textarea
                 id="promptText"
                 value={editingData.promptText}

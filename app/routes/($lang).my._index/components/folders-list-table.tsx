@@ -57,7 +57,7 @@ export function FoldersListTable (props: Props) {
           </TableHeader>
           <TableBody>
             {props.folders.map((folder, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
               <FoldersListTableRow folder={folder} key={index} />
             ))}
           </TableBody>

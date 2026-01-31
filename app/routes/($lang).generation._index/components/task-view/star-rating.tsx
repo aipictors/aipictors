@@ -65,7 +65,7 @@ export function StarRating (props: Props) {
       {[starOneRef, starTwoRef, starThreeRef, starFourRef, starFiveRef].map(
         (ref, index) => (
           <Button
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+            // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
             key={index}
             ref={ref}
             disabled={props.disabled}

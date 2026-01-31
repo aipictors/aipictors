@@ -83,7 +83,7 @@ export function SmsVerificationDialog (props: Props): React.ReactNode {
             <DialogTitle>{"認証案内"}</DialogTitle>
             <p>{"SMS認証を行います。"}</p>
             <div ref={recaptchaContainerRef}>
-              {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
+              {/* biome-ignore lint/style/useSelfClosingElements: Intentional (JSX kept explicit) */}
               <div id="recaptcha-container"></div>
             </div>
             <div className="flex items-center">

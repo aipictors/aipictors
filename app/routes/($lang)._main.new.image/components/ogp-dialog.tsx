@@ -57,7 +57,7 @@ export function OgpDialog (props: Props) {
         onCrop={onCrop}
         onClose={onClose}
       />
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only) */}
       <div
         onClick={() => {
           setIsOpen(true)

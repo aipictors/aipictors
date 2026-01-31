@@ -113,7 +113,6 @@ export function ExpressionManager(props: Props) {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="expression-name">表情名</Label>
-              {/** biome-ignore lint/nursery/useUniqueElementIds: ID is unique within this form */}
               <Input
                 id="expression-name"
                 value={newExpression.name}
@@ -125,7 +124,6 @@ export function ExpressionManager(props: Props) {
             </div>
             <div>
               <Label htmlFor="expression-description">説明</Label>
-              {/** biome-ignore lint/nursery/useUniqueElementIds: ID is unique within this form */}
               <Input
                 id="expression-description"
                 value={newExpression.description}
@@ -140,7 +138,6 @@ export function ExpressionManager(props: Props) {
             </div>
             <div>
               <Label htmlFor="expression-prompt">プロンプト修飾子</Label>
-              {/** biome-ignore lint/nursery/useUniqueElementIds: ID is unique within this form */}
               <Input
                 id="expression-prompt"
                 value={newExpression.promptModifier}
@@ -155,7 +152,6 @@ export function ExpressionManager(props: Props) {
             </div>
             <div>
               <Label htmlFor="expression-tags">タグ（カンマ区切り）</Label>
-              {/** biome-ignore lint/nursery/useUniqueElementIds: ID is unique within this form */}
               <Input
                 id="expression-tags"
                 value={newExpression.tags}

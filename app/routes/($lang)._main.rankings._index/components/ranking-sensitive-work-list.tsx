@@ -43,7 +43,7 @@ export function RankingSensitiveWorkList (props: Props) {
       {workAwards.map((workItem, index) => {
         return (
           <div
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+            // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
             key={index}
             className="relative flex flex-col space-y-2"
           >

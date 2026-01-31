@@ -114,7 +114,7 @@ export default function EventAiIdolProject () {
       >
         {t("イベント専用ページはこちら", "Event dedicated page here")}
       </GlowingGradientBorderButton>
-      {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
+      {/* biome-ignore lint/style/useSelfClosingElements: Intentional (JSX kept explicit) */}
       <iframe
         className="m-auto mt-8 mb-24"
         width={"auto"}

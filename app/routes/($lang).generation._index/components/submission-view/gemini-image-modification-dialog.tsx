@@ -611,7 +611,6 @@ export function GeminiImageModificationDialog (props: Props) {
                 <Label htmlFor="modification-prompt">
                   {t("修正内容", "Modification Instructions")}
                 </Label>
-                {/* biome-ignore lint/nursery/useUniqueElementIds: false positive */}
                 <Textarea
                   id="modification-prompt"
                   ref={textareaRef}
@@ -681,7 +680,6 @@ export function GeminiImageModificationDialog (props: Props) {
             <Label htmlFor="modification-prompt">
               {t("修正内容", "Modification Instructions")}
             </Label>
-            {/* biome-ignore lint/nursery/useUniqueElementIds: false positive */}
             <Textarea
               id="modification-prompt"
               value={prompt}

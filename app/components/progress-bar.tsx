@@ -43,7 +43,7 @@ export function ProgressBar (): React.ReactNode {
   return (
     <>
       <style>{keyframesStyle}</style>
-      {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
+      {/* biome-ignore lint/style/useSelfClosingElements: Intentional (JSX kept explicit) */}
       <div
         className="fixed top-0 left-0 z-100 w-full shadow-md"
         style={{

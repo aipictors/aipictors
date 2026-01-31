@@ -274,7 +274,6 @@ export function SensitiveToggle ({
               </p>
             </div>
           </div>
-          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <Switch
             id="sensitive-toggle"
             checked={isR18Mode}
@@ -309,7 +308,6 @@ export function SensitiveToggle ({
               {t("R18コンテンツを表示", "Show R18 Content")}
             </Label>
           </div>
-          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <Switch
             id="full-sensitive-toggle"
             checked={isR18Mode}

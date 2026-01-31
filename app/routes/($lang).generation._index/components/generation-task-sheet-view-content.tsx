@@ -1,15 +1,4 @@
-import { SwipeArea } from "~/components/swipe-area"
-import { Button } from "~/components/ui/button"
-import { ScrollArea } from "~/components/ui/scroll-area"
-import { Separator } from "~/components/ui/separator"
-import { Skeleton } from "~/components/ui/skeleton"
-import { cn } from "~/lib/utils"
-import { GenerationImageDialogButton } from "~/routes/($lang).generation._index/components/generation-image-dialog-button"
-import { GenerationMenuButton } from "~/routes/($lang).generation._index/components/generation-menu-button"
-import { GenerationReferenceDialog } from "~/routes/($lang).generation._index/components/generation-reference-dialog-button"
-import { GenerationTaskContentImagePlaceHolder } from "~/routes/($lang).generation._index/components/generation-task-content-image-place-holder"
-import type { GenerationParameters } from "~/routes/($lang).generation._index/types/generation-parameters"
-import type { GenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
+import { type FragmentOf, graphql } from "gql.tada"
 import {
   ArrowDownToLine,
   ArrowUpRightSquare,
@@ -22,18 +11,29 @@ import {
 } from "lucide-react"
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { SwipeArea } from "~/components/swipe-area"
+import { Button } from "~/components/ui/button"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { Separator } from "~/components/ui/separator"
+import { Skeleton } from "~/components/ui/skeleton"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { CopyButton } from "~/routes/($lang).generation._index/components/copy-button"
+import { GenerationImageDialogButton } from "~/routes/($lang).generation._index/components/generation-image-dialog-button"
+import { GenerationMenuButton } from "~/routes/($lang).generation._index/components/generation-menu-button"
+import { GenerationReferenceDialog } from "~/routes/($lang).generation._index/components/generation-reference-dialog-button"
+import { GenerationTaskContentImagePlaceHolder } from "~/routes/($lang).generation._index/components/generation-task-content-image-place-holder"
+import { GenerationTaskDeleteMemoConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-delete-memo-confirm-dialog"
+import { GenerationTaskPostConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-post-confirm-dialog"
+import { GeminiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/gemini-image-modification-dialog"
 import { GenerationTaskError } from "~/routes/($lang).generation._index/components/task-view/generation-task-error"
 import { StarRating } from "~/routes/($lang).generation._index/components/task-view/star-rating"
-import { GeminiImageModificationDialog } from "~/routes/($lang).generation._index/components/submission-view/gemini-image-modification-dialog"
-import { CopyButton } from "~/routes/($lang).generation._index/components/copy-button"
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { graphql, type FragmentOf } from "gql.tada"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { useTranslation } from "~/hooks/use-translation"
-import { GenerationTaskPostConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-post-confirm-dialog"
-import { GenerationTaskDeleteMemoConfirmDialog } from "~/routes/($lang).generation._index/components/generation-task-delete-memo-confirm-dialog"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import type { GenerationParameters } from "~/routes/($lang).generation._index/types/generation-parameters"
+import type { GenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
 import { normalizeGenerativeFileUrl } from "~/utils/normalize-generative-file-url"
+import { toDateTimeText } from "~/utils/to-date-time-text"
 
 type Props = {
   task:
@@ -69,7 +69,7 @@ type Props = {
 /**
  * 履歴一覧の履歴シートの中に表示する履歴内容
  */
-export function GenerationTaskSheetViewContent (props: Props) {
+export function GenerationTaskSheetViewContent(props: Props) {
   const context = useGenerationContext()
   const t = useTranslation()
 
@@ -229,9 +229,7 @@ export function GenerationTaskSheetViewContent (props: Props) {
                           alt={"-"}
                         />
                       </GenerationImageDialogButton>
-                    ) : (
-                      <></>
-                    )}
+                    ) : null}
                   </Suspense>
                   {/* ダウンロード用（非表示） */}
                   <Suspense

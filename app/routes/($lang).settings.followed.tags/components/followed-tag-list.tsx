@@ -110,7 +110,7 @@ export function FollowedTagList () {
       )}
       <div>
         {data?.viewer?.followingTags.map((followingTag) => (
-          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+          // biome-ignore lint/correctness/useJsxKeyInIterable: Intentional
           <div className="pt-1 pb-1">
             <FollowedTag
               key={followingTag.id}

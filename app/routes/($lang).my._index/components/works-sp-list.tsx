@@ -99,7 +99,7 @@ export function WorksSpList (props: Props) {
       {props.works
         .filter((work) => !deletedIds.includes(work.id))
         .map((work, index) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+          // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
           <div key={index} className="flex flex-col">
             <div className="flex space-x-4 border-b pt-2 pb-2">
               <Link to={postUrl(work)}>

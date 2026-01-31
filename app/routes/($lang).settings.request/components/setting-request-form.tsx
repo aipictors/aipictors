@@ -104,7 +104,6 @@ export function SettingRequestForm () {
                 <Label htmlFor="airplane-mode">
                   {t("サポートの送信を許可する", "Allow Support Requests")}
                 </Label>
-                {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
                 <Switch
                   onCheckedChange={setFeatureCheck}
                   checked={featureCheck}
@@ -131,7 +130,6 @@ export function SettingRequestForm () {
             <Label>
               {t("サポートの送信を許可する", "Allow Support Requests")}
             </Label>
-            {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
             <Switch disabled id="airplane-mode" />
           </div>
         </div>

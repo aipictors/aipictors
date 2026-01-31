@@ -65,8 +65,8 @@ export function SortableItem({ item, ...props }: Props): React.ReactNode {
         </Button>
       )}
       {props.optionalButton && (
-        // biome-ignore lint/complexity/useOptionalChain: <explanation>
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+        // biome-ignore lint/complexity/useOptionalChain: Intentional (readability)
+        // biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only)
         <div
           onClick={() => {
             if (props.onClickOptionButton) {

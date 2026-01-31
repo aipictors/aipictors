@@ -1,38 +1,38 @@
-import { Button } from "~/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Badge } from "~/components/ui/badge"
-import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { Link, useLoaderData } from "@remix-run/react"
-import {
-  CalendarIcon,
-  MapPinIcon,
-  UsersIcon,
-  PaletteIcon,
-  ExternalLinkIcon,
-  ImageIcon,
-  StoreIcon,
-  BadgeIcon,
-  ClockIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from "lucide-react"
-import { loaderClient } from "~/lib/loader-client"
 import { graphql } from "gql.tada"
 import {
-  EventWorkListItemFragment,
-  EventWorkList,
-} from "~/routes/($lang).events.$event._index/components/event-work-list"
-import {
-  EventAwardWorkListItemFragment,
-  EventAwardWorkList,
-} from "~/routes/($lang).events.$event._index/components/event-award-work-list"
+  BadgeIcon,
+  CalendarIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ClockIcon,
+  ExternalLinkIcon,
+  ImageIcon,
+  MapPinIcon,
+  PaletteIcon,
+  StoreIcon,
+  UsersIcon,
+} from "lucide-react"
+import { useId, useState } from "react"
+import { Badge } from "~/components/ui/badge"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { config } from "~/config"
-import { useState, useId } from "react"
+import { loaderClient } from "~/lib/loader-client"
+import {
+  EventAwardWorkList,
+  EventAwardWorkListItemFragment,
+} from "~/routes/($lang).events.$event._index/components/event-award-work-list"
+import {
+  EventWorkList,
+  EventWorkListItemFragment,
+} from "~/routes/($lang).events.$event._index/components/event-work-list"
+import { EventWakiaiaiImage } from "~/routes/events.wakiaiai/components/event-wakiaiai-image"
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = "halloween-2025"
@@ -74,7 +74,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneMonth,
 })
 
-export default function EventHalloween2025 () {
+export default function EventHalloween2025() {
   const data = useLoaderData<typeof loader>()
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
   const participationMethodsId = useId()
@@ -531,131 +531,6 @@ export default function EventHalloween2025 () {
     </div>
   )
 }
-{
-  /* Main Event Banner */
-}
-;<div className="text-center">
-  <div className="mx-auto max-w-3xl">
-    <EventWakiaiaiImage
-      alt="ハロウィン2025企画"
-      imageURL="https://assets.aipictors.com/cc52625d-887c-46f4-afbc-757b7655797f.webp"
-      linkTitle="Aipictors"
-    />
-  </div>
-</div>
-
-{
-  /* Event Details */
-}
-;<div className="grid gap-8 md:grid-cols-2">
-  <Card className="border-2 border-orange-300 bg-gradient-to-br from-orange-100 to-yellow-100 shadow-xl dark:from-orange-900/30 dark:to-yellow-900/30">
-    <CardHeader className="text-center">
-      <CardTitle className="font-bold text-2xl text-orange-600 dark:text-orange-400">
-        <CalendarIcon className="mr-2 inline h-6 w-6" />
-        開催期間
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-4 text-center">
-      <p className="font-semibold text-lg">2025年7月21日(月)～8月31日(日)</p>
-      <Badge className="bg-red-500 px-4 py-2 text-lg text-white">
-        応募受付中！
-      </Badge>
-    </CardContent>
-  </Card>
-
-  <Card className="border-2 border-purple-300 bg-gradient-to-br from-purple-100 to-pink-100 shadow-xl dark:from-purple-900/30 dark:to-pink-900/30">
-    <CardHeader className="text-center">
-      <CardTitle className="font-bold text-2xl text-purple-600 dark:text-purple-400">
-        <MapPinIcon className="mr-2 inline h-6 w-6" />
-        イベント会場
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-4 text-center">
-      <p className="text-lg">
-        愛知県東海市
-        <br />
-        太田川駅西広場
-      </p>
-      <Link to="/events/wakiaiai4">
-        <Button
-          variant="outline"
-          className="border-purple-300 text-purple-600 hover:bg-purple-50"
-        >
-          <ExternalLinkIcon className="mr-2 h-4 w-4" />
-          会場詳細を見る
-        </Button>
-      </Link>
-    </CardContent>
-  </Card>
-</div>
-
-{
-  /* Participation Method */
-}
-;<Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
-  <CardHeader className="text-center">
-    <CardTitle className="font-bold text-3xl">参加方法</CardTitle>
-  </CardHeader>
-  <CardContent className="p-8">
-    <div className="space-y-6 text-center">
-      <div className="rounded-lg border-2 border-orange-300 bg-orange-200 p-6 dark:bg-orange-800/30">
-        <h3 className="mb-4 font-bold text-2xl text-orange-700 dark:text-orange-300">
-          必須タグ
-        </h3>
-        <p className="font-bold text-3xl text-orange-900 dark:text-orange-100">
-          「!和気あいAI2025ハロウィン企画」
-        </p>
-        <p className="mt-4 text-orange-700 dark:text-orange-300">
-          このタグをつけて作品を投稿するとイベントに参加できます！
-        </p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-lg border-2 border-purple-300 bg-purple-100 p-6 dark:bg-purple-900/30">
-          <h4 className="mb-3 font-bold text-purple-700 text-xl dark:text-purple-300">
-            Aipictorsとしてのポスター展示
-          </h4>
-          <p className="text-purple-600 dark:text-purple-200">
-            優秀作品はAipictors運営が作成する和気あいAI4のポスターに掲載されます
-          </p>
-        </div>
-
-        <div className="rounded-lg border-2 border-yellow-300 bg-yellow-100 p-6 dark:bg-yellow-900/30">
-          <h4 className="mb-3 font-bold text-xl text-yellow-700 dark:text-yellow-300">
-            Aipictors冊子への掲載
-          </h4>
-          <p className="text-yellow-600 dark:text-yellow-200">
-            Aipictors運営が作成する冊子にも作品掲載のチャンスがあり、イベント会場で配布・販売されます
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-        <Button
-          size="lg"
-          className="transform bg-gradient-to-r from-orange-500 to-red-500 px-10 py-6 font-bold text-white text-xl shadow-xl transition-all duration-300 hover:scale-105 hover:from-orange-600 hover:to-red-600"
-          onClick={() => {
-            const url = `/new/image?event=wakiaiai4-halloween&tag=${encodeURIComponent("!和気あいAI2025ハロウィン企画")}`
-            window.open(url, "_blank")
-          }}
-        >
-          🎃 今すぐ作品投稿
-        </Button>
-
-        <Link to="/events/wakiaiai4">
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-purple-300 px-10 py-6 font-bold text-purple-600 text-xl hover:bg-purple-50"
-          >
-            イベント詳細
-          </Button>
-        </Link>
-      </div>
-    </div>
-  </CardContent>
-</Card>
-
 export const meta: MetaFunction = () => {
   return [
     { title: "ハロウィン2025企画 - 和気あいAI4連動特別イベント" },

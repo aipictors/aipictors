@@ -1,18 +1,18 @@
-import { Card, CardHeader, CardContent } from "~/components/ui/card"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate } from "@remix-run/react"
+import { format } from "date-fns"
 import { graphql } from "gql.tada"
+import type { LoaderFunctionArgs } from "react-router-dom"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
+import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import {
   EventAwardPagingWorkList,
   EventAwardWorkListItemFragment,
 } from "~/routes/($lang).events.$event.award._index/components/event-award-paging-work-list"
-import { Button } from "~/components/ui/button"
-import { format } from "date-fns"
-import { useTranslation } from "~/hooks/use-translation"
-import type { LoaderFunctionArgs } from "react-router-dom"
-import { config } from "~/config"
-import type { HeadersFunction } from "@remix-run/cloudflare"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
@@ -68,7 +68,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function FollowingLayout () {
+export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
   const navigate = useNavigate()
@@ -88,10 +88,9 @@ export default function FollowingLayout () {
         </CardHeader>
         <CardContent>
           <div className="m-auto flex max-w-96 flex-col items-center text-left">
-            {/* biome-ignore lint/style/useSelfClosingElements: <explanation> */}
             <div
               className="mb-2 text-left text-sm"
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
               dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
             />
             <div className="mr-auto text-sm">

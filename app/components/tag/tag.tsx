@@ -97,7 +97,7 @@ export function Tag ({
   textStyle,
 }: TagProps): React.ReactNode {
   return (
-    // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+    // biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only)
     <span
       key={tagObj.id}
       draggable={draggable}

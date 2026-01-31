@@ -30,7 +30,7 @@ export function ToggleContent ({
 
   return (
     <div>
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only) */}
       <div onClick={toggleContent} style={{ cursor: "pointer" }}>
         {trigger}
       </div>

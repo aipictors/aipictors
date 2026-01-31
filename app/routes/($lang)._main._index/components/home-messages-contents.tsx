@@ -21,7 +21,6 @@ export function HomeMessagesContents ({ onClick }: Props) {
     return null
   }
 
-  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   const { data: supportMessages, refetch } = useSuspenseQuery(MessagesQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
@@ -32,7 +31,6 @@ export function HomeMessagesContents ({ onClick }: Props) {
 
   const messages = supportMessages?.viewer?.supportMessages ?? []
 
-  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   const t = useTranslation()
 
   if (messages.length === 0) {

@@ -341,9 +341,7 @@ export default function NewAnimation () {
     `${inputState.reservationDate}T${inputState.reservationTime}`,
   )
 
-  // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
   useBeforeUnload(
-    // biome-ignore lint/correctness/useHookAtTopLevel: <explanation>
     React.useCallback(
       (event) => {
         if (state) {

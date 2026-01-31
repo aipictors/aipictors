@@ -373,7 +373,6 @@ export function ImagesPreview (props: Props): React.ReactNode {
         {/* Display full-screen preview */}
         {isOpen && (
           // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
-          // biome-ignore lint/a11y/noStaticElementInteractions: keyboard navigation required
           <div
             className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80"
             onClick={handleBackgroundClick}

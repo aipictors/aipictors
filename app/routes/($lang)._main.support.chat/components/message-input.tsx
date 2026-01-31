@@ -32,7 +32,7 @@ export function MessageInput (props: Props) {
   return (
     <div className="flex w-full items-end gap-x-4 pb-4 pb-sm md:pb-md">
       {selectedImages.map((image, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+        // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
         <div key={index} className="relative">
           <img src={image} alt={`Selected ${index}`} />
           <RiCloseCircleLine

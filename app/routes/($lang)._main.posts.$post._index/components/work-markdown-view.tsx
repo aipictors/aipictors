@@ -85,7 +85,7 @@ export function WorkMarkdownView (props: Props) {
       </div>
       {props.html && (
         <div
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
           dangerouslySetInnerHTML={{
             __html: props.html
               .replace(/&quot;/g, '"') // &quot; を " に置換

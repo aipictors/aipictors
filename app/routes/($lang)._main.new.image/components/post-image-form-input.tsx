@@ -272,7 +272,6 @@ export function PostImageFormInput (props: Props) {
       </div>
       {hasImageInfo && (
         <div className="flex items-center">
-          {/** biome-ignore lint/nursery/useUniqueElementIds: Unique IDs are handled by React useId hook */}
           <Checkbox
             checked={props.state.useGenerationParams}
             id="set-generation-check"

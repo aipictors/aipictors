@@ -305,7 +305,7 @@ const objectToText = (obj: Record<string, string | number>): string => {
 }
 
 const controlCodeToSpace = (str: string): string => {
-  // @biome-ignore lint/suspicious/noControlCharactersInRegex: <explanation>
+  // @biome-ignore lint/suspicious/noControlCharactersInRegex: Intentional
   return str.replace(/[\n\r\v\f\x7F-\x9F]/g, " ")
 }
 

@@ -21,7 +21,7 @@ export function BookmarkWorksSpList (props: Props) {
   return (
     <>
       {props.works.map((work, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+        // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
         <div key={index}>
           <div className="mt-2 mb-2 flex">
             <Link to={`/posts/${work.id}`} className="mr-2">

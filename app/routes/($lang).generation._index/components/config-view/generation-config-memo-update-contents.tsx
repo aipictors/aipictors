@@ -21,7 +21,6 @@ import { GenerationConfigDeleteMemoConfirmDialog } from "~/routes/($lang).genera
 type Props = {
   onClose: () => void
   refetchMemos: () => void
-  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   memo: any
 }
 

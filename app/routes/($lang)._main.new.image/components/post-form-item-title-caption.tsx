@@ -320,7 +320,6 @@ export function PostFormItemTitleCaption (props: Props) {
           >
             {t("タイトル", "Title")}
           </label>
-          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <Input
             id="title-input"
             onChange={handleTitleChange}
@@ -346,7 +345,6 @@ export function PostFormItemTitleCaption (props: Props) {
           >
             {t("キャプション（任意）", "Caption (Optional)")}
           </label>
-          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <AutoResizeTextarea
             id="caption-input"
             onChange={handleCaptionChange}

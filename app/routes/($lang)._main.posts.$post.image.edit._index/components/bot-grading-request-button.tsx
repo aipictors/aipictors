@@ -1,5 +1,10 @@
-import { useState, useContext, useId } from "react"
+import { useMutation } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { CheckCircle, Loader2Icon, Sparkles } from "lucide-react"
+import { useContext, useId, useState } from "react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -9,7 +14,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
-import { Checkbox } from "~/components/ui/checkbox"
 import { Label } from "~/components/ui/label"
 import {
   Select,
@@ -18,15 +22,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select"
-import { toast } from "sonner"
-import { Sparkles, Loader2Icon, CheckCircle } from "lucide-react"
-import { useTranslation } from "~/hooks/use-translation"
 import { AuthContext } from "~/contexts/auth-context"
-import { useMutation } from "@apollo/client/index"
-import { graphql } from "gql.tada"
+import { useTranslation } from "~/hooks/use-translation"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { resizeImage } from "~/utils/resize-image"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 
 type BotPersonalityType = "female" | "male" | "robot" | "sage" | "pictor_chan"
 type BotGradingType = "COMMENT_ONLY" | "SCORE_ONLY" | "COMMENT_AND_SCORE"
@@ -61,7 +61,7 @@ const RequestWorkBotGradingMutation = graphql(
  * Bot評価リクエストボタンコンポーネント
  * 作品の編集画面でBot評価をリクエストできる
  */
-export function BotGradingRequestButton (props: Props) {
+export function BotGradingRequestButton(props: Props) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
 
@@ -190,7 +190,7 @@ export function BotGradingRequestButton (props: Props) {
       // リサイズされた画像をアップロード
       const uploadedImageUrl = await uploadPublicImage(
         resizedBase64.base64,
-        props.userToken!,
+        props.userToken as string,
       )
 
       // 実際のGraphQL mutationを実行

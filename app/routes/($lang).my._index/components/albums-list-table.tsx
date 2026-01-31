@@ -57,7 +57,7 @@ export function AlbumsListTable (props: Props) {
           </TableHeader>
           <TableBody>
             {props.albums.map((album, index) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+              // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
               <AlbumsListTableRow album={album} key={index} />
             ))}
           </TableBody>

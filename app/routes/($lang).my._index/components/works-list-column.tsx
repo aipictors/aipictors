@@ -16,7 +16,7 @@ type Props = {
 export function WorksListColumn (props: Props) {
   return (
     <>
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only) */}
       <div onClick={props.onClick} className="cursor-pointer">
         <div className="flex items-center">
           {props.label}

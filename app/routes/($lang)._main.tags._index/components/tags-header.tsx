@@ -112,7 +112,6 @@ export function TagsHeader () {
             <Label htmlFor="search-mode" className="text-sm">
               {t("作品検索", "Search Works")}
             </Label>
-            {/* biome-ignore lint/nursery/useUniqueElementIds: 複数のSwitchが同じIDを使用している */}
             <Switch
               id="search-mode"
               checked={isTagMode}

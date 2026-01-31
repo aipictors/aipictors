@@ -34,7 +34,7 @@ export function NovelWorkPreviewItem (props: Props) {
         </div>
         <div className="mt-1 flex flex-wrap space-x-1">
           {props.tags.map((tag, index: number) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+            // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
             <Badge variant={"secondary"} key={index} className="text-xs">
               {tag}
             </Badge>

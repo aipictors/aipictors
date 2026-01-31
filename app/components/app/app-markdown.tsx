@@ -44,7 +44,7 @@ export function AppMarkdown (props: Props): React.ReactNode {
         "[&>hr]:my-8 [&>hr]:border-border",
         props.className,
       )}
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
       dangerouslySetInnerHTML={{ __html: html }}
     />
   )

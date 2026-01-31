@@ -235,7 +235,7 @@ export default function FollowingLayout () {
               {data.appEvent.description && (
                 <div
                   className="mb-2 text-left text-sm"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
                   dangerouslySetInnerHTML={{
                     __html: data.appEvent.description,
                   }}

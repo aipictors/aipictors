@@ -12,7 +12,6 @@ import { GenerationConfigMemoOperationParts } from "~/routes/($lang).generation.
 type Props = {
   isOpen: boolean
   onClose: () => void
-  // biome-ignore lint/suspicious/noExplicitAny: legacy code needs refactoring
   memos: any[] | undefined
   refetch: () => void
 }

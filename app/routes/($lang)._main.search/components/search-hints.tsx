@@ -33,7 +33,6 @@ function TagGrid(props: {
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {props.tags.map((tag) => (
-        // biome-ignore lint/a11y/noStaticElementInteractions: thumb grid uses div for overlay
         // biome-ignore lint/a11y/useKeyWithClickEvents: thumb grid uses click handler
         <div
           key={tag.id}

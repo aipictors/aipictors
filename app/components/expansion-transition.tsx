@@ -42,7 +42,7 @@ export function ExpansionTransition (props: Props): React.ReactNode {
   return (
     <>
       {!hasExpanded && (
-        // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+        // biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only)
         <div onClick={onToggleFilterButton}>{props.triggerChildren}</div>
       )}
       {isFilterOpen && (

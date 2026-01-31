@@ -186,7 +186,6 @@ export function AiEvaluationRadarChart (props: Props) {
 
         {/* データエリア（グラデーション付き） */}
         <defs>
-          {/* biome-ignore lint/nursery/useUniqueElementIds: グラデーション要素のためIDが必要 */}
           <radialGradient id="scoreGradient" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0.1" />

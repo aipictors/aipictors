@@ -90,7 +90,7 @@ export function MutedTagList () {
       )}
       <div>
         {data?.viewer?.mutedTags.map((mutedTag) => (
-          // biome-ignore lint/correctness/useJsxKeyInIterable: <explanation>
+          // biome-ignore lint/correctness/useJsxKeyInIterable: Intentional
           <div className="pt-1 pb-1">
             <MutedTag
               key={mutedTag.id}

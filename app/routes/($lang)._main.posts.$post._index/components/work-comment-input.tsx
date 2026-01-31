@@ -136,7 +136,6 @@ export function ReplyCommentInput (props: Props) {
           )}
         </div>
         <div className="flex items-center space-x-2 pl-14 opacity-80">
-          {/** biome-ignore lint/nursery/useUniqueElementIds: <explanation> */}
           <Checkbox
             id="reply-sensitive-checkbox"
             checked={isSensitive}

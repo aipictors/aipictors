@@ -37,7 +37,7 @@ export function Autocomplete ({
         <CommandGroup heading="">
           {autocompleteOptions.map((option) => (
             <CommandItem key={option.id}>
-              {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+              {/* biome-ignore lint/a11y/useKeyWithClickEvents: Legacy UI (click-only) */}
               <div
                 className="w-full"
                 onClick={() => {
