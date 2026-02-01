@@ -512,7 +512,7 @@ function HomeHeader(props: Props) {
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
         <div className="hidden w-full items-center space-x-2 md:flex">
           <div className="flex w-full items-center justify-end font-semibold">
-            <div className="relative ml-auto flex w-full min-w-0 max-w-[260px] flex-col rounded-xl border border-border bg-input lg:max-w-[540px]">
+            <div className="relative ml-auto flex w-full min-w-0 max-w-[400px] flex-col rounded-xl border border-border bg-input lg:max-w-[540px]">
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
