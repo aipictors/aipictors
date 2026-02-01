@@ -1,10 +1,17 @@
+import { ArrowUpFromLineIcon, XIcon } from "lucide-react"
+import {
+  cloneElement,
+  isValidElement,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react"
 import { ImageCropperModal } from "~/components/modal-image-cropper"
 import { Button } from "~/components/ui/button"
 import { Card } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
-import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
-import { ArrowUpFromLineIcon, XIcon } from "lucide-react"
-import { useCallback, useEffect, useId, useRef, useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -22,7 +29,7 @@ type Props = {
 /**
  * 指定した画像ファイルの切り抜き開始領域
  */
-export function CropImageField (props: Props): React.ReactNode {
+export function CropImageField(props: Props): React.ReactNode {
   const t = useTranslation()
 
   const [image, setImage] = useState<string | undefined>(undefined)
@@ -35,6 +42,53 @@ export function CropImageField (props: Props): React.ReactNode {
   const inputId = useId()
 
   const cropperClassName = "react-easy-crop-container"
+
+  const clearFileInputValue = useCallback(
+    (e: React.MouseEvent<HTMLInputElement>) => {
+      // Allow selecting the same file twice in a row.
+      e.currentTarget.value = ""
+    },
+    [],
+  )
+
+  const openFilePicker = useCallback(() => {
+    if (!fileInputRef.current) return
+    // Allow selecting the same file twice in a row.
+    fileInputRef.current.value = ""
+    fileInputRef.current.click()
+  }, [])
+
+  type TriggerProps = {
+    onClick?: (e: React.MouseEvent<HTMLElement>) => void
+    onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void
+  }
+
+  const triggerNode = props.children ? (
+    isValidElement(props.children) ? (
+      (() => {
+        const child = props.children as React.ReactElement<TriggerProps>
+        const originalOnClick = child.props.onClick
+        const originalOnKeyDown = child.props.onKeyDown
+
+        return cloneElement(child, {
+          onClick: (e: React.MouseEvent<HTMLElement>) => {
+            originalOnClick?.(e)
+            openFilePicker()
+          },
+          onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
+            originalOnKeyDown?.(e)
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault()
+              openFilePicker()
+            }
+          },
+        })
+      })()
+    ) : (
+      // Fallback: if children isn't a React element (string etc), use label association.
+      <label htmlFor={inputId}>{props.children}</label>
+    )
+  ) : null
 
   useEffect(() => {
     if (!props.defaultCroppedImage) return
@@ -84,8 +138,8 @@ export function CropImageField (props: Props): React.ReactNode {
       props.onCrop(croppedImage)
     }
     if (props.onCropToBase64) {
-      const base64 = await getBase64FromImageUrl(croppedImage)
-      props.onCropToBase64(base64)
+      // croppedImage is already a data URL (base64). Use it directly for instant UI update.
+      props.onCropToBase64(croppedImage)
     }
   }
 
@@ -110,15 +164,15 @@ export function CropImageField (props: Props): React.ReactNode {
       <>
         {props.children ? (
           <>
-            <label htmlFor={inputId}>{props.children}</label>
+            {triggerNode}
             <Input
-              hidden
               id={inputId}
               ref={fileInputRef}
               type="file"
               accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+              onClick={clearFileInputValue}
               onChange={onFileChange}
-              className="absolute top-0 left-0 hidden h-full w-full cursor-pointer opacity-0"
+              className="sr-only"
             />
           </>
         ) : (
@@ -133,6 +187,7 @@ export function CropImageField (props: Props): React.ReactNode {
               ref={fileInputRef}
               type="file"
               accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+              onClick={clearFileInputValue}
               onChange={onFileChange}
               className="absolute top-0 left-0 h-full w-full cursor-pointer opacity-0"
             />
@@ -167,14 +222,15 @@ export function CropImageField (props: Props): React.ReactNode {
     <>
       {props.children ? (
         <>
-          <label htmlFor={inputId}>{props.children}</label>
+          {triggerNode}
           <Input
             id={inputId}
             ref={fileInputRef}
             type="file"
             accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+            onClick={clearFileInputValue}
             onChange={onFileChange}
-            className="absolute top-0 left-0 hidden h-full w-full cursor-pointer opacity-0"
+            className="sr-only"
           />
         </>
       ) : (
@@ -190,6 +246,7 @@ export function CropImageField (props: Props): React.ReactNode {
             ref={fileInputRef}
             type="file"
             accept=".webp,.png,.jpeg,.jpg,.gif,.svg,.bmp,.ico,.tiff,.tif,.svgz,.apng,.avif,.jfif,.pjpeg,.pjp,.jpgv,.hdp,.jpe,.jpeg2000,.jxr,.wdp,.jng,.jif,.jfi"
+            onClick={clearFileInputValue}
             onChange={onFileChange}
             className="absolute top-0 left-0 h-full w-full cursor-pointer opacity-0"
           />

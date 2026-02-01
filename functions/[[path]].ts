@@ -116,6 +116,47 @@ const createMaintenanceHtml = (message: string | null): string => {
 </html>`
 }
 
+const ADMIN_HOSTNAMES = new Set(["admin.aipictors.com"])
+
+const readEnvString = (
+  ctx: Parameters<PagesFunction>[0],
+  key: string,
+): string | null => {
+  const env = ctx.env as unknown as Record<string, unknown>
+  const value = env[key]
+  return typeof value === "string" && value.length > 0 ? value : null
+}
+
+const decodeBasicAuth = (
+  authorizationHeader: string | null,
+): { username: string; password: string } | null => {
+  if (!authorizationHeader) return null
+  const [scheme, encoded] = authorizationHeader.split(" ")
+  if (scheme?.toLowerCase() !== "basic" || !encoded) return null
+
+  try {
+    const decoded = atob(encoded)
+    const index = decoded.indexOf(":")
+    if (index < 0) return null
+    return {
+      username: decoded.slice(0, index),
+      password: decoded.slice(index + 1),
+    }
+  } catch {
+    return null
+  }
+}
+
+const createBasicAuthChallengeResponse = (): Response => {
+  return new Response("Unauthorized", {
+    status: 401,
+    headers: {
+      "WWW-Authenticate": 'Basic realm="Aipictors Admin"',
+      "Cache-Control": "no-store",
+    },
+  })
+}
+
 type MaintenanceStatusPayload = {
   isMaintenance: boolean
   message: string | null
@@ -390,6 +431,52 @@ export const onRequest: PagesFunction = async (ctx) => {
         },
       },
     )
+  }
+
+  // admin.aipictors.com は Basic 認証を必須にする
+  // NOTE: Remix の loader/action より先に弾くため、Pages Functions 側で実施する。
+  const requestUrl = new URL(ctx.request.url)
+  if (ADMIN_HOSTNAMES.has(requestUrl.hostname)) {
+    const expectedUser =
+      readEnvString(ctx, "ADMIN_BASIC_AUTH_USER") ??
+      readEnvString(ctx, "ADMIN_BASIC_USER")
+    const expectedPass =
+      readEnvString(ctx, "ADMIN_BASIC_AUTH_PASSWORD") ??
+      readEnvString(ctx, "ADMIN_BASIC_PASSWORD")
+
+    // 誤設定で無防備にならないよう、資格情報未設定は 500 で落とす
+    if (!expectedUser || !expectedPass) {
+      return new Response(
+        JSON.stringify({
+          error: "Admin basic auth is not configured",
+          code: "ADMIN_BASIC_AUTH_NOT_CONFIGURED",
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store",
+          },
+        },
+      )
+    }
+
+    const credentials = decodeBasicAuth(
+      ctx.request.headers.get("authorization"),
+    )
+
+    if (
+      !credentials ||
+      credentials.username !== expectedUser ||
+      credentials.password !== expectedPass
+    ) {
+      return createBasicAuthChallengeResponse()
+    }
+
+    // adminドメインの / は管理画面へ寄せる
+    if (requestUrl.pathname === "/") {
+      return Response.redirect(new URL("/admin/works", requestUrl).toString(), 302)
+    }
   }
 
   // メンテナンスモード時はSEOに配慮して 503 を返す（noindex + Retry-After）
