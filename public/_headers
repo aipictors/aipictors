@@ -4,18 +4,28 @@
 
 # その他の静的ファイル - 短期キャッシュ
 /*
-  Cache-Control: max-age=3600, s-maxage=3600, stale-while-revalidate=3600, stale-if-error=3600
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
 
 # Service Workerは短期キャッシュ
 /firebase-messaging-sw.js
-  Cache-Control: max-age=3600, s-maxage=3600
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
 
 # アイコンファイル
 /favicon.ico
-  Cache-Control: max-age=3600, s-maxage=3600
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
 /icon.png
-  Cache-Control: max-age=3600, s-maxage=3600
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0
 
 # マニフェストファイル  
 /manifest.json
-  Cache-Control: max-age=3600, s-maxage=3600
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  Pragma: no-cache
+  Expires: 0

@@ -1,43 +1,42 @@
-import { AppHeader } from "~/components/app/app-header"
-import { Button } from "~/components/ui/button"
-import { ScrollArea } from "~/components/ui/scroll-area"
-import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
-import { AuthContext } from "~/contexts/auth-context"
+import { useQuery } from "@apollo/client/index"
 import {
-  useNavigation,
   useLocation,
   useNavigate,
+  useNavigation,
   useSearchParams,
 } from "@remix-run/react"
-import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search, X } from "lucide-react"
-import { Suspense, useContext, useState, useEffect, useRef, lazy } from "react"
-import { useBoolean } from "usehooks-ts"
 import { graphql } from "gql.tada"
-import { useQuery } from "@apollo/client/index"
-import { useTranslation } from "~/hooks/use-translation"
-import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
-import {
-  analyzeSensitiveSearch,
-  generateSensitiveUrl,
-} from "~/utils/sensitive-keyword-helpers"
-import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
-
+import { Loader2Icon, MenuIcon, MoveLeft, Plus, Search, X } from "lucide-react"
+import { lazy, Suspense, useContext, useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
+import { useBoolean } from "usehooks-ts"
+import { AppHeader } from "~/components/app/app-header"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
-import { Input } from "~/components/ui/input"
-import { Separator } from "~/components/ui/separator"
-import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
-import { toast } from "sonner"
+import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
+import { Button } from "~/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
-import { cn } from "~/lib/utils"
+import { Input } from "~/components/ui/input"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { Separator } from "~/components/ui/separator"
+import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
+import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
-import { debugLog } from "~/utils/debug-logger"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
 import { HomeHeaderR18Button } from "~/routes/($lang)._main._index/components/home-header-r18-button"
+import { debugLog } from "~/utils/debug-logger"
+import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
+import {
+  analyzeSensitiveSearch,
+  generateSensitiveUrl,
+} from "~/utils/sensitive-keyword-helpers"
 
 // 重いコンポーネントを遅延読み込み
 const HomeNotificationsMenu = lazy(() =>
@@ -402,7 +401,7 @@ function HomeHeader(props: Props) {
   }
 
   return (
-    <AppHeader isSmallLeftPadding={props.alwaysShowTitle}>
+    <AppHeader isSmallLeftPadding={isSpecialPage}>
       <div
         className={cn(
           "flex min-w-0 items-center gap-x-2",
@@ -428,19 +427,31 @@ function HomeHeader(props: Props) {
           </SheetTrigger>
           <SheetContent
             className={cn(
-              "p-0",
-              isGenerationPage ? "w-[216px] max-w-[216px]" : "",
+              "w-[216px] max-w-[216px] overflow-x-hidden p-0",
+              isGenerationPage ? "" : "",
             )}
             side="left"
           >
-            <ScrollArea className="h-full p-4">
+            <ScrollArea className="h-full overflow-x-hidden p-4">
               <Suspense fallback={null}>
                 <HomeMenuRouteList onClickMenuItem={close} />
               </Suspense>
             </ScrollArea>
           </SheetContent>
         </Sheet>
-        <div className="hidden items-center md:flex">
+
+        {/* Mobile search toggle (avoid overlap by placing near menu) */}
+        {!isSearchFormOpen && (
+          <Button
+            className="md:hidden"
+            onClick={onToggleSearchForm}
+            variant="ghost"
+            size="icon"
+          >
+            <Search className="m-auto w-auto" />
+          </Button>
+        )}
+        <div className="hidden items-center md:ml-12 md:flex">
           {/* 画像生成画面ではロゴを表示、その他の画面では余白のみ表示 */}
           {isSpecialPage && (
             <Button
@@ -472,7 +483,7 @@ function HomeHeader(props: Props) {
           {!isSpecialPage && sidebarState === "minimal" && (
             <Button
               variant="ghost"
-              className="hidden shrink-0 items-center space-x-2 pl-28 md:flex"
+              className="ml-10 hidden shrink-0 items-center gap-2 px-2 md:flex"
               onClick={() => handleNavigate("/")}
             >
               {navigation.state === "loading" && (
@@ -500,20 +511,8 @@ function HomeHeader(props: Props) {
       </div>
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
         <div className="hidden w-full items-center space-x-2 md:flex">
-          <div
-            className={`flex w-full items-center justify-start space-x-2 font-semibold ${
-              !isSpecialPage
-                ? sidebarState === "expanded"
-                  ? "pl-[248px]" // サイドバー幅216px + 余白32px
-                  : sidebarState === "collapsed"
-                    ? "pl-[96px]" // サイドバー幅64px + 余白32px
-                    : sidebarState === "minimal"
-                      ? "pl-16" // 三角ボタン分の余白
-                      : "pl-[248px]"
-                : ""
-            }`}
-          >
-            <div className="relative flex w-full min-w-0 flex-1 flex-col rounded-xl border border-border bg-input">
+          <div className="flex w-full items-center justify-end font-semibold">
+            <div className="relative ml-auto flex w-full min-w-0 max-w-[260px] flex-col rounded-xl border border-border bg-input lg:max-w-[320px]">
               <Input
                 value={searchText}
                 onChange={onChangeSearchText}
@@ -602,16 +601,6 @@ function HomeHeader(props: Props) {
                 {t("投稿", "Post")}
               </Button>
             </div>
-            {!isSearchFormOpen && (
-              <Button
-                className="block md:hidden"
-                onClick={onToggleSearchForm}
-                variant="ghost"
-                size="icon"
-              >
-                <Search className="m-auto w-auto" />
-              </Button>
-            )}
             <div className="flex space-x-2 md:hidden">
               {/* R18ボタン - モバイル版 */}
               <HomeHeaderR18Button />

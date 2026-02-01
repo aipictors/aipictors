@@ -1,12 +1,8 @@
-import { useQuery } from "@apollo/client/index"
 import { useNavigate } from "@remix-run/react"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { RefreshCcwIcon } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
-import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
-import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
-import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
 
 type Props = {
   user: FragmentOf<typeof UserHomeMenuSensitiveFragment>
@@ -15,17 +11,7 @@ type Props = {
 export function UserHomeSensitiveMenu(props: Props) {
   const cachedUser = readFragment(UserHomeMenuSensitiveFragment, props.user)
 
-  const { data = null } = useQuery(UserQuery, {
-    variables: { userId: decodeURIComponent(cachedUser.id) },
-  })
-
-  const user = readFragment(UserHomeMenuSensitiveFragment, data?.user)
-
   const t = useTranslation()
-
-  const isMuted = user?.isMuted ?? false
-
-  const isBlocked = user?.isBlocked ?? false
 
   const navigate = useNavigate()
 
@@ -44,20 +30,6 @@ export function UserHomeSensitiveMenu(props: Props) {
         >
           <RefreshCcwIcon className="size-4" />
         </Button>
-        <UserActionOther
-          id={cachedUser.id}
-          isMuted={isMuted}
-          isBlocked={isBlocked}
-        />
-        <UserActionShare login={cachedUser.login} name={cachedUser.name} />
-        {cachedUser.promptonUser?.id && (
-          <PromptonRequestColorfulButton
-            rounded="rounded-full"
-            promptonId={cachedUser.promptonUser.id}
-            variant="icon"
-            targetUserId={cachedUser.id}
-          />
-        )}
       </div>
 
       {/* Desktop actions */}
@@ -73,20 +45,6 @@ export function UserHomeSensitiveMenu(props: Props) {
             <p className="text-sm">{t("全年齢", "G")}</p>
           </div>
         </Button>
-        <UserActionOther
-          id={cachedUser.id}
-          isMuted={isMuted}
-          isBlocked={isBlocked}
-        />
-        <UserActionShare login={cachedUser.login} name={cachedUser.name} />
-        {typeof user?.promptonUser?.id === "string" && (
-          <PromptonRequestColorfulButton
-            rounded="rounded-md"
-            promptonId={user.promptonUser.id}
-            variant="icon"
-            targetUserId={user.id}
-          />
-        )}
       </div>
     </div>
   )
@@ -109,13 +67,4 @@ export const UserHomeMenuSensitiveFragment = graphql(
     }
   }`,
   [],
-)
-
-const UserQuery = graphql(
-  `query User($userId: ID!) {
-    user(id: $userId) {
-      ...UserHomeMenuSensitiveFragment
-    }
-  }`,
-  [UserHomeMenuSensitiveFragment],
 )

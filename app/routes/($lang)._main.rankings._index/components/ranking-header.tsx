@@ -1,16 +1,16 @@
-import type React from "react"
-import { useState } from "react"
-import { useNavigate, useLocation } from "@remix-run/react"
+import { useLocation, useNavigate } from "@remix-run/react"
 import {
+  CalendarIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CalendarIcon,
+  ImageIcon,
   TrendingUpIcon,
   UsersIcon,
-  ImageIcon,
 } from "lucide-react"
+import type React from "react"
+import { useState } from "react"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { Button } from "~/components/ui/button"
-import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
 import {
   Carousel,
   CarouselContent,
@@ -19,8 +19,8 @@ import {
   CarouselPrevious,
 } from "~/components/ui/carousel"
 import { useTranslation } from "~/hooks/use-translation"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
-import { getWeeksInMonth, getWeekOfMonth } from "~/utils/get-weeks-in-month"
+import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
+import { getWeekOfMonth, getWeeksInMonth } from "~/utils/get-weeks-in-month"
 
 type Props = {
   year: number
@@ -31,7 +31,7 @@ type Props = {
   onRankingTypeChange?: (type: "works" | "users") => void
 }
 
-export function RankingHeader (props: Props) {
+export function RankingHeader(props: Props) {
   const t = useTranslation()
 
   const year = props.year
@@ -213,10 +213,17 @@ export function RankingHeader (props: Props) {
     }
 
     if (viewType === "マンスリー") {
-      for (let index = 5; index >= 0; index--) {
-        const date = new Date(today)
-        date.setMonth(today.getMonth() - index)
+      // NOTE: setMonth() keeps the day-of-month; when today is 29-31 it can overflow
+      // into the next month (e.g. Mar 31 -> Feb 31 -> Mar 2), causing duplicated months.
+      const baseMonthDate = new Date(today.getFullYear(), today.getMonth(), 1)
+      const seenMonths = new Set<string>()
+      // Exclude "this month" (0 months ago) because monthly rankings may not be published yet.
+      for (let index = 6; index >= 1; index--) {
+        const date = new Date(baseMonthDate)
+        date.setMonth(baseMonthDate.getMonth() - index)
         const formattedMonth = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, "0")}`
+        if (seenMonths.has(formattedMonth)) continue
+        seenMonths.add(formattedMonth)
         const basePath = `/rankings/${date.getFullYear()}/${date.getMonth() + 1}`
         const linkWithParams = searchString
           ? `${basePath}?${searchString}`

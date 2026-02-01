@@ -29,9 +29,8 @@ export function UserHomeHeader(props: Props) {
               <AvatarFallback />
             </Avatar>
           </div>
-          <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 box-border flex h-16 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-7 opacity-0 md:h-24 md:opacity-50" />
         </div>
-        <div className="relative z-20 mx-auto w-full max-w-6xl px-4 pt-3 pb-4 md:px-8 md:pt-6 md:pb-8">
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-3 pb-4 md:px-8 md:pt-6 md:pb-8">
           {props.userIconView}
         </div>
       </div>
@@ -48,7 +47,6 @@ export function UserHomeHeader(props: Props) {
             backgroundImage: `url(${user.headerImageUrl})`,
           }}
         />
-        <div className="pointer-events-none absolute right-0 bottom-0 left-0 z-10 box-border flex h-16 flex-col justify-end bg-linear-to-t from-black to-transparent p-4 pb-7 opacity-0 md:h-24 md:opacity-50" />
         <div className="relative m-auto">
           <div className="pointer-events-none absolute top-0 left-0 h-full w-full max-w-full overflow-hidden">
             <img
@@ -60,7 +58,7 @@ export function UserHomeHeader(props: Props) {
         </div>
       </div>
 
-      <div className="relative z-30 mx-auto w-full max-w-6xl px-4 pt-3 pb-4 md:px-8 md:pt-6 md:pb-8">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-3 pb-4 md:px-8 md:pt-6 md:pb-8">
         {props.userIconView}
       </div>
     </div>

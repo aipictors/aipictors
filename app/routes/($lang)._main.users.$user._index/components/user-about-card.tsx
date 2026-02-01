@@ -1,5 +1,4 @@
 import { type FragmentOf, graphql } from "gql.tada"
-import { PenLine } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 import { UserBiography } from "~/routes/($lang)._main.users.$user._index/components/user-biography"
 
@@ -45,20 +44,6 @@ export function UserAboutCard(props: Props) {
           <p className="text-sm leading-relaxed">
             <UserBiography text={biographyText} />
           </p>
-        )}
-
-        {(isBiographyEmpty || isBiographyShort) && (
-          <div className="text-muted-foreground">
-            <div className="flex items-start gap-2 text-sm">
-              <PenLine className="mt-0.5 size-4 text-muted-foreground" />
-              <p className="whitespace-pre-line text-muted-foreground text-sm">
-                {t(
-                  "この作家さんの\n・作風\n・得意ジャンル\n・活動内容\nなどを紹介できます",
-                  "You can introduce\n• style\n• genres\n• activities\nand more",
-                )}
-              </p>
-            </div>
-          </div>
         )}
       </div>
     </section>

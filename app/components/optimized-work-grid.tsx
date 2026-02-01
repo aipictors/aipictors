@@ -51,7 +51,9 @@ export const OptimizedWorkGrid = memo((props: Props) => {
   // debounced click handler
   const debouncedClick = useMemo(
     () =>
-      debounce((workId: string) => {
+      debounce((...args: unknown[]) => {
+        const workId = args[0]
+        if (typeof workId !== "string") return
         onWorkClick?.(workId)
       }, 300),
     [onWorkClick],

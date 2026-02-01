@@ -1,11 +1,6 @@
-import { useEffect, useState, useId } from "react"
-import { Button } from "~/components/ui/button"
-import { Switch } from "~/components/ui/switch"
-import { Label } from "~/components/ui/label"
+import { AlertTriangle, Eye, EyeOff, Shield } from "lucide-react"
+import { useEffect, useId, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { useTranslation } from "~/hooks/use-translation"
-import { useLocale } from "~/hooks/use-locale"
-import { cn } from "~/lib/utils"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,22 +11,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
+import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
-import { setCookie, hasCookie } from "~/lib/cookie-utils"
-import { Shield, Eye, EyeOff, AlertTriangle } from "lucide-react"
+import { Label } from "~/components/ui/label"
+import { Switch } from "~/components/ui/switch"
+import { useLocale } from "~/hooks/use-locale"
+import { useTranslation } from "~/hooks/use-translation"
+import { hasCookie, setCookie } from "~/lib/cookie-utils"
+import { cn } from "~/lib/utils"
 
 type Props = {
   variant?: "compact" | "full" | "toggle" | "card"
   className?: string
   showStatus?: boolean
   targetUrl?: string
+  label?: string
 }
 
-export function SensitiveToggle ({
+export function SensitiveToggle({
   variant = "compact",
   className,
   showStatus = false,
   targetUrl,
+  label,
 }: Props): React.ReactNode {
   const [isR18Mode, setIsR18Mode] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -134,7 +136,9 @@ export function SensitiveToggle ({
           )}
         >
           <span className="relative z-10 flex items-center gap-2">
-            <span className="font-bold text-sm tracking-wide">R18</span>
+            <span className="font-bold text-sm tracking-wide">
+              {label ?? "R18"}
+            </span>
             {showStatus && isR18Mode && (
               <div className="h-2 w-2 animate-pulse rounded-full bg-white/80" />
             )}

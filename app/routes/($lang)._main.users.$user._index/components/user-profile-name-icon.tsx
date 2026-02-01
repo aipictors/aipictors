@@ -20,6 +20,7 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof UserProfileIconFragment>
+  r18WorksCount?: number
 }
 
 /**
@@ -27,6 +28,12 @@ type Props = {
  */
 export function UserProfileNameIcon(props: Props) {
   const user = readFragment(UserProfileIconFragment, props.user)
+
+  const r18WorksCount = props.r18WorksCount ?? 0
+  const r18WorksCountText =
+    r18WorksCount >= 100 ? "100+" : String(r18WorksCount)
+  const shouldShowR18Toggle = r18WorksCount > 0
+  const r18Label = `R18（${r18WorksCountText}）`
 
   const t = useTranslation()
 
@@ -110,9 +117,10 @@ export function UserProfileNameIcon(props: Props) {
               </h1>
               <UserSubscriptionIcon passType={user.pass?.type} />
               <UserModeratorIcon isModerator={user.isModerator} />
-              {user.receivedSensitiveLikesCount > 0 && (
+              {shouldShowR18Toggle && (
                 <SensitiveToggle
                   variant="compact"
+                  label={r18Label}
                   className="h-6 border-red-200/40 bg-background/30 px-2 text-red-500 text-xs shadow-none dark:border-red-700/40"
                   showStatus={false}
                 />
@@ -142,9 +150,10 @@ export function UserProfileNameIcon(props: Props) {
               </h1>
               <UserSubscriptionIcon passType={user.pass?.type} />
               <UserModeratorIcon isModerator={user.isModerator} />
-              {user.receivedSensitiveLikesCount > 0 && (
+              {shouldShowR18Toggle && (
                 <SensitiveToggle
                   variant="compact"
+                  label={r18Label}
                   className="h-6 border-red-200/40 bg-background/30 px-2 text-red-500 text-xs shadow-none md:h-7 md:px-3 md:text-sm dark:border-red-700/40"
                   showStatus={false}
                 />

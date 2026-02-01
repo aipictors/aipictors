@@ -1,36 +1,36 @@
-import { Separator } from "~/components/ui/separator"
-import { AuthContext } from "~/contexts/auth-context"
-import { SidebarNavigationButton } from "~/components/sidebar-navigation-button"
-import { Link, useNavigate, useLocation, useNavigation } from "@remix-run/react"
+import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
+  ChevronLeftIcon,
+  HelpCircleIcon,
   HomeIcon,
   Image,
   ImageIcon,
   LightbulbIcon,
   Loader2Icon,
+  MenuIcon,
   RocketIcon,
+  SearchIcon,
   StampIcon,
   StarIcon,
-  MenuIcon,
-  ChevronLeftIcon,
   TagIcon,
-  SearchIcon,
-  HelpCircleIcon,
 } from "lucide-react"
 import { useContext } from "react"
+import { SidebarNavigationButton } from "~/components/sidebar-navigation-button"
+import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
+import { Separator } from "~/components/ui/separator"
+import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
 import { useTranslation } from "~/hooks/use-translation"
-import { SnsIconLink } from "~/components/sns-icon"
 
 type Props = {
   title?: string
   onClickMenuItem?: () => void
 }
 
-export function HomeRouteList ({ title: propTitle, onClickMenuItem }: Props) {
+export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const authContext = useContext(AuthContext)
   const navigation = useNavigation()
   const location = useLocation()
@@ -55,13 +55,13 @@ export function HomeRouteList ({ title: propTitle, onClickMenuItem }: Props) {
   const sidebarWidth = () => {
     switch (sidebarState) {
       case "expanded":
-        return "w-[216px]"
+        return "w-[232px]"
       case "collapsed":
-        return "w-16" // アイコンサイズに合わせて幅を縮小
+        return "w-20" // 80px（AppContentsと揃える）
       case "minimal":
-        return "w-16"
+        return "w-20"
       default:
-        return "w-[216px]"
+        return "w-[232px]"
     }
   }
 
@@ -70,7 +70,7 @@ export function HomeRouteList ({ title: propTitle, onClickMenuItem }: Props) {
     return (
       <>
         {/* 三角ボタンのみ絶対配置 - ヘッダーのロゴと被らないように左端に配置 */}
-        <div className="fixed top-4 left-2 z-50 hidden md:block">
+        <div className="fixed top-4 left-2 z-[60] hidden md:block">
           <Button
             variant="ghost"
             size="icon"
@@ -86,7 +86,7 @@ export function HomeRouteList ({ title: propTitle, onClickMenuItem }: Props) {
 
   return (
     <div
-      className={`fixed top-0 hidden h-screen flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 sm:z-30 md:z-40 md:flex lg:flex ${sidebarWidth()}`}
+      className={`fixed top-0 hidden h-screen flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200 sm:z-30 md:z-[60] md:flex lg:flex ${sidebarWidth()}`}
     >
       {/* Logo with Toggle Button */}
       <div className="sticky top-[-16px] z-10 mb-4 flex items-center justify-start bg-background">

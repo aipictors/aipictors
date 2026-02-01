@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@remix-run/react"
-import type { LucideIcon } from "lucide-react"
 import clsx from "clsx"
+import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
 import {
   Tooltip,
@@ -24,7 +24,7 @@ type Props = {
  * md   (768-1023) : 非表示（hidden）
  * lg-  (>=1024 px): 再表示（inline）
  */
-export function HomeMenuNavigationButton ({
+export function HomeMenuNavigationButton({
   href,
   icon: Icon,
   children,

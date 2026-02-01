@@ -1,15 +1,15 @@
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
-import { ScrollArea } from "~/components/ui/scroll-area"
-import { MenuIcon, Search, X, Grid3X3 } from "lucide-react"
-import { useState, Suspense, lazy, useEffect } from "react"
 import {
-  useNavigate,
   Link,
   useLocation,
+  useNavigate,
   useSearchParams,
 } from "@remix-run/react"
+import { Grid3X3, MenuIcon, Search, X } from "lucide-react"
+import { lazy, Suspense, useEffect, useState } from "react"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { useTranslation } from "~/hooks/use-translation"
 
 // Lazy load メニューコンポーネント
@@ -24,7 +24,7 @@ const HomeMenuRouteList = lazy(() =>
 /**
  * ギャラリー用ヘッダー
  */
-export function GalleryHeader (): React.ReactNode {
+export function GalleryHeader(): React.ReactNode {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchText, setSearchText] = useState("")
@@ -132,8 +132,11 @@ export function GalleryHeader (): React.ReactNode {
                     <MenuIcon className="size-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="p-0" side="left">
-                  <ScrollArea className="h-full p-4">
+                <SheetContent
+                  className="w-[216px] max-w-[216px] overflow-x-hidden p-0"
+                  side="left"
+                >
+                  <ScrollArea className="h-full overflow-x-hidden p-4">
                     <Suspense fallback={null}>
                       <HomeMenuRouteList onClickMenuItem={closeMenu} />
                     </Suspense>
@@ -144,7 +147,7 @@ export function GalleryHeader (): React.ReactNode {
           </div>
 
           {/* 中央: 検索バー（デスクトップのみ） */}
-          <div className="mx-8 hidden max-w-md flex-1 md:block">
+          <div className="ml-auto hidden w-full max-w-[260px] md:block lg:max-w-[320px]">
             <div className="relative">
               <Input
                 type="text"

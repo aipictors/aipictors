@@ -1,5 +1,5 @@
-import { useSidebar } from "~/contexts/sidebar-context"
 import { AppAnnouncementBanner } from "~/components/app/app-announcement-banner"
+import { useSidebar } from "~/contexts/sidebar-context"
 
 type Props = Readonly<{
   outlet: React.ReactNode
@@ -10,30 +10,30 @@ type Props = Readonly<{
 /**
  * コンテンツ
  */
-export function AppContents (props: Props): React.ReactNode {
+export function AppContents(props: Props): React.ReactNode {
   const { sidebarState } = useSidebar()
 
   // サイドバーの状態に応じてマージンを調整
   const getContentMargin = () => {
     switch (sidebarState) {
       case "expanded":
-        return "sm:ml-[0px] md:ml-[232px] md:max-w-[calc(100vw_-_276px)]"
+        return "sm:ml-[0px] md:ml-[232px] md:max-w-[calc(100vw-276px)]"
       case "collapsed":
-        return "sm:ml-[0px] md:ml-[80px] md:max-w-[calc(100vw_-_104px)]"
+        return "sm:ml-[0px] md:ml-[80px] md:max-w-[calc(100vw-104px)]"
       case "minimal":
         return "sm:ml-[0px] md:ml-[0px] md:max-w-full"
       default:
-        return "sm:ml-[0px] md:ml-[232px] md:max-w-[calc(100vw_-_276px)]"
+        return "sm:ml-[0px] md:ml-[232px] md:max-w-[calc(100vw-276px)]"
     }
   }
 
   return (
     <>
-      <div className="flex px-2">
+      <div className="flex min-w-0 overflow-x-hidden px-2">
         <div className="hidden md:block">{props.aside && props.aside}</div>
         <div className="pointer-events-none fixed inset-x-0 top-0 z-20 h-24 bg-linear-gradient-top-to-bottom dark:opacity-20" />
         <div className="absolute top-0">{props.header && props.header}</div>
-        <div className="w-full pt-24">
+        <div className="w-full min-w-0 pt-24">
           <div className={`w-full ${getContentMargin()}`}>
             <AppAnnouncementBanner />
           </div>

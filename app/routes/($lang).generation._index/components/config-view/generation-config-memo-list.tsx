@@ -1,11 +1,18 @@
+import { useEffect, useState } from "react"
 import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { GenerationConfigMemoItem } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-item"
-import { useEffect, useState } from "react"
 
 type Props = {
   memos: unknown[] | undefined
   refetchMemos: () => void
+}
+
+type Memo = {
+  title?: string | null
+  explanation?: string | null
+  prompts?: string | null
+  model?: unknown
 }
 
 /**
@@ -13,6 +20,13 @@ type Props = {
  */
 export function GenerationConfigMemoList(props: Props) {
   const [searchWord, setSearchWord] = useState("")
+
+  const toRecord = (value: unknown): Record<string, unknown> => {
+    if (value && typeof value === "object") {
+      return value as Record<string, unknown>
+    }
+    return {}
+  }
 
   useEffect(() => {
     if (props.memos === undefined) return
@@ -23,12 +37,11 @@ export function GenerationConfigMemoList(props: Props) {
     return <>{"プリセットから設定を復元できます"}</>
   }
 
-  const memos = props.memos as Array<{
-    title?: string | null
-    explanation?: string | null
-    prompts?: string | null
-    model?: unknown
-  }>
+  const isMemo = (value: unknown): value is Memo => {
+    return Boolean(value) && typeof value === "object"
+  }
+
+  const memos = props.memos.filter(isMemo)
 
   const filterModels =
     searchWord !== ""
@@ -62,7 +75,7 @@ export function GenerationConfigMemoList(props: Props) {
                 memo={{
                   ...memo,
                   model: {
-                    ...memo.model,
+                    ...toRecord(memo.model),
                     recommendedPrompt: "",
                   },
                 }}

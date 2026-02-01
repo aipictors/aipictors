@@ -4,7 +4,7 @@
  */
 
 // デバウンス関数
-export function debounce<T extends (...args: unknown[]) => unknown>(
+export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number,
 ): (...args: Parameters<T>) => void {
@@ -16,7 +16,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 }
 
 // スロットル関数
-export function throttle<T extends (...args: unknown[]) => unknown>(
+export function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number,
 ): (...args: Parameters<T>) => void {

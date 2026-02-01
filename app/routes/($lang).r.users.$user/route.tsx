@@ -48,7 +48,17 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  return { user: result.data.user }
+  const r18WorksCountResult = await loaderClient.query({
+    query: UserR18WorksCountQuery,
+    variables: {
+      userId: result.data.user.id,
+    },
+  })
+
+  return {
+    user: result.data.user,
+    r18WorksCount: r18WorksCountResult.data.r18WorksCount,
+  }
 }
 
 export const headers: HeadersFunction = () => ({
@@ -101,13 +111,16 @@ export default function UserLayout() {
 
   // フォロワーなどの最新情報をログインしている場合は取得する
   const user = userRet?.user ?? data.user
+  const r18WorksCount = data.r18WorksCount
 
   return (
     <div className="flex w-full flex-col justify-center">
       <div className="relative">
         <UserHomeHeader
           user={user}
-          userIconView={<UserProfileNameIcon user={user} />}
+          userIconView={
+            <UserProfileNameIcon user={user} r18WorksCount={r18WorksCount} />
+          }
         />
         <UserHomeSensitiveMenu user={user} />
       </div>
@@ -132,6 +145,7 @@ const MetaUserFragment = graphql(
 const UserQuery = graphql(
   `query User($userId: ID!) {
     user(id: $userId) {
+      id
       ...UserHomeHeaderFragment
       ...UserProfileIconFragment
       ...UserHomeMenuSensitiveFragment
@@ -146,4 +160,10 @@ const UserQuery = graphql(
     UserProfileIconFragment,
     UserSensitiveTabsFragment,
   ],
+)
+
+const UserR18WorksCountQuery = graphql(
+  `query UserR18WorksCount($userId: ID!) {
+    r18WorksCount: worksCount(where: { userId: $userId, ratings: [R18, R18G], isSensitive: true })
+  }`,
 )

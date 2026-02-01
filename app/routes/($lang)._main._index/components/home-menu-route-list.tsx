@@ -1,36 +1,36 @@
-import { Separator } from "~/components/ui/separator"
-import { AuthContext } from "~/contexts/auth-context"
-import { Link, useNavigate, useLocation, useNavigation } from "@remix-run/react"
+import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
+  HeartIcon,
+  HelpCircleIcon,
   HomeIcon,
   Image,
   ImageIcon,
+  InfoIcon,
   LightbulbIcon,
   Loader2Icon,
+  RefreshCcwIcon,
   RocketIcon,
+  SearchIcon,
   StampIcon,
   StarIcon,
   TagIcon,
-  RefreshCcwIcon,
-  SearchIcon,
-  HelpCircleIcon,
-  HeartIcon,
-  InfoIcon,
 } from "lucide-react"
 import { useContext } from "react"
-import { useTranslation } from "~/hooks/use-translation"
-import { Button } from "~/components/ui/button"
-import { HomeMenuNavigationButton } from "~/routes/($lang)._main._index/components/home-menu-navigation-button"
 import { SnsIconLink } from "~/components/sns-icon"
+import { Button } from "~/components/ui/button"
+import { Separator } from "~/components/ui/separator"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { HomeMenuNavigationButton } from "~/routes/($lang)._main._index/components/home-menu-navigation-button"
 
 type Props = {
   title?: string
   onClickMenuItem?: () => void
 }
 
-export function HomeMenuRouteList ({
+export function HomeMenuRouteList({
   title: propTitle,
   onClickMenuItem,
 }: Props) {
@@ -60,7 +60,7 @@ export function HomeMenuRouteList ({
   const closeHeaderMenu = () => onClickMenuItem?.()
 
   return (
-    <div className="fixed top-0 z-40 flex h-screen w-[216px] flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4 transition-[width] duration-200">
+    <div className="flex h-full w-full flex-col space-y-1 overflow-y-auto bg-background px-2 pt-4">
       {/* Logo ----------------------------------------------------- */}
       <div className="mb-10 flex justify-start">
         <Button

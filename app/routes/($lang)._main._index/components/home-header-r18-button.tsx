@@ -188,17 +188,17 @@ export function HomeHeaderR18Button () {
         <Button
           variant="outline"
           onClick={handleR18ButtonClick}
-          className="flex items-center gap-1 rounded-r-none border border-gray-300"
+          className="flex items-center gap-1 whitespace-nowrap rounded-r-none border border-gray-300 px-2 md:px-3"
         >
           {isCurrentlyR18 ? (
             <>
               <EyeOff className="h-3 w-3" />
-              R18
+              <span className="hidden md:inline">R18</span>
             </>
           ) : (
             <>
               <Eye className="h-3 w-3" />
-              全年齢
+              <span className="hidden md:inline">全年齢</span>
             </>
           )}
         </Button>
@@ -208,7 +208,8 @@ export function HomeHeaderR18Button () {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="rounded-l-none border border-gray-300 border-l-0 px-2"
+              size="icon"
+              className="rounded-l-none border border-gray-300 border-l-0"
             >
               <ChevronDown className="h-3 w-3" />
             </Button>
