@@ -1,10 +1,15 @@
-import { Button } from "~/components/ui/button"
+import { useQuery } from "@apollo/client/index"
+import { useLocation, useNavigate } from "@remix-run/react"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu"
+  AlertTriangle,
+  Check,
+  ChevronDown,
+  Eye,
+  EyeOff,
+  Settings,
+  X,
+} from "lucide-react"
+import { useContext, useEffect, useId, useState } from "react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,22 +20,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
-import { useNavigate, useLocation } from "@remix-run/react"
-import { useQuery } from "@apollo/client/index"
+import { Button } from "~/components/ui/button"
 import {
-  ChevronDown,
-  Settings,
-  AlertTriangle,
-  X,
-  Check,
-  EyeOff,
-  Eye,
-} from "lucide-react"
-import { useState, useContext, useEffect, useId } from "react"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu"
 import { AuthContext } from "~/contexts/auth-context"
 import { userBasicSettingQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
 
-export function HomeHeaderR18Button () {
+export function HomeHeaderR18Button() {
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
   const location = useLocation()

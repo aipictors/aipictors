@@ -1,4 +1,3 @@
-import { GiftIcon } from "lucide-react"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -37,11 +36,15 @@ export function PromptonRequestColorfulButton(props: Props) {
         aria-label={t("サポートする", "Support")}
         title={t("サポートする", "Support")}
         className={cn(
-          "inline-flex size-10 items-center justify-center bg-linear-to-r from-orange-400 via-pink-500 to-blue-500 text-white shadow-sm focus:outline-hidden",
+          "inline-flex size-10 items-center justify-center shadow-sm focus:outline-hidden",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "md:bg-linear-to-r md:from-orange-400 md:via-pink-500 md:to-blue-500 md:text-white md:hover:opacity-95",
           props.rounded ?? "rounded-full",
         )}
       >
-        <GiftIcon className="size-4" />
+        <span className="font-medium text-[11px] leading-none">
+          {t("支援", "Support")}
+        </span>
       </button>
     )
   }
@@ -51,18 +54,15 @@ export function PromptonRequestColorfulButton(props: Props) {
       type="button"
       onClick={onClick}
       className={cn(
-        "flex h-8 w-full items-center bg-linear-to-r from-orange-400 via-pink-500 to-blue-500 px-2 py-1 text-white focus:outline-hidden md:h-10",
+        "flex h-10 w-full items-center justify-center gap-2 px-3 py-2 focus:outline-hidden",
+        "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        "md:bg-linear-to-r md:from-orange-400 md:via-pink-500 md:to-blue-500 md:text-white md:hover:opacity-95",
         props.rounded,
       )}
     >
-      <div className="m-auto flex items-center">
-        {props.hideIcon !== true && (
-          <span className="rounded-full bg-white bg-opacity-30 p-1">
-            <GiftIcon className="size-4" />
-          </span>
-        )}
-        <span className="font-bold">{t("サポートする", "Support")}</span>
-      </div>
+      <span className="font-medium text-sm">
+        {t("サポートする", "Support")}
+      </span>
     </button>
   )
 }
