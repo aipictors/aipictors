@@ -1,11 +1,12 @@
+import { useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { useContext } from "react"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import {
   HomeWorkFragment,
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
-import { graphql, type FragmentOf } from "gql.tada"
-import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
-import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
   userPickupWorks: FragmentOf<typeof HomeWorkFragment>[]
@@ -13,8 +14,10 @@ type Props = {
   userId: string
 }
 
-export function UserPickupContents (props: Props) {
+export function UserPickupContents(props: Props) {
   const authContext = useContext(AuthContext)
+
+  const t = useTranslation()
 
   const { data: workRes } = useQuery(userQuery, {
     skip: authContext.isLoading,
@@ -28,19 +31,19 @@ export function UserPickupContents (props: Props) {
   const newWorkDisplayed = workRes?.user?.works ?? props.userNewWorks
 
   return (
-    <div className="items-center">
-      {newWorkDisplayed && newWorkDisplayed.length > 0 && (
-        <HomeWorkSection
-          title="最新"
-          works={newWorkDisplayed}
-          isCropped={false}
-        />
-      )}
+    <div className="space-y-6">
       {workDisplayed && workDisplayed.length > 0 && (
         <HomeWorkSection
-          title="ピックアップ"
+          title={t("注目作品", "Featured")}
           works={workDisplayed}
           isCropped={true}
+        />
+      )}
+      {newWorkDisplayed && newWorkDisplayed.length > 0 && (
+        <HomeWorkSection
+          title={t("最新", "Latest")}
+          works={newWorkDisplayed}
+          isCropped={false}
         />
       )}
     </div>

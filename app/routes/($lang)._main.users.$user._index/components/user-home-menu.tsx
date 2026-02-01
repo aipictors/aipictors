@@ -1,27 +1,14 @@
-import { FollowButton } from "~/components/button/follow-button"
-import { Button } from "~/components/ui/button"
-import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
-import { type FragmentOf, graphql, readFragment } from "gql.tada"
-import { useContext } from "react"
-import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
-import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
-import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
+import { type FragmentOf, graphql, readFragment } from "gql.tada"
+import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
-import { useNavigate } from "@remix-run/react"
-import { toOmissionNumberText } from "~/utils/to-omission-number-text"
-import { useTranslation } from "~/hooks/use-translation"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
-import { Heart } from "lucide-react"
 
 type Props = {
   user: FragmentOf<typeof UserHomeMenuFragment>
 }
 
-export function UserHomeMenu (props: Props) {
+export function UserHomeMenu(props: Props) {
   const cachedUser = readFragment(UserHomeMenuFragment, props.user)
-
-  const authContext = useContext(AuthContext)
 
   const { data = null } = useQuery(UserQuery, {
     variables: { userId: decodeURIComponent(cachedUser.id) },
@@ -29,122 +16,35 @@ export function UserHomeMenu (props: Props) {
 
   const user = readFragment(UserHomeMenuFragment, data?.user) ?? cachedUser
 
-  const t = useTranslation()
-
-  const isFollowee = Boolean(user.isFollowee)
-
   const isMuted = Boolean(user.isMuted)
 
   const isBlocked = Boolean(user.isBlocked)
 
-  const navigate = useNavigate()
-
   return (
-    <div className="relative m-auto h-72 w-full md:h-24">
-      <div className="absolute top-2 right-0 z-10 md:hidden">
-        <div className="flex space-x-2">
-          {user.receivedSensitiveLikesCount > 0 && (
-            <Button
-              onClick={() => {
-                navigate(`/r/users/${user.login}`)
-              }}
-              variant={"secondary"}
-            >
-              <div className="flex cursor-pointer items-center">
-                <Heart className="mr-2 h-5 w-4" />
-                {user.receivedSensitiveLikesCount}
-                <p>{t("センシティブ", "Sensitive")}</p>
-              </div>
-            </Button>
-          )}
-          <UserActionShare login={user.login} name={user.name} />
-        </div>
-      </div>
-      <div className="absolute top-2 right-0 hidden md:block">
-        <div className="flex w-full items-center justify-end space-x-4">
-          {user.receivedSensitiveLikesCount > 0 && (
-            <SensitiveToggle
-              variant="compact"
-              targetUrl={`/r/users/${user.login}`}
-            />
-          )}
-          <UserActionOther
-            id={user.id}
-            isMuted={isMuted}
-            isBlocked={isBlocked}
-          />
-          <UserActionShare login={user.login} name={user.name} />
-          <FollowButton
-            targetUserId={user.id}
-            isFollow={isFollowee}
-            triggerChildren={
-              <Button className="font-bold">
-                {t("フォローする", "Follow")}
-              </Button>
-            }
-            unFollowTriggerChildren={
-              <Button variant={"secondary"}>
-                {t("フォロー中", "Following")}
-              </Button>
-            }
-          />
-          {typeof user?.promptonUser?.id === "string" && (
-            <PromptonRequestColorfulButton
-              rounded="rounded-md"
-              promptonId={user.promptonUser.id}
-              targetUserId={user.id}
-            />
-          )}
-          {authContext.userId === user.id && (
-            <ProfileEditDialog
-              triggerChildren={<Button>{t("編集", "Edit")}</Button>}
-            />
-          )}
-        </div>
-      </div>
-      <div className="absolute top-24 left-0 flex w-[100%] flex-col space-y-1 px-8 md:hidden">
-        <div className="mb-4 flex md:mb-0 md:hidden">
-          <div className="w-32">
-            <div className="white mt-4 font-bold text-md">
-              {toOmissionNumberText(user.followersCount)}
-            </div>
-            <div className="white mt-1 text-sm opacity-50">
-              {t("フォロワー", "Followers")}
-            </div>
-          </div>
-          <div className="w-32">
-            <div className="white mt-4 font-bold text-md">
-              {toOmissionNumberText(user.receivedLikesCount)}
-            </div>
-            <div className="white mt-1 text-sm opacity-50">
-              {t("いいね", "Liked")}
-            </div>
-          </div>
-        </div>
-        {authContext.userId !== user.id && (
-          <FollowButton
-            className="mb-2 w-[100%] rounded-full"
-            targetUserId={user.id}
-            isFollow={isFollowee}
-          />
-        )}
+    <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
+      {/* Mobile: stacked primary actions */}
+      <div className="mt-3 flex flex-col gap-2 md:hidden">
         {user.promptonUser !== null && user.promptonUser.id !== null && (
-          <div className={"block w-[100%] rounded-full"}>
+          <div className="flex justify-end">
             <PromptonRequestColorfulButton
               rounded="rounded-full"
               promptonId={user.promptonUser.id}
-              hideIcon={true}
+              variant="icon"
               targetUserId={user.id}
             />
           </div>
         )}
-        {authContext.userId === user.id && (
-          <ProfileEditDialog
-            triggerChildren={
-              <Button className="w-full rounded-full">
-                {t("プロフィール編集", "Edit Profile")}
-              </Button>
-            }
+      </div>
+
+      {/* Desktop actions */}
+      <div className="mt-4 hidden w-full items-center justify-end gap-3 md:flex md:gap-4">
+        <UserActionOther id={user.id} isMuted={isMuted} isBlocked={isBlocked} />
+        {typeof user?.promptonUser?.id === "string" && (
+          <PromptonRequestColorfulButton
+            rounded="rounded-md"
+            promptonId={user.promptonUser.id}
+            variant="icon"
+            targetUserId={user.id}
           />
         )}
       </div>

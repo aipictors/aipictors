@@ -88,7 +88,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneDay,
 })
 
-export default function UserLayout () {
+export default function UserLayout() {
   const params = useParams<"user">()
 
   const authContext = useContext(AuthContext)
@@ -166,29 +166,27 @@ export default function UserLayout () {
 
   return (
     <div className="flex w-full flex-col justify-center">
-      <div className="flex flex-col space-y-4">
-        <div className="flex min-h-96 flex-col gap-y-4">
-          <UserAboutCard user={data.user} />
-          <UserPickupContents
-            userPickupWorks={data.user.featuredWorks ?? []}
-            userNewWorks={data.user.works ?? []}
-            userId={data.user.id}
-          />
-          <div className="space-y-4">
-            {works.length !== 0 && (
-              <HomeWorkSection
-                works={works}
-                isCropped={false}
-                isShowProfile={true}
-              />
-            )}
-            {novelWorks.length !== 0 && (
-              <HomeNovelsWorksSection works={novelWorks} isCropped={false} />
-            )}
-            {columnWorks.length !== 0 && (
-              <HomeNovelsWorksSection works={columnWorks} isCropped={false} />
-            )}
-          </div>
+      <div className="mx-auto w-full max-w-6xl space-y-6 px-4 md:px-8">
+        <UserAboutCard user={data.user} />
+        <UserPickupContents
+          userPickupWorks={data.user.featuredWorks ?? []}
+          userNewWorks={data.user.works ?? []}
+          userId={data.user.id}
+        />
+        <div className="space-y-6">
+          {works.length !== 0 && (
+            <HomeWorkSection
+              works={works}
+              isCropped={false}
+              isShowProfile={true}
+            />
+          )}
+          {novelWorks.length !== 0 && (
+            <HomeNovelsWorksSection works={novelWorks} isCropped={false} />
+          )}
+          {columnWorks.length !== 0 && (
+            <HomeNovelsWorksSection works={columnWorks} isCropped={false} />
+          )}
         </div>
       </div>
     </div>

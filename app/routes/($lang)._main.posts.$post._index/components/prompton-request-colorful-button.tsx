@@ -1,6 +1,6 @@
-import { AuthContext } from "~/contexts/auth-context"
 import { GiftIcon } from "lucide-react"
 import { useContext } from "react"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 
@@ -8,13 +8,14 @@ type Props = {
   promptonId: string
   rounded?: "rounded" | "rounded-md" | "rounded-full"
   hideIcon?: boolean
+  variant?: "full" | "icon"
   targetUserId: string
 }
 
 /**
  * 投稿者への支援ボタン (Support Button for the Poster)
  */
-export function PromptonRequestColorfulButton (props: Props) {
+export function PromptonRequestColorfulButton(props: Props) {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
 
@@ -24,6 +25,25 @@ export function PromptonRequestColorfulButton (props: Props) {
 
   const onClick = () => {
     window.open(`https://prompton.io/aipic/${props.promptonId}`, "_blank")
+  }
+
+  const variant = props.variant ?? "full"
+
+  if (variant === "icon") {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={t("サポートする", "Support")}
+        title={t("サポートする", "Support")}
+        className={cn(
+          "inline-flex size-10 items-center justify-center bg-linear-to-r from-orange-400 via-pink-500 to-blue-500 text-white shadow-sm focus:outline-hidden",
+          props.rounded ?? "rounded-full",
+        )}
+      >
+        <GiftIcon className="size-4" />
+      </button>
+    )
   }
 
   return (

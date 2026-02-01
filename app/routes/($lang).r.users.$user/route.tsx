@@ -81,7 +81,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   )
 }
 
-export default function UserLayout () {
+export default function UserLayout() {
   const params = useParams<"user">()
 
   const authContext = useContext(AuthContext)
@@ -111,7 +111,7 @@ export default function UserLayout () {
         />
         <UserHomeSensitiveMenu user={user} />
       </div>
-      <div className="flex flex-col space-y-4">
+      <div className="mx-auto w-full max-w-6xl space-y-4 px-4 md:px-8">
         <UserSensitiveTabs user={user} />
         <Outlet />
       </div>

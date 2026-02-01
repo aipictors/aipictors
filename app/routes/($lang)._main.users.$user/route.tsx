@@ -18,10 +18,6 @@ import {
   UserHomeHeaderFragment,
 } from "~/routes/($lang)._main.users.$user._index/components/user-home-header"
 import {
-  UserHomeMenu,
-  UserHomeMenuFragment,
-} from "~/routes/($lang)._main.users.$user._index/components/user-home-menu"
-import {
   UserProfileIconFragment,
   UserProfileNameIcon,
 } from "~/routes/($lang)._main.users.$user._index/components/user-profile-name-icon"
@@ -81,7 +77,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   )
 }
 
-export default function UserLayout () {
+export default function UserLayout() {
   const params = useParams<"user">()
 
   const authContext = useContext(AuthContext)
@@ -102,18 +98,6 @@ export default function UserLayout () {
   // フォロワーなどの最新情報をログインしている場合は取得する
   const user = userRet?.user ?? data.user
 
-  // デバッグ用ログ
-  console.log("UserLayout Debug:", {
-    params: params.user,
-    decodedUserId: decodeURIComponent(params.user),
-    userRetData: userRet?.user,
-    loaderData: data.user,
-    finalUser: user,
-    authLoading: authContext.isLoading,
-    authNotLoggedIn: authContext.isNotLoggedIn,
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-  })
-
   return (
     <div className="flex w-full flex-col justify-center">
       <div className="relative">
@@ -121,9 +105,8 @@ export default function UserLayout () {
           user={user}
           userIconView={<UserProfileNameIcon user={user} />}
         />
-        <UserHomeMenu user={user} />
       </div>
-      <div className="space-y-4">
+      <div className="mx-auto w-full max-w-6xl space-y-4 px-4 md:px-8">
         <UserTabs user={user} />
         <Outlet />
       </div>
@@ -146,7 +129,6 @@ const UserQuery = graphql(
     user(id: $userId) {
       ...UserHomeHeaderFragment
       ...UserProfileIconFragment
-      ...UserHomeMenuFragment
       ...UserTabsFragment
       ...MetaUserFragment
     }
@@ -154,7 +136,6 @@ const UserQuery = graphql(
   [
     MetaUserFragment,
     UserHomeHeaderFragment,
-    UserHomeMenuFragment,
     UserProfileIconFragment,
     UserTabsFragment,
   ],

@@ -1,14 +1,21 @@
+import { EllipsisIcon } from "lucide-react"
+import { useContext } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover"
-import { EllipsisIcon } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { UserMuteButton } from "~/routes/($lang)._main.users.$user._index/components/user-mute-button"
 import { UserBlockButton } from "./user-block-button"
-import { AuthContext } from "~/contexts/auth-context"
-import { useContext } from "react"
 
 type Props = {
   id: string
@@ -16,8 +23,10 @@ type Props = {
   isBlocked?: boolean
 }
 
-export function UserActionOther (props: Props) {
+export function UserActionOther(props: Props) {
   const authContext = useContext(AuthContext)
+
+  const t = useTranslation()
 
   if (
     authContext.isLoading ||
@@ -29,11 +38,25 @@ export function UserActionOther (props: Props) {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button size={"icon"} variant="secondary">
-          <EllipsisIcon className="w-16" />
-        </Button>
-      </PopoverTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <Button
+                size={"icon"}
+                variant="secondary"
+                aria-label={t("その他", "More")}
+                title={t("その他", "More")}
+              >
+                <EllipsisIcon className="size-4" />
+              </Button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t("その他", "More")}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <UserMuteButton

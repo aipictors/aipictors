@@ -1,22 +1,24 @@
-import { Button } from "~/components/ui/button"
 import { Link } from "@remix-run/react"
 import {
+  RiDiscordLine,
   RiFacebookBoxLine,
   RiGithubLine,
   RiInstagramLine,
   RiTwitterXLine,
-  RiDiscordLine,
 } from "@remixicon/react"
 import { MailIcon } from "lucide-react"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   url: string
+  variant?: "default" | "compact"
+  ariaLabel?: string
 }
 
 /**
  * SNSアイコンリンク
  */
-export function SnsIconLink (props: Props): React.ReactNode {
+export function SnsIconLink(props: Props): React.ReactNode {
   const icon = () => {
     if (props.url.includes("twitter") || props.url.includes("x.com")) {
       return <RiTwitterXLine className="size-5" />
@@ -57,12 +59,20 @@ export function SnsIconLink (props: Props): React.ReactNode {
     )
   }
 
+  const variant = props.variant ?? "default"
+
   return (
     <Link className="block" to={props.url} target="_blank" rel="noreferrer">
       <Button
-        variant={"outline"}
-        size={"sm"}
-        className="h-9 w-9 p-2 transition-colors hover:bg-accent hover:text-accent-foreground"
+        variant={variant === "compact" ? "ghost" : "outline"}
+        size={variant === "compact" ? "icon" : "sm"}
+        className={
+          variant === "compact"
+            ? "h-8 w-8 p-0 text-muted-foreground"
+            : "h-9 w-9 p-2 transition-colors hover:bg-accent hover:text-accent-foreground"
+        }
+        aria-label={props.ariaLabel}
+        title={props.ariaLabel}
       >
         {icon()}
       </Button>
