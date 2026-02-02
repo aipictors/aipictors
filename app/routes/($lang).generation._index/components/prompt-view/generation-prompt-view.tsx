@@ -1,26 +1,26 @@
+import { BookTextIcon, RotateCcwIcon } from "lucide-react"
+import { useBoolean } from "usehooks-ts"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { Button } from "~/components/ui/button"
 import { Dialog, DialogTrigger } from "~/components/ui/dialog"
 import { Textarea } from "~/components/ui/textarea"
+import { useTranslation } from "~/hooks/use-translation"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import { PromptCategoriesDialogContent } from "~/routes/($lang).generation._index/components/prompt-view/prompt-categories-dialog-content"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { BookTextIcon } from "lucide-react"
-import { useBoolean } from "usehooks-ts"
-import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * Format prompt text
  * @param text
  */
-export function formatPromptTextForKeyWord (text: string) {
+export function formatPromptTextForKeyWord(text: string) {
   return text
     .split(",")
     .filter((t) => t.length !== 0)
     .join(",")
 }
 
-export function GenerationPromptView () {
+export function GenerationPromptView() {
   const context = useGenerationContext()
 
   const formattedPromptText = formatPromptTextForKeyWord(
@@ -53,6 +53,19 @@ export function GenerationPromptView () {
 
   const t = useTranslation()
 
+  const resetAction = (
+    <Button
+      size={"icon"}
+      variant={"ghost"}
+      title={t("プロンプトをクリア", "Clear prompt")}
+      onClick={() => {
+        context.updatePrompt("")
+      }}
+    >
+      <RotateCcwIcon className="h-4 w-4" />
+    </Button>
+  )
+
   const keywordsAction =
     context.config.languageUsedForPrompt === null ? (
       <DialogTrigger asChild>
@@ -65,6 +78,13 @@ export function GenerationPromptView () {
         </div>
       </DialogTrigger>
     ) : undefined
+
+  const cardAction = (
+    <>
+      {resetAction}
+      {keywordsAction}
+    </>
+  )
 
   return (
     <>
@@ -82,7 +102,7 @@ export function GenerationPromptView () {
               "生成したいイラストの要素をキーワードから選んでください。",
               "Select the elements you want to generate from the keywords",
             )}
-            action={keywordsAction}
+            action={cardAction}
           >
             <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
               <Textarea
@@ -144,6 +164,7 @@ export function GenerationPromptView () {
             "生成したいイラストを言葉で入力してください。文章からAIでプロンプトを自動生成します。",
             "Please enter the illustration you want to generate in words.",
           )}
+          action={cardAction}
         >
           <div className="relative flex h-full flex-col gap-y-2 pb-1 md:px-4 md:pb-4">
             <Textarea

@@ -1,6 +1,13 @@
+import { type FragmentOf, graphql } from "gql.tada"
+import { Suspense, useEffect, useMemo, useState } from "react"
+import { ErrorBoundary } from "react-error-boundary"
+import { toast } from "sonner"
 import { ResponsivePagination } from "~/components/responsive-pagination"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { useFocusTimeout } from "~/hooks/use-focus-timeout"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { ErrorResultCard } from "~/routes/($lang).generation._index/components/error-result-card"
 import { FallbackTaskCard } from "~/routes/($lang).generation._index/components/fallback-task-card"
@@ -10,16 +17,12 @@ import {
   GenerationTaskCard,
 } from "~/routes/($lang).generation._index/components/generation-task-card"
 import { PlanUpgradePrompt } from "~/routes/($lang).generation._index/components/plan-upgrade-prompt"
+import { MobilePullToRefresh } from "~/routes/($lang).generation._index/components/task-view/mobile-pull-to-refresh"
 import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import type { TaskContentPositionType } from "~/routes/($lang).generation._index/types/task-content-position-type"
 import { getMaxPagesByPlan } from "~/routes/($lang).generation._index/utils/get-max-pages-by-plan"
-import { graphql, type FragmentOf } from "gql.tada"
-import { Suspense } from "react"
-import { ErrorBoundary } from "react-error-boundary"
-import { toast } from "sonner"
-import { MobilePullToRefresh } from "~/routes/($lang).generation._index/components/task-view/mobile-pull-to-refresh"
 
 type Props = {
   rating: number
@@ -45,10 +48,12 @@ type Props = {
 /**
  * 画像生成履歴の一覧
  */
-export function GenerationTaskList (props: Props) {
+export function GenerationTaskList(props: Props) {
   const context = useGenerationContext()
 
   const queryData = useGenerationQuery()
+
+  const t = useTranslation()
 
   const _isTimeout = useFocusTimeout()
 
@@ -154,6 +159,57 @@ export function GenerationTaskList (props: Props) {
 
   const componentTasks = activeTasks
 
+  const perPage = props.rating === 0 || props.rating === -1 ? 56 : 800
+  const maxPagesByPlan = getMaxPagesByPlan(queryData.currentPass?.type)
+
+  const maxCountForPagination =
+    (props.protect === 0 || props.protect === -1) &&
+    (props.rating === 0 || props.rating === -1)
+      ? (queryData.userStatus?.remainingImageGenerationTasksTotalCount ?? 0)
+      : componentTasks.length
+
+  const pageCount = Math.ceil(
+    Math.min(maxCountForPagination, perPage * maxPagesByPlan) / perPage,
+  )
+  const lastPageIndex = Math.max(0, pageCount - 1)
+
+  // いま存在するページ数の約1/3をジャンプ幅にする（最低1ページ）
+  const jumpPages = Math.max(1, Math.floor(pageCount / 3))
+
+  const canJumpBack = props.currentPage > 0
+  const canJumpForward = props.currentPage < lastPageIndex
+
+  const [pageInput, setPageInput] = useState(String(props.currentPage + 1))
+
+  useEffect(() => {
+    setPageInput(String(props.currentPage + 1))
+  }, [props.currentPage])
+
+  const pageInputHint = useMemo(() => {
+    return t("ページ", "Page")
+  }, [t])
+
+  const goToPageByInput = () => {
+    const raw = pageInput.trim()
+    if (raw.length === 0) {
+      setPageInput(String(props.currentPage + 1))
+      return
+    }
+    const parsed = Number(raw)
+    if (!Number.isFinite(parsed)) {
+      setPageInput(String(props.currentPage + 1))
+      return
+    }
+    const clampedOneBased = Math.min(
+      Math.max(1, Math.floor(parsed)),
+      Math.max(1, pageCount),
+    )
+    setPageInput(String(clampedOneBased))
+    props.setCurrentPage(
+      Math.min(lastPageIndex, Math.max(0, clampedOneBased - 1)),
+    )
+  }
+
   const combinedTasks = [...componentTasks, ...activeResults]
 
   // 左右の作品へ遷移するときに使用するnanoidのリスト
@@ -228,8 +284,74 @@ export function GenerationTaskList (props: Props) {
       <div className="shrink-0 space-y-3 p-2 pb-4 md:p-4 md:pt-2 md:pb-4">
         {props.protect !== 1 && (
           <>
+            <div className="flex items-center justify-between gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={!canJumpBack}
+                title={t(
+                  "履歴を大きく戻す（全ページの約1/3）",
+                  "Jump back in history (~1/3 of pages)",
+                )}
+                onClick={() => {
+                  props.setCurrentPage(
+                    Math.max(0, props.currentPage - jumpPages),
+                  )
+                }}
+              >
+                {t(`-${jumpPages}ページ`, `-${jumpPages} pages`)}
+              </Button>
+
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground text-xs">
+                  {pageInputHint}
+                </span>
+                <Input
+                  className="h-9 w-20 text-center"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={Math.max(1, pageCount)}
+                  value={pageInput}
+                  onChange={(event) => {
+                    setPageInput(event.target.value)
+                  }}
+                  onBlur={goToPageByInput}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      ;(event.currentTarget as HTMLInputElement).blur()
+                    }
+                  }}
+                  aria-label={t("ページ番号", "Page number")}
+                  title={t(
+                    "ページ番号を入力して移動（フォーカスを外すと移動）",
+                    "Type a page number to jump (moves on blur)",
+                  )}
+                />
+                <span className="text-muted-foreground text-xs">
+                  / {Math.max(1, pageCount)}
+                </span>
+              </div>
+
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={!canJumpForward}
+                title={t(
+                  "履歴を大きく進める（全ページの約1/3）",
+                  "Jump forward in history (~1/3 of pages)",
+                )}
+                onClick={() => {
+                  props.setCurrentPage(
+                    Math.min(lastPageIndex, props.currentPage + jumpPages),
+                  )
+                }}
+              >
+                {t(`+${jumpPages}ページ`, `+${jumpPages} pages`)}
+              </Button>
+            </div>
             <ResponsivePagination
-              perPage={props.rating === 0 || props.rating === -1 ? 56 : 800}
+              perPage={perPage}
               maxCount={
                 (props.protect === 0 || props.protect === -1) &&
                 (props.rating === 0 || props.rating === -1)
@@ -243,7 +365,7 @@ export function GenerationTaskList (props: Props) {
               }}
               isActiveButtonStyle={true}
               allowExtendedPagination={true}
-              maxPages={getMaxPagesByPlan(queryData.currentPass?.type)}
+              maxPages={maxPagesByPlan}
               disableScrollToTop={true}
             />
             <PlanUpgradePrompt currentPlan={queryData.currentPass?.type} />

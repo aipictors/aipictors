@@ -1,25 +1,26 @@
-import { Textarea } from "~/components/ui/textarea"
-import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
-import { Dialog, DialogTrigger } from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { NegativePromptsDialogContent } from "~/routes/($lang).generation._index/components/negative-prompt-view/negative-prompts-dialog-content"
+import { BookTextIcon, RotateCcwIcon } from "lucide-react"
 import { useBoolean } from "usehooks-ts"
+import { Button } from "~/components/ui/button"
+import { Dialog, DialogTrigger } from "~/components/ui/dialog"
+import { Textarea } from "~/components/ui/textarea"
 import { useTranslation } from "~/hooks/use-translation"
-import { BookTextIcon } from "lucide-react"
+import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
+import { NegativePromptsDialogContent } from "~/routes/($lang).generation._index/components/negative-prompt-view/negative-prompts-dialog-content"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { getDefaultNegativePrompt } from "~/routes/($lang).generation._index/utils/get-default-negative-prompt"
 
 /**
  * Format prompt text
  * @param text
  */
-export function formatPromptTextForKeyWord (text: string) {
+export function formatPromptTextForKeyWord(text: string) {
   return text
     .split(",")
     .filter((t) => t.length !== 0)
     .join(",")
 }
 
-export function GenerationNegativePromptView () {
+export function GenerationNegativePromptView() {
   const context = useGenerationContext()
 
   const formattedNegativePromptText = formatPromptTextForKeyWord(
@@ -59,6 +60,21 @@ export function GenerationNegativePromptView () {
 
   const t = useTranslation()
 
+  const resetAction = (
+    <Button
+      size={"icon"}
+      variant={"ghost"}
+      title={t("ネガティブを初期値に戻す", "Reset negative prompt")}
+      onClick={() => {
+        context.updateNegativePrompt(
+          getDefaultNegativePrompt(context.config.modelType),
+        )
+      }}
+    >
+      <RotateCcwIcon className="h-4 w-4" />
+    </Button>
+  )
+
   return (
     <Dialog
       open={value}
@@ -74,11 +90,14 @@ export function GenerationNegativePromptView () {
           "Write the English words of the illustrations you don't want to generate. The initial value is set to a value that helps generate high-quality illustrations.",
         )}
         action={
-          <DialogTrigger asChild>
-            <Button size={"icon"} variant={"ghost"} onClick={setTrue}>
-              <BookTextIcon />
-            </Button>
-          </DialogTrigger>
+          <>
+            {resetAction}
+            <DialogTrigger asChild>
+              <Button size={"icon"} variant={"ghost"} onClick={setTrue}>
+                <BookTextIcon />
+              </Button>
+            </DialogTrigger>
+          </>
         }
       >
         <div className="relative flex h-full flex-col gap-y-2 pb-2 md:px-4 md:pb-4">
