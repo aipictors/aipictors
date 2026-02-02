@@ -30,8 +30,7 @@ export function UserProfileNameIcon(props: Props) {
   const user = readFragment(UserProfileIconFragment, props.user)
 
   const r18WorksCount = props.r18WorksCount ?? 0
-  const r18WorksCountText =
-    r18WorksCount >= 100 ? "100+" : String(r18WorksCount)
+  const r18WorksCountText = r18WorksCount >= 100 ? "99+" : String(r18WorksCount)
   const shouldShowR18Toggle = r18WorksCount > 0
   const r18Label = `R18（${r18WorksCountText}）`
 
