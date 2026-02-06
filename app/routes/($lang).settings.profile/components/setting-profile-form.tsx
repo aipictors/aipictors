@@ -1,35 +1,36 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
+import { Suspense, useContext, useEffect, useState } from "react"
+import { toast } from "sonner"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { SelectCreatedSensitiveWorksDialog } from "~/routes/($lang).my._index/components/select-created-sensitive-works-dialog"
 import {
   DialogWorkFragment,
   SelectCreatedWorksDialog,
 } from "~/routes/($lang).my._index/components/select-created-works-dialog"
-import { useQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
-import { Suspense, useContext, useState, useEffect } from "react"
-import { useMutation } from "@apollo/client/index"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import { toast } from "sonner"
-import { useTranslation } from "~/hooks/use-translation"
-import { SelectCreatedSensitiveWorksDialog } from "~/routes/($lang).my._index/components/select-created-sensitive-works-dialog"
 
 /**
  * プロフィール設定フォーム
  */
-export function SettingProfileForm () {
+export function SettingProfileForm() {
   const authContext = useContext(AuthContext)
   const t = useTranslation()
+
+  const userId = authContext.userId?.toString() ?? ""
 
   const { data: user, loading } = useQuery(userQuery, {
     skip:
       authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
-      userId: authContext.userId?.toString() ?? "",
+      userId,
     },
     fetchPolicy: "cache-first",
   })
@@ -142,6 +143,15 @@ export function SettingProfileForm () {
           ),
         },
       },
+      refetchQueries: [
+        {
+          query: userQuery,
+          variables: {
+            userId,
+          },
+        },
+      ],
+      awaitRefetchQueries: true,
     })
 
     toast(t("プロフィールを更新しました。", "Profile updated."))

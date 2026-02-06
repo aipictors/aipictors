@@ -25,7 +25,9 @@ const hasUserSpecificHeaders = (request: Request): boolean => {
   return false
 }
 
-const parseCacheControlMaxAgeSeconds = (cacheControl: string): number | null => {
+const parseCacheControlMaxAgeSeconds = (
+  cacheControl: string,
+): number | null => {
   const lower = cacheControl.toLowerCase()
   if (
     lower.includes("no-store") ||
@@ -51,7 +53,7 @@ const parseCacheControlMaxAgeSeconds = (cacheControl: string): number | null => 
   return null
 }
 
-export default async function handleRequest (
+export default async function handleRequest(
   request: Request,
   loaderStatusCode: number,
   headers: Headers,

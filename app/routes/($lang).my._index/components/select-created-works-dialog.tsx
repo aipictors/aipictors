@@ -1,20 +1,19 @@
-import { useContext, useState } from "react"
+import { useSuspenseQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { CheckIcon, ImageIcon, PlusIcon } from "lucide-react"
+import React, { useContext, useState } from "react"
+import { toast } from "sonner"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { AuthContext } from "~/contexts/auth-context"
-import { ImageIcon, CheckIcon, PlusIcon } from "lucide-react"
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import React from "react"
-import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { type FragmentOf, graphql } from "gql.tada"
-import { toast } from "sonner"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳対応
 
 type Props = {
@@ -27,7 +26,7 @@ type Props = {
 /**
  * 作成済みの作品選択ダイアログ
  */
-export function SelectCreatedWorksDialog (props: Props) {
+export function SelectCreatedWorksDialog(props: Props) {
   const t = useTranslation()
 
   const appContext = useContext(AuthContext)
@@ -146,7 +145,13 @@ export function SelectCreatedWorksDialog (props: Props) {
 
       <div className="flex flex-wrap items-center">
         {props.selectedWorks.slice(0, 7).map((work) => (
-          <div key={work.id} className="relative m-2 size-16 md:h-24 md:w-24">
+          <button
+            key={work.id}
+            type="button"
+            onClick={() => handleWorkClick(work)}
+            className="relative m-2 size-16 cursor-pointer md:h-24 md:w-24"
+            aria-label={t("選択解除", "Deselect")}
+          >
             <img
               className="size-16 rounded-md object-cover md:h-24 md:w-24"
               src={work.smallThumbnailImageURL}
@@ -158,7 +163,7 @@ export function SelectCreatedWorksDialog (props: Props) {
             <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
               <CheckIcon className="p-1 text-white dark:text-black" />
             </div>
-          </div>
+          </button>
         ))}
         <div className="border-2 border-transparent p-1">
           <Button

@@ -1,31 +1,32 @@
+import { useMutation, useQuery, useSuspenseQuery } from "@apollo/client/index"
+import { useNavigate } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { Loader2Icon, Pencil } from "lucide-react"
+import { useContext, useState } from "react"
+import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
-import { DialogWorkFragment } from "~/routes/($lang).my._index/components/select-created-works-dialog"
-import { useQuery, useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { Loader2Icon, Pencil } from "lucide-react"
-import { useContext, useState } from "react"
-import { useMutation } from "@apollo/client/index"
-import { uploadPublicImage } from "~/utils/upload-public-image"
-import { toast } from "sonner"
-import { useNavigate } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
+import { DialogWorkFragment } from "~/routes/($lang).my._index/components/select-created-works-dialog"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
 /**
  * プロフィール設定フォーム
  */
-export function ProfileEditorForm () {
+export function ProfileEditorForm() {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
 
+  const userId = authContext.userId?.toString() ?? ""
+
   const { data: user } = useSuspenseQuery(userQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
-      userId: authContext.userId?.toString() ?? "",
+      userId,
     },
     fetchPolicy: "cache-first",
   })
@@ -103,6 +104,15 @@ export function ProfileEditorForm () {
           ),
         },
       },
+      refetchQueries: [
+        {
+          query: userQuery,
+          variables: {
+            userId,
+          },
+        },
+      ],
+      awaitRefetchQueries: true,
     })
 
     toast(t("プロフィールを更新しました。", "Profile updated."))
