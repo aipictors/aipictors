@@ -1,7 +1,7 @@
-import { Button } from "~/components/ui/button"
-import { ChevronLeft, ChevronRight, XIcon, Keyboard } from "lucide-react"
+import { ChevronLeft, ChevronRight, Keyboard, XIcon } from "lucide-react"
 import type React from "react"
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { Button } from "~/components/ui/button"
 
 type Props = {
   imageURLs: string[]
@@ -11,7 +11,7 @@ type Props = {
   mode?: "dialog" | "page" // ダイアログモードかページモードかを指定
 }
 
-export function ImagesPreview (props: Props): React.ReactNode {
+export function ImagesPreview(props: Props): React.ReactNode {
   const { mode = "page" } = props
   const [isOpen, setIsOpen] = useState(false)
   const [scale, setScale] = useState(1)
@@ -374,7 +374,7 @@ export function ImagesPreview (props: Props): React.ReactNode {
         {isOpen && (
           // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
           <div
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80"
+            className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black bg-opacity-80"
             onClick={handleBackgroundClick}
           >
             <Button
