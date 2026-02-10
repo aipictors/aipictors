@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { X, Info } from "lucide-react"
+import { Info, X } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const emergencyAnnouncementsQuery = graphql(`
   query emergencyAnnouncements {
@@ -55,7 +55,7 @@ const addDismissedAnnouncement = (contentHash: string): void => {
 /**
  * 生成画面用緊急お知らせバナー
  */
-export function GenerationAnnouncementBanner () {
+export function GenerationAnnouncementBanner() {
   const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true)
 
   const {

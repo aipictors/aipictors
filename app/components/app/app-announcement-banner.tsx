@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react"
 import { useQuery } from "@apollo/client/index"
 import { useLocation } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { X, Info } from "lucide-react"
+import { Info, X } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const emergencyAnnouncementsQuery = graphql(`
   query emergencyAnnouncements {
@@ -63,7 +63,9 @@ export function AppAnnouncementBanner(): React.ReactNode {
   const { data: announcementData } = useQuery(emergencyAnnouncementsQuery, {})
 
   // 表示対象のパスを判定（トップ画面専用）
-  const isAnnouncementPath = location.pathname === "/"
+  // `($lang)` を使っているため、`/` と `/<lang>` の両方をトップ扱いにする
+  const isAnnouncementPath =
+    location.pathname === "/" || /^\/[a-z]{2}$/.test(location.pathname)
 
   // お知らせが読み込まれたら、過去に閉じたものかチェック
   useEffect(() => {
@@ -112,21 +114,21 @@ export function AppAnnouncementBanner(): React.ReactNode {
 
   return (
     <div className="border-slate-200 border-b bg-slate-50/50 dark:border-slate-700 dark:bg-slate-800/50">
-      <div className="relative w-full px-4 py-3">
-        <div className="flex items-center gap-3 pr-10">
+      <div className="relative w-full px-4 py-2">
+        <div className="flex min-w-0 items-center gap-2 pr-10">
           {/* Close button */}
           <button
             type="button"
             onClick={handleClose}
-            className="-translate-y-1/2 absolute top-1/2 right-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+            className="-translate-y-1/2 absolute top-1/2 right-4 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
             aria-label="お知らせを閉じる"
           >
             <X className="h-4 w-4" />
           </button>
 
           {/* Icon */}
-          <div className="flex-shrink-0 rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
-            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <div className="flex-shrink-0 rounded-full bg-blue-100 p-1.5 dark:bg-blue-900/30">
+            <Info className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
           </div>
 
           {/* Content */}
@@ -141,10 +143,10 @@ export function AppAnnouncementBanner(): React.ReactNode {
                     )
                   : handleNavigate(announcementData.emergencyAnnouncements.url)
               }
-              className="flex-1 text-left transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+              className="min-w-0 flex-1 text-left transition-colors hover:text-blue-600 dark:hover:text-blue-400"
             >
               <div className="flex items-center gap-2">
-                <span className="font-medium text-slate-700 text-sm dark:text-slate-200">
+                <span className="truncate font-medium text-slate-700 text-sm dark:text-slate-200">
                   {announcementData.emergencyAnnouncements.content}
                 </span>
                 <svg
@@ -164,8 +166,8 @@ export function AppAnnouncementBanner(): React.ReactNode {
               </div>
             </button>
           ) : (
-            <div className="flex-1">
-              <span className="font-medium text-slate-700 text-sm dark:text-slate-200">
+            <div className="min-w-0 flex-1">
+              <span className="truncate font-medium text-slate-700 text-sm dark:text-slate-200">
                 {announcementData.emergencyAnnouncements.content}
               </span>
             </div>

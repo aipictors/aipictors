@@ -39,7 +39,6 @@ import {
   CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { FollowedTagList } from "~/routes/($lang).settings.followed.tags/components/followed-tag-list"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
