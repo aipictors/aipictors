@@ -1,8 +1,9 @@
 import { Link } from "@remix-run/react"
 import { Images, MessageCircleIcon } from "lucide-react"
-import { cn } from "~/lib/utils"
 import { OptimizedImage } from "~/components/optimized-image"
+import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
+import { cn } from "~/lib/utils"
 
 type Props = {
   workId: string
@@ -24,7 +25,7 @@ type Props = {
 /**
  * 四角形で作品をクロップして表示するコンポーネント
  */
-export function CroppedWorkSquare (props: Props): React.ReactNode {
+export function CroppedWorkSquare(props: Props): React.ReactNode {
   // 仕様: 常に表示領域は正方形。auto は親グリッドセル幅にフィットして aspect-square。固定サイズは size-* で正方形。
   // 仕様: 短辺フィット + 長辺方向のみ translate. オーバーレイのズレ防止のためラッパーを正方形サイズそのものにする。
 
@@ -114,6 +115,9 @@ export function CroppedWorkSquare (props: Props): React.ReactNode {
     return "w-full"
   })()
 
+  const chipClassName =
+    "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
+
   if (props.size === "auto") {
     // フォールバック: aspect-ratio が環境/親レイアウト影響で期待通り効かないケースに対応
     // padding-bottom 100% で正方形スペースを確保し、その上に絶対配置でサムネイルを載せる
@@ -167,21 +171,33 @@ export function CroppedWorkSquare (props: Props): React.ReactNode {
             )}
 
             {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
-              <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                <Images className="size-3 text-white" />
-                <div className="font-bold text-white text-xs">
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "absolute top-1 right-1 flex items-center",
+                  chipClassName,
+                )}
+              >
+                <Images className="size-3 text-muted-foreground" />
+                <span className="font-semibold text-xs leading-none">
                   {props.subWorksCount + 1}
-                </div>
-              </div>
+                </span>
+              </Badge>
             )}
 
             {props.commentsCount !== undefined && props.commentsCount !== 0 && (
-              <div className="absolute top-1 left-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                <MessageCircleIcon className="size-3 text-white" />
-                <div className="font-bold text-white text-xs">
+              <Badge
+                variant="secondary"
+                className={cn(
+                  "absolute top-1 left-1 flex items-center",
+                  chipClassName,
+                )}
+              >
+                <MessageCircleIcon className="size-3 text-muted-foreground" />
+                <span className="font-semibold text-xs leading-none">
                   {props.commentsCount + 1}
-                </div>
-              </div>
+                </span>
+              </Badge>
             )}
 
             <div
@@ -240,21 +256,33 @@ export function CroppedWorkSquare (props: Props): React.ReactNode {
       )}
 
       {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
-        <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-          <Images className="size-3 text-white" />
-          <div className="font-bold text-white text-xs">
+        <Badge
+          variant="secondary"
+          className={cn(
+            "absolute top-1 right-1 flex items-center",
+            chipClassName,
+          )}
+        >
+          <Images className="size-3 text-muted-foreground" />
+          <span className="font-semibold text-xs leading-none">
             {props.subWorksCount + 1}
-          </div>
-        </div>
+          </span>
+        </Badge>
       )}
 
       {props.commentsCount !== undefined && props.commentsCount !== 0 && (
-        <div className="absolute top-1 left-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-          <MessageCircleIcon className="size-3 text-white" />
-          <div className="font-bold text-white text-xs">
+        <Badge
+          variant="secondary"
+          className={cn(
+            "absolute top-1 left-1 flex items-center",
+            chipClassName,
+          )}
+        >
+          <MessageCircleIcon className="size-3 text-muted-foreground" />
+          <span className="font-semibold text-xs leading-none">
             {props.commentsCount + 1}
-          </div>
-        </div>
+          </span>
+        </Badge>
       )}
 
       <div

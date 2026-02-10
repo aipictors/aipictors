@@ -1,5 +1,6 @@
 import { Images } from "lucide-react"
 import { useState } from "react"
+import { Badge } from "~/components/ui/badge"
 import { cn } from "~/lib/utils"
 
 type Props = {
@@ -16,8 +17,11 @@ type Props = {
 /**
  * 四角形で作品をクロップして表示するコンポーネント
  */
-export function CroppedMyWorkSquare (props: Props) {
+export function CroppedMyWorkSquare(props: Props) {
   const [isHovered, setIsHovered] = useState(false)
+
+  const chipClassName =
+    "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
   /**
    * 適切なクロップスタイルを計算する
@@ -115,12 +119,18 @@ export function CroppedMyWorkSquare (props: Props) {
           </div>
         )}
         {props.subWorksCount !== undefined && props.subWorksCount !== 0 && (
-          <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-            <Images className="size-3 text-white" />
-            <div className="font-bold text-white text-xs">
+          <Badge
+            variant="secondary"
+            className={cn(
+              "absolute top-1 right-1 z-10 flex items-center",
+              chipClassName,
+            )}
+          >
+            <Images className="size-3 text-muted-foreground" />
+            <span className="font-semibold text-xs leading-none">
               {props.subWorksCount + 1}
-            </div>
-          </div>
+            </span>
+          </Badge>
         )}
       </div>
     </div>

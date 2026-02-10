@@ -1,5 +1,3 @@
-import { ParamsError } from "~/errors/params-error"
-import { loaderClient } from "~/lib/loader-client"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -7,13 +5,15 @@ import type {
 } from "@remix-run/cloudflare"
 import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { config, META } from "~/config"
+import { ParamsError } from "~/errors/params-error"
+import { loaderClient } from "~/lib/loader-client"
 import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
+import { RankingSensitiveUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list"
 import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
-import { RankingSensitiveUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list"
-import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
@@ -64,7 +64,7 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function SensitiveAwardsPage () {
+export default function SensitiveAwardsPage() {
   const data = useLoaderData<typeof loader>()
   const params = useParams<"year" | "month" | "day">()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -83,7 +83,10 @@ export default function SensitiveAwardsPage () {
     } else {
       newSearchParams.delete("type")
     }
-    setSearchParams(newSearchParams, { replace: true })
+    setSearchParams(newSearchParams, {
+      replace: true,
+      preventScrollReset: true,
+    })
   }
 
   if (

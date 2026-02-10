@@ -1,9 +1,12 @@
 import {
-  useQuery,
   useApolloClient,
+  useMutation,
+  useQuery,
   useSuspenseQuery,
 } from "@apollo/client/index"
-import { graphql, type FragmentOf } from "gql.tada"
+import { Link, useNavigate } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Loader2Icon, MessageCircleIcon, Plus, X } from "lucide-react"
 import {
   Suspense,
   useCallback,
@@ -13,35 +16,34 @@ import {
   useRef,
   useState,
 } from "react"
-import { Link, useNavigate } from "@remix-run/react"
-
-/* ────────────────────────────────────────────────────────────
- * Shared components / hooks
- * ─────────────────────────────────────────────────────── */
-import { Card, CardContent, CardHeader } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { MessageCircleIcon, Loader2Icon } from "lucide-react"
+import { toast } from "sonner"
+import { LikeButton } from "~/components/like-button"
+import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
-import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
-import { LikeButton } from "~/components/like-button"
-import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
-import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
+/* ────────────────────────────────────────────────────────────
+ * Shared components / hooks
+ * ─────────────────────────────────────────────────────── */
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
+import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
+import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { useTranslation } from "~/hooks/use-translation"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-
 import { cn } from "~/lib/utils"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
-import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
+import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
+import {
+  CommentListItemFragment,
+  WorkCommentList,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 /* -----------------------------------------------------------------
  * Constants & helpers
@@ -92,6 +94,18 @@ const followedTagsPreviewQuery = graphql(`
     }
   }
 `)
+
+const unFollowTagMutation = graphql(
+  `mutation UnFollowTag($input: UnfollowTagInput!) {
+    unfollowTag(input: $input)
+  }`,
+)
+
+const followTagMutation = graphql(
+  `mutation FollowTag($input: FollowTagInput!) {
+    followTag(input: $input)
+  }`,
+)
 
 const feedQuery = graphql(
   `query TagFeed(
@@ -158,7 +172,7 @@ export type FollowTagsFeedContentsProps = {
 /* -----------------------------------------------------------------
  * Root component
  * -----------------------------------------------------------------*/
-export function FollowTagsFeedContents ({
+export function FollowTagsFeedContents({
   _tab,
   page,
   setPage,
@@ -168,17 +182,93 @@ export function FollowTagsFeedContents ({
 }: FollowTagsFeedContentsProps) {
   const navigate = useNavigate()
   const t = useTranslation()
-  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
+  const [isTimelineView, setIsTimelineView] = useFollowTimelineView()
+
+  const [followedTagsVersion, setFollowedTagsVersion] = useState(0)
+  const [isAddTagOpen, setIsAddTagOpen] = useState(false)
+  const [addTagText, setAddTagText] = useState("")
+  const addTagInputRef = useRef<HTMLInputElement>(null)
 
   /* タグプレビュー取得 */
-  const { data: tagData } = useSuspenseQuery(followedTagsPreviewQuery, {
-    variables: { limit: 6 },
-  })
+  const { data: tagData, refetch: refetchFollowedTagsPreview } =
+    useSuspenseQuery(followedTagsPreviewQuery, {
+      variables: { limit: 6 },
+    })
   const tags = tagData?.viewer?.followingTags ?? []
   const tagsToShow = tags.slice(0, 5)
   const hasMoreTags = tags.length > 5
 
-  const key = `follow-tags-${isPagination}`
+  const key = `follow-tags-${isPagination}-${followedTagsVersion}`
+
+  const [unFollowTag, { loading: isUnFollowing }] =
+    useMutation(unFollowTagMutation)
+
+  const [followTag, { loading: isFollowing }] = useMutation(followTagMutation)
+
+  const handleQuickUnFollow = useCallback(
+    async (tagName: string) => {
+      try {
+        await unFollowTag({
+          variables: {
+            input: {
+              tagName,
+            },
+          },
+        })
+        await refetchFollowedTagsPreview()
+        setPage(0)
+        setFollowedTagsVersion((v) => v + 1)
+        toast(t("タグを削除しました", "Tag removed"))
+      } catch (e) {
+        console.error(e)
+        if (e instanceof Error) {
+          toast(e.message)
+        }
+      }
+    },
+    [refetchFollowedTagsPreview, setPage, t, unFollowTag],
+  )
+
+  const handleToggleAddTag = useCallback(() => {
+    setIsAddTagOpen((v) => {
+      const next = !v
+      if (next) {
+        window.setTimeout(() => {
+          const input = addTagInputRef.current
+          if (!input) return
+          input.scrollIntoView({ behavior: "smooth", block: "center" })
+          input.focus()
+        }, 0)
+      }
+      return next
+    })
+  }, [])
+
+  const handleAddTag = useCallback(async () => {
+    const tagName = addTagText.trim()
+    if (!tagName) return
+
+    try {
+      await followTag({
+        variables: {
+          input: {
+            tagName,
+          },
+        },
+      })
+      setAddTagText("")
+      setIsAddTagOpen(false)
+      await refetchFollowedTagsPreview()
+      setPage(0)
+      setFollowedTagsVersion((v) => v + 1)
+      toast(t("タグを追加しました", "Tag added"))
+    } catch (e) {
+      console.error(e)
+      if (e instanceof Error) {
+        toast(e.message)
+      }
+    }
+  }, [addTagText, followTag, refetchFollowedTagsPreview, setPage, t])
 
   return (
     <div className="space-y-4">
@@ -191,29 +281,86 @@ export function FollowTagsFeedContents ({
           {t("管理", "Manage")}
         </Button>
         <Button onClick={() => setIsTimelineView(!isTimelineView)}>
-          {isTimelineView
-            ? t("一覧形式に切り替え", "Switch to List View")
-            : t("タイムライン形式に切り替え", "Switch to Timeline View")}
+          {isTimelineView ? t("一覧表示", "List") : t("カード表示", "Cards")}
         </Button>
       </div>
 
-      {/* --- タグ一覧 --- */}
-      {tags.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          {tagsToShow.map((tag) => (
-            <Link key={tag.id} to={`/tags/${tag.name}`}>
-              <Button
-                size="sm"
-                variant="secondary"
-                className="rounded-full px-3"
-              >
-                {tag.name}
-              </Button>
+      {/* --- タグ一覧（左×で解除 / 右＋で追加） --- */}
+      <div className="relative z-10 flex flex-wrap items-center gap-2">
+        {tagsToShow.map((tag) => (
+          <div
+            key={tag.id}
+            className="inline-flex h-9 items-center rounded-full bg-secondary text-secondary-foreground"
+          >
+            <button
+              type="button"
+              className={cn(
+                "ml-1 inline-flex size-7 cursor-pointer items-center justify-center rounded-full transition-colors",
+                "hover:bg-secondary/80 disabled:pointer-events-none disabled:opacity-50",
+              )}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                handleQuickUnFollow(tag.name)
+              }}
+              disabled={isUnFollowing}
+              aria-label={t("タグを削除", "Remove tag")}
+            >
+              <X className="size-4" />
+            </button>
+            <Link to={`/tags/${tag.name}`} className="px-3 font-medium text-sm">
+              {tag.name}
             </Link>
-          ))}
-          {hasMoreTags && <span className="text-sm">…</span>}
+          </div>
+        ))}
+        <Button
+          type="button"
+          variant="secondary"
+          size="icon"
+          className="relative z-10 cursor-pointer rounded-full"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleToggleAddTag()
+          }}
+          aria-label={t("タグを追加", "Add tag")}
+        >
+          <Plus className="size-4" />
+        </Button>
+        {hasMoreTags && <span className="text-sm">…</span>}
+      </div>
+
+      {isAddTagOpen && (
+        <div className="flex items-start gap-x-2">
+          <div className="flex-1">
+            <Input
+              ref={addTagInputRef}
+              className="w-full rounded-full"
+              type="text"
+              value={addTagText}
+              onChange={(e) => setAddTagText(e.target.value)}
+              placeholder={t("タグ", "Tag")}
+              maxLength={40}
+            />
+          </div>
+          <Button
+            type="button"
+            variant="secondary"
+            className="rounded-full"
+            onClick={handleAddTag}
+            disabled={isFollowing || addTagText.trim().length === 0}
+          >
+            {t("追加", "Add")}
+          </Button>
         </div>
       )}
+
+      <p className="text-muted-foreground text-xs">
+        {t(
+          "フォロータグを変更した後に投稿された作品から、この一覧に反映されます",
+          "New posts after changing followed tags will appear in this list.",
+        )}
+      </p>
 
       {/* --- フィード本体 --- */}
       {isPagination ? (
@@ -333,9 +480,6 @@ function PaginationMode({
   )
 }
 
-/* ===============================================================
- * Infinite Scroll Mode
- * ===============================================================*/
 function InfiniteMode({
   _tab,
   isTimelineView,
@@ -767,6 +911,7 @@ function GridView({
     <div className="m-auto w-full space-y-4">
       <ResponsivePhotoWorksAlbum
         works={works as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]}
+        size="large"
         isShowProfile
         onSelect={onSelect}
       />

@@ -1,4 +1,10 @@
+import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { useState } from "react"
+import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { cn } from "~/lib/utils"
 import {
   HomeNotificationsContentAwardItem,
   WorkAwardNotificationFragment,
@@ -17,27 +23,21 @@ import {
   HomeNotificationsContentSumLikedItem,
   LikedWorksSummaryNotificationFragment,
 } from "~/routes/($lang)._main._index/components/home-notifications-content-sum-liked-item"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
 import { NotificationListItemDetail } from "~/routes/($lang)._main.notifications/components/notification-list-item-detail"
 import { NotificationListReplyItemDetail } from "~/routes/($lang)._main.notifications/components/notification-list-reply-item-detail"
-import { Button } from "~/components/ui/button"
-import { useState } from "react"
-import { useTranslation } from "~/hooks/use-translation"
-import { cn } from "~/lib/utils"
 
 type Props = {
-  type: IntrospectionEnum<"NotificationType"> | null
+  type: IntrospectionEnum<"NotificationType">
   page: number
 }
 
-export function NotificationListItems (props: Props) {
+export function NotificationListItems(props: Props) {
   const result = useSuspenseQuery(ViewerNotificationsQuery, {
     variables: {
       offset: props.page * 32,
       limit: 32,
       where: {
-        type: props.type !== null ? props.type : undefined,
+        type: props.type,
       },
       orderBy: "CREATED_AT",
     },

@@ -1,15 +1,20 @@
+import { useMutation, useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Plus } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
+import { toast } from "sonner"
 import type { Tag } from "~/components/tag/tag-input"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
-import { useMutation, useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { useContext, useEffect, useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 import { FollowedTag } from "~/routes/($lang).settings.followed.tags/components/followed-tag"
-import { toast } from "sonner"
 
-export function FollowedTagList () {
+type Props = {
+  onChanged?: () => void | Promise<void>
+}
+
+export function FollowedTagList(props: Props) {
   const appContext = useContext(AuthContext)
 
   const t = useTranslation()
@@ -52,6 +57,7 @@ export function FollowedTagList () {
         },
       })
       await refetch()
+      await props.onChanged?.()
       toast(t("タグを削除しました", "Tag removed"))
     } catch (e) {
       console.error(e)
@@ -72,6 +78,7 @@ export function FollowedTagList () {
       })
       setText("")
       await refetch()
+      await props.onChanged?.()
       toast(t("タグを追加しました", "Tag added"))
     } catch (e) {
       console.error(e)
@@ -84,9 +91,10 @@ export function FollowedTagList () {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-start space-x-4">
+        <div className="flex items-start gap-x-2">
           <div className="flex-1">
             <Input
+              id="followed-tag-input"
               className="w-full rounded-full"
               type="text"
               value={text}
@@ -98,8 +106,16 @@ export function FollowedTagList () {
               <p className="text-xs">{`${count}/40`}</p>
             </div>
           </div>
-          <Button className="rounded-full" onClick={handleFollow}>
-            {t("タグを追加", "Add Tag")}
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            className="rounded-full"
+            onClick={handleFollow}
+            disabled={isFollowing || text.trim().length === 0}
+            aria-label={t("タグを追加", "Add tag")}
+          >
+            <Plus className="size-4" />
           </Button>
         </div>
       </div>

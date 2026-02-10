@@ -1,8 +1,4 @@
-import { loaderClient } from "~/lib/loader-client"
-import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
-import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
-import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { useMutation, useQuery } from "@apollo/client/index"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -15,13 +11,6 @@ import {
   useSearchParams,
 } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { config, META } from "~/config"
-import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
-import { getJstDate } from "~/utils/jst-date"
-import { createMeta } from "~/utils/create-meta"
-import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
-import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
-import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import {
   ArrowDownWideNarrow,
   ExternalLink,
@@ -29,43 +18,54 @@ import {
   Navigation,
   PlaySquare,
 } from "lucide-react"
-import { useState, Suspense, useMemo, useEffect } from "react"
+import { Suspense, useEffect, useMemo, useState } from "react"
+import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { Button } from "~/components/ui/button"
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "~/components/ui/select"
 import { Separator } from "~/components/ui/separator"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
+import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
+import { config, META } from "~/config"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
+import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { toWorkTypeText } from "~/utils/work/to-work-type-text"
-import { HomeSensitiveHotWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-hot-works-section"
-import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
-import { HomeSensitiveWorksTagSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-tag-section"
-import { HomeSensitiveNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-users-works-section"
-import { HomeSensitiveAwardWorkSection } from "~/routes/($lang)._main._index/components/home-sensitive-award-work-section"
-import { HomeSensitiveTagsSection } from "~/routes/($lang)._main._index/components/home-sensitive-tags-section"
-import { useQuery, useMutation } from "@apollo/client/index"
-import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
-import { HomeSensitiveTagList } from "~/routes/($lang).r._index/components/home-sensitive-tag-list"
-import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/components/home-new-user-sensitive-work-list-section"
+import { loaderClient } from "~/lib/loader-client"
 import { FollowSensitiveTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-tags-feed-contents"
 import { FollowSensitiveUserFeedContents } from "~/routes/($lang)._main._index/components/follow-sensitive-user-feed-contents"
-import { HomeSensitiveNewCommentsSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-comments"
+import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
+import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/components/home-new-comments"
 import { HomeNewSensitiveUsersSection } from "~/routes/($lang)._main._index/components/home-new-sensitive-users-section"
+import { HomeNewPostedUsersFragment } from "~/routes/($lang)._main._index/components/home-new-users-section"
+import { HomeNewUsersWorksFragment } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { HomeSensitiveAwardWorkSection } from "~/routes/($lang)._main._index/components/home-sensitive-award-work-section"
+import { HomeSensitiveHotWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-hot-works-section"
+import { HomeSensitiveNewCommentsSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-comments"
+import { HomeSensitiveNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-new-users-works-section"
+import { HomeSensitiveTagsSection } from "~/routes/($lang)._main._index/components/home-sensitive-tags-section"
+import { HomeSensitiveWorksSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-section"
+import { HomeSensitiveWorksTagSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-tag-section"
 import { HomeSensitiveWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-sensitive-works-users-recommended-section"
-import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
+import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
+import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
+import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { HomeNewUsersSensitiveWorkListSection } from "~/routes/($lang).r._index/components/home-new-user-sensitive-work-list-section"
 import { HomePaginationSensitiveWorksSection } from "~/routes/($lang).r._index/components/home-pagination-sensitive-works-section"
-import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
+import { HomeSensitiveTagList } from "~/routes/($lang).r._index/components/home-sensitive-tag-list"
+import { createMeta } from "~/utils/create-meta"
+import { getJstDate } from "~/utils/jst-date"
+import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
 // ---------- meta ----------
 export const meta: MetaFunction = (props) =>
@@ -121,7 +121,7 @@ const useUpdateQueryParams = () => (p: URLSearchParams) =>
   window.history.replaceState(null, "", `${location.pathname}?${p}`)
 
 // ---------- component ----------
-export default function Index () {
+export default function Index() {
   const data = useLoaderData<typeof loader>()
   const t = useTranslation()
   const locale = useLocale()

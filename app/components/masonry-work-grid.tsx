@@ -1,11 +1,11 @@
-import { useMemo, useState, useEffect } from "react"
-import type { FragmentOf } from "gql.tada"
 import { Link } from "@remix-run/react"
-import { Heart, Eye, Images } from "lucide-react"
-import { OptimizedImage } from "~/components/optimized-image"
-import { Skeleton } from "~/components/ui/skeleton"
+import type { FragmentOf } from "gql.tada"
+import { Eye, Heart, Images } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
 import { LikeButton } from "~/components/like-button"
+import { OptimizedImage } from "~/components/optimized-image"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { Skeleton } from "~/components/ui/skeleton"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -71,7 +71,7 @@ const MasonryGridSkeleton = ({
 /**
  * 共通のマソンリーグリッド
  */
-export function MasonryWorkGrid (props: Props): React.ReactNode {
+export function MasonryWorkGrid(props: Props): React.ReactNode {
   const { works, isLoadingMore, baseUrl = "posts/gallery" } = props
   const [columnCount, setColumnCount] = useState(6)
 
@@ -204,7 +204,7 @@ function WorkItem(props: WorkItemProps) {
 
         {/* サブ作品数バッジ */}
         {work.subWorksCount > 0 && (
-          <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
+          <div className="absolute top-2 right-2 flex items-center gap-1 rounded-full bg-neutral-200/70 px-2 py-1 text-neutral-800 text-xs backdrop-blur-sm dark:bg-white/10 dark:text-white">
             <Images className="size-3" />
             <span>{work.subWorksCount + 1}</span>
           </div>
@@ -238,12 +238,12 @@ function WorkItem(props: WorkItemProps) {
 
         {/* 統計情報 */}
         <div className="absolute right-2 bottom-2 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
+          <div className="flex items-center gap-1 rounded-full bg-neutral-200/70 px-2 py-1 text-neutral-800 text-xs backdrop-blur-sm dark:bg-white/10 dark:text-white">
             <Heart className="size-3" />
             <span>{work.likesCount}</span>
           </div>
           {work.commentsCount > 0 && (
-            <div className="flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-white text-xs backdrop-blur-sm">
+            <div className="flex items-center gap-1 rounded-full bg-neutral-200/70 px-2 py-1 text-neutral-800 text-xs backdrop-blur-sm dark:bg-white/10 dark:text-white">
               <Eye className="size-3" />
               <span>{work.commentsCount}</span>
             </div>

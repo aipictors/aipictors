@@ -44,10 +44,16 @@ export function GenerationReferenceDialog (props: Props) {
             <DialogTitle>{t("復元", "Restore")}</DialogTitle>
           </DialogHeader>
           <div className="flex items-center gap-2">
-            <Button onClick={handleReference} variant={"secondary"} size={"sm"}>
+            <Button
+              type="button"
+              onClick={handleReference}
+              variant={"secondary"}
+              size={"sm"}
+            >
               {t("再利用", "Reuse")}
             </Button>
             <Button
+              type="button"
               onClick={handleReferenceWithSeed}
               variant={"secondary"}
               size={"sm"}
@@ -66,8 +72,8 @@ export function GenerationReferenceDialog (props: Props) {
             </div>
           )}
           <DialogFooter>
-            <DialogClose>
-              <Button>{t("閉じる", "Close")}</Button>
+            <DialogClose asChild>
+              <Button type="button">{t("閉じる", "Close")}</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

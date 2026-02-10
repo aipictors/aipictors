@@ -1,11 +1,6 @@
-import { useEffect, useState, useId } from "react"
-import { Button } from "~/components/ui/button"
-import { Switch } from "~/components/ui/switch"
-import { Label } from "~/components/ui/label"
+import { Eye, EyeOff, Shield } from "lucide-react"
+import { useEffect, useId, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { useTranslation } from "~/hooks/use-translation"
-import { useLocale } from "~/hooks/use-locale"
-import { cn } from "~/lib/utils"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,9 +11,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "~/components/ui/alert-dialog"
+import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
+import { Label } from "~/components/ui/label"
+import { Switch } from "~/components/ui/switch"
+import { useLocale } from "~/hooks/use-locale"
+import { useTranslation } from "~/hooks/use-translation"
 import { setCookie } from "~/lib/cookie-utils"
-import { Shield, Eye, EyeOff } from "lucide-react"
+import { cn } from "~/lib/utils"
 
 type Props = {
   variant?: "compact" | "full" | "toggle" | "menu"
@@ -26,7 +26,7 @@ type Props = {
   showStatus?: boolean
 }
 
-export function SensitiveToggle ({
+export function SensitiveToggle({
   variant = "compact",
   className,
   showStatus = false,
@@ -67,7 +67,7 @@ export function SensitiveToggle ({
       }
     }
 
-    navigate(newPathname, { replace: true })
+    navigate(newPathname, { replace: true, preventScrollReset: true })
   }
 
   const handleR18ToggleClick = () => {

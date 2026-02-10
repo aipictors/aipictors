@@ -1,14 +1,11 @@
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { Button } from "~/components/ui/button"
+import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { cn } from "~/lib/utils"
 
 type Props = {
-  notificationType: IntrospectionEnum<"NotificationType"> | null
-  setNotificationType: (
-    type: IntrospectionEnum<"NotificationType"> | null,
-  ) => void
+  notificationType: IntrospectionEnum<"NotificationType">
+  setNotificationType: (type: IntrospectionEnum<"NotificationType">) => void
 }
 
 const notificationTypes = [
@@ -19,59 +16,44 @@ const notificationTypes = [
   { value: "WORK_AWARD", label: "ランキング" },
 ]
 
-export function NotificationListSetting (props: Props) {
+export function NotificationListSetting(props: Props) {
   const location = useLocation()
   const navigate = useNavigate()
+
+  const defaultType = notificationTypes[0]
+    .value as IntrospectionEnum<"NotificationType">
 
   // URLからパラメータを取得して初期化
   useEffect(() => {
     const params = new URLSearchParams(location.search)
-    const type = params.get(
-      "type",
-    ) as IntrospectionEnum<"NotificationType"> | null
-    if (type) {
-      props.setNotificationType(type)
-    }
+    const typeParam = params.get("type")
+    const matched = notificationTypes.find((t) => t.value === typeParam)
+    props.setNotificationType(
+      (matched?.value ?? defaultType) as IntrospectionEnum<"NotificationType">,
+    )
   }, [location.search])
 
   // ページ切り替えハンドラー
-  const handlePageChange = (
-    type: IntrospectionEnum<"NotificationType"> | null,
-  ) => {
+  const handlePageChange = (type: IntrospectionEnum<"NotificationType">) => {
     const params = new URLSearchParams(location.search)
-    if (type) {
-      params.set("type", type)
-    } else {
-      params.delete("type")
-    }
+    params.set("type", type)
     navigate({ search: params.toString() })
     props.setNotificationType(type)
   }
 
   return (
     <>
-      <div className="mt-4 mb-4">
-        <div className="flex space-x-4">
-          {notificationTypes.map((item) => (
-            <Button
-              key={item.value}
-              variant="secondary"
-              onClick={() =>
-                handlePageChange(
-                  item.value as IntrospectionEnum<"NotificationType">,
-                )
-              }
-              className={cn(
-                "transition-opacity duration-300",
-                props.notificationType === item.value
-                  ? "opacity-50"
-                  : "opacity-100",
-              )}
-            >
-              {item.label}
-            </Button>
-          ))}
-        </div>
+      <div className="-mx-4 sticky top-24 z-20 bg-background/95 px-4 py-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
+        <AppAnimatedTabs
+          tabs={notificationTypes.map((t) => ({
+            label: t.label,
+            value: t.value,
+          }))}
+          value={props.notificationType}
+          onChange={(value) =>
+            handlePageChange(value as IntrospectionEnum<"NotificationType">)
+          }
+        />
       </div>
     </>
   )

@@ -1,30 +1,37 @@
 import { useQuery } from "@apollo/client/index"
-import { graphql, type FragmentOf } from "gql.tada"
-import { useSearchParams, useNavigate, useLocation } from "@remix-run/react"
-import { useState, useEffect, useMemo, useCallback, useContext, useRef } from "react"
+import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
+import { format } from "date-fns"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Eye, Grid, List, Loader2, X } from "lucide-react"
 import {
-  ResponsivePhotoWorksAlbum,
-  PhotoAlbumWorkFragment,
-} from "~/components/responsive-photo-works-album"
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { useTranslation } from "~/hooks/use-translation"
-import { AuthContext } from "~/contexts/auth-context"
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import {
+  type AiModel,
   CompactFilter,
   type FilterValues,
-  type AiModel,
 } from "~/components/compact-filter"
-import { format } from "date-fns"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import {
+  PhotoAlbumWorkFragment,
+  ResponsivePhotoWorksAlbum,
+} from "~/components/responsive-photo-works-album"
 import { Badge } from "~/components/ui/badge"
-import { Loader2, Eye, List, X, Grid } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
-import type { SortType } from "~/types/sort-type"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { SearchWorksSortableSetting } from "./search-works-sortable-setting"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
+import type { SortType } from "~/types/sort-type"
+import { SearchWorksSortableSetting } from "./search-works-sortable-setting"
 
 const PER_PAGE = 32
 
@@ -153,7 +160,7 @@ export const SearchResults = ({
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
     newParams.set("page", "0")
-    setSearchParams(newParams)
+    setSearchParams(newParams, { preventScrollReset: true })
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
   const handleBookmarksSort = useCallback(() => {
@@ -167,7 +174,7 @@ export const SearchResults = ({
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
     newParams.set("page", "0")
-    setSearchParams(newParams)
+    setSearchParams(newParams, { preventScrollReset: true })
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
   const handleCommentsSort = useCallback(() => {
@@ -181,7 +188,7 @@ export const SearchResults = ({
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
     newParams.set("page", "0")
-    setSearchParams(newParams)
+    setSearchParams(newParams, { preventScrollReset: true })
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
   const handleViewsSort = useCallback(() => {
@@ -195,7 +202,7 @@ export const SearchResults = ({
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
     newParams.set("page", "0")
-    setSearchParams(newParams)
+    setSearchParams(newParams, { preventScrollReset: true })
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
   const handleTitleSort = useCallback(() => {
@@ -209,7 +216,7 @@ export const SearchResults = ({
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
     newParams.set("page", "0")
-    setSearchParams(newParams)
+    setSearchParams(newParams, { preventScrollReset: true })
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
   const handleDateCreatedSort = useCallback(() => {
@@ -223,7 +230,7 @@ export const SearchResults = ({
     newParams.set("sort", newSortOrder)
     newParams.set("orderBy", newOrderBy)
     newParams.set("page", "0")
-    setSearchParams(newParams)
+    setSearchParams(newParams, { preventScrollReset: true })
   }, [orderBy, sortOrder, searchParams, setSearchParams])
 
   // Check if current page is R18 page
@@ -570,7 +577,7 @@ export const SearchResults = ({
         newParams.set("page", "0")
       }
 
-      setSearchParams(newParams)
+      setSearchParams(newParams, { preventScrollReset: true })
     },
     [searchParams, setSearchParams, viewMode, searchWords],
   )
@@ -626,7 +633,7 @@ export const SearchResults = ({
         newParams.set("page", "0")
       }
 
-      setSearchParams(newParams)
+      setSearchParams(newParams, { preventScrollReset: true })
     },
     [searchParams, setSearchParams],
   )
@@ -643,7 +650,7 @@ export const SearchResults = ({
         newParams.delete("dialogMode")
       }
 
-      setSearchParams(newParams)
+      setSearchParams(newParams, { preventScrollReset: true })
     },
     [searchParams, setSearchParams],
   )
@@ -716,7 +723,7 @@ export const SearchResults = ({
     newParams.delete("model")
     newParams.delete("workModelId")
 
-    setSearchParams(newParams, { replace: true })
+    setSearchParams(newParams, { replace: true, preventScrollReset: true })
   }, [searchParams, setSearchParams])
 
   // Active filters summary

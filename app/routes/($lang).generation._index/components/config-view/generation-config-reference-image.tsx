@@ -1,17 +1,28 @@
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
+import { Circle } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group"
 import { Label } from "~/components/ui/label"
-import { cn } from "~/lib/utils"
+import { RadioGroup } from "~/components/ui/radio-group"
 import { useTranslation } from "~/hooks/use-translation"
-import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
+import { cn } from "~/lib/utils"
 import { GenerationConfigControlNet } from "~/routes/($lang).generation._index/components/config-view/generation-config-control-net"
 import { GenerationConfigI2i } from "~/routes/($lang).generation._index/components/config-view/generation-config-i2i"
+import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 
 type ReferenceImageMode = "none" | "i2i" | "controlnet"
 
-export function GenerationConfigReferenceImage () {
-  const context = useGenerationContext()
+function ReferenceRadioIndicator() {
+  return (
+    <span className="mt-0.5 flex size-4 items-center justify-center rounded-full border border-primary text-primary ring-offset-background">
+      <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
+        <Circle className="h-2.5 w-2.5 fill-current text-current" />
+      </RadioGroupPrimitive.Indicator>
+    </span>
+  )
+}
 
+export function GenerationConfigReferenceImage() {
+  const context = useGenerationContext()
   const t = useTranslation()
 
   const hasI2iImage = context.config.i2iImageBase64 !== ""
@@ -48,6 +59,7 @@ export function GenerationConfigReferenceImage () {
   }
 
   const onChangeMode = (nextMode: ReferenceImageMode) => {
+    if (nextMode === mode) return
     setMode(nextMode)
 
     if (nextMode === "i2i") {
@@ -91,66 +103,71 @@ export function GenerationConfigReferenceImage () {
         onValueChange={(value) => onChangeMode(value as ReferenceImageMode)}
         className="gap-2"
       >
-        <div
-          className={cn(
-            "flex items-start gap-x-3 rounded-md border border-input p-3",
-            mode === "none" && "border-primary/30 bg-primary/5",
-          )}
-        >
-          <RadioGroupItem id="ref-none" value="none" className="mt-0.5" />
-          <div className="flex flex-col gap-y-0.5">
-            <Label htmlFor="ref-none" className="cursor-pointer">
-              {t("なし", "None")}
-            </Label>
-            <p className="text-muted-foreground text-xs">
-              {t("参照画像を使いません。", "No reference image.")}
-            </p>
-          </div>
-        </div>
+        <RadioGroupPrimitive.Item id="ref-none" value="none" asChild>
+          <button
+            type="button"
+            className={cn(
+              "flex items-start gap-x-3 rounded-md border border-input p-3 text-left",
+              mode === "none" && "border-primary/30 bg-primary/5",
+            )}
+          >
+            <>
+              <ReferenceRadioIndicator />
+              <div className="flex flex-col gap-y-0.5">
+                <Label>{t("なし", "None")}</Label>
+                <p className="text-muted-foreground text-xs">
+                  {t("参照画像を使いません。", "No reference image.")}
+                </p>
+              </div>
+            </>
+          </button>
+        </RadioGroupPrimitive.Item>
 
-        <div
-          className={cn(
-            "flex items-start gap-x-3 rounded-md border border-input p-3",
-            mode === "i2i" && "border-primary/30 bg-primary/5",
-          )}
-        >
-          <RadioGroupItem id="ref-i2i" value="i2i" className="mt-0.5" />
-          <div className="flex flex-col gap-y-0.5">
-            <Label htmlFor="ref-i2i" className="cursor-pointer">
-              {t("画像から生成", "Generate from image")}
-            </Label>
-            <p className="text-muted-foreground text-xs">
-              {t(
-                "元画像をベースに生成します（構図や雰囲気を引き継ぎたいとき）。",
-                "Generate based on the input image (inherit composition/mood).",
-              )}
-            </p>
-          </div>
-        </div>
+        <RadioGroupPrimitive.Item id="ref-i2i" value="i2i" asChild>
+          <button
+            type="button"
+            className={cn(
+              "flex items-start gap-x-3 rounded-md border border-input p-3 text-left",
+              mode === "i2i" && "border-primary/30 bg-primary/5",
+            )}
+          >
+            <>
+              <ReferenceRadioIndicator />
+              <div className="flex flex-col gap-y-0.5">
+                <Label>{t("画像から生成", "Generate from image")}</Label>
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "元画像をベースに生成します（構図や雰囲気を引き継ぎたいとき）。",
+                    "Generate based on the input image (inherit composition/mood).",
+                  )}
+                </p>
+              </div>
+            </>
+          </button>
+        </RadioGroupPrimitive.Item>
 
-        <div
-          className={cn(
-            "flex items-start gap-x-3 rounded-md border border-input p-3",
-            mode === "controlnet" && "border-primary/30 bg-primary/5",
-          )}
-        >
-          <RadioGroupItem
-            id="ref-controlnet"
-            value="controlnet"
-            className="mt-0.5"
-          />
-          <div className="flex flex-col gap-y-0.5">
-            <Label htmlFor="ref-controlnet" className="cursor-pointer">
-              {t("ControlNet", "ControlNet")}
-            </Label>
-            <p className="text-muted-foreground text-xs">
-              {t(
-                "輪郭・ポーズなどを参考に、より厳密に誘導して生成します。",
-                "Guide generation more strictly using edges/pose, etc.",
-              )}
-            </p>
-          </div>
-        </div>
+        <RadioGroupPrimitive.Item id="ref-controlnet" value="controlnet" asChild>
+          <button
+            type="button"
+            className={cn(
+              "flex items-start gap-x-3 rounded-md border border-input p-3 text-left",
+              mode === "controlnet" && "border-primary/30 bg-primary/5",
+            )}
+          >
+            <>
+              <ReferenceRadioIndicator />
+              <div className="flex flex-col gap-y-0.5">
+                <Label>{t("ControlNet", "ControlNet")}</Label>
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "輪郭・ポーズなどを参考に、より厳密に誘導して生成します。",
+                    "Guide generation more strictly using edges/pose, etc.",
+                  )}
+                </p>
+              </div>
+            </>
+          </button>
+        </RadioGroupPrimitive.Item>
       </RadioGroup>
 
       {mode === "i2i" && <GenerationConfigI2i />}

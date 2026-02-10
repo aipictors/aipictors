@@ -1,17 +1,17 @@
-import React, { Suspense, useEffect } from "react"
-import { useSearchParams } from "@remix-run/react"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import type { SortType } from "~/types/sort-type"
-import { WorksListContainer } from "~/routes/($lang).my._index/components/works-list-container"
-import { WorksSetting } from "~/routes/($lang).my._index/components/works-settings"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { createMeta } from "~/utils/create-meta"
+import { useSearchParams } from "@remix-run/react"
+import React, { Suspense, useEffect } from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { META } from "~/config"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { WorksListContainer } from "~/routes/($lang).my._index/components/works-list-container"
+import { WorksSetting } from "~/routes/($lang).my._index/components/works-settings"
+import type { SortType } from "~/types/sort-type"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_POSTS, undefined, props.params.lang)
@@ -32,7 +32,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyPosts () {
+export default function MyPosts() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   // 初期値をURLパラメータから取得（一度だけ実行）
@@ -96,7 +96,7 @@ export default function MyPosts () {
     params.set("WorkOrderby", WorkOrderby)
     params.set("worksOrderDeskAsc", worksOrderDeskAsc)
 
-    setSearchParams(params, { replace: true })
+    setSearchParams(params, { replace: true, preventScrollReset: true })
   }, [
     isInitialized,
     page,

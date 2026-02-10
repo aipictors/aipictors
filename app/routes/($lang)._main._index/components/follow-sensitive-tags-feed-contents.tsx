@@ -1,9 +1,11 @@
 import {
-  useQuery,
   useApolloClient,
+  useQuery,
   useSuspenseQuery,
 } from "@apollo/client/index"
-import { graphql, type FragmentOf } from "gql.tada"
+import { Link, useNavigate } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Loader2Icon, MessageCircleIcon } from "lucide-react"
 import {
   Suspense,
   useCallback,
@@ -13,35 +15,33 @@ import {
   useRef,
   useState,
 } from "react"
-import { Link, useNavigate } from "@remix-run/react"
-
-/* ────────────────────────────────────────────────────────────
- * Shared components / hooks
- * ─────────────────────────────────────────────────────── */
-import { Card, CardContent, CardHeader } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { MessageCircleIcon, Loader2Icon } from "lucide-react"
+import { LikeButton } from "~/components/like-button"
+import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
-import { OptimizedWorkGrid } from "~/components/optimized-work-grid"
-import { LikeButton } from "~/components/like-button"
-import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
+/* ────────────────────────────────────────────────────────────
+ * Shared components / hooks
+ * ─────────────────────────────────────────────────────── */
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
 import { AuthContext } from "~/contexts/auth-context"
-import { useTranslation } from "~/hooks/use-translation"
 import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { useInfiniteScroll } from "~/routes/($lang)._main._index/hooks/use-infinite-scroll"
-import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
 import { usePagedInfinite } from "~/routes/($lang)._main._index/hooks/use-paged-infinite"
+import { useScrollRestoration } from "~/routes/($lang)._main._index/hooks/use-scroll-restoration"
+import {
+  CommentListItemFragment,
+  WorkCommentList,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { FollowedTagList } from "~/routes/($lang).settings.followed.tags/components/followed-tag-list"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 /* -----------------------------------------------------------------
  * Constants & helpers
@@ -157,7 +157,7 @@ export type FollowTagsFeedContentsProps = {
 /* -----------------------------------------------------------------
  * Root component
  * -----------------------------------------------------------------*/
-export function FollowSensitiveTagsFeedContents ({
+export function FollowSensitiveTagsFeedContents({
   page,
   setPage,
   isPagination,
@@ -169,9 +169,10 @@ export function FollowSensitiveTagsFeedContents ({
   const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
 
   /* タグプレビュー取得 */
-  const { data: tagData } = useSuspenseQuery(followedTagsPreviewQuery, {
-    variables: { limit: 6 },
-  })
+  const { data: tagData, refetch: refetchFollowedTagsPreview } =
+    useSuspenseQuery(followedTagsPreviewQuery, {
+      variables: { limit: 6 },
+    })
   const tags = tagData?.viewer?.followingTags ?? []
   const tagsToShow = tags.slice(0, 5)
   const hasMoreTags = tags.length > 5

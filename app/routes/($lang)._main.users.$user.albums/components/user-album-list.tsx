@@ -1,12 +1,13 @@
-import { type FragmentOf, graphql } from "gql.tada"
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import { Images } from "lucide-react"
+import { Badge } from "~/components/ui/badge"
 
 type Props = {
   albums: FragmentOf<typeof UserAlbumListItemFragment>[]
 }
 
-export function UserAlbumList (props: Props) {
+export function UserAlbumList(props: Props) {
   return (
     <div className="flex min-h-96 flex-col gap-y-4">
       <div className="flex flex-wrap gap-2">
@@ -39,12 +40,15 @@ export function UserAlbumList (props: Props) {
                     </p>
                   </div>
                   {album.worksCount !== undefined && album.worksCount !== 0 && (
-                    <div className="absolute top-1 right-1 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <Images className="size-3 text-white" />
-                      <div className="font-bold text-white text-xs">
+                    <Badge
+                      variant="secondary"
+                      className="absolute top-1 right-1 z-10 flex items-center gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
+                    >
+                      <Images className="size-3 text-muted-foreground" />
+                      <span className="font-semibold text-xs leading-none">
                         {album.worksCount}
-                      </div>
-                    </div>
+                      </span>
+                    </Badge>
                   )}
                 </Link>
               </div>

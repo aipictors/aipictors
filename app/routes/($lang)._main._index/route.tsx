@@ -1,22 +1,4 @@
-import { loaderClient } from "~/lib/loader-client"
-import {
-  HomeAwardWorkSection,
-  HomeWorkAwardFragment,
-} from "~/routes/($lang)._main._index/components/home-award-work-section"
-import {
-  HomeTagList,
-  HomeTagListItemFragment,
-} from "~/routes/($lang)._main._index/components/home-tag-list"
-import {
-  HomeTagFragment,
-  HomeTagsSection,
-} from "~/routes/($lang)._main._index/components/home-tags-section"
-import {
-  HomePromotionWorkFragment,
-  HomeWorksUsersRecommendedSection,
-} from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
-
+import { useMutation, useQuery } from "@apollo/client/index"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -28,65 +10,84 @@ import {
   useNavigate,
   useSearchParams,
 } from "@remix-run/react"
+import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
+import {
+  ArrowDownWideNarrow,
+  ExternalLink,
+  List,
+  Minus,
+  Navigation,
+  PlaySquare,
+  Plus,
+} from "lucide-react"
+import { Suspense, useEffect, useId, useMemo, useState } from "react"
+import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
+import { Separator } from "~/components/ui/separator"
+import { Tabs, TabsContent } from "~/components/ui/tabs"
+import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import { config, META } from "~/config"
+import { useLocale } from "~/hooks/use-locale"
+import { useTranslation } from "~/hooks/use-translation"
+import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
+import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { loaderClient } from "~/lib/loader-client"
+import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
+import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
 import {
-  HomeTagWorkFragment,
-  HomeWorksTagSection,
-} from "~/routes/($lang)._main._index/components/home-works-tag-section"
-import { getJstDate } from "~/utils/jst-date"
-import { createMeta } from "~/utils/create-meta"
+  HomeAwardWorkSection,
+  HomeWorkAwardFragment,
+} from "~/routes/($lang)._main._index/components/home-award-work-section"
+import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
+import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import {
-  HomeNewUsersWorksFragment,
-  HomeNewUsersWorksSection,
-} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+  HomeNewCommentsFragment,
+  HomeNewCommentsSection,
+} from "~/routes/($lang)._main._index/components/home-new-comments"
+import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
 import {
   HomeNewPostedUsersFragment,
   HomeNewUsersSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import {
-  HomeNewCommentsFragment,
-  HomeNewCommentsSection,
-} from "~/routes/($lang)._main._index/components/home-new-comments"
-import { useState, useEffect, Suspense, useMemo, useId } from "react"
-import { useTranslation } from "~/hooks/use-translation"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import {
-  ArrowDownWideNarrow,
-  ExternalLink,
-  List,
-  Navigation,
-  PlaySquare,
-} from "lucide-react"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "~/components/ui/select"
-import { Separator } from "~/components/ui/separator"
-import { Tabs, TabsContent } from "~/components/ui/tabs"
-import { Checkbox } from "~/components/ui/checkbox"
-import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components/follow-tags-feed-contents"
-import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
-import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
-import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
-import { toWorkTypeText } from "~/utils/work/to-work-type-text"
-import { Button } from "~/components/ui/button"
-import { useLocale } from "~/hooks/use-locale"
-import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
-import { useMutation, useQuery } from "@apollo/client/index"
-import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
-import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
+  HomeNewUsersWorksFragment,
+  HomeNewUsersWorksSection,
+} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
-import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
-import type { FragmentOf } from "gql.tada"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
-import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
+import {
+  HomeTagList,
+  HomeTagListItemFragment,
+} from "~/routes/($lang)._main._index/components/home-tag-list"
+import {
+  HomeTagFragment,
+  HomeTagsSection,
+} from "~/routes/($lang)._main._index/components/home-tags-section"
+import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
+import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
+import {
+  HomeTagWorkFragment,
+  HomeWorksTagSection,
+} from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import {
+  HomePromotionWorkFragment,
+  HomeWorksUsersRecommendedSection,
+} from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { createMeta } from "~/utils/create-meta"
+import { getJstDate } from "~/utils/jst-date"
+import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -167,7 +168,7 @@ function useScrollRestoration(isMounted: boolean) {
   }, [isMounted])
 }
 
-export default function Index () {
+export default function Index() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -288,6 +289,8 @@ export default function Index () {
   const [internalIsPagination, setInternalIsPagination] = useState(
     getInitialIsPagination(),
   )
+
+  const [isFilterUiOpen, setIsFilterUiOpen] = useState(true)
 
   // 作品遷移モード（ダイアログ / 直接リンク）
   const [isDialogMode, setIsDialogMode] = useState(false)
@@ -761,239 +764,272 @@ export default function Index () {
           {workView === "new" && (
             <div className="space-y-4">
               {/* 絞り込み用のセレクト群 - レスポンシブレイアウト */}
-              <div className="space-y-3 rounded-lg bg-muted/30 p-4">
-                {/* フィルター行1: 種類、プロンプト、ソート */}
-                <div className="grid grid-cols-3 gap-2 md:flex md:flex-wrap md:gap-3">
-                  {/* 種類 */}
-                  <Select
-                    value={workType ? workType : ""}
-                    onValueChange={handleWorkTypeChange}
-                  >
-                    <SelectTrigger className="h-10 min-w-0 font-medium text-xs md:min-w-[130px] md:text-sm">
-                      <SelectValue
-                        placeholder={
-                          workType
-                            ? toWorkTypeText({
-                                type: workType,
-                                lang: location,
-                              })
-                            : t("種類", "Type")
-                        }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">{t("種類", "Type")}</SelectItem>
-                      <SelectItem value="WORK">{t("画像", "Image")}</SelectItem>
-                      <SelectItem value="VIDEO">
-                        {t("動画", "Video")}
-                      </SelectItem>
-                      <SelectItem value="NOVEL">
-                        {t("小説", "Novel")}
-                      </SelectItem>
-                      <SelectItem value="COLUMN">
-                        {t("コラム", "Column")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {/* プロンプト有無 */}
-                  <Select
-                    value={
-                      isPromptPublic === null
-                        ? "ALL"
-                        : isPromptPublic
-                          ? "prompt"
-                          : "no-prompt"
+              <div className="rounded-lg bg-muted/30 p-2">
+                <div className="flex items-center justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => setIsFilterUiOpen((v) => !v)}
+                    aria-label={
+                      isFilterUiOpen
+                        ? t("絞り込みを閉じる", "Close filters")
+                        : t("絞り込みを開く", "Open filters")
                     }
-                    onValueChange={handlePromptChange}
                   >
-                    <SelectTrigger className="h-10 min-w-0 font-medium text-xs md:min-w-[130px] md:text-sm">
-                      <SelectValue
-                        placeholder={
+                    {isFilterUiOpen ? (
+                      <Minus className="h-4 w-4" />
+                    ) : (
+                      <Plus className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+
+                {isFilterUiOpen && (
+                  <div className="space-y-2">
+                    {/* フィルター行1: 種類、プロンプト、ソート */}
+                    <div className="grid grid-cols-3 gap-2 md:flex md:flex-wrap md:gap-2">
+                      {/* 種類 */}
+                      <Select
+                        value={workType ? workType : ""}
+                        onValueChange={handleWorkTypeChange}
+                      >
+                        <SelectTrigger className="h-8 min-w-0 font-medium text-xs md:min-w-[130px]">
+                          <SelectValue
+                            placeholder={
+                              workType
+                                ? toWorkTypeText({
+                                    type: workType,
+                                    lang: location,
+                                  })
+                                : t("種類", "Type")
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">
+                            {t("種類", "Type")}
+                          </SelectItem>
+                          <SelectItem value="WORK">
+                            {t("画像", "Image")}
+                          </SelectItem>
+                          <SelectItem value="VIDEO">
+                            {t("動画", "Video")}
+                          </SelectItem>
+                          <SelectItem value="NOVEL">
+                            {t("小説", "Novel")}
+                          </SelectItem>
+                          <SelectItem value="COLUMN">
+                            {t("コラム", "Column")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {/* プロンプト有無 */}
+                      <Select
+                        value={
                           isPromptPublic === null
-                            ? t("プロンプト", "Prompt")
+                            ? "ALL"
                             : isPromptPublic
-                              ? t("あり", "Yes")
-                              : t("なし", "No")
+                              ? "prompt"
+                              : "no-prompt"
                         }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ALL">
-                        {t("プロンプト", "Prompt")}
-                      </SelectItem>
-                      <SelectItem value="prompt">{t("あり", "Yes")}</SelectItem>
-                      <SelectItem value="no-prompt">
-                        {t("なし", "No")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {/* ソート */}
-                  <Select
-                    value={sortType ? sortType : ""}
-                    onValueChange={handleSortTypeChange}
-                  >
-                    <SelectTrigger className="h-10 min-w-0 font-medium text-xs md:min-w-[130px] md:text-sm">
-                      <ArrowDownWideNarrow className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                      <SelectValue
-                        placeholder={sortType ? sortType : t("最新", "Latest")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="DATE_CREATED">
-                        {t("最新", "Latest")}
-                      </SelectItem>
-                      <SelectItem value="LIKES_COUNT">
-                        {t("人気", "Popular")}
-                      </SelectItem>
-                      <SelectItem value="COMMENTS_COUNT">
-                        {t("コメント", "Comments")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* フィルター行2: 期間指定とチェックボックス */}
-                <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                  {/* 左側: 期間指定とチェックボックス */}
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                    {/* 期間指定 */}
-                    <Select
-                      value={timeRange}
-                      onValueChange={handleTimeRangeChange}
-                    >
-                      <SelectTrigger className="h-10 w-full font-medium text-xs sm:w-auto sm:min-w-[130px] md:text-sm">
-                        <SelectValue
-                          placeholder={
-                            timeRange === "ALL"
-                              ? t("全期間", "All time")
-                              : timeRange
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ALL">
-                          {t("全期間", "All time")}
-                        </SelectItem>
-                        <SelectItem value="TODAY">
-                          {t("本日", "Today")}
-                        </SelectItem>
-                        <SelectItem value="YESTERDAY">
-                          {t("昨日", "Yesterday")}
-                        </SelectItem>
-                        <SelectItem value="WEEK">
-                          {t("週間", "Week")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    {/* ユーザー毎に1作品フィルター */}
-                    <div className="flex items-center space-x-2 rounded-lg border bg-background px-3 py-2.5 shadow-sm transition-colors hover:bg-muted/50">
-                      <Checkbox
-                        id={checkboxId}
-                        checked={isOneWorkPerUser}
-                        onCheckedChange={(checked) => {
-                          const newValue = checked === true
-                          setIsOneWorkPerUser(newValue)
-                          const newSearchParams = new URLSearchParams(
-                            searchParams,
-                          )
-                          if (newValue) {
-                            newSearchParams.set("isOneWorkPerUser", "true")
-                          } else {
-                            newSearchParams.delete("isOneWorkPerUser")
-                          }
-                          updateQueryParams(newSearchParams)
-                        }}
-                      />
-                      <label
-                        htmlFor={checkboxId}
-                        className="cursor-pointer font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        onValueChange={handlePromptChange}
                       >
-                        {t("ユーザー毎に1作品", "One work per user")}
-                      </label>
+                        <SelectTrigger className="h-8 min-w-0 font-medium text-xs md:min-w-[130px]">
+                          <SelectValue
+                            placeholder={
+                              isPromptPublic === null
+                                ? t("プロンプト", "Prompt")
+                                : isPromptPublic
+                                  ? t("あり", "Yes")
+                                  : t("なし", "No")
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ALL">
+                            {t("プロンプト", "Prompt")}
+                          </SelectItem>
+                          <SelectItem value="prompt">
+                            {t("あり", "Yes")}
+                          </SelectItem>
+                          <SelectItem value="no-prompt">
+                            {t("なし", "No")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {/* ソート */}
+                      <Select
+                        value={sortType ? sortType : ""}
+                        onValueChange={handleSortTypeChange}
+                      >
+                        <SelectTrigger className="h-8 min-w-0 font-medium text-xs md:min-w-[130px]">
+                          <ArrowDownWideNarrow className="h-3.5 w-3.5" />
+                          <SelectValue
+                            placeholder={
+                              sortType ? sortType : t("最新", "Latest")
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="DATE_CREATED">
+                            {t("最新", "Latest")}
+                          </SelectItem>
+                          <SelectItem value="LIKES_COUNT">
+                            {t("人気", "Popular")}
+                          </SelectItem>
+                          <SelectItem value="COMMENTS_COUNT">
+                            {t("コメント", "Comments")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* フィルター行2: 期間指定とチェックボックス */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      {/* 左側: 期間指定とチェックボックス */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* 期間指定 */}
+                        <Select
+                          value={timeRange}
+                          onValueChange={handleTimeRangeChange}
+                        >
+                          <SelectTrigger className="h-8 w-full font-medium text-xs sm:w-auto sm:min-w-[130px]">
+                            <SelectValue
+                              placeholder={
+                                timeRange === "ALL"
+                                  ? t("全期間", "All time")
+                                  : timeRange
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ALL">
+                              {t("全期間", "All time")}
+                            </SelectItem>
+                            <SelectItem value="TODAY">
+                              {t("本日", "Today")}
+                            </SelectItem>
+                            <SelectItem value="YESTERDAY">
+                              {t("昨日", "Yesterday")}
+                            </SelectItem>
+                            <SelectItem value="WEEK">
+                              {t("週間", "Week")}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        {/* ユーザー毎に1作品フィルター */}
+                        <div className="flex items-center gap-2 rounded-md border bg-background px-2 py-1.5">
+                          <Checkbox
+                            id={checkboxId}
+                            checked={isOneWorkPerUser}
+                            onCheckedChange={(checked) => {
+                              const newValue = checked === true
+                              setIsOneWorkPerUser(newValue)
+                              const newSearchParams = new URLSearchParams(
+                                searchParams,
+                              )
+                              if (newValue) {
+                                newSearchParams.set("isOneWorkPerUser", "true")
+                              } else {
+                                newSearchParams.delete("isOneWorkPerUser")
+                              }
+                              updateQueryParams(newSearchParams)
+                            }}
+                          />
+                          <label
+                            htmlFor={checkboxId}
+                            className="cursor-pointer font-medium text-xs leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {t("ユーザー毎に1作品", "One work per user")}
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* 右側: 表示方式切り替え */}
+                      <div className="flex flex-wrap gap-2 md:ml-auto">
+                        <div className="flex rounded-md bg-muted/50 p-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setInternalIsPagination(false)
+                              const p = new URLSearchParams(searchParams)
+                              p.set("isPagination", "false")
+                              updateQueryParams(p)
+                            }}
+                            className={`flex items-center space-x-1.5 rounded-md px-2 py-1 font-medium text-xs transition-all ${
+                              !internalIsPagination
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            } `}
+                          >
+                            <List className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">
+                              {t("フィード", "Feed")}
+                            </span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setInternalIsPagination(true)
+                              const p = new URLSearchParams(searchParams)
+                              p.set("isPagination", "true")
+                              updateQueryParams(p)
+                            }}
+                            className={`flex items-center space-x-1.5 rounded-md px-2 py-1 font-medium text-xs transition-all ${
+                              internalIsPagination
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            } `}
+                          >
+                            <Navigation className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">
+                              {t("ページ", "Pages")}
+                            </span>
+                          </Button>
+                        </div>
+                        <div className="flex rounded-md bg-muted/50 p-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onChangeDialogMode(false)}
+                            className={`flex items-center space-x-1.5 rounded-md px-2 py-1 font-medium text-xs transition-all ${
+                              !isDialogMode
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            } `}
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            <span className="hidden lg:inline">
+                              {t("リンク遷移", "Open page")}
+                            </span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onChangeDialogMode(true)}
+                            className={`flex items-center space-x-1.5 rounded-md px-2 py-1 font-medium text-xs transition-all ${
+                              isDialogMode
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                            } `}
+                          >
+                            <PlaySquare className="h-3.5 w-3.5" />
+                            <span className="hidden lg:inline">
+                              {t("ダイアログ", "Dialog")}
+                            </span>
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-
-                  {/* 右側: 表示方式切り替え */}
-                  <div className="flex flex-wrap gap-2 md:ml-auto">
-                    <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setInternalIsPagination(false)
-                          const p = new URLSearchParams(searchParams)
-                          p.set("isPagination", "false")
-                          updateQueryParams(p)
-                        }}
-                        className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                          !internalIsPagination
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        } `}
-                      >
-                        <List className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">
-                          {t("フィード", "Feed")}
-                        </span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setInternalIsPagination(true)
-                          const p = new URLSearchParams(searchParams)
-                          p.set("isPagination", "true")
-                          updateQueryParams(p)
-                        }}
-                        className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                          internalIsPagination
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        } `}
-                      >
-                        <Navigation className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">
-                          {t("ページ", "Pages")}
-                        </span>
-                      </Button>
-                    </div>
-                    <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onChangeDialogMode(false)}
-                        className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                          !isDialogMode
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        } `}
-                      >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                        <span className="hidden lg:inline">
-                          {t("リンク遷移", "Open page")}
-                        </span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onChangeDialogMode(true)}
-                        className={`flex items-center space-x-1.5 rounded-md px-3 py-2 font-medium text-xs transition-all ${
-                          isDialogMode
-                            ? "bg-background text-foreground shadow-sm"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                        } `}
-                      >
-                        <PlaySquare className="h-3.5 w-3.5" />
-                        <span className="hidden lg:inline">
-                          {t("ダイアログ", "Dialog")}
-                        </span>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* 新着作品 */}

@@ -1,14 +1,14 @@
-import { useLoaderData, useSearchParams } from "@remix-run/react"
-import { loaderClient } from "~/lib/loader-client"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { config } from "~/config"
+import { loaderClient } from "~/lib/loader-client"
+import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
+import { RankingSensitiveUserListModern } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list-modern"
 import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
-import { RankingSensitiveUserListModern } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list-modern"
-import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
-import { config } from "~/config"
 
 export async function loader(params: LoaderFunctionArgs) {
   // 昨日の日付を取得
@@ -56,7 +56,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * ランキングの履歴
  */
-export default function Rankings () {
+export default function Rankings() {
   const data = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -74,7 +74,10 @@ export default function Rankings () {
     } else {
       newSearchParams.delete("type")
     }
-    setSearchParams(newSearchParams, { replace: true })
+    setSearchParams(newSearchParams, {
+      replace: true,
+      preventScrollReset: true,
+    })
   }
 
   // デイリーランキングかどうかを判定

@@ -1,19 +1,20 @@
-import { graphql, type FragmentOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import SSR from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
-import { LikeButton } from "~/components/like-button"
-import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { Heart, Images, MessageCircle } from "lucide-react"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { HoverVideoImage } from "~/components/hover-video-image"
+import { LikeButton } from "~/components/like-button"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Badge } from "~/components/ui/badge"
+import { WorkMediaBadge } from "~/components/work-media-badge"
 import { cn } from "~/lib/utils"
 import { HomeCroppedWorks } from "~/routes/($lang)._main._index/components/home-cropped-works"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
 import { StickerButtonFragment } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { WorkMediaBadge } from "~/components/work-media-badge"
-import { HoverVideoImage } from "~/components/hover-video-image"
+import { WorkCommentFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
@@ -31,6 +32,9 @@ type Props = {
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
+  const chipClassName =
+    "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
+
   if (props.works.length <= 2) {
     return (
       <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">
@@ -44,6 +48,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                 <CroppedWorkSquare
                   workId={workItem.id}
                   subWorksCount={workItem.subWorksCount}
+                  commentsCount={workItem.commentsCount}
                   imageUrl={workItem.smallThumbnailImageURL}
                   thumbnailImagePosition={workItem.thumbnailImagePosition ?? 0}
                   size="lg"
@@ -55,22 +60,6 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   }
                   hasVideoUrl={Boolean(workItem.url)}
                 />
-                {workItem.subWorksCount > 0 && (
-                  <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                    <Images className="size-3 text-white" />
-                    <div className="font-bold text-white text-xs">
-                      {workItem.subWorksCount + 1}
-                    </div>
-                  </div>
-                )}
-                {workItem.commentsCount > 0 && (
-                  <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                    <MessageCircle className="size-3 text-white" />
-                    <div className="font-bold text-white text-xs">
-                      {workItem.commentsCount}
-                    </div>
-                  </div>
-                )}
                 <div className="absolute right-0 bottom-0">
                   <LikeButton
                     size={56}
@@ -199,20 +188,32 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                     />
                   </div>
                   {photo.context.subWorksCount > 0 && (
-                    <div className="absolute top-1 right-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <Images className="size-3 text-white" />
-                      <div className="font-bold text-white text-xs">
+                    <Badge
+                      variant="secondary"
+                      className={cn(
+                        "absolute top-1 right-1 z-10 flex items-center",
+                        chipClassName,
+                      )}
+                    >
+                      <Images className="size-3 text-muted-foreground" />
+                      <span className="font-semibold text-xs leading-none">
                         {photo.context.subWorksCount + 1}
-                      </div>
-                    </div>
+                      </span>
+                    </Badge>
                   )}
                   {photo.context.commentsCount > 0 && (
-                    <div className="absolute top-1 left-1 z-10 flex items-center space-x-1 rounded-xl bg-zinc-800 bg-opacity-50 p-1 px-2">
-                      <MessageCircle className="size-3 text-white" />
-                      <div className="font-bold text-white text-xs">
+                    <Badge
+                      variant="secondary"
+                      className={cn(
+                        "absolute top-1 left-1 z-10 flex items-center",
+                        chipClassName,
+                      )}
+                    >
+                      <MessageCircle className="size-3 text-muted-foreground" />
+                      <span className="font-semibold text-xs leading-none">
                         {photo.context.commentsCount}
-                      </div>
-                    </div>
+                      </span>
+                    </Badge>
                   )}
                   {/* プロンプト公開・動画バッジ */}
                   <div

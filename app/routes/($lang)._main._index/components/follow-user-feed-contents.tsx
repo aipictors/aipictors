@@ -18,7 +18,7 @@ import { LikeButton } from "~/components/like-button"
 import { Link, useNavigate } from "@remix-run/react"
 import { WorkCommentList } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import { useGlobalTimelineView } from "~/hooks/use-global-feed-mode"
+import { useFollowTimelineView } from "~/hooks/use-global-feed-mode"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import {
@@ -96,7 +96,7 @@ function PaginationMode(props: Props) {
   const t = useTranslation()
   const [prevDataKey, setPrevDataKey] = useState<string>("")
 
-  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
+  const [isTimelineView, setIsTimelineView] = useFollowTimelineView()
 
   const currentPage = props.page ?? 0
   const setPage = props.setPage ?? (() => {})
@@ -249,7 +249,7 @@ function InfiniteMode(props: Props) {
   const navigate = useNavigate()
   const t = useTranslation()
 
-  const [isTimelineView, setIsTimelineView] = useGlobalTimelineView()
+  const [isTimelineView, setIsTimelineView] = useFollowTimelineView()
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [_prevFlatLength, _setPrevFlatLength] = useState<number>(0)
 
@@ -545,8 +545,8 @@ function FeedContent({
           </Button>
           <Button onClick={() => setIsTimelineView(!isTimelineView)}>
             {isTimelineView
-              ? t("一覧形式に切り替え", "Switch to List View")
-              : t("タイムライン形式に切り替え", "Switch to Timeline View")}
+              ? t("一覧表示", "List")
+              : t("カード表示", "Cards")}
           </Button>
         </div>
       )}
@@ -715,6 +715,7 @@ function FeedContent({
             works={
               works as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]
             }
+            size="large"
             isShowProfile={true}
             onSelect={onSelect}
           />

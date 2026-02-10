@@ -1,36 +1,35 @@
-import { graphql, type FragmentOf } from "gql.tada"
+import { useApolloClient, useQuery } from "@apollo/client/index"
+import { useNavigate } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { ExternalLink, Grid, List, PlaySquare } from "lucide-react"
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
+import { TagFollowButton } from "~/components/button/tag-follow-button"
+import { CompactFilter, type FilterValues } from "~/components/compact-filter"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
   type PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
-import { AuthContext } from "~/contexts/auth-context"
-import { useApolloClient, useQuery } from "@apollo/client/index"
-import {
-  useContext,
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-  useMemo,
-} from "react"
-import { tagWorksQuery } from "~/routes/($lang)._main.tags.$tag._index/route"
-import { CroppedWorkSquare } from "~/components/cropped-work-square"
-import { TagFollowButton } from "~/components/button/tag-follow-button"
-import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/tag-action-other"
-import { WorksListSortableSetting } from "~/routes/($lang).my._index/components/works-list-sortable-setting"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import type { SortType } from "~/types/sort-type"
-import { useTranslation } from "~/hooks/use-translation"
-import { Switch } from "~/components/ui/switch"
 import { Button } from "~/components/ui/button"
-import { Grid, List, PlaySquare, ExternalLink } from "lucide-react"
-import { CompactFilter, type FilterValues } from "~/components/compact-filter"
-
-import { useNavigate } from "@remix-run/react"
-import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import { Separator } from "~/components/ui/separator"
+import { Switch } from "~/components/ui/switch"
+import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { TagActionOther } from "~/routes/($lang)._main.tags._index/components/tag-action-other"
+import { tagWorksQuery } from "~/routes/($lang)._main.tags.$tag._index/route"
+import { WorksListSortableSetting } from "~/routes/($lang).my._index/components/works-list-sortable-setting"
+import type { SortType } from "~/types/sort-type"
 
 // ──────────────────────────────────────────────────────────────────────────────
 // GraphQL
@@ -97,7 +96,7 @@ type LocalFilterValues = {
   isOneWorkPerUser?: boolean
 }
 
-export function TagWorkSection (props: Props) {
+export function TagWorkSection(props: Props) {
   const authContext = useContext(AuthContext)
   const _client = useApolloClient()
   const navigate = useNavigate()
@@ -307,16 +306,32 @@ export function TagWorkSection (props: Props) {
     },
   )
 
+  const shouldRunR18PaginationFallbackQuery = useMemo(() => {
+    if (!isPagination || !isInitialized || authContext.isLoading) return false
+    if (props.shouldShowR18 || isExplicitSensitiveFilter) return false
+
+    // 全年齢クエリが完了する前にR18を並走させると
+    // 一瞬「R18表示」に切り替わるレースが発生するため待機する
+    if (paginationLoading) return false
+
+    const generalWorks = paginationResp?.tagWorks
+    if (!generalWorks) return false
+    return generalWorks.length === 0
+  }, [
+    isPagination,
+    isInitialized,
+    authContext.isLoading,
+    props.shouldShowR18,
+    isExplicitSensitiveFilter,
+    paginationLoading,
+    paginationResp,
+  ])
+
   // R18フォールバック用ページネーションクエリ
   const { data: r18PaginationResp, loading: r18PaginationLoading } = useQuery(
     tagWorksQuery,
     {
-      skip:
-        !isPagination ||
-        !isInitialized ||
-        authContext.isLoading ||
-        props.shouldShowR18 || // 既にR18を表示している場合はスキップ
-        (paginationResp?.tagWorks && paginationResp.tagWorks.length > 0), // 全年齢作品が見つかった場合はスキップ
+      skip: !shouldRunR18PaginationFallbackQuery,
       variables: {
         offset: props.page * 32,
         limit: 32,
@@ -348,6 +363,24 @@ export function TagWorkSection (props: Props) {
     fetchPolicy: "cache-and-network",
   })
 
+  const shouldRunR18InfiniteFallbackQuery = useMemo(() => {
+    if (isPagination || !isInitialized || authContext.isLoading) return false
+    if (props.shouldShowR18 || isExplicitSensitiveFilter) return false
+    if (infiniteLoading) return false
+
+    const generalWorks = infiniteResp?.tagWorks
+    if (!generalWorks) return false
+    return generalWorks.length === 0
+  }, [
+    isPagination,
+    isInitialized,
+    authContext.isLoading,
+    props.shouldShowR18,
+    isExplicitSensitiveFilter,
+    infiniteLoading,
+    infiniteResp,
+  ])
+
   // R18フォールバック用無限スクロールクエリ
   const {
     data: r18InfiniteResp,
@@ -355,12 +388,7 @@ export function TagWorkSection (props: Props) {
     fetchMore: r18FetchMore,
     refetch: r18RefetchInfinite,
   } = useQuery(tagWorksQuery, {
-    skip:
-      isPagination ||
-      !isInitialized ||
-      authContext.isLoading ||
-      props.shouldShowR18 || // 既にR18を表示している場合はスキップ
-      (infiniteResp?.tagWorks && infiniteResp.tagWorks.length > 0), // 全年齢作品が見つかった場合はスキップ
+    skip: !shouldRunR18InfiniteFallbackQuery,
     variables: {
       offset: 0,
       limit: 32,
@@ -379,43 +407,64 @@ export function TagWorkSection (props: Props) {
     if (paginationResp?.tagWorks && paginationResp.tagWorks.length > 0) {
       return paginationResp
     }
-    if (r18PaginationResp?.tagWorks && r18PaginationResp.tagWorks.length > 0) {
+    if (
+      shouldRunR18PaginationFallbackQuery &&
+      r18PaginationResp?.tagWorks &&
+      r18PaginationResp.tagWorks.length > 0
+    ) {
       console.log("Using R18 pagination fallback data")
       return r18PaginationResp
     }
     return paginationResp
-  }, [paginationResp, r18PaginationResp])
+  }, [paginationResp, r18PaginationResp, shouldRunR18PaginationFallbackQuery])
 
   const finalInfiniteData = useMemo(() => {
     if (infiniteResp?.tagWorks && infiniteResp.tagWorks.length > 0) {
       return infiniteResp
     }
-    if (r18InfiniteResp?.tagWorks && r18InfiniteResp.tagWorks.length > 0) {
+    if (
+      shouldRunR18InfiniteFallbackQuery &&
+      r18InfiniteResp?.tagWorks &&
+      r18InfiniteResp.tagWorks.length > 0
+    ) {
       console.log("Using R18 infinite fallback data")
       return r18InfiniteResp
     }
     return infiniteResp
-  }, [infiniteResp, r18InfiniteResp])
+  }, [infiniteResp, r18InfiniteResp, shouldRunR18InfiniteFallbackQuery])
 
   const isDynamicR18Fallback = useMemo(() => {
     // そもそもR18表示中／明示的にR18フィルタ中なら「フォールバック」ではない
     if (props.shouldShowR18 || isExplicitSensitiveFilter) return false
 
     if (isPagination) {
-      const generalCount = paginationResp?.tagWorks?.length ?? 0
+      // 全年齢クエリが確定する前は「フォールバック」と判定しない
+      if (paginationLoading) return false
+
+      const generalWorks = paginationResp?.tagWorks
+      if (!generalWorks) return false
+
+      const generalCount = generalWorks.length
       const r18Count = r18PaginationResp?.tagWorks?.length ?? 0
       return generalCount === 0 && r18Count > 0
     }
 
-    const generalCount = infiniteResp?.tagWorks?.length ?? 0
+    if (infiniteLoading) return false
+
+    const generalWorks = infiniteResp?.tagWorks
+    if (!generalWorks) return false
+
+    const generalCount = generalWorks.length
     const r18Count = r18InfiniteResp?.tagWorks?.length ?? 0
     return generalCount === 0 && r18Count > 0
   }, [
     props.shouldShowR18,
     isExplicitSensitiveFilter,
     isPagination,
+    paginationLoading,
     paginationResp,
     r18PaginationResp,
+    infiniteLoading,
     infiniteResp,
     r18InfiniteResp,
   ])
@@ -766,23 +815,29 @@ export function TagWorkSection (props: Props) {
 
   // ───────────────────────── ローディング判定 ─────────────────────────
   const isLoading = useMemo(() => {
+    const hasRenderableWorks = displayedWorks.length > 0
+
     // 認証コンテキストがロード中の場合
     if (authContext.isLoading) {
-      return true
+      return !hasRenderableWorks
     }
 
     // 初期化が完了していない場合
     if (!isInitialized) {
-      return true
+      return !hasRenderableWorks
     }
 
     if (isPagination) {
       // ページネーションモード: 通常クエリまたはR18フォールバッククエリがローディング中の場合
-      return paginationLoading || r18PaginationLoading
+      return (paginationLoading || r18PaginationLoading) && !hasRenderableWorks
     }
 
     // フィードモード: 通常クエリまたはR18フォールバッククエリがローディング中で無限ページが空の場合
-    return (infiniteLoading || r18InfiniteLoading) && infinitePages.length === 0
+    return (
+      (infiniteLoading || r18InfiniteLoading) &&
+      infinitePages.length === 0 &&
+      !hasRenderableWorks
+    )
   }, [
     authContext.isLoading,
     isInitialized,
@@ -792,6 +847,7 @@ export function TagWorkSection (props: Props) {
     infiniteLoading,
     r18InfiniteLoading,
     infinitePages.length,
+    displayedWorks.length,
   ])
 
   // ───────────────────────── JSX ─────────────────────────

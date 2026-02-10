@@ -1,22 +1,22 @@
+import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { Suspense, useState } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { NotificationListItems } from "~/routes/($lang)._main.notifications/components/notification-list-items"
 import { NotificationListSetting } from "~/routes/($lang)._main.notifications/components/notification-list-settings"
-import { useSuspenseQuery } from "@apollo/client/index"
-import { graphql } from "gql.tada"
-import { Suspense, useState } from "react"
 
-export function NotificationListContents () {
+export function NotificationListContents() {
   const [notifyType, setNotifyType] =
-    useState<IntrospectionEnum<"NotificationType"> | null>("LIKED_WORK")
+    useState<IntrospectionEnum<"NotificationType">>("LIKED_WORK")
 
   const [page, setPage] = useState(0)
 
   const { data: notificationsCount } = useSuspenseQuery(ViewerQuery, {
     variables: {
       where: {
-        type: notifyType !== null ? notifyType : undefined,
+        type: notifyType,
       },
       orderBy: "CREATED_AT",
     },

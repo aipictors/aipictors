@@ -5,6 +5,7 @@ import { cn } from "~/lib/utils"
 import { useUserActiveTab } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-active-tab"
 import { useUserTabLabels } from "~/routes/($lang)._main.users.$user._index/hooks/use-user-tab-label"
 import { handleUserSensitiveTabNavigation } from "~/routes/($lang)._main.users.$user._index/utils/handle-user-sensitive-tab-navigation"
+import { makeNavigateCallback } from "~/utils/make-navigate-callback"
 
 type Props = {
   user: FragmentOf<typeof UserSensitiveTabsFragment>
@@ -37,6 +38,9 @@ export function UserSensitiveTabs(props: Props) {
   const activeTab = getActiveTab()
 
   const navigate = useNavigate()
+  const onNavigateCallback = makeNavigateCallback(navigate, {
+    preventScrollReset: true,
+  })
 
   const isPrimaryTab = (label: string) => {
     // タブラベルはロケールによって変わるため、簡易的に代表文字列で判定
@@ -55,9 +59,7 @@ export function UserSensitiveTabs(props: Props) {
                 type: label,
                 userId: user.login,
                 lang: locale,
-                onNavigateCallback: (url: string) => {
-                  navigate(url)
-                },
+                onNavigateCallback,
               })
             }}
             className={cn(

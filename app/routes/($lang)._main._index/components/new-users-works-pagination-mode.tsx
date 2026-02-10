@@ -1,20 +1,21 @@
 // components/WorksPaginationMode.tsx
-import { useContext, useEffect, useMemo } from "react"
-import { useNavigate, useSearchParams } from "@remix-run/react"
+
 import { useQuery } from "@apollo/client/index"
-import { AuthContext } from "~/contexts/auth-context"
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { WorksRenderer } from "./works-renderer"
-import { WorksLoading } from "./works-loading"
-import type { WorkType, WorkOrderBy, ImageStyle } from "../types/works"
-import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
-import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import { useNavigate, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { HomeWorkFragment } from "./home-work-section"
+import { useContext, useEffect, useMemo } from "react"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { AuthContext } from "~/contexts/auth-context"
+import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
+import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import {
   getPerPage,
   makeWhere,
 } from "~/routes/($lang)._main._index/utils/works-utils"
+import type { ImageStyle, WorkOrderBy, WorkType } from "../types/works"
+import { HomeWorkFragment } from "./home-work-section"
+import { WorksLoading } from "./works-loading"
+import { WorksRenderer } from "./works-renderer"
 
 interface Props {
   anchorAt: string
@@ -28,7 +29,7 @@ interface Props {
   setPage?: (p: number) => void
 }
 
-export function NewUsersWorksPaginationMode ({ anchorAt, ...rest }: Props) {
+export function NewUsersWorksPaginationMode({ anchorAt, ...rest }: Props) {
   const PER_PAGE = getPerPage(rest.workType)
   const { isLoading: authLoading } = useContext(AuthContext)
 
@@ -101,7 +102,7 @@ export function NewUsersWorksPaginationMode ({ anchorAt, ...rest }: Props) {
 
 /* ▼ 新規ユーザ作品クエリ --------------------------------------------- */
 export const NewUserWorksQuery = graphql(
-  `query NewUserWorks($offset:Int!,$limit:Int!,$where:WorksWhereInput!) {
+  `query NewUserWorks($offset:Int!,$limit:Int!,$where:NewUsersWorksWhereInput!) {
      newUserWorks(offset:$offset, limit:$limit, where:$where) {
        ...HomeWork
        ...HomeNovelsWorkListItem

@@ -1,3 +1,4 @@
+import { HelpCircleIcon } from "lucide-react"
 import { Input } from "~/components/ui/input"
 import {
   Tooltip,
@@ -5,7 +6,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import { HelpCircleIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
@@ -13,7 +13,10 @@ type Props = {
   onChange(value: number): void
 }
 
-export function GenerationConfigScale (props: Props) {
+const MIN_SCALE = 6
+const MAX_SCALE = 15
+
+export function GenerationConfigScale(props: Props) {
   const t = useTranslation()
 
   return (
@@ -33,14 +36,20 @@ export function GenerationConfigScale (props: Props) {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        <span className="text-muted-foreground text-xs">
+          ({MIN_SCALE}-{MAX_SCALE})
+        </span>
       </div>
       <Input
         type="number"
         value={props.value}
-        min={6}
-        max={15}
+        min={MIN_SCALE}
+        max={MAX_SCALE}
         onChange={(event) => {
-          props.onChange(Number(event.target.value))
+          const nextValue = Number(event.target.value)
+          if (Number.isNaN(nextValue)) return
+          if (nextValue < MIN_SCALE || nextValue > MAX_SCALE) return
+          props.onChange(nextValue)
         }}
       />
     </div>

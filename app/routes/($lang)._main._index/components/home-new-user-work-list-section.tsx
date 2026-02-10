@@ -1,11 +1,8 @@
-import { AuthContext } from "~/contexts/auth-context"
-import {
-  HomeWorkFragment,
-  HomeWorkSection,
-} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
   HomeNovelsWorkListItemFragment,
@@ -15,7 +12,10 @@ import {
   HomeVideosWorkListItemFragment,
   HomeVideosWorksSection,
 } from "~/routes/($lang)._main._index/components/home-video-works-section"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 
 type Props = {
   isCropped?: boolean
@@ -31,7 +31,7 @@ type Props = {
 /**
  * トップ画面人気作品一覧
  */
-export function HomeNewUsersWorkListSection (props: Props) {
+export function HomeNewUsersWorkListSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
@@ -84,7 +84,7 @@ export function HomeNewUsersWorkListSection (props: Props) {
 }
 
 const WorksQuery = graphql(
-  `query Works($where: WorksWhereInput) {
+  `query Works($where: NewUsersWorksWhereInput) {
     newUserWorks: newUserWorks(
       offset: 0,
       limit: 20,

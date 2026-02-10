@@ -1,20 +1,19 @@
+import type {
+  HeadersFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare"
+import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
+import { graphql } from "gql.tada"
+import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import {
   RankingWorkList,
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
-import { RankingUserList } from "./components/ranking-user-list"
-import type {
-  HeadersFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare"
-import { useParams, useSearchParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { RankingUserList } from "./components/ranking-user-list"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -73,7 +72,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * ある日のランキングの履歴
  */
-export default function DayAwards () {
+export default function DayAwards() {
   const params = useParams()
   const data = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -92,7 +91,10 @@ export default function DayAwards () {
     } else {
       newSearchParams.delete("type")
     }
-    setSearchParams(newSearchParams, { replace: true }) // replace: true で履歴を置き換え
+    setSearchParams(newSearchParams, {
+      replace: true,
+      preventScrollReset: true,
+    }) // replace: true で履歴を置き換え
   }
 
   if (params.year === undefined) {
