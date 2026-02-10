@@ -4,11 +4,6 @@ import {
   HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import {
-  HomeBanners,
-  HomeBannerWorkFragment,
-  HomeOngoingEventFragment,
-} from "~/routes/($lang)._main._index/components/home-banners"
-import {
   HomeTagList,
   HomeTagListItemFragment,
 } from "~/routes/($lang)._main._index/components/home-tag-list"
@@ -45,8 +40,6 @@ import {
   HomeNewUsersWorksFragment,
   HomeNewUsersWorksSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
-import { createClient as createCmsClient } from "microcms-js-sdk"
-import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 import {
   HomeNewPostedUsersFragment,
   HomeNewUsersSection,
@@ -87,7 +80,6 @@ import { useLocale } from "~/hooks/use-locale"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
-import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import { HomeNewUsersWorkListSection } from "~/routes/($lang)._main._index/components/home-new-user-work-list-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
@@ -138,15 +130,6 @@ export async function loader(_props: LoaderFunctionArgs) {
   const now = getJstDate()
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
-  const microCmsClient = createCmsClient({
-    serviceDomain: "aipictors",
-    apiKey: config.cms.microCms.apiKey,
-  })
-
-  const releaseList: MicroCmsApiReleaseResponse = await microCmsClient.get({
-    endpoint: `releases?orders=-createdAt&limit=${4}&offset=0`,
-  })
-
   const result = await loaderClient.query({
     query: query,
     variables: {
@@ -156,7 +139,6 @@ export async function loader(_props: LoaderFunctionArgs) {
       day: now.getDate(),
       month: now.getMonth() + 1,
       year: now.getFullYear(),
-      adWorksLimit: config.query.homeWorkCount.ad,
       promotionWorksLimit: config.query.homeWorkCount.promotion,
       awardWorksLimit: config.query.homeWorkCount.award,
       categoryFirst: randomCategories[0],
@@ -173,7 +155,6 @@ export async function loader(_props: LoaderFunctionArgs) {
     awardDateText: awardDateText,
     firstTag: randomCategories[0],
     secondTag: randomCategories[1],
-    releaseList,
   }
 }
 
@@ -335,7 +316,6 @@ export default function Index () {
   const homeWorks = useMemo(
     () =>
       [
-        ...(data?.adWorks ?? []),
         ...(data?.promotionWorks ?? []),
         ...(data?.newUserWorks ?? []),
         ...(data?.workAwards ?? []),
@@ -602,48 +582,6 @@ export default function Index () {
     if (isLoadingMore || !hasNextPage || internalIsPagination) return
   }
 
-  // ホームタブでの作品インデックス計算
-  const _getHomeWorkIndex = (sectionIndex: number, workIndex: number) => {
-    let totalIndex = 0
-
-    // バナー作品のインデックス
-    if (sectionIndex === 0) {
-      return workIndex
-    }
-    totalIndex += data.adWorks?.length || 0
-
-    // プロモーション作品のインデックス
-    if (sectionIndex === 1) {
-      return totalIndex + workIndex
-    }
-    totalIndex += data.promotionWorks?.length || 0
-
-    // 新規ユーザ作品のインデックス
-    if (sectionIndex === 2) {
-      return totalIndex + workIndex
-    }
-    totalIndex += data.newUserWorks?.length || 0
-
-    // 受賞作品のインデックス
-    if (sectionIndex === 3) {
-      return totalIndex + workIndex
-    }
-    totalIndex += data.workAwards?.length || 0
-
-    // 第1タグ作品のインデックス
-    if (sectionIndex === 4) {
-      return totalIndex + workIndex
-    }
-    totalIndex += data.firstTagWorks?.length || 0
-
-    // 第2タグ作品のインデックス
-    if (sectionIndex === 5) {
-      return totalIndex + workIndex
-    }
-
-    return totalIndex + workIndex
-  }
-
   if (data === null) {
     return null
   }
@@ -657,7 +595,7 @@ export default function Index () {
         className="space-y-6"
       >
         {/* ヘッダー部分: タブ */}
-        <div className="-mx-4 border-b bg-background/98 px-4 py-2">
+        <div className="-mx-4 bg-background/98 px-4 py-2">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
             <div className="min-w-0 flex-1">
               <AppAnimatedTabs
@@ -684,17 +622,9 @@ export default function Index () {
                 />
               </div>
             )}
-            {data.adWorks && data.adWorks.length > 0 && (
-              <HomeBanners
-                works={data.adWorks}
-                ongoingEvents={data.latestEvent ?? []}
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-              />
-            )}
           </Suspense>
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_262px)]">
-              <HomeReleaseList releaseList={data.releaseList} />
               <HomeWorksUsersRecommendedSection
                 works={data.promotionWorks}
                 onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
@@ -1458,7 +1388,6 @@ const query = graphql(
     $awardYear: Int!
     $awardMonth: Int!
     $awardDay: Int!
-    $adWorksLimit: Int!
     $promotionWorksLimit: Int!
     $awardWorksLimit: Int!
     $categoryFirst: String!
@@ -1466,17 +1395,6 @@ const query = graphql(
     $tagWorksLimit: Int!
     $newUsersWorksLimit: Int!
   ) {
-    adWorks: works(
-      offset: 0,
-      limit: $adWorksLimit,
-      where: {
-        isFeatured: true,
-        isNowCreatedAt: true,
-        ratings: [G],
-      }
-    ) {
-      ...HomeBannerWork
-    }
     dailyTheme(year: $year, month: $month, day: $day) {
       id
       title
@@ -1566,16 +1484,8 @@ const query = graphql(
     ) {
       ...HomeNewComments
     }
-    latestEvent: appEvents(
-      offset: 0,
-      limit: 1
-    ) {
-      ...HomeOngoingEvent
-    }
   }`,
   [
-    HomeBannerWorkFragment,
-    HomeOngoingEventFragment,
     HomePromotionWorkFragment,
     HomeTagListItemFragment,
     HomeWorkAwardFragment,

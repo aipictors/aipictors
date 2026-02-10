@@ -36,7 +36,10 @@ export function GenerationConfigI2i () {
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
         <span className="text-nowrap font-bold">
-          {t("画像から生成", "Generate from image")}
+          {t(
+            "画像から生成（元画像ベース）",
+            "Generate from image (base image)",
+          )}
         </span>
         <CrossPlatformTooltip
           text={t(

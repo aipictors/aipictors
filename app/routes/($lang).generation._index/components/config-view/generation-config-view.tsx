@@ -12,13 +12,12 @@ import { Link } from "@remix-run/react"
 import { Button } from "~/components/ui/button"
 import { Sparkles } from "lucide-react"
 import { GenerationConfigClipSkip } from "~/routes/($lang).generation._index/components/config-view/generation-config-clip-skip"
-import { GenerationConfigControlNet } from "~/routes/($lang).generation._index/components/config-view/generation-config-control-net"
 import { GenerationConfigCount } from "~/routes/($lang).generation._index/components/config-view/generation-config-count"
-import { GenerationConfigI2i } from "~/routes/($lang).generation._index/components/config-view/generation-config-i2i"
 import { GenerationConfigLoraModels } from "~/routes/($lang).generation._index/components/config-view/generation-config-lora-models"
 import { GenerationConfigMemoButton } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-button"
 import { GenerationConfigMemoSettingDialog } from "~/routes/($lang).generation._index/components/config-view/generation-config-memo-setting-dialog"
 import { GenerationConfigModels } from "~/routes/($lang).generation._index/components/config-view/generation-config-models"
+import { GenerationConfigReferenceImage } from "~/routes/($lang).generation._index/components/config-view/generation-config-reference-image"
 import { GenerationConfigSampler } from "~/routes/($lang).generation._index/components/config-view/generation-config-sampler"
 import { GenerationConfigScale } from "~/routes/($lang).generation._index/components/config-view/generation-config-scale"
 import { GenerationConfigSeed } from "~/routes/($lang).generation._index/components/config-view/generation-config-seed"
@@ -182,7 +181,7 @@ export function GenerationConfigView () {
           />
           <GenerationConfigUpscale />
           <Separator />
-          <GenerationConfigI2i />
+          <GenerationConfigReferenceImage />
           <Separator />
           {/* キャラクター表情生成へのリンク */}
           <Link to="/characters" className="block">
@@ -194,8 +193,6 @@ export function GenerationConfigView () {
               {t("キャラクター表情生成", "Character Expression Generation")}
             </Button>
           </Link>
-          <Separator />
-          <GenerationConfigControlNet />
           <Separator />
           <GenerationConfigSeed
             value={context.config.seed}

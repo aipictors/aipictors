@@ -362,7 +362,7 @@ export function useGenerationContext () {
    * controlNetControlModeを変更する
    * @param value
    */
-  const changeControlNetControlMode = (item: string) => {
+  const changeControlNetControlMode = (item: string | null) => {
     const value = configAction.changeControlNetControlMode(item).getState()
     actor.send({ type: "UPDATE_CONFIG", value })
   }

@@ -1,6 +1,5 @@
 import { loaderClient } from "~/lib/loader-client"
 import { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { HomeBannerWorkFragment } from "~/routes/($lang)._main._index/components/home-banners"
 import { HomeTagListItemFragment } from "~/routes/($lang)._main._index/components/home-tag-list"
 import { HomeTagFragment } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
@@ -95,7 +94,6 @@ export async function loader(_props: LoaderFunctionArgs) {
       day: now.getDate(),
       month: now.getMonth() + 1,
       year: now.getFullYear(),
-      adWorksLimit: config.query.homeWorkCount.ad,
       promotionWorksLimit: config.query.homeWorkCount.promotion,
       awardWorksLimit: config.query.homeWorkCount.award,
       categoryFirst: firstTag,
@@ -1062,7 +1060,6 @@ const query = graphql(
     $awardYear: Int!
     $awardMonth: Int!
     $awardDay: Int!
-    $adWorksLimit: Int!
     # $novelWorksLimit: Int!
     # $novelWorksBefore: String!
     # $columnWorksLimit: Int!
@@ -1075,17 +1072,6 @@ const query = graphql(
     $tagWorksLimit: Int!
     $newUsersWorksLimit: Int!
   ) {
-    adWorks: works(
-      offset: 0,
-      limit: $adWorksLimit,
-      where: {
-        isFeatured: true,
-        ratings: [R18],
-        isNowCreatedAt: true
-      }
-    ) {
-      ...HomeBannerWork
-    }
     dailyTheme(year: $year, month: $month, day: $day) {
       id
       title
@@ -1203,7 +1189,6 @@ const query = graphql(
     # }
   }`,
   [
-    HomeBannerWorkFragment,
     HomePromotionWorkFragment,
     // HomeNovelPostFragment,
     HomeTagListItemFragment,

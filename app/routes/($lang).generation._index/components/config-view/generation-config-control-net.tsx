@@ -72,12 +72,15 @@ export function GenerationConfigControlNet () {
     <div className="flex flex-col gap-y-2">
       <div className="flex gap-x-2">
         <span className="text-nowrap font-bold">
-          {t("ControlNet", "ControlNet")}
+          {t(
+            "ControlNet（輪郭/ポーズなどで誘導）",
+            "ControlNet (guided by edges/pose)",
+          )}
         </span>
         <CrossPlatformTooltip
           text={t(
-            "参考画像からより厳密な画像生成ができます。",
-            "You can generate more accurate images from reference images.",
+            "輪郭・ポーズなどを参考に、構図をより厳密に誘導できます。",
+            "Guide composition more strictly using edges/pose, etc.",
           )}
         />
       </div>
@@ -116,13 +119,15 @@ export function GenerationConfigControlNet () {
               variant={"secondary"}
             >
               {context.config.controlNetModule !== null
-                ? t("コントロールを変更", "Change control")
-                : t("コントロールを追加", "Add control")}
+                ? t("ControlNetを変更", "Change ControlNet")
+                : t("ControlNetを追加", "Add ControlNet")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogDescription>{"Control"}</DialogDescription>
+              <DialogDescription>
+                {t("ControlNetの種類を選択", "Select ControlNet type")}
+              </DialogDescription>
             </DialogHeader>
             <GenerationConfigControlNetDialogContents
               module={module}
