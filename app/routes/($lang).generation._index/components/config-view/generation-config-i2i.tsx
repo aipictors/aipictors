@@ -5,7 +5,6 @@ import { Slider } from "~/components/ui/slider"
 import { useTranslation } from "~/hooks/use-translation"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { parseGenerationSize } from "~/routes/($lang).generation._index/types/generation-size"
-import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 
 const CHANGE_STRENGTH_MIN = 0.1
 const CHANGE_STRENGTH_MAX = 1.0
@@ -35,9 +34,10 @@ export function GenerationConfigI2i() {
    * クロップ完了
    * @param croppedImage クロップした画像
    */
-  const onCrop = async (croppedImage: string) => {
-    const base64 = await getBase64FromImageUrl(croppedImage)
-    context.changeI2iImageBase64(base64)
+  const onCrop = (croppedImage: string) => {
+    // CropImageField / ImageCropperModal provides a data URL (base64).
+    // Setting it directly avoids fetch/createImageBitmap failures that can prevent UI updates.
+    context.changeI2iImageBase64(croppedImage)
   }
 
   /**
@@ -95,6 +95,7 @@ export function GenerationConfigI2i() {
         cropHeight={size.height}
         onDeleteImage={onDeleteImage}
         onCrop={onCrop}
+        onCropToBase64={context.changeI2iImageBase64}
       />
       {context.config.i2iImageBase64 !== "" &&
         context.config.modelType !== "GEMINI" && (

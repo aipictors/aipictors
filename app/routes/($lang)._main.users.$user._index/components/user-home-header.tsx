@@ -18,7 +18,7 @@ export function UserHomeHeader(props: Props) {
   if (user.headerImageUrl === null) {
     return (
       <div className="relative">
-        <div className="relative h-[140px] overflow-hidden md:min-h-[320px]">
+        <div className="relative h-20 overflow-hidden md:h-40">
           <div className="relative m-auto">
             <Avatar className="size-6">
               <AvatarImage
@@ -30,7 +30,7 @@ export function UserHomeHeader(props: Props) {
             </Avatar>
           </div>
         </div>
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-3 pb-4 md:px-8 md:pt-6 md:pb-8">
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-2 pb-3 md:px-8 md:pt-4 md:pb-6">
           {props.userIconView}
         </div>
       </div>
