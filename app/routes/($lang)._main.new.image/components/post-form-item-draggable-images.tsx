@@ -7,6 +7,7 @@ import { SortableItems } from "~/components/drag/sortable-items"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { consumeDroppedImageFiles } from "~/utils/dropped-image-files"
 import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES } from "~/utils/file-size"
 import {
   getExtractInfoFromPNG,
@@ -176,6 +177,80 @@ export function PostFormItemDraggableImages(props: Props) {
     }
   }
 
+  const handleAcceptedFiles = (acceptedFiles: File[]) => {
+    if (props.isOnlyMove) {
+      return
+    }
+
+    if (props.maxItemsCount && props.maxItemsCount < acceptedFiles.length) {
+      toast(
+        t(
+          `最大${props.maxItemsCount}までです`,
+          `Maximum ${props.maxItemsCount} items allowed`,
+        ),
+      )
+      return
+    }
+
+    acceptedFiles.forEach(async (file) => {
+      if (props.maxItemsCount && props.maxItemsCount < props.items.length + 1) {
+        toast(
+          t(
+            `最大${props.maxItemsCount}までです`,
+            `Maximum ${props.maxItemsCount} items allowed`,
+          ),
+        )
+        return
+      }
+
+      if (props.items.length === 0 && file.type === "image/png") {
+        const pngInfo = await getExtractInfoFromPNG(file)
+        if (props.onChangePngInfo) {
+          props.onChangePngInfo(pngInfo)
+        }
+      }
+
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        if (event.target) {
+          const img = new Image()
+          img.onload = () => {
+            const canvas = document.createElement("canvas")
+            canvas.width = img.width
+            canvas.height = img.height
+            const ctx = canvas.getContext("2d")
+            ctx?.drawImage(img, 0, 0)
+            const webpDataURL = canvas.toDataURL("image/webp")
+            props.items.push({
+              id: props.items.length,
+              content: webpDataURL,
+            })
+            props.onChangeItems([...props.items])
+            updateThumbnail()
+          }
+          img.src = event.target.result as string
+        }
+      }
+      reader.readAsDataURL(file)
+    })
+
+    const inputElement = document.getElementById(
+      "images_input",
+    ) as HTMLInputElement
+    if (inputElement) {
+      const newFileList = new DataTransfer()
+      acceptedFiles.forEach((file) => {
+        newFileList.items.add(file)
+      })
+
+      inputElement.files = newFileList.files
+
+      if (props.onInputFiles) {
+        props.onInputFiles(inputElement.files)
+      }
+    }
+  }
+
   const { getRootProps, getInputProps } = useDropzone({
     minSize: 0,
     maxSize: maxSize,
@@ -188,82 +263,7 @@ export function PostFormItemDraggableImages(props: Props) {
     },
     noClick: true,
     onDrop: (acceptedFiles) => {
-      if (props.isOnlyMove) {
-        return
-      }
-
-      if (props.maxItemsCount && props.maxItemsCount < acceptedFiles.length) {
-        toast(
-          t(
-            `最大${props.maxItemsCount}までです`,
-            `Maximum ${props.maxItemsCount} items allowed`,
-          ),
-        )
-        return
-      }
-
-      acceptedFiles.forEach(async (file) => {
-        if (
-          props.maxItemsCount &&
-          props.maxItemsCount < props.items.length + 1
-        ) {
-          toast(
-            t(
-              `最大${props.maxItemsCount}までです`,
-              `Maximum ${props.maxItemsCount} items allowed`,
-            ),
-          )
-          return
-        }
-
-        if (props.items.length === 0 && file.type === "image/png") {
-          const pngInfo = await getExtractInfoFromPNG(file)
-          if (props.onChangePngInfo) {
-            props.onChangePngInfo(pngInfo)
-          }
-        }
-
-        const reader = new FileReader()
-        reader.onload = (event) => {
-          if (event.target) {
-            const img = new Image()
-            img.onload = () => {
-              const canvas = document.createElement("canvas")
-              canvas.width = img.width
-              canvas.height = img.height
-              const ctx = canvas.getContext("2d")
-              ctx?.drawImage(img, 0, 0)
-              const webpDataURL = canvas.toDataURL("image/webp")
-              props.items.push({
-                id: props.items.length,
-                content: webpDataURL,
-              })
-              props.onChangeItems([...props.items])
-              updateThumbnail()
-            }
-            img.src = event.target.result as string
-          }
-        }
-        reader.readAsDataURL(file)
-      })
-      const inputElement = document.getElementById(
-        "images_input",
-      ) as HTMLInputElement
-      if (inputElement) {
-        const fileList: File[] = []
-        acceptedFiles.forEach((file) => {
-          fileList.push(file)
-        })
-        const newFileList = new DataTransfer()
-        fileList.forEach((file) => {
-          newFileList.items.add(file)
-        })
-        inputElement.files = newFileList.files
-
-        if (props.onInputFiles) {
-          props.onInputFiles(inputElement.files)
-        }
-      }
+      handleAcceptedFiles(acceptedFiles)
     },
     onDragEnter: () => {
       setIsHovered(true)
@@ -276,6 +276,14 @@ export function PostFormItemDraggableImages(props: Props) {
     },
     disabled: props.isOnlyMove,
   })
+
+  useEffect(() => {
+    const files = consumeDroppedImageFiles()
+    if (files.length === 0) return
+
+    // 外部ドロップされた画像を、既存の選択ロジックに流し込む
+    handleAcceptedFiles(files)
+  }, [])
 
   return (
     <>
