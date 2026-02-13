@@ -1,3 +1,5 @@
+import { Suspense } from "react"
+import { useMediaQuery } from "usehooks-ts"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { ResizablePanelWithMemory } from "~/components/resizable-panel-with-memory"
 import {
@@ -5,11 +7,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "~/components/ui/resizable"
-import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 import { GenerationAnnouncementBanner } from "~/routes/($lang).generation._index/components/generation-announcement-banner"
-import { CharacterExpressionBanner } from "~/routes/($lang).generation._index/components/character-expression-banner"
-import { Suspense } from "react"
-import { useMediaQuery } from "usehooks-ts"
+import { GenerationConfigContext } from "~/routes/($lang).generation._index/contexts/generation-config-context"
 
 type Props = {
   header: React.ReactNode
@@ -23,7 +22,7 @@ type Props = {
 /**
  * 画像生成画面
  */
-export function GenerationView (props: Props) {
+export function GenerationView(props: Props) {
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
   })
@@ -35,7 +34,6 @@ export function GenerationView (props: Props) {
     return (
       <div className="flex flex-col space-y-2 pb-16">
         <GenerationAnnouncementBanner />
-        <CharacterExpressionBanner />
         <main className="flex flex-col gap-2 overflow-hidden pb-4 md:flex-row">
           <div className="flex flex-col gap-y-2">
             {props.header}
@@ -55,7 +53,6 @@ export function GenerationView (props: Props) {
     return (
       <div className="flex flex-col space-y-2 md:h-[calc(100vh-72px)]">
         <GenerationAnnouncementBanner />
-        <CharacterExpressionBanner />
         <main className="flex h-full flex-col gap-4 overflow-hidden md:flex-row">
           <ResizablePanelGroup direction="horizontal">
             <ResizablePanel className="flex flex-col gap-y-2 lg:min-w-80 xl:min-w-80">
@@ -72,7 +69,6 @@ export function GenerationView (props: Props) {
   return (
     <div className="flex flex-col space-y-2 md:h-[calc(100vh-72px)]">
       <GenerationAnnouncementBanner />
-      <CharacterExpressionBanner />
       <main className="flex h-full flex-col gap-4 overflow-hidden md:flex-row">
         <ResizablePanelGroup defaultValue={1} direction="horizontal">
           <ResizablePanelWithMemory
