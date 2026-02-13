@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react"
-import { Link } from "@remix-run/react"
-import { X, Sparkles } from "lucide-react"
+import { Sparkles, X } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
 // 閉じたバナーの状態を保存/取得
@@ -28,7 +27,7 @@ const setBannerDismissed = (): void => {
 /**
  * キャラクター表情生成の案内バナー
  */
-export function CharacterExpressionBanner () {
+export function CharacterExpressionBanner() {
   const [isVisible, setIsVisible] = useState(true)
   const t = useTranslation()
 
@@ -66,43 +65,6 @@ export function CharacterExpressionBanner () {
           <div className="flex-shrink-0 rounded-full bg-primary/20 p-2">
             <Sparkles className="h-4 w-4 text-primary" />
           </div>
-
-          {/* Content */}
-          <Link
-            to="/characters"
-            className="flex-1 text-left transition-colors hover:text-primary"
-          >
-            <div className="flex items-center gap-2">
-              <div className="flex flex-col">
-                <span className="font-medium text-foreground text-sm">
-                  {t(
-                    "新機能：キャラクター表情生成が利用できます！",
-                    "New Feature: Character Expression Generation Available!",
-                  )}
-                </span>
-                <span className="text-muted-foreground text-xs">
-                  {t(
-                    "オリジナルキャラクターの様々な表情を生成してみましょう",
-                    "Generate various expressions for your original characters",
-                  )}
-                </span>
-              </div>
-              <svg
-                className="h-3 w-3 text-muted-foreground"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </div>
-          </Link>
         </div>
       </div>
     </div>
