@@ -103,7 +103,7 @@
     "isbot": "^5.1.17",
     "jszip": "^3.10.1",
     "jwt-decode": "^4.0.0",
-    "lucide-react": "^0.562.0",
+    "lucide-react": "^0.575.0",
     "marked": "^15.0.0",
     "microcms-js-sdk": "^3.1.2",
     "million": "^3.1.11",
