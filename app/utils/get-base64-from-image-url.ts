@@ -3,12 +3,20 @@
  * @param url 画像URL
  * @param format 変換する拡張子 (例: 'image/jpeg', 'image/png', 'image/webp')
  */
+import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+import { fetchPublic } from "~/utils/fetch-public"
+
 export async function getBase64FromImageUrl(
   url: string,
   format?: "image/jpeg" | "image/webp" | "image/png",
 ): Promise<string> {
   try {
-    const response = await fetch(url)
+    const fetchUrl = getDownloadProxyUrl(url)
+    const response = await fetchPublic(fetchUrl, {
+      headers: {
+        Accept: "image/*,*/*;q=0.8",
+      },
+    })
     const blob = await response.blob()
 
     // BlobからImageを生成

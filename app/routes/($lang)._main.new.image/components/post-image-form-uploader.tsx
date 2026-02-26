@@ -224,12 +224,16 @@ export function PostImageFormUploader (props: Props) {
             payload: true,
           })
 
-          const pngInfo = await getExtractInfoFromBase64(
-            lastSelectedOriginalImage,
-          )
-          if (pngInfo.src !== null) {
-            props.onChangeImageInformation(pngInfo)
-            return
+          try {
+            const pngInfo = await getExtractInfoFromBase64(
+              lastSelectedOriginalImage,
+            )
+            if (pngInfo.src !== null) {
+              props.onChangeImageInformation(pngInfo)
+              return
+            }
+          } catch {
+            // 生成画像がPNGでない/取得できない場合は無視する
           }
         }}
       />

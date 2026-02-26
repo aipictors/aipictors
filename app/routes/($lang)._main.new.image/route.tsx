@@ -36,6 +36,7 @@ import {
   getExtractInfoFromBase64,
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
+import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
 import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
@@ -234,59 +235,80 @@ export default function NewImage () {
   useEffect(() => {
     const processImages = async () => {
       if (viewerData?.viewer?.imageGenerationResults && ref) {
-        const base64Urls = await Promise.all(
-          viewerData.viewer.imageGenerationResults
-            .map((result) =>
-              result.imageUrl ? createBase64FromImageURL(result.imageUrl) : "",
-            )
-            .filter((url) => url !== ""),
+        const results = viewerData.viewer.imageGenerationResults
+
+        const settled = await Promise.allSettled(
+          results.map(async (result) => {
+            const url = result.imageUrl ?? result.thumbnailUrl
+            if (!url) return null
+            const base64 = await createBase64FromImageURL(url)
+            return base64 ? { base64, result } : null
+          }),
         )
+
+        const fulfilled = settled
+          .filter(
+            (s): s is PromiseFulfilledResult<
+              { base64: string; result: (typeof results)[number] } | null
+            > => s.status === "fulfilled",
+          )
+          .map((s) => s.value)
+          .filter((v): v is { base64: string; result: (typeof results)[number] } =>
+            Boolean(v?.base64),
+          )
+
+        if (fulfilled.length === 0) {
+          toast(
+            t(
+              "生成画像の取得に失敗しました（URLのアクセス制限/CORSの可能性があります）",
+              "Failed to load generated images (possible access restriction/CORS)",
+            ),
+          )
+          dispatch({
+            type: "IS_SELECTED_GENERATION_IMAGE",
+            payload: false,
+          })
+          return
+        }
+
+        const items = fulfilled.map((entry, index) => ({
+          id: index + 1,
+          content: entry.base64,
+        }))
 
         dispatch({
           type: "SET_ITEMS",
-          payload: viewerData.viewer.imageGenerationResults.map(
-            (_result, index) => ({
-              id: index + 1,
-              content: base64Urls[index],
-            }),
-          ),
+          payload: items,
         })
 
         dispatch({
           type: "SET_THUMBNAIL_BASE64",
-          payload: base64Urls[0],
+          payload: items[0].content,
         })
 
-        const imageUrl =
-          viewerData.viewer.imageGenerationResults.length !== 0
-            ? viewerData.viewer.imageGenerationResults[0].imageUrl
-            : null
+        const primary = fulfilled[0].result
 
-        if (!imageUrl) {
-          return
+        // PNGメタ情報の抽出は失敗しても投稿は可能なので、例外は握りつぶす
+        try {
+          const infoUrl = primary.imageUrl ?? primary.thumbnailUrl
+          if (infoUrl) {
+            const proxied = getDownloadProxyUrl(infoUrl)
+            const pngInfo = await getExtractInfoFromBase64(proxied)
+            pngInfo.params.prompt = primary.prompt
+            pngInfo.params.negativePrompt = primary.negativePrompt
+
+            dispatchInput({
+              type: "SET_IMAGE_INFORMATION",
+              payload: pngInfo,
+            })
+          }
+        } catch {
+          // noop
         }
-
-        const pngInfo = imageUrl
-          ? await getExtractInfoFromBase64(imageUrl)
-          : null
-
-        if (pngInfo) {
-          pngInfo.params.prompt =
-            viewerData.viewer.imageGenerationResults[0].prompt
-          pngInfo.params.negativePrompt =
-            viewerData.viewer.imageGenerationResults[0].negativePrompt
-        }
-
-        dispatchInput({
-          type: "SET_IMAGE_INFORMATION",
-          payload: pngInfo,
-        })
 
         dispatchInput({
           type: "SET_AI_MODEL_ID",
-          payload:
-            viewerData.viewer.imageGenerationResults[0].postModelId?.toString() ??
-            "",
+          payload: primary.postModelId?.toString() ?? "",
         })
 
         dispatch({
@@ -297,7 +319,7 @@ export default function NewImage () {
     }
 
     processImages()
-  }, [viewerData?.viewer?.imageGenerationResults, dispatch])
+  }, [viewerData?.viewer?.imageGenerationResults, ref, t])
 
   // クエリパラメータからイベント参加情報とタグを処理
   useEffect(() => {

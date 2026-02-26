@@ -7,6 +7,7 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { Card } from "~/components/ui/card"
 import { graphql } from "gql.tada"
 import { cn } from "~/lib/utils"
+import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
 
 type Props = {
   onSubmit: (
@@ -35,9 +36,18 @@ export function ImageGenerationSelectorDialog (props: Props) {
   const [lastSelectedOriginalImage, setLastSelectedOriginalImage] =
     useState<string>("")
 
-  const handleImageClick = async (imageUrl: string, id: string) => {
+  const handleImageClick = async (
+    imageUrl: string | null,
+    thumbnailUrl: string | null,
+    id: string,
+  ) => {
     try {
-      const base64Image = await getBase64FromImageUrl(imageUrl, "image/webp")
+      const sourceUrl = imageUrl || thumbnailUrl
+      if (!sourceUrl) {
+        return
+      }
+
+      const base64Image = await getBase64FromImageUrl(sourceUrl, "image/webp")
       setSelectedImages((prevSelected) => {
         if (prevSelected.includes(base64Image)) {
           return prevSelected.filter((image) => image !== base64Image)
@@ -50,7 +60,8 @@ export function ImageGenerationSelectorDialog (props: Props) {
         }
         return [...prevSelected, id]
       })
-      setLastSelectedOriginalImage(imageUrl)
+      // 生成元画像のURLはCORSでfetchできないケースがあるため、以降の抽出処理向けにプロキシURLを渡す
+      setLastSelectedOriginalImage(getDownloadProxyUrl(sourceUrl))
     } catch (error) {
       console.error("Error converting image to base64:", error)
     }
@@ -71,7 +82,7 @@ export function ImageGenerationSelectorDialog (props: Props) {
                 <Card
                   key={result.id}
                   onClick={() =>
-                    handleImageClick(result.imageUrl ?? "", result.id)
+                    handleImageClick(result.imageUrl, result.thumbnailUrl, result.id)
                   }
                   className={cn("size-24 overflow-hidden", {
                     "border-4 border-blue-500": selectedIds.includes(result.id),

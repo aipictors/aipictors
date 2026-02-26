@@ -1,32 +1,33 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { Button } from "~/components/ui/button"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-button"
-import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
-import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
-import { useContext, useEffect, useState } from "react"
-import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
-import { type FragmentOf, graphql } from "gql.tada"
-import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
-import { AuthContext } from "~/contexts/auth-context"
-import { Heart, ShieldAlert } from "lucide-react"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
-import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
-import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
-import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
-import { toRatingText } from "~/utils/work/to-rating-text"
-import { Badge } from "~/components/ui/badge"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { toStyleText } from "~/utils/work/to-style-text"
 import { format } from "date-fns"
-import { useTranslation } from "~/hooks/use-translation"
-import { Card, CardContent } from "~/components/ui/card"
-import { ToggleContent } from "~/components/toggle-content"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Heart, ShieldAlert } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
-import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
+import { ToggleContent } from "~/components/toggle-content"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Badge } from "~/components/ui/badge"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
 import { AiEvaluationDisplay } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-display"
+import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
+import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-button"
+import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
+import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
+import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
+import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
+import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
+import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
+import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { translateText } from "~/utils/translate-text"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toRatingText } from "~/utils/work/to-rating-text"
+import { toStyleText } from "~/utils/work/to-style-text"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -37,7 +38,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function WorkArticle (props: Props) {
+export function WorkArticle(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data } = useQuery(viewerBookmarkFolderIdQuery, {
@@ -59,6 +60,16 @@ export function WorkArticle (props: Props) {
 
   const t = useTranslation()
 
+  const [targetLanguage, setTargetLanguage] = useState<string | null>(null)
+  const [isShowingTranslation, setIsShowingTranslation] = useState(false)
+  const [isTranslating, setIsTranslating] = useState(false)
+  const [translatedTitle, setTranslatedTitle] = useState("")
+  const [translatedDescription, setTranslatedDescription] = useState("")
+
+  useEffect(() => {
+    setTargetLanguage((navigator.language ?? "en").split("-")[0] ?? "en")
+  }, [])
+
   const [markdownContent, setMarkdownContent] = useState<string>("")
 
   useEffect(() => {
@@ -76,6 +87,95 @@ export function WorkArticle (props: Props) {
   const [selectedImageUrl, setSelectedImageUrl] = useState<string>(
     props.work.imageURL,
   )
+
+  useEffect(() => {
+    setIsShowingTranslation(false)
+    setIsTranslating(false)
+    setTranslatedTitle("")
+    setTranslatedDescription("")
+  }, [props.work.id])
+
+  const displayTitle = t(
+    props.work.title,
+    props.work.enTitle.length > 0 ? props.work.enTitle : props.work.title,
+  )
+
+  const displayDescription = t(
+    props.work.description ?? "",
+    props.work.enDescription ?? props.work.description ?? "",
+  )
+
+  const isProbablyJapanese = (text: string) =>
+    /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF]/.test(text)
+
+  const isProbablyEnglish = (text: string) =>
+    /[A-Za-z]/.test(text) &&
+    !/[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF\u0400-\u04FF]/.test(
+      text,
+    )
+
+  const detectLanguage = (text: string): "ja" | "en" | null => {
+    if (isProbablyJapanese(text)) return "ja"
+    if (isProbablyEnglish(text)) return "en"
+    return null
+  }
+
+  const combinedText = `${displayTitle}\n${displayDescription}`.trim()
+  const sourceLanguage = combinedText ? detectLanguage(combinedText) : null
+
+  const shouldShowTranslateLink = Boolean(
+    combinedText &&
+      targetLanguage &&
+      (sourceLanguage === null || sourceLanguage !== targetLanguage),
+  )
+
+  const translateLinkLabel =
+    targetLanguage === "ja"
+      ? t("日本語に翻訳", "Translate to Japanese")
+      : t("翻訳", "Translate")
+
+  const onClickTranslate = async () => {
+    if (!combinedText) return
+
+    if (isShowingTranslation) {
+      setIsShowingTranslation(false)
+      return
+    }
+
+    if (translatedTitle.length > 0 || translatedDescription.length > 0) {
+      setIsShowingTranslation(true)
+      return
+    }
+
+    const language =
+      targetLanguage ?? (navigator.language ?? "en").split("-")[0] ?? "en"
+
+    setIsShowingTranslation(true)
+    setIsTranslating(true)
+    try {
+      const [titleResult, descriptionResult] = await Promise.all([
+        displayTitle.length > 0
+          ? translateText({
+              text: displayTitle,
+              sourceLanguage: "auto",
+              targetLanguage: language,
+            })
+          : Promise.resolve(""),
+        displayDescription.length > 0
+          ? translateText({
+              text: displayDescription,
+              sourceLanguage: "auto",
+              targetLanguage: language,
+            })
+          : Promise.resolve(""),
+      ])
+
+      setTranslatedTitle(titleResult)
+      setTranslatedDescription(descriptionResult)
+    } finally {
+      setIsTranslating(false)
+    }
+  }
 
   console.log(props.work.botEvaluation)
 
@@ -163,14 +263,12 @@ export function WorkArticle (props: Props) {
           isDisabledShare={false}
           isTargetUserBlocked={Boolean(props.work.user?.isBlocked)}
         />
-        <h1 className="font-bold text-lg">
-          {t(
-            props.work.title,
-            props.work.enTitle.length > 0
-              ? props.work.enTitle
-              : props.work.title,
-          )}
-        </h1>
+        <h1 className="font-bold text-lg">{displayTitle}</h1>
+        {isShowingTranslation && translatedTitle.length > 0 && (
+          <p className="whitespace-pre-wrap break-words text-muted-foreground text-sm">
+            {translatedTitle}
+          </p>
+        )}
         <div className="flex flex-col space-y-4">
           {/* いいねしたユーザ一覧 */}
           {props.work.user && appContext.userId === props.work.user.id ? (
@@ -316,14 +414,36 @@ export function WorkArticle (props: Props) {
             isEditable={props.work.isTagEditable}
           />
         </div>
-        <p className="overflow-hidden whitespace-pre-wrap break-words">
-          {parseTextWithLinks(
-            t(
-              props.work.description ?? "",
-              props.work.enDescription ?? props.work.description ?? "",
-            ),
+        <div className="space-y-2">
+          <p className="overflow-hidden whitespace-pre-wrap break-words">
+            {parseTextWithLinks(displayDescription)}
+          </p>
+          {shouldShowTranslateLink && (
+            <button
+              type="button"
+              onClick={onClickTranslate}
+              disabled={isTranslating}
+              className="text-muted-foreground text-xs underline underline-offset-2 hover:text-foreground disabled:cursor-default disabled:opacity-50"
+            >
+              {isShowingTranslation
+                ? t("原文を表示", "Show original")
+                : translateLinkLabel}
+            </button>
           )}
-        </p>
+          {isShowingTranslation && displayDescription.length > 0 && (
+            <div className="rounded-md bg-muted p-2">
+              {isTranslating ? (
+                <p className="text-muted-foreground text-xs">
+                  {t("翻訳中...", "Translating...")}
+                </p>
+              ) : (
+                <p className="whitespace-pre-wrap break-words text-muted-foreground text-sm">
+                  {translatedDescription}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
         {props.work.relatedUrl !== null &&
           props.work.relatedUrl !== "undefined" &&
           props.work.relatedUrl?.length > 0 && (

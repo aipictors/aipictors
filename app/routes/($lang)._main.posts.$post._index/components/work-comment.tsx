@@ -1,25 +1,26 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { toDateTimeText } from "~/utils/to-date-time-text"
 import { useMutation } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
+import { graphql } from "gql.tada"
 import {
   ArrowDownToLine,
+  Eye,
+  EyeOff,
   Heart,
   Loader2Icon,
   ThumbsUpIcon,
-  Eye,
-  EyeOff,
 } from "lucide-react"
 import React from "react"
-import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
-import { Link } from "@remix-run/react"
-import { graphql } from "gql.tada"
-import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useTranslation } from "~/hooks/use-translation"
 import { toast } from "sonner"
-import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
+import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
+import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
+import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { translateText } from "~/utils/translate-text"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   userId: string
@@ -59,8 +60,12 @@ type Props = {
 /**
  * 作品へのコメント
  */
-export function WorkComment (props: Props) {
+export function WorkComment(props: Props) {
   const t = useTranslation()
+
+  const [targetLanguage, setTargetLanguage] = React.useState<string | null>(
+    null,
+  )
 
   const [deleteMutation, { loading: isDeleteLoading }] = useMutation(
     deleteCommentMutation,
@@ -69,6 +74,80 @@ export function WorkComment (props: Props) {
   const [openReplyInput, setOpenReplyInput] = React.useState(false)
   const [showMutedComment, setShowMutedComment] = React.useState(false)
   const [showSensitiveComment, setShowSensitiveComment] = React.useState(false)
+
+  const [isShowingTranslation, setIsShowingTranslation] = React.useState(false)
+  const [translatedText, setTranslatedText] = React.useState<string | null>(
+    null,
+  )
+  const [isTranslating, setIsTranslating] = React.useState(false)
+
+  React.useEffect(() => {
+    setTargetLanguage((navigator.language ?? "en").split("-")[0] ?? "en")
+  }, [])
+
+  const isProbablyJapanese = (text: string) =>
+    /[\u3040-\u30FF\u3400-\u4DBF\u4E00-\u9FFF]/.test(text)
+
+  const shouldShowTranslateLink = Boolean(
+    props.text &&
+      targetLanguage &&
+      !(targetLanguage === "ja" && isProbablyJapanese(props.text)),
+  )
+
+  const translateLinkLabel =
+    targetLanguage === "ja"
+      ? t("日本語に翻訳", "Translate to Japanese")
+      : t("翻訳", "Translate")
+
+  const onClickTranslate = async () => {
+    if (!props.text) return
+
+    if (isShowingTranslation) {
+      setIsShowingTranslation(false)
+      return
+    }
+
+    setIsShowingTranslation(true)
+
+    if (translatedText) return
+    if (typeof window === "undefined") return
+
+    const language =
+      targetLanguage ?? (navigator.language ?? "en").split("-")[0] ?? "en"
+
+    setIsTranslating(true)
+    try {
+      const result = await translateText({
+        text: props.text,
+        sourceLanguage: "auto",
+        targetLanguage: language,
+      })
+
+      if (!result) {
+        setIsShowingTranslation(false)
+        toast.error(
+          t(
+            "翻訳に失敗しました。しばらくしてからお試しください。",
+            "Failed to translate. Please try again later.",
+          ),
+        )
+        return
+      }
+
+      setTranslatedText(result)
+    } catch (e) {
+      console.error(e)
+      setIsShowingTranslation(false)
+      toast.error(
+        t(
+          "翻訳に失敗しました。しばらくしてからお試しください。",
+          "Failed to translate. Please try again later.",
+        ),
+      )
+    } finally {
+      setIsTranslating(false)
+    }
+  }
 
   const onDeleteComment = async () => {
     props.onDeleteComment()
@@ -180,9 +259,36 @@ export function WorkComment (props: Props) {
             )}
           </div>
           {props.text && (
-            <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
-              {props.text}
-            </p>
+            <div className="space-y-2">
+              <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
+                {props.text}
+              </p>
+              {shouldShowTranslateLink && (
+                <button
+                  type="button"
+                  onClick={onClickTranslate}
+                  disabled={isTranslating}
+                  className="text-muted-foreground text-xs underline underline-offset-2 hover:text-foreground disabled:cursor-default disabled:opacity-50"
+                >
+                  {isShowingTranslation
+                    ? t("原文を表示", "Show original")
+                    : translateLinkLabel}
+                </button>
+              )}
+              {isShowingTranslation && (
+                <div className="rounded-md bg-muted p-2">
+                  {isTranslating ? (
+                    <p className="text-muted-foreground text-xs">
+                      {t("翻訳中...", "Translating...")}
+                    </p>
+                  ) : (
+                    <p className="whitespace-pre-wrap break-words text-muted-foreground text-sm">
+                      {translatedText}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           )}
           {props.stickerImageURL && props.stickerAccessType === "PUBLIC" && (
             <Link

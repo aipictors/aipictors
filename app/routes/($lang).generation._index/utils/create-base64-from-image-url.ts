@@ -1,27 +1,44 @@
-/**
- * 画像URLからBase64を生成する
- * @param imageURL
- */
-export function createBase64FromImageURL(imageURL: string): Promise<string> {
+import { fetchPublic } from "~/utils/fetch-public"
+import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+
+function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.setAttribute("crossOrigin", "anonymous")
-    img.onload = () => {
-      const canvas = document.createElement("canvas")
-      canvas.width = img.width
-      canvas.height = img.height
-      const ctx = canvas.getContext("2d")
-      if (!ctx) {
-        reject("ctx is null")
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const result = reader.result
+      if (typeof result === "string") {
+        resolve(result)
         return
       }
-      ctx.drawImage(img, 0, 0)
-      const dataURL = canvas.toDataURL("image/png")
-      resolve(dataURL)
+      reject(new Error("Failed to convert blob to data URL"))
     }
-    img.onerror = () => {
-      reject("Failed to load image")
-    }
-    img.src = imageURL
+    reader.onerror = () => reject(new Error("Failed to read blob"))
+    reader.readAsDataURL(blob)
   })
+}
+
+/**
+ * 画像URLからBase64を生成する。
+ *
+ * - 生成画像URLはCORS設定によってCanvas経由の変換が失敗することがあるため、
+ *   同一オリジン/プロキシ経由でfetchしてData URLへ変換する。
+ */
+export async function createBase64FromImageURL(imageURL: string): Promise<string> {
+  if (!imageURL) {
+    throw new Error("Missing image url")
+  }
+
+  const fetchUrl = getDownloadProxyUrl(imageURL)
+  const response = await fetchPublic(fetchUrl, {
+    headers: {
+      Accept: "image/*,*/*;q=0.8",
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to load image (${response.status})`)
+  }
+
+  const blob = await response.blob()
+  return await blobToDataUrl(blob)
 }
