@@ -85,6 +85,16 @@ const Carousel = React.forwardRef<
 
     const handleKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
+        // Windows のブラウザ戻る/進む（Alt+←/Alt+→）はブラウザ側に任せる
+        if (
+          (event.altKey &&
+            (event.key === "ArrowLeft" || event.key === "ArrowRight")) ||
+          event.key === "BrowserBack" ||
+          event.key === "BrowserForward"
+        ) {
+          return
+        }
+
         if (event.key === "ArrowLeft") {
           event.preventDefault()
           scrollPrev()

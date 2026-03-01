@@ -74,7 +74,14 @@ export function ConfigModelButton(props: Props) {
                       {t("高速生成", "super fast generation")}
                     </Badge>
                   )}
-                  {props.name === "Gemini 2.5" && (
+                  {(props.name === "Gemini 2.5" ||
+                    props.name === "GeminiNanoBanana") && (
+                    <Badge className="text-xs opacity-50">
+                      {t("5枚分消費", "cost of 5")}
+                    </Badge>
+                  )}
+                  {(props.name === "Gemini 3.1" ||
+                    props.name === "GeminiNanoBanana2") && (
                     <Badge className="text-xs opacity-50">
                       {t("5枚分消費", "cost of 5")}
                     </Badge>

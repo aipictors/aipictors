@@ -817,10 +817,11 @@ export function GenerationSubmissionView (props: Props) {
           })
         } else if (
           modelName === "Gemini 2.5" ||
+          modelName === "Gemini 3.1" ||
           context.config.modelType === "SD5" ||
           context.config.modelType === "GEMINI"
         ) {
-          // Gemini 2.5モデル、SD5タイプ、またはGEMINIタイプの場合はGeminiタスクとして作成
+          // Geminiモデル、SD5タイプ、またはGEMINIタイプの場合はGeminiタスクとして作成
           logInfo({
             source: "GenerationSubmit",
             message: "Create Gemini task",
@@ -837,6 +838,14 @@ export function GenerationSubmissionView (props: Props) {
                 prompt: promptsTexts[i],
                 size: convertToGeminiImageSize(context.config.sizeType),
                 imageUrl: i2iFileUrl || null,
+                model:
+                  modelName?.toLowerCase().includes("3.1") ||
+                  modelName?.toLowerCase().includes("nanobanana2") ||
+                  modelName?.toLowerCase().includes("nano banana 2") ||
+                  modelName === "GeminiNanoBanana2" ||
+                  modelName === "gemini-3.1-flash-image-preview"
+                    ? "GEMINI_31_FLASH_IMAGE_PREVIEW"
+                    : "GEMINI_25_FLASH_IMAGE",
               },
             },
           })

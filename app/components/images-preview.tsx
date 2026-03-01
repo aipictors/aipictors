@@ -34,6 +34,15 @@ export function ImagesPreview(props: Props): React.ReactNode {
   const closePreview = () => setIsOpen(false)
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    // Windows のブラウザ戻る/進む（Alt+←/Alt+→）はブラウザ側に任せる
+    if (
+      (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) ||
+      e.key === "BrowserBack" ||
+      e.key === "BrowserForward"
+    ) {
+      return
+    }
+
     // 入力欄にフォーカスしている場合はショートカットキーを無効化
     const activeElement = document.activeElement
     const tagName = activeElement?.tagName.toLowerCase()

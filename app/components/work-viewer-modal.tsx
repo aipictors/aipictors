@@ -26,6 +26,15 @@ export function WorkViewerModal ({ works, startIndex, onClose }: Props): React.R
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // Windows のブラウザ戻る/進む（Alt+←/Alt+→）はブラウザ側に任せる
+      if (
+        (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) ||
+        e.key === "BrowserBack" ||
+        e.key === "BrowserForward"
+      ) {
+        return
+      }
+
       if (e.key === "ArrowLeft") prev()
       if (e.key === "ArrowRight") next()
       if (e.key === "Escape") onClose()
