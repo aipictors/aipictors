@@ -83,7 +83,7 @@ export function ConfigModelButton(props: Props) {
                   {(props.name === "Gemini 3.1" ||
                     props.name === "GeminiNanoBanana2") && (
                     <Badge className="text-xs opacity-50">
-                      {t("5枚分消費", "cost of 5")}
+                      {t("8枚分消費", "cost of 8")}
                     </Badge>
                   )}
                   {(props.name?.toLowerCase().includes("gemini") ||
