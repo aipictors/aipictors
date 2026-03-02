@@ -10,7 +10,7 @@ type Props = {
   onSelect(): void
 }
 
-export function ImageModelCard (props: Props) {
+export function ImageModelCard(props: Props) {
   /**
    * v2などのバージョン情報は残した状態でモデル名のアンダーバー以降の詳細文字列を削除する
    * @param input
@@ -81,10 +81,11 @@ export function ImageModelCard (props: Props) {
             {props.displayName === "flux.1 pro" && (
               <Badge>{t("高速生成", "super fast generation")}</Badge>
             )}
-            {(props.type === "SD5" ||
-              props.type === "GEMINI" ||
-              props.displayName === "GeminiNanoBanana") && (
+            {props.displayName === "GeminiNanoBanana" && (
               <Badge>{t("5枚分消費", "cost of 5")}</Badge>
+            )}
+            {props.displayName === "GeminiNanoBanana2" && (
+              <Badge>{t("8枚分消費", "cost of 8")}</Badge>
             )}
             {props.type !== "FLUX" && <Badge>{props.type}</Badge>}
           </div>
