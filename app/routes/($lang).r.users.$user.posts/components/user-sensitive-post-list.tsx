@@ -1,6 +1,5 @@
-import { type FragmentOf, graphql } from "gql.tada"
-import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
@@ -8,6 +7,7 @@ import {
   type PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
+import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
   works: FragmentOf<typeof UserPostsItemFragment>[]
@@ -15,7 +15,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserSensitivePostList (props: Props) {
+export function UserSensitivePostList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId = props.works.length ? (props.works[0]?.user?.id ?? "") : ""
@@ -61,7 +61,7 @@ export function UserSensitivePostList (props: Props) {
           maxCount={props.maxCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/users/${userLogin}/posts?page=${page}`)
+            navigate(`/r/users/${userLogin}/posts?page=${page}`)
           }}
         />
       </div>

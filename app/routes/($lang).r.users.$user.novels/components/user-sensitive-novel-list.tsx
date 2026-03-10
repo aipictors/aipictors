@@ -1,11 +1,11 @@
-import { type FragmentOf, graphql } from "gql.tada"
-import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/novel-work-preview-item"
 import { LikeButton } from "~/components/like-button"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { AuthContext } from "~/contexts/auth-context"
+import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/novel-work-preview-item"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -15,7 +15,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserSensitiveNovelList (props: Props) {
+export function UserSensitiveNovelList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId =
@@ -96,7 +96,7 @@ export function UserSensitiveNovelList (props: Props) {
           maxCount={props.maxCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/users/${userLogin}/novels?page=${page}`)
+            navigate(`/r/users/${userLogin}/novels?page=${page}`)
           }}
         />
       </div>

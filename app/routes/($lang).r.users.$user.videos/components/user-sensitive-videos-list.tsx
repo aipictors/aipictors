@@ -1,10 +1,10 @@
-import { type FragmentOf, graphql } from "gql.tada"
-import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ResponsivePhotoVideoWorksAlbum } from "~/components/responsive-photo-video-works-album"
+import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
   works: FragmentOf<typeof UserVideosItemFragment>[]
@@ -12,7 +12,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserSensitiveVideoList (props: Props) {
+export function UserSensitiveVideoList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId = props.works[0]?.user?.id ?? ""
@@ -54,7 +54,7 @@ export function UserSensitiveVideoList (props: Props) {
           maxCount={props.maxCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/users/${userLogin}/videos?page=${page}`)
+            navigate(`/r/users/${userLogin}/videos?page=${page}`)
           }}
         />
       </div>

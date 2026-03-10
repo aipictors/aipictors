@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client/index"
 import { useLocation, useNavigate } from "@remix-run/react"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { useLocale } from "~/hooks/use-locale"
@@ -18,16 +19,28 @@ export function UserSensitiveTabs(props: Props) {
 
   const locale = useLocale()
 
+  // 実際のユーザー作品数を確認するクエリ（hasSensitive* が false でも作品があればタブを出す）
+  const { data: worksCountData } = useQuery(UserSensitiveWorksCountQuery, {
+    variables: {
+      userId: user.id,
+    },
+  })
+
   const getActiveTab = useUserActiveTab({
     url: location.pathname,
     lang: locale,
   })
 
+  const actualImageWorksCount = worksCountData?.imageWorksCount ?? 0
+  const actualNovelWorksCount = worksCountData?.novelWorksCount ?? 0
+  const actualVideoWorksCount = worksCountData?.videoWorksCount ?? 0
+  const actualColumnWorksCount = worksCountData?.columnWorksCount ?? 0
+
   const tabLabels = useUserTabLabels({
-    hasImageWorks: user.hasSensitiveImageWorks,
-    hasNovelWorks: user.hasSensitiveNovelWorks,
-    hasVideoWorks: user.hasSensitiveVideoWorks,
-    hasColumnWorks: user.hasSensitiveColumnWorks,
+    hasImageWorks: user.hasSensitiveImageWorks || actualImageWorksCount > 0,
+    hasNovelWorks: user.hasSensitiveNovelWorks || actualNovelWorksCount > 0,
+    hasVideoWorks: user.hasSensitiveVideoWorks || actualVideoWorksCount > 0,
+    hasColumnWorks: user.hasSensitiveColumnWorks || actualColumnWorksCount > 0,
     hasFolders: user.hasFolders,
     hasAlbums: user.hasAlbums,
     hasPublicStickers: user.hasPublicStickers,
@@ -93,5 +106,14 @@ export const UserSensitiveTabsFragment = graphql(
     hasAlbums
     hasBadges
     hasPublicStickers
+  }`,
+)
+
+export const UserSensitiveWorksCountQuery = graphql(
+  `query UserSensitiveWorksCount($userId: ID!) {
+    imageWorksCount: worksCount(where: { userId: $userId, workType: WORK, ratings: [R18, R18G], isSensitive: true })
+    novelWorksCount: worksCount(where: { userId: $userId, workType: NOVEL, ratings: [R18, R18G], isSensitive: true })
+    videoWorksCount: worksCount(where: { userId: $userId, workType: VIDEO, ratings: [R18, R18G], isSensitive: true })
+    columnWorksCount: worksCount(where: { userId: $userId, workType: COLUMN, ratings: [R18, R18G], isSensitive: true })
   }`,
 )

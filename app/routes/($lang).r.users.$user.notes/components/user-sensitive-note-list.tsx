@@ -1,14 +1,14 @@
-import { type FragmentOf, graphql } from "gql.tada"
-import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
+import { useNavigate } from "react-router-dom"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { LikeButton } from "~/components/like-button"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { AuthContext } from "~/contexts/auth-context"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { NovelWorkPreviewItem } from "~/routes/($lang)._main._index/components/video-work-preview-item"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useNavigate } from "react-router-dom"
-import { ResponsivePagination } from "~/components/responsive-pagination"
 
 type Props = {
   works: FragmentOf<typeof UserNotesItemFragment>[]
@@ -16,7 +16,7 @@ type Props = {
   maxCount: number
 }
 
-export function UserSensitiveNoteList (props: Props) {
+export function UserSensitiveNoteList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const userId =
@@ -36,7 +36,7 @@ export function UserSensitiveNoteList (props: Props) {
       limit: 32,
       where: {
         userId: userId,
-        ratings: ["G", "R15"],
+        ratings: ["R18", "R18G"],
         workType: "COLUMN",
         isNowCreatedAt: true,
       },
@@ -98,7 +98,7 @@ export function UserSensitiveNoteList (props: Props) {
           maxCount={props.maxCount}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/users/${userLogin}/works?page=${page}`)
+            navigate(`/r/users/${userLogin}/notes?page=${page}`)
           }}
         />
       </div>
