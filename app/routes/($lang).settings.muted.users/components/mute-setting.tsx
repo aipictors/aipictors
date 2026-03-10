@@ -68,6 +68,14 @@ export function MuteSetting () {
 
   return (
     <div className="space-y-6">
+      <div className="rounded-md border bg-muted/40 p-4 text-sm leading-6">
+        <p className="font-medium">
+          ミュートとブロックの違い
+        </p>
+        <p className="mt-1 text-muted-foreground">
+          ミュートは自分の画面だけで表示を減らす機能です。検索結果・タグ経由の作品一覧・コメント欄のスタンプやコメント・スタンプ広場などで相手を見えにくくできます。ブロックはそれに加えて、相互の交流自体を強く制限します。
+        </p>
+      </div>
       <div className="space-y-2 rounded border p-4">
         <label className="flex items-center space-x-2">
           <input
@@ -78,6 +86,9 @@ export function MuteSetting () {
           />
           <span>ミュートしたユーザの作品を表示する</span>
         </label>
+        <p className="pl-6 text-muted-foreground text-xs leading-5">
+          検索結果、タグ経由の作品一覧、スタンプ広場などでミュートしたユーザの投稿を表示するか切り替えます。
+        </p>
 
         <label className="flex items-center space-x-2">
           <input
@@ -91,6 +102,9 @@ export function MuteSetting () {
             ※ 表示する場合はデフォルトは隠しが入った状態で表示されます
           </span>
         </label>
+        <p className="pl-6 text-muted-foreground text-xs leading-5">
+          コメント欄のコメントやスタンプ付きコメントを表示するか切り替えます。非表示にするとミュートしたユーザの反応は一覧に出ません。
+        </p>
 
         <Button
           className="mt-2 w-24"
