@@ -1,13 +1,14 @@
-import { Dialog, DialogContent } from "~/components/ui/dialog"
-import { useState } from "react"
 import { useQuery } from "@apollo/client/index"
-import { Button } from "~/components/ui/button"
-import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
-import { ScrollArea } from "~/components/ui/scroll-area"
-import { Card } from "~/components/ui/card"
 import { graphql } from "gql.tada"
+import { useState } from "react"
+import { toast } from "sonner"
+import { Button } from "~/components/ui/button"
+import { Card } from "~/components/ui/card"
+import { Dialog, DialogContent } from "~/components/ui/dialog"
+import { ScrollArea } from "~/components/ui/scroll-area"
 import { cn } from "~/lib/utils"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 
 type Props = {
   onSubmit: (
@@ -19,7 +20,7 @@ type Props = {
   setIsOpen: (isOpen: boolean) => void
 }
 
-export function ImageGenerationSelectorDialog (props: Props) {
+export function ImageGenerationSelectorDialog(props: Props) {
   const { data: imageGenerationResults } = useQuery(
     viewerImageGenerationResultsQuery,
     {
@@ -31,8 +32,13 @@ export function ImageGenerationSelectorDialog (props: Props) {
     },
   )
 
-  const [selectedImages, setSelectedImages] = useState<string[]>([])
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [selectedSourceUrlsById, setSelectedSourceUrlsById] = useState<
+    Record<string, string>
+  >({})
+  const [selectedBase64ById, setSelectedBase64ById] = useState<
+    Record<string, string>
+  >({})
   const [lastSelectedOriginalImage, setLastSelectedOriginalImage] =
     useState<string>("")
 
@@ -41,35 +47,71 @@ export function ImageGenerationSelectorDialog (props: Props) {
     thumbnailUrl: string | null,
     id: string,
   ) => {
+    const sourceUrl = imageUrl || thumbnailUrl
+    if (!sourceUrl) {
+      return
+    }
+
+    const isSelected = selectedIds.includes(id)
+
+    // 先に選択状態だけ切り替える（青枠を即時反映）
+    setSelectedIds((prevSelected) =>
+      isSelected
+        ? prevSelected.filter((selectedId) => selectedId !== id)
+        : [...prevSelected, id],
+    )
+
+    if (isSelected) {
+      setSelectedSourceUrlsById((prev) => {
+        const { [id]: _removed, ...rest } = prev
+        return rest
+      })
+      setSelectedBase64ById((prev) => {
+        const { [id]: _removed, ...rest } = prev
+        return rest
+      })
+      return
+    }
+
+    setSelectedSourceUrlsById((prev) => ({ ...prev, [id]: sourceUrl }))
+
+    // 生成元画像のURLはCORSでfetchできないケースがあるため、以降の抽出処理向けにプロキシURLを渡す
+    setLastSelectedOriginalImage(getDownloadProxyUrl(sourceUrl))
+  }
+
+  const handleSubmit = async () => {
     try {
-      const sourceUrl = imageUrl || thumbnailUrl
-      if (!sourceUrl) {
+      if (selectedIds.length === 0) {
+        props.onSubmit([], [], "")
+        props.setIsOpen(false)
         return
       }
 
-      const base64Image = await getBase64FromImageUrl(sourceUrl, "image/webp")
-      setSelectedImages((prevSelected) => {
-        if (prevSelected.includes(base64Image)) {
-          return prevSelected.filter((image) => image !== base64Image)
-        }
-        return [...prevSelected, base64Image]
-      })
-      setSelectedIds((prevSelected: string[]) => {
-        if (prevSelected.includes(id)) {
-          return prevSelected.filter((selectedId) => selectedId !== id)
-        }
-        return [...prevSelected, id]
-      })
-      // 生成元画像のURLはCORSでfetchできないケースがあるため、以降の抽出処理向けにプロキシURLを渡す
-      setLastSelectedOriginalImage(getDownloadProxyUrl(sourceUrl))
-    } catch (error) {
-      console.error("Error converting image to base64:", error)
-    }
-  }
+      const base64Images = await Promise.all(
+        selectedIds.map(async (id) => {
+          const cached = selectedBase64ById[id]
+          if (cached) return cached
 
-  const handleSubmit = () => {
-    props.onSubmit(selectedImages, selectedIds, lastSelectedOriginalImage)
-    props.setIsOpen(false)
+          const sourceUrl = selectedSourceUrlsById[id]
+          if (!sourceUrl) {
+            throw new Error("選択画像のURLが見つかりませんでした")
+          }
+
+          const base64Image = await getBase64FromImageUrl(
+            sourceUrl,
+            "image/webp",
+          )
+          setSelectedBase64ById((prev) => ({ ...prev, [id]: base64Image }))
+          return base64Image
+        }),
+      )
+
+      props.onSubmit(base64Images, selectedIds, lastSelectedOriginalImage)
+      props.setIsOpen(false)
+    } catch (error) {
+      console.error(error)
+      toast("画像の取得に失敗しました")
+    }
   }
 
   return (
@@ -82,7 +124,11 @@ export function ImageGenerationSelectorDialog (props: Props) {
                 <Card
                   key={result.id}
                   onClick={() =>
-                    handleImageClick(result.imageUrl, result.thumbnailUrl, result.id)
+                    handleImageClick(
+                      result.imageUrl,
+                      result.thumbnailUrl,
+                      result.id,
+                    )
                   }
                   className={cn("size-24 overflow-hidden", {
                     "border-4 border-blue-500": selectedIds.includes(result.id),

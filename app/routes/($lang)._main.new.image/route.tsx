@@ -1,17 +1,31 @@
-import { useEffect, useReducer, useContext, useState, useCallback } from "react"
-import { useQuery, useMutation, useLazyQuery } from "@apollo/client/index"
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client/index"
+import type { HeadersFunction } from "@remix-run/cloudflare"
 import {
   type MetaFunction,
   useBeforeUnload,
   useLoaderData,
   useSearchParams,
 } from "@remix-run/react"
-import { toast } from "sonner"
-import { safeParse } from "valibot"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
-import { AuthContext } from "~/contexts/auth-context"
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react"
+import type { LoaderFunctionArgs } from "react-router-dom"
+import { toast } from "sonner"
+import { safeParse } from "valibot"
 import { Button } from "~/components/ui/button"
+import { META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { loaderClient } from "~/lib/loader-client"
+import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
+import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 import {
   PostImageFormAiModelFragment,
   PostImageFormAlbumFragment,
@@ -21,31 +35,24 @@ import {
 } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
-import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
-import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
+import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
-import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
-import { resizeImage } from "~/utils/resize-image"
-import { sha256 } from "~/utils/sha256"
-import { uploadPublicImage } from "~/utils/upload-public-image"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
+import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
+import { createMeta } from "~/utils/create-meta"
+import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
 import {
   getExtractInfoFromBase64,
   type PNGInfo,
 } from "~/utils/get-extract-info-from-png"
-import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
-import { META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
+import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { getJstDate } from "~/utils/jst-date"
-import type { LoaderFunctionArgs } from "react-router-dom"
-import { useTranslation } from "~/hooks/use-translation"
-import type { HeadersFunction } from "@remix-run/cloudflare"
-import { loaderClient } from "~/lib/loader-client"
+import { resizeImage } from "~/utils/resize-image"
+import { sha256 } from "~/utils/sha256"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 
-export default function NewImage () {
+export default function NewImage() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -232,9 +239,20 @@ export default function NewImage () {
     })
   }
 
+  const generationResultsKey =
+    viewerData?.viewer?.imageGenerationResults?.map((r) => r.id).join("|") ?? ""
+  const processedGenerationKeyRef = useRef<string>("")
+
   useEffect(() => {
+    let cancelled = false
     const processImages = async () => {
       if (viewerData?.viewer?.imageGenerationResults && ref) {
+        const key = `${ref}::${generationResultsKey}`
+        if (processedGenerationKeyRef.current === key) {
+          return
+        }
+        processedGenerationKeyRef.current = key
+
         const results = viewerData.viewer.imageGenerationResults
 
         const settled = await Promise.allSettled(
@@ -248,14 +266,22 @@ export default function NewImage () {
 
         const fulfilled = settled
           .filter(
-            (s): s is PromiseFulfilledResult<
-              { base64: string; result: (typeof results)[number] } | null
-            > => s.status === "fulfilled",
+            (
+              s,
+            ): s is PromiseFulfilledResult<{
+              base64: string
+              result: (typeof results)[number]
+            } | null> => s.status === "fulfilled",
           )
           .map((s) => s.value)
-          .filter((v): v is { base64: string; result: (typeof results)[number] } =>
-            Boolean(v?.base64),
+          .filter(
+            (v): v is { base64: string; result: (typeof results)[number] } =>
+              Boolean(v?.base64),
           )
+
+        if (cancelled) {
+          return
+        }
 
         if (fulfilled.length === 0) {
           toast(
@@ -319,7 +345,10 @@ export default function NewImage () {
     }
 
     processImages()
-  }, [viewerData?.viewer?.imageGenerationResults, ref, t])
+    return () => {
+      cancelled = true
+    }
+  }, [ref, generationResultsKey])
 
   // クエリパラメータからイベント参加情報とタグを処理
   useEffect(() => {

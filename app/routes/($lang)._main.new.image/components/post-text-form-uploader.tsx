@@ -1,19 +1,20 @@
+import type { Dispatch } from "react"
+import { toast } from "sonner"
 import FullScreenContainer from "~/components/full-screen-container"
+import { PaintCanvas } from "~/components/paint-canvas"
 import { Button } from "~/components/ui/button"
+import { config } from "~/config"
 import { cn } from "~/lib/utils"
+import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
+import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
+import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
+import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
+import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
+import type { PostTextFormAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
 import {
   getExtractInfoFromBase64,
   getExtractInfoFromPNG,
 } from "~/utils/get-extract-info-from-png"
-import { ImageGenerationSelectorDialog } from "~/routes/($lang)._main.new.image/components/image-generation-selector-dialog"
-import { PostFormItemThumbnailPositionAdjust } from "~/routes/($lang)._main.new.image/components/post-form-item-thumbnail-position-adjust"
-import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/post-form-item-ogp"
-import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
-import type { Dispatch } from "react"
-import { toast } from "sonner"
-import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
-import type { PostTextFormAction } from "~/routes/($lang)._main.new.text/reducers/actions/post-text-form-action"
-import { PaintCanvas } from "~/components/paint-canvas"
 
 type Props = {
   dispatch: Dispatch<PostTextFormAction>
@@ -21,7 +22,7 @@ type Props = {
   onInputFiles?: (files: FileList) => void
 }
 
-export function PostTextFormUploader (props: Props) {
+export function PostTextFormUploader(props: Props) {
   const selectedFilesSizeText = () => {
     const totalBytes = props.state.items
       .map((item) => item.content)
@@ -95,7 +96,7 @@ export function PostTextFormUploader (props: Props) {
             onChangeItems={(items) => {
               props.dispatch({ type: "SET_ITEMS", payload: items })
             }}
-            maxItemsCount={1}
+            maxItemsCount={config.post.maxImageCount}
             setIndexList={(value) => {
               props.dispatch({ type: "SET_INDEX_LIST", payload: value })
             }}
@@ -178,23 +179,22 @@ export function PostTextFormUploader (props: Props) {
           selectedIds: string[],
           lastSelectedOriginalImage: string,
         ) => {
-          if (props.state.items.length === 0) {
-            const image = selectedImage[0]
-            const id = selectedIds[0]
+          props.dispatch({
+            type: "SUBMIT_IMAGE_GENERATION_DIALOG",
+            payload: {
+              selectedImageGenerationUrls: selectedImage,
+              selectedImageGenerationIds: selectedIds,
+            },
+          })
 
-            props.dispatch({
-              type: "SUBMIT_IMAGE_GENERATION_DIALOG",
-              payload: {
-                selectedImageGenerationUrls: [image],
-                selectedImageGenerationIds: [id],
-              },
-            })
+          if (selectedImage.length === 0) {
             props.dispatch({
               type: "IS_SELECTED_GENERATION_IMAGE",
               payload: false,
             })
             return
           }
+
           props.dispatch({
             type: "IS_SELECTED_GENERATION_IMAGE",
             payload: true,

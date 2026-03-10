@@ -33,7 +33,7 @@ export function AppContents(props: Props): React.ReactNode {
         <div className="hidden md:block">{props.aside && props.aside}</div>
         <div className="pointer-events-none fixed inset-x-0 top-0 z-20 h-24 bg-linear-gradient-top-to-bottom" />
         <div className="absolute top-0">{props.header && props.header}</div>
-        <div className="w-full min-w-0 pt-24">
+        <div className="w-full min-w-0 pt-16">
           <div className={`w-full ${getContentMargin()}`}>
             <AppAnnouncementBanner />
           </div>

@@ -1,11 +1,23 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import type { HeadersFunction } from "@remix-run/cloudflare"
+import {
+  type MetaFunction,
+  useBeforeUnload,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react"
+import { graphql } from "gql.tada"
+import React, { useContext, useEffect, useReducer, useRef } from "react"
+import type { LoaderFunctionArgs } from "react-router-dom"
+import { toast } from "sonner"
+import { safeParse } from "valibot"
 import { Button } from "~/components/ui/button"
+import { META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
-import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
-import { resizeImage } from "~/utils/resize-image"
-import { sha256 } from "~/utils/sha256"
-import { uploadPublicImage } from "~/utils/upload-public-image"
+import { useTranslation } from "~/hooks/use-translation"
+import { loaderClient } from "~/lib/loader-client"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
+import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 import {
   PostTextFormAiModelFragment,
   PostTextFormAlbumFragment,
@@ -19,29 +31,16 @@ import { vPostTextForm } from "~/routes/($lang)._main.new.image/validations/post
 import { postTextFormInputReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-input-reducer"
 import { postTextFormReducer } from "~/routes/($lang)._main.new.text/reducers/post-text-form-reducer"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
-import { useQuery, useMutation } from "@apollo/client/index"
-import {
-  type MetaFunction,
-  useBeforeUnload,
-  useLoaderData,
-  useSearchParams,
-} from "@remix-run/react"
-import { graphql } from "gql.tada"
-import React, { useEffect } from "react"
-import { useContext, useReducer } from "react"
-import { toast } from "sonner"
-import { safeParse } from "valibot"
-import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
+import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { getJstDate } from "~/utils/jst-date"
-import { useTranslation } from "~/hooks/use-translation"
-import type { LoaderFunctionArgs } from "react-router-dom"
+import { resizeImage } from "~/utils/resize-image"
+import { sha256 } from "~/utils/sha256"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadTextFile } from "~/utils/upload-text-file"
-import type { HeadersFunction } from "@remix-run/cloudflare"
-import { loaderClient } from "~/lib/loader-client"
 
-export default function NewText () {
+export default function NewText() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -51,6 +50,8 @@ export default function NewText () {
   const [searchParams] = useSearchParams()
 
   const ref = searchParams.get("generation")
+
+  const generationNanoids = ref?.split("|").filter(Boolean) ?? []
 
   const now = getJstDate(new Date())
 
@@ -62,18 +63,16 @@ export default function NewText () {
       offset: 0,
       limit: 128,
       ownerUserId: authContext.userId,
-      generationLimit: 64,
+      generationLimit: generationNanoids.length > 0 ? 64 : 0,
       generationOffset: 0,
       generationWhere: {
-        nanoids: ref?.split("|") ?? [],
+        nanoids: generationNanoids,
       },
       startAt: now.toISOString().split("T")[0],
       startDate: now.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
-
-  const viewer = data
 
   const [state, dispatch] = useReducer(postTextFormReducer, {
     editTargetImageBase64: null,
@@ -124,64 +123,87 @@ export default function NewText () {
     correctionMessage: "",
   })
 
+  const generationResultsKey =
+    viewerData?.viewer?.imageGenerationResults?.map((r) => r.id).join("|") ?? ""
+
+  const processedGenerationKeyRef = useRef<string>("")
+
   useEffect(() => {
+    let cancelled = false
     const processImages = async () => {
-      if (viewer?.viewer?.imageGenerationResults) {
-        const base64Urls = await Promise.all(
-          viewer.viewer.imageGenerationResults
-            .map((result) =>
-              result.imageUrl ? createBase64FromImageURL(result.imageUrl) : "",
-            )
-            .filter((url) => url !== ""),
-        )
-
-        dispatch({
-          type: "SET_ITEMS",
-          payload: viewer.viewer.imageGenerationResults.map(
-            (_result, index) => ({
-              id: index + 1,
-              content: base64Urls[index],
-            }),
-          ),
-        })
-
-        dispatch({
-          type: "SET_THUMBNAIL_BASE64",
-          payload: base64Urls[0],
-        })
-
-        if (viewer.viewer.imageGenerationResults.length > 0) {
-          dispatch({
-            type: "SET_PNG_INFO",
-            payload: {
-              src: null,
-              params: {
-                prompt: viewer.viewer.imageGenerationResults[0].prompt,
-                negativePrompt:
-                  viewer.viewer.imageGenerationResults[0].negativePrompt,
-                seed: viewer.viewer.imageGenerationResults[0].seed.toString(),
-                sampler: viewer.viewer.imageGenerationResults[0].sampler,
-                strength: "",
-                noise: "",
-                model: viewer.viewer.imageGenerationResults[0].model?.name,
-                modelHash: viewer.viewer.imageGenerationResults[0].model?.id,
-                steps: viewer.viewer.imageGenerationResults[0].steps.toString(),
-                scale: viewer.viewer.imageGenerationResults[0].scale.toString(),
-                vae: "",
-              },
-            },
-          })
-        }
-
-        dispatch({
-          type: "IS_SELECTED_GENERATION_IMAGE",
-          payload: true,
-        })
+      if (generationNanoids.length === 0) {
+        return
       }
+
+      const results = viewerData?.viewer?.imageGenerationResults
+      if (!results || results.length === 0) {
+        return
+      }
+
+      const key = `${generationNanoids.join("|")}::${generationResultsKey}`
+      if (processedGenerationKeyRef.current === key) {
+        return
+      }
+      processedGenerationKeyRef.current = key
+
+      const base64Urls = await Promise.all(
+        results
+          .map((result) => {
+            const url = result.imageUrl ?? result.thumbnailUrl
+            return url ? createBase64FromImageURL(url) : ""
+          })
+          .filter((url) => url !== ""),
+      )
+
+      if (cancelled) {
+        return
+      }
+
+      dispatch({
+        type: "SET_ITEMS",
+        payload: base64Urls.map((content, index) => ({
+          id: index,
+          content,
+        })),
+      })
+
+      dispatch({
+        type: "SET_THUMBNAIL_BASE64",
+        payload: base64Urls[0] ?? null,
+      })
+
+      const first = results[0]
+      dispatch({
+        type: "SET_PNG_INFO",
+        payload: {
+          src: null,
+          params: {
+            prompt: first.prompt,
+            negativePrompt: first.negativePrompt,
+            seed: first.seed.toString(),
+            sampler: first.sampler,
+            strength: "",
+            noise: "",
+            model: first.model?.name,
+            modelHash: first.model?.id,
+            steps: first.steps.toString(),
+            scale: first.scale.toString(),
+            vae: "",
+          },
+        },
+      })
+
+      dispatch({
+        type: "IS_SELECTED_GENERATION_IMAGE",
+        payload: true,
+      })
     }
 
     processImages()
-  }, [viewer?.viewer?.imageGenerationResults, dispatch])
+    return () => {
+      cancelled = true
+    }
+  }, [generationNanoids.join("|"), generationResultsKey])
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(CreateWorkMutation)
@@ -448,6 +470,18 @@ export default function NewText () {
     return null
   }
 
+  type DailyTheme = { id: string; title: string; dateText: string }
+
+  const themes = viewerData?.dailyThemes
+    ? (viewerData.dailyThemes as DailyTheme[]).map((theme) => ({
+        date: theme.dateText,
+        title: theme.title,
+        id: theme.id,
+      }))
+    : null
+
+  const events = viewerData?.appEvents ?? []
+
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="space-y-4">
@@ -462,17 +496,9 @@ export default function NewText () {
           albums={viewerData?.albums ?? []}
           currentPass={viewerData?.viewer?.currentPass ?? null}
           recentlyUsedTags={viewerData?.viewer?.recentlyUsedTags ?? []}
-          themes={
-            viewer?.dailyThemes
-              ? viewer.dailyThemes.map((theme) => ({
-                  date: theme.dateText,
-                  title: theme.title,
-                  id: theme.id,
-                }))
-              : null
-          }
+          themes={themes}
           aiModels={viewerData?.aiModels ?? []}
-          events={viewer?.appEvents ?? []}
+          events={events}
           needFix={false}
         />
         <div className="h-4" />
