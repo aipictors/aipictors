@@ -10,17 +10,18 @@ if (import.meta.env.DEV) {
   )
 }
 
-import { typePolicies } from "~/lib/type-policies"
-import { config } from "~/config"
 import {
   ApolloClient,
-  InMemoryCache,
   createHttpLink,
+  InMemoryCache,
   type NormalizedCacheObject,
 } from "@apollo/client/index"
 import { type ContextSetter, setContext } from "@apollo/client/link/context"
+import { onError } from "@apollo/client/link/error"
 import { getApps } from "firebase/app"
 import { getAuth, getIdToken } from "firebase/auth"
+import { config } from "~/config"
+import { typePolicies } from "~/lib/type-policies"
 
 const httpLink = createHttpLink({
   uri: config.graphql.endpoint,
@@ -53,11 +54,42 @@ const contextSetter: ContextSetter = async (_, context) => {
 
 const authLink = setContext(contextSetter)
 
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  if (!import.meta.env.DEV) return
+
+  if (graphQLErrors && graphQLErrors.length > 0) {
+    console.error("[Apollo][GraphQL error]", {
+      operation: operation.operationName,
+      variables: operation.variables,
+      errors: graphQLErrors,
+    })
+  }
+
+  if (networkError) {
+    const anyError = networkError as unknown as {
+      name?: string
+      message?: string
+      statusCode?: number
+      response?: unknown
+      bodyText?: string
+    }
+
+    console.error("[Apollo][Network error]", {
+      operation: operation.operationName,
+      variables: operation.variables,
+      name: anyError.name,
+      message: anyError.message,
+      statusCode: anyError.statusCode,
+      bodyText: anyError.bodyText,
+    })
+  }
+})
+
 const cache = new InMemoryCache({ typePolicies })
 
 export const apolloClient: ApolloClient<NormalizedCacheObject> =
   new ApolloClient({
     ssrMode: false,
-    link: authLink.concat(httpLink),
+    link: errorLink.concat(authLink).concat(httpLink),
     cache,
   })

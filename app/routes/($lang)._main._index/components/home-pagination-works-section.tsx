@@ -1,12 +1,9 @@
-import { AuthContext } from "~/contexts/auth-context"
-import {
-  HomeWorkFragment,
-  HomeWorkSection,
-} from "~/routes/($lang)._main._index/components/home-work-section"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
+import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
   HomeNovelsWorkListItemFragment,
@@ -16,7 +13,10 @@ import {
   HomeVideosWorkListItemFragment,
   HomeVideosWorksSection,
 } from "~/routes/($lang)._main._index/components/home-video-works-section"
-import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import {
+  HomeWorkFragment,
+  HomeWorkSection,
+} from "~/routes/($lang)._main._index/components/home-work-section"
 
 /**
  * 期間指定による createdAt 範囲を計算するヘルパー関数
@@ -77,7 +77,7 @@ type Props = {
 /**
  * トップ画面ホーム作品一覧（画像・小説・動画）
  */
-export function HomePaginationWorksSection (props: Props) {
+export function HomePaginationWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
   // 1ページあたりの件数（映像は少なめに）
@@ -90,6 +90,8 @@ export function HomePaginationWorksSection (props: Props) {
 
   const { data: worksResp } = useSuspenseQuery(WorksQuery, {
     skip: appContext.isLoading,
+    errorPolicy: "all",
+    returnPartialData: true,
     variables: {
       offset: props.page * perPageCount,
       limit: perPageCount,
