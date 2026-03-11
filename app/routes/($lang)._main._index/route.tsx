@@ -4,6 +4,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { createClient as createCmsClient } from "microcms-js-sdk"
 import {
   Link,
   useLoaderData,
@@ -52,6 +53,10 @@ import {
   HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
+import {
+  HomeEventPreviewList,
+  type HomePreviewEvent,
+} from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import {
   HomeNewCommentsFragment,
@@ -67,6 +72,7 @@ import {
   HomeNewUsersWorksSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
+import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import {
   HomeTagList,
   HomeTagListItemFragment,
@@ -88,6 +94,7 @@ import {
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -99,6 +106,50 @@ const getUtcDateString = (date: Date) => {
   const day = `0${date.getUTCDate()}`.slice(-2)
 
   return `${year}/${month}/${day}`
+}
+
+const normalizeOfficialHomePreviewEvent = (event: any): HomePreviewEvent => ({
+  id: event.id,
+  slug: event.slug,
+  title: event.title,
+  thumbnailImageUrl: event.thumbnailImageUrl,
+  status: event.status,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  isOfficial: true,
+  rankingEnabled: false,
+  entryCount: event.worksCount ?? 0,
+  participantCount: 0,
+  tags: event.tag ? [event.tag] : [],
+  userName: "Aipictors",
+})
+
+const normalizeUserHomePreviewEvent = (event: any): HomePreviewEvent => ({
+  id: event.id,
+  slug: event.slug,
+  title: event.title,
+  thumbnailImageUrl:
+    event.thumbnailImageUrl || event.headerImageUrl || "/images/opepnepe.png",
+  status: event.status,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  isOfficial: false,
+  rankingEnabled: event.rankingEnabled,
+  entryCount: event.entryCount,
+  participantCount: event.participantCount,
+  tags: event.tags ?? [],
+  userName: event.userName,
+})
+
+const shuffleArray = <T,>(items: T[]) => {
+  const copied = [...items]
+
+  for (let index = copied.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    ;[copied[index], copied[randomIndex]] = [copied[randomIndex], copied[index]]
+  }
+
+  return copied
 }
 
 export async function loader(_props: LoaderFunctionArgs) {
@@ -131,30 +182,49 @@ export async function loader(_props: LoaderFunctionArgs) {
   const now = getJstDate()
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
-  const result = await loaderClient.query({
-    query: query,
-    variables: {
-      awardDay: yesterday.getDate(),
-      awardMonth: yesterday.getMonth() + 1,
-      awardYear: yesterday.getFullYear(),
-      day: now.getDate(),
-      month: now.getMonth() + 1,
-      year: now.getFullYear(),
-      promotionWorksLimit: config.query.homeWorkCount.promotion,
-      awardWorksLimit: config.query.homeWorkCount.award,
-      categoryFirst: randomCategories[0],
-      categorySecond: randomCategories[1],
-      tagWorksLimit: config.query.homeWorkCount.tag,
-      newUsersWorksLimit: config.query.homeWorkCount.newUser,
-    },
+  const microCmsClient = createCmsClient({
+    serviceDomain: "aipictors",
+    apiKey: config.cms.microCms.apiKey,
   })
+
+  const [result, releaseList] = await Promise.all([
+    loaderClient.query({
+      query: query,
+      variables: {
+        awardDay: yesterday.getDate(),
+        awardMonth: yesterday.getMonth() + 1,
+        awardYear: yesterday.getFullYear(),
+        day: now.getDate(),
+        month: now.getMonth() + 1,
+        year: now.getFullYear(),
+        promotionWorksLimit: config.query.homeWorkCount.promotion,
+        awardWorksLimit: config.query.homeWorkCount.award,
+        categoryFirst: randomCategories[0],
+        categorySecond: randomCategories[1],
+        tagWorksLimit: config.query.homeWorkCount.tag,
+        newUsersWorksLimit: config.query.homeWorkCount.newUser,
+      },
+    }),
+    microCmsClient
+      .get<MicroCmsApiReleaseResponse>({
+        endpoint: "releases?orders=-createdAt&limit=4",
+      })
+      .catch(() => ({
+        contents: [],
+        totalCount: 0,
+        offset: 0,
+        limit: 4,
+      })),
+  ])
 
   const awardDateText = getUtcDateString(yesterday)
 
   return {
     ...result.data,
     awardDateText: awardDateText,
+    eventPreviews: [],
     firstTag: randomCategories[0],
+    releaseList,
     secondTag: randomCategories[1],
   }
 }
@@ -705,6 +775,8 @@ export default function Index() {
                 {data.newComments && data.newComments.length > 0 && (
                   <HomeNewCommentsSection comments={data.newComments} />
                 )}
+                <HomeEventPreviewList events={data.eventPreviews} />
+                <HomeReleaseList releaseList={data.releaseList} />
                 {data.workAwards && (
                   <HomeAwardWorksSection works={data.workAwards} />
                 )}
@@ -1578,3 +1650,4 @@ const updateClickedCountCustomerAdvertisementMutation = graphql(`
     }
   }
 `)
+
