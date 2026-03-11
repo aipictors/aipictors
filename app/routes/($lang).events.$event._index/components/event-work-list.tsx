@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
+import { gql } from "@apollo/client/index"
 import { useNavigate } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
 import { useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
@@ -8,15 +8,17 @@ import {
   ResponsivePhotoWorksAlbum,
 } from "~/components/responsive-photo-works-album"
 import { AuthContext } from "~/contexts/auth-context"
+import { graphql } from "gql.tada"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { EventWorksListSortableSetting } from "~/routes/($lang).events.$event._index/components/event-works-list-sortable-setting"
 import type { SortType } from "~/types/sort-type"
 
 type Props = {
-  works: FragmentOf<typeof EventWorkListItemFragment>[]
+  works: any[]
   maxCount: number
   page: number
   slug: string
+  eventSource: "OFFICIAL" | "USER"
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   workType: IntrospectionEnum<"WorkType"> | null
@@ -59,7 +61,9 @@ export function EventWorkList (props: Props) {
     },
   })
 
-  const works = resp?.appEvent?.works ?? props.works
+  const works = props.eventSource === "OFFICIAL"
+    ? resp?.appEvent?.works ?? props.works
+    : resp?.userEvent?.works ?? props.works
 
   const allSortType = [
     "LIKES_COUNT",
@@ -115,8 +119,13 @@ export const EventWorkListItemFragment = graphql(
 )
 
 const query = graphql(
-  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
+  `query AppEventWorkList($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
       appEvent(slug: $slug) {
+        works(offset: $offset, limit: $limit, where: $where) {
+          ...EventWorkListItem
+        }
+      }
+      userEvent(slug: $slug) {
         works(offset: $offset, limit: $limit, where: $where) {
           ...EventWorkListItem
         }

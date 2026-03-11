@@ -1,6 +1,24 @@
 import { object, string, parse, optional } from "valibot"
 
-const envSchema = object({
+export type Env = {
+  VITE_APP_URL: string
+  VITE_FIREBASE_API_KEY: string
+  VITE_FIREBASE_APP_ID: string
+  VITE_FIREBASE_AUTH_DOMAIN: string
+  VITE_FIREBASE_MEASUREMENT_ID: string
+  VITE_FIREBASE_MESSAGING_SENDER_ID: string
+  VITE_FIREBASE_PROJECT_ID: string
+  VITE_FIREBASE_STORAGE_BUCKET: string
+  VITE_GRAPHQL_ENDPOINT: string
+  VITE_GRAPHQL_ENDPOINT_REMIX: string
+  VITE_SENTRY_VERSION: string
+  VITE_WORKERS_UPLOADER: string
+  VITE_WORKERS_TEXT_UPLOADER: string
+  VITE_WORKERS_CORS_DOWNLOAD?: string
+  VITE_MICRO_CMS_API_KEY: string
+}
+
+const envSchema: ReturnType<typeof object> = object({
   VITE_APP_URL: string(),
   VITE_FIREBASE_API_KEY: string(),
   VITE_FIREBASE_APP_ID: string(),
@@ -18,4 +36,4 @@ const envSchema = object({
   VITE_MICRO_CMS_API_KEY: string(),
 })
 
-export const env = parse(envSchema, import.meta.env)
+export const env: Env = parse(envSchema, import.meta.env) as Env

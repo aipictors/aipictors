@@ -355,9 +355,27 @@ export default function NewImage() {
     const eventParam = searchParams.get("event")
     const tagParam = searchParams.get("tag")
 
-    if (eventParam === "wakiaiai4-halloween" && tagParam) {
-      // ハロウィン企画参加タグを自動設定
-      const decodedTag = decodeURIComponent(tagParam)
+    if (!tagParam) {
+      return
+    }
+
+    const decodedTag = decodeURIComponent(tagParam)
+
+    const hasTagAlready = inputState.tags.some((tag) => tag.text === decodedTag)
+
+    if (hasTagAlready) {
+      return
+    }
+
+    const matchedEvent = viewerData?.appEvents?.find((appEvent) => {
+      if (!eventParam) {
+        return true
+      }
+
+      return appEvent.slug === eventParam && appEvent.tag === decodedTag
+    })
+
+    if (matchedEvent || !eventParam) {
       dispatchInput({
         type: "ADD_TAG",
         payload: {
@@ -366,7 +384,7 @@ export default function NewImage() {
         },
       })
     }
-  }, [searchParams])
+  }, [inputState.tags, searchParams, viewerData?.appEvents])
 
   const [createWork] = useMutation(CreateWorkMutation)
   const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery)

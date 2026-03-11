@@ -22,6 +22,9 @@ export function MyContents (props: Props) {
   const t = useTranslation()
 
   const type = (path: string) => {
+    if (path.includes("events")) {
+      return "EVENTS"
+    }
     if (path.includes("posts")) {
       return "POSTS"
     }
@@ -88,6 +91,16 @@ export function MyContents (props: Props) {
                 value="HOME"
               >
                 {t("ホーム", "Home")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setMyContentType("EVENTS")
+                  navigate("/my/events")
+                }}
+                className="w-full"
+                value="EVENTS"
+              >
+                {t("イベント", "Events")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -186,6 +199,19 @@ export function MyContents (props: Props) {
               )}
             >
               {t("ホーム", "Home")}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("EVENTS")
+                navigate("/my/events")
+              }}
+              value="EVENTS"
+              variant={"secondary"}
+              className={cn(
+                myContentType === "EVENTS" && "bg-gray-200 dark:bg-zinc-900",
+              )}
+            >
+              {t("イベント", "Events")}
             </Button>
             <Button
               onClick={() => {

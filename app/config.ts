@@ -1,37 +1,144 @@
 import { env } from "~/env"
 
+type CacheControlConfig = {
+  home: string
+  short: string
+  tenSeconds: string
+  oneMinute: string
+  oneHour: string
+  oneDay: string
+  oneWeek: string
+  oneMonth: string
+}
+
+type AppConfig = {
+  cacheControl: CacheControlConfig
+  fcm: {
+    vapidKey: string
+  }
+  passFeature: {
+    badge: Record<"free" | "lite" | "standard" | "premium", boolean>
+    noAdvertisement: Record<"free" | "lite" | "standard" | "premium", boolean>
+    imageGenerationsCount: Record<"free" | "lite" | "standard" | "premium", number>
+    imageGenerationTasksCount: Record<"free" | "lite" | "standard" | "premium", number>
+    imageGenerationLoraModelsCount: Record<"free" | "lite" | "standard" | "premium", number>
+    imageGenerationHistoriesCount: Record<"free" | "lite" | "standard" | "premium", number>
+  }
+  post: {
+    maxImageCount: number
+  }
+  internalApiEndpoint: {
+    promptsCheck: string
+  }
+  logEvent: {
+    page_view: string
+    share: string
+    select_item: string
+    login: string
+  }
+  generationFeature: {
+    defaultImageModelIds: string[]
+    imageGenerationMaxSteps: number
+    imageGenerationMinSteps: number
+    defaultImageModelId: string
+    defaultImageModelType: string
+    defaultFavoritedModelIds: string[]
+    defaultImageLoraModelNames: string[]
+    defaultPromptValue: string
+    defaultNegativePromptValue: string
+    defaultScaleValue: number
+    defaultStepsValue: number
+    defaultSamplerValue: string
+    defaultClipSkipValue: number
+    samplerValues: string[]
+    defaultVaeValue: string
+    vaeValues: string[]
+    clipSkipValues: number
+    sizeValues: string[]
+    defaultIsUseRecommendedPrompt: boolean
+    defaultI2iImageBase64: string
+    defaultI2iDenoisingStrengthSize: number
+    defaultThumbnailSizeInPromptView: number
+    defaultThumbnailSizeInHistoryListFull: number
+    defaultThumbnailType: string
+    randomPrompts: string[]
+  }
+  firebaseConfig: {
+    apiKey: string
+    authDomain: string
+    projectId: string
+    storageBucket: string
+    messagingSenderId: string
+    appId: string
+    measurementId: string
+  }
+  cms: {
+    microCms: {
+      apiKey: string
+    }
+  }
+  googleAdsense: {
+    client: string
+  }
+  graphql: {
+    endpoint: string
+  }
+  query: {
+    maxLimit: number
+    generationTasksMaxLimit: number
+    homeWorkCount: Record<string, number>
+    defaultOffsetMax: number
+    offsetMax: number
+  }
+  uploader: {
+    uploadImage: string
+    uploadText: string
+  }
+  downloader: {
+    corsDownload: string
+  }
+  wordpressLink: {
+    top: string
+  }
+  siteURL: string
+  isDevelopmentMode: boolean
+  defaultOgpImageUrl: string
+  defaultSensitiveOgpImageUrl: string
+  isReleaseMode: boolean
+}
+
 /**
  * 設定
  */
-export const config = {
+export const config: AppConfig = {
   cacheControl: {
-    get home() {
+    get home(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"
     },
-    get short() {
+    get short(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"
     },
-    get tenSeconds() {
+    get tenSeconds(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"
     },
-    get oneMinute() {
+    get oneMinute(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"
     },
-    get oneHour() {
+    get oneHour(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"
     },
-    get oneDay() {
+    get oneDay(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"
     },
-    get oneWeek() {
+    get oneWeek(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"
     },
-    get oneMonth() {
+    get oneMonth(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"
     },
   },
   fcm: {
-    get vapidKey() {
+    get vapidKey(): string {
       return "BOvVhnNNznMu2HYzfZVdJa5hQwnAQW5Prld1gboUgkRY3rO6d3oLMP3WP0bKazNWm9AVI0LBQ8L94FTbN_Y4rn4"
     },
   },
@@ -236,7 +343,7 @@ export const config = {
       apiKey:
         import.meta.env.MODE === "development"
           ? env.VITE_MICRO_CMS_API_KEY
-          : (import.meta.env.VITE_MICRO_CMS_API_KEY ?? ""),
+          : ((import.meta.env.VITE_MICRO_CMS_API_KEY ?? "") as string),
     },
   },
   /**
@@ -252,7 +359,7 @@ export const config = {
    * GraphQLのエンドポイント
    */
   graphql: {
-    get endpoint() {
+    get endpoint(): string {
       if (typeof document === "undefined") {
         return env.VITE_GRAPHQL_ENDPOINT_REMIX
       }
@@ -294,8 +401,8 @@ export const config = {
   },
   downloader: {
     corsDownload:
-      env.VITE_WORKERS_CORS_DOWNLOAD ??
-      "https://aipictors-cors-download.aipictors.workers.dev",
+      (env.VITE_WORKERS_CORS_DOWNLOAD ??
+        "https://aipictors-cors-download.aipictors.workers.dev") as string,
   },
   /**
    * ワードプレスリンク

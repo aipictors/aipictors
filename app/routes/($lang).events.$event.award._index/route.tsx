@@ -14,8 +14,24 @@ import {
   EventAwardWorkListItemFragment,
 } from "~/routes/($lang).events.$event.award._index/components/event-award-paging-work-list"
 
-const toEventDateTimeText = (time: number) => {
-  const t = useTranslation()
+type EventSource = "OFFICIAL" | "USER"
+
+type AwardPageEvent = {
+  id: string
+  title: string
+  description: string
+  slug: string
+  thumbnailImageUrl: string
+  headerImageUrl: string
+  startAt: number
+  endAt: number
+  tag: string
+  worksCount: number
+  awardWorks: any[]
+  eventSource: EventSource
+}
+
+const toEventDateTimeText = (t: ReturnType<typeof useTranslation>, time: number) => {
 
   // UTC時間から日本時間（UTC+9）に変換
   const date = new Date(time * 1000)
@@ -26,6 +42,36 @@ const toEventDateTimeText = (time: number) => {
     format(japanTime, "yyyy/MM/dd HH:mm"),
   )
 }
+
+const normalizeOfficialEvent = (event: any): AwardPageEvent => ({
+  id: event.id,
+  title: event.title,
+  description: event.description,
+  slug: event.slug,
+  thumbnailImageUrl: event.thumbnailImageUrl,
+  headerImageUrl: event.headerImageUrl,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  tag: event.tag,
+  worksCount: event.worksCount ?? 0,
+  awardWorks: event.awardWorks ?? [],
+  eventSource: "OFFICIAL",
+})
+
+const normalizeUserEvent = (event: any): AwardPageEvent => ({
+  id: event.id,
+  title: event.title,
+  description: event.description,
+  slug: event.slug,
+  thumbnailImageUrl: event.thumbnailImageUrl,
+  headerImageUrl: event.headerImageUrl,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  tag: event.mainTag,
+  worksCount: event.worksCount ?? 0,
+  awardWorks: event.awardWorks ?? [],
+  eventSource: "USER",
+})
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -40,26 +86,28 @@ export async function loader(props: LoaderFunctionArgs) {
     throw new Response(null, { status: 404 })
   }
 
-  const eventsResp = await loaderClient.query({
-    query: appEventQuery,
+  const eventsResp = await loaderClient.query<any, any>({
+    query: eventAwardPageQuery as any,
     variables: {
       limit: 200,
       offset: 0,
       slug: event,
-      // where: {
-      //   ratings: ["G", "R15"],
-      //   isNowCreatedAt: true,
-      // },
       isSensitive: false,
     },
   })
 
-  if (eventsResp.data.appEvent === null) {
+  const normalizedEvent = eventsResp.data.appEvent
+    ? normalizeOfficialEvent(eventsResp.data.appEvent)
+    : eventsResp.data.userEvent
+      ? normalizeUserEvent(eventsResp.data.userEvent)
+      : null
+
+  if (normalizedEvent === null) {
     throw new Response(null, { status: 404 })
   }
 
   return {
-    appEvent: eventsResp.data.appEvent,
+    event: normalizedEvent,
     page,
   }
 }
@@ -70,6 +118,7 @@ export const headers: HeadersFunction = () => ({
 
 export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
+  const t = useTranslation()
 
   const navigate = useNavigate()
 
@@ -77,13 +126,13 @@ export default function FollowingLayout() {
     <div className="flex flex-col space-y-4">
       <img
         className="h-auto w-full rounded-lg object-cover"
-        src={data.appEvent.thumbnailImageUrl}
+        src={data.event.thumbnailImageUrl}
         alt=""
       />
       <Card className="m-auto w-full">
         <CardHeader>
           <div className="mt-4 text-center font-medium text-lg">
-            {data.appEvent.title}
+            {data.event.title}
           </div>
         </CardHeader>
         <CardContent>
@@ -91,22 +140,22 @@ export default function FollowingLayout() {
             <div
               className="mb-2 text-left text-sm"
               // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
-              dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
+              dangerouslySetInnerHTML={{ __html: data.event.description }}
             />
             <div className="mr-auto text-sm">
-              {toEventDateTimeText(data.appEvent.startAt)}～
-              {toEventDateTimeText(data.appEvent.endAt)}
+              {toEventDateTimeText(t, data.event.startAt)}～
+              {toEventDateTimeText(t, data.event.endAt)}
             </div>
             <div className="mt-2 mr-auto text-sm">
-              応募作品数: {data.appEvent.worksCount?.toString() ?? "0"}
+              応募作品数: {data.event.worksCount?.toString() ?? "0"}
             </div>
             <div className="mt-2 mr-auto text-sm">
-              <span>参加タグ: {data.appEvent.tag}</span>
+              <span>参加タグ: {data.event.tag}</span>
             </div>
-            {data.appEvent.slug !== null && (
+            {data.event.slug !== null && (
               <SensitiveToggle
                 variant="compact"
-                targetUrl={`/r/events/${data.appEvent.slug}/award`}
+                targetUrl={`/r/events/${data.event.slug}/award`}
               />
             )}
           </div>
@@ -114,7 +163,7 @@ export default function FollowingLayout() {
       </Card>
       <Button
         onClick={() => {
-          navigate(`/events/${data.appEvent.slug}`)
+          navigate(`/events/${data.event.slug}`)
         }}
         className="m-auto w-full"
         variant={"secondary"}
@@ -122,20 +171,21 @@ export default function FollowingLayout() {
       >
         {"戻る"}
       </Button>
-      {data.appEvent.awardWorks && data.appEvent.slug && (
+      {data.event.awardWorks && data.event.slug && (
         <EventAwardPagingWorkList
-          works={data.appEvent.awardWorks}
-          slug={data.appEvent.slug}
-          maxCount={data.appEvent.worksCount}
+          works={data.event.awardWorks}
+          slug={data.event.slug}
+          maxCount={data.event.worksCount}
           page={data.page}
+          eventSource={data.event.eventSource}
         />
       )}
     </div>
   )
 }
 
-const appEventQuery = graphql(
-  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $isSensitive: Boolean!) {
+const eventAwardPageQuery = graphql(
+  `query EventAwardPage($slug: String!, $offset: Int!, $limit: Int!, $isSensitive: Boolean!) {
     appEvent(slug: $slug) {
       id
       description
@@ -146,6 +196,21 @@ const appEventQuery = graphql(
       startAt
       endAt
       tag
+      worksCount
+      awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
+        ...EventAwardWorkListItem
+      }
+    }
+    userEvent(slug: $slug) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      mainTag
       worksCount
       awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
         ...EventAwardWorkListItem

@@ -1,5 +1,5 @@
-import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import { Card, CardContent, CardHeader } from "~/components/ui/card"
+import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import {
@@ -20,14 +20,122 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
-import React, { useEffect } from "react"
+import React, { useContext, useEffect } from "react"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { SortType } from "~/types/sort-type"
+import { Button } from "~/components/ui/button"
+import { toast } from "sonner"
+import { AuthContext } from "~/contexts/auth-context"
 
-const toEventDateTimeText = (time: number) => {
-  const t = useTranslation()
+type NormalizedEvent = {
+  eventSource: "OFFICIAL" | "USER"
+  id: string
+  slug: string
+  title: string
+  description: string
+  thumbnailImageUrl: string
+  headerImageUrl: string
+  startAt: number
+  endAt: number
+  mainTag: string
+  tags: string[]
+  status: string
+  remainingDays: number
+  worksCount: number
+  participantCount: number
+  rankingEnabled: boolean
+  rankingType: string
+  participationGuide: string
+  announcementText: string
+  userId?: string | null
+  userName?: string | null
+  works: any[]
+  awardWorks: any[]
+}
 
-  // UTC時間から日本時間（UTC+9）に変換
+const buildEventAnnouncementText = (props: {
+  title: string
+  tag: string
+  startAt: number
+  endAt: number
+  slug: string
+}) => {
+  const startAt = new Date(props.startAt * 1000).toLocaleString("ja-JP")
+  const endAt = new Date(props.endAt * 1000).toLocaleString("ja-JP")
+
+  return `${props.title}\n開催期間: ${startAt}〜${endAt}\n参加タグ: #${props.tag}\n詳細: https://www.aipictors.com/events/${props.slug}`
+}
+
+const normalizeOfficialEvent = (event: any): NormalizedEvent => ({
+  eventSource: "OFFICIAL",
+  id: event.id,
+  slug: event.slug,
+  title: event.title,
+  description: event.description,
+  thumbnailImageUrl: event.thumbnailImageUrl,
+  headerImageUrl: event.headerImageUrl,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  mainTag: event.tag,
+  tags: event.tag ? [event.tag] : [],
+  status: event.status,
+  remainingDays: event.remainingDays,
+  worksCount: event.worksCount,
+  participantCount: 0,
+  rankingEnabled: Boolean(event.awardWorks?.length),
+  rankingType: "LIKES",
+  participationGuide: event.wayToJoin ?? "",
+  announcementText: buildEventAnnouncementText({
+    title: event.title,
+    tag: event.tag,
+    startAt: event.startAt,
+    endAt: event.endAt,
+    slug: event.slug,
+  }),
+  works: event.works ?? [],
+  awardWorks: event.awardWorks ?? [],
+})
+
+const normalizeUserEvent = (event: any): NormalizedEvent => ({
+  eventSource: "USER",
+  id: event.id,
+  slug: event.slug,
+  title: event.title,
+  description: event.description,
+  thumbnailImageUrl:
+    event.thumbnailImageUrl || event.headerImageUrl || "/images/opepnepe.png",
+  headerImageUrl:
+    event.headerImageUrl || event.thumbnailImageUrl || "/images/opepnepe.png",
+  startAt: event.startAt,
+  endAt: event.endAt,
+  mainTag: event.mainTag,
+  tags: event.tags,
+  status: event.status,
+  remainingDays: event.remainingDays,
+  worksCount: event.entryCount,
+  participantCount: event.participantCount,
+  rankingEnabled: event.rankingEnabled,
+  rankingType: event.rankingType ?? "LIKES",
+  participationGuide: event.participationGuide ?? "",
+  announcementText:
+    event.announcementText ||
+    buildEventAnnouncementText({
+      title: event.title,
+      tag: event.mainTag,
+      startAt: event.startAt,
+      endAt: event.endAt,
+      slug: event.slug,
+    }),
+  userId: event.userId,
+  userName: event.userName,
+  works: event.works ?? [],
+  awardWorks: event.awardWorks ?? [],
+})
+
+const formatEventDateTimeText = (
+  time: number,
+  t: ReturnType<typeof useTranslation>,
+) => {
   const date = new Date(time * 1000)
   const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
 
@@ -38,12 +146,6 @@ const toEventDateTimeText = (time: number) => {
 }
 
 export async function loader(props: LoaderFunctionArgs) {
-  // const redirectResponse = checkLocaleRedirect(props.request)
-
-  // if (redirectResponse) {
-  //   return redirectResponse
-  // }
-
   const event = props.params.event
 
   const urlParams = new URL(props.request.url).searchParams
@@ -65,7 +167,7 @@ export async function loader(props: LoaderFunctionArgs) {
     : "DESC"
 
   const eventsResp = await loaderClient.query({
-    query: appEventQuery,
+    query: eventDetailQuery,
     variables: {
       limit: 64,
       offset: page * 64,
@@ -73,19 +175,24 @@ export async function loader(props: LoaderFunctionArgs) {
       where: {
         ratings: ["G", "R15"],
         isNowCreatedAt: true,
-        orderBy: orderBy,
-        sort: sort,
+        orderBy,
+        sort,
       },
       isSensitive: false,
     },
   })
 
-  if (eventsResp.data.appEvent === null) {
+  const appEvent = eventsResp.data.appEvent
+  const userEvent = eventsResp.data.userEvent
+
+  if (appEvent === null && userEvent === null) {
     throw new Response(null, { status: 404 })
   }
 
   return {
-    appEvent: eventsResp.data.appEvent,
+    appEvent: appEvent
+      ? normalizeOfficialEvent(appEvent)
+      : normalizeUserEvent(userEvent),
     page,
   }
 }
@@ -99,9 +206,7 @@ export const meta: MetaFunction = ({ data }) => {
     return [{ title: "イベントが見つかりませんでした" }]
   }
 
-  const { appEvent } = data as {
-    appEvent: { title: string; description: string; thumbnailImageUrl: string }
-  }
+  const appEvent = (data as { appEvent: NormalizedEvent }).appEvent
 
   const stripHtmlTags = (str: string) => {
     return str.replace(/<[^>]*>?/gm, "")
@@ -114,13 +219,10 @@ export const meta: MetaFunction = ({ data }) => {
   })
 }
 
-export default function FollowingLayout () {
+export default function EventDetailPage () {
   const t = useTranslation()
-
+  const authContext = useContext(AuthContext)
   const data = useLoaderData<typeof loader>()
-
-  const _navigate = useNavigate()
-
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [workType, setWorkType] =
@@ -128,7 +230,7 @@ export default function FollowingLayout () {
       (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
     )
 
-  const [WorkOrderby, setWorkOrderby] = React.useState<
+  const [workOrderBy, setWorkOrderBy] = React.useState<
     IntrospectionEnum<"WorkOrderBy">
   >(
     (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
@@ -150,7 +252,7 @@ export default function FollowingLayout () {
     params.set("page", String(data.page))
     if (workType) params.set("workType", workType)
     if (rating) params.set("rating", rating)
-    params.set("WorkOrderby", WorkOrderby)
+    params.set("WorkOrderby", workOrderBy)
     params.set("worksOrderDeskAsc", worksOrderDeskAsc)
 
     setSearchParams(params)
@@ -158,64 +260,34 @@ export default function FollowingLayout () {
     data.page,
     workType,
     rating,
-    WorkOrderby,
+    workOrderBy,
     worksOrderDeskAsc,
     setSearchParams,
   ])
 
-  const onClickTitleSortButton = () => {
-    setWorkOrderby("NAME")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+  const onCopyAnnouncement = async () => {
+    try {
+      await navigator.clipboard.writeText(data.appEvent.announcementText)
+      toast(t("告知文をコピーしました", "Announcement text copied"))
+    } catch {
+      toast(t("告知文のコピーに失敗しました", "Failed to copy announcement text"))
+    }
   }
 
-  const onClickLikeSortButton = () => {
-    setWorkOrderby("LIKES_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickBookmarkSortButton = () => {
-    setWorkOrderby("BOOKMARKS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickCommentSortButton = () => {
-    setWorkOrderby("COMMENTS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickViewSortButton = () => {
-    setWorkOrderby("VIEWS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickAccessTypeSortButton = () => {
-    setWorkOrderby("ACCESS_TYPE")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickDateSortButton = () => {
-    setWorkOrderby("DATE_CREATED")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickWorkTypeSortButton = () => {
-    setWorkOrderby("WORK_TYPE")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickIsPromotionSortButton = () => {
-    setWorkOrderby("IS_PROMOTION")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const [worksMaxCount, _setWorksMaxCount] = React.useState(0)
-
-  if (data === null) {
-    return null
-  }
+  const isOwner =
+    authContext.userId !== null &&
+    authContext.userId !== undefined &&
+    data.appEvent.userId === authContext.userId
 
   return (
     <div className="flex flex-col space-y-4">
+      {data.appEvent.headerImageUrl && (
+        <img
+          className="max-h-[320px] w-full rounded-xl object-cover"
+          src={data.appEvent.headerImageUrl}
+          alt=""
+        />
+      )}
       <div className="flex flex-col gap-x-2 gap-y-2 md:flex-row">
         {data.appEvent.thumbnailImageUrl && (
           <img
@@ -226,7 +298,29 @@ export default function FollowingLayout () {
         )}
         <Card className="m-auto w-full">
           <CardHeader>
-            <div className="mt-4 text-center font-medium text-lg">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-center">
+              <span className="rounded-full bg-black px-3 py-1 text-white text-xs">
+                {data.appEvent.eventSource === "OFFICIAL"
+                  ? t("公式イベント", "Official Event")
+                  : t("ユーザー企画", "User Event")}
+              </span>
+              <span
+                className={`rounded-full px-3 py-1 text-xs text-white ${
+                  data.appEvent.status === "ONGOING"
+                    ? "bg-red-500"
+                    : data.appEvent.status === "UPCOMING"
+                      ? "bg-sky-500"
+                      : "bg-slate-500"
+                }`}
+              >
+                {data.appEvent.status === "ONGOING"
+                  ? t("開催中", "Ongoing")
+                  : data.appEvent.status === "UPCOMING"
+                    ? t("開催予定", "Upcoming")
+                    : t("終了", "Ended")}
+              </span>
+            </div>
+            <div className="mt-2 text-center font-medium text-lg">
               {data.appEvent.title}
             </div>
           </CardHeader>
@@ -235,74 +329,174 @@ export default function FollowingLayout () {
               {data.appEvent.description && (
                 <div
                   className="mb-2 text-left text-sm"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
-                  dangerouslySetInnerHTML={{
-                    __html: data.appEvent.description,
-                  }}
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted event description HTML
+                  dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
                 />
               )}
-              {data.appEvent.startAt && data.appEvent.endAt && (
-                <div className="mr-auto text-sm">
-                  {toEventDateTimeText(data.appEvent.startAt)}～
-                  {toEventDateTimeText(data.appEvent.endAt)}
+              <div className="mr-auto text-sm">
+                {formatEventDateTimeText(data.appEvent.startAt, t)}～
+                {formatEventDateTimeText(data.appEvent.endAt, t)}
+              </div>
+              <div className="mt-2 mr-auto text-sm">
+                {data.appEvent.status === "ONGOING"
+                  ? t("残り{{count}}日", `{{count}} days left`).replace(
+                      "{{count}}",
+                      data.appEvent.remainingDays.toString(),
+                    )
+                  : data.appEvent.status === "UPCOMING"
+                    ? t("開催開始前のイベントです", "This event has not started yet")
+                    : t("終了済みイベントです", "This event has ended")}
+              </div>
+              <div className="mt-2 mr-auto text-sm">
+                {t("応募作品数:", "Entries:")} {data.appEvent.worksCount}
+              </div>
+              <div className="mt-2 mr-auto text-sm">
+                {t("参加ユーザー数:", "Participants:")} {data.appEvent.participantCount}
+              </div>
+              <div className="mt-2 mr-auto flex flex-wrap gap-2 text-sm">
+                {data.appEvent.tags.map((tag) => (
+                  <span key={tag} className="rounded-full bg-muted px-2 py-1 text-xs">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+              {data.appEvent.eventSource === "USER" && data.appEvent.userId && (
+                <div className="mt-3 mr-auto text-sm">
+                  {t("主催者:", "Host:")}{" "}
+                  <Link className="underline" to={`/users/${data.appEvent.userId}`}>
+                    {data.appEvent.userName ?? data.appEvent.userId}
+                  </Link>
                 </div>
               )}
               <div className="mt-2 mr-auto text-sm">
-                {t("応募作品数:", "Number of Submissions:")}{" "}
-                {data.appEvent.worksCount?.toString() ?? "0"}
+                {data.appEvent.rankingEnabled
+                  ? `${t("ランキング方式:", "Ranking:")} ${data.appEvent.rankingType}`
+                  : t("ランキングなしの交流イベントです", "This event does not use ranking")}
               </div>
-              <div className="mt-2 mr-auto text-sm">
-                <span>
-                  {t("参加タグ:", "Event Tag:")} {data.appEvent.tag}
-                </span>
+              {data.appEvent.participationGuide && (
+                <div className="mt-4 w-full rounded-lg border bg-muted/30 p-3 text-sm">
+                  <div className="mb-1 font-medium">
+                    {t("参加方法", "How to join")}
+                  </div>
+                  <div className="whitespace-pre-wrap">
+                    {data.appEvent.participationGuide}
+                  </div>
+                </div>
+              )}
+              <div className="mt-4 flex w-full flex-col gap-2 md:flex-row">
+                <Button asChild className="flex-1">
+                  <Link
+                    to={`/new/image?event=${data.appEvent.slug}&tag=${encodeURIComponent(data.appEvent.mainTag)}`}
+                  >
+                    {t("このイベントに投稿する", "Post to this event")}
+                  </Link>
+                </Button>
+                <Button asChild variant="secondary" className="flex-1">
+                  <Link to={`/search?q=${encodeURIComponent(data.appEvent.mainTag)}`}>
+                    {t("参加タグの作品を見る", "View works with this tag")}
+                  </Link>
+                </Button>
+                {isOwner && data.appEvent.eventSource === "USER" && (
+                  <Button asChild variant="secondary" className="flex-1">
+                    <Link to={`/events/${data.appEvent.slug}/edit`}>
+                      {t("イベントを編集", "Edit event")}
+                    </Link>
+                  </Button>
+                )}
               </div>
-              {data.appEvent.slug !== null && (
-                <SensitiveToggle
-                  variant="compact"
-                  targetUrl={`/r/events/${data.appEvent.slug}`}
-                />
+              <div className="mt-4 w-full rounded-lg border bg-background p-3 text-sm">
+                <div className="mb-2 font-medium">
+                  {t("告知用テキスト", "Announcement text")}
+                </div>
+                <div className="whitespace-pre-wrap rounded-md bg-muted/40 p-3 text-xs">
+                  {data.appEvent.announcementText}
+                </div>
+                <Button
+                  className="mt-3"
+                  variant="secondary"
+                  onClick={onCopyAnnouncement}
+                >
+                  {t("告知文をコピー", "Copy announcement text")}
+                </Button>
+              </div>
+              {data.appEvent.slug && (
+                <div className="mt-4 mr-auto">
+                  <SensitiveToggle
+                    variant="compact"
+                    targetUrl={`/r/events/${data.appEvent.slug}`}
+                  />
+                </div>
               )}
             </div>
           </CardContent>
         </Card>
       </div>
-      {data.appEvent.awardWorks && (
+
+      {data.appEvent.rankingEnabled && data.appEvent.awardWorks.length > 0 && (
         <EventAwardWorkList
           works={data.appEvent.awardWorks}
-          slug={data.appEvent.slug ?? ""}
+          slug={data.appEvent.slug}
+          eventSource={data.appEvent.eventSource}
         />
       )}
-      {data.appEvent.works && (
-        <EventWorkList
-          works={data.appEvent.works}
-          maxCount={data.appEvent.worksCount as number}
-          page={data.page}
-          slug={data.appEvent.slug ?? ""}
-          sort={worksOrderDeskAsc}
-          orderBy={WorkOrderby}
-          sumWorksCount={worksMaxCount}
-          workType={workType}
-          rating={rating}
-          onClickTitleSortButton={onClickTitleSortButton}
-          onClickLikeSortButton={onClickLikeSortButton}
-          onClickBookmarkSortButton={onClickBookmarkSortButton}
-          onClickCommentSortButton={onClickCommentSortButton}
-          onClickViewSortButton={onClickViewSortButton}
-          onClickAccessTypeSortButton={onClickAccessTypeSortButton}
-          onClickDateSortButton={onClickDateSortButton}
-          onClickWorkTypeSortButton={onClickWorkTypeSortButton}
-          onClickIsPromotionSortButton={onClickIsPromotionSortButton}
-          setWorkType={setWorkType}
-          setRating={setRating}
-          setSort={setWorksOrderDeskAsc}
-        />
-      )}
+
+      <EventWorkList
+        works={data.appEvent.works}
+        maxCount={data.appEvent.worksCount}
+        page={data.page}
+        slug={data.appEvent.slug}
+        eventSource={data.appEvent.eventSource}
+        sort={worksOrderDeskAsc}
+        orderBy={workOrderBy}
+        workType={workType}
+        rating={rating}
+        sumWorksCount={data.appEvent.worksCount}
+        setWorkType={setWorkType}
+        setRating={setRating}
+        setSort={setWorksOrderDeskAsc}
+        onClickTitleSortButton={() => {
+          setWorkOrderBy("NAME")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+        onClickLikeSortButton={() => {
+          setWorkOrderBy("LIKES_COUNT")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+        onClickBookmarkSortButton={() => {
+          setWorkOrderBy("BOOKMARKS_COUNT")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+        onClickCommentSortButton={() => {
+          setWorkOrderBy("COMMENTS_COUNT")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+        onClickViewSortButton={() => {
+          setWorkOrderBy("VIEWS_COUNT")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+        onClickAccessTypeSortButton={() => {
+          setWorkOrderBy("ACCESS_TYPE")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+        onClickDateSortButton={() => {
+          setWorkOrderBy("DATE_CREATED")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+        onClickWorkTypeSortButton={() => {
+          setWorkOrderBy("WORK_TYPE")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+        onClickIsPromotionSortButton={() => {
+          setWorkOrderBy("IS_PROMOTION")
+          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+        }}
+      />
     </div>
   )
 }
 
-const appEventQuery = graphql(
-  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!, $isSensitive: Boolean!) {
+const eventDetailQuery = graphql(
+  `query EventDetail($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!, $isSensitive: Boolean!) {
     appEvent(slug: $slug) {
       id
       description
@@ -314,6 +508,37 @@ const appEventQuery = graphql(
       endAt
       tag
       worksCount
+      wayToJoin
+      status
+      remainingDays
+      works(offset: $offset, limit: $limit, where: $where) {
+        ...EventWorkListItem
+      }
+      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+        ...EventAwardWorkListItem
+      }
+    }
+    userEvent(slug: $slug) {
+      id
+      title
+      slug
+      description
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      mainTag
+      tags
+      status
+      remainingDays
+      entryCount
+      participantCount
+      rankingEnabled
+      rankingType
+      participationGuide
+      announcementText
+      userId
+      userName
       works(offset: $offset, limit: $limit, where: $where) {
         ...EventWorkListItem
       }
@@ -322,5 +547,5 @@ const appEventQuery = graphql(
       }
     }
   }`,
-  [EventAwardWorkListItemFragment, EventWorkListItemFragment],
+  [EventWorkListItemFragment, EventAwardWorkListItemFragment],
 )

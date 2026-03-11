@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import { useNavigate } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 import {
   PhotoAlbumWorkFragment,
@@ -9,10 +9,11 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 
 type Props = {
-  works: FragmentOf<typeof EventAwardWorkListItemFragment>[]
+  works: any[]
   maxCount: number
   page: number
   slug: string
+  eventSource: "OFFICIAL" | "USER"
 }
 
 /**
@@ -32,7 +33,9 @@ export function EventAwardPagingWorkList (props: Props) {
     },
   })
 
-  const works = resp?.appEvent?.awardWorks ?? props.works
+  const works = props.eventSource === "OFFICIAL"
+    ? resp?.appEvent?.awardWorks ?? props.works
+    : resp?.userEvent?.awardWorks ?? props.works
 
   return (
     <>
@@ -57,8 +60,13 @@ export const EventAwardWorkListItemFragment = graphql(
 )
 
 const query = graphql(
-  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $isSensitive: Boolean!) {
+  `query EventAwardPaging($slug: String!, $offset: Int!, $limit: Int!, $isSensitive: Boolean!) {
       appEvent(slug: $slug) {
+        awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
+          ...EventAwardWorkListItem
+        }
+      }
+      userEvent(slug: $slug) {
         awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
           ...EventAwardWorkListItem
         }

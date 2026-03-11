@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { graphql } from "gql.tada"
 import { Heart } from "lucide-react"
 import { useContext } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
@@ -19,8 +19,9 @@ import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-nam
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
-  works: FragmentOf<typeof EventAwardWorkListItemFragment>[]
+  works: any[]
   slug: string
+  eventSource: "OFFICIAL" | "USER"
 }
 
 /**
@@ -37,7 +38,9 @@ export function EventAwardWorkList (props: Props) {
     },
   })
 
-  const workDisplayed = resp?.appEvent?.awardWorks ?? props.works
+  const workDisplayed = props.eventSource === "OFFICIAL"
+    ? resp?.appEvent?.awardWorks ?? props.works
+    : resp?.userEvent?.awardWorks ?? props.works
 
   const t = useTranslation()
 
@@ -159,8 +162,13 @@ export const EventAwardWorkListItemFragment = graphql(
 )
 
 const appAwardEventQuery = graphql(
-  `query AppEvent($slug: String!, $isSensitive: Boolean!) {
+  `query EventAwardWorks($slug: String!, $isSensitive: Boolean!) {
     appEvent(slug: $slug) {
+      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+        ...EventAwardWorkListItem
+      }
+    }
+    userEvent(slug: $slug) {
       awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
         ...EventAwardWorkListItem
       }
