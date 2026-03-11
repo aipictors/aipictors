@@ -87,6 +87,13 @@ export default function NewImage() {
 
   const viewer = data
 
+  const eventDataSource = viewerData ?? viewer
+
+  const events = [
+    ...(eventDataSource.appEvents ?? []),
+    ...(eventDataSource.userEvents ?? []),
+  ]
+
   const [state, dispatch] = useReducer(postImageFormReducer, {
     editTargetImageBase64: null,
     indexList: [],
@@ -367,12 +374,12 @@ export default function NewImage() {
       return
     }
 
-    const matchedEvent = viewerData?.appEvents?.find((appEvent) => {
+    const matchedEvent = events.find((event) => {
       if (!eventParam) {
         return true
       }
 
-      return appEvent.slug === eventParam && appEvent.tag === decodedTag
+      return event.slug === eventParam && event.tag === decodedTag
     })
 
     if (matchedEvent || !eventParam) {
@@ -384,7 +391,7 @@ export default function NewImage() {
         },
       })
     }
-  }, [inputState.tags, searchParams, viewerData?.appEvents])
+  }, [events, inputState.tags, searchParams])
 
   const [createWork] = useMutation(CreateWorkMutation)
   const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery)
@@ -1045,7 +1052,7 @@ export default function NewImage() {
               : null
           }
           aiModels={viewerData?.aiModels ?? []}
-          events={viewer?.appEvents ?? []}
+          events={events}
           needFix={false}
           imageBase64={state.thumbnailBase64}
           token={viewerData?.viewer?.token}
@@ -1228,6 +1235,21 @@ const ViewerQuery = graphql(
       description
       title
       tag
+      slug
+      endAt
+    }
+    userEvents(
+      limit: 8,
+      offset: 0,
+      where: {
+        endAt: $startAt,
+        status: "ONGOING",
+      }
+    ) {
+      id
+      description
+      title
+      tag: mainTag
       slug
       endAt
     }

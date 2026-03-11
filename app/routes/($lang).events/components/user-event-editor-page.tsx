@@ -2,9 +2,11 @@ import { useMutation, useQuery } from "@apollo/client/index"
 import { useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { Suspense, useContext, useEffect, useMemo, useState } from "react"
+import { toast } from "sonner"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
@@ -13,7 +15,6 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import { toast } from "sonner"
 
 type Props = {
   mode: "create" | "edit"
@@ -154,7 +155,48 @@ const toUnixTime = (value: string) => {
 
 const parseTags = (tagsText: string, mainTag: string) => {
   const tags = [mainTag, ...tagsText.split(/[\n,、\s]+/)]
-  return [...new Set(tags.map((tag) => tag.trim().replace(/^#+/, "")).filter(Boolean))]
+  return [
+    ...new Set(
+      tags.map((tag) => tag.trim().replace(/^#+/, "")).filter(Boolean),
+    ),
+  ]
+}
+
+const GENERATED_SUFFIX_PATTERN = /-[0-9a-f]{8}$/i
+
+const createGeneratedSuffix = () => {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 8)
+}
+
+const appendGeneratedSuffix = (value: string, maxLength: number) => {
+  const normalized = value.trim().replace(/^#+/, "")
+
+  if (!normalized || GENERATED_SUFFIX_PATTERN.test(normalized)) {
+    return normalized
+  }
+
+  const suffix = `-${createGeneratedSuffix()}`
+  const maxBaseLength = Math.max(maxLength - suffix.length, 1)
+  const base = normalized.slice(0, maxBaseLength).replace(/-+$/g, "")
+
+  return `${base}${suffix}`
+}
+
+const normalizeSlugValue = (value: string) => {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
+const normalizeMainTagValue = (value: string) => {
+  return value
+    .trim()
+    .replace(/^#+/, "")
+    .replace(/[\s　]+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-+|-+$/g, "")
 }
 
 const createInitialState = (): EditorState => ({
@@ -175,14 +217,39 @@ const createInitialState = (): EditorState => ({
   slug: "",
 })
 
-export function UserEventEditorPage (props: Props) {
+type FieldLabelProps = {
+  title: string
+  subtitle: string
+  required?: boolean
+}
+
+function FieldLabel(props: FieldLabelProps) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="font-medium text-sm">{props.title}</div>
+      {props.required && (
+        <Badge
+          variant="secondary"
+          className="border border-red-200 bg-red-50 text-red-600 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300"
+        >
+          {props.subtitle}
+        </Badge>
+      )}
+    </div>
+  )
+}
+
+export function UserEventEditorPage(props: Props) {
   const t = useTranslation()
   const navigate = useNavigate()
   const authContext = useContext(AuthContext)
 
-  const { data: tokenData } = useQuery<ViewerTokenQueryData>(viewerTokenQuery as any, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-  })
+  const { data: tokenData } = useQuery<ViewerTokenQueryData>(
+    viewerTokenQuery as any,
+    {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+    },
+  )
 
   const { data: eventData, loading: isEventLoading } = useQuery<
     UserEventForEditData,
@@ -209,7 +276,9 @@ export function UserEventEditorPage (props: Props) {
       headerImageUrl: event.headerImageUrl,
       thumbnailImageUrl: event.thumbnailImageUrl,
       mainTag: event.mainTag,
-      tagsText: event.tags.filter((tag: string) => tag !== event.mainTag).join("\n"),
+      tagsText: event.tags
+        .filter((tag: string) => tag !== event.mainTag)
+        .join("\n"),
       rankingEnabled: event.rankingEnabled,
       rankingType: event.rankingType ?? "LIKES",
       visibilityType: event.visibilityType,
@@ -263,14 +332,33 @@ export function UserEventEditorPage (props: Props) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t("イベントが見つかりません", "Event not found")}</CardTitle>
+          <CardTitle>
+            {t("イベントが見つかりません", "Event not found")}
+          </CardTitle>
         </CardHeader>
       </Card>
     )
   }
 
-  const updateField = <K extends keyof EditorState>(key: K, value: EditorState[K]) => {
+  const updateField = <K extends keyof EditorState>(
+    key: K,
+    value: EditorState[K],
+  ) => {
     setState((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const ensureGeneratedMainTag = () => {
+    updateField(
+      "mainTag",
+      appendGeneratedSuffix(normalizeMainTagValue(state.mainTag), 40),
+    )
+  }
+
+  const ensureGeneratedSlug = () => {
+    updateField(
+      "slug",
+      appendGeneratedSuffix(normalizeSlugValue(state.slug), 64),
+    )
   }
 
   const onAutoGenerate = async () => {
@@ -278,7 +366,10 @@ export function UserEventEditorPage (props: Props) {
       const result = await generateUserEventContent({
         variables: {
           input: {
-            theme: state.title || state.mainTag || t("交流イベント", "Community event"),
+            theme:
+              state.title ||
+              state.mainTag ||
+              t("交流イベント", "Community event"),
             purpose: state.description,
             tags: parseTags(state.tagsText, state.mainTag),
             rankingEnabled: state.rankingEnabled,
@@ -295,7 +386,8 @@ export function UserEventEditorPage (props: Props) {
       setState((prev) => ({
         ...prev,
         title: prev.title || generated.titles[0] || prev.title,
-        description: prev.description || generated.descriptions[0] || prev.description,
+        description:
+          prev.description || generated.descriptions[0] || prev.description,
         participationGuide:
           prev.participationGuide ||
           generated.participationGuides[0] ||
@@ -328,7 +420,12 @@ export function UserEventEditorPage (props: Props) {
     const tags = parseTags(state.tagsText, state.mainTag)
 
     if (!state.title.trim() || !state.slug.trim() || !state.mainTag.trim()) {
-      toast(t("タイトル・リンク名・主タグは必須です", "Title, slug, and main tag are required"))
+      toast(
+        t(
+          "タイトル・リンク名・主タグは必須です",
+          "Title, slug, and main tag are required",
+        ),
+      )
       return
     }
 
@@ -423,7 +520,9 @@ export function UserEventEditorPage (props: Props) {
               <div className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("ヘッダー画像", "Header image")}</div>
+                    <div className="font-medium text-sm">
+                      {t("ヘッダー画像", "Header image")}
+                    </div>
                     <CropImageField
                       isHidePreviewImage={false}
                       cropWidth={1200}
@@ -431,11 +530,15 @@ export function UserEventEditorPage (props: Props) {
                       defaultCroppedImage={state.headerImageUrl}
                       fileExtension="webp"
                       onDeleteImage={() => updateField("headerImageUrl", "")}
-                      onCropToBase64={(value) => updateField("headerImageUrl", value)}
+                      onCropToBase64={(value) =>
+                        updateField("headerImageUrl", value)
+                      }
                     />
                   </div>
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("サムネイル画像", "Thumbnail image")}</div>
+                    <div className="font-medium text-sm">
+                      {t("サムネイル画像", "Thumbnail image")}
+                    </div>
                     <CropImageField
                       isHidePreviewImage={false}
                       cropWidth={800}
@@ -443,88 +546,234 @@ export function UserEventEditorPage (props: Props) {
                       defaultCroppedImage={state.thumbnailImageUrl}
                       fileExtension="webp"
                       onDeleteImage={() => updateField("thumbnailImageUrl", "")}
-                      onCropToBase64={(value) => updateField("thumbnailImageUrl", value)}
+                      onCropToBase64={(value) =>
+                        updateField("thumbnailImageUrl", value)
+                      }
                     />
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("タイトル", "Title")}</div>
-                    <Input value={state.title} onChange={(e) => updateField("title", e.target.value)} maxLength={80} />
+                    <FieldLabel
+                      title={t("タイトル", "Title")}
+                      subtitle={t("必須", "Required")}
+                      required
+                    />
+                    <Input
+                      value={state.title}
+                      onChange={(e) => updateField("title", e.target.value)}
+                      maxLength={80}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("リンク名", "Slug")}</div>
-                    <Input value={state.slug} onChange={(e) => updateField("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))} maxLength={64} />
+                    <FieldLabel
+                      title={t("リンク名", "Slug")}
+                      subtitle={t("必須", "Required")}
+                      required
+                    />
+                    <Input
+                      value={state.slug}
+                      onChange={(e) =>
+                        updateField("slug", normalizeSlugValue(e.target.value))
+                      }
+                      onBlur={ensureGeneratedSlug}
+                      maxLength={64}
+                      required
+                    />
+                    <p className="text-muted-foreground text-xs">
+                      {t(
+                        "URLに使う識別子です。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
+                        "Used in the event URL. A random suffix is appended on blur to avoid duplicates.",
+                      )}
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="font-medium text-sm">{t("説明文", "Description")}</div>
-                  <AutoResizeTextarea value={state.description} onChange={(e) => updateField("description", e.target.value)} maxLength={4000} />
+                  <div className="font-medium text-sm">
+                    {t("説明文", "Description")}
+                  </div>
+                  <AutoResizeTextarea
+                    value={state.description}
+                    onChange={(e) => updateField("description", e.target.value)}
+                    maxLength={4000}
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="font-medium text-sm">{t("参加方法", "How to join")}</div>
-                  <AutoResizeTextarea value={state.participationGuide} onChange={(e) => updateField("participationGuide", e.target.value)} maxLength={1000} />
+                  <div className="font-medium text-sm">
+                    {t("参加方法", "How to join")}
+                  </div>
+                  <AutoResizeTextarea
+                    value={state.participationGuide}
+                    onChange={(e) =>
+                      updateField("participationGuide", e.target.value)
+                    }
+                    maxLength={1000}
+                  />
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("主タグ", "Main tag")}</div>
-                    <Input value={state.mainTag} onChange={(e) => updateField("mainTag", e.target.value)} maxLength={40} />
+                    <FieldLabel
+                      title={t("主タグ", "Main tag")}
+                      subtitle={t("必須", "Required")}
+                      required
+                    />
+                    <Input
+                      value={state.mainTag}
+                      onChange={(e) =>
+                        updateField(
+                          "mainTag",
+                          e.target.value.replace(/^#+/, ""),
+                        )
+                      }
+                      onBlur={ensureGeneratedMainTag}
+                      maxLength={40}
+                      disabled={props.mode === "edit"}
+                      required
+                    />
+                    <p className="text-muted-foreground text-xs">
+                      {props.mode === "edit"
+                        ? t(
+                            "主タグを変更すると既存の投稿作品がイベント対象外になるため、編集画面では変更できません。",
+                            "Changing the main tag would invalidate existing event submissions, so it cannot be edited here.",
+                          )
+                        : t(
+                            "イベント投稿ボタンから参加すると自動入力される基準タグです。作品一覧の集計や検索導線にも使われます。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
+                            "This is the primary tag auto-filled for event submissions and used for listing and search. A random suffix is appended on blur to avoid duplicates.",
+                          )}
+                    </p>
                   </div>
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("補助タグ", "Additional tags")}</div>
-                    <AutoResizeTextarea value={state.tagsText} onChange={(e) => updateField("tagsText", e.target.value)} maxLength={200} />
+                    <FieldLabel
+                      title={t("補助タグ", "Additional tags")}
+                      subtitle={t("任意", "Optional")}
+                    />
+                    <AutoResizeTextarea
+                      value={state.tagsText}
+                      onChange={(e) => updateField("tagsText", e.target.value)}
+                      maxLength={200}
+                    />
+                    <p className="text-muted-foreground text-xs">
+                      {t(
+                        "主タグ以外の関連語・別表記・検索補助用タグです。主タグは自動で含まれるので、ここには補足したいタグだけを入れてください。",
+                        "Use this for related terms, alternate spellings, and discovery tags. The main tag is included automatically, so only add supporting tags here.",
+                      )}
+                    </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("開始日時", "Start at")}</div>
-                    <Input type="datetime-local" value={state.startAt} onChange={(e) => updateField("startAt", e.target.value)} />
+                    <FieldLabel
+                      title={t("開始日時", "Start at")}
+                      subtitle={t("必須", "Required")}
+                      required
+                    />
+                    <Input
+                      type="datetime-local"
+                      value={state.startAt}
+                      onChange={(e) => updateField("startAt", e.target.value)}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("終了日時", "End at")}</div>
-                    <Input type="datetime-local" value={state.endAt} onChange={(e) => updateField("endAt", e.target.value)} />
+                    <FieldLabel
+                      title={t("終了日時", "End at")}
+                      subtitle={t("必須", "Required")}
+                      required
+                    />
+                    <Input
+                      type="datetime-local"
+                      value={state.endAt}
+                      onChange={(e) => updateField("endAt", e.target.value)}
+                      required
+                    />
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("公開状態", "Visibility")}</div>
-                    <select className="h-10 w-full rounded-md border bg-background px-3" value={state.visibilityType} onChange={(e) => updateField("visibilityType", e.target.value as UserEventVisibilityType)}>
+                    <div className="font-medium text-sm">
+                      {t("公開状態", "Visibility")}
+                    </div>
+                    <select
+                      className="h-10 w-full rounded-md border bg-background px-3"
+                      value={state.visibilityType}
+                      onChange={(e) =>
+                        updateField(
+                          "visibilityType",
+                          e.target.value as UserEventVisibilityType,
+                        )
+                      }
+                    >
                       <option value="DRAFT">{t("下書き", "Draft")}</option>
                       <option value="PUBLIC">{t("公開", "Public")}</option>
                       <option value="PRIVATE">{t("非公開", "Private")}</option>
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <div className="font-medium text-sm">{t("ランキング方式", "Ranking type")}</div>
-                    <select className="h-10 w-full rounded-md border bg-background px-3" value={state.rankingType} onChange={(e) => updateField("rankingType", e.target.value as UserEventRankingType)} disabled={!state.rankingEnabled}>
+                    <div className="font-medium text-sm">
+                      {t("ランキング方式", "Ranking type")}
+                    </div>
+                    <select
+                      className="h-10 w-full rounded-md border bg-background px-3"
+                      value={state.rankingType}
+                      onChange={(e) =>
+                        updateField(
+                          "rankingType",
+                          e.target.value as UserEventRankingType,
+                        )
+                      }
+                      disabled={!state.rankingEnabled}
+                    >
                       <option value="LIKES">{t("いいね数", "Likes")}</option>
-                      <option value="BOOKMARKS">{t("ブックマーク数", "Bookmarks")}</option>
-                      <option value="COMMENTS">{t("コメント数", "Comments")}</option>
+                      <option value="BOOKMARKS">
+                        {t("ブックマーク数", "Bookmarks")}
+                      </option>
+                      <option value="COMMENTS">
+                        {t("コメント数", "Comments")}
+                      </option>
                       <option value="VIEWS">{t("閲覧数", "Views")}</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                  <label className="flex items-center gap-2 text-sm">
-                    <Checkbox checked={state.rankingEnabled} onCheckedChange={(checked) => updateField("rankingEnabled", checked === true)} />
+                  <div className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={state.rankingEnabled}
+                      onCheckedChange={(checked) =>
+                        updateField("rankingEnabled", checked === true)
+                      }
+                    />
                     {t("ランキングあり", "Enable ranking")}
-                  </label>
-                  <label className="flex items-center gap-2 text-sm">
-                    <Checkbox checked={state.isSensitive} onCheckedChange={(checked) => updateField("isSensitive", checked === true)} />
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={state.isSensitive}
+                      onCheckedChange={(checked) =>
+                        updateField("isSensitive", checked === true)
+                      }
+                    />
                     {t("成人向けイベント", "Sensitive event")}
-                  </label>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <div className="font-medium text-sm">{t("告知文", "Announcement text")}</div>
-                  <AutoResizeTextarea value={state.announcementText} onChange={(e) => updateField("announcementText", e.target.value)} maxLength={1000} />
+                  <div className="font-medium text-sm">
+                    {t("告知文", "Announcement text")}
+                  </div>
+                  <AutoResizeTextarea
+                    value={state.announcementText}
+                    onChange={(e) =>
+                      updateField("announcementText", e.target.value)
+                    }
+                    maxLength={1000}
+                  />
                 </div>
               </div>
             </ScrollArea>
@@ -533,9 +782,18 @@ export function UserEventEditorPage (props: Props) {
 
         <div className="flex flex-col gap-2 md:flex-row">
           <Button disabled={isSaving} onClick={onSave}>
-            {props.mode === "create" ? t("作成する", "Create") : t("更新する", "Save changes")}
+            {props.mode === "create"
+              ? t("作成する", "Create")
+              : t("更新する", "Save changes")}
           </Button>
-          <Button variant="secondary" onClick={() => navigate(props.mode === "create" ? "/events" : `/events/${props.slug}`)}>
+          <Button
+            variant="secondary"
+            onClick={() =>
+              navigate(
+                props.mode === "create" ? "/events" : `/events/${props.slug}`,
+              )
+            }
+          >
             {t("キャンセル", "Cancel")}
           </Button>
         </div>
