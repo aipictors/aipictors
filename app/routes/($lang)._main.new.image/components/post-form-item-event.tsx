@@ -1,8 +1,8 @@
-import type { Tag } from "~/components/tag/tag-input"
-import { Checkbox } from "~/components/ui/checkbox"
 import { Link } from "@remix-run/react"
 import { useEffect, useState } from "react"
+import type { Tag } from "~/components/tag/tag-input"
 import { Card, CardContent } from "~/components/ui/card"
+import { Checkbox } from "~/components/ui/checkbox"
 import { getJstDate } from "~/utils/jst-date"
 
 type Props = {
@@ -21,6 +21,7 @@ type Props = {
  */
 export function PostFormItemEvent(props: Props) {
   const now = getJstDate(new Date())
+  const checkboxId = `attend-checkbox-${props.slug ?? props.eventTag ?? "event"}`
 
   const isOngoing = now <= new Date(props.endAt * 1000)
 
@@ -60,9 +61,9 @@ export function PostFormItemEvent(props: Props) {
           <Checkbox
             checked={isAttending}
             onCheckedChange={handleAttendanceChange}
-            id="attend-checkbox"
+            id={checkboxId}
           />
-          <label htmlFor="attend-checkbox" className="ml-2 font-medium text-sm">
+          <label htmlFor={checkboxId} className="ml-2 font-medium text-sm">
             参加する
           </label>
         </div>

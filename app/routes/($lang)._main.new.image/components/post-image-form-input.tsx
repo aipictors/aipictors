@@ -1,30 +1,31 @@
-import { useEffect, type Dispatch } from "react"
+import { useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { type Dispatch, useEffect, useState } from "react"
+import type { InferInput } from "valibot"
+import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
+import { useTranslation } from "~/hooks/use-translation" // 翻訳フックの使用
+import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
+import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
+import { PostFormItemBotGrading } from "~/routes/($lang)._main.new.image/components/post-form-item-bot-grading"
+import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
+import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
+import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/post-form-item-event"
+import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
+import { PostFormItemGenerationParams } from "~/routes/($lang)._main.new.image/components/post-form-item-generation-params"
 import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
 import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
-import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
-import { PostFormItemTitleCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-title-caption"
-import { useQuery } from "@apollo/client/index"
-import { PostFormItemTheme } from "~/routes/($lang)._main.new.image/components/post-form-item-theme"
-import { Checkbox } from "~/components/ui/checkbox"
-import { PostFormItemView } from "~/routes/($lang)._main.new.image/components/post-form-item-view"
-import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
-import { PostFormItemTags } from "~/routes/($lang)._main.new.image/components/post-form-item-tags"
-import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/post-form-item-event"
 import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
-import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
-import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
-import { type FragmentOf, graphql } from "gql.tada"
-import type { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
-import type { InferInput } from "valibot"
-import { PostFormItemGenerationParams } from "~/routes/($lang)._main.new.image/components/post-form-item-generation-params"
+import { PostFormItemTags } from "~/routes/($lang)._main.new.image/components/post-form-item-tags"
+import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
+import { PostFormItemTheme } from "~/routes/($lang)._main.new.image/components/post-form-item-theme"
+import { PostFormItemTitleCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-title-caption"
+import { PostFormItemView } from "~/routes/($lang)._main.new.image/components/post-form-item-view"
+import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
 import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
-import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
-import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
-import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
-import { PostFormItemBotGrading } from "~/routes/($lang)._main.new.image/components/post-form-item-bot-grading"
+import type { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
 import { AiEvaluationSection } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/ai-evaluation-section"
-import { useTranslation } from "~/hooks/use-translation" // 翻訳フックの使用
 
 // AI評価セクション用のprops型
 type AiEvaluationProps = {
@@ -56,6 +57,7 @@ type Props = {
     tag: string | null
     endAt: number
     slug: string | null
+    source: "OFFICIAL" | "USER"
   }[]
   aiModels: FragmentOf<typeof PostImageFormAiModelFragment>[]
   needFix: boolean
@@ -88,10 +90,11 @@ const getJSTDate = () => {
   return `${year}-${month}-${day}`
 }
 
-export function PostImageFormInput (props: Props) {
+export function PostImageFormInput(props: Props) {
   const t = useTranslation() // 翻訳対応
   const jstDate = getJSTDate()
   const reservationDate = props.state.reservationDate || jstDate
+  const [isUserEventsVisible, setIsUserEventsVisible] = useState(false)
 
   const { data, loading } = useQuery(pageQuery, {
     variables: {
@@ -193,6 +196,11 @@ export function PostImageFormInput (props: Props) {
         name: model.name,
       }))
   }
+
+  const officialEvents = props.events.filter(
+    (event) => event.source === "OFFICIAL",
+  )
+  const userEvents = props.events.filter((event) => event.source === "USER")
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -335,7 +343,7 @@ export function PostImageFormInput (props: Props) {
           }
         />
       )}
-      {props.events.map((event) => (
+      {officialEvents.map((event) => (
         <div key={event.slug}>
           <PostFormItemEvent
             eventName={event.title ?? null}
@@ -353,6 +361,61 @@ export function PostImageFormInput (props: Props) {
           />
         </div>
       ))}
+      {userEvents.length > 0 && (
+        <div className="space-y-3 rounded-lg border border-dashed p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-medium text-sm">
+                {t("ユーザーイベント企画", "User-created events")}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {t(
+                  "通常は閉じています。参加したい企画があるときだけ表示してください。",
+                  "Hidden by default. Open this only when you want to join a user-created event.",
+                )}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsUserEventsVisible((prev) => !prev)}
+            >
+              {isUserEventsVisible
+                ? t("閉じる", "Hide")
+                : t(
+                    `見る（${userEvents.length}件）`,
+                    `View (${userEvents.length})`,
+                  )}
+            </Button>
+          </div>
+
+          {isUserEventsVisible && (
+            <div className="space-y-3">
+              {userEvents.map((event) => (
+                <div key={event.slug}>
+                  <PostFormItemEvent
+                    eventName={event.title ?? null}
+                    eventDescription={event.description ?? null}
+                    eventTag={event.tag ?? null}
+                    endAt={event.endAt ?? 0}
+                    slug={event.slug ?? null}
+                    addTag={(tag) => {
+                      props.dispatch({ type: "ADD_TAG", payload: tag })
+                    }}
+                    removeTag={(tag) => {
+                      props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
+                    }}
+                    isAttending={props.state.tags.some(
+                      (tag) => tag.text === event.tag,
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <PostFormItemTags
         whiteListTags={tagOptions()}
         tags={props.state.tags}

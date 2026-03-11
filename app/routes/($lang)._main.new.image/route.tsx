@@ -52,6 +52,17 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 
+type EventOption = {
+  title: string | null
+  description: string | null
+  tag: string | null
+  endAt: number
+  slug: string | null
+  source: "OFFICIAL" | "USER"
+}
+
+type RawEventOption = Omit<EventOption, "source">
+
 export default function NewImage() {
   const data = useLoaderData<typeof loader>()
 
@@ -89,9 +100,17 @@ export default function NewImage() {
 
   const eventDataSource = viewerData ?? viewer
 
-  const events = [
-    ...(eventDataSource.appEvents ?? []),
-    ...(eventDataSource.userEvents ?? []),
+  const appEvents: RawEventOption[] = Array.isArray(eventDataSource.appEvents)
+    ? (eventDataSource.appEvents as RawEventOption[])
+    : []
+
+  const userEvents: RawEventOption[] = Array.isArray(eventDataSource.userEvents)
+    ? (eventDataSource.userEvents as RawEventOption[])
+    : []
+
+  const events: EventOption[] = [
+    ...appEvents.map((event) => ({ ...event, source: "OFFICIAL" as const })),
+    ...userEvents.map((event) => ({ ...event, source: "USER" as const })),
   ]
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
@@ -1242,7 +1261,6 @@ const ViewerQuery = graphql(
       limit: 8,
       offset: 0,
       where: {
-        endAt: $startAt,
         status: "ONGOING",
       }
     ) {

@@ -146,7 +146,11 @@ export function GenerationConfigReferenceImage() {
           </button>
         </RadioGroupPrimitive.Item>
 
-        <RadioGroupPrimitive.Item id="ref-controlnet" value="controlnet" asChild>
+        <RadioGroupPrimitive.Item
+          id="ref-controlnet"
+          value="controlnet"
+          asChild
+        >
           <button
             type="button"
             className={cn(

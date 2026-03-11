@@ -1,16 +1,18 @@
 import { gql } from "@apollo/client/index"
-import { loaderClient } from "~/lib/loader-client"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { Form, type MetaFunction, useLoaderData } from "@remix-run/react"
-import { config, META } from "~/config"
-import { createMeta } from "~/utils/create-meta"
-import { useTranslation } from "~/hooks/use-translation"
+import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { config, META } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
+import { loaderClient } from "~/lib/loader-client"
 import {
   AppEventCard,
   type EventCardItem,
 } from "~/routes/($lang).events._index/components/app-event-card"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { createMeta } from "~/utils/create-meta"
 
 const getEventPriority = (status: string) => {
   if (status === "UPCOMING") {
@@ -94,6 +96,55 @@ const sortEvents = (events: EventCardItem[], sort: string) => {
   })
 }
 
+const countEventsByStatus = (events: EventCardItem[]) => {
+  return {
+    ongoing: events.filter((event) => event.status === "ONGOING").length,
+    upcoming: events.filter((event) => event.status === "UPCOMING").length,
+    ended: events.filter((event) => event.status === "ENDED").length,
+  }
+}
+
+type EventListSectionProps = {
+  events: EventCardItem[]
+}
+
+function EventListSection(props: EventListSectionProps) {
+  const t = useTranslation()
+
+  const statusCounts = countEventsByStatus(props.events)
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        <Badge className="bg-red-500 text-white hover:bg-red-500/90">
+          {t("開催中", "Ongoing")} ({statusCounts.ongoing})
+        </Badge>
+        <Badge className="bg-sky-500 text-white hover:bg-sky-500/90">
+          {t("開催予定", "Upcoming")} ({statusCounts.upcoming})
+        </Badge>
+        <Badge variant="secondary">
+          {t("終了", "Ended")} ({statusCounts.ended})
+        </Badge>
+      </div>
+      <div className="grid gap-2 rounded-lg md:grid-cols-2 xl:grid-cols-3">
+        {props.events.map((appEvent) => (
+          <div key={appEvent.id}>
+            <AppEventCard appEvent={appEvent} />
+          </div>
+        ))}
+      </div>
+      {props.events.length === 0 && (
+        <div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground text-sm">
+          {t(
+            "条件に一致するイベントは見つかりませんでした。別のキーワードや状態でお試しください。",
+            "No events matched your filters. Try a different keyword or status.",
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)
 }
@@ -152,10 +203,16 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function FollowingLayout () {
+export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
+
+  const officialEvents = data.appEvents.filter((event) => event.isOfficial)
+
+  const userEvents = data.appEvents.filter((event) => !event.isOfficial)
+
+  const defaultTab = officialEvents.length > 0 ? "official" : "user"
 
   if (data === null) {
     return null
@@ -181,7 +238,10 @@ export default function FollowingLayout () {
             <a href="/my/events">{t("マイイベント管理", "Manage my events")}</a>
           </Button>
         </div>
-        <Form className="grid gap-3 rounded-lg border p-4 md:grid-cols-2 xl:grid-cols-[1fr_180px_180px_180px_auto]" method="get">
+        <Form
+          className="grid gap-3 rounded-lg border p-4 md:grid-cols-2 xl:grid-cols-[1fr_180px_180px_180px_auto]"
+          method="get"
+        >
           <Input
             name="q"
             defaultValue={data.filters.keyword}
@@ -205,8 +265,12 @@ export default function FollowingLayout () {
             defaultValue={data.filters.ranking}
             className="h-10 rounded-md border bg-background px-3 py-2 text-sm"
           >
-            <option value="ALL">{t("ランキング条件すべて", "All ranking types")}</option>
-            <option value="RANKING">{t("ランキングあり", "Ranking enabled")}</option>
+            <option value="ALL">
+              {t("ランキング条件すべて", "All ranking types")}
+            </option>
+            <option value="RANKING">
+              {t("ランキングあり", "Ranking enabled")}
+            </option>
             <option value="CASUAL">{t("ランキングなし", "No ranking")}</option>
           </select>
           <select
@@ -214,9 +278,13 @@ export default function FollowingLayout () {
             defaultValue={data.filters.sort}
             className="h-10 rounded-md border bg-background px-3 py-2 text-sm"
           >
-            <option value="ONGOING_FIRST">{t("開催中優先", "Ongoing first")}</option>
+            <option value="ONGOING_FIRST">
+              {t("開催中優先", "Ongoing first")}
+            </option>
             <option value="POPULAR">{t("人気順", "Popular")}</option>
-            <option value="CLOSING_SOON">{t("締切が近い順", "Closing soon")}</option>
+            <option value="CLOSING_SOON">
+              {t("締切が近い順", "Closing soon")}
+            </option>
             <option value="NEWEST">{t("新着順", "Newest")}</option>
           </select>
           <div className="flex gap-2">
@@ -228,21 +296,22 @@ export default function FollowingLayout () {
             </Button>
           </div>
         </Form>
-        <div className="grid gap-2 rounded-lg md:grid-cols-2 xl:grid-cols-3">
-          {data.appEvents.map((appEvent) => (
-            <div key={appEvent.id}>
-              <AppEventCard appEvent={appEvent} />
-            </div>
-          ))}
-        </div>
-        {data.appEvents.length === 0 && (
-          <div className="rounded-lg border border-dashed p-8 text-center text-muted-foreground text-sm">
-            {t(
-              "条件に一致するイベントは見つかりませんでした。別のキーワードや状態でお試しください。",
-              "No events matched your filters. Try a different keyword or status.",
-            )}
-          </div>
-        )}
+        <Tabs defaultValue={defaultTab} className="space-y-4">
+          <TabsList className="h-auto w-full justify-start gap-2 overflow-x-auto rounded-lg bg-muted/60 p-1">
+            <TabsTrigger value="official" className="min-w-fit">
+              {t("公式イベント", "Official events")} ({officialEvents.length})
+            </TabsTrigger>
+            <TabsTrigger value="user" className="min-w-fit">
+              {t("ユーザー企画", "User events")} ({userEvents.length})
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="official" className="m-0">
+            <EventListSection events={officialEvents} />
+          </TabsContent>
+          <TabsContent value="user" className="m-0">
+            <EventListSection events={userEvents} />
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   )
