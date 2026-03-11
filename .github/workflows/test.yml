@@ -39,7 +39,7 @@ jobs:
       - name: Install deps
         run: rm -rf node_modules && bun install --ignore-scripts --frozen-lockfile
       - name: Lint
-        run: bunx oxlint@latest --jsx-a11y-plugin --react-perf-plugin
+        run: bunx oxlint@1.53.0 --config .oxlintrc.json --jsx-a11y-plugin --react-perf-plugin .
       - name: Run Test
         run: bun test
   # quality:
