@@ -20,6 +20,7 @@ type Props = {
   imageUrls?: string[]
   workType: IntrospectionEnum<"WorkType">
   isSensitive?: boolean
+  likeButtonLabel?: string
   bookmarkFolderId: string | null
   workLikesCount: number
   defaultLiked: boolean
@@ -106,7 +107,7 @@ export function WorkAction(props: Props) {
           <>
             <LikeButton
               size={40}
-              text={`いいね ${props.workLikesCount}`}
+              text={`${props.likeButtonLabel ?? "いいね"} ${props.workLikesCount}`}
               defaultLiked={props.defaultLiked}
               defaultLikedCount={props.workLikesCount}
               isSensitive={props.isSensitive}

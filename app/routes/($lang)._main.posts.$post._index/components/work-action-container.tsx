@@ -31,9 +31,19 @@ export function WorkActionContainer (props: Props) {
     },
   })
 
+  const { data: userSettingData } = useQuery(userSettingQuery, {
+    skip: appContext.isLoading || appContext.isNotLoggedIn,
+  })
+
   const isLiked = data?.work?.isLiked ?? false
 
   const isBookmarked = data?.work?.isBookmarked ?? false
+
+  const likeButtonLabel =
+    data?.work?.isSensitive ||
+    userSettingData?.userSetting?.isAnonymousLikeAllAges !== true
+      ? "いいね"
+      : "匿名いいね"
 
   return (
     <WorkAction
@@ -45,6 +55,7 @@ export function WorkActionContainer (props: Props) {
       imageUrls={props.imageUrls}
       defaultLiked={isLiked}
       defaultBookmarked={isBookmarked}
+      likeButtonLabel={likeButtonLabel}
       bookmarkFolderId={props.bookmarkFolderId}
       targetWorkId={props.targetWorkId}
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
@@ -192,6 +203,15 @@ const workQuery = graphql(
       monthlyRanking
       relatedUrl
       nanoid
+    }
+  }`,
+)
+
+const userSettingQuery = graphql(
+  `query WorkActionUserSetting {
+    userSetting {
+      id
+      isAnonymousLikeAllAges
     }
   }`,
 )
