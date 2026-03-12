@@ -12,6 +12,7 @@ type Props = {
   maxCount: number
   page: number
   slug: string
+  eventSource: "OFFICIAL" | "USER"
 }
 
 /**
@@ -20,7 +21,7 @@ type Props = {
 export function EventAwardPagingSensitiveWorkList (props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data: resp } = useQuery(query, {
+  const { data } = useQuery<any>(query as any, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: 0,
@@ -30,7 +31,11 @@ export function EventAwardPagingSensitiveWorkList (props: Props) {
     },
   })
 
-  const works = resp?.appEvent?.awardWorks ?? props.works
+  const resp = data as any
+
+  const works = props.eventSource === "OFFICIAL"
+    ? (resp?.appEvent?.awardWorks ?? props.works)
+    : (resp?.userEvent?.awardWorks ?? props.works)
 
   return (
     <>
@@ -57,6 +62,11 @@ export const EventAwardWorkListItemFragment = graphql(
 const query = graphql(
   `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $isSensitive: Boolean!) {
       appEvent(slug: $slug) {
+        awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
+          ...EventAwardWorkListItem
+        }
+      }
+      userEvent(slug: $slug) {
         awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
           ...EventAwardWorkListItem
         }

@@ -1,21 +1,30 @@
-import { Button } from "~/components/ui/button"
-import { Checkbox } from "~/components/ui/checkbox"
-import { Separator } from "~/components/ui/separator"
-import { AuthContext } from "~/contexts/auth-context"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useId, useState } from "react"
 import { toast } from "sonner"
+import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
+import { Label } from "~/components/ui/label"
+import { Separator } from "~/components/ui/separator"
+import { Switch } from "~/components/ui/switch"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳用フック
 import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/components/setting-fcm-form"
+import {
+  getLikeVisibilityPreferences,
+  saveLikeVisibilityPreferences,
+} from "~/utils/like-visibility-preference"
 
 /**
  * 通知設定フォーム
  */
-export function SettingNotificationForm () {
+export function SettingNotificationForm() {
   const authContext = useContext(AuthContext)
   const t = useTranslation() // 翻訳フックを使用
+  const notifyCommentId = useId()
+  const allAgeAnonymousId = useId()
+  const sensitiveAnonymousId = useId()
 
   const { data: userSetting, refetch: refetchSetting } = useQuery(
     userSettingQuery,
@@ -31,10 +40,25 @@ export function SettingNotificationForm () {
   const [isNotifyComment, setIsNotifyComment] = useState<boolean>(
     userSetting?.userSetting?.isNotifyComment ?? false,
   )
+  const [isAllAgeLikeAnonymousByDefault, setIsAllAgeLikeAnonymousByDefault] =
+    useState(false)
+  const [
+    isSensitiveLikeAnonymousByDefault,
+    setIsSensitiveLikeAnonymousByDefault,
+  ] = useState(true)
 
   useEffect(() => {
     setIsNotifyComment(userSetting?.userSetting?.isNotifyComment ?? false)
   }, [userSetting])
+
+  useEffect(() => {
+    const preferences = getLikeVisibilityPreferences()
+
+    setIsAllAgeLikeAnonymousByDefault(preferences.allAgeAnonymousByDefault)
+    setIsSensitiveLikeAnonymousByDefault(
+      preferences.sensitiveAnonymousByDefault,
+    )
+  }, [])
 
   const onSave = async () => {
     await updateUserSetting({
@@ -44,6 +68,12 @@ export function SettingNotificationForm () {
         },
       },
     })
+
+    saveLikeVisibilityPreferences({
+      allAgeAnonymousByDefault: isAllAgeLikeAnonymousByDefault,
+      sensitiveAnonymousByDefault: isSensitiveLikeAnonymousByDefault,
+    })
+
     toast(t("保存しました", "Settings saved"))
   }
 
@@ -52,21 +82,18 @@ export function SettingNotificationForm () {
       <div className="space-y-4">
         <p className="font-bold">{t("通知", "Notifications")}</p>
         <div className="flex justify-between">
-          <label
-            htmlFor="5"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
+          <Label htmlFor={notifyCommentId}>
             {t(
               "コメントの通知を受け取る",
               "Receive notifications for comments",
             )}
-          </label>
+          </Label>
           <Checkbox
             onCheckedChange={(value: boolean) => {
               setIsNotifyComment(value)
             }}
             checked={isNotifyComment}
-            id="terms"
+            id={notifyCommentId}
           />
         </div>
         <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-sm">
@@ -75,16 +102,54 @@ export function SettingNotificationForm () {
           </p>
           <p className="mt-2 text-muted-foreground">
             {t(
-              "全年齢作品へのいいねは、初期状態で名前を表示します。必要に応じて匿名いいねへ切り替えられます。",
-              "Likes on all-ages works show your name by default. You can switch to anonymous when needed.",
+              "ここで設定した内容は、このブラウザでいいねダイアログを開いたときの初期選択に反映されます。",
+              "These settings control the default choice shown in the like dialog on this browser.",
             )}
           </p>
-          <p className="mt-2 text-muted-foreground">
-            {t(
-              "センシティブ作品へのいいねは、初期状態で匿名です。必要に応じて名前表示のいいねへ切り替えられます。",
-              "Likes on sensitive works are anonymous by default. You can switch to a named like when needed.",
-            )}
-          </p>
+          <div className="mt-4 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <Label htmlFor={allAgeAnonymousId}>
+                  {t(
+                    "全年齢作品のいいねを匿名にする",
+                    "Default all-ages likes to anonymous",
+                  )}
+                </Label>
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "オフの場合は、名前を表示していいねが初期選択になります。",
+                    "When off, named likes will be selected by default.",
+                  )}
+                </p>
+              </div>
+              <Switch
+                id={allAgeAnonymousId}
+                checked={isAllAgeLikeAnonymousByDefault}
+                onCheckedChange={setIsAllAgeLikeAnonymousByDefault}
+              />
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <Label htmlFor={sensitiveAnonymousId}>
+                  {t(
+                    "センシティブ作品のいいねを匿名にする",
+                    "Default sensitive likes to anonymous",
+                  )}
+                </Label>
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "オフの場合は、名前を表示していいねが初期選択になります。",
+                    "When off, named likes will be selected by default.",
+                  )}
+                </p>
+              </div>
+              <Switch
+                id={sensitiveAnonymousId}
+                checked={isSensitiveLikeAnonymousByDefault}
+                onCheckedChange={setIsSensitiveLikeAnonymousByDefault}
+              />
+            </div>
+          </div>
         </div>
       </div>
       <Button

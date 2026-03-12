@@ -1,16 +1,17 @@
-import { WorkActionMenu } from "./work-action-menu"
-import { SharePopover } from "./work-action-share"
+import { Suspense, useContext, useEffect, useState } from "react"
 import { LikeButton } from "~/components/like-button"
 import { DialogLikeButton } from "~/components/work/dialog-like-button"
-import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
-import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils/download-image-file-as-png"
-import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post._index/components/work-editor-button"
-import { Suspense, useContext } from "react"
-import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post._index/components/work-action-bookmark"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { RecommendButton } from "~/routes/($lang)._main.posts.$post._index/components/recommend-button"
+import { WorkActionBookmark } from "~/routes/($lang)._main.posts.$post._index/components/work-action-bookmark"
+import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post._index/components/work-editor-button"
+import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
+import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils/download-image-file-as-png"
 import { downloadZipFile } from "~/routes/($lang).generation._index/utils/download-zip-file"
+import { getDefaultLikeIsAnonymous } from "~/utils/like-visibility-preference"
+import { WorkActionMenu } from "./work-action-menu"
+import { SharePopover } from "./work-action-share"
 
 type Props = {
   id: string
@@ -38,8 +39,21 @@ type Props = {
 /**
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー、ZIPダウンロード）
  */
-export function WorkAction (props: Props) {
+export function WorkAction(props: Props) {
   const appContext = useContext(AuthContext)
+  const [likeButtonText, setLikeButtonText] = useState(
+    `いいね ${props.workLikesCount}`,
+  )
+
+  useEffect(() => {
+    const isAnonymous = getDefaultLikeIsAnonymous(Boolean(props.isSensitive))
+
+    setLikeButtonText(
+      isAnonymous
+        ? `匿名いいね ${props.workLikesCount}`
+        : `いいね ${props.workLikesCount}`,
+    )
+  }, [props.isSensitive, props.workLikesCount])
 
   const stripFileExtension = (name: string): string => {
     return name.replace(/\.[^./\\]+$/, "")
@@ -106,7 +120,7 @@ export function WorkAction (props: Props) {
           <>
             <LikeButton
               size={40}
-              text={`いいね ${props.workLikesCount}`}
+              text={likeButtonText}
               defaultLiked={props.defaultLiked}
               defaultLikedCount={props.workLikesCount}
               isSensitive={props.isSensitive}
@@ -115,6 +129,7 @@ export function WorkAction (props: Props) {
               targetWorkOwnerUserId={props.targetWorkOwnerUserId}
               isUsedShortcutKey={true}
               isTargetUserBlocked={props.isTargetUserBlocked}
+              isChoiceDialogDisabled={true}
             />
             <Suspense fallback={null}>
               <RecommendButton

@@ -1,22 +1,36 @@
 import { Card, CardHeader, CardContent } from "~/components/ui/card"
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import { useLoaderData, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
 import { RefreshCcwIcon } from "lucide-react"
-import {
-  EventSensitiveWorkList,
-  EventSensitiveWorkListItemFragment,
-} from "~/routes/($lang).r.events.$event._index/components/event-sensitive-work-list"
+import { EventSensitiveWorkListItemFragment } from "~/routes/($lang).r.events.$event._index/components/event-sensitive-work-list"
+import { EventAwardPagingSensitiveWorkList } from "~/routes/($lang).events.$event.award._index/components/event-award-paging-sensitive-work-list"
 import { Button } from "~/components/ui/button"
 import { format } from "date-fns"
 import { useTranslation } from "~/hooks/use-translation"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { config } from "~/config"
-import React, { useEffect } from "react"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import type { SortType } from "~/types/sort-type"
 
 type Translate = (ja: string, en: string) => string
+
+type EventSource = "OFFICIAL" | "USER"
+
+type SensitiveAwardEvent = {
+  id: string
+  description: string
+  title: string
+  slug: string
+  thumbnailImageUrl: string | null
+  headerImageUrl: string | null
+  startAt: number
+  endAt: number
+  tag: string
+  worksCount: number
+  awardWorks: React.ComponentProps<
+    typeof EventAwardPagingSensitiveWorkList
+  >["works"]
+  eventSource: EventSource
+}
 
 const toEventDateTimeText = (t: Translate, time: number) => {
   // UTC時間から日本時間（UTC+9）に変換
@@ -28,6 +42,36 @@ const toEventDateTimeText = (t: Translate, time: number) => {
     format(japanTime, "yyyy/MM/dd HH:mm"),
   )
 }
+
+const normalizeOfficialEvent = (event: any): SensitiveAwardEvent => ({
+  id: event.id,
+  description: event.description,
+  title: event.title,
+  slug: event.slug,
+  thumbnailImageUrl: event.thumbnailImageUrl,
+  headerImageUrl: event.headerImageUrl,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  tag: event.tag,
+  worksCount: event.worksCount ?? 0,
+  awardWorks: event.awardWorks ?? [],
+  eventSource: "OFFICIAL",
+})
+
+const normalizeUserEvent = (event: any): SensitiveAwardEvent => ({
+  id: event.id,
+  description: event.description,
+  title: event.title,
+  slug: event.slug,
+  thumbnailImageUrl: event.thumbnailImageUrl,
+  headerImageUrl: event.headerImageUrl,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  tag: event.mainTag,
+  worksCount: event.entryCount ?? event.worksCount ?? 0,
+  awardWorks: event.awardWorks ?? [],
+  eventSource: "USER",
+})
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -43,26 +87,25 @@ export async function loader(props: LoaderFunctionArgs) {
   const eventsResp = await loaderClient.query({
     query: appEventQuery,
     variables: {
-      limit: 64,
-      offset: page * 64,
+      limit: 200,
+      offset: 0,
       slug: event,
-      where: {
-        ratings: ["R18", "R18G"],
-        isNowCreatedAt: true,
-      },
       isSensitive: true,
     },
   })
 
-  if (eventsResp.data.appEvent === null) {
+  const normalizedEvent = eventsResp.data.appEvent
+    ? normalizeOfficialEvent(eventsResp.data.appEvent)
+    : eventsResp.data.userEvent
+      ? normalizeUserEvent(eventsResp.data.userEvent)
+      : null
+
+  if (normalizedEvent === null) {
     throw new Response(null, { status: 404 })
   }
 
   return {
-    appEvent: eventsResp.data.appEvent,
-    works: eventsResp.data.appEvent.works,
-    worksCount: eventsResp.data.appEvent.worksCount as number,
-    awardWorks: eventsResp.data.appEvent.awardWorks,
+    event: normalizedEvent,
     page,
   }
 }
@@ -76,96 +119,8 @@ export default function FollowingLayout() {
 
   const t = useTranslation()
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
 
-  const [workType, setWorkType] =
-    React.useState<IntrospectionEnum<"WorkType"> | null>(
-      (searchParams.get("workType") as IntrospectionEnum<"WorkType">) || null,
-    )
-
-  const [WorkOrderby, setWorkOrderby] = React.useState<
-    IntrospectionEnum<"WorkOrderBy">
-  >(
-    (searchParams.get("WorkOrderby") as IntrospectionEnum<"WorkOrderBy">) ||
-      "DATE_CREATED",
-  )
-
-  const [worksOrderDeskAsc, setWorksOrderDeskAsc] = React.useState<SortType>(
-    (searchParams.get("worksOrderDeskAsc") as SortType) || "DESC",
-  )
-
-  const [rating, setRating] =
-    React.useState<IntrospectionEnum<"Rating"> | null>(
-      (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
-    )
-
-  useEffect(() => {
-    const params = new URLSearchParams()
-
-    params.set("page", String(data.page))
-    if (workType) params.set("workType", workType)
-    if (rating) params.set("rating", rating)
-    params.set("WorkOrderby", WorkOrderby)
-    params.set("worksOrderDeskAsc", worksOrderDeskAsc)
-
-    setSearchParams(params)
-  }, [
-    data.page,
-    workType,
-    rating,
-    WorkOrderby,
-    worksOrderDeskAsc,
-    setSearchParams,
-  ])
-
-  const onClickTitleSortButton = () => {
-    setWorkOrderby("NAME")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickLikeSortButton = () => {
-    setWorkOrderby("LIKES_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickBookmarkSortButton = () => {
-    setWorkOrderby("BOOKMARKS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickCommentSortButton = () => {
-    setWorkOrderby("COMMENTS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickViewSortButton = () => {
-    setWorkOrderby("VIEWS_COUNT")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickAccessTypeSortButton = () => {
-    setWorkOrderby("ACCESS_TYPE")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickDateSortButton = () => {
-    setWorkOrderby("DATE_CREATED")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickWorkTypeSortButton = () => {
-    setWorkOrderby("WORK_TYPE")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const onClickIsPromotionSortButton = () => {
-    setWorkOrderby("IS_PROMOTION")
-    setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-  }
-
-  const [worksMaxCount, _setWorksMaxCount] = React.useState(0)
-
-  if (data.works === null) {
+  if (data.event.awardWorks === null) {
     return null
   }
 
@@ -174,7 +129,7 @@ export default function FollowingLayout() {
       <Card className="m-auto w-full">
         <CardHeader>
           <div className="mt-4 text-center font-medium text-lg">
-            {data.appEvent.title}
+            {data.event.title}
           </div>
         </CardHeader>
         <CardContent>
@@ -182,23 +137,23 @@ export default function FollowingLayout() {
             <div
               className="mb-2 text-left text-sm"
               // biome-ignore lint/security/noDangerouslySetInnerHtml: trusted CMS HTML
-              dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
+              dangerouslySetInnerHTML={{ __html: data.event.description }}
             />
             <div className="mr-auto text-sm">
-              {toEventDateTimeText(t, data.appEvent.startAt)}～
-              {toEventDateTimeText(t, data.appEvent.endAt)}
+              {toEventDateTimeText(t, data.event.startAt)}～
+              {toEventDateTimeText(t, data.event.endAt)}
             </div>
             <div className="mt-2 mr-auto text-sm">
-              応募作品数: {data.appEvent.worksCount?.toString() ?? "0"}
+              応募作品数: {data.event.worksCount?.toString() ?? "0"}
             </div>
             <div className="mt-2 mr-auto text-sm">
-              <span>参加タグ: {data.appEvent.tag}</span>
+              <span>参加タグ: {data.event.tag}</span>
             </div>
             <Button
               className="mt-4 flex w-40 cursor-pointer justify-center"
               variant={"secondary"}
               onClick={() => {
-                navigate(`/events/${data.appEvent.slug}`)
+                navigate(`/events/${data.event.slug}`)
               }}
             >
               <RefreshCcwIcon className="mr-1 w-3" />
@@ -207,29 +162,13 @@ export default function FollowingLayout() {
           </div>
         </CardContent>
       </Card>
-      {data.appEvent.slug && (
-        <EventSensitiveWorkList
-          works={data.works}
-          maxCount={data.worksCount}
+      {data.event.slug && (
+        <EventAwardPagingSensitiveWorkList
+          works={data.event.awardWorks}
+          maxCount={data.event.worksCount}
           page={data.page}
-          slug={data.appEvent.slug}
-          sort={worksOrderDeskAsc}
-          orderBy={WorkOrderby}
-          sumWorksCount={worksMaxCount}
-          workType={workType}
-          rating={rating}
-          onClickTitleSortButton={onClickTitleSortButton}
-          onClickLikeSortButton={onClickLikeSortButton}
-          onClickBookmarkSortButton={onClickBookmarkSortButton}
-          onClickCommentSortButton={onClickCommentSortButton}
-          onClickViewSortButton={onClickViewSortButton}
-          onClickAccessTypeSortButton={onClickAccessTypeSortButton}
-          onClickDateSortButton={onClickDateSortButton}
-          onClickWorkTypeSortButton={onClickWorkTypeSortButton}
-          onClickIsPromotionSortButton={onClickIsPromotionSortButton}
-          setWorkType={setWorkType}
-          setRating={setRating}
-          setSort={setWorksOrderDeskAsc}
+          slug={data.event.slug}
+          eventSource={data.event.eventSource}
         />
       )}
     </div>
@@ -237,7 +176,7 @@ export default function FollowingLayout() {
 }
 
 const appEventQuery = graphql(
-  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!, $isSensitive: Boolean!) {
+  `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $isSensitive: Boolean!) {
     appEvent(slug: $slug) {
       id
       description
@@ -249,10 +188,23 @@ const appEventQuery = graphql(
       endAt
       tag
       worksCount
-      works(offset: $offset, limit: $limit, where: $where) {
+      awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
         ...EventSensitiveWorkListItem
       }
-      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+    }
+    userEvent(slug: $slug) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      mainTag
+      entryCount
+      worksCount
+      awardWorks(offset: $offset, limit: $limit, isSensitive: $isSensitive) {
         ...EventSensitiveWorkListItem
       }
     }

@@ -16,6 +16,24 @@ import {
 } from "~/routes/($lang).r.events.$event._index/components/event-sensitive-work-list"
 import type { SortType } from "~/types/sort-type"
 
+type EventSource = "OFFICIAL" | "USER"
+
+type SensitiveEvent = {
+  id: string
+  description: string
+  title: string
+  slug: string
+  thumbnailImageUrl: string | null
+  headerImageUrl: string | null
+  startAt: number
+  endAt: number
+  tag: string
+  worksCount: number
+  works: React.ComponentProps<typeof EventSensitiveWorkList>["works"]
+  awardWorks: React.ComponentProps<typeof EventSensitiveWorkList>["works"]
+  eventSource: EventSource
+}
+
 const toEventDateTimeText = (time: number) => {
   const t = useTranslation()
 
@@ -28,6 +46,38 @@ const toEventDateTimeText = (time: number) => {
     format(japanTime, "yyyy/MM/dd HH:mm"),
   )
 }
+
+const normalizeOfficialEvent = (event: any): SensitiveEvent => ({
+  id: event.id,
+  description: event.description,
+  title: event.title,
+  slug: event.slug,
+  thumbnailImageUrl: event.thumbnailImageUrl,
+  headerImageUrl: event.headerImageUrl,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  tag: event.tag,
+  worksCount: event.worksCount ?? 0,
+  works: event.works ?? [],
+  awardWorks: event.awardWorks ?? [],
+  eventSource: "OFFICIAL",
+})
+
+const normalizeUserEvent = (event: any): SensitiveEvent => ({
+  id: event.id,
+  description: event.description,
+  title: event.title,
+  slug: event.slug,
+  thumbnailImageUrl: event.thumbnailImageUrl,
+  headerImageUrl: event.headerImageUrl,
+  startAt: event.startAt,
+  endAt: event.endAt,
+  tag: event.mainTag,
+  worksCount: event.entryCount ?? event.worksCount ?? 0,
+  works: event.works ?? [],
+  awardWorks: event.awardWorks ?? [],
+  eventSource: "USER",
+})
 
 export async function loader(props: LoaderFunctionArgs) {
   const event = props.params.event
@@ -64,15 +114,18 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
-  if (eventsResp.data.appEvent === null) {
+  const normalizedEvent = eventsResp.data.appEvent
+    ? normalizeOfficialEvent(eventsResp.data.appEvent)
+    : eventsResp.data.userEvent
+      ? normalizeUserEvent(eventsResp.data.userEvent)
+      : null
+
+  if (normalizedEvent === null) {
     throw new Response(null, { status: 404 })
   }
 
   return {
-    appEvent: eventsResp.data.appEvent,
-    works: eventsResp.data.appEvent.works,
-    worksCount: eventsResp.data.appEvent.worksCount as number,
-    awardWorks: eventsResp.data.appEvent.awardWorks,
+    event: normalizedEvent,
     page,
   }
 }
@@ -177,17 +230,17 @@ export default function FollowingLayout() {
 
   return (
     <div className="flex flex-col space-y-4">
-      {data.appEvent.thumbnailImageUrl && (
+      {data.event.thumbnailImageUrl && (
         <img
           className="h-auto max-h-96 w-full rounded-lg object-cover"
-          src={data.appEvent.thumbnailImageUrl}
+          src={data.event.thumbnailImageUrl}
           alt=""
         />
       )}
       <Card className="m-auto w-full">
         <CardHeader>
           <div className="mt-4 text-center font-medium text-lg">
-            {data.appEvent.title}
+            {data.event.title}
           </div>
         </CardHeader>
         <CardContent>
@@ -195,23 +248,23 @@ export default function FollowingLayout() {
             <div
               className="mb-2 text-left text-sm"
               // biome-ignore lint/security/noDangerouslySetInnerHtml: HTML is generated from serialized/trusted data
-              dangerouslySetInnerHTML={{ __html: data.appEvent.description }}
+              dangerouslySetInnerHTML={{ __html: data.event.description }}
             />
             <div className="mr-auto text-sm">
-              {toEventDateTimeText(data.appEvent.startAt)}～
-              {toEventDateTimeText(data.appEvent.endAt)}
+              {toEventDateTimeText(data.event.startAt)}～
+              {toEventDateTimeText(data.event.endAt)}
             </div>
             <div className="mt-2 mr-auto text-sm">
-              応募作品数: {data.appEvent.worksCount?.toString() ?? "0"}
+              応募作品数: {data.event.worksCount?.toString() ?? "0"}
             </div>
             <div className="mt-2 mr-auto text-sm">
-              <span>参加タグ: {data.appEvent.tag}</span>
+              <span>参加タグ: {data.event.tag}</span>
             </div>
             <Button
               className="mt-4 flex w-40 cursor-pointer justify-center"
               variant={"secondary"}
               onClick={() => {
-                navigate(`/events/${data.appEvent.slug}`)
+                navigate(`/events/${data.event.slug}`)
               }}
             >
               <RefreshCcwIcon className="mr-1 w-3" />
@@ -220,12 +273,13 @@ export default function FollowingLayout() {
           </div>
         </CardContent>
       </Card>
-      {data.appEvent.slug && (
+      {data.event.slug && (
         <EventSensitiveWorkList
-          works={data.works ?? []}
-          maxCount={data.worksCount}
+          works={data.event.works}
+          maxCount={data.event.worksCount}
           page={data.page}
-          slug={data.appEvent.slug}
+          slug={data.event.slug}
+          eventSource={data.event.eventSource}
           sort={worksOrderDeskAsc}
           orderBy={WorkOrderby}
           sumWorksCount={worksMaxCount}
@@ -261,6 +315,25 @@ const appEventQuery = graphql(
       startAt
       endAt
       tag
+      worksCount
+      works(offset: $offset, limit: $limit, where: $where) {
+        ...EventSensitiveWorkListItem
+      }
+      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+        ...EventSensitiveWorkListItem
+      }
+    }
+    userEvent(slug: $slug) {
+      id
+      description
+      title
+      slug
+      thumbnailImageUrl
+      headerImageUrl
+      startAt
+      endAt
+      mainTag
+      entryCount
       worksCount
       works(offset: $offset, limit: $limit, where: $where) {
         ...EventSensitiveWorkListItem

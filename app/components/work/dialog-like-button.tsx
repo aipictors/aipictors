@@ -16,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
+import { getDefaultLikeIsAnonymous } from "~/utils/like-visibility-preference"
 
 type Props = {
   text?: string
@@ -79,7 +80,13 @@ export function DialogLikeButton (props: Props): React.ReactNode {
   const [isChoiceDialogOpen, setIsChoiceDialogOpen] = useState(false)
 
   const isSensitive = props.isSensitive ?? /\/r($|\/)/.test(location.pathname)
-  const defaultIsAnonymous = isSensitive
+  const [defaultIsAnonymous, setDefaultIsAnonymous] = useState(() =>
+    getDefaultLikeIsAnonymous(isSensitive),
+  )
+
+  useEffect(() => {
+    setDefaultIsAnonymous(getDefaultLikeIsAnonymous(isSensitive))
+  }, [isSensitive])
 
   // targetWorkIdが変更されたときの処理
   useEffect(() => {
@@ -109,7 +116,7 @@ export function DialogLikeButton (props: Props): React.ReactNode {
 
   // クリックハンドラー
   const performLike = useCallback(
-    async (isAnonymous?: boolean) => {
+    async (_isAnonymous?: boolean) => {
       if (props.onClick) {
         props.onClick(!isLiked)
       }
@@ -133,7 +140,6 @@ export function DialogLikeButton (props: Props): React.ReactNode {
             variables: {
               input: {
                 workId: props.targetWorkId,
-                isAnonymous: isAnonymous,
               },
             },
           })
@@ -374,7 +380,7 @@ export function DialogLikeButton (props: Props): React.ReactNode {
             >
               <span className="flex flex-col items-start">
                 <span>{alternateAction.label}</span>
-                <span className="font-normal text-xs text-muted-foreground">
+                <span className="font-normal text-muted-foreground text-xs">
                   {alternateAction.description}
                 </span>
               </span>

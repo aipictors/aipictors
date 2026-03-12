@@ -1,13 +1,9 @@
-import { useEffect, useState, useContext, useCallback } from "react"
-import { Heart } from "lucide-react"
-import { cn } from "~/lib/utils"
-import { AuthContext } from "~/contexts/auth-context"
-import { LoginDialogButton } from "~/components/login-dialog-button"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { KeyCodes } from "~/config"
-import { useTranslation } from "~/hooks/use-translation"
+import { Heart } from "lucide-react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
+import { LoginDialogButton } from "~/components/login-dialog-button"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -16,6 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
+import { KeyCodes } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { getDefaultLikeIsAnonymous } from "~/utils/like-visibility-preference"
 
 type Props = {
   size?: number
@@ -34,9 +35,10 @@ type Props = {
   isParticle?: boolean
   isUsedShortcutKey?: boolean
   isTargetUserBlocked?: boolean
+  isChoiceDialogDisabled?: boolean
 }
 
-export function LikeButton (props: Props): React.ReactNode {
+export function LikeButton(props: Props): React.ReactNode {
   const t = useTranslation()
   const location = useLocation()
 
@@ -82,7 +84,13 @@ export function LikeButton (props: Props): React.ReactNode {
   const [isChoiceDialogOpen, setIsChoiceDialogOpen] = useState(false)
 
   const isSensitive = props.isSensitive ?? /\/r($|\/)/.test(location.pathname)
-  const defaultIsAnonymous = isSensitive
+  const [defaultIsAnonymous, setDefaultIsAnonymous] = useState(() =>
+    getDefaultLikeIsAnonymous(isSensitive),
+  )
+
+  useEffect(() => {
+    setDefaultIsAnonymous(getDefaultLikeIsAnonymous(isSensitive))
+  }, [isSensitive])
 
   // クライアントサイドでのみローカルストレージから状態を復元
   useEffect(() => {
@@ -147,7 +155,7 @@ export function LikeButton (props: Props): React.ReactNode {
     }
   }, [props.defaultLiked, props.defaultLikedCount, getLocalLikeState])
 
-  const performLike = async (isAnonymous?: boolean) => {
+  const performLike = async (_isAnonymous?: boolean) => {
     if (props.onClick) {
       props.onClick(!isLiked)
     }
@@ -171,7 +179,6 @@ export function LikeButton (props: Props): React.ReactNode {
           variables: {
             input: {
               workId: props.targetWorkId,
-              isAnonymous: isAnonymous,
             },
           },
         })
@@ -199,6 +206,11 @@ export function LikeButton (props: Props): React.ReactNode {
 
     if (isLiked) {
       await performLike()
+      return
+    }
+
+    if (props.isChoiceDialogDisabled) {
+      await performLike(defaultIsAnonymous)
       return
     }
 
@@ -369,7 +381,11 @@ export function LikeButton (props: Props): React.ReactNode {
         >
           <Heart
             className={cn(
-              clicked ? (isLiked ? "like-animation" : "like-animation-end") : "",
+              clicked
+                ? isLiked
+                  ? "like-animation"
+                  : "like-animation-end"
+                : "",
             )}
             size={Math.floor(size / 2)}
             strokeWidth={1.5}
@@ -384,63 +400,65 @@ export function LikeButton (props: Props): React.ReactNode {
         )}
       </button>
 
-      <Dialog open={isChoiceDialogOpen} onOpenChange={setIsChoiceDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t("いいね方法を選択", "Choose how to like")}
-            </DialogTitle>
-            <DialogDescription>
-              {defaultIsAnonymous
-                ? t(
-                    "センシティブ作品は匿名いいねが初期選択です。必要に応じて名前表示にも切り替えられます。",
-                    "Sensitive works default to anonymous likes. You can switch to a named like when needed.",
-                  )
-                : t(
-                    "全年齢作品は名前表示のいいねが初期選択です。必要に応じて匿名にも切り替えられます。",
-                    "All-ages works default to named likes. You can switch to anonymous when needed.",
-                  )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <Button
-              className="w-full justify-start whitespace-normal px-4 py-6 text-left"
-              onClick={async () => {
-                setIsChoiceDialogOpen(false)
-                await performLike(defaultAction.isAnonymous)
-              }}
-            >
-              <span className="flex flex-col items-start">
-                <span>{defaultAction.label}</span>
-                <span className="font-normal text-xs opacity-80">
-                  {defaultAction.description}
+      {!props.isChoiceDialogDisabled && (
+        <Dialog open={isChoiceDialogOpen} onOpenChange={setIsChoiceDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {t("いいね方法を選択", "Choose how to like")}
+              </DialogTitle>
+              <DialogDescription>
+                {defaultIsAnonymous
+                  ? t(
+                      "センシティブ作品は匿名いいねが初期選択です。必要に応じて名前表示にも切り替えられます。",
+                      "Sensitive works default to anonymous likes. You can switch to a named like when needed.",
+                    )
+                  : t(
+                      "全年齢作品は名前表示のいいねが初期選択です。必要に応じて匿名にも切り替えられます。",
+                      "All-ages works default to named likes. You can switch to anonymous when needed.",
+                    )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <Button
+                className="w-full justify-start whitespace-normal px-4 py-6 text-left"
+                onClick={async () => {
+                  setIsChoiceDialogOpen(false)
+                  await performLike(defaultAction.isAnonymous)
+                }}
+              >
+                <span className="flex flex-col items-start">
+                  <span>{defaultAction.label}</span>
+                  <span className="font-normal text-xs opacity-80">
+                    {defaultAction.description}
+                  </span>
                 </span>
-              </span>
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start whitespace-normal px-4 py-6 text-left"
-              onClick={async () => {
-                setIsChoiceDialogOpen(false)
-                await performLike(alternateAction.isAnonymous)
-              }}
-            >
-              <span className="flex flex-col items-start">
-                <span>{alternateAction.label}</span>
-                <span className="font-normal text-xs text-muted-foreground">
-                  {alternateAction.description}
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start whitespace-normal px-4 py-6 text-left"
+                onClick={async () => {
+                  setIsChoiceDialogOpen(false)
+                  await performLike(alternateAction.isAnonymous)
+                }}
+              >
+                <span className="flex flex-col items-start">
+                  <span>{alternateAction.label}</span>
+                  <span className="font-normal text-muted-foreground text-xs">
+                    {alternateAction.description}
+                  </span>
                 </span>
-              </span>
-            </Button>
-            <p className="text-muted-foreground text-xs">
-              {t(
-                "匿名いいねは作者への通知や作品のいいね一覧でユーザー名を表示しません。",
-                "Anonymous likes hide your name from author notifications and visible like lists.",
-              )}
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
+              </Button>
+              <p className="text-muted-foreground text-xs">
+                {t(
+                  "匿名いいねは作者への通知や作品のいいね一覧でユーザー名を表示しません。",
+                  "Anonymous likes hide your name from author notifications and visible like lists.",
+                )}
+              </p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   )
 }

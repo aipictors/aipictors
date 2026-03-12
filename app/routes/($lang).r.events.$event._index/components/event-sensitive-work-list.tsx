@@ -17,6 +17,7 @@ type Props = {
   maxCount: number
   page: number
   slug: string
+  eventSource: "OFFICIAL" | "USER"
   sort: SortType
   orderBy: IntrospectionEnum<"WorkOrderBy">
   workType: IntrospectionEnum<"WorkType"> | null
@@ -44,7 +45,7 @@ export function EventSensitiveWorkList (props: Props) {
 
   const authContext = useContext(AuthContext)
 
-  const { data: resp } = useQuery(query, {
+  const { data: resp } = useQuery<any>(query as any, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       offset: props.page * 64,
@@ -59,7 +60,11 @@ export function EventSensitiveWorkList (props: Props) {
     },
   })
 
-  const workDisplayed = resp?.appEvent?.works ?? props.works
+  const userEventWorks = resp?.userEvent?.works
+
+  const workDisplayed = props.eventSource === "OFFICIAL"
+    ? (resp?.appEvent?.works ?? props.works)
+    : (userEventWorks ?? props.works)
 
   const allSortType = [
     "LIKES_COUNT",
@@ -95,7 +100,7 @@ export function EventSensitiveWorkList (props: Props) {
         perPage={64}
         currentPage={props.page}
         onPageChange={(page: number) => {
-          navigate(`/events/${props.slug}?page=${page}`)
+          navigate(`/r/events/${props.slug}?page=${page}`)
         }}
       />
     </>
@@ -112,6 +117,11 @@ export const EventSensitiveWorkListItemFragment = graphql(
 const query = graphql(
   `query AppEvent($slug: String!, $offset: Int!, $limit: Int!, $where: WorksWhereInput!) {
       appEvent(slug: $slug) {
+        works(offset: $offset, limit: $limit, where: $where) {
+          ...EventSensitiveWorkListItem
+        }
+      }
+      userEvent(slug: $slug) {
         works(offset: $offset, limit: $limit, where: $where) {
           ...EventSensitiveWorkListItem
         }
