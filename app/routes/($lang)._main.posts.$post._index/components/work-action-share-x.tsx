@@ -11,11 +11,12 @@ interface XIntentProps extends HTMLProps<HTMLAnchorElement> {
   via?: string
   related?: string[]
   in_reply_to?: string
+  label?: string
 }
 
 export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
   (
-    { text, url, hashtags, via, related, in_reply_to, ...intrinsicProps },
+    { text, url, hashtags, via, related, in_reply_to, label, ...intrinsicProps },
     forwardedRef,
   ) => {
     const t = useTranslation()
@@ -41,7 +42,7 @@ export const XIntent = forwardRef<HTMLAnchorElement, XIntentProps>(
           {...intrinsicProps}
         >
           <RiTwitterXLine />
-          {t("Xで共有する", "Share on X")}
+          {label ?? t("Xで共有する", "Share on X")}
         </Link>
       </Button>
     )

@@ -6,17 +6,31 @@ import type {
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
 import { format } from "date-fns"
 import { graphql } from "gql.tada"
+import { Share2 } from "lucide-react"
 import React, { useContext, useEffect } from "react"
 import { toast } from "sonner"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
+import { CopyWorkUrlButton } from "~/routes/($lang)._main.posts.$post._index/components/work-action-copy-url"
+import { XIntent } from "~/routes/($lang)._main.posts.$post._index/components/work-action-share-x"
 import {
   EventAwardWorkList,
   EventAwardWorkListItemFragment,
@@ -238,6 +252,12 @@ function EventHeroContent(props: {
             R18
           </Badge>
         )}
+        <EventActionShare
+          slug={props.appEvent.slug}
+          title={props.appEvent.title}
+          announcementText={props.appEvent.announcementText}
+          isOverlay={props.isOverlay}
+        />
       </div>
 
       <div className="max-w-4xl space-y-3 text-foreground">
@@ -271,6 +291,67 @@ function EventHeroContent(props: {
         />
       </div>
     </div>
+  )
+}
+
+function EventActionShare(props: {
+  slug: string
+  title: string
+  announcementText: string
+  isOverlay?: boolean
+}) {
+  const t = useTranslation()
+
+  const currentUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/events/${props.slug}`
+      : `https://www.aipictors.com/events/${props.slug}`
+
+  return (
+    <Popover>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <Button
+                size="icon"
+                variant={props.isOverlay ? "secondary" : "outline"}
+                className={props.isOverlay
+                  ? "bg-background/90 text-foreground backdrop-blur"
+                  : undefined}
+                aria-label={t("イベントを共有", "Share event")}
+                title={t("イベントを共有", "Share event")}
+              >
+                <Share2 className="size-4" />
+              </Button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{t("イベントを共有", "Share event")}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <PopoverContent className="w-80">
+        <div className="grid gap-4">
+          <div className="space-y-2">
+            <h4 className="font-medium leading-none">
+              {t("イベントを共有する", "Share event")}
+            </h4>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              {props.title}
+            </p>
+          </div>
+          <div className="grid gap-2">
+            <CopyWorkUrlButton currentUrl={currentUrl} />
+            <XIntent
+              text={props.announcementText}
+              hashtags={["Aipictors"]}
+              label={t("Xで告知する", "Announce on X")}
+            />
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   )
 }
 
