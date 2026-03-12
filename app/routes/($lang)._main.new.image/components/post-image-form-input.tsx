@@ -54,6 +54,8 @@ type Props = {
   events: {
     title: string | null
     description: string | null
+    thumbnailImageUrl?: string | null
+    headerImageUrl?: string | null
     tag: string | null
     endAt: number
     slug: string | null
@@ -348,6 +350,7 @@ export function PostImageFormInput(props: Props) {
           <PostFormItemEvent
             eventName={event.title ?? null}
             eventDescription={event.description ?? null}
+            thumbnailImageUrl={event.thumbnailImageUrl ?? event.headerImageUrl ?? null}
             eventTag={event.tag ?? null}
             endAt={event.endAt ?? 0}
             slug={event.slug ?? null}
@@ -397,6 +400,7 @@ export function PostImageFormInput(props: Props) {
                   <PostFormItemEvent
                     eventName={event.title ?? null}
                     eventDescription={event.description ?? null}
+                    thumbnailImageUrl={event.thumbnailImageUrl ?? event.headerImageUrl ?? null}
                     eventTag={event.tag ?? null}
                     endAt={event.endAt ?? 0}
                     slug={event.slug ?? null}

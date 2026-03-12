@@ -8,6 +8,7 @@ import { getJstDate } from "~/utils/jst-date"
 type Props = {
   eventName: string | null
   eventDescription: string | null
+  thumbnailImageUrl?: string | null
   eventTag: string | null
   endAt: number
   slug: string | null
@@ -22,6 +23,7 @@ type Props = {
 export function PostFormItemEvent(props: Props) {
   const now = getJstDate(new Date())
   const checkboxId = `attend-checkbox-${props.slug ?? props.eventTag ?? "event"}`
+  const thumbnailSrc = props.thumbnailImageUrl || "/images/opepnepe.png"
 
   const isOngoing = now <= new Date(props.endAt * 1000)
 
@@ -74,15 +76,25 @@ export function PostFormItemEvent(props: Props) {
           target="_blank"
         >
           <Card>
-            <CardContent className="space-y-2 p-4">
-              <h3 className="font-medium text-sm">{props.eventName}</h3>
-              {props.eventDescription !== null && (
-                <div
-                  className="font-medium text-xs"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: eventDescription is pre-formatted HTML content
-                  dangerouslySetInnerHTML={{ __html: props.eventDescription }}
+            <CardContent className="p-4">
+              <div className="flex items-start gap-3">
+                <img
+                  src={thumbnailSrc}
+                  alt={props.eventName ?? ""}
+                  className="h-16 w-16 shrink-0 rounded-md object-cover"
+                  loading="lazy"
                 />
-              )}
+                <div className="min-w-0 space-y-2">
+                  <h3 className="font-medium text-sm">{props.eventName}</h3>
+                  {props.eventDescription !== null && (
+                    <div
+                      className="line-clamp-3 font-medium text-xs"
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: eventDescription is pre-formatted HTML content
+                      dangerouslySetInnerHTML={{ __html: props.eventDescription }}
+                    />
+                  )}
+                </div>
+              </div>
             </CardContent>
           </Card>
         </Link>

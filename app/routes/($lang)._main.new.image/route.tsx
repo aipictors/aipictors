@@ -55,6 +55,8 @@ import { uploadPublicImage } from "~/utils/upload-public-image"
 type EventOption = {
   title: string | null
   description: string | null
+  thumbnailImageUrl?: string | null
+  headerImageUrl?: string | null
   tag: string | null
   endAt: number
   slug: string | null
@@ -1253,6 +1255,8 @@ const ViewerQuery = graphql(
       id
       description
       title
+      thumbnailImageUrl
+      headerImageUrl
       tag
       slug
       endAt
@@ -1267,6 +1271,8 @@ const ViewerQuery = graphql(
       id
       description
       title
+      thumbnailImageUrl
+      headerImageUrl
       tag: mainTag
       slug
       endAt
