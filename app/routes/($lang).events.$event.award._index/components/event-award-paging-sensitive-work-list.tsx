@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/index"
-import { graphql, type FragmentOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import {
   PhotoAlbumWorkFragment,
@@ -18,7 +18,7 @@ type Props = {
 /**
  * イベント作品一覧
  */
-export function EventAwardPagingSensitiveWorkList (props: Props) {
+export function EventAwardPagingSensitiveWorkList(props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data } = useQuery<any>(query as any, {
@@ -33,9 +33,10 @@ export function EventAwardPagingSensitiveWorkList (props: Props) {
 
   const resp = data as any
 
-  const works = props.eventSource === "OFFICIAL"
-    ? (resp?.appEvent?.awardWorks ?? props.works)
-    : (resp?.userEvent?.awardWorks ?? props.works)
+  const works =
+    props.eventSource === "OFFICIAL"
+      ? (resp?.appEvent?.awardWorks ?? props.works)
+      : (resp?.userEvent?.awardWorks ?? props.works)
 
   return (
     <>

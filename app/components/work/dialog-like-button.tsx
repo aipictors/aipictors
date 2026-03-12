@@ -16,7 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { getDefaultLikeIsAnonymous } from "~/utils/like-visibility-preference"
 
 type Props = {
   text?: string
@@ -80,14 +79,6 @@ export function DialogLikeButton (props: Props): React.ReactNode {
   const [isChoiceDialogOpen, setIsChoiceDialogOpen] = useState(false)
 
   const isSensitive = props.isSensitive ?? /\/r($|\/)/.test(location.pathname)
-  const [defaultIsAnonymous, setDefaultIsAnonymous] = useState(() =>
-    getDefaultLikeIsAnonymous(isSensitive),
-  )
-
-  useEffect(() => {
-    setDefaultIsAnonymous(getDefaultLikeIsAnonymous(isSensitive))
-  }, [isSensitive])
-
   // targetWorkIdが変更されたときの処理
   useEffect(() => {
     const localState = getLocalLikeState()
@@ -116,7 +107,7 @@ export function DialogLikeButton (props: Props): React.ReactNode {
 
   // クリックハンドラー
   const performLike = useCallback(
-    async (_isAnonymous?: boolean) => {
+    async (isAnonymous?: boolean) => {
       if (props.onClick) {
         props.onClick(!isLiked)
       }
@@ -140,6 +131,7 @@ export function DialogLikeButton (props: Props): React.ReactNode {
             variables: {
               input: {
                 workId: props.targetWorkId,
+                ...(isAnonymous !== undefined && { isAnonymous }),
               },
             },
           })
@@ -258,6 +250,8 @@ export function DialogLikeButton (props: Props): React.ReactNode {
   }
 
   // ログイン済みの場合
+  const defaultIsAnonymous = isSensitive
+
   const defaultAction = defaultIsAnonymous
     ? {
         isAnonymous: true,

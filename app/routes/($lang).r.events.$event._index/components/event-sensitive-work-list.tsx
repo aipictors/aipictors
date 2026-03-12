@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/index"
 import { useNavigate } from "@remix-run/react"
-import { graphql, type FragmentOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import {
@@ -40,7 +40,7 @@ type Props = {
 /**
  * イベント作品一覧
  */
-export function EventSensitiveWorkList (props: Props) {
+export function EventSensitiveWorkList(props: Props) {
   const navigate = useNavigate()
 
   const authContext = useContext(AuthContext)
@@ -62,9 +62,10 @@ export function EventSensitiveWorkList (props: Props) {
 
   const userEventWorks = resp?.userEvent?.works
 
-  const workDisplayed = props.eventSource === "OFFICIAL"
-    ? (resp?.appEvent?.works ?? props.works)
-    : (userEventWorks ?? props.works)
+  const workDisplayed =
+    props.eventSource === "OFFICIAL"
+      ? (resp?.appEvent?.works ?? props.works)
+      : (userEventWorks ?? props.works)
 
   const allSortType = [
     "LIKES_COUNT",

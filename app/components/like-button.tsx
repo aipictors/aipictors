@@ -16,7 +16,6 @@ import { KeyCodes } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { getDefaultLikeIsAnonymous } from "~/utils/like-visibility-preference"
 
 type Props = {
   size?: number
@@ -84,14 +83,6 @@ export function LikeButton(props: Props): React.ReactNode {
   const [isChoiceDialogOpen, setIsChoiceDialogOpen] = useState(false)
 
   const isSensitive = props.isSensitive ?? /\/r($|\/)/.test(location.pathname)
-  const [defaultIsAnonymous, setDefaultIsAnonymous] = useState(() =>
-    getDefaultLikeIsAnonymous(isSensitive),
-  )
-
-  useEffect(() => {
-    setDefaultIsAnonymous(getDefaultLikeIsAnonymous(isSensitive))
-  }, [isSensitive])
-
   // クライアントサイドでのみローカルストレージから状態を復元
   useEffect(() => {
     const localState = getLocalLikeState()
@@ -155,7 +146,7 @@ export function LikeButton(props: Props): React.ReactNode {
     }
   }, [props.defaultLiked, props.defaultLikedCount, getLocalLikeState])
 
-  const performLike = async (_isAnonymous?: boolean) => {
+  const performLike = async (isAnonymous?: boolean) => {
     if (props.onClick) {
       props.onClick(!isLiked)
     }
@@ -179,6 +170,7 @@ export function LikeButton(props: Props): React.ReactNode {
           variables: {
             input: {
               workId: props.targetWorkId,
+              ...(isAnonymous !== undefined && { isAnonymous }),
             },
           },
         })
@@ -209,8 +201,10 @@ export function LikeButton(props: Props): React.ReactNode {
       return
     }
 
-    if (props.isChoiceDialogDisabled) {
-      await performLike(defaultIsAnonymous)
+    const shouldSkipChoiceDialog = props.isChoiceDialogDisabled ?? !props.text
+
+    if (shouldSkipChoiceDialog) {
+      await performLike()
       return
     }
 
@@ -304,6 +298,8 @@ export function LikeButton(props: Props): React.ReactNode {
       />
     )
   }
+
+  const defaultIsAnonymous = isSensitive
 
   const defaultAction = defaultIsAnonymous
     ? {

@@ -1,4 +1,4 @@
-import { Suspense, useContext, useEffect, useState } from "react"
+import { Suspense, useContext } from "react"
 import { LikeButton } from "~/components/like-button"
 import { DialogLikeButton } from "~/components/work/dialog-like-button"
 import { AuthContext } from "~/contexts/auth-context"
@@ -9,7 +9,6 @@ import { WorkEditorButton } from "~/routes/($lang)._main.posts.$post._index/comp
 import { createImageFileFromUrl } from "~/routes/($lang).generation._index/utils/create-image-file-from-url"
 import { downloadImageFileAsPng } from "~/routes/($lang).generation._index/utils/download-image-file-as-png"
 import { downloadZipFile } from "~/routes/($lang).generation._index/utils/download-zip-file"
-import { getDefaultLikeIsAnonymous } from "~/utils/like-visibility-preference"
 import { WorkActionMenu } from "./work-action-menu"
 import { SharePopover } from "./work-action-share"
 
@@ -41,19 +40,6 @@ type Props = {
  */
 export function WorkAction(props: Props) {
   const appContext = useContext(AuthContext)
-  const [likeButtonText, setLikeButtonText] = useState(
-    `いいね ${props.workLikesCount}`,
-  )
-
-  useEffect(() => {
-    const isAnonymous = getDefaultLikeIsAnonymous(Boolean(props.isSensitive))
-
-    setLikeButtonText(
-      isAnonymous
-        ? `匿名いいね ${props.workLikesCount}`
-        : `いいね ${props.workLikesCount}`,
-    )
-  }, [props.isSensitive, props.workLikesCount])
 
   const stripFileExtension = (name: string): string => {
     return name.replace(/\.[^./\\]+$/, "")
@@ -120,7 +106,7 @@ export function WorkAction(props: Props) {
           <>
             <LikeButton
               size={40}
-              text={likeButtonText}
+              text={`いいね ${props.workLikesCount}`}
               defaultLiked={props.defaultLiked}
               defaultLikedCount={props.workLikesCount}
               isSensitive={props.isSensitive}
@@ -129,7 +115,6 @@ export function WorkAction(props: Props) {
               targetWorkOwnerUserId={props.targetWorkOwnerUserId}
               isUsedShortcutKey={true}
               isTargetUserBlocked={props.isTargetUserBlocked}
-              isChoiceDialogDisabled={true}
             />
             <Suspense fallback={null}>
               <RecommendButton

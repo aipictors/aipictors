@@ -11,10 +11,6 @@ import { Switch } from "~/components/ui/switch"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation" // 翻訳用フック
 import { SettingFcmForm } from "~/routes/($lang).settings.push-notification/components/setting-fcm-form"
-import {
-  getLikeVisibilityPreferences,
-  saveLikeVisibilityPreferences,
-} from "~/utils/like-visibility-preference"
 
 /**
  * 通知設定フォーム
@@ -26,12 +22,9 @@ export function SettingNotificationForm() {
   const allAgeAnonymousId = useId()
   const sensitiveAnonymousId = useId()
 
-  const { data: userSetting, refetch: refetchSetting } = useQuery(
-    userSettingQuery,
-    {
-      skip: authContext.isLoading || authContext.isNotLoggedIn,
-    },
-  )
+  const { data: userSetting } = useQuery(userSettingQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  })
 
   const [updateUserSetting, { loading: isUpdatingUserSetting }] = useMutation(
     updateUserSettingMutation,
@@ -52,26 +45,23 @@ export function SettingNotificationForm() {
   }, [userSetting])
 
   useEffect(() => {
-    const preferences = getLikeVisibilityPreferences()
-
-    setIsAllAgeLikeAnonymousByDefault(preferences.allAgeAnonymousByDefault)
-    setIsSensitiveLikeAnonymousByDefault(
-      preferences.sensitiveAnonymousByDefault,
+    setIsAllAgeLikeAnonymousByDefault(
+      userSetting?.userSetting?.isAnonymousLikeAllAges ?? false,
     )
-  }, [])
+    setIsSensitiveLikeAnonymousByDefault(
+      userSetting?.userSetting?.isAnonymousLikeSensitive ?? true,
+    )
+  }, [userSetting])
 
   const onSave = async () => {
     await updateUserSetting({
       variables: {
         input: {
           isNotifyComment: isNotifyComment,
+          isAnonymousLikeAllAges: isAllAgeLikeAnonymousByDefault,
+          isAnonymousLikeSensitive: isSensitiveLikeAnonymousByDefault,
         },
       },
-    })
-
-    saveLikeVisibilityPreferences({
-      allAgeAnonymousByDefault: isAllAgeLikeAnonymousByDefault,
-      sensitiveAnonymousByDefault: isSensitiveLikeAnonymousByDefault,
     })
 
     toast(t("保存しました", "Settings saved"))
@@ -102,8 +92,8 @@ export function SettingNotificationForm() {
           </p>
           <p className="mt-2 text-muted-foreground">
             {t(
-              "ここで設定した内容は、このブラウザでいいねダイアログを開いたときの初期選択に反映されます。",
-              "These settings control the default choice shown in the like dialog on this browser.",
+              "ここで設定した内容は、サムネイルからのいいね時にそのまま適用されます。作品詳細では必要に応じて都度切り替えできます。",
+              "These settings are applied directly when liking from thumbnails. On the work detail page, you can still switch each time if needed.",
             )}
           </p>
           <div className="mt-4 space-y-4">
@@ -228,6 +218,8 @@ const userSettingQuery = graphql(
       preferenceRating
       featurePromptonRequest
       isNotifyComment
+      isAnonymousLikeAllAges
+      isAnonymousLikeSensitive
     }
   }`,
 )
