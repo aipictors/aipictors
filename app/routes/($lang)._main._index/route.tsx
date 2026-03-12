@@ -93,6 +93,7 @@ import {
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
+import { fetchFeaturedTaggedReleases, fetchReleaseList } from "~/utils/micro-cms-release"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
@@ -226,12 +227,7 @@ export async function loader(_props: LoaderFunctionArgs) {
   const now = getJstDate()
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
 
-  const microCmsClient = createCmsClient({
-    serviceDomain: "aipictors",
-    apiKey: config.cms.microCms.apiKey,
-  })
-
-  const [result, releaseList] = await Promise.all([
+  const [result, releaseList, featuredReleaseList] = await Promise.all([
     loaderClient.query({
       query: query,
       variables: {
@@ -249,16 +245,16 @@ export async function loader(_props: LoaderFunctionArgs) {
         newUsersWorksLimit: config.query.homeWorkCount.newUser,
       },
     }),
-    microCmsClient
-      .get<MicroCmsApiReleaseResponse>({
-        endpoint: "releases?orders=-createdAt&limit=4",
-      })
+    fetchReleaseList({
+      limit: 4,
+    })
       .catch(() => ({
         contents: [],
         totalCount: 0,
         offset: 0,
         limit: 4,
       })),
+    fetchFeaturedTaggedReleases().catch(() => []),
   ])
 
   const awardDateText = getUtcDateString(yesterday)
@@ -282,6 +278,7 @@ export async function loader(_props: LoaderFunctionArgs) {
     awardDateText: awardDateText,
     eventPreviews,
     firstTag: randomCategories[0],
+    featuredReleaseList,
     releaseList,
     secondTag: randomCategories[1],
   }
@@ -758,6 +755,7 @@ export default function Index() {
             <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_262px)]">
               <HomeQuickPreviewBar
                 events={data.eventPreviews}
+                  featuredReleases={data.featuredReleaseList}
                 releaseList={data.releaseList}
               />
               <HomeWorksUsersRecommendedSection
@@ -841,7 +839,10 @@ export default function Index() {
                   <HomeEventPreviewList events={data.eventPreviews} />
                 </div>
                 <div className="hidden md:block">
-                  <HomeReleaseList releaseList={data.releaseList} />
+                  <HomeReleaseList
+                    featuredReleases={data.featuredReleaseList}
+                    releaseList={data.releaseList}
+                  />
                 </div>
                 {data.workAwards && (
                   <HomeAwardWorksSection works={data.workAwards} />

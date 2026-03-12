@@ -6,15 +6,20 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { createClient as createCmsClient } from "microcms-js-sdk"
+import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 import type {
   MicroCmsApiRelease,
-  MicroCmsApiReleaseResponse,
 } from "~/types/micro-cms-release-response"
 import { useTranslation } from "~/hooks/use-translation"
 import { ChevronRight } from "lucide-react"
+import {
+  featuredReleaseTags,
+  fetchReleaseList,
+  isFeaturedReleaseTag,
+  type FeaturedReleaseTag,
+} from "~/utils/micro-cms-release"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.RELEASES, undefined, props.params.lang)
@@ -30,26 +35,17 @@ export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const pageParam = url.searchParams.get("page")
   const qParam = url.searchParams.get("q")?.trim() ?? ""
+  const tagParam = url.searchParams.get("tag")
+  const selectedTag = isFeaturedReleaseTag(tagParam) ? tagParam : null
   const limit = 16
   const page = Math.max(1, Number(pageParam) || 1)
   const offset = (page - 1) * limit
 
-  const microCmsClient = createCmsClient({
-    serviceDomain: "aipictors",
-    apiKey: config.cms.microCms.apiKey,
-  })
-
-  const query = new URLSearchParams({
-    orders: "-createdAt",
-    limit: String(limit),
-    offset: String(offset),
-  })
-  if (qParam.length > 0) {
-    query.set("q", qParam)
-  }
-
-  const data: MicroCmsApiReleaseResponse = await microCmsClient.get({
-    endpoint: `releases?${query.toString()}`,
+  const data = await fetchReleaseList({
+    limit,
+    offset,
+    q: qParam,
+    tag: selectedTag,
   })
 
   return {
@@ -57,6 +53,8 @@ export async function loader(props: LoaderFunctionArgs) {
     page,
     limit,
     q: qParam,
+    selectedTag,
+    tags: featuredReleaseTags,
   }
 }
 
@@ -83,8 +81,22 @@ export default function Milestone () {
     if (data.q.length > 0) {
       params.set("q", data.q)
     }
+    if (data.selectedTag) {
+      params.set("tag", data.selectedTag)
+    }
     params.set("page", String(page))
     return `?${params.toString()}`
+  }
+
+  const buildTagSearch = (tag: FeaturedReleaseTag | null) => {
+    const params = new URLSearchParams()
+    if (data.q.length > 0) {
+      params.set("q", data.q)
+    }
+    if (tag) {
+      params.set("tag", tag)
+    }
+    return params.toString() ? `?${params.toString()}` : "?"
   }
 
   const formatDate = (timestamp: number) => {
@@ -106,10 +118,29 @@ export default function Milestone () {
             placeholder={t("お知らせ内容で検索", "Search announcements")}
             className="w-full md:w-72"
           />
+          {data.selectedTag && <input type="hidden" name="tag" value={data.selectedTag} />}
           <Button type="submit" variant="secondary">
             {t("検索", "Search")}
           </Button>
         </form>
+      </div>
+      <div className="flex flex-wrap gap-2 px-4">
+        <Button asChild variant={data.selectedTag === null ? "default" : "outline"} size="sm">
+          <Link to={buildTagSearch(null)}>{t("すべて", "All")}</Link>
+        </Button>
+        {data.tags.map((tag) => (
+          <Button
+            key={tag}
+            asChild
+            variant={data.selectedTag === tag ? "default" : "outline"}
+            size="sm"
+            className="h-auto px-3 py-1.5"
+          >
+            <Link to={buildTagSearch(tag)}>
+              <ReleaseTagBadge tag={tag} />
+            </Link>
+          </Button>
+        ))}
       </div>
       {releases.map((release) => (
         <Link
@@ -120,11 +151,7 @@ export default function Milestone () {
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex items-center gap-2 text-muted-foreground text-xs">
               <span>{formatDate(release.createdAt)}</span>
-              {release.tag && (
-                <span className="rounded-full bg-muted px-2 py-0.5 text-foreground">
-                  {release.tag}
-                </span>
-              )}
+              <ReleaseTagBadge tag={release.tag} className="px-1.5 py-0 text-[10px]" />
             </div>
             <p className="mt-1 line-clamp-1 font-semibold text-sm">
               {release.title}
@@ -133,6 +160,14 @@ export default function Milestone () {
           <ChevronRight className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
         </Link>
       ))}
+      {releases.length === 0 && (
+        <div className="rounded-lg border border-dashed px-4 py-10 text-center text-muted-foreground text-sm">
+          {t(
+            "条件に合うお知らせはありません。タグや検索語を変えてお試しください。",
+            "No announcements matched. Try a different tag or keyword.",
+          )}
+        </div>
+      )}
       <div className="flex flex-col items-center justify-center gap-3 pb-2">
         <div className="text-muted-foreground text-xs">
           {t(

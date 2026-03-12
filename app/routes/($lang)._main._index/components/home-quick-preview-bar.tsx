@@ -3,15 +3,20 @@ import { ChevronRight } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import { ReleaseTagBadge } from "~/components/release-tag-badge"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { useRotatingHomeEvents } from "~/routes/($lang)._main._index/components/use-rotating-home-events"
-import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
+import type {
+  MicroCmsApiRelease,
+  MicroCmsApiReleaseResponse,
+} from "~/types/micro-cms-release-response"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   events: HomePreviewEvent[]
+  featuredReleases: MicroCmsApiRelease[]
   releaseList: MicroCmsApiReleaseResponse
 }
 
@@ -32,9 +37,15 @@ const formatReleaseDate = (timestamp: number) => {
 export function HomeQuickPreviewBar(props: Props) {
   const t = useTranslation()
   const { currentIndex, isVisible } = useRotatingHomeEvents(props.events)
+  const rotatingReleases = useRotatingHomeEvents(props.featuredReleases, {
+    intervalMs: 3600,
+    fadeMs: 240,
+  })
 
   const firstEvent = props.events[currentIndex]
-  const firstRelease = props.releaseList.contents[0]
+  const firstRelease =
+    props.featuredReleases[rotatingReleases.currentIndex] ??
+    props.releaseList.contents[0]
 
   return (
     <div className="grid gap-2 md:grid-cols-2">
@@ -136,15 +147,27 @@ export function HomeQuickPreviewBar(props: Props) {
         </div>
 
         {firstRelease ? (
-          <Link
-            to={`/releases/${firstRelease.id}`}
-            className="mt-1.5 block rounded-md px-1 py-0.5 transition-colors hover:bg-muted/40"
+          <div
+            className={cn(
+              "transition-all duration-500 ease-out",
+              rotatingReleases.isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-20 translate-y-1",
+            )}
           >
-            <div className="line-clamp-1 text-sm">{firstRelease.title}</div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">
-              {formatReleaseDate(firstRelease.createdAt)}
-            </div>
-          </Link>
+            <Link
+              to={`/releases/${firstRelease.id}`}
+              className="mt-1.5 block rounded-md px-1 py-0.5 transition-colors hover:bg-muted/40"
+            >
+              <div className="flex items-center gap-2">
+                <ReleaseTagBadge tag={firstRelease.tag} className="px-1.5 py-0 text-[10px]" />
+                <span className="line-clamp-1 flex-1 text-sm">{firstRelease.title}</span>
+              </div>
+              <div className="mt-0.5 text-[11px] text-muted-foreground">
+                {formatReleaseDate(firstRelease.createdAt)}
+              </div>
+            </Link>
+          </div>
         ) : (
           <div className="mt-1.5 px-1 py-0.5 text-muted-foreground text-xs">
             {t(
