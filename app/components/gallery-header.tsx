@@ -11,6 +11,7 @@ import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { useTranslation } from "~/hooks/use-translation"
+import { buildSearchPath, getSearchTermFromPathname } from "~/utils/search-route"
 
 // Lazy load メニューコンポーネント
 const HomeMenuRouteList = lazy(() =>
@@ -36,9 +37,10 @@ export function GalleryHeader(): React.ReactNode {
 
   // 現在の検索テキストをURLパラメータから初期化
   useEffect(() => {
-    const currentSearchText = searchParams.get("q") || ""
+    const currentSearchText =
+      searchParams.get("q") || getSearchTermFromPathname(location.pathname) || ""
     setSearchText(currentSearchText)
-  }, [searchParams])
+  }, [searchParams, location.pathname])
 
   // モバイル判定
   useEffect(() => {
@@ -60,7 +62,7 @@ export function GalleryHeader(): React.ReactNode {
         navigate(`${location.pathname}?${newSearchParams.toString()}`)
       } else {
         // その他のページの場合は検索ページに遷移
-        navigate(`/search?q=${encodeURIComponent(searchText.trim())}`)
+        navigate(buildSearchPath(searchText.trim()))
       }
     } else {
       // 検索テキストが空の場合は検索パラメータを削除

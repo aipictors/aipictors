@@ -1,5 +1,10 @@
 import { useQuery } from "@apollo/client/index"
-import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "@remix-run/react"
 import { format } from "date-fns"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Eye, Grid, List, Loader2, X } from "lucide-react"
@@ -71,6 +76,7 @@ export const SearchResults = ({
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const location = useLocation()
+  const params = useParams()
   const { isLoggedIn } = useContext(AuthContext)
   const authContext = useContext(AuthContext)
 
@@ -90,7 +96,8 @@ export const SearchResults = ({
 
   // Read URL parameters
   const currentPage = Math.max(0, Number(searchParams.get("page") || "0"))
-  const searchWordsParam = searchParams.get("q") || ""
+  const searchWordsParam =
+    params.q ? decodeURIComponent(params.q) : (searchParams.get("q") ?? "")
   const searchWords = searchWordsParam.split(",").filter(Boolean)
   const ratingParam = searchParams.get("rating") || ""
   const ratings = ratingParam.split(",").filter(Boolean)
@@ -102,6 +109,9 @@ export const SearchResults = ({
   const dialogModeParam = searchParams.get("dialogMode") === "true"
   const viewModeParam = searchParams.get("viewMode") || "pagination"
   const promptPublicParam = searchParams.get("promptPublic") || "all"
+  const searchInTagsParam = searchParams.get("searchInTags") !== "false"
+  const searchInDescriptionParam =
+    searchParams.get("searchInDescription") === "true"
   const myWorksOnlyParam = searchParams.get("myWorksOnly") === "true"
   const isOneWorkPerUserParam = searchParams.get("isOneWorkPerUser") === "true"
   const aiUsageParam = searchParams.get("aiUsage") || "all"
@@ -257,6 +267,8 @@ export const SearchResults = ({
     modelSearch: "",
     workModelId: modelParam, // modelパラメータをworkModelIdとして使用
     navigateToTagPage,
+    searchInTags: searchInTagsParam,
+    searchInDescription: searchInDescriptionParam,
   })
 
   // URLパラメータ変更（SearchHeaderなど）をフィルタ状態へ同期する
@@ -275,6 +287,9 @@ export const SearchResults = ({
     // Search words - highest priority
     if (searchWords.length > 0) {
       conditions.search = searchWords.join(" ")
+      conditions.searchInTags = filterValues.searchInTags ?? true
+      conditions.searchInDescription =
+        filterValues.searchInDescription ?? false
     }
 
     console.log("filterValues", filterValues)
@@ -521,6 +536,18 @@ export const SearchResults = ({
         newParams.delete("promptPublic")
       }
 
+      if (values.searchInTags === false) {
+        newParams.set("searchInTags", "false")
+      } else {
+        newParams.delete("searchInTags")
+      }
+
+      if (values.searchInDescription) {
+        newParams.set("searchInDescription", "true")
+      } else {
+        newParams.delete("searchInDescription")
+      }
+
       // Update my works only
       if (values.myWorksOnly) {
         newParams.set("myWorksOnly", "true")
@@ -749,6 +776,14 @@ export const SearchResults = ({
           ? t("AI使用", "AI used")
           : t("AI未使用", "No AI")
       filters.push(`${t("AI", "AI")}: ${aiLabel}`)
+    }
+
+    if (filterValues.searchInTags === false) {
+      filters.push(t("タグ検索なし", "Tags excluded"))
+    }
+
+    if (filterValues.searchInDescription) {
+      filters.push(t("説明文も検索", "Descriptions included"))
     }
 
     if (filterValues.promptPublic && filterValues.promptPublic !== "all") {

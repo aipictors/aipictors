@@ -4,6 +4,7 @@ import { Tag, Search, Cpu, TrendingUp } from "lucide-react"
 import { useNavigate } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import { graphql } from "gql.tada"
+import { buildSearchPath } from "~/utils/search-route"
 
 type PopularTag = {
   id: string
@@ -62,11 +63,11 @@ export function SearchHints (props: Props) {
   const t = useTranslation()
 
   const handleTagClick = (tagName: string) => {
-    navigate(`/search?q=${encodeURIComponent(tagName)}`)
+    navigate(buildSearchPath(tagName))
   }
 
   const handleKeywordClick = (keyword: string) => {
-    navigate(`/search?q=${encodeURIComponent(keyword)}`)
+    navigate(buildSearchPath(keyword))
   }
 
   const handleModelClick = (modelId: string) => {

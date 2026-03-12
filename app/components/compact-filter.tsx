@@ -49,6 +49,8 @@ export type FilterValues = {
   ageRestrictions: string[]
   aiUsage: string
   promptPublic: string
+  searchInTags?: boolean
+  searchInDescription?: boolean
   dateFrom: Date | undefined
   dateTo: Date | undefined
   myWorksOnly?: boolean
@@ -182,6 +184,45 @@ function FilterContent({
             <SelectItem value="private">{t("非公開", "Private")}</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-3">
+        <div className="font-medium text-sm">
+          {t("検索対象", "Search scope")}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={`${uniqueId}-search-in-tags-${inSheet ? "sheet" : "dialog"}`}
+            checked={localFilters.searchInTags ?? true}
+            onCheckedChange={(checked) => {
+              updateLocalFilter("searchInTags", checked === true)
+            }}
+          />
+          <label
+            htmlFor={`${uniqueId}-search-in-tags-${inSheet ? "sheet" : "dialog"}`}
+            className="cursor-pointer text-sm"
+          >
+            {t("タグも検索対象に含める", "Include tags in search")}
+          </label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id={`${uniqueId}-search-in-description-${inSheet ? "sheet" : "dialog"}`}
+            checked={localFilters.searchInDescription || false}
+            onCheckedChange={(checked) => {
+              updateLocalFilter("searchInDescription", checked === true)
+            }}
+          />
+          <label
+            htmlFor={`${uniqueId}-search-in-description-${inSheet ? "sheet" : "dialog"}`}
+            className="cursor-pointer text-sm"
+          >
+            {t(
+              "説明文も検索対象に含める",
+              "Include descriptions in search",
+            )}
+          </label>
+        </div>
       </div>
 
       {/* 自分の作品のみ */}
@@ -416,6 +457,9 @@ export function CompactFilter (props: Props): React.ReactNode {
       ageRestrictions: searchParams.get("ageRestrictions")?.split(",") || [],
       aiUsage: searchParams.get("aiUsage") || "all",
       promptPublic: searchParams.get("promptPublic") || "all",
+      searchInTags: searchParams.get("searchInTags") !== "false",
+      searchInDescription:
+        searchParams.get("searchInDescription") === "true",
       dateFrom: searchParams.get("dateFrom")
         ? new Date(searchParams.get("dateFrom") as string)
         : undefined,
@@ -458,6 +502,18 @@ export function CompactFilter (props: Props): React.ReactNode {
         newParams.set("promptPublic", newFilters.promptPublic)
       } else {
         newParams.delete("promptPublic")
+      }
+
+      if (newFilters.searchInTags === false) {
+        newParams.set("searchInTags", "false")
+      } else {
+        newParams.delete("searchInTags")
+      }
+
+      if (newFilters.searchInDescription) {
+        newParams.set("searchInDescription", "true")
+      } else {
+        newParams.delete("searchInDescription")
       }
 
       if (newFilters.dateFrom) {
@@ -627,6 +683,8 @@ export function CompactFilter (props: Props): React.ReactNode {
       ageRestrictions: [],
       aiUsage: "all",
       promptPublic: "all",
+      searchInTags: true,
+      searchInDescription: false,
       dateFrom: undefined,
       dateTo: undefined,
       myWorksOnly: false,
@@ -643,6 +701,8 @@ export function CompactFilter (props: Props): React.ReactNode {
   const hasActiveFilters =
     filters.ageRestrictions.length > 0 ||
     filters.promptPublic !== "all" ||
+    filters.searchInTags === false ||
+    filters.searchInDescription ||
     filters.dateFrom ||
     filters.dateTo ||
     filters.myWorksOnly ||
@@ -654,6 +714,8 @@ export function CompactFilter (props: Props): React.ReactNode {
     localFilters.ageRestrictions.length > 0 ||
     localFilters.aiUsage !== "all" ||
     localFilters.promptPublic !== "all" ||
+    localFilters.searchInTags === false ||
+    localFilters.searchInDescription ||
     localFilters.dateFrom ||
     localFilters.dateTo ||
     localFilters.myWorksOnly ||

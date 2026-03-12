@@ -1,6 +1,6 @@
 import { Cpu, Search, SlidersHorizontal, User, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import { useSearchParams, useNavigate } from "@remix-run/react"
+import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
@@ -13,6 +13,11 @@ import {
 } from "~/components/ui/sheet"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { useTranslation } from "~/hooks/use-translation"
+import {
+  buildSearchPath,
+  getSearchTermFromPathname,
+  isSearchPathname,
+} from "~/utils/search-route"
 
 type AiModel = {
   id: string
@@ -28,6 +33,7 @@ type Props = {
 
 export function SearchHeader (props: Props) {
   const [searchParams] = useSearchParams()
+  const location = useLocation()
   const navigate = useNavigate()
   const t = useTranslation()
 
@@ -35,19 +41,33 @@ export function SearchHeader (props: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   // URLパラメータから初期値を取得
-  const [searchText, setSearchText] = useState(searchParams.get("q") || "")
+  const [searchText, setSearchText] = useState(
+    searchParams.get("q") || getSearchTermFromPathname(location.pathname) || "",
+  )
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [userSearchText, setUserSearchText] = useState("")
+  const [searchInTags, setSearchInTags] = useState(
+    searchParams.get("searchInTags") !== "false",
+  )
+  const [searchInDescription, setSearchInDescription] = useState(
+    searchParams.get("searchInDescription") === "true",
+  )
 
   // URLパラメータの変更を監視
   useEffect(() => {
-    setSearchText(searchParams.get("q") || "")
+    setSearchText(
+      searchParams.get("q") || getSearchTermFromPathname(location.pathname) || "",
+    )
+    setSearchInTags(searchParams.get("searchInTags") !== "false")
+    setSearchInDescription(
+      searchParams.get("searchInDescription") === "true",
+    )
 
     // modelパラメータがある場合は検索テキストを空にする
     if (searchParams.get("model") || searchParams.get("workModelId")) {
       setSearchText("")
     }
-  }, [searchParams])
+  }, [searchParams, location.pathname])
 
   const validateQuery = (rawText: string) => {
     const trimmedText = rawText.trim()
@@ -71,8 +91,13 @@ export function SearchHeader (props: Props) {
     const validated = validateQuery(trimmedText)
     if (validated) {
       const newParams = new URLSearchParams()
-      newParams.set("q", validated)
-      navigate(`/search?${newParams.toString()}`)
+      if (!searchInTags) {
+        newParams.set("searchInTags", "false")
+      }
+      if (searchInDescription) {
+        newParams.set("searchInDescription", "true")
+      }
+      navigate(buildSearchPath(validated, newParams))
     }
   }
 
@@ -104,11 +129,19 @@ export function SearchHeader (props: Props) {
     params.delete("model")
     params.delete("workModelId")
     params.delete("page")
+    params.delete("searchInTags")
+    params.delete("searchInDescription")
 
     // ? が空なら取り除く
-    const nextUrl = params.toString()
-      ? `${location.pathname}?${params.toString()}`
+    const nextPath = isSearchPathname(location.pathname)
+      ? location.pathname.startsWith("/r/")
+        ? "/r/search"
+        : "/search"
       : location.pathname
+
+    const nextUrl = params.toString()
+      ? `${nextPath}?${params.toString()}`
+      : nextPath
 
     // 履歴を汚さないよう replace
     navigate(nextUrl, { replace: true })
@@ -135,8 +168,8 @@ export function SearchHeader (props: Props) {
           <Input
             ref={inputRef}
             placeholder={t(
-              "タグ・雰囲気・キャラ名で探す",
-              "Search by tags, vibe, or character",
+              "作品タイトル・タグで探す",
+              "Search by work title or tag",
             )}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -177,6 +210,49 @@ export function SearchHeader (props: Props) {
                     )}
                   </p>
                 </SheetHeader>
+
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 font-semibold text-sm">
+                    <Search className="h-4 w-4" />
+                    {t("作品検索条件", "Work search options")}
+                  </div>
+                  <div className="space-y-2 rounded-lg border p-3">
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={searchInTags}
+                        onChange={(event) => setSearchInTags(event.target.checked)}
+                      />
+                      <span>
+                        {t(
+                          "タグも検索対象に含める",
+                          "Include tags in the search",
+                        )}
+                      </span>
+                    </label>
+                    <label className="flex items-center gap-2 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={searchInDescription}
+                        onChange={(event) =>
+                          setSearchInDescription(event.target.checked)
+                        }
+                      />
+                      <span>
+                        {t(
+                          "説明文も検索対象に含める",
+                          "Include descriptions in the search",
+                        )}
+                      </span>
+                    </label>
+                    <p className="text-muted-foreground text-xs">
+                      {t(
+                        "デフォルトではタイトル部分一致 + タグ検索です。",
+                        "Default search uses partial title match + tags.",
+                      )}
+                    </p>
+                  </div>
+                </section>
 
                 <section className="space-y-3">
                   <div className="flex items-center gap-2 font-semibold text-sm">

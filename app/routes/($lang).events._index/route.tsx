@@ -15,6 +15,10 @@ import {
 } from "~/routes/($lang).events._index/components/app-event-card"
 import { createMeta } from "~/utils/create-meta"
 
+const EVENTS_PAGE_LIMIT = 16
+
+const ONGOING_EVENTS_SUMMARY_LIMIT = 200
+
 const getEventPriority = (status: string) => {
   if (status === "UPCOMING") {
     return 1
@@ -127,6 +131,25 @@ const countEventsByStatus = (events: EventCardItem[]) => {
     ongoing: events.filter((event) => event.status === "ONGOING").length,
     upcoming: events.filter((event) => event.status === "UPCOMING").length,
     ended: events.filter((event) => event.status === "ENDED").length,
+  }
+}
+
+const buildOngoingEventSummary = (props: {
+  officialEvents: Array<{ worksCount?: number | null }>
+  userEvents: Array<{ entryCount?: number | null }>
+}) => {
+  const ongoingEventCount = props.officialEvents.length + props.userEvents.length
+
+  const ongoingEntryCount =
+    props.officialEvents.reduce(
+      (sum, event) => sum + (event.worksCount ?? 0),
+      0,
+    ) +
+    props.userEvents.reduce((sum, event) => sum + (event.entryCount ?? 0), 0)
+
+  return {
+    ongoingEventCount,
+    ongoingEntryCount,
   }
 }
 
@@ -313,24 +336,39 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const sort = urlParams.get("sort")?.trim() ?? "ONGOING_FIRST"
 
-  const resp = await loaderClient.query({
-    query: eventsQuery,
-    variables: {
-      offset: page * 16,
-      limit: 16,
-      appEventWhere: {
-        ...(keyword.length > 0 && { keyword }),
-        ...(status.length > 0 && { status }),
+  const [resp, ongoingEventsSummaryResp] = await Promise.all([
+    loaderClient.query({
+      query: eventsQuery,
+      variables: {
+        offset: page * EVENTS_PAGE_LIMIT,
+        limit: EVENTS_PAGE_LIMIT,
+        appEventWhere: {
+          ...(keyword.length > 0 && { keyword }),
+          ...(status.length > 0 && { status }),
+        },
+        userEventWhere: {
+          ...(keyword.length > 0 && { keyword }),
+          ...(status.length > 0 && { status }),
+          ...(ranking === "RANKING" && { rankingEnabled: true }),
+          ...(ranking === "CASUAL" && { rankingEnabled: false }),
+          sort,
+        },
       },
-      userEventWhere: {
-        ...(keyword.length > 0 && { keyword }),
-        ...(status.length > 0 && { status }),
-        ...(ranking === "RANKING" && { rankingEnabled: true }),
-        ...(ranking === "CASUAL" && { rankingEnabled: false }),
-        sort,
+    }),
+    loaderClient.query({
+      query: ongoingEventsSummaryQuery,
+      variables: {
+        offset: 0,
+        limit: ONGOING_EVENTS_SUMMARY_LIMIT,
+        appEventWhere: {
+          status: "ONGOING",
+        },
+        userEventWhere: {
+          status: "ONGOING",
+        },
       },
-    },
-  })
+    }),
+  ])
 
   const userIconMap = await buildUserEventIconMap(
     resp.data.userEvents.map((event: any) => event.userId).filter(Boolean),
@@ -348,6 +386,10 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {
     appEvents: sortEvents(mergedEvents, sort),
+    ongoingSummary: buildOngoingEventSummary({
+      officialEvents: ongoingEventsSummaryResp.data.appEvents,
+      userEvents: ongoingEventsSummaryResp.data.userEvents,
+    }),
     filters: {
       keyword,
       status,
@@ -365,6 +407,10 @@ export default function FollowingLayout() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
+
+  const formatNumberWithCommas = (value: number) => {
+    return value.toLocaleString()
+  }
 
   const officialEvents = data.appEvents.filter((event) => event.isOfficial)
 
@@ -386,6 +432,33 @@ export default function FollowingLayout() {
         {t("AIイラスト - 開催イベント一覧", "AI Illustration - Event List")}
       </h1>
       <div className="mt-4 flex flex-col space-y-4">
+        <div className="grid gap-2 md:grid-cols-2">
+          <div className="rounded-lg border bg-muted/30 px-4 py-3">
+            <div className="text-muted-foreground text-xs">
+              {t("開催中累計イベント数", "Total ongoing events")}
+            </div>
+            <div className="mt-1 font-semibold text-lg">
+              {formatNumberWithCommas(data.ongoingSummary.ongoingEventCount)}
+              <span className="ml-1 text-muted-foreground text-sm font-normal">
+                {t("件", "events")}
+              </span>
+            </div>
+          </div>
+          <div className="rounded-lg border bg-muted/30 px-4 py-3">
+            <div className="text-muted-foreground text-xs">
+              {t(
+                "開催中イベントの累計参加作品数",
+                "Total entries in ongoing events",
+              )}
+            </div>
+            <div className="mt-1 font-semibold text-lg">
+              {formatNumberWithCommas(data.ongoingSummary.ongoingEntryCount)}
+              <span className="ml-1 text-muted-foreground text-sm font-normal">
+                {t("作品", "entries")}
+              </span>
+            </div>
+          </div>
+        </div>
         <FeaturedEventRotator events={featuredEvents} />
         <div className="flex flex-wrap gap-2">
           <Button asChild>
@@ -509,6 +582,24 @@ const eventsQuery = gql`
       participantCount
       userId
       userName
+    }
+  }
+`
+
+const ongoingEventsSummaryQuery = gql`
+  query OngoingEventsSummary(
+    $limit: Int!
+    $offset: Int!
+    $appEventWhere: AppEventsWhereInput
+    $userEventWhere: UserEventsWhereInput
+  ) {
+    appEvents(limit: $limit, offset: $offset, where: $appEventWhere) {
+      id
+      worksCount
+    }
+    userEvents(limit: $limit, offset: $offset, where: $userEventWhere) {
+      id
+      entryCount
     }
   }
 `

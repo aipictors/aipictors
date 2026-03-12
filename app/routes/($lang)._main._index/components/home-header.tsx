@@ -34,6 +34,11 @@ import { HomeHeaderR18Button } from "~/routes/($lang)._main._index/components/ho
 import { debugLog } from "~/utils/debug-logger"
 import { isSensitiveKeyword } from "~/utils/is-sensitive-keyword"
 import {
+  buildSearchPath,
+  getSearchTermFromPathname,
+  isSearchPathname,
+} from "~/utils/search-route"
+import {
   analyzeSensitiveSearch,
   generateSensitiveUrl,
 } from "~/utils/sensitive-keyword-helpers"
@@ -117,19 +122,9 @@ function HomeHeader(props: Props) {
       return
     }
 
-    if (
-      currentPath.startsWith("/tags/") ||
-      currentPath.startsWith("/r/tags/")
-    ) {
-      // タグページの場合、URLからタグ名を抽出
-      const tagMatch = currentPath.match(/\/tags\/([^/]+)/)
-      if (tagMatch) {
-        const decodedTag = decodeURIComponent(tagMatch[1])
-        setSearchText(decodedTag)
-      }
-    } else if (currentPath === "/search" || currentPath === "/r/search") {
-      // 検索ページの場合
-      const query = searchParams.get("q") || ""
+    if (isSearchPathname(currentPath)) {
+      const pathSearchTerm = getSearchTermFromPathname(currentPath)
+      const query = pathSearchTerm ?? searchParams.get("q") ?? ""
       setSearchText(query)
     } else {
       // その他のページの場合は検索テキストをクリア
@@ -168,9 +163,7 @@ function HomeHeader(props: Props) {
     }
 
     // タグ検索ページへ遷移
-    const encodedText = encodeURIComponent(sanitizedText)
-    const baseUrl = `/tags/${encodedText}`
-    console.log("Navigating to:", isSensitiveTag(sanitizedText))
+    const baseUrl = buildSearchPath(sanitizedText)
     navigate(getSensitiveLink(baseUrl, isSensitiveTag(sanitizedText)), {
       replace: true,
     })
@@ -199,8 +192,7 @@ function HomeHeader(props: Props) {
       return
     }
 
-    const encodedText = encodeURIComponent(sanitizedText)
-    const baseUrl = `/tags/${encodedText}`
+    const baseUrl = buildSearchPath(sanitizedText)
     const targetUrl = generateSensitiveUrl(baseUrl, isSensitive)
 
     if (shouldShowWarning) {
@@ -342,7 +334,7 @@ function HomeHeader(props: Props) {
     isManualNavigationRef.current = true
 
     // 検索テキストをクリア（検索関連ページ以外への遷移時）
-    const isSearchRelatedPath = path === "/search" || path.startsWith("/tags/")
+    const isSearchRelatedPath = isSearchPathname(path)
     if (!isSearchRelatedPath) {
       setSearchText("")
     }

@@ -3,14 +3,22 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
+import { redirect } from "@remix-run/cloudflare"
+import {
+  useLoaderData,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { config } from "~/config"
+import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
 import { SearchHints } from "~/routes/($lang)._main.search/components/search-hints"
 import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
+import { buildSearchPath } from "~/utils/search-route"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -20,9 +28,30 @@ export async function loader(props: LoaderFunctionArgs) {
   // }
 
   const url = new URL(props.request.url)
+  const pathSearchQuery = props.params.q
+    ? decodeURIComponent(props.params.q)
+    : null
+
+  if (pathSearchQuery === null) {
+    const legacySearchQuery = url.searchParams.get("q")
+
+    if (legacySearchQuery) {
+      const nextSearchParams = new URLSearchParams(url.searchParams)
+      nextSearchParams.delete("q")
+
+      return redirect(
+        buildSearchPath(legacySearchQuery, nextSearchParams, {
+          basePath: url.pathname.startsWith("/r/") ? "/r/search" : "/search",
+        }),
+      )
+    }
+  }
 
   const tag = url.searchParams.get("tag")
-  const q = url.searchParams.get("q")
+  const q = pathSearchQuery ?? url.searchParams.get("q")
+  const searchInTags = url.searchParams.get("searchInTags") !== "false"
+  const searchInDescription =
+    url.searchParams.get("searchInDescription") === "true"
   const model =
     url.searchParams.get("workModelId") ?? url.searchParams.get("model")
 
@@ -36,6 +65,8 @@ export async function loader(props: LoaderFunctionArgs) {
   // Add search query
   if (q) {
     whereCondition.search = q
+    whereCondition.searchInTags = searchInTags
+    whereCondition.searchInDescription = searchInDescription
   }
 
   // Add tag search (legacy support)
@@ -118,6 +149,7 @@ export async function loader(props: LoaderFunctionArgs) {
           thumbnailImageURL: model.thumbnailImageURL || undefined,
         }))
         .slice(0, 8) || [], // 表示用に8個に制限
+    searchQuery: q,
   }
 }
 
@@ -127,14 +159,16 @@ export const headers: HeadersFunction = () => ({
 
 export default function Search() {
   const data = useLoaderData<typeof loader>()
+  const params = useParams()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const t = useTranslation()
 
   if (data === null) {
     return null
   }
 
-  const searchQuery = searchParams.get("q")
+  const searchQuery = data.searchQuery ?? params.q ?? searchParams.get("q")
   const tagQuery = searchParams.get("tag")
   const modelQuery =
     searchParams.get("workModelId") ?? searchParams.get("model")
@@ -190,9 +224,18 @@ export default function Search() {
 
     // 🔍 キーワード検索時
     if (searchQuery) {
+      const options = [
+        searchParams.get("searchInTags") !== "false"
+          ? t("タグ含む", "Tags on")
+          : t("タグ除外", "Tags off"),
+        searchParams.get("searchInDescription") === "true"
+          ? t("説明含む", "Descriptions on")
+          : null,
+      ].filter(Boolean)
+
       return modelLabel
-        ? `🔍 「${searchQuery}」の検索結果（${orderLabel}・${modelLabel}）`
-        : `🔍 「${searchQuery}」の検索結果（${orderLabel}）`
+        ? `🔍 「${searchQuery}」の検索結果（${orderLabel}・${modelLabel}${options.length ? `・${options.join(" / ")}` : ""}）`
+        : `🔍 「${searchQuery}」の検索結果（${orderLabel}${options.length ? `・${options.join(" / ")}` : ""}）`
     }
 
     // 🎨 AIモデルのみ
@@ -220,9 +263,7 @@ export default function Search() {
   ]
 
   const onChipClick = (chip: string) => {
-    const params = new URLSearchParams()
-    params.set("q", chip)
-    navigate(`/search?${params.toString()}`)
+    navigate(buildSearchPath(chip))
   }
 
   return (
@@ -280,7 +321,7 @@ export default function Search() {
 }
 
 export const meta: MetaFunction = (props) => {
-  const searchQuery = props.params?.q || ""
+  const searchQuery = props.data?.searchQuery ?? props.params?.q ?? ""
 
   let title = "検索 - Aipictors"
   let description =
