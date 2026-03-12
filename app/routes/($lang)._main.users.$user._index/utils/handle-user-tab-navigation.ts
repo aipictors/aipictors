@@ -27,6 +27,9 @@ export const handleUserTabNavigation = (props: Props) => {
   if (props.type === t("シリーズ", "Series")) {
     props.onNavigateCallback(`/users/${props.userId}/albums`)
   }
+  if (props.type === t("イベント", "Events")) {
+    props.onNavigateCallback(`/users/${props.userId}/events`)
+  }
   if (props.type === t("バッジ", "Badges")) {
     props.onNavigateCallback(`/users/${props.userId}/badges`)
   }

@@ -15,6 +15,8 @@ export const useUserActiveTab = (props: Props) => {
       return props.lang === "ja" ? "動画" : "Videos"
     if (props.url.endsWith("/albums"))
       return props.lang === "ja" ? "シリーズ" : "Series"
+    if (props.url.endsWith("/events"))
+      return props.lang === "ja" ? "イベント" : "Events"
     if (props.url.endsWith("/collections"))
       return props.lang === "ja" ? "コレクション" : "Collections"
     if (props.url.endsWith("/stickers"))

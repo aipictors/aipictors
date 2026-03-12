@@ -1,8 +1,10 @@
-import { Card, CardHeader } from "~/components/ui/card"
 import { Link } from "@remix-run/react"
-import { getJstDate } from "~/utils/jst-date"
-import { useEventDateTimeText } from "~/routes/($lang).events._index/hooks/use-event-date-time-text"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Card, CardHeader } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
+import { useEventDateTimeText } from "~/routes/($lang).events._index/hooks/use-event-date-time-text"
+import { getJstDate } from "~/utils/jst-date"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 export type EventCardItem = {
   id: string
@@ -20,13 +22,14 @@ export type EventCardItem = {
   participantCount: number
   userId?: string | null
   userName?: string | null
+  userIconUrl?: string | null
 }
 
 type Props = {
   appEvent: EventCardItem
 }
 
-export function AppEventCard (props: Props) {
+export function AppEventCard(props: Props) {
   const appEvent = props.appEvent
 
   const t = useTranslation()
@@ -39,14 +42,20 @@ export function AppEventCard (props: Props) {
 
   const remainingDays = Math.max(
     0,
-    Math.ceil((new Date(appEvent.endAt * 1000).getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+    Math.ceil(
+      (new Date(appEvent.endAt * 1000).getTime() - now.getTime()) /
+        (1000 * 60 * 60 * 24),
+    ),
   )
 
   const startAt = useEventDateTimeText(appEvent.startAt)
 
   const endAt = useEventDateTimeText(appEvent.endAt)
 
-  const plainDescription = appEvent.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+  const plainDescription = appEvent.description
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
 
   const statusLabel = isOngoing
     ? t("開催中", "Ongoing")
@@ -113,14 +122,28 @@ export function AppEventCard (props: Props) {
                   : t("ランキングなし", "No ranking")}
               </span>
             </div>
-            {!appEvent.isOfficial && appEvent.userName && (
-              <div className="text-muted-foreground text-xs">
-                {t("主催", "Host")}: {appEvent.userName}
-              </div>
-            )}
+            <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+              <Avatar className="size-4">
+                {appEvent.userIconUrl && (
+                  <AvatarImage
+                    src={withIconUrlFallback(appEvent.userIconUrl)}
+                    alt=""
+                  />
+                )}
+                <AvatarFallback className="text-[9px]">
+                  {(appEvent.userName ?? "A").slice(0, 1)}
+                </AvatarFallback>
+              </Avatar>
+              <span className="line-clamp-1">
+                {t("主催", "Host")}: {appEvent.userName ?? "Aipictors"}
+              </span>
+            </div>
             <div className="text-xs">
               {isOngoing
-                ? t("残り{{count}}日", `{{count}} days left`).replace("{{count}}", remainingDays.toString())
+                ? t("残り{{count}}日", "{{count}} days left").replace(
+                    "{{count}}",
+                    remainingDays.toString(),
+                  )
                 : isUpcoming
                   ? t("開始前のイベントです", "This event has not started yet")
                   : t("アーカイブを閲覧できます", "Archive available")}

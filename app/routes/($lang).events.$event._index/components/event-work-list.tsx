@@ -10,6 +10,7 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import { graphql } from "gql.tada"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { useTranslation } from "~/hooks/use-translation"
 import { EventWorksListSortableSetting } from "~/routes/($lang).events.$event._index/components/event-works-list-sortable-setting"
 import type { SortType } from "~/types/sort-type"
 
@@ -44,6 +45,7 @@ type Props = {
  */
 export function EventWorkList (props: Props) {
   const navigate = useNavigate()
+  const t = useTranslation()
 
   const authContext = useContext(AuthContext)
 
@@ -75,24 +77,34 @@ export function EventWorkList (props: Props) {
   ] as IntrospectionEnum<"WorkOrderBy">[]
 
   return (
-    <>
+    <div className="space-y-6">
       {!props.isHideSortableSetting && (
-        <div className="mr-auto w-32">
-          <EventWorksListSortableSetting
-            nowSort={props.sort}
-            nowOrderBy={props.orderBy}
-            allOrderBy={allSortType}
-            setSort={props.setSort}
-            onClickTitleSortButton={props.onClickTitleSortButton}
-            onClickLikeSortButton={props.onClickLikeSortButton}
-            onClickBookmarkSortButton={props.onClickBookmarkSortButton}
-            onClickCommentSortButton={props.onClickCommentSortButton}
-            onClickViewSortButton={props.onClickViewSortButton}
-            onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
-            onClickDateSortButton={props.onClickDateSortButton}
-            onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
-            onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
-          />
+        <div className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-background/70 p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+          <div>
+            <div className="font-medium text-foreground/75 text-xs tracking-wide uppercase">
+              {t("並び替え", "Sort")}
+            </div>
+            <div className="mt-1 text-foreground text-sm">
+              {t("見たい順に作品を切り替え", "Change how entries are ordered")}
+            </div>
+          </div>
+          <div className="w-full md:w-40">
+            <EventWorksListSortableSetting
+              nowSort={props.sort}
+              nowOrderBy={props.orderBy}
+              allOrderBy={allSortType}
+              setSort={props.setSort}
+              onClickTitleSortButton={props.onClickTitleSortButton}
+              onClickLikeSortButton={props.onClickLikeSortButton}
+              onClickBookmarkSortButton={props.onClickBookmarkSortButton}
+              onClickCommentSortButton={props.onClickCommentSortButton}
+              onClickViewSortButton={props.onClickViewSortButton}
+              onClickAccessTypeSortButton={props.onClickAccessTypeSortButton}
+              onClickDateSortButton={props.onClickDateSortButton}
+              onClickWorkTypeSortButton={props.onClickWorkTypeSortButton}
+              onClickIsPromotionSortButton={props.onClickIsPromotionSortButton}
+            />
+          </div>
         </div>
       )}
       <ResponsivePhotoWorksAlbum works={works} isShowProfile={true} />
@@ -107,7 +119,7 @@ export function EventWorkList (props: Props) {
           }}
         />
       </div>
-    </>
+    </div>
   )
 }
 

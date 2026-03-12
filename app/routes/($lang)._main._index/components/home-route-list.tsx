@@ -309,7 +309,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
             <Link className="text-xs opacity-80" to="/privacy">
               {t("プライバシーポリシー", "Privacy Policy")}
             </Link>
-            <p className="text-xs opacity-80">©2025 Aipictors Co.,Ltd.</p>
+            <p className="text-xs opacity-80">©2026 Aipictors Co.,Ltd.</p>
           </div>
         </footer>
       )}

@@ -18,6 +18,8 @@ type MyEventsQueryData = {
     id: string
     slug: string
     title: string
+    thumbnailImageUrl: string | null
+    headerImageUrl: string | null
     mainTag: string
     status: string
     visibilityType: UserEventVisibilityType
@@ -99,6 +101,10 @@ export default function MyEventsRoute () {
 
   const events = data?.userEvents ?? []
 
+  const resolveThumbnailImageUrl = (event: MyEventsQueryData["userEvents"][number]) => {
+    return event.thumbnailImageUrl || event.headerImageUrl || "/images/opepnepe.png"
+  }
+
   const onStatusChange = async (slug: string, visibilityType: UserEventVisibilityType, forceEnd = false) => {
     try {
       await updateStatus({
@@ -134,25 +140,32 @@ export default function MyEventsRoute () {
       <div className="grid gap-4">
         {events.map((event) => (
           <Card key={event.id}>
-            <CardHeader>
-              <CardTitle className="flex flex-wrap items-center justify-between gap-2">
-                <span>{event.title}</span>
-                <span className="rounded-full bg-muted px-3 py-1 text-xs">{event.status}</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="text-muted-foreground text-sm">#{event.mainTag}</div>
-              <div className="flex flex-wrap gap-2 text-sm">
-                <span>{t("作品", "Entries")}: {event.entryCount}</span>
-                <span>{t("参加者", "Participants")}: {event.participantCount}</span>
-                <span>{event.rankingEnabled ? t("ランキングあり", "Ranking enabled") : t("ランキングなし", "No ranking")}</span>
+            <CardContent className="flex items-start gap-4 pt-6">
+              <div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border bg-muted/30 sm:h-24 sm:w-24">
+                <img
+                  alt={event.title}
+                  className="h-full w-full object-cover"
+                  src={resolveThumbnailImageUrl(event)}
+                />
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Button asChild variant="secondary"><Link to={`/events/${event.slug}`}>{t("詳細", "Open")}</Link></Button>
-                <Button asChild variant="secondary"><Link to={`/events/${event.slug}/edit`}>{t("編集", "Edit")}</Link></Button>
-                <Button variant="secondary" onClick={() => onStatusChange(event.slug, event.visibilityType === "PUBLIC" ? "DRAFT" : "PUBLIC")}>{event.visibilityType === "PUBLIC" ? t("下書きに戻す", "Move to draft") : t("公開する", "Publish")}</Button>
-                <Button variant="secondary" onClick={() => onStatusChange(event.slug, "PRIVATE")}>{t("非公開", "Make private")}</Button>
-                <Button variant="secondary" onClick={() => onStatusChange(event.slug, "PUBLIC", true)}>{t("終了する", "End event")}</Button>
+              <div className="min-w-0 flex-1 space-y-3">
+                <CardTitle className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="break-words">{event.title}</span>
+                  <span className="rounded-full bg-muted px-3 py-1 text-xs">{event.status}</span>
+                </CardTitle>
+                <div className="text-muted-foreground text-sm">#{event.mainTag}</div>
+                <div className="flex flex-wrap gap-2 text-sm">
+                  <span>{t("作品", "Entries")}: {event.entryCount}</span>
+                  <span>{t("参加者", "Participants")}: {event.participantCount}</span>
+                  <span>{event.rankingEnabled ? t("ランキングあり", "Ranking enabled") : t("ランキングなし", "No ranking")}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button asChild variant="secondary"><Link to={`/events/${event.slug}`}>{t("詳細", "Open")}</Link></Button>
+                  <Button asChild variant="secondary"><Link to={`/events/${event.slug}/edit`}>{t("編集", "Edit")}</Link></Button>
+                  <Button variant="secondary" onClick={() => onStatusChange(event.slug, event.visibilityType === "PUBLIC" ? "DRAFT" : "PUBLIC")}>{event.visibilityType === "PUBLIC" ? t("下書きに戻す", "Move to draft") : t("公開する", "Publish")}</Button>
+                  <Button variant="secondary" onClick={() => onStatusChange(event.slug, "PRIVATE")}>{t("非公開", "Make private")}</Button>
+                  <Button variant="secondary" onClick={() => onStatusChange(event.slug, "PUBLIC", true)}>{t("終了する", "End event")}</Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -176,6 +189,8 @@ const myEventsQuery = graphql(
       id
       slug
       title
+      thumbnailImageUrl
+      headerImageUrl
       mainTag
       status
       visibilityType

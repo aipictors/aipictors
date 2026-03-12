@@ -89,4 +89,26 @@ describe("useUserActiveTab", () => {
 
     expect(getActiveTab()).toBe("Stickers")
   })
+
+  test("日本語のイベントを返す", () => {
+    const props = {
+      url: "/users/123/events",
+      lang: "ja",
+    }
+
+    const getActiveTab = useUserActiveTab(props)
+
+    expect(getActiveTab()).toBe("イベント")
+  })
+
+  test("英語のEventsを返す", () => {
+    const props = {
+      url: "/users/123/events",
+      lang: "en",
+    }
+
+    const getActiveTab = useUserActiveTab(props)
+
+    expect(getActiveTab()).toBe("Events")
+  })
 })

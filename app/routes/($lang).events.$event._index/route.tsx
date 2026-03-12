@@ -148,12 +148,127 @@ const getStatusBadgeClassName = (status: string) => {
   return "border-transparent bg-slate-500 text-white"
 }
 
-function EventStatCard(props: { label: string; value: string }) {
+function EventStatCard(props: {
+  label: string
+  value: string
+  helper?: string
+}) {
   return (
-    <div className="rounded-xl border bg-muted/30 px-4 py-3">
-      <div className="text-muted-foreground text-xs">{props.label}</div>
-      <div className="mt-1 font-semibold text-lg leading-none">
+    <div className="rounded-2xl border border-border/70 bg-background/95 px-4 py-4 shadow-sm backdrop-blur">
+      <div className="font-medium text-foreground/75 text-xs tracking-wide uppercase">
+        {props.label}
+      </div>
+      <div className="mt-2 font-bold text-2xl text-foreground leading-none md:text-3xl">
         {props.value}
+      </div>
+      {props.helper && (
+        <div className="mt-2 text-foreground/70 text-xs">{props.helper}</div>
+      )}
+    </div>
+  )
+}
+
+function EventPeriodCard(props: {
+  startAt: number
+  endAt: number
+  t: ReturnType<typeof useTranslation>
+}) {
+  return (
+    <div className="rounded-2xl border border-border/70 bg-background/95 px-4 py-4 shadow-sm backdrop-blur">
+      <div className="font-medium text-foreground/75 text-xs tracking-wide uppercase">
+        {props.t("開催期間", "Event period")}
+      </div>
+      <div className="mt-2 flex items-center gap-2 font-bold text-2xl text-foreground leading-none md:text-3xl">
+        <span>{formatEventMonthDayText(props.startAt)}</span>
+        <span className="text-foreground/55">→</span>
+        <span>{formatEventMonthDayText(props.endAt)}</span>
+      </div>
+      <div className="mt-2 text-foreground/70 text-xs">
+        {props.t("日本時間", "Japan time (JST)")}
+      </div>
+    </div>
+  )
+}
+
+function EventHeroContent(props: {
+  appEvent: NormalizedEvent
+  statusText: string
+  statusDescription: string
+  t: ReturnType<typeof useTranslation>
+  className?: string
+  isOverlay?: boolean
+}) {
+  const eventTypeText =
+    props.appEvent.eventSource === "USER"
+      ? props.t("ユーザー企画", "User event")
+      : props.t("公式イベント", "Official event")
+
+  const heroHighlightText =
+    props.appEvent.status === "ONGOING"
+      ? props.t("⏳ 残り{{count}}日", "⏳ {{count}} days left").replace(
+          "{{count}}",
+          props.appEvent.remainingDays.toString(),
+        )
+      : props.appEvent.status === "UPCOMING"
+        ? props.t("🗓 開催前", "🗓 Upcoming")
+        : props.t("✓ 終了済み", "✓ Ended")
+
+  const subtitleClassName = props.isOverlay
+    ? "text-sm text-white/80 md:text-base"
+    : "text-sm text-foreground/80 md:text-base"
+
+  return (
+    <div className={props.className}>
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge
+          className={`${getStatusBadgeClassName(props.appEvent.status)} ${props.isOverlay ? "backdrop-blur" : ""}`}
+        >
+          {props.statusText}
+        </Badge>
+        <Badge className="border-transparent bg-orange-100 font-semibold text-orange-700">
+          {heroHighlightText}
+        </Badge>
+        {props.appEvent.isSensitive && (
+          <Badge
+            variant="secondary"
+            className={props.isOverlay
+              ? "bg-rose-50/90 text-rose-700 backdrop-blur"
+              : "bg-rose-50 text-rose-700"}
+          >
+            R18
+          </Badge>
+        )}
+      </div>
+
+      <div className="max-w-4xl space-y-3 text-foreground">
+        <h1
+          className="text-pretty font-bold text-3xl leading-tight text-white md:text-4xl xl:text-5xl"
+        >
+          {props.appEvent.title}
+        </h1>
+        <p className={subtitleClassName}>{eventTypeText}</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)_minmax(0,1fr)]">
+        <EventPeriodCard
+          startAt={props.appEvent.startAt}
+          endAt={props.appEvent.endAt}
+          t={props.t}
+        />
+        <EventStatCard
+          label={props.t("参加作品数", "Entries")}
+          value={props.appEvent.worksCount.toString()}
+          helper={props.t("作品", "entries")}
+        />
+        <EventStatCard
+          label={props.t("ランキング方式", "Ranking")}
+          value={
+            props.appEvent.rankingEnabled
+              ? props.appEvent.rankingType
+              : props.t("なし", "None")
+          }
+          helper={props.statusDescription}
+        />
       </div>
     </div>
   )
@@ -162,8 +277,8 @@ function EventStatCard(props: { label: string; value: string }) {
 function EventMetaRow(props: { label: string; value: React.ReactNode }) {
   return (
     <div className="space-y-1 rounded-xl border bg-background px-4 py-3">
-      <div className="text-muted-foreground text-xs">{props.label}</div>
-      <div className="text-sm leading-relaxed">{props.value}</div>
+      <div className="font-medium text-foreground/80 text-xs">{props.label}</div>
+      <div className="text-foreground text-sm leading-relaxed">{props.value}</div>
     </div>
   )
 }
@@ -179,6 +294,36 @@ const formatEventDateTimeText = (
     format(japanTime, "yyyy年MM月dd日 HH時mm分"),
     format(japanTime, "yyyy/MM/dd HH:mm"),
   )
+}
+
+const formatEventDateText = (
+  time: number,
+  t: ReturnType<typeof useTranslation>,
+) => {
+  const date = new Date(time * 1000)
+  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+
+  return t(
+    format(japanTime, "yyyy年MM月dd日"),
+    format(japanTime, "yyyy/MM/dd"),
+  )
+}
+
+const formatEventMonthDayText = (time: number) => {
+  const date = new Date(time * 1000)
+  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+
+  return format(japanTime, "MM/dd")
+}
+
+const formatEventTimeOnlyText = (
+  time: number,
+  t: ReturnType<typeof useTranslation>,
+) => {
+  const date = new Date(time * 1000)
+  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+
+  return t(format(japanTime, "HH時mm分"), format(japanTime, "HH:mm"))
 }
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -336,135 +481,112 @@ export default function EventDetailPage() {
   return (
     <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6 px-4 pb-8 md:px-6 xl:px-8">
       {data.appEvent.headerImageUrl && (
-        <section className="overflow-hidden rounded-2xl border bg-card shadow-xs">
+        <section className="relative overflow-hidden rounded-3xl border bg-card shadow-xs">
           <img
-            className="h-[220px] w-full object-cover md:h-[300px] xl:h-[340px]"
+            className="h-[280px] w-full object-cover object-center md:h-[360px] lg:h-[420px] xl:h-[480px]"
             src={data.appEvent.headerImageUrl}
-            alt=""
+            alt={data.appEvent.title}
           />
+          <div className="xl:absolute xl:inset-0 xl:bg-linear-to-t xl:from-black/75 xl:via-black/45 xl:to-black/20" />
+          <div className="border-t bg-slate-950 p-4 md:p-5 xl:hidden">
+            <EventHeroContent
+              appEvent={data.appEvent}
+              statusText={statusText}
+              statusDescription={statusDescription}
+              t={t}
+              className="mx-auto flex max-w-5xl flex-col gap-5"
+            />
+          </div>
+          <div className="absolute inset-x-0 bottom-0 hidden p-6 xl:block xl:p-8">
+            <EventHeroContent
+              appEvent={data.appEvent}
+              statusText={statusText}
+              statusDescription={statusDescription}
+              t={t}
+              isOverlay={true}
+              className="mx-auto flex max-w-4xl flex-col gap-5"
+            />
+          </div>
         </section>
       )}
 
-      <section className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
-        <aside className="space-y-4">
-          {data.appEvent.thumbnailImageUrl && (
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <img
-                  className="aspect-square w-full object-cover"
-                  src={data.appEvent.thumbnailImageUrl}
-                  alt={data.appEvent.title}
-                />
-              </CardContent>
-            </Card>
-          )}
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">
-                {t("イベント情報", "Event info")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <EventMetaRow
-                label={t("イベント種別", "Event type")}
-                value={
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">
-                      {data.appEvent.eventSource === "OFFICIAL"
-                        ? t("公式イベント", "Official Event")
-                        : t("ユーザー企画", "User Event")}
-                    </Badge>
-                    <Badge
-                      className={getStatusBadgeClassName(data.appEvent.status)}
-                    >
-                      {statusText}
-                    </Badge>
-                    {data.appEvent.isSensitive && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-rose-50 text-rose-700"
-                      >
-                        R18
-                      </Badge>
-                    )}
-                  </div>
-                }
-              />
-
-              {data.appEvent.eventSource === "USER" && data.appEvent.userId && (
-                <EventMetaRow
-                  label={t("主催者", "Host")}
-                  value={
-                    <Link
-                      className="font-medium underline underline-offset-2"
-                      to={`/users/${data.appEvent.userId}`}
-                    >
-                      {data.appEvent.userName ?? data.appEvent.userId}
-                    </Link>
-                  }
-                />
+      <section className="space-y-4 rounded-3xl border bg-card/80 p-4 shadow-xs backdrop-blur-sm md:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-1">
+            <div className="text-foreground/80 text-sm font-medium">
+              {t("作品一覧", "Works")}
+            </div>
+            <h2 className="font-semibold text-2xl md:text-3xl">
+              {t("参加作品（{{count}}）", "Entries ({{count}})").replace(
+                "{{count}}",
+                data.appEvent.worksCount.toString(),
               )}
+            </h2>
+          </div>
+        </div>
 
-              <EventMetaRow
-                label={t("タグ", "Tags")}
-                value={
-                  <div className="flex flex-wrap gap-2">
-                    {data.appEvent.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="bg-muted text-foreground"
-                      >
-                        #{tag}
-                      </Badge>
-                    ))}
-                  </div>
-                }
-              />
+        <EventWorkList
+          works={data.appEvent.works}
+          maxCount={data.appEvent.worksCount}
+          page={data.page}
+          slug={data.appEvent.slug}
+          eventSource={data.appEvent.eventSource}
+          sort={worksOrderDeskAsc}
+          orderBy={workOrderBy}
+          workType={workType}
+          rating={rating}
+          sumWorksCount={data.appEvent.worksCount}
+          setWorkType={setWorkType}
+          setRating={setRating}
+          setSort={setWorksOrderDeskAsc}
+          onClickTitleSortButton={() => {
+            setWorkOrderBy("NAME")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+          onClickLikeSortButton={() => {
+            setWorkOrderBy("LIKES_COUNT")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+          onClickBookmarkSortButton={() => {
+            setWorkOrderBy("BOOKMARKS_COUNT")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+          onClickCommentSortButton={() => {
+            setWorkOrderBy("COMMENTS_COUNT")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+          onClickViewSortButton={() => {
+            setWorkOrderBy("VIEWS_COUNT")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+          onClickAccessTypeSortButton={() => {
+            setWorkOrderBy("ACCESS_TYPE")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+          onClickDateSortButton={() => {
+            setWorkOrderBy("DATE_CREATED")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+          onClickWorkTypeSortButton={() => {
+            setWorkOrderBy("WORK_TYPE")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+          onClickIsPromotionSortButton={() => {
+            setWorkOrderBy("IS_PROMOTION")
+            setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+          }}
+        />
+      </section>
 
-              {data.appEvent.slug && (
-                <EventMetaRow
-                  label={t("表示切替", "Display toggle")}
-                  value={
-                    <SensitiveToggle
-                      variant="compact"
-                      targetUrl={`/r/events/${data.appEvent.slug}`}
-                    />
-                  }
-                />
-              )}
-            </CardContent>
-          </Card>
+      {data.appEvent.rankingEnabled && data.appEvent.awardWorks.length > 0 && (
+        <EventAwardWorkList
+          works={data.appEvent.awardWorks}
+          slug={data.appEvent.slug}
+          eventSource={data.appEvent.eventSource}
+        />
+      )}
 
-          {isOwner && data.appEvent.eventSource === "USER" && (
-            <Card className="border-dashed">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">
-                  {t("管理", "Management")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-muted-foreground text-sm">
-                  {t(
-                    "主催者向けの設定変更はこちらから行えます。",
-                    "Organizer-only settings are available here.",
-                  )}
-                </p>
-                <Button
-                  asChild
-                  variant="secondary"
-                  className="w-full justify-center"
-                >
-                  <Link to={`/events/${data.appEvent.slug}/edit`}>
-                    {t("イベントを編集", "Edit event")}
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </aside>
-
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-4">
           <Card>
             <CardHeader className="space-y-4 pb-4">
@@ -491,10 +613,13 @@ export default function EventDetailPage() {
                     )}
                   </div>
                   <div>
-                    <h1 className="font-semibold text-2xl leading-tight md:text-3xl">
+                    <h2 className="font-semibold text-2xl leading-tight md:text-3xl">
+                      {t("イベント概要", "Event overview")}
+                    </h2>
+                    <p className="mt-3 font-semibold text-foreground text-lg leading-snug md:text-xl">
                       {data.appEvent.title}
-                    </h1>
-                    <p className="mt-2 text-muted-foreground text-sm md:text-base">
+                    </p>
+                    <p className="mt-2 text-foreground/90 text-sm leading-relaxed md:text-base">
                       {statusDescription}
                     </p>
                   </div>
@@ -511,29 +636,6 @@ export default function EventDetailPage() {
                   }}
                 />
               )}
-
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <EventStatCard
-                  label={t("開催期間", "Event period")}
-                  value={`${formatEventDateTimeText(data.appEvent.startAt, t)}〜${formatEventDateTimeText(data.appEvent.endAt, t)}`}
-                />
-                <EventStatCard
-                  label={t("参加作品数", "Entries")}
-                  value={data.appEvent.worksCount.toString()}
-                />
-                <EventStatCard
-                  label={t("参加ユーザー数", "Participants")}
-                  value={data.appEvent.participantCount.toString()}
-                />
-                <EventStatCard
-                  label={t("ランキング方式", "Ranking")}
-                  value={
-                    data.appEvent.rankingEnabled
-                      ? data.appEvent.rankingType
-                      : t("なし", "None")
-                  }
-                />
-              </div>
 
               <div className="space-y-3 rounded-xl border bg-muted/20 p-4">
                 <div className="font-medium text-sm">
@@ -602,65 +704,138 @@ export default function EventDetailPage() {
             </CardContent>
           </Card>
         </div>
+
+        <aside className="space-y-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">
+                {t("イベント情報", "Event info")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <EventMetaRow
+                label={t("イベント種別", "Event type")}
+                value={
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline">
+                      {data.appEvent.eventSource === "OFFICIAL"
+                        ? t("公式イベント", "Official Event")
+                        : t("ユーザー企画", "User Event")}
+                    </Badge>
+                    <Badge
+                      className={getStatusBadgeClassName(data.appEvent.status)}
+                    >
+                      {statusText}
+                    </Badge>
+                    {data.appEvent.isSensitive && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-rose-50 text-rose-700"
+                      >
+                        R18
+                      </Badge>
+                    )}
+                  </div>
+                }
+              />
+
+              {data.appEvent.eventSource === "USER" && data.appEvent.userId && (
+                <EventMetaRow
+                  label={t("主催者", "Host")}
+                  value={
+                    <Link
+                      className="font-medium underline underline-offset-2"
+                      to={`/users/${data.appEvent.userId}`}
+                    >
+                      {data.appEvent.userName ?? data.appEvent.userId}
+                    </Link>
+                  }
+                />
+              )}
+
+              <EventMetaRow
+                label={t("開催期間", "Event period")}
+                value={
+                  <div className="space-y-2">
+                    <div className="rounded-lg bg-muted/40 px-3 py-2">
+                      <div className="text-muted-foreground text-xs">
+                        {t("開始", "Starts")}
+                      </div>
+                      <div className="font-medium">
+                        {formatEventDateTimeText(data.appEvent.startAt, t)}
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-muted/40 px-3 py-2">
+                      <div className="text-muted-foreground text-xs">
+                        {t("終了", "Ends")}
+                      </div>
+                      <div className="font-medium">
+                        {formatEventDateTimeText(data.appEvent.endAt, t)}
+                      </div>
+                    </div>
+                  </div>
+                }
+              />
+
+              <EventMetaRow
+                label={t("タグ", "Tags")}
+                value={
+                  <div className="flex flex-wrap gap-2">
+                    {data.appEvent.tags.map((tag) => (
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="bg-muted text-foreground"
+                      >
+                        #{tag}
+                      </Badge>
+                    ))}
+                  </div>
+                }
+              />
+
+              {data.appEvent.slug && (
+                <EventMetaRow
+                  label={t("表示切替", "Display toggle")}
+                  value={
+                    <SensitiveToggle
+                      variant="compact"
+                      targetUrl={`/r/events/${data.appEvent.slug}`}
+                    />
+                  }
+                />
+              )}
+            </CardContent>
+          </Card>
+
+          {isOwner && data.appEvent.eventSource === "USER" && (
+            <Card className="border-dashed">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">
+                  {t("管理", "Management")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-muted-foreground text-sm">
+                  {t(
+                    "主催者向けの設定変更はこちらから行えます。",
+                    "Organizer-only settings are available here.",
+                  )}
+                </p>
+                <Button
+                  asChild
+                  variant="secondary"
+                  className="w-full justify-center"
+                >
+                  <Link to={`/events/${data.appEvent.slug}/edit`}>
+                    {t("イベントを編集", "Edit event")}
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </aside>
       </section>
-
-      {data.appEvent.rankingEnabled && data.appEvent.awardWorks.length > 0 && (
-        <EventAwardWorkList
-          works={data.appEvent.awardWorks}
-          slug={data.appEvent.slug}
-        />
-      )}
-
-      <EventWorkList
-        works={data.appEvent.works}
-        maxCount={data.appEvent.worksCount}
-        page={data.page}
-        slug={data.appEvent.slug}
-        sort={worksOrderDeskAsc}
-        orderBy={workOrderBy}
-        workType={workType}
-        rating={rating}
-        sumWorksCount={data.appEvent.worksCount}
-        setWorkType={setWorkType}
-        setRating={setRating}
-        setSort={setWorksOrderDeskAsc}
-        onClickTitleSortButton={() => {
-          setWorkOrderBy("NAME")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-        onClickLikeSortButton={() => {
-          setWorkOrderBy("LIKES_COUNT")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-        onClickBookmarkSortButton={() => {
-          setWorkOrderBy("BOOKMARKS_COUNT")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-        onClickCommentSortButton={() => {
-          setWorkOrderBy("COMMENTS_COUNT")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-        onClickViewSortButton={() => {
-          setWorkOrderBy("VIEWS_COUNT")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-        onClickAccessTypeSortButton={() => {
-          setWorkOrderBy("ACCESS_TYPE")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-        onClickDateSortButton={() => {
-          setWorkOrderBy("DATE_CREATED")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-        onClickWorkTypeSortButton={() => {
-          setWorkOrderBy("WORK_TYPE")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-        onClickIsPromotionSortButton={() => {
-          setWorkOrderBy("IS_PROMOTION")
-          setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
-        }}
-      />
     </div>
   )
 }

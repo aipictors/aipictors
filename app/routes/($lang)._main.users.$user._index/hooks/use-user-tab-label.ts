@@ -4,6 +4,7 @@ type Props = {
   hasColumnWorks: boolean
   hasVideoWorks: boolean
   hasAlbums: boolean
+  hasUserEvents: boolean
   hasFolders: boolean
   hasPublicStickers: boolean
   hasBadges: boolean
@@ -21,6 +22,7 @@ export const useUserTabLabels = (props: Props) => {
     ...(props.hasColumnWorks ? [t("コラム", "Columns")] : []),
     ...(props.hasVideoWorks ? [t("動画", "Videos")] : []),
     ...(props.hasAlbums ? [t("シリーズ", "Series")] : []),
+    ...(props.hasUserEvents ? [t("イベント", "Events")] : []),
     ...(props.hasFolders ? [t("コレクション", "Collections")] : []),
     ...(props.hasPublicStickers ? [t("スタンプ", "Stickers")] : []),
     ...(props.hasBadges ? [t("バッジ", "Badges")] : []),

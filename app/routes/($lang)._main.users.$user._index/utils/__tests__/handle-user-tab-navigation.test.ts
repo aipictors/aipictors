@@ -84,4 +84,32 @@ describe("handleUserTabNavigation", () => {
 
     expect(onNavigateCallback).toHaveBeenCalledWith("/users/123/stickers")
   })
+
+  test("日本語のイベントにナビゲートする", () => {
+    const onNavigateCallback = jest.fn()
+    const props = {
+      userId: "123",
+      type: "イベント",
+      lang: "ja",
+      onNavigateCallback,
+    }
+
+    handleUserTabNavigation(props)
+
+    expect(onNavigateCallback).toHaveBeenCalledWith("/users/123/events")
+  })
+
+  test("英語のEventsにナビゲートする", () => {
+    const onNavigateCallback = jest.fn()
+    const props = {
+      userId: "123",
+      type: "Events",
+      lang: "en",
+      onNavigateCallback,
+    }
+
+    handleUserTabNavigation(props)
+
+    expect(onNavigateCallback).toHaveBeenCalledWith("/users/123/events")
+  })
 })

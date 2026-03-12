@@ -11,7 +11,6 @@ import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Input } from "~/components/ui/input"
-import { ScrollArea } from "~/components/ui/scroll-area"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { uploadPublicImage } from "~/utils/upload-public-image"
@@ -141,8 +140,14 @@ const toDateTimeLocalValue = (time: number) => {
   }
 
   const date = new Date(time * 1000)
-  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-  return offsetDate.toISOString().slice(0, 16)
+
+  const year = date.getUTCFullYear()
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(date.getUTCDate()).padStart(2, "0")
+  const hours = String(date.getUTCHours()).padStart(2, "0")
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0")
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
 const toUnixTime = (value: string) => {
@@ -150,7 +155,24 @@ const toUnixTime = (value: string) => {
     return 0
   }
 
-  return Math.floor(new Date(value).getTime() / 1000)
+  const [datePart, timePart] = value.split("T")
+
+  if (!datePart || !timePart) {
+    return 0
+  }
+
+  const [year, month, day] = datePart.split("-").map(Number)
+  const [hours, minutes] = timePart.split(":").map(Number)
+
+  if (
+    [year, month, day, hours, minutes].some((part) => Number.isNaN(part))
+  ) {
+    return 0
+  }
+
+  return Math.floor(
+    Date.UTC(year, month - 1, day, hours, minutes) / 1000,
+  )
 }
 
 const parseTags = (tagsText: string, mainTag: string) => {
@@ -515,9 +537,7 @@ export function UserEventEditorPage(props: Props) {
         </div>
 
         <Card>
-          <CardContent className="pt-6">
-            <ScrollArea className="max-h-[75vh] pr-4">
-              <div className="space-y-6">
+          <CardContent className="space-y-6 pt-6">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <div className="font-medium text-sm">
@@ -642,8 +662,8 @@ export function UserEventEditorPage(props: Props) {
                             "Changing the main tag would invalidate existing event submissions, so it cannot be edited here.",
                           )
                         : t(
-                            "イベント投稿ボタンから参加すると自動入力される基準タグです。作品一覧の集計や検索導線にも使われます。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
-                            "This is the primary tag auto-filled for event submissions and used for listing and search. A random suffix is appended on blur to avoid duplicates.",
+                            "イベント投稿ボタンから参加すると自動入力される基準タグです。作品一覧の集計や検索導線にも使われます。#は不要です。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
+                            "This is the primary tag auto-filled for event submissions and used for listing and search. Do not include #. A random suffix is appended on blur to avoid duplicates.",
                           )}
                     </p>
                   </div>
@@ -659,8 +679,8 @@ export function UserEventEditorPage(props: Props) {
                     />
                     <p className="text-muted-foreground text-xs">
                       {t(
-                        "主タグ以外の関連語・別表記・検索補助用タグです。主タグは自動で含まれるので、ここには補足したいタグだけを入れてください。",
-                        "Use this for related terms, alternate spellings, and discovery tags. The main tag is included automatically, so only add supporting tags here.",
+                        "主タグ以外の関連語・別表記・検索補助用タグです。主タグは自動で含まれるので、ここには補足したいタグだけを入れてください。#は不要です。",
+                        "Use this for related terms, alternate spellings, and discovery tags. The main tag is included automatically, so only add supporting tags here. Do not include #.",
                       )}
                     </p>
                   </div>
@@ -679,6 +699,12 @@ export function UserEventEditorPage(props: Props) {
                       onChange={(e) => updateField("startAt", e.target.value)}
                       required
                     />
+                    <p className="text-muted-foreground text-xs">
+                      {t(
+                        "日本時間で入力してください。保存時も日本時間の時刻として扱われます。",
+                        "Enter the time in JST. It is also saved as a JST wall-clock time.",
+                      )}
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <FieldLabel
@@ -692,6 +718,12 @@ export function UserEventEditorPage(props: Props) {
                       onChange={(e) => updateField("endAt", e.target.value)}
                       required
                     />
+                    <p className="text-muted-foreground text-xs">
+                      {t(
+                        "日本時間で入力してください。開始日時より後の時刻を指定してください。",
+                        "Enter the time in JST. Choose a time after the start time.",
+                      )}
+                    </p>
                   </div>
                 </div>
 
@@ -775,8 +807,6 @@ export function UserEventEditorPage(props: Props) {
                     maxLength={1000}
                   />
                 </div>
-              </div>
-            </ScrollArea>
           </CardContent>
         </Card>
 

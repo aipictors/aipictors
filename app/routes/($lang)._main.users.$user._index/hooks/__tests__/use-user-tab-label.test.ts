@@ -9,6 +9,7 @@ describe("useUserTabLabels", () => {
       hasColumnWorks: false,
       hasVideoWorks: true,
       hasAlbums: false,
+      hasUserEvents: true,
       hasFolders: true,
       hasPublicStickers: true,
       hasBadges: false,
@@ -22,6 +23,7 @@ describe("useUserTabLabels", () => {
       "画像",
       "小説",
       "動画",
+      "イベント",
       "コレクション",
       "スタンプ",
     ])
@@ -34,6 +36,7 @@ describe("useUserTabLabels", () => {
       hasColumnWorks: true,
       hasVideoWorks: true,
       hasAlbums: true,
+      hasUserEvents: true,
       hasFolders: false,
       hasPublicStickers: false,
       hasBadges: false,
@@ -48,6 +51,7 @@ describe("useUserTabLabels", () => {
       "Columns",
       "Videos",
       "Series",
+      "Events",
     ])
   })
 
@@ -58,6 +62,7 @@ describe("useUserTabLabels", () => {
       hasColumnWorks: false,
       hasVideoWorks: false,
       hasAlbums: false,
+      hasUserEvents: false,
       hasFolders: false,
       hasPublicStickers: false,
       hasBadges: false,
@@ -76,6 +81,7 @@ describe("useUserTabLabels", () => {
       hasColumnWorks: true,
       hasVideoWorks: true,
       hasAlbums: true,
+      hasUserEvents: true,
       hasFolders: true,
       hasPublicStickers: true,
       hasBadges: true,
@@ -91,6 +97,7 @@ describe("useUserTabLabels", () => {
       "Columns",
       "Videos",
       "Series",
+      "Events",
       "Collections",
       "Stickers",
       "Badges",

@@ -44,6 +44,7 @@ export function UserTabs(props: Props) {
     hasColumnWorks: user.hasColumnWorks || actualColumnWorksCount > 0,
     hasFolders: user.hasFolders,
     hasAlbums: user.hasAlbums,
+    hasUserEvents: user.hasUserEvents,
     hasPublicStickers: user.hasPublicStickers,
     hasBadges: user.hasBadges,
     lang: locale,
@@ -105,6 +106,7 @@ export const UserTabsFragment = graphql(`
     hasColumnWorks
     hasFolders
     hasAlbums
+    hasUserEvents
     hasPublicStickers
     hasBadges
   }

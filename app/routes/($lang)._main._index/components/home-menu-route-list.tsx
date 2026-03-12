@@ -305,7 +305,7 @@ export function HomeMenuRouteList({
             </div>
 
             {/* コピーライト */}
-            <p className="text-xs opacity-70">©2025 Aipictors Co.,Ltd.</p>
+            <p className="text-xs opacity-70">©2026 Aipictors Co.,Ltd.</p>
           </div>
         </div>
       </footer>

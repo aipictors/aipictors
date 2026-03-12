@@ -40,6 +40,7 @@ const normalizeOfficialEvent = (event: any): EventCardItem => ({
   rankingEnabled: false,
   entryCount: event.worksCount ?? 0,
   participantCount: 0,
+  userIconUrl: null,
   userName: "Aipictors",
 })
 
@@ -59,8 +60,32 @@ const normalizeUserEvent = (event: any): EventCardItem => ({
   entryCount: event.entryCount,
   participantCount: event.participantCount,
   userId: event.userId,
+  userIconUrl: event.userIconUrl ?? null,
   userName: event.userName,
 })
+
+const buildUserEventIconMap = async (userIds: string[]) => {
+  const uniqueUserIds = [...new Set(userIds.filter(Boolean))]
+
+  const responses = await Promise.all(
+    uniqueUserIds.map(async (userId) => {
+      try {
+        const response = await loaderClient.query({
+          query: eventUserIconQuery,
+          variables: {
+            userId,
+          },
+        })
+
+        return [userId, response.data.user?.iconUrl ?? null] as const
+      } catch {
+        return [userId, null] as const
+      }
+    }),
+  )
+
+  return new Map<string, string | null>(responses)
+}
 
 const sortEvents = (events: EventCardItem[], sort: string) => {
   const copied = [...events]
@@ -183,9 +208,18 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const userIconMap = await buildUserEventIconMap(
+    resp.data.userEvents.map((event: any) => event.userId).filter(Boolean),
+  )
+
+  const userEventsWithIcons = resp.data.userEvents.map((event: any) => ({
+    ...event,
+    userIconUrl: event.userId ? userIconMap.get(event.userId) ?? null : null,
+  }))
+
   const mergedEvents = [
     ...resp.data.appEvents.map(normalizeOfficialEvent),
-    ...resp.data.userEvents.map(normalizeUserEvent),
+    ...userEventsWithIcons.map(normalizeUserEvent),
   ]
 
   return {
@@ -352,6 +386,15 @@ const eventsQuery = gql`
       participantCount
       userId
       userName
+    }
+  }
+`
+
+const eventUserIconQuery = gql`
+  query EventUserIcon($userId: ID!) {
+    user(id: $userId) {
+      id
+      iconUrl
     }
   }
 `

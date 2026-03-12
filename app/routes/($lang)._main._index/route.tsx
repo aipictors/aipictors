@@ -4,7 +4,6 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { createClient as createCmsClient } from "microcms-js-sdk"
 import {
   Link,
   useLoaderData,
@@ -22,6 +21,7 @@ import {
   PlaySquare,
   Plus,
 } from "lucide-react"
+import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Suspense, useEffect, useId, useMemo, useState } from "react"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
@@ -72,6 +72,7 @@ import {
   HomeNewUsersWorksSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
+import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import {
   HomeTagList,
@@ -91,10 +92,10 @@ import {
   HomePromotionWorkFragment,
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
-import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -121,6 +122,7 @@ const normalizeOfficialHomePreviewEvent = (event: any): HomePreviewEvent => ({
   entryCount: event.worksCount ?? 0,
   participantCount: 0,
   tags: event.tag ? [event.tag] : [],
+  userIconUrl: null,
   userName: "Aipictors",
 })
 
@@ -137,7 +139,8 @@ const normalizeUserHomePreviewEvent = (event: any): HomePreviewEvent => ({
   rankingEnabled: event.rankingEnabled,
   entryCount: event.entryCount,
   participantCount: event.participantCount,
-  tags: event.tags ?? [],
+  tags: [event.mainTag, ...(event.tags ?? [])].filter(Boolean),
+  userIconUrl: event.userIconUrl ?? null,
   userName: event.userName,
 })
 
@@ -150,6 +153,47 @@ const shuffleArray = <T,>(items: T[]) => {
   }
 
   return copied
+}
+
+const isHomePreviewTargetStatus = (status: string) => {
+  return status === "ONGOING" || status === "UPCOMING"
+}
+
+const buildHomeEventPreviews = (
+  officialEvents: any[],
+  userEvents: any[],
+) => {
+  return shuffleArray([
+    ...officialEvents
+      .filter((event) => isHomePreviewTargetStatus(event.status))
+      .map(normalizeOfficialHomePreviewEvent),
+    ...userEvents
+      .filter((event) => isHomePreviewTargetStatus(event.status))
+      .map(normalizeUserHomePreviewEvent),
+  ])
+}
+
+const buildUserEventIconMap = async (userIds: string[]) => {
+  const uniqueUserIds = [...new Set(userIds.filter(Boolean))]
+
+  const responses = await Promise.all(
+    uniqueUserIds.map(async (userId) => {
+      try {
+        const response = await loaderClient.query({
+          query: homeEventUserIconQuery,
+          variables: {
+            userId,
+          },
+        })
+
+        return [userId, response.data.user?.iconUrl ?? null] as const
+      } catch {
+        return [userId, null] as const
+      }
+    }),
+  )
+
+  return new Map<string, string | null>(responses)
 }
 
 export async function loader(_props: LoaderFunctionArgs) {
@@ -218,11 +262,25 @@ export async function loader(_props: LoaderFunctionArgs) {
   ])
 
   const awardDateText = getUtcDateString(yesterday)
+  const appEvents: any[] = Array.isArray(result.data.appEvents)
+    ? result.data.appEvents
+    : []
+  const userEventsRaw: any[] = Array.isArray(result.data.userEvents)
+    ? result.data.userEvents
+    : []
+  const userIconMap = await buildUserEventIconMap(
+    userEventsRaw.map((event) => event.userId).filter(Boolean),
+  )
+  const userEvents = userEventsRaw.map((event) => ({
+    ...event,
+    userIconUrl: event.userId ? userIconMap.get(event.userId) ?? null : null,
+  }))
+  const eventPreviews = buildHomeEventPreviews(appEvents, userEvents)
 
   return {
     ...result.data,
     awardDateText: awardDateText,
-    eventPreviews: [],
+    eventPreviews,
     firstTag: randomCategories[0],
     releaseList,
     secondTag: randomCategories[1],
@@ -698,6 +756,10 @@ export default function Index() {
           </Suspense>
           <div className="block space-y-4 md:flex md:space-x-4 md:space-y-0">
             <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_262px)]">
+              <HomeQuickPreviewBar
+                events={data.eventPreviews}
+                releaseList={data.releaseList}
+              />
               <HomeWorksUsersRecommendedSection
                 works={data.promotionWorks}
                 onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
@@ -775,8 +837,12 @@ export default function Index() {
                 {data.newComments && data.newComments.length > 0 && (
                   <HomeNewCommentsSection comments={data.newComments} />
                 )}
-                <HomeEventPreviewList events={data.eventPreviews} />
-                <HomeReleaseList releaseList={data.releaseList} />
+                <div className="hidden md:block">
+                  <HomeEventPreviewList events={data.eventPreviews} />
+                </div>
+                <div className="hidden md:block">
+                  <HomeReleaseList releaseList={data.releaseList} />
+                </div>
                 {data.workAwards && (
                   <HomeAwardWorksSection works={data.workAwards} />
                 )}
@@ -1592,6 +1658,34 @@ const query = graphql(
     ) {
       ...HomeNewComments
     }
+    appEvents(limit: 12, offset: 0) {
+      id
+      slug
+      title
+      thumbnailImageUrl
+      status
+      startAt
+      endAt
+      tag
+      worksCount
+    }
+    userEvents(limit: 12, offset: 0) {
+      id
+      slug
+      title
+      thumbnailImageUrl
+      headerImageUrl
+      status
+      startAt
+      endAt
+      mainTag
+      tags
+      rankingEnabled
+      entryCount
+      participantCount
+      userId
+      userName
+    }
   }`,
   [
     HomePromotionWorkFragment,
@@ -1603,6 +1697,15 @@ const query = graphql(
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
   ],
+)
+
+const homeEventUserIconQuery = graphql(
+  `query HomeEventUserIcon($userId: ID!) {
+    user(id: $userId) {
+      id
+      iconUrl
+    }
+  }`,
 )
 
 const viewerCurrentPassQuery = graphql(`
@@ -1650,4 +1753,3 @@ const updateClickedCountCustomerAdvertisementMutation = graphql(`
     }
   }
 `)
-
