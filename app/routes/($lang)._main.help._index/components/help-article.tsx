@@ -520,12 +520,20 @@ export function HelpArticle () {
                   <h3 className="mb-2 font-semibold">
                     {t("いいね・ブックマーク", "Likes & Bookmarks")}
                   </h3>
-                  <p className="text-muted-foreground text-sm">
+                  <div className="space-y-2 text-muted-foreground text-sm">
+                    <p>
                     {t(
                       "気に入った作品にいいねを押したり、後で見返すためにブックマークできます。ブックマークはコレクションフォルダで整理可能です。",
                       "Like favorite works or bookmark them to view later. Bookmarks can be organized in collection folders.",
                     )}
-                  </p>
+                    </p>
+                    <p>
+                      {t(
+                        "全年齢作品は名前表示のいいねが初期選択で、センシティブ作品は匿名いいねが初期選択です。どちらも送信前に切り替えられます。",
+                        "All-ages works default to named likes, while sensitive works default to anonymous likes. You can switch either option before sending.",
+                      )}
+                    </p>
+                  </div>
                 </div>
 
                 <div className="border-green-500 border-l-4 pl-4">

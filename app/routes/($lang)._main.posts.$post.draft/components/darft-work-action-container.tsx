@@ -45,6 +45,7 @@ export function DraftWorkActionContainer (props: Props) {
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
       isHideEditButton={false}
       isRecommended={data?.work?.isMyRecommended ?? false}
+      isSensitive={data?.work?.isSensitive ?? false}
       isDisabledShare={true}
       workType={
         (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"

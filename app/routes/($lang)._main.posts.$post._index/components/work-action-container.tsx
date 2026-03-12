@@ -50,6 +50,7 @@ export function WorkActionContainer (props: Props) {
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
       isHideEditButton={false}
       isRecommended={data?.work?.isMyRecommended ?? false}
+      isSensitive={data?.work?.isSensitive ?? false}
       isDisabledShare={props.isDisabledShare}
       workType={
         (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"

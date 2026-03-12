@@ -69,6 +69,23 @@ export function SettingNotificationForm () {
             id="terms"
           />
         </div>
+        <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-sm">
+          <p className="font-medium">
+            {t("いいねの表示ルール", "Like visibility rules")}
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            {t(
+              "全年齢作品へのいいねは、初期状態で名前を表示します。必要に応じて匿名いいねへ切り替えられます。",
+              "Likes on all-ages works show your name by default. You can switch to anonymous when needed.",
+            )}
+          </p>
+          <p className="mt-2 text-muted-foreground">
+            {t(
+              "センシティブ作品へのいいねは、初期状態で匿名です。必要に応じて名前表示のいいねへ切り替えられます。",
+              "Likes on sensitive works are anonymous by default. You can switch to a named like when needed.",
+            )}
+          </p>
+        </div>
       </div>
       <Button
         onClick={onSave}

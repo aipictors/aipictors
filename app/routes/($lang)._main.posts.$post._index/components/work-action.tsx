@@ -19,6 +19,7 @@ type Props = {
   currentImageUrl?: string
   imageUrls?: string[]
   workType: IntrospectionEnum<"WorkType">
+  isSensitive?: boolean
   bookmarkFolderId: string | null
   workLikesCount: number
   defaultLiked: boolean
@@ -94,6 +95,7 @@ export function WorkAction (props: Props) {
             text={`${props.workLikesCount}`}
             defaultLiked={props.defaultLiked}
             defaultLikedCount={props.workLikesCount}
+            isSensitive={props.isSensitive}
             targetWorkId={props.targetWorkId}
             targetWorkOwnerUserId={props.targetWorkOwnerUserId}
             isUsedShortcutKey={true}
@@ -107,6 +109,7 @@ export function WorkAction (props: Props) {
               text={`いいね ${props.workLikesCount}`}
               defaultLiked={props.defaultLiked}
               defaultLikedCount={props.workLikesCount}
+              isSensitive={props.isSensitive}
               targetWorkId={props.targetWorkId}
               isBackgroundNone={false}
               targetWorkOwnerUserId={props.targetWorkOwnerUserId}
