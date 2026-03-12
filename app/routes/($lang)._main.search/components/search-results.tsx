@@ -379,10 +379,15 @@ export const SearchResults = ({
     notifyOnNetworkStatusChange: true,
   })
 
+  const paginationResultCount = data?.works?.length ?? 0
+  const shouldFetchCount =
+    viewMode === "pagination" &&
+    (currentPage > 0 || paginationResultCount >= PER_PAGE)
+
   // Count query
   const { data: countData } = useQuery(SearchWorksCountQuery, {
     variables: { where },
-    // fetchPolicy: "cache-first",
+    skip: !shouldFetchCount,
     errorPolicy: "ignore",
   })
 
@@ -741,8 +746,10 @@ export const SearchResults = ({
     initialWorks,
     currentPage,
   ])
-  const totalCount = countData?.worksCount || 0
-  const totalPages = Math.ceil(totalCount / PER_PAGE)
+  const totalCount = shouldFetchCount
+    ? (countData?.worksCount ?? currentWorks.length)
+    : currentWorks.length
+  const totalPages = shouldFetchCount ? Math.ceil(totalCount / PER_PAGE) : 1
 
   // Handle model tag removal
   const handleModelTagRemove = useCallback(() => {
