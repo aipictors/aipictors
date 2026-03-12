@@ -153,7 +153,10 @@ export function GalleryHeader(): React.ReactNode {
             <div className="relative">
               <Input
                 type="text"
-                placeholder={t("作品を検索...", "Search artworks...")}
+                placeholder={t(
+                  "作品・タグ・ユーザー名を検索...",
+                  "Search artworks, tags, or usernames...",
+                )}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -194,7 +197,10 @@ export function GalleryHeader(): React.ReactNode {
             <div className="relative">
               <Input
                 type="text"
-                placeholder={t("作品を検索...", "Search artworks...")}
+                placeholder={t(
+                  "作品・タグ・ユーザー名を検索...",
+                  "Search artworks, tags, or usernames...",
+                )}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onKeyPress={handleKeyPress}

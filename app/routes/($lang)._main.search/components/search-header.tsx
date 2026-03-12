@@ -168,8 +168,8 @@ export function SearchHeader (props: Props) {
           <Input
             ref={inputRef}
             placeholder={t(
-              "作品タイトル・タグで探す",
-              "Search by work title or tag",
+              "作品タイトル・タグ・ユーザー名で探す",
+              "Search by work title, tag, or username",
             )}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
@@ -248,7 +248,7 @@ export function SearchHeader (props: Props) {
                     <p className="text-muted-foreground text-xs">
                       {t(
                         "デフォルトではタイトル部分一致 + タグ検索です。",
-                        "Default search uses partial title match + tags.",
+                        "Default search uses partial title match + tags + usernames.",
                       )}
                     </p>
                   </div>
@@ -328,8 +328,8 @@ export function SearchHeader (props: Props) {
 
       <p className="text-muted-foreground text-xs">
         {t(
-          "例：魔法使い 青髪 ファンタジー（Enterで検索 / そのまま眺めてもOK）",
-          "Example: wizard blue hair fantasy (Press Enter / or just browse)",
+          "例：魔法使い 青髪 zzz（作品名・タグ・ユーザー名をまとめて検索）",
+          "Example: wizard blue hair zzz (titles, tags, and usernames are searched together)",
         )}
       </p>
     </div>

@@ -225,6 +225,7 @@ export default function Search() {
     // 🔍 キーワード検索時
     if (searchQuery) {
       const options = [
+        t("ユーザー名含む", "Usernames on"),
         searchParams.get("searchInTags") !== "false"
           ? t("タグ含む", "Tags on")
           : t("タグ除外", "Tags off"),

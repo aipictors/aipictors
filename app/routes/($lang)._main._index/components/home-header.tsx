@@ -511,7 +511,10 @@ function HomeHeader(props: Props) {
                 onKeyDown={onEnterKey}
                 onCompositionStart={onCompStart}
                 onCompositionEnd={onCompEnd}
-                placeholder={t("作品を検索", "Search for posts")}
+                placeholder={t(
+                  "作品・タグ・ユーザー名を検索",
+                  "Search posts, tags, or usernames",
+                )}
                 className="pr-20"
               />
               <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
@@ -557,7 +560,10 @@ function HomeHeader(props: Props) {
                 onKeyDown={onEnterKey}
                 onCompositionStart={onCompStart}
                 onCompositionEnd={onCompEnd}
-                placeholder={t("作品を検索", "Search for posts")}
+                placeholder={t(
+                  "作品・タグ・ユーザー名を検索",
+                  "Search posts, tags, or usernames",
+                )}
                 className="w-full pr-10"
               />
               <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
