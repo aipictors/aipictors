@@ -177,13 +177,26 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
   return (
     <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
       <Link to={`/events/${event.slug}`} className="group block">
-        <div className="relative">
-          <img
-            src={event.thumbnailImageUrl}
-            alt={event.title}
-            className="h-44 w-full object-cover md:h-56"
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-black/65 via-black/25 to-transparent" />
+        <div className="relative bg-black">
+          <div className="absolute inset-0 scale-110">
+            <img
+              src={event.thumbnailImageUrl}
+              alt=""
+              className="h-full w-full object-cover object-center opacity-60 blur-3xl"
+              aria-hidden="true"
+            />
+            <div className="absolute inset-0 bg-black/35" />
+          </div>
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-black/40" />
+          <div className="relative flex min-h-[220px] items-center justify-center px-4 py-4 md:min-h-[280px] md:px-6 md:py-6">
+            <div className="w-full max-w-[520px] overflow-hidden rounded-xl border border-white/15 bg-white/10 shadow-lg backdrop-blur-[2px]">
+              <img
+                src={event.thumbnailImageUrl}
+                alt={event.title}
+                className="h-44 w-full object-contain object-center md:h-56"
+              />
+            </div>
+          </div>
           <div className="absolute inset-x-0 bottom-0 p-4 md:p-5">
             <div className="max-w-3xl space-y-2 text-white">
               <div className="flex flex-wrap items-center gap-2">
