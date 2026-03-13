@@ -13,6 +13,7 @@ import { useBoolean } from "usehooks-ts"
 import { AppHeader } from "~/components/app/app-header"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { LogoutDialogLegacy } from "~/components/logout-dialog-legacy"
+import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { SensitiveKeywordWarning } from "~/components/search/sensitive-keyword-warning"
 import { Button } from "~/components/ui/button"
 import {
@@ -27,6 +28,7 @@ import { Separator } from "~/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
+import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { HomeHeaderNotLoggedInMenu } from "~/routes/($lang)._main._index/components/home-header-not-logged-in-menu"
@@ -92,6 +94,11 @@ function HomeHeader(props: Props) {
   const isNavigatingRef = useRef(false)
   const isManualNavigationRef = useRef(false) // 手動ナビゲーションフラグを追加
   const sensitivePath = /\/r($|\/)/.test(location.pathname)
+  const {
+    isRateLimitDialogOpen,
+    executeSearchWithRateLimit,
+    closeSearchRateLimitDialog,
+  } = useSearchRateLimit()
   const getSensitiveLink = (path: string, forceSensitive = false) => {
     // すでに /r 付与済みならそのまま返す
     if (path.startsWith("/r/") || path === "/r") return path
@@ -201,13 +208,17 @@ function HomeHeader(props: Props) {
       setShowSensitiveWarning(true)
     } else {
       // Navigate directly
-      navigate(targetUrl, { replace: true })
+      executeSearchWithRateLimit(() => {
+        navigate(targetUrl, { replace: true })
+      })
     }
   }
 
   const handleSensitiveConfirm = () => {
     if (pendingSearchData) {
-      navigate(pendingSearchData.targetUrl, { replace: true })
+      executeSearchWithRateLimit(() => {
+        navigate(pendingSearchData.targetUrl, { replace: true })
+      })
     }
     setShowSensitiveWarning(false)
     setPendingSearchData(null)
@@ -707,6 +718,15 @@ function HomeHeader(props: Props) {
           onCancel={handleSensitiveCancel}
           keyword={pendingSearchData?.sanitizedText || ""}
           targetUrl={pendingSearchData?.targetUrl || ""}
+        />
+
+        <SearchRateLimitDialog
+          isOpen={isRateLimitDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              closeSearchRateLimitDialog()
+            }
+          }}
         />
       </div>
     </AppHeader>

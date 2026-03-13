@@ -12,7 +12,9 @@ import {
 } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { config } from "~/config"
+import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
 import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
@@ -163,6 +165,11 @@ export default function Search() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const t = useTranslation()
+  const {
+    isRateLimitDialogOpen,
+    executeSearchWithRateLimit,
+    closeSearchRateLimitDialog,
+  } = useSearchRateLimit()
 
   if (data === null) {
     return null
@@ -264,7 +271,9 @@ export default function Search() {
   ]
 
   const onChipClick = (chip: string) => {
-    navigate(buildSearchPath(chip))
+    executeSearchWithRateLimit(() => {
+      navigate(buildSearchPath(chip))
+    })
   }
 
   return (
@@ -317,12 +326,23 @@ export default function Search() {
           </details>
         </div>
       </div>
+      <SearchRateLimitDialog
+        isOpen={isRateLimitDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeSearchRateLimitDialog()
+          }
+        }}
+      />
     </>
   )
 }
 
-export const meta: MetaFunction = (props) => {
-  const searchQuery = props.data?.searchQuery ?? props.params?.q ?? ""
+export const meta: MetaFunction<typeof loader> = (props) => {
+  const searchQuery =
+    (props.data as { searchQuery?: string } | undefined)?.searchQuery ??
+    props.params?.q ??
+    ""
 
   let title = "検索 - Aipictors"
   let description =

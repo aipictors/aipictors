@@ -1,9 +1,11 @@
+import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { Cpu, Search, SlidersHorizontal, User, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { toast } from "sonner"
+import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
+import { ScrollArea } from "~/components/ui/scroll-area"
 import {
   Sheet,
   SheetContent,
@@ -11,7 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "~/components/ui/sheet"
-import { ScrollArea } from "~/components/ui/scroll-area"
+import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import {
   buildSearchPath,
@@ -31,11 +33,16 @@ type Props = {
   models?: AiModel[]
 }
 
-export function SearchHeader (props: Props) {
+export function SearchHeader(props: Props) {
   const [searchParams] = useSearchParams()
   const location = useLocation()
   const navigate = useNavigate()
   const t = useTranslation()
+  const {
+    isRateLimitDialogOpen,
+    executeSearchWithRateLimit,
+    closeSearchRateLimitDialog,
+  } = useSearchRateLimit()
 
   // 検索入力用 ref
   const inputRef = useRef<HTMLInputElement>(null)
@@ -56,12 +63,12 @@ export function SearchHeader (props: Props) {
   // URLパラメータの変更を監視
   useEffect(() => {
     setSearchText(
-      searchParams.get("q") || getSearchTermFromPathname(location.pathname) || "",
+      searchParams.get("q") ||
+        getSearchTermFromPathname(location.pathname) ||
+        "",
     )
     setSearchInTags(searchParams.get("searchInTags") !== "false")
-    setSearchInDescription(
-      searchParams.get("searchInDescription") === "true",
-    )
+    setSearchInDescription(searchParams.get("searchInDescription") === "true")
 
     // modelパラメータがある場合は検索テキストを空にする
     if (searchParams.get("model") || searchParams.get("workModelId")) {
@@ -97,7 +104,9 @@ export function SearchHeader (props: Props) {
       if (searchInDescription) {
         newParams.set("searchInDescription", "true")
       }
-      navigate(buildSearchPath(validated, newParams))
+      executeSearchWithRateLimit(() => {
+        navigate(buildSearchPath(validated, newParams))
+      })
     }
   }
 
@@ -107,14 +116,18 @@ export function SearchHeader (props: Props) {
     if (!validated) return
     const newParams = new URLSearchParams()
     newParams.set("q", validated)
-    navigate(`/users?${newParams.toString()}`)
+    executeSearchWithRateLimit(() => {
+      navigate(`/users?${newParams.toString()}`)
+    })
     setIsFilterOpen(false)
   }
 
   const onSelectModel = (modelId: string) => {
     const newParams = new URLSearchParams()
     newParams.set("workModelId", modelId)
-    navigate(`/search?${newParams.toString()}`)
+    executeSearchWithRateLimit(() => {
+      navigate(`/search?${newParams.toString()}`)
+    })
     setIsFilterOpen(false)
   }
 
@@ -221,7 +234,9 @@ export function SearchHeader (props: Props) {
                       <input
                         type="checkbox"
                         checked={searchInTags}
-                        onChange={(event) => setSearchInTags(event.target.checked)}
+                        onChange={(event) =>
+                          setSearchInTags(event.target.checked)
+                        }
                       />
                       <span>
                         {t(
@@ -332,6 +347,15 @@ export function SearchHeader (props: Props) {
           "Example: wizard blue hair zzz (titles, tags, and usernames are searched together)",
         )}
       </p>
+
+      <SearchRateLimitDialog
+        isOpen={isRateLimitDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeSearchRateLimitDialog()
+          }
+        }}
+      />
     </div>
   )
 }

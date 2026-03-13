@@ -1,9 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Button } from "~/components/ui/button"
-import { Tag, Search, Cpu, TrendingUp } from "lucide-react"
 import { useNavigate } from "@remix-run/react"
-import { useTranslation } from "~/hooks/use-translation"
 import { graphql } from "gql.tada"
+import { Cpu, Search, Tag, TrendingUp } from "lucide-react"
+import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
+import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
+import { useTranslation } from "~/hooks/use-translation"
 import { buildSearchPath } from "~/utils/search-route"
 
 type PopularTag = {
@@ -58,20 +60,31 @@ function TagGrid(props: {
   )
 }
 
-export function SearchHints (props: Props) {
+export function SearchHints(props: Props) {
   const navigate = useNavigate()
   const t = useTranslation()
+  const {
+    isRateLimitDialogOpen,
+    executeSearchWithRateLimit,
+    closeSearchRateLimitDialog,
+  } = useSearchRateLimit()
 
   const handleTagClick = (tagName: string) => {
-    navigate(buildSearchPath(tagName))
+    executeSearchWithRateLimit(() => {
+      navigate(buildSearchPath(tagName))
+    })
   }
 
   const handleKeywordClick = (keyword: string) => {
-    navigate(buildSearchPath(keyword))
+    executeSearchWithRateLimit(() => {
+      navigate(buildSearchPath(keyword))
+    })
   }
 
   const handleModelClick = (modelId: string) => {
-    navigate(`/search?model=${encodeURIComponent(modelId)}`)
+    executeSearchWithRateLimit(() => {
+      navigate(`/search?model=${encodeURIComponent(modelId)}`)
+    })
   }
 
   const getModelBlurb = (modelName: string) => {
@@ -157,130 +170,141 @@ export function SearchHints (props: Props) {
   })()
 
   return (
-    <div className="space-y-6">
-      {/* タグ（意味をつけて探索しやすく） */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Tag className="size-5" />
-            {t("似た雰囲気を探す", "Find Similar Vibes")}
-          </CardTitle>
-          <p className="text-muted-foreground text-sm">
-            {t(
-              "雰囲気・題材・定番などから、次の一枚を見つけやすくします",
-              "Find the next piece by vibe, theme, and evergreen picks",
-            )}
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <h3 className="font-semibold text-sm">
-                {t("人気ジャンル", "Popular Genres")}
-              </h3>
-              <p className="text-muted-foreground text-xs">
-                {t("題材・世界観で探す", "Find by theme")}
-              </p>
+    <>
+      <div className="space-y-6">
+        {/* タグ（意味をつけて探索しやすく） */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Tag className="size-5" />
+              {t("似た雰囲気を探す", "Find Similar Vibes")}
+            </CardTitle>
+            <p className="text-muted-foreground text-sm">
+              {t(
+                "雰囲気・題材・定番などから、次の一枚を見つけやすくします",
+                "Find the next piece by vibe, theme, and evergreen picks",
+              )}
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <div className="flex items-baseline justify-between">
+                <h3 className="font-semibold text-sm">
+                  {t("人気ジャンル", "Popular Genres")}
+                </h3>
+                <p className="text-muted-foreground text-xs">
+                  {t("題材・世界観で探す", "Find by theme")}
+                </p>
+              </div>
+              <TagGrid tags={groupedTags.genre} onTagClick={handleTagClick} />
             </div>
-            <TagGrid tags={groupedTags.genre} onTagClick={handleTagClick} />
-          </div>
 
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <h3 className="font-semibold text-sm">
-                {t("最近流行っている", "Trending Now")}
-              </h3>
-              <p className="text-muted-foreground text-xs">
-                {t("最近よく見られるタグ", "Currently popular")}
-              </p>
+            <div className="space-y-3">
+              <div className="flex items-baseline justify-between">
+                <h3 className="font-semibold text-sm">
+                  {t("最近流行っている", "Trending Now")}
+                </h3>
+                <p className="text-muted-foreground text-xs">
+                  {t("最近よく見られるタグ", "Currently popular")}
+                </p>
+              </div>
+              <TagGrid tags={groupedTags.trend} onTagClick={handleTagClick} />
             </div>
-            <TagGrid tags={groupedTags.trend} onTagClick={handleTagClick} />
-          </div>
 
-          <div className="space-y-3">
-            <div className="flex items-baseline justify-between">
-              <h3 className="font-semibold text-sm">
-                {t("定番テーマ", "Evergreen")}
-              </h3>
-              <p className="text-muted-foreground text-xs">
-                {t("雰囲気・好みで探す", "Find by vibe")}
-              </p>
+            <div className="space-y-3">
+              <div className="flex items-baseline justify-between">
+                <h3 className="font-semibold text-sm">
+                  {t("定番テーマ", "Evergreen")}
+                </h3>
+                <p className="text-muted-foreground text-xs">
+                  {t("雰囲気・好みで探す", "Find by vibe")}
+                </p>
+              </div>
+              <TagGrid tags={groupedTags.classic} onTagClick={handleTagClick} />
             </div>
-            <TagGrid tags={groupedTags.classic} onTagClick={handleTagClick} />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      {/* よく検索されているキーワード */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <TrendingUp className="size-5" />
-            {t("いま人気のキーワード", "Trending Keywords")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {props.popularKeywords.map((keyword) => (
-              <Button
-                key={keyword}
-                variant="ghost"
-                size="sm"
-                className="h-auto rounded-full border px-3 py-1"
-                onClick={() => handleKeywordClick(keyword)}
-              >
-                <Search className="mr-1 size-3" />
-                <span className="text-sm">{keyword}</span>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        {/* よく検索されているキーワード */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <TrendingUp className="size-5" />
+              {t("いま人気のキーワード", "Trending Keywords")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {props.popularKeywords.map((keyword) => (
+                <Button
+                  key={keyword}
+                  variant="ghost"
+                  size="sm"
+                  className="h-auto rounded-full border px-3 py-1"
+                  onClick={() => handleKeywordClick(keyword)}
+                >
+                  <Search className="mr-1 size-3" />
+                  <span className="text-sm">{keyword}</span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* 人気モデル */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Cpu className="size-5" />
-            {t("モデル一覧", "Models")}
-          </CardTitle>
-          <p className="text-muted-foreground text-sm">
-            {t(
-              "押すと、そのモデルで投稿された作品一覧を表示します",
-              "Tap to show works posted with that model",
-            )}
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
-            {props.popularModels.map((model) => (
-              <Button
-                key={model.id}
-                variant="outline"
-                className="flex h-auto items-start gap-3 p-3 text-left"
-                onClick={() => handleModelClick(model.workModelId)}
-              >
-                {model.thumbnailImageURL && (
-                  <img
-                    src={model.thumbnailImageURL}
-                    alt={model.name}
-                    className="size-12 rounded object-cover"
-                  />
-                )}
-                <div className="min-w-0">
-                  <p className="truncate font-medium text-xs">
-                    {model.displayName}
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-muted-foreground text-xs leading-snug">
-                    {getModelBlurb(model.displayName)}
-                  </p>
-                </div>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        {/* 人気モデル */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Cpu className="size-5" />
+              {t("モデル一覧", "Models")}
+            </CardTitle>
+            <p className="text-muted-foreground text-sm">
+              {t(
+                "押すと、そのモデルで投稿された作品一覧を表示します",
+                "Tap to show works posted with that model",
+              )}
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+              {props.popularModels.map((model) => (
+                <Button
+                  key={model.id}
+                  variant="outline"
+                  className="flex h-auto items-start gap-3 p-3 text-left"
+                  onClick={() => handleModelClick(model.workModelId)}
+                >
+                  {model.thumbnailImageURL && (
+                    <img
+                      src={model.thumbnailImageURL}
+                      alt={model.name}
+                      className="size-12 rounded object-cover"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-xs">
+                      {model.displayName}
+                    </p>
+                    <p className="mt-1 line-clamp-2 text-muted-foreground text-xs leading-snug">
+                      {getModelBlurb(model.displayName)}
+                    </p>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <SearchRateLimitDialog
+        isOpen={isRateLimitDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeSearchRateLimitDialog()
+          }
+        }}
+      />
+    </>
   )
 }
 

@@ -6,7 +6,7 @@ export function buildSearchPath(
   searchTerm?: string | null,
   searchParams?: URLSearchParams,
   options?: SearchPathOptions,
-) {
+): string {
   const basePath = options?.basePath ?? "/search"
   const trimmed = searchTerm?.trim() ?? ""
   const pathname = trimmed
@@ -21,7 +21,7 @@ export function buildSearchPath(
   return query ? `${pathname}?${query}` : pathname
 }
 
-export function getSearchTermFromPathname(pathname: string) {
+export function getSearchTermFromPathname(pathname: string): string | null {
   const match = pathname.match(/^\/(?:r\/)?search\/([^/?#]+)/)
 
   if (!match) {
@@ -31,6 +31,6 @@ export function getSearchTermFromPathname(pathname: string) {
   return decodeURIComponent(match[1])
 }
 
-export function isSearchPathname(pathname: string) {
+export function isSearchPathname(pathname: string): boolean {
   return /^\/(?:r\/)?search(?:\/|$)/.test(pathname)
 }

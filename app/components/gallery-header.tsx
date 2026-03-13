@@ -6,12 +6,17 @@ import {
 } from "@remix-run/react"
 import { Grid3X3, MenuIcon, Search, X } from "lucide-react"
 import { lazy, Suspense, useEffect, useState } from "react"
+import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
+import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
-import { buildSearchPath, getSearchTermFromPathname } from "~/utils/search-route"
+import {
+  buildSearchPath,
+  getSearchTermFromPathname,
+} from "~/utils/search-route"
 
 // Lazy load メニューコンポーネント
 const HomeMenuRouteList = lazy(() =>
@@ -34,11 +39,18 @@ export function GalleryHeader(): React.ReactNode {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const t = useTranslation()
+  const {
+    isRateLimitDialogOpen,
+    executeSearchWithRateLimit,
+    closeSearchRateLimitDialog,
+  } = useSearchRateLimit()
 
   // 現在の検索テキストをURLパラメータから初期化
   useEffect(() => {
     const currentSearchText =
-      searchParams.get("q") || getSearchTermFromPathname(location.pathname) || ""
+      searchParams.get("q") ||
+      getSearchTermFromPathname(location.pathname) ||
+      ""
     setSearchText(currentSearchText)
   }, [searchParams, location.pathname])
 
@@ -55,15 +67,17 @@ export function GalleryHeader(): React.ReactNode {
 
   const handleSearch = () => {
     if (searchText.trim()) {
-      // 現在のページがギャラリーページの場合は、このページ内で検索
-      if (location.pathname.includes("/posts/gallery")) {
-        const newSearchParams = new URLSearchParams(searchParams)
-        newSearchParams.set("q", searchText.trim())
-        navigate(`${location.pathname}?${newSearchParams.toString()}`)
-      } else {
-        // その他のページの場合は検索ページに遷移
-        navigate(buildSearchPath(searchText.trim()))
-      }
+      executeSearchWithRateLimit(() => {
+        // 現在のページがギャラリーページの場合は、このページ内で検索
+        if (location.pathname.includes("/posts/gallery")) {
+          const newSearchParams = new URLSearchParams(searchParams)
+          newSearchParams.set("q", searchText.trim())
+          navigate(`${location.pathname}?${newSearchParams.toString()}`)
+        } else {
+          // その他のページの場合は検索ページに遷移
+          navigate(buildSearchPath(searchText.trim()))
+        }
+      })
     } else {
       // 検索テキストが空の場合は検索パラメータを削除
       if (location.pathname.includes("/posts/gallery")) {
@@ -218,6 +232,15 @@ export function GalleryHeader(): React.ReactNode {
             </div>
           </div>
         )}
+
+        <SearchRateLimitDialog
+          isOpen={isRateLimitDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              closeSearchRateLimitDialog()
+            }
+          }}
+        />
       </div>
     </div>
   )

@@ -169,7 +169,7 @@ function EventStatCard(props: {
 }) {
   return (
     <div className="rounded-2xl border border-border/70 bg-background/95 px-4 py-4 shadow-sm backdrop-blur">
-      <div className="font-medium text-foreground/75 text-xs tracking-wide uppercase">
+      <div className="font-medium text-foreground/75 text-xs uppercase tracking-wide">
         {props.label}
       </div>
       <div className="mt-2 font-bold text-2xl text-foreground leading-none md:text-3xl">
@@ -189,7 +189,7 @@ function EventPeriodCard(props: {
 }) {
   return (
     <div className="rounded-2xl border border-border/70 bg-background/95 px-4 py-4 shadow-sm backdrop-blur">
-      <div className="font-medium text-foreground/75 text-xs tracking-wide uppercase">
+      <div className="font-medium text-foreground/75 text-xs uppercase tracking-wide">
         {props.t("開催期間", "Event period")}
       </div>
       <div className="mt-2 flex items-center gap-2 font-bold text-2xl text-foreground leading-none md:text-3xl">
@@ -219,10 +219,9 @@ function EventHeroContent(props: {
 
   const heroHighlightText =
     props.appEvent.status === "ONGOING"
-      ? props.t("⏳ 残り{{count}}日", "⏳ {{count}} days left").replace(
-          "{{count}}",
-          props.appEvent.remainingDays.toString(),
-        )
+      ? props
+          .t("⏳ 残り{{count}}日", "⏳ {{count}} days left")
+          .replace("{{count}}", props.appEvent.remainingDays.toString())
       : props.appEvent.status === "UPCOMING"
         ? props.t("🗓 開催前", "🗓 Upcoming")
         : props.t("✓ 終了済み", "✓ Ended")
@@ -245,9 +244,11 @@ function EventHeroContent(props: {
         {props.appEvent.isSensitive && (
           <Badge
             variant="secondary"
-            className={props.isOverlay
-              ? "bg-rose-50/90 text-rose-700 backdrop-blur"
-              : "bg-rose-50 text-rose-700"}
+            className={
+              props.isOverlay
+                ? "bg-rose-50/90 text-rose-700 backdrop-blur"
+                : "bg-rose-50 text-rose-700"
+            }
           >
             R18
           </Badge>
@@ -261,9 +262,7 @@ function EventHeroContent(props: {
       </div>
 
       <div className="max-w-4xl space-y-3 text-foreground">
-        <h1
-          className="text-pretty font-bold text-3xl leading-tight text-white md:text-4xl xl:text-5xl"
-        >
+        <h1 className="text-pretty font-bold text-3xl text-white leading-tight md:text-4xl xl:text-5xl">
           {props.appEvent.title}
         </h1>
         <p className={subtitleClassName}>{eventTypeText}</p>
@@ -316,9 +315,11 @@ function EventActionShare(props: {
               <Button
                 size="icon"
                 variant={props.isOverlay ? "secondary" : "outline"}
-                className={props.isOverlay
-                  ? "bg-background/90 text-foreground backdrop-blur"
-                  : undefined}
+                className={
+                  props.isOverlay
+                    ? "bg-background/90 text-foreground backdrop-blur"
+                    : undefined
+                }
                 aria-label={t("イベントを共有", "Share event")}
                 title={t("イベントを共有", "Share event")}
               >
@@ -358,8 +359,12 @@ function EventActionShare(props: {
 function EventMetaRow(props: { label: string; value: React.ReactNode }) {
   return (
     <div className="space-y-1 rounded-xl border bg-background px-4 py-3">
-      <div className="font-medium text-foreground/80 text-xs">{props.label}</div>
-      <div className="text-foreground text-sm leading-relaxed">{props.value}</div>
+      <div className="font-medium text-foreground/80 text-xs">
+        {props.label}
+      </div>
+      <div className="text-foreground text-sm leading-relaxed">
+        {props.value}
+      </div>
     </div>
   )
 }
@@ -384,10 +389,7 @@ const formatEventDateText = (
   const date = new Date(time * 1000)
   const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
 
-  return t(
-    format(japanTime, "yyyy年MM月dd日"),
-    format(japanTime, "yyyy/MM/dd"),
-  )
+  return t(format(japanTime, "yyyy年MM月dd日"), format(japanTime, "yyyy/MM/dd"))
 }
 
 const formatEventMonthDayText = (time: number) => {
@@ -594,7 +596,7 @@ export default function EventDetailPage() {
       <section className="space-y-4 rounded-3xl border bg-card/80 p-4 shadow-xs backdrop-blur-sm md:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-1">
-            <div className="text-foreground/80 text-sm font-medium">
+            <div className="font-medium text-foreground/80 text-sm">
               {t("作品一覧", "Works")}
             </div>
             <h2 className="font-semibold text-2xl md:text-3xl">

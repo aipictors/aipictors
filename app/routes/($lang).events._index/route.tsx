@@ -138,7 +138,8 @@ const buildOngoingEventSummary = (props: {
   officialEvents: Array<{ worksCount?: number | null }>
   userEvents: Array<{ entryCount?: number | null }>
 }) => {
-  const ongoingEventCount = props.officialEvents.length + props.userEvents.length
+  const ongoingEventCount =
+    props.officialEvents.length + props.userEvents.length
 
   const ongoingEntryCount =
     props.officialEvents.reduce(
@@ -171,7 +172,10 @@ const shuffleEvents = (events: EventCardItem[]) => {
 function FeaturedEventRotator(props: { events: EventCardItem[] }) {
   const t = useTranslation()
 
-  const shuffledEvents = useMemo(() => shuffleEvents(props.events), [props.events])
+  const shuffledEvents = useMemo(
+    () => shuffleEvents(props.events),
+    [props.events],
+  )
 
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -228,7 +232,10 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
                     ? t("開催中", "Ongoing")
                     : t("開催予定", "Upcoming")}
                 </Badge>
-                <Badge variant="secondary" className="bg-black/35 text-white backdrop-blur-sm">
+                <Badge
+                  variant="secondary"
+                  className="bg-black/35 text-white backdrop-blur-sm"
+                >
                   {event.isOfficial
                     ? t("公式イベント", "Official event")
                     : t("ユーザー企画", "User event")}
@@ -239,7 +246,10 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
                   {event.title}
                 </h2>
                 <p className="line-clamp-1 text-sm text-white/80 md:text-base">
-                  {event.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()}
+                  {event.description
+                    .replace(/<[^>]*>/g, " ")
+                    .replace(/\s+/g, " ")
+                    .trim()}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 text-xs md:text-sm">
@@ -267,10 +277,10 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
                   ? "w-6 bg-foreground"
                   : "w-2.5 bg-muted-foreground/40 hover:bg-muted-foreground/60"
               }`}
-              aria-label={t("{{count}}件目のイベントを表示", "Show event {{count}}").replace(
-                "{{count}}",
-                String(index + 1),
-              )}
+              aria-label={t(
+                "{{count}}件目のイベントを表示",
+                "Show event {{count}}",
+              ).replace("{{count}}", String(index + 1))}
               onClick={() => setCurrentIndex(index)}
             />
           ))}
@@ -376,7 +386,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const userEventsWithIcons = resp.data.userEvents.map((event: any) => ({
     ...event,
-    userIconUrl: event.userId ? userIconMap.get(event.userId) ?? null : null,
+    userIconUrl: event.userId ? (userIconMap.get(event.userId) ?? null) : null,
   }))
 
   const mergedEvents = [
@@ -439,7 +449,7 @@ export default function FollowingLayout() {
             </div>
             <div className="mt-1 font-semibold text-lg">
               {formatNumberWithCommas(data.ongoingSummary.ongoingEventCount)}
-              <span className="ml-1 text-muted-foreground text-sm font-normal">
+              <span className="ml-1 font-normal text-muted-foreground text-sm">
                 {t("件", "events")}
               </span>
             </div>
@@ -453,7 +463,7 @@ export default function FollowingLayout() {
             </div>
             <div className="mt-1 font-semibold text-lg">
               {formatNumberWithCommas(data.ongoingSummary.ongoingEntryCount)}
-              <span className="ml-1 text-muted-foreground text-sm font-normal">
+              <span className="ml-1 font-normal text-muted-foreground text-sm">
                 {t("作品", "entries")}
               </span>
             </div>
