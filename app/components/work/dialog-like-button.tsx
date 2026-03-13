@@ -1,21 +1,13 @@
-import { useEffect, useState, useContext, useCallback } from "react"
-import { Heart } from "lucide-react"
-import { cn } from "~/lib/utils"
-import { AuthContext } from "~/contexts/auth-context"
-import { LoginDialogButton } from "~/components/login-dialog-button"
 import { useMutation } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { KeyCodes } from "~/config"
-import { useTranslation } from "~/hooks/use-translation"
+import { Heart } from "lucide-react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
-import { Button } from "~/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "~/components/ui/dialog"
+import { LoginDialogButton } from "~/components/login-dialog-button"
+import { KeyCodes } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 
 type Props = {
   text?: string
@@ -33,7 +25,7 @@ type Props = {
 /**
  * ダイアログ専用のいいねボタン - 幅いっぱいクリックできる領域
  */
-export function DialogLikeButton (props: Props): React.ReactNode {
+export function DialogLikeButton(props: Props): React.ReactNode {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const location = useLocation()
@@ -76,9 +68,9 @@ export function DialogLikeButton (props: Props): React.ReactNode {
   const [isLiked, setIsLiked] = useState(props.defaultLiked ?? false)
   const [likedCount, setLikedCount] = useState(props.defaultLikedCount)
   const [clicked, setClicked] = useState(false)
-  const [isChoiceDialogOpen, setIsChoiceDialogOpen] = useState(false)
 
   const isSensitive = props.isSensitive ?? /\/r($|\/)/.test(location.pathname)
+
   // targetWorkIdが変更されたときの処理
   useEffect(() => {
     const localState = getLocalLikeState()
@@ -107,7 +99,7 @@ export function DialogLikeButton (props: Props): React.ReactNode {
 
   // クリックハンドラー
   const performLike = useCallback(
-    async (isAnonymous?: boolean) => {
+    async (_isAnonymous?: boolean) => {
       if (props.onClick) {
         props.onClick(!isLiked)
       }
@@ -131,7 +123,6 @@ export function DialogLikeButton (props: Props): React.ReactNode {
             variables: {
               input: {
                 workId: props.targetWorkId,
-                ...(isAnonymous !== undefined && { isAnonymous }),
               },
             },
           })
@@ -170,14 +161,9 @@ export function DialogLikeButton (props: Props): React.ReactNode {
     async (e: { preventDefault: () => void }) => {
       e.preventDefault()
 
-      if (isLiked) {
-        await performLike()
-        return
-      }
-
-      setIsChoiceDialogOpen(true)
+      await performLike()
     },
-    [isLiked, performLike],
+    [performLike],
   )
 
   // キーボードショートカット処理
@@ -249,146 +235,47 @@ export function DialogLikeButton (props: Props): React.ReactNode {
     )
   }
 
-  // ログイン済みの場合
-  const defaultIsAnonymous = isSensitive
-
-  const defaultAction = defaultIsAnonymous
-    ? {
-        isAnonymous: true,
-        label: t("匿名でいいね", "Like anonymously"),
-        description: t(
-          "作者通知やいいね一覧で名前を表示しません。",
-          "Your name will not appear in author notifications or visible like lists.",
-        ),
-      }
-    : {
-        isAnonymous: false,
-        label: t("名前を表示していいね", "Like with your name"),
-        description: t(
-          "作者通知やいいね一覧に名前が表示されます。",
-          "Your name will appear in author notifications and visible like lists.",
-        ),
-      }
-
-  const alternateAction = defaultIsAnonymous
-    ? {
-        isAnonymous: false,
-        label: t("名前を表示していいね", "Like with your name"),
-        description: t(
-          "必要なときだけ名前を表示していいねできます。",
-          "Use this if you want your name to be shown for this like.",
-        ),
-      }
-    : {
-        isAnonymous: true,
-        label: t("匿名でいいね", "Like anonymously"),
-        description: t(
-          "必要なときだけ匿名いいねに切り替えられます。",
-          "Use this if you want to hide your name for this like.",
-        ),
-      }
-
   return (
-    <>
-      <button
-        type="button"
-        onClick={handleOnClick}
-        disabled={isCreateLoading || isDeleteLoading || props.isTargetUserBlocked}
-        className={cn(
-          "flex w-full cursor-pointer items-center justify-center rounded-lg py-2 transition-all duration-200",
-          {
-            "bg-pink-50/80 hover:bg-pink-100/80 dark:bg-pink-950/50 dark:hover:bg-pink-900/50":
-              isLiked,
-            "bg-secondary/30 hover:bg-secondary/50": !isLiked,
-            "cursor-not-allowed opacity-50":
-              isCreateLoading || isDeleteLoading || props.isTargetUserBlocked,
-          },
-        )}
-      >
-        <div className="flex items-center space-x-2">
-          <Heart
-            className={cn(
-              "transition-all duration-200",
-              clicked ? (isLiked ? "like-animation" : "like-animation-end") : "",
-            )}
-            size={20}
-            strokeWidth={1.5}
-            fill={isLiked ? "#E2264D" : "transparent"}
-            stroke={isLiked ? "#E2264D" : "#9CA3AF"}
-          />
-          {props.text && (
-            <span
-              className={cn(
-                "font-medium text-sm transition-colors duration-200",
-                isLiked
-                  ? "text-pink-600 dark:text-pink-400"
-                  : "text-muted-foreground",
-              )}
-            >
-              {props.text}
-            </span>
+    <button
+      type="button"
+      onClick={handleOnClick}
+      disabled={isCreateLoading || isDeleteLoading || props.isTargetUserBlocked}
+      className={cn(
+        "flex w-full cursor-pointer items-center justify-center rounded-lg py-2 transition-all duration-200",
+        {
+          "bg-pink-50/80 hover:bg-pink-100/80 dark:bg-pink-950/50 dark:hover:bg-pink-900/50":
+            isLiked,
+          "bg-secondary/30 hover:bg-secondary/50": !isLiked,
+          "cursor-not-allowed opacity-50":
+            isCreateLoading || isDeleteLoading || props.isTargetUserBlocked,
+        },
+      )}
+    >
+      <div className="flex items-center space-x-2">
+        <Heart
+          className={cn(
+            "transition-all duration-200",
+            clicked ? (isLiked ? "like-animation" : "like-animation-end") : "",
           )}
-        </div>
-      </button>
-
-      <Dialog open={isChoiceDialogOpen} onOpenChange={setIsChoiceDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {t("いいね方法を選択", "Choose how to like")}
-            </DialogTitle>
-            <DialogDescription>
-              {defaultIsAnonymous
-                ? t(
-                    "センシティブ作品は匿名いいねが初期選択です。必要に応じて名前表示にも切り替えられます。",
-                    "Sensitive works default to anonymous likes. You can switch to a named like when needed.",
-                  )
-                : t(
-                    "全年齢作品は名前表示のいいねが初期選択です。必要に応じて匿名にも切り替えられます。",
-                    "All-ages works default to named likes. You can switch to anonymous when needed.",
-                  )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <Button
-              className="w-full justify-start whitespace-normal px-4 py-6 text-left"
-              onClick={async () => {
-                setIsChoiceDialogOpen(false)
-                await performLike(defaultAction.isAnonymous)
-              }}
-            >
-              <span className="flex flex-col items-start">
-                <span>{defaultAction.label}</span>
-                <span className="font-normal text-xs opacity-80">
-                  {defaultAction.description}
-                </span>
-              </span>
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full justify-start whitespace-normal px-4 py-6 text-left"
-              onClick={async () => {
-                setIsChoiceDialogOpen(false)
-                await performLike(alternateAction.isAnonymous)
-              }}
-            >
-              <span className="flex flex-col items-start">
-                <span>{alternateAction.label}</span>
-                <span className="font-normal text-muted-foreground text-xs">
-                  {alternateAction.description}
-                </span>
-              </span>
-            </Button>
-            <p className="text-muted-foreground text-xs">
-              {t(
-                "匿名いいねは作者への通知や作品のいいね一覧でユーザー名を表示しません。",
-                "Anonymous likes hide your name from author notifications and visible like lists.",
-              )}
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+          size={20}
+          strokeWidth={1.5}
+          fill={isLiked ? "#E2264D" : "transparent"}
+          stroke={isLiked ? "#E2264D" : "#9CA3AF"}
+        />
+        {props.text && (
+          <span
+            className={cn(
+              "font-medium text-sm transition-colors duration-200",
+              isLiked
+                ? "text-pink-600 dark:text-pink-400"
+                : "text-muted-foreground",
+            )}
+          >
+            {props.text}
+          </span>
+        )}
+      </div>
+    </button>
   )
 }
 
