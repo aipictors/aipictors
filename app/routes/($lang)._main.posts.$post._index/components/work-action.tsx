@@ -14,6 +14,8 @@ import { SharePopover } from "./work-action-share"
 
 type Props = {
   id: string
+  accessType?: string
+  uuid?: string | null
   title?: string
   description?: string
   currentImageUrl?: string
@@ -143,6 +145,8 @@ export function WorkAction(props: Props) {
               title={props.title ?? ""}
               description={props.description ?? ""}
               id={props.targetWorkId}
+              accessType={props.accessType}
+              uuid={props.uuid}
             />
             <WorkActionMenu
               onDownload={onDownload}

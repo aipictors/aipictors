@@ -1,25 +1,30 @@
+import { Share2 } from "lucide-react"
 import { Button } from "~/components/ui/button"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover"
-import { Share2 } from "lucide-react"
+import { useTranslation } from "~/hooks/use-translation"
 import { CopyWorkUrlButton } from "./work-action-copy-url"
 import { XIntent } from "./work-action-share-x"
-import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   title: string
   description: string
   isDisabledShare?: boolean
   id: string
+  accessType?: string
+  uuid?: string | null
 }
 
-export function SharePopover (props: Props) {
+export function SharePopover(props: Props) {
   const t = useTranslation()
 
-  const currentUrl = `https://www.aipictors.com/posts/${props.id}`
+  const postPath =
+    props.accessType === "LIMITED" && props.uuid ? props.uuid : props.id
+
+  const currentUrl = `https://www.aipictors.com/posts/${postPath}`
 
   const shareText = t(
     `AIイラスト投稿サイトAipictorsに投稿された作品\n「${props.title}」\n\n${props.description}`,

@@ -1,8 +1,8 @@
-import { WorkAction } from "~/routes/($lang)._main.posts.$post._index/components/work-action"
-import { useContext } from "react"
-import { AuthContext } from "~/contexts/auth-context"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
+import { useContext } from "react"
+import { AuthContext } from "~/contexts/auth-context"
+import { WorkAction } from "~/routes/($lang)._main.posts.$post._index/components/work-action"
 
 type Props = {
   title?: string
@@ -21,7 +21,7 @@ type Props = {
 /**
  * 作品への操作一覧（いいね、フォルダに追加、シェア、メニュー）
  */
-export function WorkActionContainer (props: Props) {
+export function WorkActionContainer(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data } = useQuery(workQuery, {
@@ -48,6 +48,8 @@ export function WorkActionContainer (props: Props) {
   return (
     <WorkAction
       id={props.targetWorkId}
+      accessType={data?.work?.accessType}
+      uuid={data?.work?.uuid}
       workLikesCount={props.workLikesCount}
       title={props.title}
       description={props.description}
@@ -81,6 +83,7 @@ const workQuery = graphql(
       isMyRecommended
       title
       accessType
+      uuid
       type
       adminAccessType
       promptAccessType
