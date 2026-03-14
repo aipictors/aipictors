@@ -380,7 +380,6 @@ export default function NewImage() {
 
   // クエリパラメータからイベント参加情報とタグを処理
   useEffect(() => {
-    const eventParam = searchParams.get("event")
     const tagParam = searchParams.get("tag")
 
     if (!tagParam) {
@@ -395,24 +394,14 @@ export default function NewImage() {
       return
     }
 
-    const matchedEvent = events.find((event) => {
-      if (!eventParam) {
-        return true
-      }
-
-      return event.slug === eventParam && event.tag === decodedTag
+    dispatchInput({
+      type: "ADD_TAG",
+      payload: {
+        id: Math.random().toString(),
+        text: decodedTag,
+      },
     })
-
-    if (matchedEvent || !eventParam) {
-      dispatchInput({
-        type: "ADD_TAG",
-        payload: {
-          id: Math.random().toString(),
-          text: decodedTag,
-        },
-      })
-    }
-  }, [events, inputState.tags, searchParams])
+  }, [inputState.tags, searchParams])
 
   const [createWork] = useMutation(CreateWorkMutation)
   const [checkWorkByImageHash] = useLazyQuery(WorkByImageHashQuery)

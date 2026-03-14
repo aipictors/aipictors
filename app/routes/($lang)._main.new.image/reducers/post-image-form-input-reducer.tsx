@@ -19,6 +19,14 @@ export const postImageFormInputReducer = (
       }
     }
     case "ADD_TAG": {
+      const hasSameTag = state.tags.some((tag) => {
+        return tag.text === action.payload.text
+      })
+
+      if (hasSameTag) {
+        return state
+      }
+
       return {
         ...state,
         tags: [...state.tags, action.payload],

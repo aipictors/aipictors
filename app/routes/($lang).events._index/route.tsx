@@ -1,7 +1,14 @@
 import { gql } from "@apollo/client/index"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { Form, Link, type MetaFunction, useLoaderData } from "@remix-run/react"
-import { useEffect, useMemo, useState } from "react"
+import {
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
@@ -178,6 +185,10 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
   )
 
   const [currentIndex, setCurrentIndex] = useState(0)
+  const swipeStartXRef = useRef<number | null>(null)
+  const didSwipeRef = useRef(false)
+
+  const SWIPE_THRESHOLD = 40
 
   useEffect(() => {
     setCurrentIndex(0)
@@ -199,11 +210,73 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
     return null
   }
 
+  const onPointerDown = (event: ReactPointerEvent<HTMLElement>) => {
+    swipeStartXRef.current = event.clientX
+    didSwipeRef.current = false
+  }
+
+  const onPointerUp = (event: ReactPointerEvent<HTMLElement>) => {
+    if (shuffledEvents.length <= 1 || swipeStartXRef.current === null) {
+      swipeStartXRef.current = null
+      return
+    }
+
+    const deltaX = event.clientX - swipeStartXRef.current
+    swipeStartXRef.current = null
+
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD) {
+      return
+    }
+
+    didSwipeRef.current = true
+
+    if (deltaX < 0) {
+      setCurrentIndex((prev) => (prev + 1) % shuffledEvents.length)
+      return
+    }
+
+    setCurrentIndex(
+      (prev) => (prev - 1 + shuffledEvents.length) % shuffledEvents.length,
+    )
+  }
+
+  const onPointerCancel = () => {
+    swipeStartXRef.current = null
+  }
+
+  const onClickCapture = (event: ReactMouseEvent<HTMLElement>) => {
+    if (!didSwipeRef.current) {
+      return
+    }
+
+    event.preventDefault()
+    didSwipeRef.current = false
+  }
+
+  const onClickPrev = () => {
+    setCurrentIndex(
+      (prev) => (prev - 1 + shuffledEvents.length) % shuffledEvents.length,
+    )
+  }
+
+  const onClickNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % shuffledEvents.length)
+  }
+
   const event = shuffledEvents[currentIndex]
 
   return (
-    <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-      <Link to={`/events/${event.slug}`} className="group block">
+    <section
+      className="touch-pan-y overflow-hidden rounded-2xl border bg-card shadow-sm"
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
+    >
+      <Link
+        to={`/events/${event.slug}`}
+        className="group block"
+        onClickCapture={onClickCapture}
+      >
         <div className="relative bg-black">
           <div className="absolute inset-0 scale-110">
             <img
@@ -268,6 +341,15 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
       </Link>
       {shuffledEvents.length > 1 && (
         <div className="flex items-center justify-center gap-2 bg-card px-4 py-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onClickPrev}
+            aria-label={t("前のイベントへ", "Previous event")}
+          >
+            {t("前へ", "Prev")}
+          </Button>
           {shuffledEvents.map((rotatorEvent, index) => (
             <button
               key={rotatorEvent.id}
@@ -284,6 +366,15 @@ function FeaturedEventRotator(props: { events: EventCardItem[] }) {
               onClick={() => setCurrentIndex(index)}
             />
           ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onClickNext}
+            aria-label={t("次のイベントへ", "Next event")}
+          >
+            {t("次へ", "Next")}
+          </Button>
         </div>
       )}
     </section>

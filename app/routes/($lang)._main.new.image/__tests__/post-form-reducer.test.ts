@@ -1,6 +1,6 @@
+import { describe, expect, test } from "bun:test"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
-import { test, expect, describe } from "bun:test"
 
 const initialState: PostImageFormInputState = {
   imageInformation: null,
@@ -89,5 +89,27 @@ describe("SET_THEME_ID", () => {
     const newState = postImageFormInputReducer(state, action)
 
     expect(newState.tags.length).toBe(1)
+  })
+})
+
+describe("ADD_TAG", () => {
+  test("同じテキストのタグは重複して追加されない", () => {
+    const state = {
+      ...initialState,
+      tags: [{ id: "tag-1", text: "美味しい料理祭-4a476e7f" }],
+    }
+
+    const action = {
+      type: "ADD_TAG",
+      payload: {
+        id: "tag-2",
+        text: "美味しい料理祭-4a476e7f",
+      },
+    } as const
+
+    const newState = postImageFormInputReducer(state, action)
+
+    expect(newState.tags).toHaveLength(1)
+    expect(newState.tags[0].text).toBe("美味しい料理祭-4a476e7f")
   })
 })
