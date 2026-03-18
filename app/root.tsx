@@ -1,7 +1,11 @@
 import "react-photo-view/dist/react-photo-view.css"
 import "@fontsource-variable/m-plus-2"
 
-import type { LinksFunction } from "@remix-run/cloudflare"
+import {
+  json,
+  type LinksFunction,
+  type LoaderFunctionArgs,
+} from "@remix-run/cloudflare"
 import {
   isRouteErrorResponse,
   Links,
@@ -9,6 +13,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useLocation,
   useNavigate,
   useRouteError,
@@ -23,6 +28,7 @@ import { AppNotFoundPage } from "~/components/app/app-not-found-page"
 import { Toaster } from "~/components/app/app-sonner"
 import { ContextProviders } from "~/components/context-providers"
 import { ProgressBar } from "~/components/progress-bar"
+import { config } from "~/config"
 import { cn } from "~/lib/utils"
 import styles from "~/tailwind.css?url"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
@@ -33,6 +39,128 @@ const PerformanceMonitor = lazy(() =>
     default: mod.PerformanceMonitor,
   })),
 )
+
+const MAINTENANCE_STATUS_QUERY = `query MaintenanceStatus {
+  maintenanceStatus {
+    isMaintenanceModeWeb
+    maintenanceMessageWeb
+  }
+}`
+
+type RootLoaderData = {
+  isMaintenance: boolean
+  maintenanceMessage: string | null
+}
+
+let maintenanceStatusCache:
+  | (RootLoaderData & {
+      cachedAt: number
+    })
+  | null = null
+
+const getTimeoutSignal = (ms: number): AbortSignal | undefined => {
+  const maybe = AbortSignal as unknown as {
+    timeout?: (timeoutMs: number) => AbortSignal
+  }
+  return typeof maybe.timeout === "function" ? maybe.timeout(ms) : undefined
+}
+
+const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
+  const cacheTtlMs = 30_000
+
+  if (
+    maintenanceStatusCache !== null &&
+    Date.now() - maintenanceStatusCache.cachedAt < cacheTtlMs
+  ) {
+    return {
+      isMaintenance: maintenanceStatusCache.isMaintenance,
+      maintenanceMessage: maintenanceStatusCache.maintenanceMessage,
+    }
+  }
+
+  try {
+    const response = await fetch(config.graphql.endpoint, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        provider: "aipictors",
+        platform: "web",
+      },
+      signal: getTimeoutSignal(3000),
+      body: JSON.stringify({
+        query: MAINTENANCE_STATUS_QUERY,
+        variables: {},
+      }),
+    })
+
+    if (!response.ok) {
+      return { isMaintenance: false, maintenanceMessage: null }
+    }
+
+    const jsonResponse = (await response.json()) as {
+      errors?: Array<unknown>
+      data?: {
+        maintenanceStatus?: {
+          isMaintenanceModeWeb?: boolean
+          maintenanceMessageWeb?: string | null
+        } | null
+      } | null
+    }
+
+    const status = jsonResponse.data?.maintenanceStatus
+
+    if (Array.isArray(jsonResponse.errors) || !status) {
+      return {
+        isMaintenance: true,
+        maintenanceMessage:
+          "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
+      }
+    }
+
+    const nextValue = {
+      isMaintenance: status.isMaintenanceModeWeb === true,
+      maintenanceMessage: status.maintenanceMessageWeb ?? null,
+    }
+
+    maintenanceStatusCache = {
+      ...nextValue,
+      cachedAt: Date.now(),
+    }
+
+    return nextValue
+  } catch {
+    return {
+      isMaintenance: maintenanceStatusCache?.isMaintenance ?? false,
+      maintenanceMessage: maintenanceStatusCache?.maintenanceMessage ?? null,
+    }
+  }
+}
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url)
+
+  if (url.pathname.startsWith("/build/") || url.pathname.startsWith("/assets/")) {
+    return json<RootLoaderData>({
+      isMaintenance: false,
+      maintenanceMessage: null,
+    })
+  }
+
+  const maintenanceStatus = await getMaintenanceStatus()
+
+  if (maintenanceStatus.isMaintenance) {
+    return json<RootLoaderData>(maintenanceStatus, {
+      status: 503,
+      headers: {
+        "Cache-Control": "no-store",
+        "Retry-After": "300",
+        "X-Robots-Tag": "noindex, nofollow, noarchive",
+      },
+    })
+  }
+
+  return json<RootLoaderData>(maintenanceStatus)
+}
 
 export const links: LinksFunction = () => {
   return [
@@ -59,6 +187,28 @@ export function ErrorBoundary(): React.ReactNode {
   return <AppNotFoundPage />
 }
 
+function MaintenancePage(props: { message: string | null }): React.ReactNode {
+  const message =
+    props.message && props.message.trim().length > 0
+      ? props.message
+      : "ただいまメンテナンス中です。しばらくしてから再度お試しください。"
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#0b1220] px-6 py-10 text-center text-slate-200">
+      <div className="w-full max-w-[720px]">
+        <img
+          src="https://assets.aipictors.com/sorrypictorchan.webp"
+          alt="maintenance"
+          className="mx-auto mb-[18px] block w-full max-w-[360px]"
+        />
+        <p className="whitespace-pre-wrap text-base leading-[1.7] opacity-95">
+          {message}
+        </p>
+      </div>
+    </main>
+  )
+}
+
 type Props = Readonly<{
   children: React.ReactNode
 }>
@@ -67,6 +217,7 @@ type Props = Readonly<{
  * https://remix.run/docs/en/main/file-conventions/root#layout-export
  */
 export function Layout(props: Props): React.ReactNode {
+  const loaderData = useLoaderData<typeof loader>()
   const location = useLocation()
   const navigate = useNavigate()
   const [_key, setKey] = useState(
@@ -268,6 +419,12 @@ export function Layout(props: Props): React.ReactNode {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        {loaderData.isMaintenance && (
+          <>
+            <title>メンテナンス中 | Aipictors</title>
+            <meta name="robots" content="noindex,nofollow,noarchive" />
+          </>
+        )}
         <Links />
       </head>
       <body
@@ -339,12 +496,17 @@ export function Layout(props: Props): React.ReactNode {
 }
 
 export default function App(): React.ReactNode {
+  const loaderData = useLoaderData<typeof loader>()
   const [isMounted, setIsMounted] = useState(false)
 
   // クライアントサイドのみでパフォーマンス監視を有効にする
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  if (loaderData.isMaintenance) {
+    return <MaintenancePage message={loaderData.maintenanceMessage} />
+  }
 
   return (
     <>
