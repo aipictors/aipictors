@@ -113,7 +113,7 @@ const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
       return {
         isMaintenance: true,
         maintenanceMessage:
-          "ただいまメンテナンス中です。しばらくしてから再度お試しください。",
+          "平素よりご利用いただき、誠にありがとうございます。現在、システムメンテナンス実施中のため、サービスをご利用いただくことができません。ご利用の皆様にはご不便をおかけしておりますこと、深くお詫び申し上げます。メンテナンス完了次第、順次サービスを再開いたしますので、今しばらくお待ちくださいますようお願い申し上げます。",
       }
     }
 
@@ -139,7 +139,10 @@ const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
 
-  if (url.pathname.startsWith("/build/") || url.pathname.startsWith("/assets/")) {
+  if (
+    url.pathname.startsWith("/build/") ||
+    url.pathname.startsWith("/assets/")
+  ) {
     return json<RootLoaderData>({
       isMaintenance: false,
       maintenanceMessage: null,
@@ -191,7 +194,7 @@ function MaintenancePage(props: { message: string | null }): React.ReactNode {
   const message =
     props.message && props.message.trim().length > 0
       ? props.message
-      : "ただいまメンテナンス中です。しばらくしてから再度お試しください。"
+      : "平素よりご利用いただき、誠にありがとうございます。現在、システムメンテナンス実施中のため、サービスをご利用いただくことができません。ご利用の皆様にはご不便をおかけしておりますこと、深くお詫び申し上げます。メンテナンス完了次第、順次サービスを再開いたしますので、今しばらくお待ちくださいますようお願い申し上げます。"
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#0b1220] px-6 py-10 text-center text-slate-200">
