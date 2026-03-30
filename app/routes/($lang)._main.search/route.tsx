@@ -99,10 +99,11 @@ const buildWorksWhere = (props: {
 
   if (props.prompt === "with") {
     where.hasPrompt = true
+    where.isPromptPublic = true
   }
 
   if (props.prompt === "without") {
-    where.hasPrompt = false
+    where.isPromptPublic = false
   }
 
   return where
@@ -439,8 +440,8 @@ export default function SearchRoute() {
                   {(
                     [
                       ["all", t("すべて", "All")],
-                      ["with", t("呪文あり", "With prompt")],
-                      ["without", t("呪文なし", "Without prompt")],
+                      ["with", t("プロンプトあり", "With prompt")],
+                      ["without", t("プロンプトなし", "Without prompt")],
                     ] as const
                   ).map(([value, label], index) => (
                     <button
@@ -611,7 +612,7 @@ export default function SearchRoute() {
                     to={`/posts/${work.id}`}
                     className="flex items-start gap-3"
                   >
-                    <div className="flex size-12 shrink-0 items-center justify-center bg-yellow-300 font-bold text-2xl text-black">
+                    <div className="flex size-12 shrink-0 items-center justify-center bg-orange-400 font-bold text-2xl text-black">
                       {index + 1}
                     </div>
 

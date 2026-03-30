@@ -1,27 +1,15 @@
-import { useCallback, useState } from "react"
-import { consumeSearchRateLimitSlot } from "~/utils/search-rate-limit"
+import { useCallback } from "react"
 
 export function useSearchRateLimit() {
-  const [isRateLimitDialogOpen, setIsRateLimitDialogOpen] = useState(false)
-
   const executeSearchWithRateLimit = useCallback((action: () => void) => {
-    const result = consumeSearchRateLimitSlot()
-
-    if (!result.isAllowed) {
-      setIsRateLimitDialogOpen(true)
-      return false
-    }
-
     action()
     return true
   }, [])
 
-  const closeSearchRateLimitDialog = useCallback(() => {
-    setIsRateLimitDialogOpen(false)
-  }, [])
+  const closeSearchRateLimitDialog = useCallback(() => {}, [])
 
   return {
-    isRateLimitDialogOpen,
+    isRateLimitDialogOpen: false,
     executeSearchWithRateLimit,
     closeSearchRateLimitDialog,
   }
