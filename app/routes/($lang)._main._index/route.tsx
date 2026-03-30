@@ -93,9 +93,12 @@ import {
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
-import { fetchFeaturedTaggedReleases, fetchReleaseList } from "~/utils/micro-cms-release"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
+import {
+  fetchFeaturedTaggedReleases,
+  fetchReleaseList,
+} from "~/utils/micro-cms-release"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 
 export const meta: MetaFunction = (props) => {
@@ -160,10 +163,7 @@ const isHomePreviewTargetStatus = (status: string) => {
   return status === "ONGOING" || status === "UPCOMING"
 }
 
-const buildHomeEventPreviews = (
-  officialEvents: any[],
-  userEvents: any[],
-) => {
+const buildHomeEventPreviews = (officialEvents: any[], userEvents: any[]) => {
   return shuffleArray([
     ...officialEvents
       .filter((event) => isHomePreviewTargetStatus(event.status))
@@ -230,6 +230,7 @@ export async function loader(_props: LoaderFunctionArgs) {
   const [result, releaseList, featuredReleaseList] = await Promise.all([
     loaderClient.query({
       query: query,
+      errorPolicy: "all",
       variables: {
         awardDay: yesterday.getDate(),
         awardMonth: yesterday.getMonth() + 1,
@@ -247,40 +248,76 @@ export async function loader(_props: LoaderFunctionArgs) {
     }),
     fetchReleaseList({
       limit: 4,
-    })
-      .catch(() => ({
-        contents: [],
-        totalCount: 0,
-        offset: 0,
-        limit: 4,
-      })),
+    }).catch(() => ({
+      contents: [],
+      totalCount: 0,
+      offset: 0,
+      limit: 4,
+    })),
     fetchFeaturedTaggedReleases().catch(() => []),
   ])
 
   const awardDateText = getUtcDateString(yesterday)
-  const appEvents: any[] = Array.isArray(result.data.appEvents)
-    ? result.data.appEvents
+  const resultData = result.data
+  const appEvents: any[] = Array.isArray(resultData?.appEvents)
+    ? resultData.appEvents
     : []
-  const userEventsRaw: any[] = Array.isArray(result.data.userEvents)
-    ? result.data.userEvents
+  const userEventsRaw: any[] = Array.isArray(resultData?.userEvents)
+    ? resultData.userEvents
     : []
   const userIconMap = await buildUserEventIconMap(
     userEventsRaw.map((event) => event.userId).filter(Boolean),
   )
   const userEvents = userEventsRaw.map((event) => ({
     ...event,
-    userIconUrl: event.userId ? userIconMap.get(event.userId) ?? null : null,
+    userIconUrl: event.userId ? (userIconMap.get(event.userId) ?? null) : null,
   }))
   const eventPreviews = buildHomeEventPreviews(appEvents, userEvents)
+  const safeReleaseList =
+    releaseList && Array.isArray(releaseList.contents)
+      ? releaseList
+      : {
+          contents: [],
+          totalCount: 0,
+          offset: 0,
+          limit: 4,
+        }
 
   return {
-    ...result.data,
+    ...(resultData ?? {}),
     awardDateText: awardDateText,
     eventPreviews,
     firstTag: randomCategories[0],
-    featuredReleaseList,
-    releaseList,
+    featuredReleaseList: Array.isArray(featuredReleaseList)
+      ? featuredReleaseList
+      : [],
+    hotTags: Array.isArray(resultData?.hotTags) ? resultData.hotTags : [],
+    newComments: Array.isArray(resultData?.newComments)
+      ? resultData.newComments
+      : [],
+    newPostedUsers: Array.isArray(resultData?.newPostedUsers)
+      ? resultData.newPostedUsers
+      : [],
+    newUserWorks: Array.isArray(resultData?.newUserWorks)
+      ? resultData.newUserWorks
+      : [],
+    promotionWorks: Array.isArray(resultData?.promotionWorks)
+      ? resultData.promotionWorks
+      : [],
+    recommendedTags: Array.isArray(resultData?.recommendedTags)
+      ? resultData.recommendedTags
+      : [],
+    releaseList: safeReleaseList,
     secondTag: randomCategories[1],
+    secondTagWorks: Array.isArray(resultData?.secondTagWorks)
+      ? resultData.secondTagWorks
+      : [],
+    workAwards: Array.isArray(resultData?.workAwards)
+      ? resultData.workAwards
+      : [],
+    firstTagWorks: Array.isArray(resultData?.firstTagWorks)
+      ? resultData.firstTagWorks
+      : [],
   }
 }
 
@@ -755,7 +792,7 @@ export default function Index() {
             <div className="flex w-full min-w-0 flex-col space-y-4 overflow-hidden md:max-w-[calc(100%_-_262px)]">
               <HomeQuickPreviewBar
                 events={data.eventPreviews}
-                  featuredReleases={data.featuredReleaseList}
+                featuredReleases={data.featuredReleaseList}
                 releaseList={data.releaseList}
               />
               <HomeWorksUsersRecommendedSection

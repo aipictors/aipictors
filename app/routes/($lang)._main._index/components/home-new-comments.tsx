@@ -1,12 +1,12 @@
-import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql, readFragment } from "gql.tada"
+import { ExternalLink, Type } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { Badge } from "~/components/ui/badge"
+import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { toElapsedTimeEnText } from "~/utils/to-elapsed-time-en-text"
 import { toElapsedTimeText } from "~/utils/to-elapsed-time-text"
-import { Button } from "~/components/ui/button"
-import { ExternalLink, Type } from "lucide-react"
-import { Badge } from "~/components/ui/badge"
 
 type Props = {
   comments: FragmentOf<typeof HomeNewCommentsFragment>[]
@@ -15,7 +15,7 @@ type Props = {
 /**
  * 新規コメント一覧（テキストのみに絞り込み）
  */
-export function HomeNewCommentsSection (props: Props) {
+export function HomeNewCommentsSection(props: Props) {
   const t = useTranslation()
 
   const comments = readFragment(HomeNewCommentsFragment, props.comments)
@@ -45,42 +45,46 @@ export function HomeNewCommentsSection (props: Props) {
         )}
       </p>
 
-      {comments.map((comment) => (
-        <div
-          key={comment.comment?.id}
-          className="flex items-center space-x-2 opacity-80"
-        >
-          {comment.work?.smallThumbnailImageURL && (
-            <div className="flex items-center space-x-2">
-              <CroppedWorkSquare
-                workId={comment.work.id}
-                imageUrl={comment.work?.smallThumbnailImageURL}
-                size="sm"
-                thumbnailImagePosition={
-                  comment.work?.thumbnailImagePosition ?? 0
-                }
-                imageWidth={comment.work?.smallThumbnailImageWidth}
-                imageHeight={comment.work?.smallThumbnailImageHeight}
-              />
-              <div className="flex flex-col space-y-2">
-                {comment.comment && comment.comment.text.length > 0 && (
-                  <p>
-                    <span className="line-clamp-2 font-semibold text-md">
-                      {comment.comment.text}
-                    </span>
-                  </p>
-                )}
-                <div className="text-sm">
-                  {t(
-                    toElapsedTimeText(comment.createdAt),
-                    toElapsedTimeEnText(comment.createdAt),
+      {comments.map((comment) => {
+        const commentText = comment.comment?.text ?? ""
+
+        return (
+          <div
+            key={comment.comment?.id}
+            className="flex items-center space-x-2 opacity-80"
+          >
+            {comment.work?.smallThumbnailImageURL && (
+              <div className="flex items-center space-x-2">
+                <CroppedWorkSquare
+                  workId={comment.work.id}
+                  imageUrl={comment.work?.smallThumbnailImageURL}
+                  size="sm"
+                  thumbnailImagePosition={
+                    comment.work?.thumbnailImagePosition ?? 0
+                  }
+                  imageWidth={comment.work?.smallThumbnailImageWidth}
+                  imageHeight={comment.work?.smallThumbnailImageHeight}
+                />
+                <div className="flex flex-col space-y-2">
+                  {commentText.length > 0 && (
+                    <p>
+                      <span className="line-clamp-2 font-semibold text-md">
+                        {commentText}
+                      </span>
+                    </p>
                   )}
+                  <div className="text-sm">
+                    {t(
+                      toElapsedTimeText(comment.createdAt),
+                      toElapsedTimeEnText(comment.createdAt),
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      ))}
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }

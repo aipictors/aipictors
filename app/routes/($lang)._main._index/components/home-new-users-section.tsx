@@ -1,6 +1,6 @@
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { useTranslation } from "~/hooks/use-translation"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -11,32 +11,34 @@ type Props = {
 /**
  * 新規ユーザ一覧
  */
-export function HomeNewUsersSection (props: Props) {
+export function HomeNewUsersSection(props: Props) {
   const t = useTranslation()
 
   return (
     <div className="flex flex-col space-y-4">
       <h2 className="font-semibold">{t("新規クリエイター", "New Creators")}</h2>
-      {props.users.map((user) => (
-        <div key={user.id} className="flex items-center space-x-2">
-          <Link
-            to={`/users/${user.login}`}
-            className="flex items-center space-x-2"
-          >
-            <Avatar>
-              <AvatarImage
-                className="rounded-full"
-                src={withIconUrlFallback(user.iconUrl)}
-                alt=""
-              />
-              <AvatarFallback />
-            </Avatar>
-            <div className="font-semibold text-md">
-              {user.name.length > 0 ? user.name : "名無し"}
-            </div>
-          </Link>
-        </div>
-      ))}
+      {props.users.map((user) => {
+        const displayName = user.name?.length ? user.name : "名無し"
+
+        return (
+          <div key={user.id} className="flex items-center space-x-2">
+            <Link
+              to={`/users/${user.login}`}
+              className="flex items-center space-x-2"
+            >
+              <Avatar>
+                <AvatarImage
+                  className="rounded-full"
+                  src={withIconUrlFallback(user.iconUrl)}
+                  alt=""
+                />
+                <AvatarFallback />
+              </Avatar>
+              <div className="font-semibold text-md">{displayName}</div>
+            </Link>
+          </div>
+        )
+      })}
     </div>
   )
 }

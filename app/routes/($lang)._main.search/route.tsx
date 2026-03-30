@@ -4,31 +4,100 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { redirect } from "@remix-run/cloudflare"
-import {
-  useLoaderData,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "@remix-run/react"
+import { Link, useLoaderData, useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { Heart, Search } from "lucide-react"
+import { useEffect, useState, type FormEvent } from "react"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { LikeButton } from "~/components/like-button"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import { config } from "~/config"
 import { useSearchRateLimit } from "~/hooks/use-search-rate-limit"
 import { useTranslation } from "~/hooks/use-translation"
 import { loaderClient } from "~/lib/loader-client"
-import { SearchHeader } from "~/routes/($lang)._main.search/components/search-header"
-import { SearchHints } from "~/routes/($lang)._main.search/components/search-hints"
-import { SearchResults } from "~/routes/($lang)._main.search/components/search-results"
+import { cn } from "~/lib/utils"
 import { buildSearchPath } from "~/utils/search-route"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+
+type SearchRatingFilter = "G" | "R15" | "R18"
+type SearchStyleFilter = "all" | "ILLUSTRATION" | "REAL"
+type SearchPromptFilter = "all" | "with" | "without"
+
+const RESULTS_LIMIT = 30
+const SIDEBAR_RANKING_LIMIT = 7
+
+const normalizeTagQuery = (value?: string | null) => {
+  if (!value) {
+    return null
+  }
+
+  const normalized = value.trim().replace(/^#+/, "")
+  return normalized.length > 0 ? normalized : null
+}
+
+const getRatingFilter = (
+  value: string | null,
+  isSensitiveMode: boolean,
+): SearchRatingFilter => {
+  if (value === "G" || value === "R15" || value === "R18") {
+    return value
+  }
+
+  return isSensitiveMode ? "R18" : "G"
+}
+
+const getStyleFilter = (value: string | null): SearchStyleFilter => {
+  if (value === "ILLUSTRATION" || value === "REAL") {
+    return value
+  }
+
+  return "all"
+}
+
+const getPromptFilter = (value: string | null): SearchPromptFilter => {
+  if (value === "with" || value === "without") {
+    return value
+  }
+
+  return "all"
+}
+
+const buildWorksWhere = (props: {
+  tagQuery?: string | null
+  rating: SearchRatingFilter
+  style: SearchStyleFilter
+  prompt: SearchPromptFilter
+}) => {
+  const where: Record<string, unknown> = {
+    ratings: [props.rating],
+    orderBy: "LIKES_COUNT",
+    sort: "DESC",
+  }
+
+  if (props.tagQuery) {
+    where.tagNames = [props.tagQuery]
+  }
+
+  if (props.style !== "all") {
+    where.style = props.style
+  }
+
+  if (props.prompt === "with") {
+    where.hasPrompt = true
+  }
+
+  if (props.prompt === "without") {
+    where.hasPrompt = false
+  }
+
+  return where
+}
 
 export async function loader(props: LoaderFunctionArgs) {
-  // const redirectResponse = checkLocaleRedirect(props.request)
-
-  // if (redirectResponse) {
-  //   return redirectResponse
-  // }
-
   const url = new URL(props.request.url)
   const pathSearchQuery = props.params.q
     ? decodeURIComponent(props.params.q)
@@ -49,109 +118,80 @@ export async function loader(props: LoaderFunctionArgs) {
     }
   }
 
-  const tag = url.searchParams.get("tag")
-  const q = pathSearchQuery ?? url.searchParams.get("q")
-  const searchInTags = url.searchParams.get("searchInTags") !== "false"
-  const searchInDescription =
-    url.searchParams.get("searchInDescription") === "true"
-  const model =
-    url.searchParams.get("workModelId") ?? url.searchParams.get("model")
+  const isSensitiveMode = url.pathname.startsWith("/r/")
+  const searchQuery = normalizeTagQuery(
+    pathSearchQuery ?? url.searchParams.get("tag") ?? url.searchParams.get("q"),
+  )
+  const rating = getRatingFilter(
+    url.searchParams.get("rating"),
+    isSensitiveMode,
+  )
+  const style = getStyleFilter(url.searchParams.get("style"))
+  const prompt = getPromptFilter(url.searchParams.get("prompt"))
 
-  // Build where condition
-  const whereCondition: Record<string, unknown> = {
-    // /search は基本的に G + R15 を表示（SearchResults のデフォルトと合わせる）
-    ratings: ["G", "R15"],
-    orderBy: "LIKES_COUNT",
-  }
-
-  // Add search query
-  if (q) {
-    whereCondition.search = q
-    whereCondition.searchInTags = searchInTags
-    whereCondition.searchInDescription = searchInDescription
-  }
-
-  // Add tag search (legacy support)
-  if (tag) {
-    whereCondition.tagNames = [tag]
-  }
-
-  // Add model search
-  if (model) {
-    whereCondition.modelPostedIds = [model]
-  }
-
-  const worksResp = await loaderClient.query({
-    query: worksQuery,
-    variables: {
-      offset: 0,
-      limit: 16,
-      where: whereCondition,
-    },
+  const resultWhere = buildWorksWhere({
+    tagQuery: searchQuery,
+    rating,
+    style,
+    prompt,
+  })
+  const rankingWhere = buildWorksWhere({
+    rating,
+    style,
+    prompt,
   })
 
-  // AIモデル一覧を取得
-  const modelsResp = await loaderClient.query({
-    query: aiModelsQuery,
-    variables: {},
-  })
-
-  // 人気タグを取得（タグ使用数順）
-  const popularTagsResp = await loaderClient.query({
-    query: popularTagsQuery,
-    variables: { limit: 20 },
-  })
-
-  // よく検索されているキーワード（サンプルデータ、実際のAPI実装時に差し替え）
-  const popularKeywords = [
-    "イラスト",
-    "アニメ",
-    "キャラクター",
-    "風景",
-    "ポートレート",
-    "ファンタジー",
-    "サイバーパンク",
-    "かわいい",
-    "美少女",
-    "メカ",
-    "ドラゴン",
-    "魔法使い",
-  ]
+  const [popularTagsResp, rankingResp, worksResp, worksCountResp] =
+    await Promise.all([
+      loaderClient.query({
+        query: popularTagsQuery,
+        variables: {
+          limit: 10,
+          where: { isSensitive: isSensitiveMode },
+        },
+      }),
+      loaderClient.query({
+        query: worksQuery,
+        variables: {
+          offset: 0,
+          limit: SIDEBAR_RANKING_LIMIT,
+          where: rankingWhere,
+        },
+      }),
+      searchQuery
+        ? loaderClient.query({
+            query: worksQuery,
+            variables: {
+              offset: 0,
+              limit: RESULTS_LIMIT,
+              where: resultWhere,
+            },
+          })
+        : Promise.resolve(null),
+      searchQuery
+        ? loaderClient.query({
+            query: worksCountQuery,
+            variables: { where: resultWhere },
+          })
+        : Promise.resolve(null),
+    ])
 
   return {
-    workResp: worksResp.data?.works ?? [],
-    models:
-      modelsResp.data?.aiModels
-        ?.map((model) => ({
-          id: model.workModelId || model.id,
-          name: model.name,
-          displayName: model.name,
-          workModelId: model.workModelId || model.id,
-          thumbnailImageURL: model.thumbnailImageURL,
-        }))
-        .filter((model) => model.id) || [],
+    filters: {
+      prompt,
+      rating,
+      style,
+    },
+    isSensitiveMode,
     popularTags:
-      popularTagsResp.data?.recommendedTags
-        ?.map((tag) => ({
-          id: tag.tagName, // tagNameをidとして使用
-          name: tag.tagName,
-          count: 0, // recommendedTagsには件数がないため0を設定
-          thumbnailUrl: tag.thumbnailUrl, // サムネイルURLを追加
-        }))
-        .slice(0, 15) || [], // 表示用に15個に制限
-    popularKeywords: popularKeywords.slice(0, 12), // 表示用に12個に制限
-    popularModels:
-      modelsResp.data?.aiModels
-        ?.filter((model) => model.thumbnailImageURL) // サムネイルがあるもののみ
-        ?.map((model) => ({
-          id: model.workModelId || model.id,
-          name: model.name,
-          displayName: model.name,
-          workModelId: model.workModelId || model.id,
-          thumbnailImageURL: model.thumbnailImageURL || undefined,
-        }))
-        .slice(0, 8) || [], // 表示用に8個に制限
-    searchQuery: q,
+      popularTagsResp.data?.recommendedTags?.map((tag) => ({
+        name: tag.tagName,
+        thumbnailUrl: tag.thumbnailUrl,
+      })) ?? [],
+    rankingWorks: rankingResp.data?.works ?? [],
+    searchQuery,
+    works: worksResp?.data?.works ?? [],
+    worksCount: worksCountResp?.data?.worksCount ?? 0,
   }
 }
 
@@ -159,10 +199,48 @@ export const headers: HeadersFunction = () => ({
   "Cache-Control": config.cacheControl.oneHour,
 })
 
+function FilterButton(props: {
+  children: React.ReactNode
+  isActive: boolean
+  onClick: () => void
+  variant?: "underline" | "pill"
+}) {
+  if (props.variant === "pill") {
+    return (
+      <button
+        type="button"
+        onClick={props.onClick}
+        className={cn(
+          "rounded-sm border px-4 py-2 text-sm transition-colors",
+          props.isActive
+            ? "border-foreground bg-foreground text-background"
+            : "border-border bg-background text-muted-foreground hover:text-foreground",
+        )}
+      >
+        {props.children}
+      </button>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={props.onClick}
+      className={cn(
+        "border-b-2 px-1 pb-3 font-medium text-base transition-colors md:text-lg",
+        props.isActive
+          ? "border-foreground text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground",
+      )}
+    >
+      {props.children}
+    </button>
+  )
+}
+
 export default function Search() {
   const data = useLoaderData<typeof loader>()
-  const params = useParams()
-  const [searchParams] = useSearchParams()
+  const location = useLocation()
   const navigate = useNavigate()
   const t = useTranslation()
   const {
@@ -170,162 +248,344 @@ export default function Search() {
     executeSearchWithRateLimit,
     closeSearchRateLimitDialog,
   } = useSearchRateLimit()
+  const [searchText, setSearchText] = useState(data.searchQuery ?? "")
 
-  if (data === null) {
-    return null
+  useEffect(() => {
+    setSearchText(data.searchQuery ?? "")
+  }, [data.searchQuery])
+
+  const basePath = location.pathname.startsWith("/r/") ? "/r/search" : "/search"
+
+  const buildFilterParams = (next?: Partial<typeof data.filters>) => {
+    const params = new URLSearchParams()
+    const rating = next?.rating ?? data.filters.rating
+    const style = next?.style ?? data.filters.style
+    const prompt = next?.prompt ?? data.filters.prompt
+
+    if (rating !== (data.isSensitiveMode ? "R18" : "G")) {
+      params.set("rating", rating)
+    }
+
+    if (style !== "all") {
+      params.set("style", style)
+    }
+
+    if (prompt !== "all") {
+      params.set("prompt", prompt)
+    }
+
+    return params
   }
 
-  const searchQuery = data.searchQuery ?? params.q ?? searchParams.get("q")
-  const tagQuery = searchParams.get("tag")
-  const modelQuery =
-    searchParams.get("workModelId") ?? searchParams.get("model")
+  const navigateToSearch = (
+    tagName?: string | null,
+    next?: Partial<typeof data.filters>,
+  ) => {
+    const normalizedQuery = normalizeTagQuery(tagName)
+    const nextParams = buildFilterParams(next)
 
-  const hasAnySearchQuery = Boolean(searchQuery || tagQuery || modelQuery)
-
-  const orderLabel = (() => {
-    const orderBy = searchParams.get("orderBy")
-    const sort = searchParams.get("sort")
-
-    const base = (() => {
-      switch (orderBy) {
-        case "DATE_CREATED":
-          return "新着順"
-        case "VIEWS_COUNT":
-          return "閲覧数順"
-        case "COMMENTS_COUNT":
-          return "コメント順"
-        case "BOOKMARKS_COUNT":
-          return "ブックマーク順"
-        case "NAME":
-          return "タイトル順"
-        default:
-          return "人気順（いいね）"
-      }
-    })()
-
-    if (sort === "ASC") return `${base}（昇順）`
-    return base
-  })()
-
-  const modelLabel = (() => {
-    if (!modelQuery) return null
-    const m = data.models.find(
-      (x) => x.workModelId === modelQuery || x.id === modelQuery,
-    )
-
-    return m?.displayName ?? modelQuery
-  })()
-
-  const stateLabel = (() => {
-    // 🏷 タグクリック時
-    if (tagQuery) {
-      const tags = tagQuery
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean)
-      if (tags.length >= 2) {
-        return `🏷 #${tags[0]} × #${tags[1]} の作品一覧（${orderLabel}）`
-      }
-      return `🏷 #${tagQuery} の作品一覧（${orderLabel}）`
-    }
-
-    // 🔍 キーワード検索時
-    if (searchQuery) {
-      const options = [
-        t("ユーザー名含む", "Usernames on"),
-        searchParams.get("searchInTags") !== "false"
-          ? t("タグ含む", "Tags on")
-          : t("タグ除外", "Tags off"),
-        searchParams.get("searchInDescription") === "true"
-          ? t("説明含む", "Descriptions on")
-          : null,
-      ].filter(Boolean)
-
-      return modelLabel
-        ? `🔍 「${searchQuery}」の検索結果（${orderLabel}・${modelLabel}${options.length ? `・${options.join(" / ")}` : ""}）`
-        : `🔍 「${searchQuery}」の検索結果（${orderLabel}${options.length ? `・${options.join(" / ")}` : ""}）`
-    }
-
-    // 🎨 AIモデルのみ
-    if (modelQuery) {
-      return modelLabel
-        ? `${modelLabel} の作品一覧（${orderLabel}）`
-        : `モデルの作品一覧（${orderLabel}）`
-    }
-
-    // 🔰 初期表示
-    return "⭐ おすすめ作品（Aipictorsピック）"
-  })()
-
-  const beginnerChips = [
-    "かわいい",
-    "ファンタジー",
-    "SF",
-    "アニメ風",
-    "写実",
-    "風景",
-    "ポートレート",
-    "サイバーパンク",
-    "魔法使い",
-    "青髪",
-  ]
-
-  const onChipClick = (chip: string) => {
     executeSearchWithRateLimit(() => {
-      navigate(buildSearchPath(chip))
+      navigate(buildSearchPath(normalizedQuery, nextParams, { basePath }))
     })
   }
 
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    navigateToSearch(searchText)
+  }
+
+  const hasResults = data.searchQuery !== null
+
   return (
     <>
-      <div className="mx-auto max-w-4xl px-4 pt-4">
-        <SearchHeader models={data.models} />
+      <div className="mx-auto max-w-[1480px] px-3 py-5 md:px-6 md:py-6 lg:px-8">
+        <form
+          onSubmit={handleSubmit}
+          className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-center"
+        >
+          <label className="sr-only" htmlFor="search-rating-select">
+            {t("年齢指定", "Age rating")}
+          </label>
+          <select
+            id="search-rating-select"
+            className="h-12 rounded-md border bg-background px-4 text-sm lg:w-40"
+            value={data.filters.rating}
+            onChange={(event) => {
+              navigateToSearch(data.searchQuery, {
+                rating: event.target.value as SearchRatingFilter,
+              })
+            }}
+          >
+            <option value="G">{t("全年齢", "All ages")}</option>
+            <option value="R15">R-15</option>
+            <option value="R18">R-18</option>
+          </select>
 
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground text-sm">
-          <span className="font-medium text-foreground">{stateLabel}</span>
-        </div>
-
-        {/* 入力しなくても使える：初心者向けタグチップ */}
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-2">
-          {beginnerChips.map((chip) => (
-            <button
-              key={chip}
-              type="button"
-              onClick={() => onChipClick(chip)}
-              className="shrink-0 rounded-full border bg-background px-3 py-1 text-sm hover:bg-muted"
+          <div className="flex flex-1 items-center overflow-hidden rounded-md border bg-background">
+            <Input
+              value={searchText}
+              onChange={(event) => setSearchText(event.target.value)}
+              placeholder={t("タグで検索", "Search by tag")}
+              className="h-12 border-0 text-base shadow-none focus-visible:ring-0"
+            />
+            <Button
+              type="submit"
+              size="icon"
+              className="mr-1 size-10 shrink-0"
+              aria-label={t("検索", "Search")}
             >
-              {`#${chip}`}
-            </button>
-          ))}
-        </div>
-      </div>
+              <Search className="size-5" />
+            </Button>
+          </div>
+        </form>
 
-      {/* 直下に即グリッド（初期状態でも必ず作品が見える） */}
-      <div className="mx-auto max-w-6xl px-4 py-4">
-        <SearchResults
-          models={data.models}
-          initialWorks={data.workResp}
-          mode="explore"
-        />
-
-        {/* 下層：ヒント（情報は出しすぎず、必要なら深掘り） */}
-        <div className="mt-6">
-          <details>
-            <summary className="cursor-pointer text-muted-foreground text-sm">
-              {hasAnySearchQuery
-                ? "さらに探す（雰囲気・トレンド・画風）"
-                : "さらに探す（雰囲気・トレンド・画風）"}
-            </summary>
-            <div className="mt-4">
-              <SearchHints
-                popularTags={data.popularTags}
-                popularKeywords={data.popularKeywords}
-                popularModels={data.popularModels}
-              />
+        <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px]">
+          <main className="min-w-0">
+            <div className="mb-7 border-b pb-4 md:pb-5">
+              <div>
+                <h1 className="font-bold text-3xl leading-none md:text-4xl">
+                  {data.searchQuery
+                    ? `#${data.searchQuery}`
+                    : t("タグ検索", "Tag Search")}
+                </h1>
+                <p className="mt-4 text-foreground/80 text-xl font-semibold md:text-2xl">
+                  {data.searchQuery
+                    ? t(`${data.worksCount}件`, `${data.worksCount} works`)
+                    : t(
+                        "検索したいタグを入力してください",
+                        "Enter a tag to start searching",
+                      )}
+                </p>
+              </div>
             </div>
-          </details>
+
+            <div className="mb-6 flex flex-col gap-5 md:mb-8">
+              <div className="flex flex-wrap items-center gap-6 border-b pb-1">
+                {([
+                  ["all", t("すべて", "All")],
+                  ["ILLUSTRATION", t("AIイラスト", "AI Illustration")],
+                  ["REAL", t("AIフォト", "AI Photo")],
+                ] as const).map(([value, label]) => (
+                  <FilterButton
+                    key={value}
+                    isActive={data.filters.style === value}
+                    onClick={() => {
+                      navigateToSearch(data.searchQuery, { style: value })
+                    }}
+                  >
+                    {label}
+                  </FilterButton>
+                ))}
+              </div>
+
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="order-1 flex flex-wrap gap-2 md:order-2 md:justify-end">
+                  {([
+                    ["G", t("全年齢", "All ages")],
+                    ["R15", "R-15"],
+                    ["R18", "R-18"],
+                  ] as const).map(([value, label]) => (
+                    <FilterButton
+                      key={value}
+                      variant="pill"
+                      isActive={data.filters.rating === value}
+                      onClick={() => {
+                        navigateToSearch(data.searchQuery, { rating: value })
+                      }}
+                    >
+                      {label}
+                    </FilterButton>
+                  ))}
+                </div>
+
+                <div className="order-2 flex flex-wrap gap-0 md:order-1">
+                  {([
+                    ["all", t("すべて", "All")],
+                    ["with", t("呪文あり", "With prompt")],
+                    ["without", t("呪文なし", "Without prompt")],
+                  ] as const).map(([value, label], index) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => {
+                        navigateToSearch(data.searchQuery, { prompt: value })
+                      }}
+                      className={cn(
+                        "border px-4 py-3 text-sm transition-colors md:text-base",
+                        index === 0 ? "rounded-l-md" : "",
+                        index === 2 ? "rounded-r-md" : "",
+                        index > 0 ? "-ml-px" : "",
+                        data.filters.prompt === value
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {hasResults ? (
+              data.works.length > 0 ? (
+                <div className="grid grid-cols-2 gap-x-4 gap-y-7 md:gap-x-5 md:gap-y-8 lg:grid-cols-4 xl:grid-cols-5">
+                  {data.works.map((work) => (
+                    <article key={work.id} className="min-w-0">
+                      <div className="group relative">
+                        <CroppedWorkSquare
+                          workId={work.id}
+                          imageUrl={work.smallThumbnailImageURL}
+                          thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                          size="auto"
+                          imageWidth={work.smallThumbnailImageWidth}
+                          imageHeight={work.smallThumbnailImageHeight}
+                          subWorksCount={work.subWorksCount}
+                          commentsCount={work.commentsCount}
+                          isPromptPublic={
+                            work.promptAccessType === "PUBLIC" || work.isGeneration
+                          }
+                          hasVideoUrl={Boolean(work.url)}
+                          isGeneration={work.isGeneration}
+                        />
+
+                        <div className="absolute right-2 bottom-2 z-10">
+                          <LikeButton
+                            size={48}
+                            targetWorkId={work.id}
+                            targetWorkOwnerUserId={work.user?.id ?? ""}
+                            defaultLiked={work.isLiked}
+                            defaultLikedCount={0}
+                            likedCount={work.likesCount}
+                            isBackgroundNone={true}
+                            strokeWidth={2}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="mt-3 flex items-start justify-between gap-3">
+                        <Link
+                          to={`/posts/${work.id}`}
+                          className="line-clamp-2 flex-1 font-bold text-[clamp(1.25rem,2vw,1.6rem)] leading-snug hover:underline md:text-lg"
+                        >
+                          {work.title}
+                        </Link>
+
+                        <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-sm">
+                          <Heart className="size-4" />
+                          <span>{work.likesCount}</span>
+                        </div>
+                      </div>
+
+                      {work.user && (
+                        <Link
+                          to={`/users/${work.user.id}`}
+                          className="mt-2 flex items-center gap-2"
+                        >
+                          <Avatar className="size-9">
+                            <AvatarImage
+                              src={withIconUrlFallback(work.user.iconUrl)}
+                              alt={work.user.name}
+                            />
+                            <AvatarFallback>
+                              {work.user.name.slice(0, 1)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="truncate text-base md:text-lg">{work.user.name}</span>
+                        </Link>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-md border bg-muted/20 px-6 py-16 text-center">
+                  <p className="text-muted-foreground text-lg">
+                    {t(
+                      "該当する作品が見つかりませんでした",
+                      "No works were found",
+                    )}
+                  </p>
+                </div>
+              )
+            ) : (
+              <div className="rounded-md border bg-muted/20 px-6 py-16 text-center">
+                <p className="text-muted-foreground text-lg">
+                  {t(
+                    "検索したいタグを入力してください",
+                    "Enter a tag to start searching",
+                  )}
+                </p>
+              </div>
+            )}
+          </main>
+
+          <aside className="hidden space-y-10 xl:block">
+            <section>
+              <h2 className="mb-6 font-bold text-3xl">
+                {t("人気のイラストタグ", "Popular Illustration Tags")}
+              </h2>
+              <div className="space-y-4 text-xl leading-relaxed">
+                {data.popularTags.map((tag) => (
+                  <button
+                    key={tag.name}
+                    type="button"
+                    className="block text-left font-semibold transition-colors hover:text-primary"
+                    onClick={() => {
+                      navigateToSearch(tag.name)
+                    }}
+                  >
+                    #{tag.name}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h2 className="mb-6 font-bold text-3xl">
+                {t("人気ランキング", "Popular Ranking")}
+              </h2>
+              <div className="space-y-4">
+                {data.rankingWorks.map((work, index) => (
+                  <Link
+                    key={work.id}
+                    to={`/posts/${work.id}`}
+                    className="flex items-start gap-3"
+                  >
+                    <div className="flex size-12 shrink-0 items-center justify-center bg-yellow-300 font-bold text-2xl text-black">
+                      {index + 1}
+                    </div>
+
+                    <img
+                      src={work.smallThumbnailImageURL}
+                      alt={work.title}
+                      className="size-[72px] shrink-0 object-cover"
+                    />
+
+                    <div className="min-w-0">
+                      <p className="line-clamp-2 font-semibold text-lg leading-snug">
+                        {work.title}
+                      </p>
+                      <div className="mt-2 flex items-center gap-2 text-muted-foreground text-base">
+                        <Avatar className="size-7">
+                          <AvatarImage
+                            src={withIconUrlFallback(work.user?.iconUrl)}
+                            alt={work.user?.name ?? ""}
+                          />
+                          <AvatarFallback>
+                            {work.user?.name?.slice(0, 1) ?? "?"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="truncate">{work.user?.name}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          </aside>
         </div>
       </div>
+
       <SearchRateLimitDialog
         isOpen={isRateLimitDialogOpen}
         onOpenChange={(open) => {
@@ -339,19 +599,14 @@ export default function Search() {
 }
 
 export const meta: MetaFunction<typeof loader> = (props) => {
-  const searchQuery =
-    (props.data as { searchQuery?: string } | undefined)?.searchQuery ??
-    props.params?.q ??
-    ""
+  const searchQuery = props.data?.searchQuery ?? ""
 
-  let title = "検索 - Aipictors"
-  let description =
-    "AI生成イラストを検索できます。様々なタグやフィルターを使って、お気に入りの作品を見つけましょう。"
-
-  if (searchQuery) {
-    title = `「${searchQuery}」の検索結果 - Aipictors`
-    description = `「${searchQuery}」に関するAI生成イラストの検索結果を表示しています。`
-  }
+  const title = searchQuery
+    ? `#${searchQuery} の作品検索 - Aipictors`
+    : "タグ検索 - Aipictors"
+  const description = searchQuery
+    ? `#${searchQuery} のタグで投稿された作品を一覧表示します。`
+    : "タグで作品を検索できます。人気タグやランキングもあわせて確認できます。"
 
   return [
     { title },
@@ -370,7 +625,7 @@ export const meta: MetaFunction<typeof loader> = (props) => {
 }
 
 const worksQuery = graphql(
-  `query Works($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+  `query SearchTagWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
     }
@@ -378,22 +633,15 @@ const worksQuery = graphql(
   [PhotoAlbumWorkFragment],
 )
 
-const aiModelsQuery = graphql(
-  `query AiModels {
-    aiModels(offset: 0, limit: 124, where: {}) {
-      id
-      name
-      type
-      generationModelId
-      workModelId
-      thumbnailImageURL
-    }
+const worksCountQuery = graphql(
+  `query SearchTagWorksCount($where: WorksWhereInput) {
+    worksCount(where: $where)
   }`,
 )
 
 const popularTagsQuery = graphql(
-  `query PopularTags($limit: Int!) {
-    recommendedTags(limit: $limit, where: { isSensitive: false }) {
+  `query SearchPopularTags($limit: Int!, $where: RecommendedTagsWhereInput!) {
+    recommendedTags(limit: $limit, where: $where) {
       tagName
       thumbnailUrl
     }

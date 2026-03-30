@@ -13,10 +13,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
   useLocation,
   useNavigate,
   useRouteError,
+  useRouteLoaderData,
 } from "@remix-run/react"
 import { init } from "@sentry/browser"
 import { ThemeProvider } from "next-themes"
@@ -50,6 +50,11 @@ const MAINTENANCE_STATUS_QUERY = `query MaintenanceStatus {
 type RootLoaderData = {
   isMaintenance: boolean
   maintenanceMessage: string | null
+}
+
+const defaultRootLoaderData: RootLoaderData = {
+  isMaintenance: false,
+  maintenanceMessage: null,
 }
 
 let maintenanceStatusCache:
@@ -212,6 +217,10 @@ function MaintenancePage(props: { message: string | null }): React.ReactNode {
   )
 }
 
+const useRootLoaderData = (): RootLoaderData => {
+  return useRouteLoaderData<typeof loader>("root") ?? defaultRootLoaderData
+}
+
 type Props = Readonly<{
   children: React.ReactNode
 }>
@@ -220,7 +229,7 @@ type Props = Readonly<{
  * https://remix.run/docs/en/main/file-conventions/root#layout-export
  */
 export function Layout(props: Props): React.ReactNode {
-  const loaderData = useLoaderData<typeof loader>()
+  const loaderData = useRootLoaderData()
   const location = useLocation()
   const navigate = useNavigate()
   const [_key, setKey] = useState(
@@ -499,7 +508,7 @@ export function Layout(props: Props): React.ReactNode {
 }
 
 export default function App(): React.ReactNode {
-  const loaderData = useLoaderData<typeof loader>()
+  const loaderData = useRootLoaderData()
   const [isMounted, setIsMounted] = useState(false)
 
   // クライアントサイドのみでパフォーマンス監視を有効にする
