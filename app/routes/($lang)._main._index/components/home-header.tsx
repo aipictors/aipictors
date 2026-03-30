@@ -131,7 +131,8 @@ function HomeHeader(props: Props) {
 
     if (isSearchPathname(currentPath)) {
       const pathSearchTerm = getSearchTermFromPathname(currentPath)
-      const query = pathSearchTerm ?? searchParams.get("q") ?? ""
+      const query =
+        searchParams.get("tag") ?? searchParams.get("q") ?? pathSearchTerm ?? ""
       setSearchText(query)
     } else {
       // その他のページの場合は検索テキストをクリア
@@ -522,10 +523,7 @@ function HomeHeader(props: Props) {
                 onKeyDown={onEnterKey}
                 onCompositionStart={onCompStart}
                 onCompositionEnd={onCompEnd}
-                placeholder={t(
-                  "作品・タグ・ユーザー名を検索",
-                  "Search posts, tags, or usernames",
-                )}
+                placeholder={t("タグ名を入力", "Enter tag name")}
                 className="pr-20"
               />
               <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">
@@ -571,10 +569,7 @@ function HomeHeader(props: Props) {
                 onKeyDown={onEnterKey}
                 onCompositionStart={onCompStart}
                 onCompositionEnd={onCompEnd}
-                placeholder={t(
-                  "作品・タグ・ユーザー名を検索",
-                  "Search posts, tags, or usernames",
-                )}
+                placeholder={t("タグ名を入力", "Enter tag name")}
                 className="w-full pr-10"
               />
               <div className="-translate-y-1/2 absolute top-1/2 right-1 flex items-center gap-1">

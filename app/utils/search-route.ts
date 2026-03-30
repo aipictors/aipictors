@@ -7,18 +7,32 @@ export function buildSearchPath(
   searchParams?: URLSearchParams,
   options?: SearchPathOptions,
 ): string {
-  const basePath = options?.basePath ?? "/search"
+  const rawBasePath = options?.basePath ?? "/search"
+  const basePath = rawBasePath.endsWith("/")
+    ? rawBasePath.slice(0, -1)
+    : rawBasePath
   const trimmed = searchTerm?.trim() ?? ""
-  const pathname = trimmed
-    ? `${basePath}/${encodeURIComponent(trimmed)}`
-    : basePath
+  const params = new URLSearchParams(searchParams?.toString() ?? "")
 
-  if (!searchParams) {
-    return pathname
+  params.delete("q")
+
+  if (params.has("rating") && !params.has("age_limit")) {
+    params.set("age_limit", params.get("rating") ?? "")
+  }
+  params.delete("rating")
+
+  if (trimmed) {
+    params.set("tag", trimmed)
+  } else {
+    params.delete("tag")
   }
 
-  const query = searchParams.toString()
-  return query ? `${pathname}?${query}` : pathname
+  if ((trimmed || params.toString()) && !params.has("age_limit")) {
+    params.set("age_limit", "")
+  }
+
+  const query = params.toString()
+  return query ? `${basePath}/?${query}` : basePath
 }
 
 export function getSearchTermFromPathname(pathname: string): string | null {

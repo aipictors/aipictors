@@ -738,7 +738,7 @@ export default function EventDetailPage() {
                     className="w-full sm:w-auto"
                   >
                     <Link
-                      to={`/search?q=${encodeURIComponent(data.appEvent.mainTag)}`}
+                      to={`/search/?age_limit=&tag=${encodeURIComponent(data.appEvent.mainTag)}`}
                     >
                       {t("参加タグの作品を見る", "View works with this tag")}
                     </Link>

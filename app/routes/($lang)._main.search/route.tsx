@@ -6,10 +6,11 @@ import type {
 import { redirect } from "@remix-run/cloudflare"
 import { Link, useLoaderData, useLocation, useNavigate } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Heart, Search } from "lucide-react"
-import { useEffect, useState, type FormEvent } from "react"
+import { Heart, SearchIcon } from "lucide-react"
+import { type FormEvent, useEffect, useState } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
 import { SearchRateLimitDialog } from "~/components/search/search-rate-limit-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
@@ -66,6 +67,16 @@ const getPromptFilter = (value: string | null): SearchPromptFilter => {
   return "all"
 }
 
+const getCurrentPage = (value: string | null) => {
+  const parsed = Number(value ?? "0")
+
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    return 0
+  }
+
+  return Math.floor(parsed)
+}
+
 const buildWorksWhere = (props: {
   tagQuery?: string | null
   rating: SearchRatingFilter
@@ -99,35 +110,46 @@ const buildWorksWhere = (props: {
 
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
+  const isSensitiveMode = url.pathname.startsWith("/r/")
+  const basePath = isSensitiveMode ? "/r/search" : "/search"
   const pathSearchQuery = props.params.q
     ? decodeURIComponent(props.params.q)
     : null
-
-  if (pathSearchQuery === null) {
-    const legacySearchQuery = url.searchParams.get("q")
-
-    if (legacySearchQuery) {
-      const nextSearchParams = new URLSearchParams(url.searchParams)
-      nextSearchParams.delete("q")
-
-      return redirect(
-        buildSearchPath(legacySearchQuery, nextSearchParams, {
-          basePath: url.pathname.startsWith("/r/") ? "/r/search" : "/search",
-        }),
-      )
-    }
-  }
-
-  const isSensitiveMode = url.pathname.startsWith("/r/")
   const searchQuery = normalizeTagQuery(
     pathSearchQuery ?? url.searchParams.get("tag") ?? url.searchParams.get("q"),
   )
+  const currentPage = getCurrentPage(url.searchParams.get("page"))
   const rating = getRatingFilter(
-    url.searchParams.get("rating"),
+    url.searchParams.get("age_limit") ?? url.searchParams.get("rating"),
     isSensitiveMode,
   )
   const style = getStyleFilter(url.searchParams.get("style"))
   const prompt = getPromptFilter(url.searchParams.get("prompt"))
+  const defaultRating = isSensitiveMode ? "R18" : "G"
+
+  if (
+    pathSearchQuery !== null ||
+    url.searchParams.has("q") ||
+    url.searchParams.has("rating") ||
+    (searchQuery !== null && !url.searchParams.has("age_limit")) ||
+    url.searchParams.get("page") === "0"
+  ) {
+    const nextSearchParams = new URLSearchParams(url.searchParams)
+
+    nextSearchParams.delete("q")
+    nextSearchParams.delete("rating")
+    nextSearchParams.set("age_limit", rating === defaultRating ? "" : rating)
+
+    if (currentPage > 0) {
+      nextSearchParams.set("page", String(currentPage))
+    } else {
+      nextSearchParams.delete("page")
+    }
+
+    return redirect(
+      buildSearchPath(searchQuery, nextSearchParams, { basePath }),
+    )
+  }
 
   const resultWhere = buildWorksWhere({
     tagQuery: searchQuery,
@@ -162,7 +184,7 @@ export async function loader(props: LoaderFunctionArgs) {
         ? loaderClient.query({
             query: worksQuery,
             variables: {
-              offset: 0,
+              offset: currentPage * RESULTS_LIMIT,
               limit: RESULTS_LIMIT,
               where: resultWhere,
             },
@@ -182,6 +204,7 @@ export async function loader(props: LoaderFunctionArgs) {
       rating,
       style,
     },
+    currentPage,
     isSensitiveMode,
     popularTags:
       popularTagsResp.data?.recommendedTags?.map((tag) => ({
@@ -238,7 +261,7 @@ function FilterButton(props: {
   )
 }
 
-export default function Search() {
+export default function SearchRoute() {
   const data = useLoaderData<typeof loader>()
   const location = useLocation()
   const navigate = useNavigate()
@@ -256,15 +279,19 @@ export default function Search() {
 
   const basePath = location.pathname.startsWith("/r/") ? "/r/search" : "/search"
 
-  const buildFilterParams = (next?: Partial<typeof data.filters>) => {
+  const buildFilterParams = (
+    next?: Partial<typeof data.filters> & { page?: number },
+  ) => {
     const params = new URLSearchParams()
     const rating = next?.rating ?? data.filters.rating
     const style = next?.style ?? data.filters.style
     const prompt = next?.prompt ?? data.filters.prompt
+    const page = next?.page ?? 0
 
-    if (rating !== (data.isSensitiveMode ? "R18" : "G")) {
-      params.set("rating", rating)
-    }
+    params.set(
+      "age_limit",
+      rating === (data.isSensitiveMode ? "R18" : "G") ? "" : rating,
+    )
 
     if (style !== "all") {
       params.set("style", style)
@@ -274,12 +301,16 @@ export default function Search() {
       params.set("prompt", prompt)
     }
 
+    if (page > 0) {
+      params.set("page", String(page))
+    }
+
     return params
   }
 
   const navigateToSearch = (
     tagName?: string | null,
-    next?: Partial<typeof data.filters>,
+    next?: Partial<typeof data.filters> & { page?: number },
   ) => {
     const normalizedQuery = normalizeTagQuery(tagName)
     const nextParams = buildFilterParams(next)
@@ -325,7 +356,7 @@ export default function Search() {
             <Input
               value={searchText}
               onChange={(event) => setSearchText(event.target.value)}
-              placeholder={t("タグで検索", "Search by tag")}
+              placeholder={t("タグ名を入力", "Enter tag name")}
               className="h-12 border-0 text-base shadow-none focus-visible:ring-0"
             />
             <Button
@@ -334,7 +365,7 @@ export default function Search() {
               className="mr-1 size-10 shrink-0"
               aria-label={t("検索", "Search")}
             >
-              <Search className="size-5" />
+              <SearchIcon className="size-5" />
             </Button>
           </div>
         </form>
@@ -348,24 +379,28 @@ export default function Search() {
                     ? `#${data.searchQuery}`
                     : t("タグ検索", "Tag Search")}
                 </h1>
-                <p className="mt-4 text-foreground/80 text-xl font-semibold md:text-2xl">
-                  {data.searchQuery
-                    ? t(`${data.worksCount}件`, `${data.worksCount} works`)
-                    : t(
-                        "検索したいタグを入力してください",
-                        "Enter a tag to start searching",
-                      )}
+                <p className="mt-4 font-semibold text-xl md:text-2xl">
+                  <span className="text-foreground/80">
+                    {data.searchQuery
+                      ? t(`${data.worksCount}件`, `${data.worksCount} works`)
+                      : t(
+                          "検索したいタグを入力してください",
+                          "Enter a tag to start searching",
+                        )}
+                  </span>
                 </p>
               </div>
             </div>
 
             <div className="mb-6 flex flex-col gap-5 md:mb-8">
               <div className="flex flex-wrap items-center gap-6 border-b pb-1">
-                {([
-                  ["all", t("すべて", "All")],
-                  ["ILLUSTRATION", t("AIイラスト", "AI Illustration")],
-                  ["REAL", t("AIフォト", "AI Photo")],
-                ] as const).map(([value, label]) => (
+                {(
+                  [
+                    ["all", t("すべて", "All")],
+                    ["ILLUSTRATION", t("AIイラスト", "AI Illustration")],
+                    ["REAL", t("AIフォト", "AI Photo")],
+                  ] as const
+                ).map(([value, label]) => (
                   <FilterButton
                     key={value}
                     isActive={data.filters.style === value}
@@ -380,11 +415,13 @@ export default function Search() {
 
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="order-1 flex flex-wrap gap-2 md:order-2 md:justify-end">
-                  {([
-                    ["G", t("全年齢", "All ages")],
-                    ["R15", "R-15"],
-                    ["R18", "R-18"],
-                  ] as const).map(([value, label]) => (
+                  {(
+                    [
+                      ["G", t("全年齢", "All ages")],
+                      ["R15", "R-15"],
+                      ["R18", "R-18"],
+                    ] as const
+                  ).map(([value, label]) => (
                     <FilterButton
                       key={value}
                       variant="pill"
@@ -399,11 +436,13 @@ export default function Search() {
                 </div>
 
                 <div className="order-2 flex flex-wrap gap-0 md:order-1">
-                  {([
-                    ["all", t("すべて", "All")],
-                    ["with", t("呪文あり", "With prompt")],
-                    ["without", t("呪文なし", "Without prompt")],
-                  ] as const).map(([value, label], index) => (
+                  {(
+                    [
+                      ["all", t("すべて", "All")],
+                      ["with", t("呪文あり", "With prompt")],
+                      ["without", t("呪文なし", "Without prompt")],
+                    ] as const
+                  ).map(([value, label], index) => (
                     <button
                       key={value}
                       type="button"
@@ -429,77 +468,98 @@ export default function Search() {
 
             {hasResults ? (
               data.works.length > 0 ? (
-                <div className="grid grid-cols-2 gap-x-4 gap-y-7 md:gap-x-5 md:gap-y-8 lg:grid-cols-4 xl:grid-cols-5">
-                  {data.works.map((work) => (
-                    <article key={work.id} className="min-w-0">
-                      <div className="group relative">
-                        <CroppedWorkSquare
-                          workId={work.id}
-                          imageUrl={work.smallThumbnailImageURL}
-                          thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                          size="auto"
-                          imageWidth={work.smallThumbnailImageWidth}
-                          imageHeight={work.smallThumbnailImageHeight}
-                          subWorksCount={work.subWorksCount}
-                          commentsCount={work.commentsCount}
-                          isPromptPublic={
-                            work.promptAccessType === "PUBLIC" || work.isGeneration
-                          }
-                          hasVideoUrl={Boolean(work.url)}
-                          isGeneration={work.isGeneration}
-                        />
-
-                        <div className="absolute right-2 bottom-2 z-10">
-                          <LikeButton
-                            size={48}
-                            targetWorkId={work.id}
-                            targetWorkOwnerUserId={work.user?.id ?? ""}
-                            defaultLiked={work.isLiked}
-                            defaultLikedCount={0}
-                            likedCount={work.likesCount}
-                            isBackgroundNone={true}
-                            strokeWidth={2}
+                <>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-7 md:gap-x-5 md:gap-y-8 lg:grid-cols-4 xl:grid-cols-5">
+                    {data.works.map((work) => (
+                      <article key={work.id} className="min-w-0">
+                        <div className="group relative">
+                          <CroppedWorkSquare
+                            workId={work.id}
+                            imageUrl={work.smallThumbnailImageURL}
+                            thumbnailImagePosition={
+                              work.thumbnailImagePosition ?? 0
+                            }
+                            size="auto"
+                            imageWidth={work.smallThumbnailImageWidth}
+                            imageHeight={work.smallThumbnailImageHeight}
+                            subWorksCount={work.subWorksCount}
+                            commentsCount={work.commentsCount}
+                            isPromptPublic={
+                              work.promptAccessType === "PUBLIC" ||
+                              work.isGeneration
+                            }
+                            hasVideoUrl={Boolean(work.url)}
+                            isGeneration={work.isGeneration}
                           />
-                        </div>
-                      </div>
 
-                      <div className="mt-3 flex items-start justify-between gap-3">
-                        <Link
-                          to={`/posts/${work.id}`}
-                          className="line-clamp-2 flex-1 font-bold text-[clamp(1.25rem,2vw,1.6rem)] leading-snug hover:underline md:text-lg"
-                        >
-                          {work.title}
-                        </Link>
-
-                        <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-sm">
-                          <Heart className="size-4" />
-                          <span>{work.likesCount}</span>
-                        </div>
-                      </div>
-
-                      {work.user && (
-                        <Link
-                          to={`/users/${work.user.id}`}
-                          className="mt-2 flex items-center gap-2"
-                        >
-                          <Avatar className="size-9">
-                            <AvatarImage
-                              src={withIconUrlFallback(work.user.iconUrl)}
-                              alt={work.user.name}
+                          <div className="absolute right-2 bottom-2 z-10">
+                            <LikeButton
+                              size={48}
+                              targetWorkId={work.id}
+                              targetWorkOwnerUserId={work.user?.id ?? ""}
+                              defaultLiked={work.isLiked}
+                              defaultLikedCount={0}
+                              likedCount={work.likesCount}
+                              isBackgroundNone={true}
+                              strokeWidth={2}
                             />
-                            <AvatarFallback>
-                              {work.user.name.slice(0, 1)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="truncate text-base md:text-lg">{work.user.name}</span>
-                        </Link>
-                      )}
-                    </article>
-                  ))}
-                </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 flex items-start justify-between gap-3">
+                          <Link
+                            to={`/posts/${work.id}`}
+                            className="line-clamp-2 flex-1 font-bold text-[clamp(1.25rem,2vw,1.6rem)] leading-snug hover:underline md:text-lg"
+                          >
+                            {work.title}
+                          </Link>
+
+                          <div className="flex shrink-0 items-center gap-1 text-muted-foreground text-sm">
+                            <Heart className="size-4" />
+                            <span>{work.likesCount}</span>
+                          </div>
+                        </div>
+
+                        {work.user && (
+                          <Link
+                            to={`/users/${work.user.id}`}
+                            className="mt-2 flex items-center gap-2"
+                          >
+                            <Avatar className="size-9">
+                              <AvatarImage
+                                src={withIconUrlFallback(work.user.iconUrl)}
+                                alt={work.user.name}
+                              />
+                              <AvatarFallback>
+                                {work.user.name.slice(0, 1)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="truncate text-base md:text-lg">
+                              {work.user.name}
+                            </span>
+                          </Link>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+
+                  {data.worksCount > RESULTS_LIMIT && (
+                    <div className="mt-10 flex justify-center">
+                      <ResponsivePagination
+                        maxCount={data.worksCount}
+                        perPage={RESULTS_LIMIT}
+                        currentPage={data.currentPage}
+                        onPageChange={(page) => {
+                          navigateToSearch(data.searchQuery, { page })
+                        }}
+                        isActiveButtonStyle
+                      />
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="rounded-md border bg-muted/20 px-6 py-16 text-center">
-                  <p className="text-muted-foreground text-lg">
+                  <p className="text-lg text-muted-foreground">
                     {t(
                       "該当する作品が見つかりませんでした",
                       "No works were found",
@@ -509,7 +569,7 @@ export default function Search() {
               )
             ) : (
               <div className="rounded-md border bg-muted/20 px-6 py-16 text-center">
-                <p className="text-muted-foreground text-lg">
+                <p className="text-lg text-muted-foreground">
                   {t(
                     "検索したいタグを入力してください",
                     "Enter a tag to start searching",
@@ -565,7 +625,7 @@ export default function Search() {
                       <p className="line-clamp-2 font-semibold text-lg leading-snug">
                         {work.title}
                       </p>
-                      <div className="mt-2 flex items-center gap-2 text-muted-foreground text-base">
+                      <div className="mt-2 flex items-center gap-2 text-base text-muted-foreground">
                         <Avatar className="size-7">
                           <AvatarImage
                             src={withIconUrlFallback(work.user?.iconUrl)}
