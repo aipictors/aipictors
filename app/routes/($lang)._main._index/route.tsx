@@ -21,7 +21,6 @@ import {
   PlaySquare,
   Plus,
 } from "lucide-react"
-import { createClient as createCmsClient } from "microcms-js-sdk"
 import { Suspense, useEffect, useId, useMemo, useState } from "react"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
@@ -53,10 +52,7 @@ import {
   HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
-import {
-  HomeEventPreviewList,
-  type HomePreviewEvent,
-} from "~/routes/($lang)._main._index/components/home-event-preview-list"
+import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import {
   HomeNewCommentsFragment,
@@ -73,7 +69,6 @@ import {
 } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
-import { HomeReleaseList } from "~/routes/($lang)._main._index/components/home-release-list"
 import {
   HomeTagList,
   HomeTagListItemFragment,
@@ -92,7 +87,6 @@ import {
   HomePromotionWorkFragment,
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import type { MicroCmsApiReleaseResponse } from "~/types/micro-cms-release-response"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import {
@@ -872,15 +866,6 @@ export default function Index() {
                 {data.newComments && data.newComments.length > 0 && (
                   <HomeNewCommentsSection comments={data.newComments} />
                 )}
-                <div className="hidden md:block">
-                  <HomeEventPreviewList events={data.eventPreviews} />
-                </div>
-                <div className="hidden md:block">
-                  <HomeReleaseList
-                    featuredReleases={data.featuredReleaseList}
-                    releaseList={data.releaseList}
-                  />
-                </div>
                 {data.workAwards && (
                   <HomeAwardWorksSection works={data.workAwards} />
                 )}
