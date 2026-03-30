@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/button"
 
 type Props = {
   url: string
-  variant?: "default" | "compact"
+  variant?: "default" | "compact" | "plain"
   ariaLabel?: string
 }
 
@@ -19,32 +19,35 @@ type Props = {
  * SNSアイコンリンク
  */
 export function SnsIconLink(props: Props): React.ReactNode {
+  const variant = props.variant ?? "default"
+  const iconClassName = variant === "plain" ? "size-6" : "size-5"
+
   const icon = () => {
     if (props.url.includes("twitter") || props.url.includes("x.com")) {
-      return <RiTwitterXLine className="size-5" />
+      return <RiTwitterXLine className={iconClassName} />
     }
     if (props.url.includes("instagram")) {
-      return <RiInstagramLine className="size-5" />
+      return <RiInstagramLine className={iconClassName} />
     }
     if (props.url.includes("facebook")) {
-      return <RiFacebookBoxLine className="size-5" />
+      return <RiFacebookBoxLine className={iconClassName} />
     }
     if (props.url.includes("github")) {
-      return <RiGithubLine className="size-5" />
+      return <RiGithubLine className={iconClassName} />
     }
     if (props.url.includes("discord")) {
-      return <RiDiscordLine className="size-5" />
+      return <RiDiscordLine className={iconClassName} />
     }
     // メールアドレス
     if (props.url.includes("mailto")) {
-      return <MailIcon className="size-5" />
+      return <MailIcon className={iconClassName} />
     }
     // その他
     return (
       // biome-ignore lint/a11y/noSvgWithoutTitle: generic icon
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="size-5"
+        className={iconClassName}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -59,7 +62,20 @@ export function SnsIconLink(props: Props): React.ReactNode {
     )
   }
 
-  const variant = props.variant ?? "default"
+  if (variant === "plain") {
+    return (
+      <Link
+        className="inline-flex items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+        to={props.url}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={props.ariaLabel}
+        title={props.ariaLabel}
+      >
+        {icon()}
+      </Link>
+    )
+  }
 
   return (
     <Link className="block" to={props.url} target="_blank" rel="noreferrer">

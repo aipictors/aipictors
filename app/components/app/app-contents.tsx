@@ -5,6 +5,7 @@ type Props = Readonly<{
   outlet: React.ReactNode
   aside?: React.ReactNode
   header?: React.ReactNode
+  footer?: React.ReactNode
 }>
 
 /**
@@ -40,6 +41,9 @@ export function AppContents(props: Props): React.ReactNode {
           <div className={`w-full space-y-4 pb-4 ${getContentMargin()}`}>
             {props.outlet}
           </div>
+          {props.footer && (
+            <div className={`w-full ${getContentMargin()}`}>{props.footer}</div>
+          )}
         </div>
       </div>
     </>
