@@ -51,7 +51,12 @@ type Props = {
 export function UserNavigationMenuContent (props: Props) {
   const authContext = useContext(AuthContext)
 
-  const { data, refetch } = useQuery(viewerUserQuery, {
+  const {
+    data,
+    refetch,
+    error: viewerError,
+    loading: viewerLoading,
+  } = useQuery(viewerUserQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     errorPolicy: "all",
     fetchPolicy: "cache-and-network", // キャッシュがある場合は即座に表示、バックグラウンドで更新
@@ -170,6 +175,96 @@ export function UserNavigationMenuContent (props: Props) {
 
   if (authContext.isNotLoggedIn) {
     return null
+  }
+
+  // 通信失敗時に「永遠に読み込み中」に見えるのを防ぐ
+  // - dataが取れないがエラーが発生している場合は、認証情報だけで最低限のメニューを表示する
+  // - これにより、メニューがスケルトンで固まって見える状態を回避する
+  if (!data?.viewer?.user && viewerError) {
+    const fallbackIconUrl = authContext.avatarPhotoURL || ""
+    const fallbackDisplayName = authContext.displayName || ""
+    const fallbackLogin = authContext.login || ""
+
+    return (
+      <div className={userNavigationStyles.container}>
+        <div className="relative mb-6 h-20 w-full rounded-md bg-gray-100 p-3 dark:bg-gray-800">
+          <Link
+            to={getSensitiveLink(`/users/${fallbackLogin}`)}
+            className="absolute bottom-[-24px] left-3"
+          >
+            <Avatar className="h-12 w-12 cursor-pointer border-2 border-white">
+              <AvatarImage src={withIconUrlFallback(fallbackIconUrl)} />
+              <AvatarFallback>
+                {fallbackDisplayName
+                  ? fallbackDisplayName.charAt(0).toUpperCase()
+                  : "U"}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        </div>
+
+        <div className="px-2 pb-2">
+          <h3 className={userNavigationStyles.userName}>
+            {fallbackDisplayName || t("ユーザー", "User")}
+          </h3>
+          {fallbackLogin ? (
+            <p className={userNavigationStyles.userLogin}>@{fallbackLogin}</p>
+          ) : (
+            <p className={userNavigationStyles.userLogin}>
+              {t("読み込みに失敗しました", "Failed to load")}
+            </p>
+          )}
+          <p className="mt-1 text-muted-foreground text-xs">
+            {t(
+              "ユーザー情報の取得に失敗しました。通信状況を確認してください。",
+              "Failed to fetch user info. Please check your connection.",
+            )}
+          </p>
+        </div>
+
+        <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
+          {fallbackLogin && (
+            <MenuItemLink
+              href={getSensitiveLink(`/users/${fallbackLogin}`)}
+              icon={<UserCircleIcon className={userNavigationStyles.menuIcon} />}
+              label={t("マイページ", "My page")}
+            />
+          )}
+          <MenuItemLink
+            href={getSensitiveLink("/my")}
+            icon={<SquareKanbanIcon className={userNavigationStyles.menuIcon} />}
+            label={t("ダッシュボード", "Dashboard")}
+          />
+          <MenuItemLink
+            href={getSensitiveLink("/settings")}
+            icon={<SettingsIcon className={userNavigationStyles.menuIcon} />}
+            label={t("設定", "Settings")}
+          />
+          <DropdownMenuItem
+            onClick={() => refetch()}
+            className={userNavigationStyles.menuItem}
+            disabled={viewerLoading}
+          >
+            <span
+              className={`${userNavigationStyles.menuText} ${userNavigationStyles.menuItemText}`}
+            >
+              {t("再読み込み", "Retry")}
+            </span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={props.onLogout}
+            className={userNavigationStyles.menuItem}
+          >
+            <LogOutIcon className={userNavigationStyles.menuIcon} />
+            <span
+              className={`${userNavigationStyles.menuText} ${userNavigationStyles.menuItemText}`}
+            >
+              {t("ログアウト", "Logout")}
+            </span>
+          </DropdownMenuItem>
+        </ScrollArea>
+      </div>
+    )
   }
 
   // データが読み込み中の場合は認証情報を使用してスケルトンを表示
