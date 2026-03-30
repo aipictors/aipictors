@@ -373,7 +373,7 @@ export default function SearchRoute() {
 
         <div className="grid gap-10 xl:grid-cols-[minmax(0,1fr)_280px] 2xl:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0">
-            <div className="mb-7 border-b pb-4 md:pb-5">
+            <div className="mb-7 pb-4 md:pb-5">
               <div>
                 <h1 className="font-bold text-3xl leading-none md:text-4xl">
                   {data.searchQuery
@@ -394,7 +394,7 @@ export default function SearchRoute() {
             </div>
 
             <div className="mb-6 flex flex-col gap-5 md:mb-8">
-              <div className="flex flex-wrap items-center gap-6 border-b pb-1">
+              <div className="flex flex-wrap items-center gap-6 pb-1">
                 {(
                   [
                     ["all", t("すべて", "All")],
