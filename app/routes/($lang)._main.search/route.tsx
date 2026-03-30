@@ -158,6 +158,7 @@ export async function loader(props: LoaderFunctionArgs) {
     style,
     prompt,
   })
+  const shouldUseFilteredCount = style !== "all" || prompt !== "all"
   const rankingWhere = buildWorksWhere({
     rating,
     style,
@@ -174,7 +175,7 @@ export async function loader(props: LoaderFunctionArgs) {
         },
       }),
       loaderClient.query({
-        query: worksQuery,
+        query: rankingWorksQuery,
         variables: {
           offset: 0,
           limit: SIDEBAR_RANKING_LIMIT,
@@ -183,7 +184,7 @@ export async function loader(props: LoaderFunctionArgs) {
       }),
       searchQuery
         ? loaderClient.query({
-            query: worksQuery,
+            query: searchTagWorksQuery,
             variables: {
               offset: currentPage * RESULTS_LIMIT,
               limit: RESULTS_LIMIT,
@@ -192,10 +193,20 @@ export async function loader(props: LoaderFunctionArgs) {
           })
         : Promise.resolve(null),
       searchQuery
-        ? loaderClient.query({
-            query: worksCountQuery,
-            variables: { where: resultWhere },
-          })
+        ? shouldUseFilteredCount
+          ? loaderClient.query({
+              query: worksCountQuery,
+              variables: { where: resultWhere },
+            })
+          : loaderClient.query({
+              query: tagWorksCountQuery,
+              variables: {
+                where: {
+                  ratings: [rating],
+                  tagName: searchQuery,
+                },
+              },
+            })
         : Promise.resolve(null),
     ])
 
@@ -214,8 +225,11 @@ export async function loader(props: LoaderFunctionArgs) {
       })) ?? [],
     rankingWorks: rankingResp.data?.works ?? [],
     searchQuery,
-    works: worksResp?.data?.works ?? [],
-    worksCount: worksCountResp?.data?.worksCount ?? 0,
+    works: worksResp?.data?.tagWorks ?? [],
+    worksCount:
+      worksCountResp?.data?.worksCount ??
+      worksCountResp?.data?.tagWorksCount ??
+      0,
   }
 }
 
@@ -685,9 +699,18 @@ export const meta: MetaFunction<typeof loader> = (props) => {
   ]
 }
 
-const worksQuery = graphql(
-  `query SearchTagWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+const rankingWorksQuery = graphql(
+  `query SearchRankingWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
     works(offset: $offset, limit: $limit, where: $where) {
+      ...PhotoAlbumWork
+    }
+  }`,
+  [PhotoAlbumWorkFragment],
+)
+
+const searchTagWorksQuery = graphql(
+  `query SearchTagWorks($offset: Int!, $limit: Int!, $where: WorksWhereInput) {
+    tagWorks(offset: $offset, limit: $limit, where: $where) {
       ...PhotoAlbumWork
     }
   }`,
@@ -697,6 +720,12 @@ const worksQuery = graphql(
 const worksCountQuery = graphql(
   `query SearchTagWorksCount($where: WorksWhereInput) {
     worksCount(where: $where)
+  }`,
+)
+
+const tagWorksCountQuery = graphql(
+  `query SearchExactTagWorksCount($where: TagWorksCountWhereInput!) {
+    tagWorksCount(where: $where)
   }`,
 )
 
