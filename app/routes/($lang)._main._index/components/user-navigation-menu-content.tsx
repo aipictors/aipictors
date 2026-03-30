@@ -75,6 +75,17 @@ export function UserNavigationMenuContent (props: Props) {
   })
 
   useEffect(() => {
+    if (!import.meta.env.DEV) return
+    if (!viewerError) return
+
+    console.error("[UserNavigationMenuContent] viewerUserQuery failed", {
+      message: viewerError.message,
+      graphQLErrors: viewerError.graphQLErrors,
+      networkError: viewerError.networkError,
+    })
+  }, [viewerError])
+
+  useEffect(() => {
     if (authContext.login) {
       refetch()
     }
@@ -670,26 +681,16 @@ const viewerUserQuery = graphql(
       id
       user {
         id
-        biography
         login
         name
-        awardsCount
         followersCount
         followCount
         iconUrl
         headerImageUrl
-        webFcmToken
-        generatedCount
         promptonUser {
           id
           name
         }
-        receivedLikesCount
-        receivedViewsCount
-        createdLikesCount
-        createdViewsCount
-        createdCommentsCount
-        createdBookmarksCount
       }
     }
   }`,

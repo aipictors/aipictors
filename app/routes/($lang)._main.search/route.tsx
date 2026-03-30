@@ -103,6 +103,7 @@ const buildWorksWhere = (props: {
   }
 
   if (props.prompt === "without") {
+    where.hasPrompt = false
     where.isPromptPublic = false
   }
 
