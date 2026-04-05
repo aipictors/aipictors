@@ -418,6 +418,34 @@ function EventListSection(props: EventListSectionProps) {
   )
 }
 
+function EventCategoryTabTrigger(props: {
+  value: string
+  title: string
+  description: string
+  count: number
+}) {
+  return (
+    <TabsTrigger
+      value={props.value}
+      className="group h-auto min-h-16 flex-1 rounded-xl border border-transparent bg-background/70 px-4 py-3 text-left data-[state=active]:border-[#0096fa]/30 data-[state=active]:bg-[#0096fa] data-[state=active]:text-white data-[state=active]:shadow-sm"
+    >
+      <div className="flex w-full items-center justify-between gap-3">
+        <div className="space-y-0.5">
+          <div className="font-semibold text-sm leading-none md:text-base">
+            {props.title}
+          </div>
+          <div className="text-muted-foreground text-xs leading-relaxed group-data-[state=active]:text-white/85">
+            {props.description}
+          </div>
+        </div>
+        <div className="shrink-0 rounded-full bg-muted px-2.5 py-1 font-semibold text-xs group-data-[state=active]:bg-white/18 group-data-[state=active]:text-white">
+          {props.count}
+        </div>
+      </div>
+    </TabsTrigger>
+  )
+}
+
 export const meta: MetaFunction = () => {
   return createMeta(META.EVENTS)
 }
@@ -628,13 +656,25 @@ export default function FollowingLayout() {
           </div>
         </Form>
         <Tabs defaultValue={defaultTab} className="space-y-4">
-          <TabsList className="h-auto w-full justify-start gap-2 overflow-x-auto rounded-lg bg-muted/60 p-1">
-            <TabsTrigger value="official" className="min-w-fit">
-              {t("公式イベント", "Official events")} ({officialEvents.length})
-            </TabsTrigger>
-            <TabsTrigger value="user" className="min-w-fit">
-              {t("ユーザー企画", "User events")} ({userEvents.length})
-            </TabsTrigger>
+          <TabsList className="grid h-auto w-full grid-cols-1 gap-2 rounded-2xl bg-muted/50 p-2 md:grid-cols-2">
+            <EventCategoryTabTrigger
+              value="official"
+              title={t("公式イベント一覧", "Official events")}
+              description={t(
+                "Aipictors主催の企画・コンテストはこちら",
+                "Browse contests and events hosted by Aipictors",
+              )}
+              count={officialEvents.length}
+            />
+            <EventCategoryTabTrigger
+              value="user"
+              title={t("ユーザーイベント一覧", "User events")}
+              description={t(
+                "ユーザー主催の企画をまとめてチェック",
+                "Find community-hosted user events in one place",
+              )}
+              count={userEvents.length}
+            />
           </TabsList>
           <TabsContent value="official" className="m-0">
             <EventListSection events={officialEvents} />
