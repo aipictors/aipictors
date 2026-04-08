@@ -43,7 +43,7 @@ type Props = {
   worksCount: number
   works: FragmentOf<typeof ThemeWorkFragment>[]
   defaultTab?: "list" | "calender"
-  themeId: number
+  themeId: number | null
 }
 
 export function ThemeContainer (props: Props) {
@@ -69,12 +69,15 @@ export function ThemeContainer (props: Props) {
   const t = useTranslation()
 
   const { data: resp } = useQuery(themeWorksQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    skip:
+      authContext.isLoading ||
+      authContext.isNotLoggedIn ||
+      props.themeId === null,
     variables: {
       offset: props.page * 64,
       limit: 64,
       where: {
-        subjectId: props.themeId,
+        subjectId: props.themeId ?? 0,
         ratings: ["G", "R15"],
         orderBy: "DATE_CREATED",
         isNowCreatedAt: true,

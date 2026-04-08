@@ -32,15 +32,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const month = Number.parseInt(props.params.month)
 
-  const dailyThemesResp = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 31,
-      where: { year: year, month: month },
-    },
-  })
-
   const today = getJstDate(new Date())
 
   const todayYear = today.getFullYear()
@@ -49,31 +40,6 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const todayDay = today.getDate()
 
-  const todayThemesResp = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 32,
-      where: { year: todayYear, month: todayMonth, day: todayDay },
-    },
-  })
-
-  const worksResp = todayThemesResp.data.dailyThemes.length
-    ? await loaderClient.query({
-        query: themeWorksQuery,
-        variables: {
-          offset: page * 64,
-          limit: 64,
-          where: {
-            subjectId: Number(todayThemesResp.data.dailyThemes[0].id),
-            ratings: ["G", "R15"],
-            orderBy: "DATE_CREATED",
-            isNowCreatedAt: true,
-          },
-        },
-      })
-    : null
-
   const getJSTDate = (date: Date) => {
     const offsetJST = 9 * 60 // JST は UTC +9 時間
     const utcDate = date.getTime() + date.getTimezoneOffset() * 60 * 1000
@@ -81,22 +47,15 @@ export async function loader(props: LoaderFunctionArgs) {
     return jstDate
   }
 
-  const jstStartDate = getJSTDate(new Date(today.setDate(today.getDate() + 1)))
+  const jstStartDate = getJSTDate(new Date(today.getTime()))
+  jstStartDate.setDate(jstStartDate.getDate() + 1)
 
-  const jstEndDate = getJSTDate(new Date(today.setDate(today.getDate() + 7)))
+  const jstEndDate = getJSTDate(new Date(today.getTime()))
+  jstEndDate.setDate(jstEndDate.getDate() + 7)
 
   const startDate = jstStartDate.toISOString().split("T")[0]
 
   const endDate = jstEndDate.toISOString().split("T")[0]
-
-  const afterSevenDayThemesResp = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 7,
-      where: { startDate, endDate },
-    },
-  })
 
   const sevenDaysAgo = new Date(
     Number(todayYear),
@@ -117,25 +76,69 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const formatDate = (date: Date) => date.toISOString().split("T")[0]
 
-  const dailyBeforeThemes = await loaderClient.query({
-    query: dailyThemesQuery,
-    variables: {
-      offset: 0,
-      limit: 14,
-      where: {
-        startDate: formatDate(sevenDaysAgo),
-        endDate: formatDate(sevenDaysAfter),
-        orderBy: "DATE_STARTED",
-        sort: "ASC",
-      },
-    },
-  })
+  const [dailyThemesResp, todayThemesResp, afterSevenDayThemesResp, dailyBeforeThemes] =
+    await Promise.all([
+      loaderClient.query({
+        query: dailyThemesQuery,
+        variables: {
+          offset: 0,
+          limit: 31,
+          where: { year: year, month: month },
+        },
+      }),
+      loaderClient.query({
+        query: dailyThemesQuery,
+        variables: {
+          offset: 0,
+          limit: 32,
+          where: { year: todayYear, month: todayMonth, day: todayDay },
+        },
+      }),
+      loaderClient.query({
+        query: dailyThemesQuery,
+        variables: {
+          offset: 0,
+          limit: 7,
+          where: { startDate, endDate },
+        },
+      }),
+      loaderClient.query({
+        query: dailyThemesQuery,
+        variables: {
+          offset: 0,
+          limit: 14,
+          where: {
+            startDate: formatDate(sevenDaysAgo),
+            endDate: formatDate(sevenDaysAfter),
+            orderBy: "DATE_STARTED",
+            sort: "ASC",
+          },
+        },
+      }),
+    ])
+
+  const todayTheme = todayThemesResp.data.dailyThemes[0] ?? null
+  const subjectId = todayTheme ? Number(todayTheme.id) : null
+
+  const worksResp = subjectId
+    ? await loaderClient.query({
+        query: themeWorksQuery,
+        variables: {
+          offset: page * 64,
+          limit: 64,
+          where: {
+            subjectId,
+            ratings: ["G", "R15"],
+            orderBy: "DATE_CREATED",
+            isNowCreatedAt: true,
+          },
+        },
+      })
+    : null
 
   return {
     dailyThemes: dailyThemesResp.data.dailyThemes,
-    todayTheme: todayThemesResp.data.dailyThemes.length
-      ? todayThemesResp.data.dailyThemes[0]
-      : null,
+    todayTheme,
     dailyBeforeThemes: dailyBeforeThemes.data.dailyThemes,
     works: worksResp ? worksResp.data.works : null,
     afterSevenDayThemes: afterSevenDayThemesResp.data.dailyThemes,
@@ -143,7 +146,7 @@ export async function loader(props: LoaderFunctionArgs) {
     page,
     year: year,
     month: month,
-    subjectId: Number(todayThemesResp.data.dailyThemes[0].id),
+    subjectId,
   }
 }
 
