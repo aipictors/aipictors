@@ -9,11 +9,13 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { redirect } from "@remix-run/cloudflare"
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -39,6 +41,18 @@ export async function loader(props: LoaderFunctionArgs) {
   const month = Number.parseInt(props.params.month)
 
   const week = Number.parseInt(props.params.week)
+
+  const redirectPath = getFutureRankingRedirectPath(props.request.url, {
+    kind: "weekly",
+    year,
+    month,
+    week,
+    pathnamePrefix: "/rankings",
+  })
+
+  if (redirectPath) {
+    return redirect(redirectPath, { status: 302 })
+  }
 
   const workAwardsResp = await loaderClient.query({
     query: workAwardsQuery,

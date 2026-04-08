@@ -3,6 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { redirect } from "@remix-run/cloudflare"
 import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
@@ -15,6 +16,7 @@ import {
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { createMeta } from "~/utils/create-meta"
+import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.SENSITIVE_RANKINGS_DAY, undefined, props.params.lang)
@@ -40,6 +42,18 @@ export async function loader(props: LoaderFunctionArgs) {
   const month = Number.parseInt(props.params.month)
 
   const day = Number.parseInt(props.params.day)
+
+  const redirectPath = getFutureRankingRedirectPath(props.request.url, {
+    kind: "daily",
+    year,
+    month,
+    day,
+    pathnamePrefix: "/r/rankings",
+  })
+
+  if (redirectPath) {
+    return redirect(redirectPath, { status: 302 })
+  }
 
   const workAwardsResp = await loaderClient.query({
     query: workAwardsQuery,
