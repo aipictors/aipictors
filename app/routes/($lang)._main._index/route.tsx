@@ -502,7 +502,12 @@ export default function Index() {
 
     // 既存パラメータをコピーして編集
     const newSearchParams = new URLSearchParams(searchParams)
-    newSearchParams.set("tab", tab)
+
+    if (tab === "home") {
+      newSearchParams.delete("tab")
+    } else {
+      newSearchParams.set("tab", tab)
+    }
 
     // 別タブでは page 不要なので消す or 0 にする
     if (tab === "new") {
@@ -526,7 +531,11 @@ export default function Index() {
     const newSearchParams = new URLSearchParams(searchParams)
 
     // タブ
-    newSearchParams.set("tab", currentTab)
+    if (currentTab === "home") {
+      newSearchParams.delete("tab")
+    } else {
+      newSearchParams.set("tab", currentTab)
+    }
 
     // ページ
     if (currentTab === "new") {
