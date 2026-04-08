@@ -112,8 +112,8 @@ export const meta: MetaFunction = (props) => {
 export type HomeTab = "home" | "new" | "follow-user" | "follow-tag"
 
 export const HOME_TAB_PATHS: Record<HomeTab, string> = {
-  home: "/",
-  new: "/new-works",
+  home: "/home",
+  new: "/",
   "follow-user": "/follow-user-works",
   "follow-tag": "/follow-tag-works",
 }
@@ -372,7 +372,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
   const updateQueryParams = useUpdateQueryParams()
   const authContext = useContext(AuthContext)
 
-  const currentTab = props.forcedTab ?? "home"
+  const currentTab = props.forcedTab ?? "new"
 
   // URLパラメータから初期値を取得する関数（SSR対応）
   const getInitialPageValue = () => {
@@ -1602,7 +1602,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 }
 
 export default function Index() {
-  return <HomeIndexPage />
+  return <HomeIndexPage forcedTab="new" />
 }
 
 export const headers: HeadersFunction = () => ({

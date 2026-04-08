@@ -66,7 +66,7 @@ export function HomeMenuRouteList({
         <Button
           variant="ghost"
           className="flex items-center space-x-2 p-0 md:p-2"
-          onClick={() => navigate(getSensitiveLink("/"))}
+          onClick={() => navigate(getSensitiveLink("/home"))}
         >
           {navigation.state === "loading" ? (
             <Loader2Icon className="size-8 animate-spin" />
@@ -85,7 +85,7 @@ export function HomeMenuRouteList({
 
       {/* Main nav ------------------------------------------------- */}
       <HomeMenuNavigationButton
-        href={isSensitive ? "/r?tab=home" : "/"}
+        href={isSensitive ? "/r?tab=home" : "/home"}
         onClick={closeHeaderMenu}
         icon={HomeIcon}
       >

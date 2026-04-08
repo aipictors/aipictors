@@ -117,7 +117,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
           <Button
             variant="ghost"
             className="flex items-center space-x-2 p-0"
-            onClick={() => navigate(getSensitiveLink("/"))}
+            onClick={() => navigate(getSensitiveLink("/home"))}
           >
             {navigation.state === "loading" ? (
               <Loader2Icon className="size-8 animate-spin" />
@@ -137,7 +137,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
 
       {/* Navigation Items */}
       <SidebarNavigationButton
-        href={isSensitive ? "/r?tab=home" : "/"}
+        href={isSensitive ? "/r?tab=home" : "/home"}
         icon={HomeIcon}
       >
         {t("ホーム", "Home")}

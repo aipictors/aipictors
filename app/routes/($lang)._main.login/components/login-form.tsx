@@ -18,7 +18,7 @@ export function LoginForm() {
   const isNew = searchParams.get("new")
 
   const onClickHome = () => {
-    window.location.href = "/"
+    window.location.href = "/home"
   }
 
   const navigate = useNavigate()
