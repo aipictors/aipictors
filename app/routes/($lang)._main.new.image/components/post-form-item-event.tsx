@@ -10,6 +10,7 @@ type Props = {
   eventDescription: string | null
   thumbnailImageUrl?: string | null
   eventTag: string | null
+  ratings?: ("G" | "R15" | "R18" | "R18G")[] | null
   endAt: number
   slug: string | null
   removeTag: (tag: Tag) => void
@@ -86,6 +87,11 @@ export function PostFormItemEvent(props: Props) {
                 />
                 <div className="min-w-0 space-y-2">
                   <h3 className="font-medium text-sm">{props.eventName}</h3>
+                  {props.ratings && props.ratings.length > 0 && (
+                    <div className="text-muted-foreground text-xs">
+                      対象年齢: {props.ratings.join(", ")}
+                    </div>
+                  )}
                   {props.eventDescription !== null && (
                     <div
                       className="line-clamp-3 font-medium text-xs"

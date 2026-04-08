@@ -62,6 +62,7 @@ type NormalizedEvent = {
   rankingType: string
   participationGuide: string
   announcementText: string
+  ratings?: IntrospectionEnum<"Rating">[] | null
   isSensitive: boolean
   userId?: string | null
   userName?: string | null
@@ -108,6 +109,7 @@ const normalizeOfficialEvent = (event: any): NormalizedEvent => ({
     endAt: event.endAt,
     slug: event.slug,
   }),
+  ratings: null,
   isSensitive: false,
   works: event.works ?? [],
   awardWorks: event.awardWorks ?? [],
@@ -143,12 +145,25 @@ const normalizeUserEvent = (event: any): NormalizedEvent => ({
       endAt: event.endAt,
       slug: event.slug,
     }),
+  ratings: event.ratings,
   isSensitive: event.isSensitive ?? false,
   userId: event.userId,
   userName: event.userName,
   works: event.works ?? [],
   awardWorks: event.awardWorks ?? [],
 })
+
+const getEventRatingBadgeText = (event: Pick<NormalizedEvent, "ratings" | "isSensitive">) => {
+  if (event.ratings && event.ratings.length > 0) {
+    return event.ratings.join(", ")
+  }
+
+  if (event.isSensitive) {
+    return "R18"
+  }
+
+  return null
+}
 
 const getStatusBadgeClassName = (status: string) => {
   if (status === "ONGOING") {
@@ -229,6 +244,7 @@ function EventHeroContent(props: {
   const subtitleClassName = props.isOverlay
     ? "text-sm text-white/80 md:text-base"
     : "text-sm text-foreground/80 md:text-base"
+  const ratingBadgeText = getEventRatingBadgeText(props.appEvent)
 
   return (
     <div className={props.className}>
@@ -241,7 +257,7 @@ function EventHeroContent(props: {
         <Badge className="border-transparent bg-orange-100 font-semibold text-orange-700">
           {heroHighlightText}
         </Badge>
-        {props.appEvent.isSensitive && (
+        {ratingBadgeText && (
           <Badge
             variant="secondary"
             className={
@@ -250,7 +266,7 @@ function EventHeroContent(props: {
                 : "bg-rose-50 text-rose-700"
             }
           >
-            R18
+            {ratingBadgeText}
           </Badge>
         )}
         <EventActionShare
@@ -686,12 +702,12 @@ export default function EventDetailPage() {
                     >
                       {statusText}
                     </Badge>
-                    {data.appEvent.isSensitive && (
+                    {getEventRatingBadgeText(data.appEvent) && (
                       <Badge
                         variant="secondary"
                         className="bg-rose-50 text-rose-700"
                       >
-                        R18
+                        {getEventRatingBadgeText(data.appEvent)}
                       </Badge>
                     )}
                   </div>
@@ -810,12 +826,12 @@ export default function EventDetailPage() {
                     >
                       {statusText}
                     </Badge>
-                    {data.appEvent.isSensitive && (
+                    {getEventRatingBadgeText(data.appEvent) && (
                       <Badge
                         variant="secondary"
                         className="bg-rose-50 text-rose-700"
                       >
-                        R18
+                        {getEventRatingBadgeText(data.appEvent)}
                       </Badge>
                     )}
                   </div>
@@ -965,6 +981,7 @@ const eventDetailQuery = graphql(
       rankingType
       participationGuide
       announcementText
+      ratings
       isSensitive
       userId
       userName

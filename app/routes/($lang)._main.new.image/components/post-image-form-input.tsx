@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { type Dispatch, useEffect, useState } from "react"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { InferInput } from "valibot"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
@@ -57,6 +58,7 @@ type Props = {
     thumbnailImageUrl?: string | null
     headerImageUrl?: string | null
     tag: string | null
+    ratings?: IntrospectionEnum<"Rating">[] | null
     endAt: number
     slug: string | null
     source: "OFFICIAL" | "USER"
@@ -91,6 +93,13 @@ const getJSTDate = () => {
 
   return `${year}-${month}-${day}`
 }
+
+const allRatings: IntrospectionEnum<"Rating">[] = ["G", "R15", "R18", "R18G"]
+
+const intersectRatings = (
+  current: IntrospectionEnum<"Rating">[],
+  next: IntrospectionEnum<"Rating">[],
+) => current.filter((rating) => next.includes(rating))
 
 export function PostImageFormInput(props: Props) {
   const t = useTranslation() // 翻訳対応
@@ -203,6 +212,50 @@ export function PostImageFormInput(props: Props) {
     (event) => event.source === "OFFICIAL",
   )
   const userEvents = props.events.filter((event) => event.source === "USER")
+  const selectedTagTexts = props.state.tags.map((tag) => tag.text)
+  const matchedUserEvents = userEvents.filter(
+    (event) => event.tag && selectedTagTexts.includes(event.tag),
+  )
+  const matchedUserEventAllowedRatings = matchedUserEvents
+    .map((event) => event.ratings ?? allRatings)
+    .reduce<IntrospectionEnum<"Rating">[]>((current, ratings, index) => {
+      if (index === 0) {
+        return ratings
+      }
+
+      return intersectRatings(current, ratings)
+    }, allRatings)
+  const hasNoSharedRatings =
+    matchedUserEvents.length > 0 && matchedUserEventAllowedRatings.length === 0
+  const allowedRatings =
+    matchedUserEvents.length > 0 ? matchedUserEventAllowedRatings : allRatings
+  const shouldAutoAdjustRating =
+    allowedRatings.length === 1 ? allowedRatings[0] : null
+  const ratingNote = hasNoSharedRatings
+    ? t(
+        "適用中のユーザーイベントタグ同士で共通の対象年齢種別がありません。イベントタグを見直してください。",
+        "The applied user event tags do not share any common age category. Review the event tags.",
+      )
+    : matchedUserEvents.length > 0
+      ? t(
+          `イベントタグ適用中のため、年齢種別は ${allowedRatings.join(", ")} のみ選択できます。タグを外すと通常の選択に戻ります。`,
+          `Because event tags are applied, only ${allowedRatings.join(", ")} can be selected. Remove the tag to restore normal selection.`,
+        )
+      : null
+
+  useEffect(() => {
+    if (
+      !shouldAutoAdjustRating ||
+      props.state.ratingRestriction === shouldAutoAdjustRating
+    ) {
+      return
+    }
+
+    props.dispatch({
+      type: "SET_RATING_RESTRICTION",
+      payload: shouldAutoAdjustRating,
+    })
+  }, [props.dispatch, props.state.ratingRestriction, shouldAutoAdjustRating])
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -251,6 +304,8 @@ export function PostImageFormInput(props: Props) {
       />
       <PostFormItemRating
         rating={props.state.ratingRestriction}
+        allowedRatings={allowedRatings}
+        note={ratingNote}
         setRating={(value) => {
           props.dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
         }}
@@ -352,6 +407,7 @@ export function PostImageFormInput(props: Props) {
             eventDescription={event.description ?? null}
             thumbnailImageUrl={event.thumbnailImageUrl ?? event.headerImageUrl ?? null}
             eventTag={event.tag ?? null}
+            ratings={event.ratings ?? null}
             endAt={event.endAt ?? 0}
             slug={event.slug ?? null}
             addTag={(tag) => {
@@ -402,6 +458,7 @@ export function PostImageFormInput(props: Props) {
                     eventDescription={event.description ?? null}
                     thumbnailImageUrl={event.thumbnailImageUrl ?? event.headerImageUrl ?? null}
                     eventTag={event.tag ?? null}
+                    ratings={event.ratings ?? null}
                     endAt={event.endAt ?? 0}
                     slug={event.slug ?? null}
                     addTag={(tag) => {

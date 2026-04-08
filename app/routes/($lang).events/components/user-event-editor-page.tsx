@@ -34,12 +34,13 @@ type EditorState = {
   startAt: string
   endAt: string
   announcementText: string
-  isSensitive: boolean
+  ratings: UserEventRating[]
   slug: string
 }
 
 type UserEventVisibilityType = "DRAFT" | "PUBLIC" | "PRIVATE"
 type UserEventRankingType = "LIKES" | "BOOKMARKS" | "COMMENTS" | "VIEWS"
+type UserEventRating = "G" | "R15" | "R18" | "R18G"
 
 type ViewerTokenQueryData = {
   viewer: {
@@ -65,7 +66,7 @@ type UserEventForEditData = {
     startAt: number
     endAt: number
     announcementText: string
-    isSensitive: boolean
+    ratings: UserEventRating[]
   } | null
 }
 
@@ -97,7 +98,7 @@ type CreateUserEventMutationVars = {
     startAt: number
     endAt: number
     announcementText: string
-    isSensitive: boolean
+    ratings: UserEventRating[]
   }
 }
 
@@ -246,9 +247,16 @@ const createInitialState = (): EditorState => ({
   startAt: createDateTimeLocalValue({ hours: 0, minutes: 0 }),
   endAt: createDateTimeLocalValue({ hours: 23, minutes: 59 }),
   announcementText: "",
-  isSensitive: false,
+  ratings: ["G"],
   slug: "",
 })
+
+const eventRatingOptions: { value: UserEventRating; label: string }[] = [
+  { value: "G", label: "全年齢 / All Ages" },
+  { value: "R15", label: "R15" },
+  { value: "R18", label: "R18" },
+  { value: "R18G", label: "R18G" },
+]
 
 type FieldLabelProps = {
   title: string
@@ -318,7 +326,7 @@ export function UserEventEditorPage(props: Props) {
       startAt: toDateTimeLocalValue(event.startAt),
       endAt: toDateTimeLocalValue(event.endAt),
       announcementText: event.announcementText,
-      isSensitive: event.isSensitive,
+      ratings: event.ratings,
       slug: event.slug,
     }
   }, [event])
@@ -378,6 +386,19 @@ export function UserEventEditorPage(props: Props) {
     value: EditorState[K],
   ) => {
     setState((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const toggleRating = (rating: UserEventRating, checked: boolean) => {
+    setState((prev) => {
+      const nextRatings = checked
+        ? [...new Set([...prev.ratings, rating])]
+        : prev.ratings.filter((value) => value !== rating)
+
+      return {
+        ...prev,
+        ratings: nextRatings.length > 0 ? nextRatings : prev.ratings,
+      }
+    })
   }
 
   const ensureGeneratedMainTag = () => {
@@ -487,7 +508,7 @@ export function UserEventEditorPage(props: Props) {
         startAt: toUnixTime(state.startAt),
         endAt: toUnixTime(state.endAt),
         announcementText: state.announcementText,
-        isSensitive: state.isSensitive,
+        ratings: state.ratings,
       }
 
       if (props.mode === "create") {
@@ -792,14 +813,32 @@ export function UserEventEditorPage(props: Props) {
                 />
                 {t("ランキングあり", "Enable ranking")}
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Checkbox
-                  checked={state.isSensitive}
-                  onCheckedChange={(checked) =>
-                    updateField("isSensitive", checked === true)
-                  }
-                />
-                {t("成人向けイベント", "Sensitive event")}
+              <div className="min-w-[220px] space-y-2">
+                <div className="font-medium text-sm">
+                  {t("対象年齢種別", "Target age category")}
+                </div>
+                <div className="space-y-2 rounded-md border bg-background p-3">
+                  {eventRatingOptions.map((option) => (
+                    <label
+                      key={option.value}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <Checkbox
+                        checked={state.ratings.includes(option.value)}
+                        onCheckedChange={(checked) =>
+                          toggleRating(option.value, checked === true)
+                        }
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "複数選択できます。イベントタグ付きで投稿すると、ここで許可した年齢種別だけ選べます。",
+                    "You can select multiple options. Posts with this event tag can only use the allowed age restrictions selected here.",
+                  )}
+                </p>
               </div>
             </div>
 
@@ -867,7 +906,7 @@ const userEventForEditQuery = graphql(
       startAt
       endAt
       announcementText
-      isSensitive
+      ratings
     }
   }`,
 )

@@ -52,12 +52,15 @@ import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 
+type EventRating = "G" | "R15" | "R18" | "R18G"
+
 type EventOption = {
   title: string | null
   description: string | null
   thumbnailImageUrl?: string | null
   headerImageUrl?: string | null
   tag: string | null
+  ratings?: EventRating[] | null
   endAt: number
   slug: string | null
   source: "OFFICIAL" | "USER"
@@ -75,6 +78,7 @@ export default function NewImage() {
   const [searchParams] = useSearchParams()
 
   const ref = searchParams.get("generation")
+  const eventSlug = searchParams.get("event")
 
   const now = getJstDate(new Date())
 
@@ -98,6 +102,13 @@ export default function NewImage() {
     },
   })
 
+  const { data: selectedUserEventData } = useQuery(SelectedUserEventQuery, {
+    skip: !eventSlug,
+    variables: {
+      slug: eventSlug ?? "",
+    },
+  })
+
   const viewer = data
 
   const eventDataSource = viewerData ?? viewer
@@ -110,9 +121,18 @@ export default function NewImage() {
     ? (eventDataSource.userEvents as RawEventOption[])
     : []
 
+  const selectedUserEvent = selectedUserEventData?.userEvent as RawEventOption | undefined
+  const mergedUserEvents = selectedUserEvent
+    && !userEvents.some(
+      (event) =>
+        event.slug === selectedUserEvent.slug || event.tag === selectedUserEvent.tag,
+    )
+    ? [selectedUserEvent, ...userEvents]
+    : userEvents
+
   const events: EventOption[] = [
     ...appEvents.map((event) => ({ ...event, source: "OFFICIAL" as const })),
-    ...userEvents.map((event) => ({ ...event, source: "USER" as const })),
+    ...mergedUserEvents.map((event) => ({ ...event, source: "USER" as const })),
   ]
 
   const [state, dispatch] = useReducer(postImageFormReducer, {
@@ -1262,6 +1282,7 @@ const ViewerQuery = graphql(
       title
       thumbnailImageUrl
       headerImageUrl
+      ratings
       tag: mainTag
       slug
       endAt
@@ -1273,6 +1294,22 @@ const ViewerQuery = graphql(
     PostImageFormPassFragment,
     PostImageFormRecentlyUsedTagsFragment,
   ],
+)
+
+const SelectedUserEventQuery = graphql(
+  `query SelectedUserEvent($slug: String!) {
+    userEvent(slug: $slug) {
+      id
+      description
+      title
+      thumbnailImageUrl
+      headerImageUrl
+      ratings
+      tag: mainTag
+      slug
+      endAt
+    }
+  }`,
 )
 
 const CreateWorkMutation = graphql(
