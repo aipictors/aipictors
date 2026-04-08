@@ -1,5 +1,3 @@
-import { Separator } from "~/components/ui/separator"
-import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 import {
   AwardIcon,
   FolderIcon,
@@ -8,14 +6,16 @@ import {
   LightbulbIcon,
   Undo2Icon,
 } from "lucide-react"
+import { Separator } from "~/components/ui/separator"
+import { HomeNavigationButton } from "~/routes/($lang)._main._index/components/home-navigation-button"
 
-export function SensitiveRouteList () {
+export function SensitiveRouteList() {
   return (
     <div className="space-y-1">
       <HomeNavigationButton href={"/"} icon={Undo2Icon}>
         {"全年齢"}
       </HomeNavigationButton>
-      <HomeNavigationButton href={"/r"} icon={HomeIcon}>
+      <HomeNavigationButton href={"/r?tab=home"} icon={HomeIcon}>
         {"ホーム"}
       </HomeNavigationButton>
       <HomeNavigationButton href={"/r/themes"} icon={LightbulbIcon}>

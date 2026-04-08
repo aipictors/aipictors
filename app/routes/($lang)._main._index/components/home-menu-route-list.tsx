@@ -85,7 +85,7 @@ export function HomeMenuRouteList({
 
       {/* Main nav ------------------------------------------------- */}
       <HomeMenuNavigationButton
-        href={isSensitive ? "/r" : "/"}
+        href={isSensitive ? "/r?tab=home" : "/?tab=home"}
         onClick={closeHeaderMenu}
         icon={HomeIcon}
       >

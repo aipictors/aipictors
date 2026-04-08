@@ -21,7 +21,14 @@ import {
   PlaySquare,
   Plus,
 } from "lucide-react"
-import { Suspense, useEffect, useId, useMemo, useState } from "react"
+import {
+  Suspense,
+  useContext,
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+} from "react"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -39,6 +46,7 @@ import { Separator } from "~/components/ui/separator"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import { config, META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
@@ -332,12 +340,13 @@ export default function Index() {
 
   const [searchParams, _setSearchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
+  const authContext = useContext(AuthContext)
 
   // URLパラメータから初期値を取得する関数（SSR対応）
   const getInitialTabValue = () => {
     if (typeof window === "undefined") return "home"
     const tabParam = searchParams.get("tab")
-    return tabParam || "home"
+    return tabParam || (authContext.isLoggedIn ? "new" : "home")
   }
 
   const getInitialPageValue = () => {
@@ -493,6 +502,18 @@ export default function Index() {
     }
   }, [isMounted])
 
+  useEffect(() => {
+    if (authContext.isLoading || searchParams.has("tab")) {
+      return
+    }
+
+    if (!authContext.isLoggedIn || currentTab !== "home") {
+      return
+    }
+
+    setCurrentTab("new")
+  }, [authContext.isLoading, authContext.isLoggedIn, currentTab, searchParams])
+
   // タブ変更時（Tabs の onValueChange）などで呼ばれる
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab)
@@ -504,7 +525,7 @@ export default function Index() {
     const newSearchParams = new URLSearchParams(searchParams)
 
     if (tab === "home") {
-      newSearchParams.delete("tab")
+      newSearchParams.set("tab", "home")
     } else {
       newSearchParams.set("tab", tab)
     }
@@ -529,10 +550,19 @@ export default function Index() {
   useEffect(() => {
     if (!isMounted) return
     const newSearchParams = new URLSearchParams(searchParams)
+    const hasExplicitTab = searchParams.has("tab")
 
     // タブ
     if (currentTab === "home") {
-      newSearchParams.delete("tab")
+      if (authContext.isLoggedIn && !hasExplicitTab) {
+        return
+      }
+
+      if (hasExplicitTab) {
+        newSearchParams.set("tab", "home")
+      } else {
+        newSearchParams.delete("tab")
+      }
     } else {
       newSearchParams.set("tab", currentTab)
     }

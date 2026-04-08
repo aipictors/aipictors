@@ -1,14 +1,14 @@
+import { useNavigate, useSearchParams } from "@remix-run/react"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
 import { useEffect } from "react"
 import { LoginDialogContent } from "~/components/login-dialog-content"
-import { useNavigate, useSearchParams } from "@remix-run/react"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 
 /**
  * ログインフォーム
  */
-export function LoginForm () {
+export function LoginForm() {
   const [searchParams] = useSearchParams()
 
   const ref = searchParams.get("result")
@@ -18,7 +18,7 @@ export function LoginForm () {
   const isNew = searchParams.get("new")
 
   const onClickHome = () => {
-    window.location.href = "/"
+    window.location.href = "/?tab=home"
   }
 
   const navigate = useNavigate()

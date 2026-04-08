@@ -18,7 +18,7 @@ import {
   Navigation,
   PlaySquare,
 } from "lucide-react"
-import { Suspense, useEffect, useMemo, useState } from "react"
+import { Suspense, useContext, useEffect, useMemo, useState } from "react"
 import { AppAnimatedTabs } from "~/components/app/app-animated-tabs"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -35,6 +35,7 @@ import { Separator } from "~/components/ui/separator"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import { config, META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 import { useWorkDialogUrl } from "~/hooks/use-work-dialog-url"
@@ -128,10 +129,11 @@ export default function Index() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const updateQueryParams = useUpdateQueryParams()
+  const authContext = useContext(AuthContext)
 
   // ------ local state ------
   const [currentTab, setCurrentTab] = useState(
-    searchParams.get("tab") ?? "home",
+    searchParams.get("tab") ?? (authContext.isLoggedIn ? "new" : "home"),
   )
   const [workView, setWorkView] = useState(searchParams.get("view") ?? "new")
   const [newWorksPage, setNewWorksPage] = useState(
@@ -271,6 +273,18 @@ export default function Index() {
   const isSubscriptionUser = ["LITE", "STANDARD", "PREMIUM"].includes(
     pass?.viewer?.currentPass?.type ?? "",
   )
+
+  useEffect(() => {
+    if (authContext.isLoading || searchParams.has("tab")) {
+      return
+    }
+
+    if (!authContext.isLoggedIn || currentTab !== "home") {
+      return
+    }
+
+    setCurrentTab("new")
+  }, [authContext.isLoading, authContext.isLoggedIn, currentTab, searchParams])
 
   // localStorageからダイアログモードを復元
   useEffect(() => {

@@ -136,7 +136,10 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
       </div>
 
       {/* Navigation Items */}
-      <SidebarNavigationButton href={isSensitive ? "/r" : "/"} icon={HomeIcon}>
+      <SidebarNavigationButton
+        href={isSensitive ? "/r?tab=home" : "/?tab=home"}
+        icon={HomeIcon}
+      >
         {t("ホーム", "Home")}
         {isSensitive && " - R18"}
       </SidebarNavigationButton>
