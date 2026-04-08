@@ -5,6 +5,7 @@ import {
   SmileIcon,
   UserIcon,
   UserXIcon,
+  LinkIcon,
 } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -24,6 +25,12 @@ export function AccountRouteList () {
         icon={LockKeyholeIcon}
       >
         {t("パスワード", "Password")}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        href={"settings/account"}
+        icon={LinkIcon}
+      >
+        {t("SNS紐付け", "Link SNS Accounts")}
       </HomeNavigationButton>
       <HomeNavigationButton
         isDisabled={true}
