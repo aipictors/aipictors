@@ -86,6 +86,7 @@ export default function NewImage() {
 
   const { data: viewerData, loading } = useQuery(ViewerQuery, {
     skip: !authContext.isLoggedIn,
+    errorPolicy: "all",
     fetchPolicy: "cache-and-network", // お題データの最新状態を取得するためキャッシュを無効化
     variables: {
       offset: 0,
@@ -102,8 +103,17 @@ export default function NewImage() {
     },
   })
 
+  const { data: userEventsData } = useQuery(UserEventsQuery, {
+    errorPolicy: "all",
+    variables: {
+      limit: 8,
+      offset: 0,
+    },
+  })
+
   const { data: selectedUserEventData } = useQuery(SelectedUserEventQuery, {
     skip: !eventSlug,
+    errorPolicy: "all",
     variables: {
       slug: eventSlug ?? "",
     },
@@ -117,8 +127,8 @@ export default function NewImage() {
     ? (eventDataSource.appEvents as RawEventOption[])
     : []
 
-  const userEvents: RawEventOption[] = Array.isArray(eventDataSource.userEvents)
-    ? (eventDataSource.userEvents as RawEventOption[])
+  const userEvents: RawEventOption[] = Array.isArray(userEventsData?.userEvents)
+    ? (userEventsData.userEvents as RawEventOption[])
     : []
 
   const selectedUserEvent = selectedUserEventData?.userEvent as RawEventOption | undefined
@@ -1270,9 +1280,20 @@ const ViewerQuery = graphql(
       slug
       endAt
     }
+  }`,
+  [
+    PostImageFormAiModelFragment,
+    PostImageFormAlbumFragment,
+    PostImageFormPassFragment,
+    PostImageFormRecentlyUsedTagsFragment,
+  ],
+)
+
+const UserEventsQuery = graphql(
+  `query UserEventsQuery($limit: Int!, $offset: Int!) {
     userEvents(
-      limit: 8,
-      offset: 0,
+      limit: $limit,
+      offset: $offset,
       where: {
         status: "ONGOING",
       }
@@ -1288,12 +1309,6 @@ const ViewerQuery = graphql(
       endAt
     }
   }`,
-  [
-    PostImageFormAiModelFragment,
-    PostImageFormAlbumFragment,
-    PostImageFormPassFragment,
-    PostImageFormRecentlyUsedTagsFragment,
-  ],
 )
 
 const SelectedUserEventQuery = graphql(
