@@ -62,6 +62,7 @@ import {
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
+import { HomeLoginNoticeMarquee } from "~/routes/($lang)._main._index/components/home-login-notice-marquee"
 import {
   HomeNewCommentsFragment,
   HomeNewCommentsSection,
@@ -736,6 +737,28 @@ export default function Index() {
   const [hasNextPage, _setHasNextPage] = useState(true)
   const [isLoadingMore, _setIsLoadingMore] = useState(false)
 
+  const loginNoticeMessages = useMemo(
+    () => [
+      t(
+        "ホームではおすすめやランキングをまとめて見られます",
+        "Home brings recommendations and rankings together",
+      ),
+      t(
+        "新着・人気では種類やプロンプトで最新作品を絞り込めます",
+        "New and popular lets you filter the latest works by type and prompt",
+      ),
+      t(
+        "フォロー新着ではフォロー中ユーザーの新着作品を追えます",
+        "Followed new posts keeps up with creators you follow",
+      ),
+      t(
+        "お気に入りタグ新着では登録タグの最新投稿を追えます",
+        "Favorite tag feed follows the latest posts for your saved tags",
+      ),
+    ],
+    [t],
+  )
+
   // ダイアログで表示する作品データを決定
   const displayedWorks = useMemo(() => {
     switch (currentTab) {
@@ -792,6 +815,9 @@ export default function Index() {
         onValueChange={handleTabChange}
         className="space-y-6"
       >
+        {authContext.isLoggedIn && (
+          <HomeLoginNoticeMarquee messages={loginNoticeMessages} />
+        )}
         {/* ヘッダー部分: タブ */}
         <div className="-mx-4 bg-background/98 px-4 py-2">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
@@ -989,13 +1015,13 @@ export default function Index() {
                 {isFilterUiOpen && (
                   <div className="space-y-2">
                     {/* フィルター行1: 種類、プロンプト、ソート */}
-                    <div className="grid grid-cols-3 gap-2 md:flex md:flex-wrap md:gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       {/* 種類 */}
                       <Select
                         value={workType ? workType : ""}
                         onValueChange={handleWorkTypeChange}
                       >
-                        <SelectTrigger className="h-8 min-w-0 font-medium text-xs md:min-w-[130px]">
+                        <SelectTrigger className="h-8 w-full min-w-0 font-medium text-xs">
                           <SelectValue
                             placeholder={
                               workType
@@ -1037,7 +1063,7 @@ export default function Index() {
                         }
                         onValueChange={handlePromptChange}
                       >
-                        <SelectTrigger className="h-8 min-w-0 font-medium text-xs md:min-w-[130px]">
+                        <SelectTrigger className="h-8 w-full min-w-0 font-medium text-xs">
                           <SelectValue
                             placeholder={
                               isPromptPublic === null
@@ -1066,7 +1092,7 @@ export default function Index() {
                         value={sortType ? sortType : ""}
                         onValueChange={handleSortTypeChange}
                       >
-                        <SelectTrigger className="h-8 min-w-0 font-medium text-xs md:min-w-[130px]">
+                        <SelectTrigger className="h-8 w-full min-w-0 font-medium text-xs">
                           <ArrowDownWideNarrow className="h-3.5 w-3.5" />
                           <SelectValue
                             placeholder={
