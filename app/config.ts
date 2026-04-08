@@ -878,6 +878,13 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Manage your password settings",
     isIndex: false,
   },
+  SETTINGS_ACCOUNT_WITHDRAWAL: {
+    title: "退会",
+    enTitle: "Withdraw Account",
+    description: "You can withdraw your account",
+    enDescription: "Withdraw your account",
+    isIndex: false,
+  },
   SETTINGS_MUTE_USERS: {
     title: "ユーザミュート設定",
     enTitle: "Mute Users Settings",

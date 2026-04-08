@@ -4,6 +4,7 @@ import {
   LockKeyholeIcon,
   SmileIcon,
   UserIcon,
+  UserXIcon,
 } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -30,6 +31,12 @@ export function AccountRouteList () {
         icon={UserIcon}
       >
         {t("プロフィール", "Profile")}
+      </HomeNavigationButton>
+      <HomeNavigationButton
+        href={"/settings/account/withdrawal"}
+        icon={UserXIcon}
+      >
+        {t("退会", "Withdraw Account")}
       </HomeNavigationButton>
     </div>
   )

@@ -71,6 +71,17 @@ export function SettingsNavigation () {
         </div>
       </SettingNavigationButton>
       <SettingNavigationButton
+        href={"/settings/account/withdrawal"}
+        icon={UserXIcon}
+      >
+        <div className="flex w-full items-center justify-between">
+          {t("退会", "Withdraw Account")}
+          <div className="ml-auto text-right md:hidden">
+            <ChevronRight />
+          </div>
+        </div>
+      </SettingNavigationButton>
+      <SettingNavigationButton
         href={"/settings/followed/tags"}
         icon={BookmarkXIcon}
       >
