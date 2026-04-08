@@ -737,27 +737,16 @@ export default function Index() {
   const [hasNextPage, _setHasNextPage] = useState(true)
   const [isLoadingMore, _setIsLoadingMore] = useState(false)
 
-  const loginNoticeMessages = useMemo(
-    () => [
-      t(
-        "ホームではおすすめやランキングをまとめて見られます",
-        "Home brings recommendations and rankings together",
-      ),
-      t(
-        "新着・人気では種類やプロンプトで最新作品を絞り込めます",
-        "New and popular lets you filter the latest works by type and prompt",
-      ),
-      t(
-        "フォロー新着ではフォロー中ユーザーの新着作品を追えます",
-        "Followed new posts keeps up with creators you follow",
-      ),
-      t(
-        "お気に入りタグ新着では登録タグの最新投稿を追えます",
-        "Favorite tag feed follows the latest posts for your saved tags",
-      ),
-    ],
-    [t],
-  )
+  const loginNoticeReleases = useMemo(() => {
+    const mergedReleases = [
+      ...data.featuredReleaseList,
+      ...data.releaseList.contents,
+    ]
+
+    return mergedReleases.filter((release, index, array) => {
+      return array.findIndex((item) => item.id === release.id) === index
+    })
+  }, [data.featuredReleaseList, data.releaseList.contents])
 
   // ダイアログで表示する作品データを決定
   const displayedWorks = useMemo(() => {
@@ -816,7 +805,7 @@ export default function Index() {
         className="space-y-6"
       >
         {authContext.isLoggedIn && (
-          <HomeLoginNoticeMarquee messages={loginNoticeMessages} />
+          <HomeLoginNoticeMarquee releases={loginNoticeReleases} />
         )}
         {/* ヘッダー部分: タブ */}
         <div className="-mx-4 bg-background/98 px-4 py-2">
