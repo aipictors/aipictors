@@ -4,6 +4,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { redirect } from "@remix-run/cloudflare"
 import {
   Link,
   useLoaderData,
@@ -108,6 +109,15 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
 }
 
+export type HomeTab = "home" | "new" | "follow-user" | "follow-tag"
+
+export const HOME_TAB_PATHS: Record<HomeTab, string> = {
+  home: "/",
+  new: "/new-works",
+  "follow-user": "/follow-user-works",
+  "follow-tag": "/follow-tag-works",
+}
+
 const getUtcDateString = (date: Date) => {
   const year = date.getUTCFullYear()
   const month = `0${date.getUTCMonth() + 1}`.slice(-2)
@@ -200,7 +210,22 @@ const buildUserEventIconMap = async (userIds: string[]) => {
   return new Map<string, string | null>(responses)
 }
 
-export async function loader(_props: LoaderFunctionArgs) {
+export async function loader(props: LoaderFunctionArgs) {
+  const url = new URL(props.request.url)
+  const legacyTab = url.searchParams.get("tab")
+
+  if (
+    legacyTab === "home" ||
+    legacyTab === "new" ||
+    legacyTab === "follow-user" ||
+    legacyTab === "follow-tag"
+  ) {
+    url.pathname = HOME_TAB_PATHS[legacyTab]
+    url.searchParams.delete("tab")
+
+    return redirect(`${url.pathname}${url.search}`, { status: 302 })
+  }
+
   const categories = ["ゆめかわ", "ダークソウル", "パステル", "ちびキャラ"]
 
   const getRandomCategories = () => {
@@ -333,7 +358,11 @@ function useScrollRestoration(isMounted: boolean) {
   }, [isMounted])
 }
 
-export default function Index() {
+type HomeIndexPageProps = {
+  forcedTab?: HomeTab
+}
+
+export function HomeIndexPage(props: HomeIndexPageProps = {}) {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
@@ -343,13 +372,9 @@ export default function Index() {
   const updateQueryParams = useUpdateQueryParams()
   const authContext = useContext(AuthContext)
 
-  // URLパラメータから初期値を取得する関数（SSR対応）
-  const getInitialTabValue = () => {
-    if (typeof window === "undefined") return "home"
-    const tabParam = searchParams.get("tab")
-    return tabParam || (authContext.isLoggedIn ? "new" : "home")
-  }
+  const currentTab = props.forcedTab ?? "home"
 
+  // URLパラメータから初期値を取得する関数（SSR対応）
   const getInitialPageValue = () => {
     if (typeof window === "undefined") return 0
     const page = searchParams.get("page")
@@ -415,17 +440,15 @@ export default function Index() {
 
   const [isMounted, setIsMounted] = useState(false)
 
-  // タブ関連 - URLパラメータから初期化
-  const initialTab = getInitialTabValue()
   const initialPage = getInitialPageValue()
   const [newWorksPage, setNewWorksPage] = useState(
-    initialTab === "new" ? initialPage : 0,
+    currentTab === "new" ? initialPage : 0,
   )
   const [followUserFeedPage, setFollowUserFeedPage] = useState(
-    initialTab === "follow-user" ? initialPage : 0,
+    currentTab === "follow-user" ? initialPage : 0,
   )
   const [followTagFeedPage, setFollowTagFeedPage] = useState(
-    initialTab === "follow-tag" ? initialPage : 0,
+    currentTab === "follow-tag" ? initialPage : 0,
   )
 
   const [workType, setWorkType] =
@@ -445,9 +468,6 @@ export default function Index() {
   const [timeRange, setTimeRange] = useState<string>(getInitialTimeRange())
 
   const location = useLocale()
-
-  // タブ（home / new / follow-user / follow-tag）
-  const [currentTab, setCurrentTab] = useState(initialTab)
 
   // 新着タブ内（「新着 / 人気 / 新規ユーザ」）切り替え
   const [workView, setWorkView] = useState(getInitialWorkView())
@@ -503,46 +523,16 @@ export default function Index() {
     }
   }, [isMounted])
 
-  useEffect(() => {
-    if (authContext.isLoading || searchParams.has("tab")) {
-      return
-    }
-
-    if (!authContext.isLoggedIn || currentTab !== "home") {
-      return
-    }
-
-    setCurrentTab("new")
-  }, [authContext.isLoading, authContext.isLoggedIn, currentTab, searchParams])
-
   // タブ変更時（Tabs の onValueChange）などで呼ばれる
   const handleTabChange = (tab: string) => {
-    setCurrentTab(tab)
-    setNewWorksPage(0)
-    setFollowUserFeedPage(0)
-    setFollowTagFeedPage(0)
-
-    // 既存パラメータをコピーして編集
-    const newSearchParams = new URLSearchParams(searchParams)
-
-    if (tab === "home") {
-      newSearchParams.set("tab", "home")
-    } else {
-      newSearchParams.set("tab", tab)
+    if (
+      tab === "home" ||
+      tab === "new" ||
+      tab === "follow-user" ||
+      tab === "follow-tag"
+    ) {
+      navigate(HOME_TAB_PATHS[tab])
     }
-
-    // 別タブでは page 不要なので消す or 0 にする
-    if (tab === "new") {
-      newSearchParams.set("page", "0")
-    } else if (tab === "follow-user") {
-      newSearchParams.set("page", "0")
-    } else if (tab === "follow-tag") {
-      newSearchParams.set("page", "0")
-    } else {
-      newSearchParams.delete("page")
-    }
-
-    updateQueryParams(newSearchParams)
   }
 
   /**
@@ -551,22 +541,6 @@ export default function Index() {
   useEffect(() => {
     if (!isMounted) return
     const newSearchParams = new URLSearchParams(searchParams)
-    const hasExplicitTab = searchParams.has("tab")
-
-    // タブ
-    if (currentTab === "home") {
-      if (authContext.isLoggedIn && !hasExplicitTab) {
-        return
-      }
-
-      if (hasExplicitTab) {
-        newSearchParams.set("tab", "home")
-      } else {
-        newSearchParams.delete("tab")
-      }
-    } else {
-      newSearchParams.set("tab", currentTab)
-    }
 
     // ページ
     if (currentTab === "new") {
@@ -800,7 +774,7 @@ export default function Index() {
     <>
       <Tabs
         value={currentTab}
-        defaultValue="home"
+        defaultValue={currentTab}
         onValueChange={handleTabChange}
         className="space-y-6"
       >
@@ -1625,6 +1599,10 @@ export default function Index() {
       )}
     </>
   )
+}
+
+export default function Index() {
+  return <HomeIndexPage />
 }
 
 export const headers: HeadersFunction = () => ({

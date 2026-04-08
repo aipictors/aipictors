@@ -85,7 +85,7 @@ export function HomeMenuRouteList({
 
       {/* Main nav ------------------------------------------------- */}
       <HomeMenuNavigationButton
-        href={isSensitive ? "/r?tab=home" : "/?tab=home"}
+        href={isSensitive ? "/r?tab=home" : "/"}
         onClick={closeHeaderMenu}
         icon={HomeIcon}
       >
@@ -138,7 +138,7 @@ export function HomeMenuRouteList({
       </HomeMenuNavigationButton>
 
       <HomeMenuNavigationButton
-        href={createLink("/?tab=follow-user")}
+        href={createLink("/follow-user-works")}
         icon={Image}
         onClick={closeHeaderMenu}
       >

@@ -137,7 +137,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
 
       {/* Navigation Items */}
       <SidebarNavigationButton
-        href={isSensitive ? "/r?tab=home" : "/?tab=home"}
+        href={isSensitive ? "/r?tab=home" : "/"}
         icon={HomeIcon}
       >
         {t("ホーム", "Home")}
@@ -188,7 +188,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
       </SidebarNavigationButton>
 
       <SidebarNavigationButton
-        href={createLink("/?tab=follow-user")}
+        href={createLink("/follow-user-works")}
         icon={Image}
         onClick={closeHeaderMenu}
       >
