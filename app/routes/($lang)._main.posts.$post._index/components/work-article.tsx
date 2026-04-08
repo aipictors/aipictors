@@ -286,6 +286,14 @@ export function WorkArticle(props: Props) {
             >
               <div>
                 <Separator className="mt-2 mb-2" />
+                {props.work.likesCount > 0 && props.work.likedUsers.length === 0 && (
+                  <p className="mb-2 text-muted-foreground text-sm">
+                    {t(
+                      "匿名いいねのみのため表示できるユーザはいません",
+                      "No non-anonymous likes to display",
+                    )}
+                  </p>
+                )}
                 <CarouselWithGradation
                   items={props.work.likedUsers.map((user) => (
                     <WorkLikedUser

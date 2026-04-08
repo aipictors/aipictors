@@ -44,6 +44,13 @@ type Props = {
 export function SensitiveWorkContainer (props: Props) {
   const authContext = useContext(AuthContext)
 
+  const isWorkOwner =
+    !authContext.isLoading &&
+    authContext.userId !== null &&
+    authContext.userId !== undefined &&
+    props.work?.user !== null &&
+    authContext.userId === props.work?.user?.id
+
   const { data, refetch } = useQuery(sensitiveWorkQuery, {
     skip: authContext.userId !== props.work?.user?.id && authContext.isLoading,
     variables: {
@@ -51,7 +58,18 @@ export function SensitiveWorkContainer (props: Props) {
     },
   })
 
-  const work = data?.work ?? props.work
+  // SSRではlikedUsersが空で返るため、作品オーナーの場合はネットワークから再取得する
+  const { data: likedUsersData } = useQuery(workLikedUsersQuery, {
+    skip: !isWorkOwner,
+    fetchPolicy: "network-only",
+    variables: {
+      id: props.post,
+    },
+  })
+
+  const workBase = data?.work ?? props.work
+  const likedUsers = likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
+  const work = workBase ? { ...workBase, likedUsers } : workBase
 
   const { data: workCommentsRet } = useQuery(workCommentsQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -294,6 +312,20 @@ const sensitiveWorkQuery = graphql(
     }
   }`,
   [sensitiveWorkArticleFragment],
+)
+
+const workLikedUsersQuery = graphql(
+  `query SensitiveWorkLikedUsers($id: ID!) {
+    work(id: $id) {
+      id
+      likedUsers(offset: 0, limit: 120) {
+        id
+        name
+        iconUrl
+        login
+      }
+    }
+  }`,
 )
 
 const updateClickedCountCustomerAdvertisementMutation = graphql(
