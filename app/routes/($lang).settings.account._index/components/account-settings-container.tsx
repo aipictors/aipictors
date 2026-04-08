@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react"
 import { ChevronRight, KeyRoundIcon, LinkIcon, SmileIcon } from "lucide-react"
+import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { SNSConnectSection } from "~/routes/($lang).settings.account._index/components/sns-connect-section"
 
@@ -48,12 +49,16 @@ export function AccountSettingsContainer() {
       </div>
 
       <div className="border-t pt-4">
-        <Link
-          to="/settings/account/withdrawal"
-          className="text-muted-foreground text-xs underline-offset-4 transition-colors hover:text-foreground hover:underline"
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="h-auto px-0 py-0 font-normal text-muted-foreground text-xs underline underline-offset-2 hover:bg-transparent hover:text-foreground"
         >
-          {t("退会", "Withdraw Account")}
-        </Link>
+          <Link to="/settings/account/withdrawal">
+            {t("退会", "Withdraw Account")}
+          </Link>
+        </Button>
       </div>
     </div>
   )
