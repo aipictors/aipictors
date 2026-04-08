@@ -150,6 +150,18 @@ const toDateTimeLocalValue = (time: number) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
+const createDateTimeLocalValue = (props: { hours: number; minutes: number }) => {
+  const date = new Date()
+
+  const year = date.getUTCFullYear()
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+  const day = String(date.getUTCDate()).padStart(2, "0")
+  const hours = String(props.hours).padStart(2, "0")
+  const minutes = String(props.minutes).padStart(2, "0")
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
 const toUnixTime = (value: string) => {
   if (!value) {
     return 0
@@ -232,8 +244,8 @@ const createInitialState = (): EditorState => ({
   rankingEnabled: false,
   rankingType: "LIKES",
   visibilityType: "DRAFT",
-  startAt: "",
-  endAt: "",
+  startAt: createDateTimeLocalValue({ hours: 0, minutes: 0 }),
+  endAt: createDateTimeLocalValue({ hours: 23, minutes: 59 }),
   announcementText: "",
   isSensitive: false,
   slug: "",
