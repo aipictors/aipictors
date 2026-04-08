@@ -1,21 +1,22 @@
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import {
   ArrowLeftIcon,
   BellIcon,
   BookmarkXIcon,
+  ChevronRight,
   ImageIcon,
   MedalIcon,
-  StickerIcon,
   PaletteIcon,
-  UserXIcon,
-  ChevronRight,
   Radio,
+  StickerIcon,
+  UserIcon,
+  UserXIcon,
 } from "lucide-react"
-import { graphql } from "gql.tada"
-import { useQuery } from "@apollo/client/index"
 import { useTranslation } from "~/hooks/use-translation" // useTranslation フックをインポート
 import { SettingNavigationButton } from "~/routes/($lang).settings._index/components/settings-navigation-button"
 
-export function SettingsNavigation () {
+export function SettingsNavigation() {
   const { data } = useQuery(viewerIsAdvertiserQuery)
   const t = useTranslation() // useTranslation フックを使う
 
@@ -48,34 +49,9 @@ export function SettingsNavigation () {
           </div>
         </div>
       </SettingNavigationButton>
-      <SettingNavigationButton
-        href={"/settings/account/login"}
-        icon={ImageIcon}
-      >
+      <SettingNavigationButton href={"/settings/account"} icon={UserIcon}>
         <div className="flex w-full items-center justify-between">
-          {t("ID", "ID")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton
-        href={"/settings/account/password"}
-        icon={ImageIcon}
-      >
-        <div className="flex w-full items-center justify-between">
-          {t("パスワード", "Password")}
-          <div className="ml-auto text-right md:hidden">
-            <ChevronRight />
-          </div>
-        </div>
-      </SettingNavigationButton>
-      <SettingNavigationButton
-        href={"/settings/account/withdrawal"}
-        icon={UserXIcon}
-      >
-        <div className="flex w-full items-center justify-between">
-          {t("退会", "Withdraw Account")}
+          {t("アカウント設定", "Account Settings")}
           <div className="ml-auto text-right md:hidden">
             <ChevronRight />
           </div>

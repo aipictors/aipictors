@@ -150,7 +150,10 @@ const toDateTimeLocalValue = (time: number) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
-const createDateTimeLocalValue = (props: { hours: number; minutes: number }) => {
+const createDateTimeLocalValue = (props: {
+  hours: number
+  minutes: number
+}) => {
   const date = new Date()
 
   const year = date.getUTCFullYear()
@@ -176,15 +179,11 @@ const toUnixTime = (value: string) => {
   const [year, month, day] = datePart.split("-").map(Number)
   const [hours, minutes] = timePart.split(":").map(Number)
 
-  if (
-    [year, month, day, hours, minutes].some((part) => Number.isNaN(part))
-  ) {
+  if ([year, month, day, hours, minutes].some((part) => Number.isNaN(part))) {
     return 0
   }
 
-  return Math.floor(
-    Date.UTC(year, month - 1, day, hours, minutes) / 1000,
-  )
+  return Math.floor(Date.UTC(year, month - 1, day, hours, minutes) / 1000)
 }
 
 const parseTags = (tagsText: string, mainTag: string) => {
@@ -550,275 +549,272 @@ export function UserEventEditorPage(props: Props) {
 
         <Card>
           <CardContent className="space-y-6 pt-6">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <div className="font-medium text-sm">
-                      {t("ヘッダー画像", "Header image")}
-                    </div>
-                    <CropImageField
-                      isHidePreviewImage={false}
-                      cropWidth={1200}
-                      cropHeight={630}
-                      defaultCroppedImage={state.headerImageUrl}
-                      fileExtension="webp"
-                      onDeleteImage={() => updateField("headerImageUrl", "")}
-                      onCropToBase64={(value) =>
-                        updateField("headerImageUrl", value)
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="font-medium text-sm">
-                      {t("サムネイル画像", "Thumbnail image")}
-                    </div>
-                    <CropImageField
-                      isHidePreviewImage={false}
-                      cropWidth={800}
-                      cropHeight={800}
-                      defaultCroppedImage={state.thumbnailImageUrl}
-                      fileExtension="webp"
-                      onDeleteImage={() => updateField("thumbnailImageUrl", "")}
-                      onCropToBase64={(value) =>
-                        updateField("thumbnailImageUrl", value)
-                      }
-                    />
-                  </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <div className="font-medium text-sm">
+                  {t("ヘッダー画像", "Header image")}
                 </div>
+                <CropImageField
+                  isHidePreviewImage={false}
+                  cropWidth={1200}
+                  cropHeight={630}
+                  defaultCroppedImage={state.headerImageUrl}
+                  fileExtension="webp"
+                  onDeleteImage={() => updateField("headerImageUrl", "")}
+                  onCropToBase64={(value) =>
+                    updateField("headerImageUrl", value)
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="font-medium text-sm">
+                  {t("サムネイル画像", "Thumbnail image")}
+                </div>
+                <CropImageField
+                  isHidePreviewImage={false}
+                  cropWidth={800}
+                  cropHeight={800}
+                  defaultCroppedImage={state.thumbnailImageUrl}
+                  fileExtension="webp"
+                  onDeleteImage={() => updateField("thumbnailImageUrl", "")}
+                  onCropToBase64={(value) =>
+                    updateField("thumbnailImageUrl", value)
+                  }
+                />
+              </div>
+            </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <FieldLabel
-                      title={t("タイトル", "Title")}
-                      subtitle={t("必須", "Required")}
-                      required
-                    />
-                    <Input
-                      value={state.title}
-                      onChange={(e) => updateField("title", e.target.value)}
-                      maxLength={80}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <FieldLabel
-                      title={t("リンク名", "Slug")}
-                      subtitle={t("必須", "Required")}
-                      required
-                    />
-                    <Input
-                      value={state.slug}
-                      onChange={(e) =>
-                        updateField("slug", normalizeSlugValue(e.target.value))
-                      }
-                      onBlur={ensureGeneratedSlug}
-                      maxLength={64}
-                      required
-                    />
-                    <p className="text-muted-foreground text-xs">
-                      {t(
-                        "URLに使う識別子です。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
-                        "Used in the event URL. A random suffix is appended on blur to avoid duplicates.",
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <FieldLabel
+                  title={t("タイトル", "Title")}
+                  subtitle={t("必須", "Required")}
+                  required
+                />
+                <Input
+                  value={state.title}
+                  onChange={(e) => updateField("title", e.target.value)}
+                  maxLength={80}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <FieldLabel
+                  title={t("リンク名", "Slug")}
+                  subtitle={t("必須", "Required")}
+                  required
+                />
+                <Input
+                  value={state.slug}
+                  onChange={(e) =>
+                    updateField("slug", normalizeSlugValue(e.target.value))
+                  }
+                  onBlur={ensureGeneratedSlug}
+                  maxLength={64}
+                  required
+                />
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "URLに使う識別子です。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
+                    "Used in the event URL. A random suffix is appended on blur to avoid duplicates.",
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="font-medium text-sm">
+                {t("説明文", "Description")}
+              </div>
+              <AutoResizeTextarea
+                value={state.description}
+                onChange={(e) => updateField("description", e.target.value)}
+                maxLength={4000}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="font-medium text-sm">
+                {t("参加方法", "How to join")}
+              </div>
+              <AutoResizeTextarea
+                value={state.participationGuide}
+                onChange={(e) =>
+                  updateField("participationGuide", e.target.value)
+                }
+                maxLength={1000}
+              />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <FieldLabel
+                  title={t("主タグ", "Main tag")}
+                  subtitle={t("必須", "Required")}
+                  required
+                />
+                <Input
+                  value={state.mainTag}
+                  onChange={(e) =>
+                    updateField("mainTag", e.target.value.replace(/^#+/, ""))
+                  }
+                  onBlur={ensureGeneratedMainTag}
+                  maxLength={40}
+                  disabled={props.mode === "edit"}
+                  required
+                />
+                <p className="text-muted-foreground text-xs">
+                  {props.mode === "edit"
+                    ? t(
+                        "主タグを変更すると既存の投稿作品がイベント対象外になるため、編集画面では変更できません。",
+                        "Changing the main tag would invalidate existing event submissions, so it cannot be edited here.",
+                      )
+                    : t(
+                        "イベント投稿ボタンから参加すると自動入力される基準タグです。作品一覧の集計や検索導線にも使われます。#は不要です。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
+                        "This is the primary tag auto-filled for event submissions and used for listing and search. Do not include #. A random suffix is appended on blur to avoid duplicates.",
                       )}
-                    </p>
-                  </div>
-                </div>
+                </p>
+              </div>
+              <div className="space-y-2">
+                <FieldLabel
+                  title={t("補助タグ", "Additional tags")}
+                  subtitle={t("任意", "Optional")}
+                />
+                <AutoResizeTextarea
+                  value={state.tagsText}
+                  onChange={(e) => updateField("tagsText", e.target.value)}
+                  maxLength={200}
+                />
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "主タグ以外の関連語・別表記・検索補助用タグです。主タグは自動で含まれるので、ここには補足したいタグだけを入れてください。#は不要です。",
+                    "Use this for related terms, alternate spellings, and discovery tags. The main tag is included automatically, so only add supporting tags here. Do not include #.",
+                  )}
+                </p>
+              </div>
+            </div>
 
-                <div className="space-y-2">
-                  <div className="font-medium text-sm">
-                    {t("説明文", "Description")}
-                  </div>
-                  <AutoResizeTextarea
-                    value={state.description}
-                    onChange={(e) => updateField("description", e.target.value)}
-                    maxLength={4000}
-                  />
-                </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <FieldLabel
+                  title={t("開始日時", "Start at")}
+                  subtitle={t("必須", "Required")}
+                  required
+                />
+                <Input
+                  type="datetime-local"
+                  value={state.startAt}
+                  onChange={(e) => updateField("startAt", e.target.value)}
+                  required
+                />
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "日本時間で入力してください。保存時も日本時間の時刻として扱われます。",
+                    "Enter the time in JST. It is also saved as a JST wall-clock time.",
+                  )}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <FieldLabel
+                  title={t("終了日時", "End at")}
+                  subtitle={t("必須", "Required")}
+                  required
+                />
+                <Input
+                  type="datetime-local"
+                  value={state.endAt}
+                  onChange={(e) => updateField("endAt", e.target.value)}
+                  required
+                />
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "日本時間で入力してください。開始日時より後の時刻を指定してください。",
+                    "Enter the time in JST. Choose a time after the start time.",
+                  )}
+                </p>
+              </div>
+            </div>
 
-                <div className="space-y-2">
-                  <div className="font-medium text-sm">
-                    {t("参加方法", "How to join")}
-                  </div>
-                  <AutoResizeTextarea
-                    value={state.participationGuide}
-                    onChange={(e) =>
-                      updateField("participationGuide", e.target.value)
-                    }
-                    maxLength={1000}
-                  />
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <div className="font-medium text-sm">
+                  {t("公開状態", "Visibility")}
                 </div>
+                <select
+                  className="h-10 w-full rounded-md border bg-background px-3"
+                  value={state.visibilityType}
+                  onChange={(e) =>
+                    updateField(
+                      "visibilityType",
+                      e.target.value as UserEventVisibilityType,
+                    )
+                  }
+                >
+                  <option value="DRAFT">{t("下書き", "Draft")}</option>
+                  <option value="PUBLIC">{t("公開", "Public")}</option>
+                  <option value="PRIVATE">{t("非公開", "Private")}</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <div className="font-medium text-sm">
+                  {t("ランキング方式", "Ranking type")}
+                </div>
+                <select
+                  className="h-10 w-full rounded-md border bg-background px-3"
+                  value={state.rankingType}
+                  onChange={(e) =>
+                    updateField(
+                      "rankingType",
+                      e.target.value as UserEventRankingType,
+                    )
+                  }
+                  disabled={!state.rankingEnabled}
+                >
+                  <option value="LIKES">{t("いいね数", "Likes")}</option>
+                  <option value="BOOKMARKS">
+                    {t("ブックマーク数", "Bookmarks")}
+                  </option>
+                  <option value="COMMENTS">
+                    {t("コメント数", "Comments")}
+                  </option>
+                  <option value="VIEWS">{t("閲覧数", "Views")}</option>
+                </select>
+              </div>
+            </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <FieldLabel
-                      title={t("主タグ", "Main tag")}
-                      subtitle={t("必須", "Required")}
-                      required
-                    />
-                    <Input
-                      value={state.mainTag}
-                      onChange={(e) =>
-                        updateField(
-                          "mainTag",
-                          e.target.value.replace(/^#+/, ""),
-                        )
-                      }
-                      onBlur={ensureGeneratedMainTag}
-                      maxLength={40}
-                      disabled={props.mode === "edit"}
-                      required
-                    />
-                    <p className="text-muted-foreground text-xs">
-                      {props.mode === "edit"
-                        ? t(
-                            "主タグを変更すると既存の投稿作品がイベント対象外になるため、編集画面では変更できません。",
-                            "Changing the main tag would invalidate existing event submissions, so it cannot be edited here.",
-                          )
-                        : t(
-                            "イベント投稿ボタンから参加すると自動入力される基準タグです。作品一覧の集計や検索導線にも使われます。#は不要です。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
-                            "This is the primary tag auto-filled for event submissions and used for listing and search. Do not include #. A random suffix is appended on blur to avoid duplicates.",
-                          )}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <FieldLabel
-                      title={t("補助タグ", "Additional tags")}
-                      subtitle={t("任意", "Optional")}
-                    />
-                    <AutoResizeTextarea
-                      value={state.tagsText}
-                      onChange={(e) => updateField("tagsText", e.target.value)}
-                      maxLength={200}
-                    />
-                    <p className="text-muted-foreground text-xs">
-                      {t(
-                        "主タグ以外の関連語・別表記・検索補助用タグです。主タグは自動で含まれるので、ここには補足したいタグだけを入れてください。#は不要です。",
-                        "Use this for related terms, alternate spellings, and discovery tags. The main tag is included automatically, so only add supporting tags here. Do not include #.",
-                      )}
-                    </p>
-                  </div>
-                </div>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center">
+              <div className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={state.rankingEnabled}
+                  onCheckedChange={(checked) =>
+                    updateField("rankingEnabled", checked === true)
+                  }
+                />
+                {t("ランキングあり", "Enable ranking")}
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={state.isSensitive}
+                  onCheckedChange={(checked) =>
+                    updateField("isSensitive", checked === true)
+                  }
+                />
+                {t("成人向けイベント", "Sensitive event")}
+              </div>
+            </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <FieldLabel
-                      title={t("開始日時", "Start at")}
-                      subtitle={t("必須", "Required")}
-                      required
-                    />
-                    <Input
-                      type="datetime-local"
-                      value={state.startAt}
-                      onChange={(e) => updateField("startAt", e.target.value)}
-                      required
-                    />
-                    <p className="text-muted-foreground text-xs">
-                      {t(
-                        "日本時間で入力してください。保存時も日本時間の時刻として扱われます。",
-                        "Enter the time in JST. It is also saved as a JST wall-clock time.",
-                      )}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <FieldLabel
-                      title={t("終了日時", "End at")}
-                      subtitle={t("必須", "Required")}
-                      required
-                    />
-                    <Input
-                      type="datetime-local"
-                      value={state.endAt}
-                      onChange={(e) => updateField("endAt", e.target.value)}
-                      required
-                    />
-                    <p className="text-muted-foreground text-xs">
-                      {t(
-                        "日本時間で入力してください。開始日時より後の時刻を指定してください。",
-                        "Enter the time in JST. Choose a time after the start time.",
-                      )}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <div className="font-medium text-sm">
-                      {t("公開状態", "Visibility")}
-                    </div>
-                    <select
-                      className="h-10 w-full rounded-md border bg-background px-3"
-                      value={state.visibilityType}
-                      onChange={(e) =>
-                        updateField(
-                          "visibilityType",
-                          e.target.value as UserEventVisibilityType,
-                        )
-                      }
-                    >
-                      <option value="DRAFT">{t("下書き", "Draft")}</option>
-                      <option value="PUBLIC">{t("公開", "Public")}</option>
-                      <option value="PRIVATE">{t("非公開", "Private")}</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="font-medium text-sm">
-                      {t("ランキング方式", "Ranking type")}
-                    </div>
-                    <select
-                      className="h-10 w-full rounded-md border bg-background px-3"
-                      value={state.rankingType}
-                      onChange={(e) =>
-                        updateField(
-                          "rankingType",
-                          e.target.value as UserEventRankingType,
-                        )
-                      }
-                      disabled={!state.rankingEnabled}
-                    >
-                      <option value="LIKES">{t("いいね数", "Likes")}</option>
-                      <option value="BOOKMARKS">
-                        {t("ブックマーク数", "Bookmarks")}
-                      </option>
-                      <option value="COMMENTS">
-                        {t("コメント数", "Comments")}
-                      </option>
-                      <option value="VIEWS">{t("閲覧数", "Views")}</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Checkbox
-                      checked={state.rankingEnabled}
-                      onCheckedChange={(checked) =>
-                        updateField("rankingEnabled", checked === true)
-                      }
-                    />
-                    {t("ランキングあり", "Enable ranking")}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Checkbox
-                      checked={state.isSensitive}
-                      onCheckedChange={(checked) =>
-                        updateField("isSensitive", checked === true)
-                      }
-                    />
-                    {t("成人向けイベント", "Sensitive event")}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="font-medium text-sm">
-                    {t("告知文", "Announcement text")}
-                  </div>
-                  <AutoResizeTextarea
-                    value={state.announcementText}
-                    onChange={(e) =>
-                      updateField("announcementText", e.target.value)
-                    }
-                    maxLength={1000}
-                  />
-                </div>
+            <div className="space-y-2">
+              <div className="font-medium text-sm">
+                {t("告知文", "Announcement text")}
+              </div>
+              <AutoResizeTextarea
+                value={state.announcementText}
+                onChange={(e) =>
+                  updateField("announcementText", e.target.value)
+                }
+                maxLength={1000}
+              />
+            </div>
           </CardContent>
         </Card>
 

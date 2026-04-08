@@ -1,9 +1,7 @@
-import type {
-  HeadersFunction,
-  MetaFunction,
-} from "@remix-run/cloudflare"
+import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { config, META } from "~/config"
-import { AccountNavigation } from "~/routes/($lang).settings.account._index/components/account-navigation"
+import { useTranslation } from "~/hooks/use-translation"
+import { SettingsHeader } from "~/routes/($lang).settings/components/settings-header"
 import { AccountSettingsContainer } from "~/routes/($lang).settings.account._index/components/account-settings-container"
 import { createMeta } from "~/utils/create-meta"
 
@@ -18,15 +16,15 @@ export const headers: HeadersFunction = () => ({
 /**
  * アカウント
  */
-export default function Account () {
+export default function Account() {
+  const t = useTranslation()
+
   return (
-    <>
-      <div className="hidden md:block">
-        <AccountSettingsContainer />
+    <div className="w-full space-y-4">
+      <div className="block md:hidden">
+        <SettingsHeader title={t("アカウント設定", "Account Settings")} />
       </div>
-      <div className="md:hidden">
-        <AccountNavigation />
-      </div>
-    </>
+      <AccountSettingsContainer />
+    </div>
   )
 }
