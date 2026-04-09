@@ -109,14 +109,14 @@ export default function ThemeProposalsPage() {
         </Button>
       </div>
 
-      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-950">
-        <p className="font-medium">
+      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-950 dark:border-orange-800 dark:bg-orange-950/30 dark:text-orange-100">
+        <p className="font-medium dark:text-orange-100">
           {t(
             "保留中のお題案にはログインユーザーがいいねできます。採用判定ではAIが内容に加えていいね数も参考にし、近い案ならいいねが多い案を優先します。",
             "Signed-in users can like pending theme proposals. Adoption AI now considers likes as well, and will prefer higher-liked proposals when ideas are similarly strong.",
           )}
         </p>
-        <p className="mt-1 text-xs text-orange-800">
+        <p className="mt-1 text-xs text-orange-800 dark:text-orange-200/80">
           {t(
             "公平性のため、自分の提案にはいいねできません。",
             "For fairness, you cannot like your own proposal.",
@@ -167,8 +167,8 @@ export default function ThemeProposalsPage() {
                   </Link>
                 </div>
 
-                <div className="relative rounded-[22px] border border-orange-200 bg-linear-to-br from-white via-orange-50/70 to-amber-100/70 p-3 shadow-sm">
-                  <div className="absolute top-6 left-[-6px] h-3 w-3 rotate-45 border-orange-200 border-b border-l bg-orange-50" />
+                <div className="relative rounded-[22px] border border-orange-200 bg-linear-to-br from-white via-orange-50/70 to-amber-100/70 p-3 shadow-sm dark:border-orange-800 dark:from-zinc-900 dark:via-orange-950/40 dark:to-amber-950/30 dark:text-zinc-100">
+                  <div className="absolute top-6 left-[-6px] h-3 w-3 rotate-45 border-orange-200 border-b border-l bg-orange-50 dark:border-orange-800 dark:bg-orange-950/80" />
 
                   <div className="flex flex-col gap-3">
                     <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
@@ -180,24 +180,24 @@ export default function ThemeProposalsPage() {
                           <Badge variant="secondary" className="px-2 py-0 text-[11px]">
                             {format(targetDate, "yyyy/MM/dd (EEE)", { locale: ja })}
                           </Badge>
-                          <Badge variant="outline" className="gap-1 px-2 py-0 text-[11px] bg-white/80">
+                          <Badge variant="outline" className="gap-1 bg-white/80 px-2 py-0 text-[11px] dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-100">
                             <Heart
                               className={proposal.isLiked ? "size-3.5 fill-rose-500 text-rose-500" : "size-3.5"}
                             />
                             <span>{proposal.likesCount}</span>
                           </Badge>
-                          <span className="text-muted-foreground text-xs">
+                          <span className="text-muted-foreground text-xs dark:text-zinc-400">
                             {t("送信", "Submitted")}: {formatUnixTime(proposal.createdAt)}
                           </span>
                         </div>
-                        <div className="rounded-[18px] bg-white/85 px-3 py-2.5 shadow-sm">
-                          <p className="font-semibold text-base leading-6">{proposal.inputTheme}</p>
-                          <p className="mt-1 text-muted-foreground text-xs leading-5">
+                        <div className="rounded-[18px] bg-white/85 px-3 py-2.5 shadow-sm dark:bg-zinc-900/75">
+                          <p className="font-semibold text-base leading-6 dark:text-zinc-50">{proposal.inputTheme}</p>
+                          <p className="mt-1 text-muted-foreground text-xs leading-5 dark:text-zinc-400">
                             {proposal.title}
                             {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
                           </p>
-                          <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
-                            <span className="font-medium text-foreground/80">Prompt:</span>{" "}
+                          <p className="mt-1 text-[11px] leading-5 text-muted-foreground dark:text-zinc-400">
+                            <span className="font-medium text-foreground/80 dark:text-zinc-200">Prompt:</span>{" "}
                             {proposal.promptName}
                           </p>
                         </div>
@@ -269,8 +269,8 @@ export default function ThemeProposalsPage() {
                     </div>
 
                     {proposal.precheckComment && (
-                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-900 text-sm">
-                        <p className="mb-1 font-medium text-xs uppercase tracking-wide">
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-900 text-sm dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-100">
+                        <p className="mb-1 font-medium text-xs uppercase tracking-wide dark:text-emerald-200">
                           {t("一次チェック", "Initial check")}
                         </p>
                         <p className="leading-6">{proposal.precheckComment}</p>
@@ -278,8 +278,8 @@ export default function ThemeProposalsPage() {
                     )}
 
                     {proposal.decisionComment && (
-                      <div className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2 text-sky-900 text-sm">
-                        <p className="mb-1 font-medium text-xs uppercase tracking-wide">
+                      <div className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2 text-sky-900 text-sm dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-100">
+                        <p className="mb-1 font-medium text-xs uppercase tracking-wide dark:text-sky-200">
                           {t("ぴくたーちゃんのコメント", "Pictor-chan comment")}
                         </p>
                         <p className="leading-6">{proposal.decisionComment}</p>

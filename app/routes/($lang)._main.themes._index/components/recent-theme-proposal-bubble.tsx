@@ -78,8 +78,8 @@ export function RecentThemeProposalBubble(props: Props) {
 
   return (
     <div className="relative min-h-16 max-w-[320px] flex-1">
-      <div className="absolute top-[26px] left-5 z-0 size-3 rotate-45 rounded-[2px] border border-orange-200/70 bg-orange-50/95" />
-      <div className="relative z-10 overflow-hidden rounded-2xl border border-orange-200/70 bg-linear-to-r from-orange-50/95 via-white to-amber-50/95 px-3 py-2 shadow-sm backdrop-blur-sm">
+      <div className="absolute top-[26px] left-5 z-0 size-3 rotate-45 rounded-[2px] border border-orange-200/70 bg-orange-50/95 dark:border-orange-800/70 dark:bg-orange-950/90" />
+      <div className="relative z-10 overflow-hidden rounded-2xl border border-orange-200/70 bg-linear-to-r from-orange-50/95 via-white to-amber-50/95 px-3 py-2 shadow-sm backdrop-blur-sm dark:border-orange-800/70 dark:from-zinc-900 dark:via-orange-950/50 dark:to-amber-950/40 dark:text-zinc-100">
         <div
           className={`flex items-center gap-3 transition-all duration-300 ${isVisible ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0"}`}
         >
@@ -88,7 +88,7 @@ export function RecentThemeProposalBubble(props: Props) {
             className="shrink-0"
             aria-label={proposal.proposerName}
           >
-            <Avatar className="size-10 border border-white/80 shadow-sm">
+            <Avatar className="size-10 border border-white/80 shadow-sm dark:border-zinc-700">
               <AvatarImage
                 src={withIconUrlFallback(proposal.proposerIconUrl)}
                 alt={proposal.proposerName}
@@ -99,16 +99,16 @@ export function RecentThemeProposalBubble(props: Props) {
             </Avatar>
           </Link>
           <div className="min-w-0">
-            <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-2 text-[11px] text-muted-foreground dark:text-zinc-400">
               <span>{t("最近の提案", "Recent proposal")}</span>
               <Link
                 to={`/users/${proposal.proposerUserId}`}
-                className="truncate font-medium text-foreground/80 hover:text-foreground"
+                className="truncate font-medium text-foreground/80 hover:text-foreground dark:text-zinc-200 dark:hover:text-zinc-50"
               >
                 {proposal.proposerName}
               </Link>
             </div>
-            <p className="line-clamp-2 text-sm leading-5 text-foreground/85">
+            <p className="line-clamp-2 text-sm leading-5 text-foreground/85 dark:text-zinc-100/90">
               「{proposal.inputTheme}」
             </p>
           </div>

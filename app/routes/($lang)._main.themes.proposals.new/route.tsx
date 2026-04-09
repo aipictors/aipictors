@@ -192,13 +192,13 @@ export default function NewThemeProposalPage() {
       )}
 
       <div className="grid gap-4 xl:grid-cols-[1.1fr_1.3fr]">
-        <Card className="border-orange-200 bg-linear-to-br from-orange-50 via-background to-amber-50">
+        <Card className="border-orange-200 bg-linear-to-br from-orange-50 via-background to-amber-50 dark:border-orange-800 dark:from-orange-950/35 dark:via-zinc-950 dark:to-amber-950/25">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 dark:text-zinc-50">
               <SparklesIcon className="size-4" />
               {t("提案内容", "Proposal")}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="dark:text-zinc-400">
               {t(
                 "英語でも日本語でも送信できます。送信時に一次チェックと翻訳整形を行います。",
                 "You can submit in Japanese or English. A pre-check and translation normalization will run on submit.",
@@ -206,17 +206,17 @@ export default function NewThemeProposalPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-3xl border border-orange-200 bg-white/80 p-4 shadow-sm">
-              <p className="text-muted-foreground text-xs">
+            <div className="rounded-3xl border border-orange-200 bg-white/80 p-4 shadow-sm dark:border-orange-800 dark:bg-zinc-900/80">
+              <p className="text-muted-foreground text-xs dark:text-zinc-400">
                 {t("選択中の対象日", "Selected target date")}
               </p>
               <div className="mt-2 flex items-center gap-2 overflow-hidden">
-                <CalendarDaysIcon className="size-4 text-orange-500" />
-                <p className="truncate whitespace-nowrap font-semibold text-lg">
+                <CalendarDaysIcon className="size-4 text-orange-500 dark:text-orange-300" />
+                <p className="truncate whitespace-nowrap font-semibold text-lg dark:text-zinc-50">
                   {format(parseISO(date), "yyyy/MM/dd (EEE)", { locale: ja })}
                 </p>
               </div>
-              <p className="mt-2 whitespace-nowrap text-muted-foreground text-xs">
+              <p className="mt-2 whitespace-nowrap text-muted-foreground text-xs dark:text-zinc-400">
                 {t(
                   `提案できる最短日は ${format(minimumProposalDate, "yyyy/MM/dd")} です。`,
                   `The earliest proposal date is ${format(minimumProposalDate, "yyyy/MM/dd")}.`,
@@ -264,13 +264,13 @@ export default function NewThemeProposalPage() {
               />
             </div>
 
-            <div className="rounded-3xl border bg-background/80 p-4">
+            <div className="rounded-3xl border bg-background/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/60">
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <p className="font-medium text-sm">
+                  <p className="font-medium text-sm dark:text-zinc-100">
                     {t("過去の重複チェック", "Duplicate history check")}
                   </p>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-muted-foreground text-xs dark:text-zinc-400">
                     {t(
                       "過去1年の公式お題から同じ内容を探します。重複しても送信はできます。",
                       "Search the last year of official themes for the same idea. Matching entries do not block submission.",
@@ -321,15 +321,15 @@ export default function NewThemeProposalPage() {
                   </div>
 
                   {duplicateThemes.length === 0 ? (
-                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-900 text-sm">
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-900 text-sm dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-100">
                       {t(
                         "直近1年では同じお題は見つかりませんでした。",
                         "No matching theme was found in the past year.",
                       )}
                     </div>
                   ) : (
-                    <div className="rounded-2xl border bg-white p-3">
-                      <p className="font-medium text-sm">
+                    <div className="rounded-2xl border bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900/80">
+                      <p className="font-medium text-sm dark:text-zinc-100">
                         {t("一致した開催日", "Matching dates")}
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
@@ -337,7 +337,7 @@ export default function NewThemeProposalPage() {
                           <Link
                             key={item.id}
                             to={`/themes/${item.year}/${item.month}/${item.day}`}
-                            className="max-w-full truncate whitespace-nowrap rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-sm transition hover:bg-orange-100"
+                            className="max-w-full truncate whitespace-nowrap rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-sm transition hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/40 dark:text-orange-100 dark:hover:bg-orange-950/60"
                             title={`${format(parseISO(item.dateText), "yyyy/MM/dd", { locale: ja })} · ${item.title}`}
                           >
                             {format(parseISO(item.dateText), "yyyy/MM/dd", { locale: ja })}
@@ -352,7 +352,7 @@ export default function NewThemeProposalPage() {
               )}
 
               {checkedTheme !== null && checkedTheme !== theme.trim() && (
-                <div className="mt-3 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-muted-foreground text-sm">
+                <div className="mt-3 flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-muted-foreground text-sm dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-400">
                   <AlertCircleIcon className="size-4" />
                   {t(
                     "お題の内容が変わったので、必要ならもう一度重複チェックしてください。",
@@ -379,12 +379,12 @@ export default function NewThemeProposalPage() {
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-sky-200 bg-linear-to-br from-sky-50 via-background to-cyan-50">
+        <Card className="overflow-hidden border-sky-200 bg-linear-to-br from-sky-50 via-background to-cyan-50 dark:border-sky-800 dark:from-sky-950/35 dark:via-zinc-950 dark:to-cyan-950/25">
           <CardHeader>
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <CardTitle>{t("お題カレンダー", "Theme calendar")}</CardTitle>
-                <CardDescription>
+                <CardTitle className="dark:text-zinc-50">{t("お題カレンダー", "Theme calendar")}</CardTitle>
+                <CardDescription className="dark:text-zinc-400">
                   {t(
                     "過去のお題と7日後までの予定を見ながら、8日後以降のセルを選べます。",
                     "Browse past themes and the next seven days, then pick any cell from day eight onward.",
@@ -400,7 +400,7 @@ export default function NewThemeProposalPage() {
                 >
                   <ChevronLeftIcon className="size-4" />
                 </Button>
-                <div className="min-w-28 whitespace-nowrap text-center font-semibold text-sm">
+                <div className="min-w-28 whitespace-nowrap text-center font-semibold text-sm dark:text-zinc-100">
                   {format(visibleMonth, "yyyy年M月", { locale: ja })}
                 </div>
                 <Button
@@ -436,7 +436,7 @@ export default function NewThemeProposalPage() {
                   ))}
                   {cells.map((day, index) => {
                     if (day === null) {
-                      return <div key={`empty-${index}`} className="aspect-square rounded-3xl bg-white/20" />
+                      return <div key={`empty-${index}`} className="aspect-square rounded-3xl bg-white/20 dark:bg-zinc-900/20" />
                     }
 
                     const cellDate = new Date(
@@ -462,9 +462,9 @@ export default function NewThemeProposalPage() {
                         className={cn(
                           "relative aspect-square rounded-3xl border p-2 text-left transition",
                           {
-                            "cursor-pointer border-emerald-500 bg-emerald-50 shadow-sm": isSelectable,
-                            "cursor-default border-slate-200 bg-white/80": !isSelectable,
-                            "ring-2 ring-orange-400": isSelected,
+                            "cursor-pointer border-emerald-500 bg-emerald-50 shadow-sm dark:border-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-100": isSelectable,
+                            "cursor-default border-slate-200 bg-white/80 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-100": !isSelectable,
+                            "ring-2 ring-orange-400 dark:ring-orange-500": isSelected,
                           },
                         )}
                       >
@@ -487,16 +487,16 @@ export default function NewThemeProposalPage() {
                           {themeForDay && isHistoryWindow ? (
                             <>
                               <p className="truncate whitespace-nowrap font-medium" title={themeForDay.title}>{themeForDay.title}</p>
-                              <p className="mt-1 truncate whitespace-nowrap text-muted-foreground text-[10px]">
+                              <p className="mt-1 truncate whitespace-nowrap text-muted-foreground text-[10px] dark:text-zinc-400">
                                 {t("過去または近日公開のお題", "Past or upcoming official theme")}
                               </p>
                             </>
                           ) : isSelectable ? (
-                            <p className="truncate whitespace-nowrap text-emerald-700 text-xs">
+                            <p className="truncate whitespace-nowrap text-emerald-700 text-xs dark:text-emerald-300">
                               {t("この日付に提案できます", "You can propose for this date")}
                             </p>
                           ) : (
-                            <p className="truncate whitespace-nowrap text-muted-foreground text-xs">
+                            <p className="truncate whitespace-nowrap text-muted-foreground text-xs dark:text-zinc-400">
                               {t("この期間は既存お題の確認用です", "This period is for checking official themes")}
                             </p>
                           )}
@@ -516,9 +516,9 @@ export default function NewThemeProposalPage() {
 
 function DuplicateSummaryCard(props: { label: string, count: number }) {
   return (
-    <div className="rounded-2xl border bg-white p-3 text-center shadow-sm">
-      <p className="text-muted-foreground text-xs">{props.label}</p>
-      <p className="mt-1 font-semibold text-2xl">{props.count}</p>
+    <div className="rounded-2xl border bg-white p-3 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900/80">
+      <p className="text-muted-foreground text-xs dark:text-zinc-400">{props.label}</p>
+      <p className="mt-1 font-semibold text-2xl dark:text-zinc-50">{props.count}</p>
     </div>
   )
 }
