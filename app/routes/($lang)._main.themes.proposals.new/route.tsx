@@ -224,6 +224,15 @@ export default function NewThemeProposalPage() {
               </p>
             </div>
 
+            <Alert>
+              <AlertDescription>
+                {t(
+                  "提案一覧ではログインユーザーが保留中の案にいいねできます。採用判定ではAIが内容に加えていいね数も参考にし、近い案ならいいねの多い案を優先します。",
+                  "Signed-in users can like pending proposals in the list. Adoption AI now considers likes too, and will prefer higher-liked proposals when candidates are otherwise close.",
+                )}
+              </AlertDescription>
+            </Alert>
+
             <div className="space-y-2">
               <label className="font-medium text-sm" htmlFor="proposal-date">
                 {t("対象日", "Target date")}

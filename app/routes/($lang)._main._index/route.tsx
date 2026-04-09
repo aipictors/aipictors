@@ -219,29 +219,6 @@ const createBaseHomeLoaderData = (props: {
   firstTagWorks: [],
 })
 
-const buildUserEventIconMap = async (userIds: string[]) => {
-  const uniqueUserIds = [...new Set(userIds.filter(Boolean))]
-
-  const responses = await Promise.all(
-    uniqueUserIds.map(async (userId) => {
-      try {
-        const response = await loaderClient.query({
-          query: homeEventUserIconQuery,
-          variables: {
-            userId,
-          },
-        })
-
-        return [userId, response.data.user?.iconUrl ?? null] as const
-      } catch {
-        return [userId, null] as const
-      }
-    }),
-  )
-
-  return new Map<string, string | null>(responses)
-}
-
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const legacyTab = url.searchParams.get("tab")
@@ -339,16 +316,9 @@ export async function loader(props: LoaderFunctionArgs) {
   const appEvents: any[] = Array.isArray(resultData?.appEvents)
     ? resultData.appEvents
     : []
-  const userEventsRaw: any[] = Array.isArray(resultData?.userEvents)
+  const userEvents: any[] = Array.isArray(resultData?.userEvents)
     ? resultData.userEvents
     : []
-  const userIconMap = await buildUserEventIconMap(
-    userEventsRaw.map((event) => event.userId).filter(Boolean),
-  )
-  const userEvents = userEventsRaw.map((event) => ({
-    ...event,
-    userIconUrl: event.userId ? (userIconMap.get(event.userId) ?? null) : null,
-  }))
   const eventPreviews = buildHomeEventPreviews(appEvents, userEvents)
 
   return {
@@ -736,8 +706,15 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     updateQueryParams(newSearchParams)
   }
 
-  const { data: pass } = useQuery(viewerCurrentPassQuery, {})
+  const shouldLoadHomeSidebarQueries = currentTab === "home" && isMounted
+
+  const { data: pass } = useQuery(viewerCurrentPassQuery, {
+    skip: !shouldLoadHomeSidebarQueries,
+    fetchPolicy: "cache-first",
+  })
   const { data: advertisements } = useQuery(randomCustomerAdvertisementQuery, {
+    skip: !shouldLoadHomeSidebarQueries,
+    fetchPolicy: "cache-first",
     variables: {
       where: {
         isSensitive: false,
@@ -1832,6 +1809,7 @@ const query = graphql(
       entryCount
       participantCount
       userId
+      userIconUrl
       userName
     }
   }`,
@@ -1842,15 +1820,6 @@ const query = graphql(
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
   ],
-)
-
-const homeEventUserIconQuery = graphql(
-  `query HomeEventUserIcon($userId: ID!) {
-    user(id: $userId) {
-      id
-      iconUrl
-    }
-  }`,
 )
 
 const viewerCurrentPassQuery = graphql(`

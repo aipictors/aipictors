@@ -2,8 +2,8 @@ import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
-import { Loader2Icon } from "lucide-react"
-import { useState } from "react"
+import { Heart, Loader2Icon } from "lucide-react"
+import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { AppPageHeader } from "~/components/app/app-page-header"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 
 type ThemeProposal = {
@@ -40,6 +41,8 @@ type ThemeProposal = {
   decidedAt?: number | null
   adoptedSubjectId?: string | null
   canCancel: boolean
+  likesCount: number
+  isLiked: boolean
 }
 
 type QueryData = {
@@ -48,6 +51,7 @@ type QueryData = {
 
 export default function ThemeProposalsPage() {
   const t = useTranslation()
+  const authContext = useContext(AuthContext)
   const { data, loading, refetch } = useQuery<QueryData>(ThemeProposalsQuery, {
     variables: { offset: 0, limit: 100 },
     fetchPolicy: "cache-and-network",
@@ -55,7 +59,10 @@ export default function ThemeProposalsPage() {
   const [cancelProposal, { loading: isCanceling }] = useMutation(
     CancelThemeProposalMutation,
   )
+  const [createThemeProposalLike] = useMutation(CreateThemeProposalLikeMutation)
+  const [deleteThemeProposalLike] = useMutation(DeleteThemeProposalLikeMutation)
   const [pendingCancelId, setPendingCancelId] = useState<string | null>(null)
+  const [pendingLikeId, setPendingLikeId] = useState<string | null>(null)
 
   const proposals = data?.themeProposals ?? []
 
@@ -64,6 +71,22 @@ export default function ThemeProposalsPage() {
     toast(t("提案を取り消しました", "Canceled the proposal"))
     setPendingCancelId(null)
     void refetch()
+  }
+
+  const onToggleLike = async (proposal: ThemeProposal) => {
+    setPendingLikeId(proposal.id)
+
+    try {
+      if (proposal.isLiked) {
+        await deleteThemeProposalLike({ variables: { proposalId: proposal.id } })
+      } else {
+        await createThemeProposalLike({ variables: { proposalId: proposal.id } })
+      }
+
+      void refetch()
+    } finally {
+      setPendingLikeId(null)
+    }
   }
 
   return (
@@ -84,6 +107,21 @@ export default function ThemeProposalsPage() {
         </Button>
       </div>
 
+      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-950">
+        <p className="font-medium">
+          {t(
+            "保留中のお題案にはログインユーザーがいいねできます。採用判定ではAIが内容に加えていいね数も参考にし、近い案ならいいねが多い案を優先します。",
+            "Signed-in users can like pending theme proposals. Adoption AI now considers likes as well, and will prefer higher-liked proposals when ideas are similarly strong.",
+          )}
+        </p>
+        <p className="mt-1 text-xs text-orange-800">
+          {t(
+            "公平性のため、自分の提案にはいいねできません。",
+            "For fairness, you cannot like your own proposal.",
+          )}
+        </p>
+      </div>
+
       {loading && proposals.length === 0 ? (
         <div className="flex items-center justify-center py-12 text-muted-foreground">
           <Loader2Icon className="mr-2 animate-spin" />
@@ -93,6 +131,12 @@ export default function ThemeProposalsPage() {
         <div className="grid gap-6">
           {proposals.map((proposal) => {
             const targetDate = new Date(`${proposal.targetDate}T00:00:00`)
+            const isOwnProposal = authContext.userId === proposal.proposerUserId
+            const canLikeProposal =
+              authContext.isLoggedIn &&
+              !isOwnProposal &&
+              proposal.status === "PENDING"
+            const isLikeBusy = pendingLikeId === proposal.id
 
             return (
               <div key={proposal.id} className="grid gap-3 md:grid-cols-[108px_1fr] md:items-start">
@@ -132,6 +176,12 @@ export default function ThemeProposalsPage() {
                           <Badge variant="secondary">
                             {format(targetDate, "yyyy/MM/dd (EEE)", { locale: ja })}
                           </Badge>
+                          <Badge variant="outline" className="gap-1.5 bg-white/80">
+                            <Heart
+                              className={proposal.isLiked ? "size-3.5 fill-rose-500 text-rose-500" : "size-3.5"}
+                            />
+                            <span>{proposal.likesCount}</span>
+                          </Badge>
                         </div>
                         <div className="rounded-[24px] bg-white/80 p-4 shadow-sm">
                           <p className="font-semibold text-lg leading-7">{proposal.inputTheme}</p>
@@ -142,44 +192,69 @@ export default function ThemeProposalsPage() {
                         </div>
                       </div>
 
-                      {proposal.canCancel && (
-                        <AlertDialog
-                          open={pendingCancelId === proposal.id}
-                          onOpenChange={(open) => {
-                            setPendingCancelId(open ? proposal.id : null)
-                          }}
-                        >
-                          <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="sm">
-                              {t("取り消す", "Cancel")}
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                {t("提案を取り消しますか？", "Cancel this proposal?")}
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                {t(
-                                  "保留中の提案だけ取り消せます。",
-                                  "Only pending proposals can be canceled.",
-                                )}
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>
-                                {t("戻る", "Back")}
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => onCancel(proposal.id)}
-                                disabled={isCanceling}
-                              >
-                                {isCanceling ? t("処理中", "Working") : t("取り消す", "Cancel")}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
+                      <div className="flex flex-wrap items-center justify-end gap-2">
+                        {canLikeProposal && (
+                          <Button
+                            variant={proposal.isLiked ? "default" : "outline"}
+                            size="sm"
+                            disabled={isLikeBusy}
+                            onClick={() => onToggleLike(proposal)}
+                            className="gap-2"
+                          >
+                            {isLikeBusy ? (
+                              <Loader2Icon className="size-4 animate-spin" />
+                            ) : (
+                              <Heart
+                                className={proposal.isLiked ? "size-4 fill-current" : "size-4"}
+                              />
+                            )}
+                            <span>
+                              {proposal.isLiked
+                                ? t("いいね解除", "Unlike")
+                                : t("いいね", "Like")}
+                            </span>
+                          </Button>
+                        )}
+
+                        {proposal.canCancel && (
+                          <AlertDialog
+                            open={pendingCancelId === proposal.id}
+                            onOpenChange={(open) => {
+                              setPendingCancelId(open ? proposal.id : null)
+                            }}
+                          >
+                            <AlertDialogTrigger asChild>
+                              <Button variant="destructive" size="sm">
+                                {t("取り消す", "Cancel")}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  {t("提案を取り消しますか？", "Cancel this proposal?")}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t(
+                                    "保留中の提案だけ取り消せます。",
+                                    "Only pending proposals can be canceled.",
+                                  )}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                  {t("戻る", "Back")}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => onCancel(proposal.id)}
+                                  disabled={isCanceling}
+                                >
+                                  {isCanceling ? t("処理中", "Working") : t("取り消す", "Cancel")}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
                     </div>
 
                     <div className="grid gap-2 text-sm md:grid-cols-2 xl:grid-cols-[1fr_220px]">
@@ -288,6 +363,8 @@ const ThemeProposalsQuery = gql`
       decidedAt
       adoptedSubjectId
       canCancel
+      likesCount
+      isLiked
     }
   }
 `
@@ -297,6 +374,26 @@ const CancelThemeProposalMutation = gql`
     cancelThemeProposal(proposalId: $proposalId) {
       id
       status
+    }
+  }
+`
+
+const CreateThemeProposalLikeMutation = gql`
+  mutation CreateThemeProposalLike($proposalId: ID!) {
+    createThemeProposalLike(proposalId: $proposalId) {
+      id
+      likesCount
+      isLiked
+    }
+  }
+`
+
+const DeleteThemeProposalLikeMutation = gql`
+  mutation DeleteThemeProposalLike($proposalId: ID!) {
+    deleteThemeProposalLike(proposalId: $proposalId) {
+      id
+      likesCount
+      isLiked
     }
   }
 `
