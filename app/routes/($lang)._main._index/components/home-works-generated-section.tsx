@@ -3,13 +3,16 @@ import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-
 import { HomeGenerationWorkSection } from "~/routes/($lang)._main._index/components/home-generation-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { config } from "~/config"
 
 type Props = {
   works: FragmentOf<typeof HomeGenerationWorkFragment>[]
   dateText: string
   onSelect?: (index: string) => void
+  onWorksLoaded?: (
+    works: FragmentOf<typeof HomeGenerationWorkFragment>[],
+  ) => void
 }
 
 /**
@@ -34,6 +37,10 @@ export function HomeWorksGeneratedSection (props: Props) {
   })
 
   const workDisplayed = resp?.works ?? props.works
+
+  useEffect(() => {
+    props.onWorksLoaded?.(workDisplayed)
+  }, [workDisplayed])
 
   return (
     <>

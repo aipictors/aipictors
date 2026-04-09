@@ -5,13 +5,16 @@ import {
 } from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { config } from "~/config"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   works: FragmentOf<typeof HomeNewUsersWorksFragment>[]
   onSelect?: (index: string) => void
+  onWorksLoaded?: (
+    works: FragmentOf<typeof HomeNewUsersWorksFragment>[],
+  ) => void
 }
 
 /**
@@ -35,6 +38,10 @@ export function HomeNewUsersWorksSection (props: Props) {
 
   const workDisplayed = newUsersWorksResp?.newUserWorks ?? props.works
 
+  useEffect(() => {
+    props.onWorksLoaded?.(workDisplayed)
+  }, [workDisplayed])
+
   const t = useTranslation()
 
   return (
@@ -45,6 +52,7 @@ export function HomeNewUsersWorksSection (props: Props) {
           works={workDisplayed}
           isCropped={true}
           isShowProfile={false}
+          onSelect={props.onSelect}
         />
       )}
     </>

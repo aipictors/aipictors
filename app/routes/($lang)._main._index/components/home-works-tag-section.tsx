@@ -5,7 +5,7 @@ import {
 } from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { config } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
@@ -18,6 +18,7 @@ type Props = {
   style?: IntrospectionEnum<"ImageStyle">
   isCropped?: boolean
   onSelect?: (index: string) => void
+  onWorksLoaded?: (works: FragmentOf<typeof HomeTagWorkFragment>[]) => void
 }
 
 /**
@@ -70,6 +71,10 @@ export function HomeWorksTagSection (props: Props) {
     ...(secondWorkDisplayed ?? []),
   ]
 
+  useEffect(() => {
+    props.onWorksLoaded?.(combinedWorks)
+  }, [combinedWorks])
+
   const t = useTranslation()
 
   return (
@@ -78,6 +83,7 @@ export function HomeWorksTagSection (props: Props) {
         title={t("タグ作品", "Tag Works")}
         works={combinedWorks}
         isCropped={props.isCropped}
+        onSelect={props.onSelect}
       />
     </>
   )

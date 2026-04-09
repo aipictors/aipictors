@@ -26,6 +26,7 @@ type Props = {
   isCropped?: boolean
   targetRowHeight?: number
   isShowProfile?: boolean
+  onSelect?: (index: string) => void
 }
 
 export function HomeRecommendedWorkList (props: Props) {
@@ -64,12 +65,13 @@ export function HomeRecommendedWorkList (props: Props) {
         )}
       </div>
       {props.isCropped ? (
-        <HomeCroppedWorkList works={props.works} />
+        <HomeCroppedWorkList works={props.works} onSelect={props.onSelect} />
       ) : (
         <ResponsivePhotoWorksAlbum
           works={props.works}
           targetRowHeight={props.targetRowHeight}
           isShowProfile={props.isShowProfile}
+          onSelect={props.onSelect}
         />
       )}
     </section>

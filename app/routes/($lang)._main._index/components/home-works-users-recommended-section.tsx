@@ -2,7 +2,7 @@ import { AuthContext } from "~/contexts/auth-context"
 import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { config } from "~/config"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { useTranslation } from "~/hooks/use-translation"
@@ -12,6 +12,9 @@ type Props = {
   works: FragmentOf<typeof HomePromotionWorkFragment>[]
   style?: IntrospectionEnum<"ImageStyle">
   onSelect?: (index: string) => void
+  onWorksLoaded?: (
+    works: FragmentOf<typeof HomePromotionWorkFragment>[],
+  ) => void
 }
 
 /**
@@ -39,6 +42,10 @@ export function HomeWorksUsersRecommendedSection (props: Props) {
 
   const workDisplayed = recommendedWorksResp?.works ?? props.works
 
+  useEffect(() => {
+    props.onWorksLoaded?.(workDisplayed)
+  }, [workDisplayed])
+
   const t = useTranslation()
 
   return (
@@ -49,6 +56,7 @@ export function HomeWorksUsersRecommendedSection (props: Props) {
           works={workDisplayed}
           isCropped={false}
           isShowProfile={true}
+          onSelect={props.onSelect}
         />
       )}
     </>

@@ -61,6 +61,10 @@ import {
   HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
+import {
+  HomeDeferredSection,
+  HomeWorkSectionPlaceholder,
+} from "~/routes/($lang)._main._index/components/home-deferred-section"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import { HomeLoginNoticeMarquee } from "~/routes/($lang)._main._index/components/home-login-notice-marquee"
@@ -73,10 +77,7 @@ import {
   HomeNewPostedUsersFragment,
   HomeNewUsersSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-section"
-import {
-  HomeNewUsersWorksFragment,
-  HomeNewUsersWorksSection,
-} from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { HomeNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
@@ -90,14 +91,8 @@ import {
 } from "~/routes/($lang)._main._index/components/home-tags-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
-import {
-  HomeTagWorkFragment,
-  HomeWorksTagSection,
-} from "~/routes/($lang)._main._index/components/home-works-tag-section"
-import {
-  HomePromotionWorkFragment,
-  HomeWorksUsersRecommendedSection,
-} from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { HomeWorksTagSection } from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 import type {
   MicroCmsApiRelease,
   MicroCmsApiReleaseResponse,
@@ -336,12 +331,7 @@ export async function loader(props: LoaderFunctionArgs) {
       day: now.getDate(),
       month: now.getMonth() + 1,
       year: now.getFullYear(),
-      promotionWorksLimit: config.query.homeWorkCount.promotion,
       awardWorksLimit: config.query.homeWorkCount.award,
-      categoryFirst: randomCategories[0],
-      categorySecond: randomCategories[1],
-      tagWorksLimit: config.query.homeWorkCount.tag,
-      newUsersWorksLimit: config.query.homeWorkCount.newUser,
     },
   })
 
@@ -372,23 +362,11 @@ export async function loader(props: LoaderFunctionArgs) {
     newPostedUsers: Array.isArray(resultData?.newPostedUsers)
       ? resultData.newPostedUsers
       : [],
-    newUserWorks: Array.isArray(resultData?.newUserWorks)
-      ? resultData.newUserWorks
-      : [],
-    promotionWorks: Array.isArray(resultData?.promotionWorks)
-      ? resultData.promotionWorks
-      : [],
     recommendedTags: Array.isArray(resultData?.recommendedTags)
       ? resultData.recommendedTags
       : [],
-    secondTagWorks: Array.isArray(resultData?.secondTagWorks)
-      ? resultData.secondTagWorks
-      : [],
     workAwards: Array.isArray(resultData?.workAwards)
       ? resultData.workAwards
-      : [],
-    firstTagWorks: Array.isArray(resultData?.firstTagWorks)
-      ? resultData.firstTagWorks
       : [],
   }
 }
@@ -532,6 +510,19 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
   const [currentWorks, setCurrentWorks] = useState<
     FragmentOf<typeof PhotoAlbumWorkFragment>[]
   >([])
+  const [homeSectionWorks, setHomeSectionWorks] = useState({
+    generated: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+    newUsers: (data?.newUserWorks ?? []) as FragmentOf<
+      typeof PhotoAlbumWorkFragment
+    >[],
+    recommended: (data?.promotionWorks ?? []) as FragmentOf<
+      typeof PhotoAlbumWorkFragment
+    >[],
+    tags: [
+      ...(data?.firstTagWorks ?? []),
+      ...(data?.secondTagWorks ?? []),
+    ] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  })
 
   const onChangeDialogMode = (mode: boolean) => {
     setIsDialogMode(mode)
@@ -547,16 +538,41 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
   // ホームタブ用の作品データを管理するstate
   const homeWorks = useMemo(
-    () =>
-      [
-        ...(data?.promotionWorks ?? []),
-        ...(data?.newUserWorks ?? []),
-        ...(data?.workAwards ?? []),
-        ...(data?.firstTagWorks ?? []),
-        ...(data?.secondTagWorks ?? []),
-      ] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
-    [data],
+    () => {
+      const works = [
+        ...homeSectionWorks.recommended,
+        ...homeSectionWorks.generated,
+        ...homeSectionWorks.newUsers,
+        ...homeSectionWorks.tags,
+      ]
+
+      return works.filter(
+        (work, index, self) =>
+          self.findIndex((target) => target.id === work.id) === index,
+      )
+    },
+    [homeSectionWorks],
   )
+
+  const updateHomeSectionWorks = (
+    section: keyof typeof homeSectionWorks,
+    works: FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  ) => {
+    setHomeSectionWorks((prev) => {
+      const isSameWorks =
+        prev[section].length === works.length &&
+        prev[section].every((work, index) => work.id === works[index]?.id)
+
+      if (isSameWorks) {
+        return prev
+      }
+
+      return {
+        ...prev,
+        [section]: works,
+      }
+    })
+  }
 
   /**
    * マウント時の初期化（状態はすでに初期値で設定済み）
@@ -861,32 +877,80 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 featuredReleases={data.featuredReleaseList}
                 releaseList={data.releaseList}
               />
-              <HomeWorksUsersRecommendedSection
-                works={data.promotionWorks}
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-              />
-              <HomeWorksGeneratedSection
-                works={[]}
-                dateText={data.awardDateText}
-              />
-              <HomeNewUsersWorksSection
-                works={data.newUserWorks}
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-              />
-              <HomeAwardWorkSection
-                awardDateText={data.awardDateText}
-                title={t("前日ランキング", "Previous Day Ranking")}
-                awards={data.workAwards}
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-              />
-              <HomeWorksTagSection
-                tag={data.firstTag}
-                works={data.firstTagWorks}
-                secondTag={data.secondTag}
-                secondWorks={data.secondTagWorks}
-                isCropped={true}
-                onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-              />
+              <HomeDeferredSection
+                fallback={
+                  <HomeWorkSectionPlaceholder
+                    title={t("ユーザからの推薦", "Recommended by users")}
+                  />
+                }
+              >
+                <HomeWorksUsersRecommendedSection
+                  works={[]}
+                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                  onWorksLoaded={(works) => updateHomeSectionWorks("recommended", works)}
+                />
+              </HomeDeferredSection>
+              <HomeDeferredSection
+                fallback={
+                  <HomeWorkSectionPlaceholder
+                    title={t("作品を選んで無料生成", "Generate from featured works")}
+                  />
+                }
+              >
+                <HomeWorksGeneratedSection
+                  works={[]}
+                  dateText={data.awardDateText}
+                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                  onWorksLoaded={(works) => updateHomeSectionWorks("generated", works)}
+                />
+              </HomeDeferredSection>
+              <HomeDeferredSection
+                fallback={
+                  <HomeWorkSectionPlaceholder
+                    title={t("新規クリエイターの初投稿作品", "New creators' first works")}
+                    variant="cropped"
+                  />
+                }
+              >
+                <HomeNewUsersWorksSection
+                  works={[]}
+                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                  onWorksLoaded={(works) => updateHomeSectionWorks("newUsers", works)}
+                />
+              </HomeDeferredSection>
+              <HomeDeferredSection
+                fallback={
+                  <HomeWorkSectionPlaceholder
+                    title={t("前日ランキング", "Previous Day Ranking")}
+                    variant="cropped"
+                  />
+                }
+              >
+                <HomeAwardWorkSection
+                  awardDateText={data.awardDateText}
+                  title={t("前日ランキング", "Previous Day Ranking")}
+                  awards={[]}
+                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                />
+              </HomeDeferredSection>
+              <HomeDeferredSection
+                fallback={
+                  <HomeWorkSectionPlaceholder
+                    title={t("タグ作品", "Tag Works")}
+                    variant="cropped"
+                  />
+                }
+              >
+                <HomeWorksTagSection
+                  tag={data.firstTag}
+                  works={[]}
+                  secondTag={data.secondTag}
+                  secondWorks={[]}
+                  isCropped={true}
+                  onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
+                  onWorksLoaded={(works) => updateHomeSectionWorks("tags", works)}
+                />
+              </HomeDeferredSection>
               <HomeTagsSection
                 title={t("人気タグ", "Popular Tags")}
                 tags={data.recommendedTags}
@@ -1696,12 +1760,7 @@ const query = graphql(
     $awardYear: Int!
     $awardMonth: Int!
     $awardDay: Int!
-    $promotionWorksLimit: Int!
     $awardWorksLimit: Int!
-    $categoryFirst: String!
-    $categorySecond: String!
-    $tagWorksLimit: Int!
-    $newUsersWorksLimit: Int!
   ) {
     dailyTheme(year: $year, month: $month, day: $day) {
       id
@@ -1729,51 +1788,6 @@ const query = graphql(
       }
     ) {
       ...HomeTag
-    }
-    firstTagWorks: works(
-      offset: 0,
-      limit: $tagWorksLimit,
-      where: {
-        ratings: [G],
-        search: $categoryFirst,
-        isNowCreatedAt: true,
-        orderBy: LIKES_COUNT
-      }
-    ) {
-      ...HomeTagWork
-    }
-    secondTagWorks: works(
-      offset: 0,
-      limit: $tagWorksLimit,
-      where: {
-        ratings: [G],
-        search: $categorySecond,
-        isNowCreatedAt: true,
-        orderBy: LIKES_COUNT
-      }
-    ) {
-      ...HomeTagWork
-    }
-    promotionWorks: works(
-      offset: 0,
-      limit: $promotionWorksLimit,
-      where: {
-        isRecommended: true
-        isNowCreatedAt: true
-        ratings: [G, R15]
-      }
-    ) {
-      ...HomePromotionWork
-    }
-    newUserWorks: newUserWorks(
-      offset: 0,
-      limit: $newUsersWorksLimit,
-      where: {
-        ratings: [G, R15],
-        isNowCreatedAt: true
-      }
-    ) {
-      ...HomeNewUsersWorks
     }
     newPostedUsers: newPostedUsers(
       offset: 0,
@@ -1822,12 +1836,9 @@ const query = graphql(
     }
   }`,
   [
-    HomePromotionWorkFragment,
     HomeTagListItemFragment,
     HomeWorkAwardFragment,
     HomeTagFragment,
-    HomeTagWorkFragment,
-    HomeNewUsersWorksFragment,
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
   ],
