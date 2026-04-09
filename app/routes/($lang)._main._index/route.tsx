@@ -1545,7 +1545,14 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
           </div>
 
           {/* コンテンツ */}
-          <Suspense fallback={<AppLoadingPage />}>
+          <Suspense
+            fallback={
+              <HomeNewWorksSkeleton
+                view="new"
+                isPagination={internalIsPagination}
+              />
+            }
+          >
             <FollowUserFeedContents
               tab={currentTab}
               key={`follow-user-${followUserFeedPage}-${currentTab}`}
@@ -1637,7 +1644,14 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
             </div>
           </div>
 
-          <Suspense fallback={<AppLoadingPage />}>
+          <Suspense
+            fallback={
+              <HomeNewWorksSkeleton
+                view="new"
+                isPagination={internalIsPagination}
+              />
+            }
+          >
             <FollowTagsFeedContents
               _tab={currentTab}
               key={`follow-tag-${followTagFeedPage}-${currentTab}`}
