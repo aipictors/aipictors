@@ -54,6 +54,14 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   })
 
+  const recentThemeProposalsResp = await loaderClient.query({
+    query: recentThemeProposalsQuery,
+    variables: {
+      offset: 0,
+      limit: 12,
+    },
+  })
+
   const worksResp = todayThemesResp.data.dailyThemes.length
     ? await loaderClient.query({
         query: themeWorksQuery,
@@ -137,6 +145,7 @@ export async function loader(props: LoaderFunctionArgs) {
     works: worksResp ? worksResp.data.works : null,
     afterSevenDayThemes: afterSevenDayThemesResp.data.dailyThemes,
     dailyBeforeThemes: dailyBeforeThemes.data.dailyThemes,
+    recentThemeProposals: recentThemeProposalsResp.data.themeProposals,
     worksCount: worksResp ? worksResp.data.worksCount : null,
     page,
     themeId: Number(todayThemesResp.data.dailyThemes[0].id),
@@ -166,6 +175,7 @@ export default function Themes () {
         works={data.works ?? []}
         afterSevenDayThemes={data.afterSevenDayThemes}
         dailyBeforeThemes={data.dailyBeforeThemes}
+        recentThemeProposals={data.recentThemeProposals ?? []}
         worksCount={data.worksCount ?? 0}
         page={data.page}
         year={data.year}
@@ -197,4 +207,17 @@ const themeWorksQuery = graphql(
     worksCount(where: $where)
   }`,
   [ThemeWorkFragment],
+)
+
+const recentThemeProposalsQuery = graphql(
+  `query RecentThemeProposals($offset: Int!, $limit: Int!) {
+    themeProposals(offset: $offset, limit: $limit) {
+      id
+      inputTheme
+      proposerUserId
+      proposerName
+      proposerIconUrl
+      createdAt
+    }
+  }`,
 )

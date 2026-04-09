@@ -30,6 +30,16 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { RecentThemeProposalBubble } from "~/routes/($lang)._main.themes._index/components/recent-theme-proposal-bubble"
+
+type RecentThemeProposal = {
+  id: string
+  inputTheme: string
+  proposerUserId: string
+  proposerName: string
+  proposerIconUrl: string | null
+  createdAt: number
+}
 
 type Props = {
   year: number
@@ -40,6 +50,7 @@ type Props = {
   todayTheme: FragmentOf<typeof ThemeListItemFragment> | null
   afterSevenDayThemes: FragmentOf<typeof ThemeListItemFragment>[]
   dailyBeforeThemes: FragmentOf<typeof ThemeListItemFragment>[]
+  recentThemeProposals?: RecentThemeProposal[]
   page: number
   worksCount: number
   works: FragmentOf<typeof ThemeWorkFragment>[]
@@ -176,13 +187,18 @@ export function ThemeContainer (props: Props) {
     "Themes are updated daily. Create and submit AI illustrations according to the theme! The update happens at 0:00 AM.",
   )
 
+  const recentThemeProposals = props.recentThemeProposals ?? []
+
   return (
     <div className="flex flex-col space-y-4">
       <AppPageHeader title={t("お題", "Theme")} description={description} />
-      <div className="flex flex-wrap gap-2">
-        <Button asChild variant="secondary" size="sm">
-          <Link to="/themes/proposals">{t("お題提案一覧", "Theme proposals")}</Link>
-        </Button>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="secondary" size="sm">
+            <Link to="/themes/proposals">{t("お題提案一覧", "Theme proposals")}</Link>
+          </Button>
+          <RecentThemeProposalBubble proposals={recentThemeProposals} />
+        </div>
         {!authContext.isNotLoggedIn && (
           <Button asChild size="sm">
             <Link to="/themes/proposals/new">{t("お題を提案する", "Submit a proposal")}</Link>
