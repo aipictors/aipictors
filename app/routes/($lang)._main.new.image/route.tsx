@@ -131,14 +131,18 @@ export default function NewImage() {
     ? (userEventsData.userEvents as RawEventOption[])
     : []
 
-  const selectedUserEvent = selectedUserEventData?.userEvent as RawEventOption | undefined
-  const mergedUserEvents = selectedUserEvent
-    && !userEvents.some(
+  const selectedUserEvent = selectedUserEventData?.userEvent as
+    | RawEventOption
+    | undefined
+  const mergedUserEvents =
+    selectedUserEvent &&
+    !userEvents.some(
       (event) =>
-        event.slug === selectedUserEvent.slug || event.tag === selectedUserEvent.tag,
+        event.slug === selectedUserEvent.slug ||
+        event.tag === selectedUserEvent.tag,
     )
-    ? [selectedUserEvent, ...userEvents]
-    : userEvents
+      ? [selectedUserEvent, ...userEvents]
+      : userEvents
 
   const events: EventOption[] = [
     ...appEvents.map((event) => ({ ...event, source: "OFFICIAL" as const })),
@@ -300,6 +304,7 @@ export default function NewImage() {
   const generationResultsKey =
     viewerData?.viewer?.imageGenerationResults?.map((r) => r.id).join("|") ?? ""
   const processedGenerationKeyRef = useRef<string>("")
+  const appliedInitialTagParamsRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     let cancelled = false
@@ -417,6 +422,12 @@ export default function NewImage() {
     }
 
     const decodedTag = decodeURIComponent(tagParam)
+
+    if (appliedInitialTagParamsRef.current.has(decodedTag)) {
+      return
+    }
+
+    appliedInitialTagParamsRef.current.add(decodedTag)
 
     const hasTagAlready = inputState.tags.some((tag) => tag.text === decodedTag)
 
