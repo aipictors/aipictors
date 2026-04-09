@@ -29,6 +29,7 @@ import {
 } from "~/routes/($lang)._main.themes.$year.$month.$day._index/components/theme-article"
 import { useTranslation } from "~/hooks/use-translation"
 import { useUpdateQueryParams } from "~/hooks/use-update-query-params"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 
 type Props = {
   year: number
@@ -178,6 +179,16 @@ export function ThemeContainer (props: Props) {
   return (
     <div className="flex flex-col space-y-4">
       <AppPageHeader title={t("お題", "Theme")} description={description} />
+      <div className="flex flex-wrap gap-2">
+        <Button asChild variant="secondary" size="sm">
+          <Link to="/themes/proposals">{t("お題提案一覧", "Theme proposals")}</Link>
+        </Button>
+        {!authContext.isNotLoggedIn && (
+          <Button asChild size="sm">
+            <Link to="/themes/proposals/new">{t("お題を提案する", "Submit a proposal")}</Link>
+          </Button>
+        )}
+      </div>
       {!props.day && props.todayTheme && (
         <div className="relative overflow-hidden rounded-md">
           <Link
@@ -205,6 +216,29 @@ export function ThemeContainer (props: Props) {
             </h2>
           </Link>
         </div>
+      )}
+
+      {props.day && props.targetThemes?.[0]?.proposer && (
+        <Link
+          to={`/users/${props.targetThemes[0].proposer.id}`}
+          className="flex items-center gap-3 rounded-lg border bg-card p-3"
+        >
+          <Avatar className="size-12">
+            <AvatarImage
+              src={props.targetThemes[0].proposer.iconUrl ?? ""}
+              alt={props.targetThemes[0].proposer.name}
+            />
+            <AvatarFallback>
+              {props.targetThemes[0].proposer.name.slice(0, 1)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="text-muted-foreground text-xs">
+              {t("このお題の提案者", "Theme proposer")}
+            </p>
+            <p className="font-medium">{props.targetThemes[0].proposer.name}</p>
+          </div>
+        </Link>
       )}
 
       <div className="flex flex-col items-center justify-between space-y-2 md:flex-row md:space-y-0">

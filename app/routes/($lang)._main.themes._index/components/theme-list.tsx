@@ -4,6 +4,7 @@ import { Link, useNavigate } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { cn } from "~/lib/utils"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 
 type Props = {
   year: number
@@ -64,6 +65,7 @@ export function ThemeList (props: Props) {
         : (theme?.firstWork?.smallThumbnailImageURL ?? null),
       proposerId: theme?.proposer?.id ?? null,
       proposerName: theme?.proposer?.name ?? null,
+      proposerIconUrl: theme?.proposer?.iconUrl ?? null,
     }
   })
 
@@ -178,16 +180,27 @@ export function ThemeList (props: Props) {
                     {block.title}
                   </div>
                 )}
-              </div>
               {block.proposerId && block.proposerId?.length !== 0 && (
                 <Link
                   to={`/users/${block.proposerId}`}
-                  className="absolute right-0 bottom-0 left-0 z-10 text-wrap bg-black bg-opacity-60 p-0 text-center text-sm text-white opacity-40"
+                    className="absolute right-0 bottom-0 left-0 z-10 flex items-center justify-center gap-1 bg-black bg-opacity-70 px-1 py-1 text-white"
                 >
-                  {block.proposerName}
-                  {"さん案"}
-                </Link>
-              )}
+                    <Avatar className="size-4">
+                      <AvatarImage
+                        src={block.proposerIconUrl ?? ""}
+                        alt={block.proposerName ?? ""}
+                      />
+                      <AvatarFallback className="text-[8px]">
+                        {block.proposerName?.slice(0, 1)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="truncate text-[10px] md:text-xs">
+                      {block.proposerName}
+                      {"さん案"}
+                    </span>
+                  </Link>
+                )}
+              </div>
             </div>
           ))}
         </div>
