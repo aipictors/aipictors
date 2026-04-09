@@ -11,11 +11,11 @@ function SkeletonToggleGroup(props: {
   items: Array<{ width: string; active?: boolean }>
 }) {
   return (
-    <div className="flex rounded-lg bg-muted/50 p-1 shadow-sm">
+    <div className="flex rounded-lg bg-muted/50 p-1">
       {props.items.map((item, index) => (
         <div
           key={`toggle-item-${item.width}-${index}`}
-          className={`rounded-md px-2 py-1 ${item.active ? "bg-background shadow-sm" : ""}`}
+          className={`rounded-md px-2 py-1 ${item.active ? "bg-background" : ""}`}
         >
           <Skeleton className={`h-7 ${item.width}`} />
         </div>
@@ -31,7 +31,7 @@ export function HomeNewWorksSkeleton(props: Props) {
   return (
     <div className="space-y-4" aria-hidden="true">
       {showFilterPanel ? (
-        <div className="rounded-lg border bg-muted/30 p-2 shadow-sm">
+        <div className="rounded-lg border bg-muted/30 p-2">
           <div className="flex items-center justify-end">
             <Skeleton className="h-7 w-7 rounded-md" />
           </div>
@@ -43,7 +43,7 @@ export function HomeNewWorksSkeleton(props: Props) {
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Skeleton className="h-8 w-28 rounded-md" />
-              <div className="flex items-center gap-2 rounded-md border bg-background px-2 py-1.5 shadow-sm">
+              <div className="flex items-center gap-2 rounded-md border bg-background px-2 py-1.5">
                 <Skeleton className="h-4 w-4 rounded-sm" />
                 <Skeleton className="h-3 w-28" />
               </div>
@@ -78,7 +78,7 @@ export function HomeNewWorksSkeleton(props: Props) {
         {cardHeights.map((height, index) => (
           <div
             key={`new-works-skeleton-${props.view}-${height}-${index}`}
-            className="overflow-hidden rounded-xl border bg-card shadow-sm"
+            className="overflow-hidden rounded-xl bg-card"
           >
             <div className="relative overflow-hidden">
               <Skeleton
@@ -87,35 +87,29 @@ export function HomeNewWorksSkeleton(props: Props) {
               />
               <div className="absolute top-2 right-2 flex gap-1.5">
                 {index % 3 === 0 && (
-                  <Skeleton className="h-6 w-12 rounded-full" />
+                  <div className="rounded-md bg-background/85 px-1.5 py-1">
+                    <Skeleton className="h-3 w-8 bg-muted" />
+                  </div>
                 )}
-                <Skeleton className="h-6 w-8 rounded-full" />
-              </div>
-              <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/30 via-black/5 to-transparent px-3 pt-8 pb-3">
-                <Skeleton className="h-3 w-20 bg-white/30" />
-                <div className="flex gap-1.5">
-                  <Skeleton className="h-3 w-8 bg-white/30" />
-                  <Skeleton className="h-3 w-8 bg-white/30" />
+                <div className="rounded-md bg-background/85 px-1.5 py-1">
+                  <Skeleton className="h-3 w-6 bg-muted" />
                 </div>
+              </div>
+              <div className="absolute right-3 bottom-3 rounded-full bg-background/90 p-2">
+                <Skeleton className="h-5 w-5 rounded-full bg-muted" />
               </div>
             </div>
 
-            <div className="space-y-3 p-3">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-4/5" />
-                <Skeleton className="h-3 w-2/3" />
-              </div>
-              <div className="flex items-center justify-between">
+            <div className="space-y-2 px-1 pt-2 pb-1">
+              <Skeleton className="h-5 w-4/5" />
+              <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <Skeleton className="h-7 w-7 rounded-full" />
-                  <div className="space-y-1.5">
-                    <Skeleton className="h-3 w-16" />
-                    <Skeleton className="h-2.5 w-12" />
-                  </div>
+                  <Skeleton className="h-4 w-20" />
                 </div>
-                <div className="space-y-1.5 text-right">
-                  <Skeleton className="ml-auto h-3 w-10" />
-                  <Skeleton className="ml-auto h-2.5 w-8" />
+                <div className="flex items-center gap-1">
+                  <Skeleton className="h-3.5 w-3.5 rounded-full" />
+                  <Skeleton className="h-4 w-6" />
                 </div>
               </div>
             </div>
@@ -125,7 +119,7 @@ export function HomeNewWorksSkeleton(props: Props) {
 
       {props.isPagination && (
         <div className="fixed inset-x-0 bottom-0 z-10 flex justify-center border border-border/40 bg-background/95 p-2 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-          <div className="flex items-center gap-2 rounded-lg bg-background px-3 py-2 shadow-sm">
+          <div className="flex items-center gap-2 rounded-lg bg-background px-3 py-2">
             <Skeleton className="h-8 w-8 rounded-md" />
             <Skeleton className="h-8 w-8 rounded-md" />
             <Skeleton className="h-8 w-10 rounded-md" />
