@@ -77,6 +77,7 @@ import {
   HomeNewUsersWorksFragment,
   HomeNewUsersWorksSection,
 } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
+import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
 import {
@@ -97,6 +98,10 @@ import {
   HomePromotionWorkFragment,
   HomeWorksUsersRecommendedSection,
 } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import type {
+  MicroCmsApiRelease,
+  MicroCmsApiReleaseResponse,
+} from "~/types/micro-cms-release-response"
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import {
@@ -187,6 +192,38 @@ const buildHomeEventPreviews = (officialEvents: any[], userEvents: any[]) => {
   ])
 }
 
+const createEmptyReleaseList = (): MicroCmsApiReleaseResponse => ({
+  contents: [],
+  totalCount: 0,
+  offset: 0,
+  limit: 4,
+})
+
+const createBaseHomeLoaderData = (props: {
+  awardDateText: string
+  firstTag: string
+  secondTag: string
+  releaseList: MicroCmsApiReleaseResponse
+  featuredReleaseList: MicroCmsApiRelease[]
+}) => ({
+  awardDateText: props.awardDateText,
+  dailyTheme: null,
+  eventPreviews: [],
+  firstTag: props.firstTag,
+  featuredReleaseList: props.featuredReleaseList,
+  hotTags: [],
+  newComments: [],
+  newPostedUsers: [],
+  newUserWorks: [],
+  promotionWorks: [],
+  recommendedTags: [],
+  releaseList: props.releaseList,
+  secondTag: props.secondTag,
+  secondTagWorks: [],
+  workAwards: [],
+  firstTagWorks: [],
+})
+
 const buildUserEventIconMap = async (userIds: string[]) => {
   const uniqueUserIds = [...new Set(userIds.filter(Boolean))]
 
@@ -213,6 +250,8 @@ const buildUserEventIconMap = async (userIds: string[]) => {
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const legacyTab = url.searchParams.get("tab")
+  const currentPathLeaf = url.pathname.split("/").filter(Boolean).at(-1) ?? ""
+  const isHomeRoute = currentPathLeaf === "home"
 
   if (
     legacyTab === "home" ||
@@ -254,26 +293,9 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const now = getJstDate()
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+  const awardDateText = getUtcDateString(yesterday)
 
-  const [result, releaseList, featuredReleaseList] = await Promise.all([
-    loaderClient.query({
-      query: query,
-      errorPolicy: "all",
-      variables: {
-        awardDay: yesterday.getDate(),
-        awardMonth: yesterday.getMonth() + 1,
-        awardYear: yesterday.getFullYear(),
-        day: now.getDate(),
-        month: now.getMonth() + 1,
-        year: now.getFullYear(),
-        promotionWorksLimit: config.query.homeWorkCount.promotion,
-        awardWorksLimit: config.query.homeWorkCount.award,
-        categoryFirst: randomCategories[0],
-        categorySecond: randomCategories[1],
-        tagWorksLimit: config.query.homeWorkCount.tag,
-        newUsersWorksLimit: config.query.homeWorkCount.newUser,
-      },
-    }),
+  const [releaseList, featuredReleaseList] = await Promise.all([
     fetchReleaseList({
       limit: 4,
     }).catch(() => ({
@@ -285,7 +307,44 @@ export async function loader(props: LoaderFunctionArgs) {
     fetchFeaturedTaggedReleases().catch(() => []),
   ])
 
-  const awardDateText = getUtcDateString(yesterday)
+  const safeReleaseList =
+    releaseList && Array.isArray(releaseList.contents)
+      ? releaseList
+      : createEmptyReleaseList()
+
+  const baseLoaderData = createBaseHomeLoaderData({
+    awardDateText,
+    firstTag: randomCategories[0],
+    secondTag: randomCategories[1],
+    releaseList: safeReleaseList,
+    featuredReleaseList: Array.isArray(featuredReleaseList)
+      ? featuredReleaseList
+      : [],
+  })
+
+  if (!isHomeRoute) {
+    return baseLoaderData
+  }
+
+  const result = await loaderClient.query({
+    query: query,
+    errorPolicy: "all",
+    variables: {
+      awardDay: yesterday.getDate(),
+      awardMonth: yesterday.getMonth() + 1,
+      awardYear: yesterday.getFullYear(),
+      day: now.getDate(),
+      month: now.getMonth() + 1,
+      year: now.getFullYear(),
+      promotionWorksLimit: config.query.homeWorkCount.promotion,
+      awardWorksLimit: config.query.homeWorkCount.award,
+      categoryFirst: randomCategories[0],
+      categorySecond: randomCategories[1],
+      tagWorksLimit: config.query.homeWorkCount.tag,
+      newUsersWorksLimit: config.query.homeWorkCount.newUser,
+    },
+  })
+
   const resultData = result.data
   const appEvents: any[] = Array.isArray(resultData?.appEvents)
     ? resultData.appEvents
@@ -301,24 +360,11 @@ export async function loader(props: LoaderFunctionArgs) {
     userIconUrl: event.userId ? (userIconMap.get(event.userId) ?? null) : null,
   }))
   const eventPreviews = buildHomeEventPreviews(appEvents, userEvents)
-  const safeReleaseList =
-    releaseList && Array.isArray(releaseList.contents)
-      ? releaseList
-      : {
-          contents: [],
-          totalCount: 0,
-          offset: 0,
-          limit: 4,
-        }
 
   return {
+    ...baseLoaderData,
     ...(resultData ?? {}),
-    awardDateText: awardDateText,
     eventPreviews,
-    firstTag: randomCategories[0],
-    featuredReleaseList: Array.isArray(featuredReleaseList)
-      ? featuredReleaseList
-      : [],
     hotTags: Array.isArray(resultData?.hotTags) ? resultData.hotTags : [],
     newComments: Array.isArray(resultData?.newComments)
       ? resultData.newComments
@@ -335,8 +381,6 @@ export async function loader(props: LoaderFunctionArgs) {
     recommendedTags: Array.isArray(resultData?.recommendedTags)
       ? resultData.recommendedTags
       : [],
-    releaseList: safeReleaseList,
-    secondTag: randomCategories[1],
     secondTagWorks: Array.isArray(resultData?.secondTagWorks)
       ? resultData.secondTagWorks
       : [],
@@ -1222,7 +1266,14 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               </div>
 
               {/* 新着作品 */}
-              <Suspense fallback={<AppLoadingPage />}>
+              <Suspense
+                fallback={
+                  <HomeNewWorksSkeleton
+                    view="new"
+                    isPagination={internalIsPagination}
+                  />
+                }
+              >
                 {internalIsPagination ? (
                   <HomePaginationWorksSection
                     page={newWorksPage}
@@ -1292,7 +1343,14 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 </div>
               </div>
 
-              <Suspense fallback={<AppLoadingPage />}>
+              <Suspense
+                fallback={
+                  <HomeNewWorksSkeleton
+                    view="popular"
+                    isPagination={internalIsPagination}
+                  />
+                }
+              >
                 <HomeHotWorksSection
                   page={newWorksPage}
                   setPage={setNewWorksPage}
@@ -1388,7 +1446,14 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 </div>
               </div>
 
-              <Suspense fallback={<AppLoadingPage />}>
+              <Suspense
+                fallback={
+                  <HomeNewWorksSkeleton
+                    view="new-user"
+                    isPagination={internalIsPagination}
+                  />
+                }
+              >
                 <HomeNewUsersWorkListSection
                   workType={workType}
                   isPromptPublic={isPromptPublic}
