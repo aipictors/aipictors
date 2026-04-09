@@ -1,19 +1,18 @@
-import { loaderClient } from "~/lib/loader-client"
-import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import {
-  RankingWorkList,
-  WorkAwardListItemFragment,
-} from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { redirect } from "@remix-run/cloudflare"
-import { useParams } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
+import { loaderClient } from "~/lib/loader-client"
+import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
+import {
+  RankingWorkList,
+  WorkAwardListItemFragment,
+} from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { createMeta } from "~/utils/create-meta"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
@@ -77,7 +76,7 @@ export const meta: MetaFunction = (props) => {
 /**
  * ある月のランキングの履歴
  */
-export default function MonthlyAwards () {
+export default function MonthlyAwards() {
   const params = useParams()
 
   if (params.year === undefined) {

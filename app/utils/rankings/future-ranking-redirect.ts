@@ -37,7 +37,10 @@ export const getFutureRankingRedirectPath = (
   const yesterday = getJstDate(new Date(now.getTime() - 24 * 60 * 60 * 1000))
 
   if (input.kind === "monthly") {
-    const currentMonthValue = toMonthValue(now.getFullYear(), now.getMonth() + 1)
+    const currentMonthValue = toMonthValue(
+      now.getFullYear(),
+      now.getMonth() + 1,
+    )
     const requestedMonthValue = toMonthValue(input.year, input.month)
 
     if (requestedMonthValue < currentMonthValue) {
