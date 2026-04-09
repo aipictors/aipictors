@@ -210,13 +210,13 @@ export default function NewThemeProposalPage() {
               <p className="text-muted-foreground text-xs">
                 {t("選択中の対象日", "Selected target date")}
               </p>
-              <div className="mt-2 flex items-center gap-2">
+              <div className="mt-2 flex items-center gap-2 overflow-hidden">
                 <CalendarDaysIcon className="size-4 text-orange-500" />
-                <p className="font-semibold text-lg">
+                <p className="truncate whitespace-nowrap font-semibold text-lg">
                   {format(parseISO(date), "yyyy/MM/dd (EEE)", { locale: ja })}
                 </p>
               </div>
-              <p className="mt-2 text-muted-foreground text-xs">
+              <p className="mt-2 whitespace-nowrap text-muted-foreground text-xs">
                 {t(
                   `提案できる最短日は ${format(minimumProposalDate, "yyyy/MM/dd")} です。`,
                   `The earliest proposal date is ${format(minimumProposalDate, "yyyy/MM/dd")}.`,
@@ -328,7 +328,8 @@ export default function NewThemeProposalPage() {
                           <Link
                             key={item.id}
                             to={`/themes/${item.year}/${item.month}/${item.day}`}
-                            className="rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-sm transition hover:bg-orange-100"
+                            className="max-w-full truncate whitespace-nowrap rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-sm transition hover:bg-orange-100"
+                            title={`${format(parseISO(item.dateText), "yyyy/MM/dd", { locale: ja })} · ${item.title}`}
                           >
                             {format(parseISO(item.dateText), "yyyy/MM/dd", { locale: ja })}
                             {" · "}
@@ -390,7 +391,7 @@ export default function NewThemeProposalPage() {
                 >
                   <ChevronLeftIcon className="size-4" />
                 </Button>
-                <div className="min-w-28 text-center font-semibold text-sm">
+                <div className="min-w-28 whitespace-nowrap text-center font-semibold text-sm">
                   {format(visibleMonth, "yyyy年M月", { locale: ja })}
                 </div>
                 <Button
@@ -406,9 +407,9 @@ export default function NewThemeProposalPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap gap-2 text-xs">
-              <Badge variant="secondary">{t("過去と7日後まで", "Past to +7 days")}</Badge>
-              <Badge className="bg-emerald-600 text-white">{t("提案OK", "Proposal open")}</Badge>
-              <Badge className="bg-slate-500 text-white">{t("受付前", "Not open yet")}</Badge>
+              <Badge variant="secondary" className="whitespace-nowrap">{t("過去と7日後まで", "Past to +7 days")}</Badge>
+              <Badge className="whitespace-nowrap bg-emerald-600 text-white">{t("提案OK", "Proposal open")}</Badge>
+              <Badge className="whitespace-nowrap bg-slate-500 text-white">{t("受付前", "Not open yet")}</Badge>
             </div>
 
             {isCalendarLoading && dailyThemes.length === 0 ? (
@@ -458,14 +459,14 @@ export default function NewThemeProposalPage() {
                           },
                         )}
                       >
-                        <div className="flex items-start justify-between gap-1">
+                        <div className="flex items-start justify-between gap-1 overflow-hidden">
                           <span className="font-semibold text-sm">{day}</span>
                           {isSelectable ? (
-                            <Badge className="h-5 bg-emerald-600 px-1.5 text-[10px] text-white">
+                            <Badge className="h-5 whitespace-nowrap bg-emerald-600 px-1.5 text-[10px] text-white">
                               {t("提案OK", "Open")}
                             </Badge>
                           ) : (
-                            <Badge className="h-5 bg-slate-500 px-1.5 text-[10px] text-white">
+                            <Badge className="h-5 whitespace-nowrap bg-slate-500 px-1.5 text-[10px] text-white">
                               {isHistoryWindow
                                 ? t("公開中", "Visible")
                                 : t("受付前", "Closed")}
@@ -473,20 +474,20 @@ export default function NewThemeProposalPage() {
                           )}
                         </div>
 
-                        <div className="mt-2 line-clamp-3 text-[11px] leading-4">
+                        <div className="mt-2 text-[11px] leading-4">
                           {themeForDay && isHistoryWindow ? (
                             <>
-                              <p className="font-medium">{themeForDay.title}</p>
-                              <p className="mt-1 text-muted-foreground text-[10px]">
+                              <p className="truncate whitespace-nowrap font-medium" title={themeForDay.title}>{themeForDay.title}</p>
+                              <p className="mt-1 truncate whitespace-nowrap text-muted-foreground text-[10px]">
                                 {t("過去または近日公開のお題", "Past or upcoming official theme")}
                               </p>
                             </>
                           ) : isSelectable ? (
-                            <p className="text-emerald-700 text-xs">
+                            <p className="truncate whitespace-nowrap text-emerald-700 text-xs">
                               {t("この日付に提案できます", "You can propose for this date")}
                             </p>
                           ) : (
-                            <p className="text-muted-foreground text-xs">
+                            <p className="truncate whitespace-nowrap text-muted-foreground text-xs">
                               {t("この期間は既存お題の確認用です", "This period is for checking official themes")}
                             </p>
                           )}
