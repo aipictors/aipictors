@@ -64,7 +64,9 @@ export default function ThemeProposalsPage() {
   const [pendingCancelId, setPendingCancelId] = useState<string | null>(null)
   const [pendingLikeId, setPendingLikeId] = useState<string | null>(null)
 
-  const proposals = data?.themeProposals ?? []
+  const proposals = (data?.themeProposals ?? []).filter(
+    (proposal) => proposal.status !== "CANCELED",
+  )
 
   const onCancel = async (proposalId: string) => {
     await cancelProposal({ variables: { proposalId: proposalId } })
@@ -107,7 +109,7 @@ export default function ThemeProposalsPage() {
         </Button>
       </div>
 
-      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm text-orange-950">
+      <div className="rounded-2xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-950">
         <p className="font-medium">
           {t(
             "保留中のお題案にはログインユーザーがいいねできます。採用判定ではAIが内容に加えていいね数も参考にし、近い案ならいいねが多い案を優先します。",
@@ -128,7 +130,7 @@ export default function ThemeProposalsPage() {
           {t("読み込み中", "Loading")}
         </div>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid gap-3">
           {proposals.map((proposal) => {
             const targetDate = new Date(`${proposal.targetDate}T00:00:00`)
             const isOwnProposal = authContext.userId === proposal.proposerUserId
@@ -139,13 +141,13 @@ export default function ThemeProposalsPage() {
             const isLikeBusy = pendingLikeId === proposal.id
 
             return (
-              <div key={proposal.id} className="grid gap-3 md:grid-cols-[108px_1fr] md:items-start">
-                <div className="flex flex-col items-center gap-2 pt-3 text-center">
+              <div key={proposal.id} className="grid gap-2 md:grid-cols-[84px_1fr] md:items-start">
+                <div className="flex flex-col items-center gap-1 pt-1 text-center">
                   <Link
                     to={`/users/${proposal.proposerUserId}`}
                     className="flex flex-col items-center gap-2"
                   >
-                    <Avatar className="size-16 border-4 border-white shadow-md">
+                    <Avatar className="size-12 border-2 border-white shadow-sm">
                       <AvatarImage
                         src={proposal.proposerIconUrl ?? ""}
                         alt={proposal.proposerName}
@@ -155,44 +157,53 @@ export default function ThemeProposalsPage() {
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-muted-foreground text-[11px]">
+                      <p className="text-muted-foreground text-[10px] leading-none">
                         {t("提案者", "Proposer")}
                       </p>
-                      <p className="font-medium text-sm">{proposal.proposerName}</p>
+                      <p className="mt-1 line-clamp-2 font-medium text-xs leading-4">
+                        {proposal.proposerName}
+                      </p>
                     </div>
                   </Link>
                 </div>
 
-                <div className="relative rounded-[28px] border border-orange-200 bg-linear-to-br from-white via-orange-50/70 to-amber-100/70 p-5 shadow-sm">
-                  <div className="absolute top-8 left-[-7px] h-4 w-4 rotate-45 border-orange-200 border-b border-l bg-orange-50" />
+                <div className="relative rounded-[22px] border border-orange-200 bg-linear-to-br from-white via-orange-50/70 to-amber-100/70 p-3 shadow-sm">
+                  <div className="absolute top-6 left-[-6px] h-3 w-3 rotate-45 border-orange-200 border-b border-l bg-orange-50" />
 
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                      <div className="space-y-2">
-                        <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="min-w-0 space-y-2">
+                        <div className="flex flex-wrap items-center gap-1.5">
                           <Badge className={getStatusBadgeClassName(proposal.status)}>
                             {getStatusLabel(t, proposal.status)}
                           </Badge>
-                          <Badge variant="secondary">
+                          <Badge variant="secondary" className="px-2 py-0 text-[11px]">
                             {format(targetDate, "yyyy/MM/dd (EEE)", { locale: ja })}
                           </Badge>
-                          <Badge variant="outline" className="gap-1.5 bg-white/80">
+                          <Badge variant="outline" className="gap-1 px-2 py-0 text-[11px] bg-white/80">
                             <Heart
                               className={proposal.isLiked ? "size-3.5 fill-rose-500 text-rose-500" : "size-3.5"}
                             />
                             <span>{proposal.likesCount}</span>
                           </Badge>
+                          <span className="text-muted-foreground text-xs">
+                            {t("送信", "Submitted")}: {formatUnixTime(proposal.createdAt)}
+                          </span>
                         </div>
-                        <div className="rounded-[24px] bg-white/80 p-4 shadow-sm">
-                          <p className="font-semibold text-lg leading-7">{proposal.inputTheme}</p>
-                          <p className="mt-2 text-muted-foreground text-sm">
+                        <div className="rounded-[18px] bg-white/85 px-3 py-2.5 shadow-sm">
+                          <p className="font-semibold text-base leading-6">{proposal.inputTheme}</p>
+                          <p className="mt-1 text-muted-foreground text-xs leading-5">
                             {proposal.title}
                             {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
+                          </p>
+                          <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                            <span className="font-medium text-foreground/80">Prompt:</span>{" "}
+                            {proposal.promptName}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center justify-end gap-2">
+                      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
                         {canLikeProposal && (
                           <Button
                             variant={proposal.isLiked ? "default" : "outline"}
@@ -257,34 +268,21 @@ export default function ThemeProposalsPage() {
                       </div>
                     </div>
 
-                    <div className="grid gap-2 text-sm md:grid-cols-2 xl:grid-cols-[1fr_220px]">
-                      <div className="rounded-2xl border bg-white/80 p-3">
-                        <p className="text-muted-foreground text-xs">Prompt</p>
-                        <p className="mt-1">{proposal.promptName}</p>
-                      </div>
-                      <div className="rounded-2xl border bg-white/80 p-3">
-                        <p className="text-muted-foreground text-xs">
-                          {t("送信日時", "Submitted")}
-                        </p>
-                        <p className="mt-1">{formatUnixTime(proposal.createdAt)}</p>
-                      </div>
-                    </div>
-
                     {proposal.precheckComment && (
-                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-900 text-sm">
-                        <p className="mb-1 font-medium">
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-900 text-sm">
+                        <p className="mb-1 font-medium text-xs uppercase tracking-wide">
                           {t("一次チェック", "Initial check")}
                         </p>
-                        <p>{proposal.precheckComment}</p>
+                        <p className="leading-6">{proposal.precheckComment}</p>
                       </div>
                     )}
 
                     {proposal.decisionComment && (
-                      <div className="rounded-2xl border border-sky-200 bg-sky-50 p-3 text-sky-900 text-sm">
-                        <p className="mb-1 font-medium">
+                      <div className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2 text-sky-900 text-sm">
+                        <p className="mb-1 font-medium text-xs uppercase tracking-wide">
                           {t("ぴくたーちゃんのコメント", "Pictor-chan comment")}
                         </p>
-                        <p>{proposal.decisionComment}</p>
+                        <p className="leading-6">{proposal.decisionComment}</p>
                       </div>
                     )}
 
