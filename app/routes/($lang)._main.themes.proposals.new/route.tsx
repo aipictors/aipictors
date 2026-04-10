@@ -28,6 +28,13 @@ import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
+import {
   Card,
   CardContent,
   CardDescription,
@@ -68,6 +75,23 @@ type DuplicateCheckQueryData = {
   themeProposalDuplicateThemes: DailyTheme[]
 }
 
+type CalendarThemeProposal = {
+  id: string
+  inputTheme: string
+  title: string
+  enTitle: string
+  targetDate: string
+  status: string
+  proposerUserId: string
+  proposerName: string
+  createdAt: number
+  likesCount: number
+}
+
+type CalendarThemeProposalsQueryData = {
+  themeProposals: CalendarThemeProposal[]
+}
+
 export default function NewThemeProposalPage() {
   const t = useTranslation()
   const navigate = useNavigate()
@@ -96,14 +120,26 @@ export default function NewThemeProposalPage() {
       },
       fetchPolicy: "cache-and-network",
     })
+  const { data: proposalCalendarData, loading: isProposalCalendarLoading } =
+    useQuery<CalendarThemeProposalsQueryData>(CalendarThemeProposalsQuery, {
+      variables: {
+        offset: 0,
+        limit: 200,
+        year: visibleMonth.getFullYear(),
+        month: visibleMonth.getMonth() + 1,
+      },
+      fetchPolicy: "cache-and-network",
+    })
   const [runDuplicateCheck, duplicateCheck] = useLazyQuery<DuplicateCheckQueryData>(
     ThemeProposalDuplicateThemesQuery,
     {
       fetchPolicy: "no-cache",
     },
   )
+  const [selectedProposalDate, setSelectedProposalDate] = useState<string | null>(null)
 
   const dailyThemes = calendarData?.dailyThemes ?? []
+  const monthThemeProposals = proposalCalendarData?.themeProposals ?? []
   const duplicateThemes = checkedTheme === theme.trim()
     ? (duplicateCheck.data?.themeProposalDuplicateThemes ?? [])
     : []
@@ -121,6 +157,18 @@ export default function NewThemeProposalPage() {
     visibleMonth.getFullYear(),
     visibleMonth.getMonth() + 1,
   )
+  const proposalsByDate = monthThemeProposals.reduce(
+    (map, proposal) => {
+      const items = map.get(proposal.targetDate) ?? []
+      items.push(proposal)
+      map.set(proposal.targetDate, items)
+      return map
+    },
+    new Map<string, CalendarThemeProposal[]>(),
+  )
+  const selectedDateProposals = selectedProposalDate
+    ? (proposalsByDate.get(selectedProposalDate) ?? [])
+    : []
 
   const onSubmit = async () => {
     if (!theme.trim()) {
@@ -417,11 +465,19 @@ export default function NewThemeProposalPage() {
           <CardContent className="space-y-4">
             <div className="flex flex-wrap gap-2 text-xs">
               <Badge variant="secondary" className="whitespace-nowrap">{t("過去と7日後まで", "Past to +7 days")}</Badge>
-              <Badge className="whitespace-nowrap bg-emerald-600 text-white">{t("提案OK", "Proposal open")}</Badge>
+              <Badge className="whitespace-nowrap bg-emerald-600 text-white">{t("未提案", "No proposals yet")}</Badge>
+              <Badge className="whitespace-nowrap bg-amber-500 text-white">{t("提案あり", "Has proposals")}</Badge>
               <Badge className="whitespace-nowrap bg-slate-500 text-white">{t("受付前", "Not open yet")}</Badge>
             </div>
 
-            {isCalendarLoading && dailyThemes.length === 0 ? (
+            <p className="text-muted-foreground text-xs dark:text-zinc-400">
+              {t(
+                "8日後以降の日付は、未提案と提案ありで色分けしています。提案ありの日付では件数ボタンから日別一覧を開けます。",
+                "Dates from day eight onward are color-coded by whether proposals already exist. Use the count button to open the per-day list.",
+              )}
+            </p>
+
+            {isCalendarLoading && isProposalCalendarLoading && dailyThemes.length === 0 && monthThemeProposals.length === 0 ? (
               <div className="flex min-h-64 items-center justify-center text-muted-foreground">
                 <Loader2Icon className="mr-2 size-4 animate-spin" />
                 {t("カレンダーを読み込み中", "Loading calendar")}
@@ -446,23 +502,46 @@ export default function NewThemeProposalPage() {
                     )
                     const dateText = format(cellDate, "yyyy-MM-dd")
                     const themeForDay = dailyThemes.find((item) => item.dateText === dateText)
+                    const proposalsForDay = proposalsByDate.get(dateText) ?? []
+                    const hasProposals = proposalsForDay.length > 0
                     const isSelectable = !isBefore(cellDate, minimumProposalDate)
                     const isSelected = dateText === date
                     const isHistoryWindow = isBefore(cellDate, minimumProposalDate)
+                    const cellStatusLabel = isSelectable
+                      ? hasProposals
+                        ? t("提案あり", "Has proposals")
+                        : t("未提案", "No proposals")
+                      : isHistoryWindow
+                        ? t("公開中", "Visible")
+                        : t("受付前", "Closed")
 
                     return (
-                      <button
+                      <div
                         key={dateText}
-                        type="button"
+                        role={isSelectable ? "button" : undefined}
+                        tabIndex={isSelectable ? 0 : undefined}
                         onClick={() => {
-                          if (isSelectable) {
+                          if (!isSelectable) {
+                            return
+                          }
+
+                          onSelectDate(dateText)
+                        }}
+                        onKeyDown={(event) => {
+                          if (!isSelectable) {
+                            return
+                          }
+
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault()
                             onSelectDate(dateText)
                           }
                         }}
                         className={cn(
-                          "relative aspect-square rounded-3xl border p-2 text-left transition",
+                          "relative flex aspect-square flex-col rounded-3xl border p-2 text-left transition",
                           {
-                            "cursor-pointer border-emerald-500 bg-emerald-50 shadow-sm dark:border-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-100": isSelectable,
+                            "cursor-pointer border-emerald-500 bg-emerald-50 shadow-sm dark:border-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-100": isSelectable && !hasProposals,
+                            "cursor-pointer border-amber-400 bg-amber-50 shadow-sm dark:border-amber-700 dark:bg-amber-950/35 dark:text-amber-100": isSelectable && hasProposals,
                             "cursor-default border-slate-200 bg-white/80 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-100": !isSelectable,
                             "ring-2 ring-orange-400 dark:ring-orange-500": isSelected,
                           },
@@ -471,24 +550,39 @@ export default function NewThemeProposalPage() {
                         <div className="flex items-start justify-between gap-1 overflow-hidden">
                           <span className="font-semibold text-sm">{day}</span>
                           {isSelectable ? (
-                            <Badge className="h-5 whitespace-nowrap bg-emerald-600 px-1.5 text-[10px] text-white">
-                              {t("提案OK", "Open")}
+                            <Badge
+                              className={cn(
+                                "h-5 whitespace-nowrap px-1.5 text-[10px] text-white",
+                                hasProposals ? "bg-amber-500" : "bg-emerald-600",
+                              )}
+                            >
+                              {cellStatusLabel}
                             </Badge>
                           ) : (
                             <Badge className="h-5 whitespace-nowrap bg-slate-500 px-1.5 text-[10px] text-white">
-                              {isHistoryWindow
-                                ? t("公開中", "Visible")
-                                : t("受付前", "Closed")}
+                              {cellStatusLabel}
                             </Badge>
                           )}
                         </div>
 
-                        <div className="mt-2 text-[11px] leading-4">
+                        <div className="mt-2 flex-1 text-[11px] leading-4">
                           {themeForDay && isHistoryWindow ? (
                             <>
                               <p className="truncate whitespace-nowrap font-medium" title={themeForDay.title}>{themeForDay.title}</p>
                               <p className="mt-1 truncate whitespace-nowrap text-muted-foreground text-[10px] dark:text-zinc-400">
                                 {t("過去または近日公開のお題", "Past or upcoming official theme")}
+                              </p>
+                            </>
+                          ) : isSelectable && hasProposals ? (
+                            <>
+                              <p className="truncate whitespace-nowrap font-medium text-amber-800 text-xs dark:text-amber-200">
+                                {t("この日に提案があります", "Proposals already submitted")}
+                              </p>
+                              <p className="mt-1 truncate whitespace-nowrap text-[10px] text-amber-700/80 dark:text-amber-200/80">
+                                {t(
+                                  `${proposalsForDay.length}件の提案が集まっています。`,
+                                  `${proposalsForDay.length} proposals already exist for this date.`,
+                                )}
                               </p>
                             </>
                           ) : isSelectable ? (
@@ -501,12 +595,98 @@ export default function NewThemeProposalPage() {
                             </p>
                           )}
                         </div>
-                      </button>
+
+                        {hasProposals && (
+                          <div className="mt-2 flex justify-end">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              className="h-6 rounded-full px-2 text-[10px]"
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                setSelectedProposalDate(dateText)
+                              }}
+                            >
+                              {t(
+                                `${proposalsForDay.length}件を見る`,
+                                `View ${proposalsForDay.length}`,
+                              )}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     )
                   })}
                 </div>
               </div>
             )}
+
+            <Dialog
+              open={selectedProposalDate !== null}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setSelectedProposalDate(null)
+                }
+              }}
+            >
+              <DialogContent className="max-w-xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    {selectedProposalDate
+                      ? t(
+                          `${format(parseISO(selectedProposalDate), "yyyy/MM/dd (EEE)", { locale: ja })} の提案一覧`,
+                          `Proposals for ${format(parseISO(selectedProposalDate), "yyyy/MM/dd (EEE)", { locale: ja })}`,
+                        )
+                      : t("提案一覧", "Proposal list")}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {t(
+                      "この日付に送られている提案を確認できます。内容を見たうえで別案を出すか判断できます。",
+                      "Review the proposals already submitted for this date before deciding whether to submit an alternative.",
+                    )}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="max-h-[65vh] space-y-2 overflow-y-auto pr-1">
+                  {selectedDateProposals.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed p-4 text-center text-muted-foreground text-sm dark:border-zinc-700 dark:text-zinc-400">
+                      {t("この日付の提案はまだありません。", "There are no proposals for this date yet.")}
+                    </div>
+                  ) : (
+                    selectedDateProposals.map((proposal) => (
+                      <div
+                        key={proposal.id}
+                        className="rounded-2xl border border-amber-200 bg-amber-50/70 p-3 dark:border-amber-800 dark:bg-amber-950/20"
+                      >
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <Badge className={getProposalStatusBadgeClassName(proposal.status)}>
+                            {getProposalStatusLabel(t, proposal.status)}
+                          </Badge>
+                          <Badge variant="outline" className="px-2 py-0 text-[11px]">
+                            {t("いいね", "Likes")}: {proposal.likesCount}
+                          </Badge>
+                          <span className="text-muted-foreground text-[11px] dark:text-zinc-400">
+                            {t("提案者", "Proposer")}: {proposal.proposerName}
+                          </span>
+                          <span className="text-muted-foreground text-[11px] dark:text-zinc-400">
+                            {t("送信", "Submitted")}: {formatUnixTime(proposal.createdAt)}
+                          </span>
+                        </div>
+
+                        <p className="mt-2 font-semibold text-sm leading-5 dark:text-zinc-50">
+                          {proposal.inputTheme}
+                        </p>
+                        <p className="mt-1 text-[11px] leading-4 text-muted-foreground dark:text-zinc-400">
+                          {proposal.title}
+                          {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
+                        </p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </div>
@@ -549,6 +729,23 @@ const ThemeProposalDuplicateThemesQuery = gql`
   }
 `
 
+const CalendarThemeProposalsQuery = gql`
+  query ProposalCalendarThemeProposals($offset: Int!, $limit: Int!, $year: Int!, $month: Int!) {
+    themeProposals(offset: $offset, limit: $limit, year: $year, month: $month) {
+      id
+      inputTheme
+      title
+      enTitle
+      targetDate
+      status
+      proposerUserId
+      proposerName
+      createdAt
+      likesCount
+    }
+  }
+`
+
 const CreateThemeProposalMutation = gql`
   mutation CreateThemeProposal($date: String!, $theme: String!) {
     createThemeProposal(date: $date, theme: $theme) {
@@ -559,3 +756,32 @@ const CreateThemeProposalMutation = gql`
     }
   }
 `
+
+function getProposalStatusLabel(
+  t: ReturnType<typeof useTranslation>,
+  status: string,
+) {
+  switch (status) {
+    case "ADOPTED":
+      return t("採用", "Adopted")
+    case "REJECTED":
+      return t("不採用", "Rejected")
+    default:
+      return t("保留中", "Pending")
+  }
+}
+
+function getProposalStatusBadgeClassName(status: string) {
+  switch (status) {
+    case "ADOPTED":
+      return "bg-emerald-600 text-white"
+    case "REJECTED":
+      return "bg-slate-600 text-white"
+    default:
+      return "bg-amber-500 text-white"
+  }
+}
+
+function formatUnixTime(value: number) {
+  return format(new Date(value * 1000), "yyyy/MM/dd HH:mm")
+}
