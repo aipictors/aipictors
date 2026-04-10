@@ -30,6 +30,7 @@ type Props = {
   comments: FragmentOf<typeof CommentListItemFragment>[]
   defaultShowCommentCount?: number
   isWorkOwnerBlocked?: boolean
+  isLoadingComments?: boolean
 }
 
 // コメント
@@ -286,7 +287,11 @@ export function WorkCommentList (props: Props) {
       <div className="space-y-4">
         <p>
           {t("コメント", "Comments")} (
-          {showComments.length + (showNewComments?.length ?? 0)})
+          {props.isLoadingComments &&
+          showComments.length === 0 &&
+          (showNewComments?.length ?? 0) === 0
+            ? "..."
+            : showComments.length + (showNewComments?.length ?? 0)})
         </p>
         {props.isWorkOwnerBlocked && (
           <div className="rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
@@ -383,6 +388,14 @@ export function WorkCommentList (props: Props) {
         </div>
       </div>
       <div className="space-y-4 overflow-y-auto">
+        {props.isLoadingComments &&
+          showComments.length === 0 &&
+          (showNewComments?.length ?? 0) === 0 && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2Icon className="size-4 animate-spin" />
+              <span>{t("コメントを読み込み中", "Loading comments")}</span>
+            </div>
+          )}
         {showNewComments && (
           <div className="space-y-4">
             {showNewComments.map((comment) => (

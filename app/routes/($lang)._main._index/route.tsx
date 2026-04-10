@@ -44,6 +44,7 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { Separator } from "~/components/ui/separator"
+import { Skeleton } from "~/components/ui/skeleton"
 import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { WorkViewerDialog } from "~/components/work/work-viewer-dialog"
 import { config, META } from "~/config"
@@ -60,7 +61,10 @@ import {
   HomeAwardWorkSection,
   HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { HomeAwardWorksSection } from "~/routes/($lang)._main._index/components/home-award-works"
+import {
+  HomeAwardWorksFragment,
+  HomeAwardWorksSection,
+} from "~/routes/($lang)._main._index/components/home-award-works"
 import {
   HomeDeferredSection,
   HomeWorkSectionPlaceholder,
@@ -347,13 +351,9 @@ export async function loader(props: LoaderFunctionArgs) {
     query: query,
     errorPolicy: "all",
     variables: {
-      awardDay: yesterday.getDate(),
-      awardMonth: yesterday.getMonth() + 1,
-      awardYear: yesterday.getFullYear(),
       day: now.getDate(),
       month: now.getMonth() + 1,
       year: now.getFullYear(),
-      awardWorksLimit: config.query.homeWorkCount.award,
     },
   })
 
@@ -372,17 +372,8 @@ export async function loader(props: LoaderFunctionArgs) {
       ...(resultData ?? {}),
       eventPreviews,
       hotTags: Array.isArray(resultData?.hotTags) ? resultData.hotTags : [],
-      newComments: Array.isArray(resultData?.newComments)
-        ? resultData.newComments
-        : [],
-      newPostedUsers: Array.isArray(resultData?.newPostedUsers)
-        ? resultData.newPostedUsers
-        : [],
       recommendedTags: Array.isArray(resultData?.recommendedTags)
         ? resultData.recommendedTags
-        : [],
-      workAwards: Array.isArray(resultData?.workAwards)
-        ? resultData.workAwards
         : [],
     },
     {
@@ -799,7 +790,13 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     updateQueryParams(newSearchParams)
   }
 
-  const shouldLoadHomeSidebarQueries = currentTab === "home" && isMounted
+  const shouldLoadHomeSidebarQueries =
+    currentTab === "home" && typeof window !== "undefined"
+
+  const awardDateParts = data.awardDateText.split("/")
+  const awardYear = Number(awardDateParts[0] ?? "0")
+  const awardMonth = Number(awardDateParts[1] ?? "0")
+  const awardDay = Number(awardDateParts[2] ?? "0")
 
   const { data: pass } = useQuery(viewerCurrentPassQuery, {
     skip: !shouldLoadHomeSidebarQueries,
@@ -818,6 +815,19 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
   const [updateClickedCountCustomerAdvertisement] = useMutation(
     updateClickedCountCustomerAdvertisementMutation,
   )
+  const { data: homeSidebarData, loading: isHomeSidebarLoading } = useQuery(
+    homeSidebarQuery,
+    {
+      skip: !shouldLoadHomeSidebarQueries,
+      fetchPolicy: "cache-first",
+      variables: {
+        awardDay,
+        awardMonth,
+        awardYear,
+        awardWorksLimit: config.query.homeWorkCount.award,
+      },
+    },
+  )
 
   const onClickAdvertisement = async () => {
     if (advertisements?.randomCustomerAdvertisement) {
@@ -834,6 +844,23 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     passData?.type === "LITE" ||
     passData?.type === "STANDARD" ||
     passData?.type === "PREMIUM"
+  const sidebarNewPostedUsers = (
+    Array.isArray(homeSidebarData?.newPostedUsers)
+      ? homeSidebarData.newPostedUsers
+      : data.newPostedUsers
+  ) as FragmentOf<typeof HomeNewPostedUsersFragment>[]
+  const sidebarNewComments = (
+    Array.isArray(homeSidebarData?.newComments)
+      ? homeSidebarData.newComments
+      : data.newComments
+  ) as FragmentOf<typeof HomeNewCommentsFragment>[]
+  const sidebarWorkAwards = (
+    Array.isArray(homeSidebarData?.workAwards)
+      ? homeSidebarData.workAwards
+      : data.workAwards
+  ) as FragmentOf<
+    typeof HomeAwardWorksFragment | typeof HomeWorkAwardFragment
+  >[]
 
   // スクロール位置復元しない
   useScrollRestoration(isMounted)
@@ -1046,6 +1073,10 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                             advertisements.randomCustomerAdvertisement.imageUrl
                           }
                           alt="Advertisement"
+                          loading="lazy"
+                          decoding="async"
+                          fetchPriority="low"
+                          className="h-auto w-full"
                         />
                       </Link>
                       <div className="absolute top-0 right-0">
@@ -1063,17 +1094,33 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                     <img
                       src="https://assets.aipictors.com/Aipictors_01.webp"
                       alt="Aipictors Logo"
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
+                      className="h-auto w-full"
                     />
                   </Link>
                 )}
-                {data.newPostedUsers && (
-                  <HomeNewUsersSection users={data.newPostedUsers} />
+                {isHomeSidebarLoading &&
+                  sidebarNewPostedUsers.length === 0 &&
+                  sidebarNewComments.length === 0 &&
+                  sidebarWorkAwards.length === 0 && (
+                    <div className="space-y-3">
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-12 w-full" />
+                      <Skeleton className="h-6 w-40" />
+                      <Skeleton className="h-16 w-full" />
+                    </div>
+                  )}
+                {sidebarNewPostedUsers.length > 0 && (
+                  <HomeNewUsersSection users={sidebarNewPostedUsers} />
                 )}
-                {data.newComments && data.newComments.length > 0 && (
-                  <HomeNewCommentsSection comments={data.newComments} />
+                {sidebarNewComments.length > 0 && (
+                  <HomeNewCommentsSection comments={sidebarNewComments} />
                 )}
-                {data.workAwards && (
-                  <HomeAwardWorksSection works={data.workAwards} />
+                {sidebarWorkAwards.length > 0 && (
+                  <HomeAwardWorksSection works={sidebarWorkAwards} />
                 )}
               </div>
             </div>
@@ -1845,10 +1892,6 @@ const query = graphql(
     $year: Int!
     $month: Int!
     $day: Int!
-    $awardYear: Int!
-    $awardMonth: Int!
-    $awardDay: Int!
-    $awardWorksLimit: Int!
   ) {
     dailyTheme(year: $year, month: $month, day: $day) {
       id
@@ -1857,18 +1900,6 @@ const query = graphql(
     hotTags {
       ...HomeTagListItem
     }
-    workAwards(
-      offset: 0
-      limit: $awardWorksLimit
-      where: {
-        year: $awardYear
-        month: $awardMonth
-        day: $awardDay
-        isSensitive: false
-      }
-    ) {
-      ...HomeWorkAward
-    }
     recommendedTags: recommendedTags(
       limit: 16
       where: {
@@ -1876,23 +1907,6 @@ const query = graphql(
       }
     ) {
       ...HomeTag
-    }
-    newPostedUsers: newPostedUsers(
-      offset: 0,
-      limit: 8,
-    ) {
-      ...HomeNewPostedUsers
-    }
-    newComments: newComments(
-      offset: 0,
-      limit: 8,
-      where: {
-        isSensitive: false,
-        isTextOnly: true,
-        ratings: [G, R15]
-      }
-    ) {
-      ...HomeNewComments
     }
     appEvents(limit: 12, offset: 0) {
       id
@@ -1926,8 +1940,49 @@ const query = graphql(
   }`,
   [
     HomeTagListItemFragment,
-    HomeWorkAwardFragment,
     HomeTagFragment,
+  ],
+)
+
+const homeSidebarQuery = graphql(
+  `query HomeSidebarQuery(
+    $awardYear: Int!
+    $awardMonth: Int!
+    $awardDay: Int!
+    $awardWorksLimit: Int!
+  ) {
+    workAwards(
+      offset: 0
+      limit: $awardWorksLimit
+      where: {
+        year: $awardYear
+        month: $awardMonth
+        day: $awardDay
+        isSensitive: false
+      }
+    ) {
+      ...HomeAwardWorks
+    }
+    newPostedUsers: newPostedUsers(
+      offset: 0
+      limit: 8
+    ) {
+      ...HomeNewPostedUsers
+    }
+    newComments: newComments(
+      offset: 0
+      limit: 8
+      where: {
+        isSensitive: false
+        isTextOnly: true
+        ratings: [G, R15]
+      }
+    ) {
+      ...HomeNewComments
+    }
+  }`,
+  [
+    HomeAwardWorksFragment,
     HomeNewPostedUsersFragment,
     HomeNewCommentsFragment,
   ],

@@ -23,21 +23,21 @@ import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import {
   HomeAwardWorksSection,
   type HomeAwardWorksFragment,
+  homeAwardWorksQuery,
 } from "~/routes/($lang)._main._index/components/home-award-works"
 import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import { useTranslation } from "~/hooks/use-translation"
 import { Link } from "react-router-dom"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
-import { workCommentsQuery } from "~/routes/($lang)._main.posts.$post._index/route"
+import {
+  newCommentsQuery,
+  workCommentsQuery,
+} from "~/routes/($lang)._main.posts.$post._index/route"
+import { getJstDate } from "~/utils/jst-date"
 
 type Props = {
   post: string
   work: FragmentOf<typeof workArticleFragment> | null
-  comments: FragmentOf<typeof CommentListItemFragment>[]
-  newComments: FragmentOf<typeof HomeNewCommentsFragment>[]
-  awardWorks: FragmentOf<
-    typeof HomeAwardWorksFragment | typeof HomeWorkAwardFragment
-  >[]
 }
 
 /**
@@ -80,14 +80,44 @@ export function WorkContainer (props: Props) {
   const likedUsers = likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
   const work = workBase ? { ...workBase, likedUsers } : workBase
 
-  const { data: workCommentsRet } = useQuery(workCommentsQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  const { data: workCommentsRet, loading: isLoadingComments } = useQuery(
+    workCommentsQuery,
+    {
+      fetchPolicy: "network-only",
+      ssr: false,
+      variables: {
+        workId: props.post,
+      },
+    },
+  )
+
+  const comments = workCommentsRet?.work?.comments ?? []
+
+  const { data: newCommentsData } = useQuery(newCommentsQuery, {
+    fetchPolicy: "cache-first",
+    ssr: false,
+  })
+
+  const now = getJstDate(new Date())
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+
+  const { data: awardWorksData } = useQuery(homeAwardWorksQuery, {
+    fetchPolicy: "cache-first",
+    ssr: false,
     variables: {
-      workId: props.post,
+      offset: 0,
+      limit: 4,
+      where: {
+        isSensitive: false,
+        year: yesterday.getFullYear(),
+        month: yesterday.getMonth() + 1,
+        day: yesterday.getDate(),
+      },
     },
   })
 
-  const comments = workCommentsRet?.work?.comments ?? props.comments
+  const newComments = newCommentsData?.newComments ?? []
+  const awardWorks = awardWorksData?.workAwards ?? []
 
   const tags = work?.tagNames ?? []
 
@@ -169,6 +199,7 @@ export function WorkContainer (props: Props) {
               <WorkCommentList
                 workId={work.id}
                 comments={comments}
+                isLoadingComments={isLoadingComments}
                 workOwnerIconImageURL={work.user?.iconUrl}
                 isWorkOwnerBlocked={work.user?.isBlocked ?? false}
               />
@@ -244,11 +275,11 @@ export function WorkContainer (props: Props) {
                     />
                   </Link>
                 )}
-                {props.newComments && props.newComments.length > 0 && (
-                  <HomeNewCommentsSection comments={props.newComments} />
+                {newComments.length > 0 && (
+                  <HomeNewCommentsSection comments={newComments} />
                 )}
-                {props.awardWorks && (
-                  <HomeAwardWorksSection works={props.awardWorks} />
+                {awardWorks.length > 0 && (
+                  <HomeAwardWorksSection works={awardWorks} />
                 )}
               </div>
             </div>

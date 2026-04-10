@@ -4,6 +4,7 @@ import { workArticleFragment } from "~/routes/($lang)._main.posts.$post._index/c
 import { CommentListItemFragment } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
 import { WorkContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-container"
 import {
+  json,
   redirect,
   type HeadersFunction,
   type LoaderFunctionArgs,
@@ -21,6 +22,9 @@ import { HomeNewCommentsFragment } from "~/routes/($lang)._main._index/component
 import { homeAwardWorksQuery } from "~/routes/($lang)._main._index/components/home-award-works"
 import { getJstDate } from "~/utils/jst-date"
 import type { BreadcrumbList, VisualArtwork, WithContext } from "schema-dts"
+
+const PUBLIC_POST_CACHE_CONTROL =
+  "public, max-age=0, s-maxage=120, stale-while-revalidate=600"
 
 export function HydrateFallback () {
   return <AppLoadingPage />
@@ -64,54 +68,17 @@ export async function loader(props: LoaderFunctionArgs) {
     return redirect(`/r/posts/${props.params.post}`)
   }
 
-  const workCommentsResp = await loaderClient.query({
-    query: workCommentsQuery,
-    variables: {
-      workId: props.params.post,
+  return json(
+    {
+      post: props.params.post,
+      work: workResp.data.work,
     },
-  })
-
-  if (workCommentsResp.data.work === null) {
-    throw new Response(null, { status: 404 })
-  }
-
-  const newComments = await loaderClient.query({
-    query: newCommentsQuery,
-    variables: {
-      workId: props.params.post,
-    },
-  })
-
-  const now = getJstDate(new Date())
-
-  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
-
-  // ランキング
-  const awardWorks = await loaderClient.query({
-    query: homeAwardWorksQuery,
-    variables: {
-      offset: 0,
-      limit: 4,
-      where: {
-        isSensitive: false,
-        year: yesterday.getFullYear(),
-        month: yesterday.getMonth() + 1,
-        day: yesterday.getDate(),
+    {
+      headers: {
+        "Cache-Control": PUBLIC_POST_CACHE_CONTROL,
       },
     },
-  })
-
-  // if (awardWorks.data.workAwards.length === 0) {
-  //   throw new Response(null, { status: 404 })
-  // }
-
-  return {
-    post: props.params.post,
-    work: workResp.data.work,
-    workComments: workCommentsResp.data.work.comments,
-    newComments: newComments.data.newComments,
-    awardWorks: awardWorks.data.workAwards,
-  }
+  )
 }
 
 export const meta: MetaFunction = (props) => {
@@ -171,8 +138,9 @@ export const meta: MetaFunction = (props) => {
   )
 }
 
-export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.oneDay,
+export const headers: HeadersFunction = ({ loaderHeaders }) => ({
+  "Cache-Control":
+    loaderHeaders.get("Cache-Control") ?? config.cacheControl.short,
 })
 
 export default function Work () {
@@ -281,9 +249,6 @@ export default function Work () {
       <WorkContainer
         post={data.post}
         work={data.work}
-        comments={data.workComments}
-        newComments={data.newComments}
-        awardWorks={data.awardWorks}
       />
     </>
   )
@@ -310,7 +275,7 @@ const workQuery = graphql(
   [workArticleFragment],
 )
 
-const newCommentsQuery = graphql(
+export const newCommentsQuery = graphql(
   `query NewComments {
     newComments: newComments(
       offset: 0,
