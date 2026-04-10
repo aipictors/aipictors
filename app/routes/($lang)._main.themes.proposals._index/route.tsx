@@ -62,6 +62,7 @@ type QueryData = {
 type ThemeProposalsQueryVariables = {
   offset: number
   limit: number
+  orderBy?: string
   proposerUserId?: string
   date?: string
   year?: number
@@ -71,6 +72,8 @@ type ThemeProposalsQueryVariables = {
 }
 
 type ProposalPeriod = "all" | "day" | "week" | "month"
+
+type ProposalSort = "date" | "likes"
 
 type ThemeProposalsPageContentProps = {
   scope?: "all" | "mine"
@@ -105,6 +108,7 @@ export function ThemeProposalsPageContent(
     (authContext.isLoading || authContext.isNotLoggedIn || authContext.userId === null)
 
   const period = getPeriod(searchParams.get("period"))
+  const sort = getSort(searchParams.get("sort"))
   const currentPage = getPage(searchParams.get("page"))
   const dayValue = getDayValue(searchParams.get("day"))
   const weekValue = getWeekValue(searchParams.get("week"))
@@ -123,6 +127,7 @@ export function ThemeProposalsPageContent(
     variables: {
       offset: PAGE_SIZE * currentPage,
       limit: PAGE_SIZE,
+      ...(sort === "likes" ? { orderBy: "LIKES_COUNT" } : {}),
       proposerUserId,
       ...filterVariables,
     },
@@ -152,6 +157,7 @@ export function ThemeProposalsPageContent(
   const totalCount = data?.themeProposalsCount ?? 0
   const totalPages = Math.ceil(totalCount / PAGE_SIZE)
   const filterSummary = getFilterSummary(t, period, dayValue, weekValue, monthValue)
+  const sortSummary = getSortSummary(t, sort)
   const myPreviewItems = myProposalPreview.data?.themeProposals ?? []
   const myPreviewCount = myProposalPreview.data?.themeProposalsCount ?? 0
   const pageTitle = isMinePage
@@ -441,6 +447,33 @@ export function ThemeProposalsPageContent(
                 )}
               </div>
 
+              <div className="space-y-1">
+                <p className="text-xs font-medium tracking-wide text-muted-foreground">
+                  {t("並び順", "Order")}
+                </p>
+                <Select
+                  value={sort}
+                  onValueChange={(value) => {
+                    updateSearch((params) => {
+                      if (value === "date") {
+                        params.delete("sort")
+                        return
+                      }
+
+                      params.set("sort", value)
+                    })
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="date">{t("日付順", "By date")}</SelectItem>
+                    <SelectItem value="likes">{t("いいね順", "By likes")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <Button
                 variant="outline"
                 onClick={() => {
@@ -449,6 +482,7 @@ export function ThemeProposalsPageContent(
                     params.delete("day")
                     params.delete("week")
                     params.delete("month")
+                    params.delete("sort")
                   })
                 }}
               >
@@ -459,6 +493,9 @@ export function ThemeProposalsPageContent(
             <div className="flex flex-wrap items-center gap-2 text-sm">
               <Badge variant="secondary" className="rounded-full px-3 py-1">
                 {filterSummary}
+              </Badge>
+              <Badge variant="secondary" className="rounded-full px-3 py-1">
+                {sortSummary}
               </Badge>
               <Badge variant="secondary" className="rounded-full px-3 py-1">
                 {t(`${totalCount}件`, `${totalCount} items`)}
@@ -500,14 +537,14 @@ export function ThemeProposalsPageContent(
       <div className="rounded-2xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-950 dark:border-orange-800 dark:bg-orange-950/30 dark:text-orange-100">
         <p className="font-medium dark:text-orange-100">
           {t(
-            "保留中のお題案にはログインユーザーがいいねできます。採用判定では X (Grok) が内容に加えていいね数も参考にし、近い案ならいいねが多い案を優先します。",
-            "Signed-in users can like pending theme proposals. X (Grok) also considers likes and will prefer higher-liked proposals when ideas are similarly strong.",
+            "採用判定ではぴくたーちゃんが内容に加えていいね数も参考にし、近い案ならいいねが多い案を優先します。",
+            "Pictor-chan also considers likes in addition to the proposal content, and will prefer the higher-liked option when ideas are similarly strong.",
           )}
         </p>
         <p className="mt-1 text-xs text-orange-800 dark:text-orange-200/80">
           {t(
-            "公平性のため、自分の提案にはいいねできません。",
-            "For fairness, you cannot like your own proposal.",
+            "ログインしていれば保留中かどうかに関係なくいいねできます。公平性のため、自分の提案にはいいねできません。",
+            "If you are signed in, you can like proposals at any time. For fairness, you cannot like your own proposal.",
           )}
         </p>
       </div>
@@ -558,10 +595,7 @@ export function ThemeProposalsPageContent(
           {proposals.map((proposal) => {
             const targetDate = new Date(`${proposal.targetDate}T00:00:00`)
             const isOwnProposal = authContext.userId === proposal.proposerUserId
-            const canLikeProposal =
-              authContext.isLoggedIn &&
-              !isOwnProposal &&
-              proposal.status === "PENDING"
+            const canLikeProposal = authContext.isLoggedIn && !isOwnProposal
             const isLikeBusy = pendingLikeId === proposal.id
             const isExpanded = expandedProposalIds.includes(proposal.id)
 
@@ -599,7 +633,7 @@ export function ThemeProposalsPageContent(
                             : t("いいね", "Like")
                           : isOwnProposal
                             ? t("自分の提案にはいいねできません", "You cannot like your own proposal")
-                            : t("保留中の提案のみいいねできます", "Only pending proposals can be liked")
+                            : t("ログインするといいねできます", "Sign in to like proposals")
                       }
                     >
                       {isLikeBusy ? (
@@ -856,8 +890,8 @@ function getPictorPreviewMessage(
       )
     default:
       return t(
-        `「${proposal.inputTheme}」はどうかな？ いいねが多い提案ほど採用されやすいよ。`,
-        `How about "${proposal.inputTheme}"? Proposals with more likes are more likely to be adopted.`,
+        `「${proposal.inputTheme}」はどうかな？ 内容に加えていいね数も参考にして、近い案ならいいねが多いほうを優先するよ。`,
+        `How about "${proposal.inputTheme}"? Besides the idea itself, I also look at likes and prefer the more-liked option when proposals are close.`,
       )
   }
 }
@@ -870,6 +904,15 @@ function getPeriod(value: string | null): ProposalPeriod {
       return value
     default:
       return "all"
+  }
+}
+
+function getSort(value: string | null): ProposalSort {
+  switch (value) {
+    case "likes":
+      return "likes"
+    default:
+      return "date"
   }
 }
 
@@ -1022,10 +1065,22 @@ function getFilterSummary(
   return t("全期間", "All periods")
 }
 
+function getSortSummary(
+  t: ReturnType<typeof useTranslation>,
+  sort: ProposalSort,
+) {
+  if (sort === "likes") {
+    return t("いいね順", "By likes")
+  }
+
+  return t("日付順", "By date")
+}
+
 const ThemeProposalsQuery = gql`
   query ThemeProposals(
     $offset: Int!
     $limit: Int!
+    $orderBy: String
     $proposerUserId: ID
     $date: String
     $year: Int
@@ -1036,6 +1091,7 @@ const ThemeProposalsQuery = gql`
     themeProposals(
       offset: $offset
       limit: $limit
+      orderBy: $orderBy
       proposerUserId: $proposerUserId
       date: $date
       year: $year
