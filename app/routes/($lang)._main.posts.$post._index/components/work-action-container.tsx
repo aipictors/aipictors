@@ -5,6 +5,8 @@ import { AuthContext } from "~/contexts/auth-context"
 import { WorkAction } from "~/routes/($lang)._main.posts.$post._index/components/work-action"
 
 type Props = {
+  accessType?: string
+  uuid?: string | null
   title?: string
   description?: string
   currentImageUrl?: string
@@ -13,7 +15,12 @@ type Props = {
   targetWorkId: string
   targetWorkOwnerUserId: string
   bookmarkFolderId: string | null
+  defaultLiked: boolean
+  defaultBookmarked: boolean
+  isRecommended: boolean
+  workType: string
   isDisabledShare?: boolean
+  isSensitive?: boolean
   isTargetUserBlocked?: boolean
   mode?: "default" | "dialogLikeOnly"
 }
@@ -24,23 +31,12 @@ type Props = {
 export function WorkActionContainer(props: Props) {
   const appContext = useContext(AuthContext)
 
-  const { data } = useQuery(workQuery, {
-    skip: appContext.isLoading,
-    variables: {
-      id: props.targetWorkId,
-    },
-  })
-
   const { data: userSettingData } = useQuery(userSettingQuery, {
     skip: appContext.isLoading || appContext.isNotLoggedIn,
   })
 
-  const isLiked = data?.work?.isLiked ?? false
-
-  const isBookmarked = data?.work?.isBookmarked ?? false
-
   const likeButtonLabel =
-    data?.work?.isSensitive ||
+    props.isSensitive ||
     userSettingData?.userSetting?.isAnonymousLikeAllAges !== true
       ? "いいね"
       : "匿名いいね"
@@ -48,167 +44,29 @@ export function WorkActionContainer(props: Props) {
   return (
     <WorkAction
       id={props.targetWorkId}
-      accessType={data?.work?.accessType}
-      uuid={data?.work?.uuid}
+      accessType={props.accessType}
+      uuid={props.uuid}
       workLikesCount={props.workLikesCount}
       title={props.title}
       description={props.description}
       currentImageUrl={props.currentImageUrl}
       imageUrls={props.imageUrls}
-      defaultLiked={isLiked}
-      defaultBookmarked={isBookmarked}
+      defaultLiked={props.defaultLiked}
+      defaultBookmarked={props.defaultBookmarked}
       likeButtonLabel={likeButtonLabel}
       bookmarkFolderId={props.bookmarkFolderId}
       targetWorkId={props.targetWorkId}
       targetWorkOwnerUserId={props.targetWorkOwnerUserId}
       isHideEditButton={false}
-      isRecommended={data?.work?.isMyRecommended ?? false}
-      isSensitive={data?.work?.isSensitive ?? false}
+      isRecommended={props.isRecommended}
+      isSensitive={props.isSensitive}
       isDisabledShare={props.isDisabledShare}
-      workType={
-        (data?.work?.type as "COLUMN" | "NOVEL" | "WORK" | "VIDEO") ?? "WORK"
-      }
+      workType={props.workType as "COLUMN" | "NOVEL" | "WORK" | "VIDEO"}
       isTargetUserBlocked={props.isTargetUserBlocked}
-      prompt={data?.work?.prompt}
-      negativePrompt={data?.work?.negativePrompt}
       mode={props.mode}
     />
   )
 }
-
-const workQuery = graphql(
-  `query Work($id: ID!) {
-    work(id: $id) {
-      id
-      isMyRecommended
-      title
-      accessType
-      uuid
-      type
-      adminAccessType
-      promptAccessType
-      rating
-      description
-      isSensitive
-      enTitle
-      enDescription
-      imageURL
-      largeThumbnailImageURL
-      largeThumbnailImageWidth
-      largeThumbnailImageHeight
-      smallThumbnailImageURL
-      smallThumbnailImageWidth
-      smallThumbnailImageHeight
-      thumbnailImagePosition
-      subWorksCount
-      user {
-        id
-        biography
-        login
-        nanoid
-        name
-        receivedLikesCount
-        receivedViewsCount
-        awardsCount
-        followersCount
-        worksCount
-        iconUrl
-        headerImageUrl
-        webFcmToken
-        headerImageUrl
-        biography
-        receivedLikesCount
-        createdLikesCount
-        createdBookmarksCount
-        isFollower
-        isFollowee
-        isMuted
-        works(offset: 0, limit: 16) {
-          id
-          userId
-          largeThumbnailImageURL
-          largeThumbnailImageWidth
-          largeThumbnailImageHeight
-          smallThumbnailImageURL
-          smallThumbnailImageWidth
-          smallThumbnailImageHeight
-          thumbnailImagePosition
-          subWorksCount
-        }
-      }
-      likedUsers(offset: 0, limit: 120) {
-        id
-        name
-        iconUrl
-        login
-      }
-      album {
-        id
-        title
-        description
-      }
-      dailyTheme {
-        id
-        title
-      }
-      tagNames
-      createdAt
-      likesCount
-      viewsCount
-      commentsCount
-      subWorks {
-        id
-        imageUrl
-      }
-      nextWork {
-        id
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-      }
-      previousWork {
-        id
-        smallThumbnailImageURL
-        smallThumbnailImageWidth
-        smallThumbnailImageHeight
-        thumbnailImagePosition
-      }
-      model
-      modelHash
-      generationModelId
-      workModelId
-      isTagEditable
-      isCommentsEditable
-      isLiked
-      isBookmarked
-      isInCollection
-      isPromotion
-      isGeneration
-      ogpThumbnailImageUrl
-      prompt
-      negativePrompt
-      noise
-      seed
-      steps
-      sampler
-      scale
-      strength
-      vae
-      clipSkip
-      otherGenerationParams
-      pngInfo
-      style
-      url
-      updatedAt
-      dailyRanking
-      weeklyRanking
-      monthlyRanking
-      relatedUrl
-      nanoid
-    }
-  }`,
-)
 
 const userSettingQuery = graphql(
   `query WorkActionUserSetting {

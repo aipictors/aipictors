@@ -138,6 +138,7 @@ export function DraftWorkArticle (props: Props) {
           </Link>
         )}
         <WorkActionContainer
+          accessType={props.work.accessType}
           workLikesCount={props.work.likesCount}
           title={props.work.title}
           description={props.work.description ?? ""}
@@ -148,8 +149,13 @@ export function DraftWorkArticle (props: Props) {
           ]}
           targetWorkId={props.work.id}
           bookmarkFolderId={bookmarkFolderId}
+          defaultLiked={props.work.isLiked}
+          defaultBookmarked={props.work.isBookmarked}
           targetWorkOwnerUserId={props.work.user?.id ?? ""}
+          isRecommended={props.work.isMyRecommended}
           isDisabledShare={true}
+          isSensitive={props.work.isSensitive}
+          workType={props.work.type}
         />
         <h1 className="font-bold text-lg">
           {t(

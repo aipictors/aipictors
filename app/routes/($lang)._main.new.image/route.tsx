@@ -78,6 +78,7 @@ export default function NewImage() {
   const [searchParams] = useSearchParams()
 
   const ref = searchParams.get("generation")
+  const generationNanoids = ref?.split("|").filter(Boolean) ?? []
   const eventSlug = searchParams.get("event")
 
   const now = getJstDate(new Date())
@@ -92,11 +93,15 @@ export default function NewImage() {
       offset: 0,
       limit: 128,
       ownerUserId: authContext.userId ?? "-1",
+      withGenerationResults: generationNanoids.length > 0,
       generationLimit: 64,
       generationOffset: 0,
-      generationWhere: {
-        nanoids: ref?.split("|") ?? [],
-      },
+      generationWhere:
+        generationNanoids.length > 0
+          ? {
+              nanoids: generationNanoids,
+            }
+          : undefined,
       startAt: now.toISOString().split("T")[0],
       startDate: now.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
@@ -1159,11 +1164,10 @@ export async function loader(_props: LoaderFunctionArgs) {
       offset: 0,
       limit: 128,
       ownerUserId: "-1",
+      withGenerationResults: false,
       generationLimit: 64,
       generationOffset: 0,
-      generationWhere: {
-        nanoids: [],
-      },
+      generationWhere: undefined,
       startAt: now.toISOString().split("T")[0],
       startDate: now.toISOString().split("T")[0],
       endDate: afterDate.toISOString().split("T")[0],
@@ -1185,6 +1189,7 @@ const ViewerQuery = graphql(
     $limit: Int!,
     $offset: Int!,
     $ownerUserId: ID
+    $withGenerationResults: Boolean!
     $generationOffset: Int!
     $generationLimit: Int!
     $generationWhere: ImageGenerationResultsWhereInput
@@ -1201,7 +1206,7 @@ const ViewerQuery = graphql(
       recentlyUsedTags {
         ...PostImageFormRecentlyUsedTags
       }
-      imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) {
+      imageGenerationResults(offset: $generationOffset, limit: $generationLimit, where: $generationWhere) @include(if: $withGenerationResults) {
         id
         prompt
         negativePrompt

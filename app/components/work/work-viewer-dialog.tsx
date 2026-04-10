@@ -679,6 +679,7 @@ export function WorkViewerDialog({
         <div className="border-t bg-background/95 backdrop-blur-sm">
           <div className="w-full">
             <WorkActionContainer
+              accessType={currentWork.accessType}
               workLikesCount={currentWork.likesCount}
               title={currentWork.title}
               description={
@@ -695,9 +696,14 @@ export function WorkViewerDialog({
               ]}
               targetWorkId={currentWork.id}
               bookmarkFolderId={null}
+              defaultLiked={currentWork.isLiked}
+              defaultBookmarked={currentWork.isBookmarked}
               targetWorkOwnerUserId={currentWork.user?.id ?? ""}
+              isRecommended={currentWork.isMyRecommended}
               isDisabledShare={false}
+              isSensitive={currentWork.isSensitive}
               isTargetUserBlocked={Boolean(currentWork.user?.isBlocked)}
+              workType={currentWork.type}
               mode="dialogLikeOnly"
             />
           </div>
