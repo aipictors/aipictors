@@ -1,14 +1,23 @@
 import { gql, useMutation, useQuery } from "@apollo/client/index"
-import { Link } from "@remix-run/react"
-import { format } from "date-fns"
+import { Link, useSearchParams } from "@remix-run/react"
+import { addDays, format } from "date-fns"
 import { ja } from "date-fns/locale"
 import { ChevronDown, ChevronUp, Heart, Loader2Icon } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { AppPageHeader } from "~/components/app/app-page-header"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,18 +56,29 @@ type ThemeProposal = {
 
 type QueryData = {
   themeProposals: ThemeProposal[]
+  themeProposalsCount: number
 }
+
+type ThemeProposalsQueryVariables = {
+  offset: number
+  limit: number
+  date?: string
+  year?: number
+  month?: number
+  startDate?: string
+  endDate?: string
+}
+
+type ProposalPeriod = "all" | "day" | "week" | "month"
 
 const PICTOR_CHAN_ICON_URL =
   "https://assets.aipictors.com/pictorchanicon.webp"
+const PAGE_SIZE = 12
 
 export default function ThemeProposalsPage() {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
-  const { data, loading, refetch } = useQuery<QueryData>(ThemeProposalsQuery, {
-    variables: { offset: 0, limit: 100 },
-    fetchPolicy: "cache-and-network",
-  })
+  const [searchParams, setSearchParams] = useSearchParams()
   const [cancelProposal, { loading: isCanceling }] = useMutation(
     CancelThemeProposalMutation,
   )
@@ -68,12 +88,86 @@ export default function ThemeProposalsPage() {
   const [pendingLikeId, setPendingLikeId] = useState<string | null>(null)
   const [expandedProposalIds, setExpandedProposalIds] = useState<string[]>([])
 
-  const proposals = (data?.themeProposals ?? []).filter(
-    (proposal) => proposal.status !== "CANCELED",
-  )
+  const period = getPeriod(searchParams.get("period"))
+  const currentPage = getPage(searchParams.get("page"))
+  const dayValue = getDayValue(searchParams.get("day"))
+  const weekValue = getWeekValue(searchParams.get("week"))
+  const monthValue = getMonthValue(searchParams.get("month"))
+  const filterVariables = getFilterVariables({
+    period,
+    dayValue,
+    weekValue,
+    monthValue,
+  })
+
+  const { data, loading, refetch } = useQuery<
+    QueryData,
+    ThemeProposalsQueryVariables
+  >(ThemeProposalsQuery, {
+    variables: {
+      offset: PAGE_SIZE * currentPage,
+      limit: PAGE_SIZE,
+      ...filterVariables,
+    },
+    fetchPolicy: "cache-and-network",
+    notifyOnNetworkStatusChange: true,
+  })
+
+  const proposals = data?.themeProposals ?? []
+  const totalCount = data?.themeProposalsCount ?? 0
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE)
+  const filterSummary = getFilterSummary(t, period, dayValue, weekValue, monthValue)
+
+  const updateSearch = (
+    update: (params: URLSearchParams) => void,
+    options?: { resetPage?: boolean },
+  ) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      update(next)
+
+      if (options?.resetPage ?? true) {
+        next.set("page", "0")
+      }
+
+      return next
+    })
+  }
+
+  const onPeriodChange = (value: ProposalPeriod) => {
+    updateSearch((params) => {
+      if (value === "all") {
+        params.delete("period")
+        params.delete("day")
+        params.delete("week")
+        params.delete("month")
+        return
+      }
+
+      params.set("period", value)
+
+      if (value === "day") {
+        params.set("day", dayValue ?? getCurrentDateValue())
+        params.delete("week")
+        params.delete("month")
+        return
+      }
+
+      if (value === "week") {
+        params.set("week", weekValue ?? getCurrentWeekValue())
+        params.delete("day")
+        params.delete("month")
+        return
+      }
+
+      params.set("month", monthValue ?? getCurrentMonthValue())
+      params.delete("day")
+      params.delete("week")
+    })
+  }
 
   const onCancel = async (proposalId: string) => {
-    await cancelProposal({ variables: { proposalId: proposalId } })
+    await cancelProposal({ variables: { proposalId } })
     toast(t("提案を取り消しました", "Canceled the proposal"))
     setPendingCancelId(null)
     void refetch()
@@ -106,21 +200,149 @@ export default function ThemeProposalsPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5 pb-24">
       <AppPageHeader
         title={t("お題提案一覧", "Theme proposals")}
         description={t(
-          "送られたお題提案と、ぴくたーちゃんの採用コメントを確認できます。",
-          "Browse submitted theme proposals and Pictor-chan's adoption comments.",
+          "提案者とぴくたーちゃんのやり取りを時系列で確認できます。日付・週・月ごとの絞り込みにも対応しています。",
+          "Review theme proposal conversations with Pictor-chan, with day, week, and month filters.",
         )}
       />
 
-      <div className="flex justify-end">
-        <Button asChild>
-          <Link to="/themes/proposals/new">
-            {t("お題を提案する", "Submit a proposal")}
-          </Link>
-        </Button>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="flex-1 rounded-3xl border border-orange-200 bg-linear-to-br from-orange-50 via-white to-amber-50 p-4 shadow-sm dark:border-orange-900 dark:from-orange-950/30 dark:via-zinc-950 dark:to-amber-950/20">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div className="grid gap-3 sm:grid-cols-[160px_1fr_auto] sm:items-end">
+              <div className="space-y-1">
+                <p className="text-xs font-medium tracking-wide text-muted-foreground">
+                  {t("表示範囲", "Range")}
+                </p>
+                <Select value={period} onValueChange={(value) => onPeriodChange(value as ProposalPeriod)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("すべて", "All")}</SelectItem>
+                    <SelectItem value="day">{t("日付", "Day")}</SelectItem>
+                    <SelectItem value="week">{t("週", "Week")}</SelectItem>
+                    <SelectItem value="month">{t("月", "Month")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <p className="text-xs font-medium tracking-wide text-muted-foreground">
+                  {t("絞り込み値", "Filter value")}
+                </p>
+
+                {period === "day" && (
+                  <Input
+                    type="date"
+                    value={dayValue ?? ""}
+                    onChange={(event) => {
+                      updateSearch((params) => {
+                        params.set("period", "day")
+                        if (event.target.value.length > 0) {
+                          params.set("day", event.target.value)
+                        } else {
+                          params.delete("day")
+                        }
+                        params.delete("week")
+                        params.delete("month")
+                      })
+                    }}
+                    className="max-w-sm"
+                  />
+                )}
+
+                {period === "week" && (
+                  <Input
+                    type="week"
+                    value={weekValue ?? ""}
+                    onChange={(event) => {
+                      updateSearch((params) => {
+                        params.set("period", "week")
+                        if (event.target.value.length > 0) {
+                          params.set("week", event.target.value)
+                        } else {
+                          params.delete("week")
+                        }
+                        params.delete("day")
+                        params.delete("month")
+                      })
+                    }}
+                    className="max-w-sm"
+                  />
+                )}
+
+                {period === "month" && (
+                  <Input
+                    type="month"
+                    value={monthValue ?? ""}
+                    onChange={(event) => {
+                      updateSearch((params) => {
+                        params.set("period", "month")
+                        if (event.target.value.length > 0) {
+                          params.set("month", event.target.value)
+                        } else {
+                          params.delete("month")
+                        }
+                        params.delete("day")
+                        params.delete("week")
+                      })
+                    }}
+                    className="max-w-sm"
+                  />
+                )}
+
+                {period === "all" && (
+                  <div className="flex h-10 items-center rounded-md border border-dashed border-orange-200 bg-white/70 px-3 text-sm text-muted-foreground dark:border-orange-900 dark:bg-zinc-950/60">
+                    {t("期間指定なし", "No date filter")}
+                  </div>
+                )}
+              </div>
+
+              <Button
+                variant="outline"
+                onClick={() => {
+                  updateSearch((params) => {
+                    params.delete("period")
+                    params.delete("day")
+                    params.delete("week")
+                    params.delete("month")
+                  })
+                }}
+              >
+                {t("絞り込み解除", "Clear filter")}
+              </Button>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <Badge variant="secondary" className="rounded-full px-3 py-1">
+                {filterSummary}
+              </Badge>
+              <Badge variant="secondary" className="rounded-full px-3 py-1">
+                {t(`${totalCount}件`, `${totalCount} items`)}
+              </Badge>
+              {totalPages > 0 && (
+                <Badge variant="secondary" className="rounded-full px-3 py-1">
+                  {t(
+                    `${currentPage + 1}/${totalPages}ページ`,
+                    `Page ${currentPage + 1}/${totalPages}`,
+                  )}
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex shrink-0 justify-end">
+          <Button asChild>
+            <Link to="/themes/proposals/new">
+              {t("お題を提案する", "Submit a proposal")}
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-950 dark:border-orange-800 dark:bg-orange-950/30 dark:text-orange-100">
@@ -139,12 +361,24 @@ export default function ThemeProposalsPage() {
       </div>
 
       {loading && proposals.length === 0 ? (
-        <div className="flex items-center justify-center py-12 text-muted-foreground">
+        <div className="flex items-center justify-center py-16 text-muted-foreground">
           <Loader2Icon className="mr-2 animate-spin" />
           {t("読み込み中", "Loading")}
         </div>
+      ) : proposals.length === 0 ? (
+        <div className="rounded-3xl border border-dashed border-orange-200 bg-white/80 px-6 py-14 text-center text-sm text-muted-foreground dark:border-orange-900 dark:bg-zinc-950/60">
+          <p className="font-medium text-foreground dark:text-zinc-100">
+            {t("条件に合う提案はありません。", "No proposals match this filter.")}
+          </p>
+          <p className="mt-2">
+            {t(
+              "別の日付や週・月に切り替えるか、絞り込みを解除してください。",
+              "Try another day, week, or month, or clear the filter.",
+            )}
+          </p>
+        </div>
       ) : (
-        <div className="grid gap-2.5">
+        <div className="space-y-4">
           {proposals.map((proposal) => {
             const targetDate = new Date(`${proposal.targetDate}T00:00:00`)
             const isOwnProposal = authContext.userId === proposal.proposerUserId
@@ -154,240 +388,238 @@ export default function ThemeProposalsPage() {
               proposal.status === "PENDING"
             const isLikeBusy = pendingLikeId === proposal.id
             const isExpanded = expandedProposalIds.includes(proposal.id)
-            const previewMessage = getPictorPreviewMessage(t, proposal)
 
             return (
-              <div key={proposal.id} className="grid gap-2 md:grid-cols-[88px_1fr] md:items-start">
-                <div className="flex flex-col items-center gap-2 pt-1 text-center">
-                  <Link to="/pictor-chan" className="flex flex-col items-center gap-2">
-                    <Avatar className="size-14 border-2 border-white bg-white shadow-md ring-4 ring-orange-100 dark:border-zinc-900 dark:bg-zinc-900 dark:ring-orange-950/40">
-                      <AvatarImage src={PICTOR_CHAN_ICON_URL} alt={t("ぴくたーちゃん", "Pictor-chan")} />
-                      <AvatarFallback>ぴ</AvatarFallback>
-                    </Avatar>
-                    <div className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-orange-900 dark:bg-orange-950/60 dark:text-orange-100">
-                      {t("ぴくたーちゃん", "Pictor-chan")}
-                    </div>
-                  </Link>
-                </div>
+              <article
+                key={proposal.id}
+                className="rounded-[28px] border border-orange-200 bg-linear-to-br from-white via-orange-50/75 to-amber-50/90 p-4 shadow-sm dark:border-orange-900 dark:from-zinc-950 dark:via-orange-950/20 dark:to-amber-950/20"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="secondary" className="px-2.5 py-1 text-[11px]">
+                      {format(targetDate, "yyyy/MM/dd (EEE)", { locale: ja })}
+                    </Badge>
+                    <Badge className={getStatusBadgeClassName(proposal.status)}>
+                      {getStatusLabel(t, proposal.status)}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {t("提案の会話ログ", "Proposal conversation")}
+                    </span>
+                  </div>
 
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => onToggleExpanded(proposal.id)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault()
-                      onToggleExpanded(proposal.id)
-                    }
-                  }}
-                  className="group relative rounded-[24px] border border-orange-200 bg-linear-to-br from-white via-orange-50/85 to-amber-100/75 p-3 shadow-sm transition hover:border-orange-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-300 dark:border-orange-800 dark:from-zinc-900 dark:via-orange-950/40 dark:to-amber-950/30 dark:text-zinc-100 dark:hover:border-orange-700"
-                >
-                  <div className="absolute top-7 left-[-6px] h-3 w-3 rotate-45 border-orange-200 border-b border-l bg-orange-50 dark:border-orange-800 dark:bg-orange-950/80" />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={proposal.isLiked ? "default" : "outline"}
+                      size="sm"
+                      disabled={!canLikeProposal || isLikeBusy}
+                      onClick={() => {
+                        void onToggleLike(proposal)
+                      }}
+                      className="h-8 gap-1.5 rounded-full px-3"
+                      title={
+                        canLikeProposal
+                          ? proposal.isLiked
+                            ? t("いいね解除", "Unlike")
+                            : t("いいね", "Like")
+                          : isOwnProposal
+                            ? t("自分の提案にはいいねできません", "You cannot like your own proposal")
+                            : t("保留中の提案のみいいねできます", "Only pending proposals can be liked")
+                      }
+                    >
+                      {isLikeBusy ? (
+                        <Loader2Icon className="size-3.5 animate-spin" />
+                      ) : (
+                        <Heart className={proposal.isLiked ? "size-3.5 fill-current" : "size-3.5"} />
+                      )}
+                      <span className="text-[11px]">{proposal.likesCount}</span>
+                    </Button>
 
-                  <div className="flex flex-col gap-2">
-                    <div className="flex flex-wrap items-start gap-2">
-                      <div className="min-w-0 flex-1 space-y-2">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <Badge variant="secondary" className="px-2 py-0 text-[11px]">
-                            {format(targetDate, "yyyy/MM/dd (EEE)", { locale: ja })}
-                          </Badge>
-                          <Badge className={getStatusBadgeClassName(proposal.status)}>
-                            {getStatusLabel(t, proposal.status)}
-                          </Badge>
-                          <span className="text-[11px] text-muted-foreground dark:text-zinc-400">
-                            {t("吹き出しをクリックで詳細", "Click the bubble for details")}
-                          </span>
-                        </div>
-
-                        <p className="pr-2 text-sm leading-6 font-medium text-foreground/90 dark:text-zinc-50">
-                          {previewMessage}
-                        </p>
-
-                        <div className="inline-flex max-w-full items-center rounded-[18px] border border-white/70 bg-white/80 px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-50">
-                          <span className="truncate">「{proposal.inputTheme}」</span>
-                        </div>
-                      </div>
-
-                      <div className="flex shrink-0 items-center gap-2 self-start">
-                        <Button
-                          variant={proposal.isLiked ? "default" : "outline"}
-                          size="sm"
-                          disabled={!canLikeProposal || isLikeBusy}
-                          onClick={(event) => {
-                            event.stopPropagation()
-                            void onToggleLike(proposal)
-                          }}
-                          className="h-8 gap-1.5 rounded-full px-2.5"
-                          title={
-                            canLikeProposal
-                              ? proposal.isLiked
-                                ? t("いいね解除", "Unlike")
-                                : t("いいね", "Like")
-                              : isOwnProposal
-                                ? t("自分の提案にはいいねできません", "You cannot like your own proposal")
-                                : t("保留中の提案のみいいねできます", "Only pending proposals can be liked")
-                          }
-                        >
-                          {isLikeBusy ? (
-                            <Loader2Icon className="size-3.5 animate-spin" />
-                          ) : (
-                            <Heart
-                              className={proposal.isLiked ? "size-3.5 fill-current" : "size-3.5"}
-                            />
-                          )}
-                          <span className="text-[11px]">{proposal.likesCount}</span>
-                        </Button>
-
-                        <div className="flex size-8 items-center justify-center rounded-full border border-orange-200 bg-white/80 text-orange-700 shadow-sm transition group-hover:border-orange-300 dark:border-orange-800 dark:bg-zinc-900/70 dark:text-orange-200">
-                          {isExpanded ? (
-                            <ChevronUp className="size-4" />
-                          ) : (
-                            <ChevronDown className="size-4" />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {isExpanded && (
-                      <div className="space-y-3 border-t border-orange-200/70 pt-3 dark:border-orange-900/80">
-                        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                          <div className="min-w-0 flex-1 space-y-2.5">
-                            <div className="flex items-center gap-3 rounded-[18px] border border-white/70 bg-white/80 px-3 py-2 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/75">
-                              <Link
-                                to={`/users/${proposal.proposerUserId}`}
-                                className="shrink-0"
-                                onClick={(event) => {
-                                  event.stopPropagation()
-                                }}
-                              >
-                                <Avatar className="size-10 border border-white shadow-sm dark:border-zinc-700">
-                                  <AvatarImage
-                                    src={withIconUrlFallback(proposal.proposerIconUrl)}
-                                    alt={proposal.proposerName}
-                                  />
-                                  <AvatarFallback>
-                                    {proposal.proposerName.slice(0, 1)}
-                                  </AvatarFallback>
-                                </Avatar>
-                              </Link>
-                              <div className="min-w-0">
-                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground dark:text-zinc-400">
-                                  {t("提案者", "Proposer")}
-                                </p>
-                                <Link
-                                  to={`/users/${proposal.proposerUserId}`}
-                                  onClick={(event) => {
-                                    event.stopPropagation()
-                                  }}
-                                  className="line-clamp-1 font-medium text-foreground hover:underline dark:text-zinc-100"
-                                >
-                                  {proposal.proposerName}
-                                </Link>
-                              </div>
-                            </div>
-
-                            <div className="rounded-[18px] bg-white/85 px-3 py-3 shadow-sm dark:bg-zinc-900/75">
-                              <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="text-muted-foreground text-xs dark:text-zinc-400">
-                                  {t("送信", "Submitted")}: {formatUnixTime(proposal.createdAt)}
-                                </span>
-                                {proposal.decidedAt && (
-                                  <span className="text-muted-foreground text-xs dark:text-zinc-400">
-                                    {t("判定", "Decided")}: {formatUnixTime(proposal.decidedAt)}
-                                  </span>
-                                )}
-                              </div>
-                              <p className="mt-2 text-[12px] leading-5 text-muted-foreground dark:text-zinc-300">
-                                {proposal.title}
-                                {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
-                              </p>
-                              <p className="mt-1 text-[12px] leading-5 text-muted-foreground dark:text-zinc-300">
-                                <span className="font-medium text-foreground/80 dark:text-zinc-100">Prompt:</span>{" "}
-                                {proposal.promptName}
-                              </p>
-                            </div>
-
-                            {proposal.decisionComment && (
-                              <div className="rounded-[20px] border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-100">
-                                <p className="mb-1 font-medium text-[11px] uppercase tracking-wide dark:text-sky-200">
-                                  {t("ぴくたーちゃんのコメント", "Pictor-chan comment")}
-                                </p>
-                                <p className="leading-6">{proposal.decisionComment}</p>
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-                            {proposal.canCancel && (
-                              <AlertDialog
-                                open={pendingCancelId === proposal.id}
-                                onOpenChange={(open) => {
-                                  setPendingCancelId(open ? proposal.id : null)
-                                }}
-                              >
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={(event) => {
-                                      event.stopPropagation()
-                                    }}
-                                  >
-                                    {t("取り消す", "Cancel")}
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      {t("提案を取り消しますか？", "Cancel this proposal?")}
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      {t(
-                                        "保留中の提案だけ取り消せます。",
-                                        "Only pending proposals can be canceled.",
-                                      )}
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      {t("戻る", "Back")}
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => onCancel(proposal.id)}
-                                      disabled={isCanceling}
-                                    >
-                                      {isCanceling ? t("処理中", "Working") : t("取り消す", "Cancel")}
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            )}
-
-                            {proposal.status === "ADOPTED" && proposal.adoptedSubjectId && (
-                              <Button
-                                asChild
-                                variant="secondary"
-                                size="sm"
-                                onClick={(event) => {
-                                  event.stopPropagation()
-                                }}
-                              >
-                                <Link
-                                  to={`/themes/${proposal.targetDate.slice(0, 4)}/${Number(proposal.targetDate.slice(5, 7))}/${Number(proposal.targetDate.slice(8, 10))}`}
-                                >
-                                  {t("採用されたお題を見る", "Open adopted theme")}
-                                </Link>
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onToggleExpanded(proposal.id)}
+                      aria-label={
+                        isExpanded
+                          ? t("詳細を閉じる", "Collapse details")
+                          : t("詳細を開く", "Expand details")
+                      }
+                      className="size-8 rounded-full"
+                    >
+                      {isExpanded ? (
+                        <ChevronUp className="size-4" />
+                      ) : (
+                        <ChevronDown className="size-4" />
+                      )}
+                    </Button>
                   </div>
                 </div>
-              </div>
+
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Link to={`/users/${proposal.proposerUserId}`} className="shrink-0">
+                      <Avatar className="size-11 border border-white shadow-sm dark:border-zinc-800">
+                        <AvatarImage
+                          src={withIconUrlFallback(proposal.proposerIconUrl)}
+                          alt={proposal.proposerName}
+                        />
+                        <AvatarFallback>
+                          {proposal.proposerName.slice(0, 1)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Link>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-center gap-2">
+                        <Link
+                          to={`/users/${proposal.proposerUserId}`}
+                          className="line-clamp-1 text-sm font-semibold text-foreground hover:underline dark:text-zinc-100"
+                        >
+                          {proposal.proposerName}
+                        </Link>
+                        <span className="text-xs text-muted-foreground">
+                          {t("提案者", "Proposer")}
+                        </span>
+                      </div>
+
+                      <div className="rounded-[22px] rounded-tl-md border border-sky-100 bg-sky-50 px-4 py-3 text-sm leading-6 text-sky-950 shadow-sm dark:border-sky-900/70 dark:bg-sky-950/30 dark:text-sky-50">
+                        <p className="font-medium">{t("このお題どうですか？", "How about this theme?")}</p>
+                        <p className="mt-2 text-base font-semibold text-slate-900 dark:text-white">
+                          「{proposal.inputTheme}」
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                    <Link to="/pictor-chan" className="shrink-0">
+                      <Avatar className="size-11 border border-white bg-white shadow-sm ring-4 ring-orange-100 dark:border-zinc-900 dark:bg-zinc-900 dark:ring-orange-950/40">
+                        <AvatarImage
+                          src={PICTOR_CHAN_ICON_URL}
+                          alt={t("ぴくたーちゃん", "Pictor-chan")}
+                        />
+                        <AvatarFallback>ぴ</AvatarFallback>
+                      </Avatar>
+                    </Link>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-center gap-2">
+                        <Link
+                          to="/pictor-chan"
+                          className="text-sm font-semibold text-foreground hover:underline dark:text-zinc-100"
+                        >
+                          {t("ぴくたーちゃん", "Pictor-chan")}
+                        </Link>
+                        <span className="text-xs text-muted-foreground">
+                          {t("判定コメント", "Response")}
+                        </span>
+                      </div>
+
+                      <div className="rounded-[22px] rounded-tl-md border border-orange-200 bg-white/90 px-4 py-3 text-sm leading-6 text-slate-800 shadow-sm dark:border-orange-900 dark:bg-zinc-900/75 dark:text-zinc-100">
+                        <p>{getPictorPreviewMessage(t, proposal)}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div className="mt-4 space-y-3 border-t border-orange-200/70 pt-4 dark:border-orange-900/70">
+                    <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+                      <div className="rounded-2xl bg-white/80 px-4 py-3 shadow-sm dark:bg-zinc-900/70">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground dark:text-zinc-400">
+                          <span>
+                            {t("送信", "Submitted")}: {formatUnixTime(proposal.createdAt)}
+                          </span>
+                          {proposal.decidedAt && (
+                            <span>
+                              {t("判定", "Decided")}: {formatUnixTime(proposal.decidedAt)}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="mt-3 text-sm font-semibold text-foreground dark:text-zinc-100">
+                          {proposal.title}
+                          {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
+                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground dark:text-zinc-300">
+                          <span className="font-medium text-foreground dark:text-zinc-100">Prompt:</span>{" "}
+                          {proposal.promptName}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-end gap-2">
+                        {proposal.canCancel && (
+                          <AlertDialog
+                            open={pendingCancelId === proposal.id}
+                            onOpenChange={(open) => {
+                              setPendingCancelId(open ? proposal.id : null)
+                            }}
+                          >
+                            <AlertDialogTrigger asChild>
+                              <Button variant="destructive" size="sm">
+                                {t("取り消す", "Cancel")}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  {t("提案を取り消しますか？", "Cancel this proposal?")}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t(
+                                    "保留中の提案だけ取り消せます。",
+                                    "Only pending proposals can be canceled.",
+                                  )}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                  {t("戻る", "Back")}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => onCancel(proposal.id)}
+                                  disabled={isCanceling}
+                                >
+                                  {isCanceling ? t("処理中", "Working") : t("取り消す", "Cancel")}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+
+                        {proposal.status === "ADOPTED" && proposal.adoptedSubjectId && (
+                          <Button asChild variant="secondary" size="sm">
+                            <Link
+                              to={`/themes/${proposal.targetDate.slice(0, 4)}/${Number(proposal.targetDate.slice(5, 7))}/${Number(proposal.targetDate.slice(8, 10))}`}
+                            >
+                              {t("採用されたお題を見る", "Open adopted theme")}
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </article>
             )
           })}
+        </div>
+      )}
+
+      {totalCount > PAGE_SIZE && (
+        <div className="rounded-2xl border border-orange-200 bg-white/80 p-3 shadow-sm dark:border-orange-900 dark:bg-zinc-950/70">
+          <ResponsivePagination
+            perPage={PAGE_SIZE}
+            maxCount={totalCount}
+            currentPage={currentPage}
+            onPageChange={(page) => {
+              updateSearch(
+                (params) => {
+                  params.set("page", String(page))
+                },
+                { resetPage: false },
+              )
+            }}
+          />
         </div>
       )}
     </div>
@@ -454,9 +686,185 @@ function getPictorPreviewMessage(
   }
 }
 
+function getPeriod(value: string | null): ProposalPeriod {
+  switch (value) {
+    case "day":
+    case "week":
+    case "month":
+      return value
+    default:
+      return "all"
+  }
+}
+
+function getPage(value: string | null) {
+  const page = Number.parseInt(value ?? "0", 10)
+
+  if (Number.isNaN(page) || page < 0) {
+    return 0
+  }
+
+  return page
+}
+
+function getDayValue(value: string | null) {
+  return value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null
+}
+
+function getWeekValue(value: string | null) {
+  return value && /^\d{4}-W\d{2}$/.test(value) ? value : null
+}
+
+function getMonthValue(value: string | null) {
+  return value && /^\d{4}-\d{2}$/.test(value) ? value : null
+}
+
+function getCurrentDateValue() {
+  return format(new Date(), "yyyy-MM-dd")
+}
+
+function getCurrentMonthValue() {
+  return format(new Date(), "yyyy-MM")
+}
+
+function getCurrentWeekValue() {
+  return toIsoWeekValue(new Date())
+}
+
+function toIsoWeekValue(date: Date) {
+  const workingDate = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  )
+  const dayNumber = workingDate.getUTCDay() || 7
+  workingDate.setUTCDate(workingDate.getUTCDate() + 4 - dayNumber)
+  const yearStart = new Date(Date.UTC(workingDate.getUTCFullYear(), 0, 1))
+  const weekNumber = Math.ceil(
+    ((workingDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
+  )
+
+  return `${workingDate.getUTCFullYear()}-W${String(weekNumber).padStart(2, "0")}`
+}
+
+function getWeekRange(weekValue: string) {
+  const match = /^(\d{4})-W(\d{2})$/.exec(weekValue)
+
+  if (match === null) {
+    return null
+  }
+
+  const year = Number.parseInt(match[1], 10)
+  const week = Number.parseInt(match[2], 10)
+
+  if (Number.isNaN(year) || Number.isNaN(week) || week < 1 || week > 53) {
+    return null
+  }
+
+  const firstWeekAnchor = new Date(Date.UTC(year, 0, 4))
+  const firstWeekDay = firstWeekAnchor.getUTCDay() || 7
+  const start = new Date(firstWeekAnchor)
+  start.setUTCDate(
+    firstWeekAnchor.getUTCDate() - firstWeekDay + 1 + (week - 1) * 7,
+  )
+
+  return {
+    startDate: format(start, "yyyy-MM-dd"),
+    endDate: format(addDays(start, 6), "yyyy-MM-dd"),
+  }
+}
+
+function getMonthFilter(monthValue: string) {
+  const match = /^(\d{4})-(\d{2})$/.exec(monthValue)
+
+  if (match === null) {
+    return null
+  }
+
+  const year = Number.parseInt(match[1], 10)
+  const month = Number.parseInt(match[2], 10)
+
+  if (Number.isNaN(year) || Number.isNaN(month) || month < 1 || month > 12) {
+    return null
+  }
+
+  return { year, month }
+}
+
+function getFilterVariables(params: {
+  period: ProposalPeriod
+  dayValue: string | null
+  weekValue: string | null
+  monthValue: string | null
+}) {
+  if (params.period === "day" && params.dayValue) {
+    return { date: params.dayValue }
+  }
+
+  if (params.period === "week" && params.weekValue) {
+    const range = getWeekRange(params.weekValue)
+
+    if (range) {
+      return range
+    }
+  }
+
+  if (params.period === "month" && params.monthValue) {
+    const monthFilter = getMonthFilter(params.monthValue)
+
+    if (monthFilter) {
+      return monthFilter
+    }
+  }
+
+  return {}
+}
+
+function getFilterSummary(
+  t: ReturnType<typeof useTranslation>,
+  period: ProposalPeriod,
+  dayValue: string | null,
+  weekValue: string | null,
+  monthValue: string | null,
+) {
+  if (period === "day" && dayValue) {
+    return format(new Date(`${dayValue}T00:00:00`), "yyyy/MM/dd (EEE)", {
+      locale: ja,
+    })
+  }
+
+  if (period === "week" && weekValue) {
+    const range = getWeekRange(weekValue)
+
+    if (range) {
+      return `${range.startDate.replaceAll("-", "/")} - ${range.endDate.replaceAll("-", "/")}`
+    }
+  }
+
+  if (period === "month" && monthValue) {
+    return monthValue.replace("-", "/")
+  }
+
+  return t("全期間", "All periods")
+}
+
 const ThemeProposalsQuery = gql`
-  query ThemeProposals($offset: Int!, $limit: Int!) {
-    themeProposals(offset: $offset, limit: $limit) {
+  query ThemeProposals(
+    $offset: Int!
+    $limit: Int!
+    $date: String
+    $year: Int
+    $month: Int
+    $startDate: String
+    $endDate: String
+  ) {
+    themeProposals(
+      offset: $offset
+      limit: $limit
+      date: $date
+      year: $year
+      month: $month
+      startDate: $startDate
+      endDate: $endDate
+    ) {
       id
       title
       enTitle
@@ -476,6 +884,13 @@ const ThemeProposalsQuery = gql`
       likesCount
       isLiked
     }
+    themeProposalsCount(
+      date: $date
+      year: $year
+      month: $month
+      startDate: $startDate
+      endDate: $endDate
+    )
   }
 `
 
