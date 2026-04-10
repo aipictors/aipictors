@@ -334,6 +334,7 @@ export default function ThemeProposalsPage() {
                           )}
                         </>
                       )}
+                    </div>
                   </div>
                 </div>
               </div>
