@@ -2,7 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
-import { Heart, Loader2Icon, MinusIcon, PlusIcon } from "lucide-react"
+import { ChevronDown, ChevronUp, Heart, Loader2Icon } from "lucide-react"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
 import { AppPageHeader } from "~/components/app/app-page-header"
@@ -22,6 +22,7 @@ import {
 } from "~/components/ui/alert-dialog"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type ThemeProposal = {
   id: string
@@ -47,6 +48,9 @@ type ThemeProposal = {
 type QueryData = {
   themeProposals: ThemeProposal[]
 }
+
+const PICTOR_CHAN_ICON_URL =
+  "https://assets.aipictors.com/pictorchan-icon_11zon.webp"
 
 export default function ThemeProposalsPage() {
   const t = useTranslation()
@@ -150,51 +154,69 @@ export default function ThemeProposalsPage() {
               proposal.status === "PENDING"
             const isLikeBusy = pendingLikeId === proposal.id
             const isExpanded = expandedProposalIds.includes(proposal.id)
+            const previewMessage = getPictorPreviewMessage(t, proposal)
 
             return (
-              <div key={proposal.id} className="grid gap-1.5 md:grid-cols-[72px_1fr] md:items-start">
-                <div className="flex flex-col items-center gap-1 pt-0.5 text-center">
-                  <Link
-                    to={`/users/${proposal.proposerUserId}`}
-                    className="flex flex-col items-center gap-1.5"
-                  >
-                    <Avatar className="size-10 border-2 border-white shadow-sm">
-                      <AvatarImage
-                        src={proposal.proposerIconUrl ?? ""}
-                        alt={proposal.proposerName}
-                      />
-                      <AvatarFallback>
-                        {proposal.proposerName.slice(0, 1)}
-                      </AvatarFallback>
+              <div key={proposal.id} className="grid gap-2 md:grid-cols-[88px_1fr] md:items-start">
+                <div className="flex flex-col items-center gap-2 pt-1 text-center">
+                  <Link to="/pictor-chan" className="flex flex-col items-center gap-2">
+                    <Avatar className="size-14 border-2 border-white bg-white shadow-md ring-4 ring-orange-100 dark:border-zinc-900 dark:bg-zinc-900 dark:ring-orange-950/40">
+                      <AvatarImage src={PICTOR_CHAN_ICON_URL} alt={t("ぴくたーちゃん", "Pictor-chan")} />
+                      <AvatarFallback>ぴ</AvatarFallback>
                     </Avatar>
-                    <div>
-                      <p className="text-muted-foreground text-[10px] leading-none">
-                        {t("提案者", "Proposer")}
-                      </p>
-                      <p className="mt-0.5 line-clamp-2 font-medium text-[11px] leading-4">
-                        {proposal.proposerName}
-                      </p>
+                    <div className="rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-orange-900 dark:bg-orange-950/60 dark:text-orange-100">
+                      {t("ぴくたーちゃん", "Pictor-chan")}
                     </div>
                   </Link>
                 </div>
 
-                <div className="relative rounded-[20px] border border-orange-200 bg-linear-to-br from-white via-orange-50/70 to-amber-100/70 p-2.5 shadow-sm dark:border-orange-800 dark:from-zinc-900 dark:via-orange-950/40 dark:to-amber-950/30 dark:text-zinc-100">
-                  <div className="absolute top-5 left-[-5px] h-2.5 w-2.5 rotate-45 border-orange-200 border-b border-l bg-orange-50 dark:border-orange-800 dark:bg-orange-950/80" />
+                <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onToggleExpanded(proposal.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault()
+                      onToggleExpanded(proposal.id)
+                    }
+                  }}
+                  className="group relative rounded-[24px] border border-orange-200 bg-linear-to-br from-white via-orange-50/85 to-amber-100/75 p-3 shadow-sm transition hover:border-orange-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-orange-300 dark:border-orange-800 dark:from-zinc-900 dark:via-orange-950/40 dark:to-amber-950/30 dark:text-zinc-100 dark:hover:border-orange-700"
+                >
+                  <div className="absolute top-7 left-[-6px] h-3 w-3 rotate-45 border-orange-200 border-b border-l bg-orange-50 dark:border-orange-800 dark:bg-orange-950/80" />
 
                   <div className="flex flex-col gap-2">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <Badge variant="secondary" className="px-2 py-0 text-[11px]">
-                          {format(targetDate, "yyyy/MM/dd (EEE)", { locale: ja })}
-                        </Badge>
-                        <p className="min-w-0 flex-1 truncate font-semibold text-sm leading-5 dark:text-zinc-50">
-                          {proposal.inputTheme}
+                    <div className="flex flex-wrap items-start gap-2">
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <Badge variant="secondary" className="px-2 py-0 text-[11px]">
+                            {format(targetDate, "yyyy/MM/dd (EEE)", { locale: ja })}
+                          </Badge>
+                          <Badge className={getStatusBadgeClassName(proposal.status)}>
+                            {getStatusLabel(t, proposal.status)}
+                          </Badge>
+                          <span className="text-[11px] text-muted-foreground dark:text-zinc-400">
+                            {t("吹き出しをクリックで詳細", "Click the bubble for details")}
+                          </span>
+                        </div>
+
+                        <p className="pr-2 text-sm leading-6 font-medium text-foreground/90 dark:text-zinc-50">
+                          {previewMessage}
                         </p>
+
+                        <div className="inline-flex max-w-full items-center rounded-[18px] border border-white/70 bg-white/80 px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-50">
+                          <span className="truncate">「{proposal.inputTheme}」</span>
+                        </div>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-2 self-start">
                         <Button
                           variant={proposal.isLiked ? "default" : "outline"}
                           size="sm"
                           disabled={!canLikeProposal || isLikeBusy}
-                          onClick={() => onToggleLike(proposal)}
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            void onToggleLike(proposal)
+                          }}
                           className="h-8 gap-1.5 rounded-full px-2.5"
                           title={
                             canLikeProposal
@@ -215,114 +237,152 @@ export default function ThemeProposalsPage() {
                           )}
                           <span className="text-[11px]">{proposal.likesCount}</span>
                         </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          className="size-8 rounded-full"
-                          onClick={() => onToggleExpanded(proposal.id)}
-                          aria-label={
-                            isExpanded
-                              ? t("詳細を閉じる", "Collapse details")
-                              : t("詳細を開く", "Expand details")
-                          }
-                        >
-                          {isExpanded ? (
-                            <MinusIcon className="size-4" />
-                          ) : (
-                            <PlusIcon className="size-4" />
-                          )}
-                        </Button>
-                      </div>
 
-                      {isExpanded && (
-                        <>
-                          <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
-                            <div className="min-w-0 space-y-1.5">
+                        <div className="flex size-8 items-center justify-center rounded-full border border-orange-200 bg-white/80 text-orange-700 shadow-sm transition group-hover:border-orange-300 dark:border-orange-800 dark:bg-zinc-900/70 dark:text-orange-200">
+                          {isExpanded ? (
+                            <ChevronUp className="size-4" />
+                          ) : (
+                            <ChevronDown className="size-4" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {isExpanded && (
+                      <div className="space-y-3 border-t border-orange-200/70 pt-3 dark:border-orange-900/80">
+                        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                          <div className="min-w-0 flex-1 space-y-2.5">
+                            <div className="flex items-center gap-3 rounded-[18px] border border-white/70 bg-white/80 px-3 py-2 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/75">
+                              <Link
+                                to={`/users/${proposal.proposerUserId}`}
+                                className="shrink-0"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                }}
+                              >
+                                <Avatar className="size-10 border border-white shadow-sm dark:border-zinc-700">
+                                  <AvatarImage
+                                    src={withIconUrlFallback(proposal.proposerIconUrl)}
+                                    alt={proposal.proposerName}
+                                  />
+                                  <AvatarFallback>
+                                    {proposal.proposerName.slice(0, 1)}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </Link>
+                              <div className="min-w-0">
+                                <p className="text-[11px] uppercase tracking-wide text-muted-foreground dark:text-zinc-400">
+                                  {t("提案者", "Proposer")}
+                                </p>
+                                <Link
+                                  to={`/users/${proposal.proposerUserId}`}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                  }}
+                                  className="line-clamp-1 font-medium text-foreground hover:underline dark:text-zinc-100"
+                                >
+                                  {proposal.proposerName}
+                                </Link>
+                              </div>
+                            </div>
+
+                            <div className="rounded-[18px] bg-white/85 px-3 py-3 shadow-sm dark:bg-zinc-900/75">
                               <div className="flex flex-wrap items-center gap-1.5">
-                                <Badge className={getStatusBadgeClassName(proposal.status)}>
-                                  {getStatusLabel(t, proposal.status)}
-                                </Badge>
-                                <Badge variant="outline" className="bg-white/80 px-2 py-0 text-[11px] dark:border-zinc-700 dark:bg-zinc-900/70 dark:text-zinc-100">
-                                  {t("提案者", "Proposer")}: {proposal.proposerName}
-                                </Badge>
                                 <span className="text-muted-foreground text-xs dark:text-zinc-400">
                                   {t("送信", "Submitted")}: {formatUnixTime(proposal.createdAt)}
                                 </span>
+                                {proposal.decidedAt && (
+                                  <span className="text-muted-foreground text-xs dark:text-zinc-400">
+                                    {t("判定", "Decided")}: {formatUnixTime(proposal.decidedAt)}
+                                  </span>
+                                )}
                               </div>
-                              <div className="rounded-[16px] bg-white/85 px-3 py-2 shadow-sm dark:bg-zinc-900/75">
-                                <p className="text-muted-foreground text-[11px] leading-4 dark:text-zinc-400">
-                                  {proposal.title}
-                                  {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
-                                </p>
-                                <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground dark:text-zinc-400">
-                                  <span className="font-medium text-foreground/80 dark:text-zinc-200">Prompt:</span>{" "}
-                                  {proposal.promptName}
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-                              {proposal.canCancel && (
-                                <AlertDialog
-                                  open={pendingCancelId === proposal.id}
-                                  onOpenChange={(open) => {
-                                    setPendingCancelId(open ? proposal.id : null)
-                                  }}
-                                >
-                                  <AlertDialogTrigger asChild>
-                                    <Button variant="destructive" size="sm">
-                                      {t("取り消す", "Cancel")}
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>
-                                        {t("提案を取り消しますか？", "Cancel this proposal?")}
-                                      </AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        {t(
-                                          "保留中の提案だけ取り消せます。",
-                                          "Only pending proposals can be canceled.",
-                                        )}
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>
-                                        {t("戻る", "Back")}
-                                      </AlertDialogCancel>
-                                      <AlertDialogAction
-                                        onClick={() => onCancel(proposal.id)}
-                                        disabled={isCanceling}
-                                      >
-                                        {isCanceling ? t("処理中", "Working") : t("取り消す", "Cancel")}
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              )}
-
-                              {proposal.status === "ADOPTED" && proposal.adoptedSubjectId && (
-                                <Button asChild variant="secondary" size="sm">
-                                  <Link
-                                    to={`/themes/${proposal.targetDate.slice(0, 4)}/${Number(proposal.targetDate.slice(5, 7))}/${Number(proposal.targetDate.slice(8, 10))}`}
-                                  >
-                                    {t("採用されたお題を見る", "Open adopted theme")}
-                                  </Link>
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                          {proposal.decisionComment && (
-                            <div className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-1.5 text-sky-900 text-sm dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-100">
-                              <p className="mb-0.5 font-medium text-[11px] uppercase tracking-wide dark:text-sky-200">
-                                {t("ぴくたーちゃんのコメント", "Pictor-chan comment")}
+                              <p className="mt-2 text-[12px] leading-5 text-muted-foreground dark:text-zinc-300">
+                                {proposal.title}
+                                {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
                               </p>
-                              <p className="leading-5">{proposal.decisionComment}</p>
+                              <p className="mt-1 text-[12px] leading-5 text-muted-foreground dark:text-zinc-300">
+                                <span className="font-medium text-foreground/80 dark:text-zinc-100">Prompt:</span>{" "}
+                                {proposal.promptName}
+                              </p>
                             </div>
-                          )}
-                        </>
-                      )}
+
+                            {proposal.decisionComment && (
+                              <div className="rounded-[20px] border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-100">
+                                <p className="mb-1 font-medium text-[11px] uppercase tracking-wide dark:text-sky-200">
+                                  {t("ぴくたーちゃんのコメント", "Pictor-chan comment")}
+                                </p>
+                                <p className="leading-6">{proposal.decisionComment}</p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                            {proposal.canCancel && (
+                              <AlertDialog
+                                open={pendingCancelId === proposal.id}
+                                onOpenChange={(open) => {
+                                  setPendingCancelId(open ? proposal.id : null)
+                                }}
+                              >
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={(event) => {
+                                      event.stopPropagation()
+                                    }}
+                                  >
+                                    {t("取り消す", "Cancel")}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      {t("提案を取り消しますか？", "Cancel this proposal?")}
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      {t(
+                                        "保留中の提案だけ取り消せます。",
+                                        "Only pending proposals can be canceled.",
+                                      )}
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      {t("戻る", "Back")}
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => onCancel(proposal.id)}
+                                      disabled={isCanceling}
+                                    >
+                                      {isCanceling ? t("処理中", "Working") : t("取り消す", "Cancel")}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            )}
+
+                            {proposal.status === "ADOPTED" && proposal.adoptedSubjectId && (
+                              <Button
+                                asChild
+                                variant="secondary"
+                                size="sm"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                }}
+                              >
+                                <Link
+                                  to={`/themes/${proposal.targetDate.slice(0, 4)}/${Number(proposal.targetDate.slice(5, 7))}/${Number(proposal.targetDate.slice(8, 10))}`}
+                                >
+                                  {t("採用されたお題を見る", "Open adopted theme")}
+                                </Link>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     </div>
                   </div>
                 </div>
@@ -365,6 +425,33 @@ function getStatusBadgeClassName(status: string) {
       return "bg-rose-600 text-white"
     default:
       return "bg-amber-500 text-white"
+  }
+}
+
+function getPictorPreviewMessage(
+  t: ReturnType<typeof useTranslation>,
+  proposal: ThemeProposal,
+) {
+  if (proposal.decisionComment && proposal.decisionComment.length > 0) {
+    return proposal.decisionComment
+  }
+
+  switch (proposal.status) {
+    case "ADOPTED":
+      return t(
+        `「${proposal.inputTheme}」を採用したよ。みんなの支持が集まった注目のお題だね。`,
+        `I picked "${proposal.inputTheme}". It gathered strong support from everyone.`,
+      )
+    case "REJECTED":
+      return t(
+        `今回は「${proposal.inputTheme}」は見送りになったよ。また素敵なお題を待ってるね。`,
+        `"${proposal.inputTheme}" was not selected this time, but I would love to see more ideas from you.`,
+      )
+    default:
+      return t(
+        `「${proposal.inputTheme}」はどうかな？ いいねが多い提案ほど採用されやすいよ。`,
+        `How about "${proposal.inputTheme}"? Proposals with more likes are more likely to be adopted.`,
+      )
   }
 }
 
