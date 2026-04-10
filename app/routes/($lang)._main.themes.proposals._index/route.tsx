@@ -62,6 +62,7 @@ type QueryData = {
 type ThemeProposalsQueryVariables = {
   offset: number
   limit: number
+  proposerUserId?: string
   date?: string
   year?: number
   month?: number
@@ -71,11 +72,21 @@ type ThemeProposalsQueryVariables = {
 
 type ProposalPeriod = "all" | "day" | "week" | "month"
 
+type ThemeProposalsPageContentProps = {
+  scope?: "all" | "mine"
+}
+
 const PICTOR_CHAN_ICON_URL =
   "https://assets.aipictors.com/pictorchanicon.webp"
 const PAGE_SIZE = 12
 
 export default function ThemeProposalsPage() {
+  return <ThemeProposalsPageContent scope="all" />
+}
+
+export function ThemeProposalsPageContent(
+  props: ThemeProposalsPageContentProps,
+) {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const [searchParams, setSearchParams] = useSearchParams()
@@ -87,6 +98,11 @@ export default function ThemeProposalsPage() {
   const [pendingCancelId, setPendingCancelId] = useState<string | null>(null)
   const [pendingLikeId, setPendingLikeId] = useState<string | null>(null)
   const [expandedProposalIds, setExpandedProposalIds] = useState<string[]>([])
+  const isMinePage = props.scope === "mine"
+  const proposerUserId = isMinePage ? authContext.userId ?? undefined : undefined
+  const shouldSkipMineQuery =
+    isMinePage &&
+    (authContext.isLoading || authContext.isNotLoggedIn || authContext.userId === null)
 
   const period = getPeriod(searchParams.get("period"))
   const currentPage = getPage(searchParams.get("page"))
@@ -107,16 +123,49 @@ export default function ThemeProposalsPage() {
     variables: {
       offset: PAGE_SIZE * currentPage,
       limit: PAGE_SIZE,
+      proposerUserId,
       ...filterVariables,
     },
+    skip: shouldSkipMineQuery,
     fetchPolicy: "cache-and-network",
     notifyOnNetworkStatusChange: true,
   })
+
+  const myProposalPreview = useQuery<QueryData, ThemeProposalsQueryVariables>(
+    ThemeProposalsQuery,
+    {
+      variables: {
+        offset: 0,
+        limit: 3,
+        proposerUserId: authContext.userId ?? undefined,
+      },
+      skip:
+        isMinePage ||
+        authContext.isLoading ||
+        authContext.isNotLoggedIn ||
+        authContext.userId === null,
+      fetchPolicy: "cache-and-network",
+    },
+  )
 
   const proposals = data?.themeProposals ?? []
   const totalCount = data?.themeProposalsCount ?? 0
   const totalPages = Math.ceil(totalCount / PAGE_SIZE)
   const filterSummary = getFilterSummary(t, period, dayValue, weekValue, monthValue)
+  const myPreviewItems = myProposalPreview.data?.themeProposals ?? []
+  const myPreviewCount = myProposalPreview.data?.themeProposalsCount ?? 0
+  const pageTitle = isMinePage
+    ? t("あなたの提案一覧", "Your theme proposals")
+    : t("お題提案一覧", "Theme proposals")
+  const pageDescription = isMinePage
+    ? t(
+        "あなたが提案したお題の状況を、日付・週・月で絞り込みながら確認できます。",
+        "Review the status of the themes you submitted with day, week, and month filters.",
+      )
+    : t(
+        "提案者とぴくたーちゃんのやり取りを時系列で確認できます。日付・週・月ごとの絞り込みにも対応しています。",
+        "Review theme proposal conversations with Pictor-chan, with day, week, and month filters.",
+      )
 
   const updateSearch = (
     update: (params: URLSearchParams) => void,
@@ -202,12 +251,102 @@ export default function ThemeProposalsPage() {
   return (
     <div className="space-y-5 pb-24">
       <AppPageHeader
-        title={t("お題提案一覧", "Theme proposals")}
-        description={t(
-          "提案者とぴくたーちゃんのやり取りを時系列で確認できます。日付・週・月ごとの絞り込みにも対応しています。",
-          "Review theme proposal conversations with Pictor-chan, with day, week, and month filters.",
-        )}
+        title={pageTitle}
+        description={pageDescription}
       />
+
+      {!isMinePage && (
+        <section className="rounded-[28px] border border-sky-200 bg-linear-to-br from-sky-50 via-white to-cyan-50 p-4 shadow-sm dark:border-sky-900 dark:from-sky-950/30 dark:via-zinc-950 dark:to-cyan-950/20">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="font-semibold text-base text-foreground dark:text-zinc-50">
+                  {t("あなたの提案", "Your proposals")}
+                </h2>
+                {authContext.isLoggedIn && (
+                  <Badge variant="secondary" className="rounded-full px-3 py-1">
+                    {t(`${myPreviewCount}件`, `${myPreviewCount} items`)}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground dark:text-zinc-300">
+                {t(
+                  "自分で送ったお題の進捗をここからすぐ確認できます。",
+                  "Quickly check the status of the themes you submitted.",
+                )}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {authContext.isLoggedIn && (
+                <Button asChild variant="secondary">
+                  <Link to="/themes/proposals/mine">
+                    {t("あなたの提案一覧", "Your proposals")}
+                  </Link>
+                </Button>
+              )}
+              <Button asChild>
+                <Link to="/themes/proposals/new">
+                  {t("お題を提案する", "Submit a proposal")}
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-4">
+            {authContext.isLoading ? (
+              <div className="flex items-center gap-2 rounded-2xl border border-dashed border-sky-200 bg-white/80 px-4 py-6 text-sm text-muted-foreground dark:border-sky-900 dark:bg-zinc-950/60">
+                <Loader2Icon className="size-4 animate-spin" />
+                {t("あなたの提案を読み込み中です。", "Loading your proposals.")}
+              </div>
+            ) : authContext.isNotLoggedIn ? (
+              <div className="rounded-2xl border border-dashed border-sky-200 bg-white/80 px-4 py-6 text-sm text-muted-foreground dark:border-sky-900 dark:bg-zinc-950/60">
+                {t(
+                  "ログインすると、ここにあなたが提案したお題の一覧プレビューが表示されます。",
+                  "Sign in to see a preview of the themes you submitted here.",
+                )}
+              </div>
+            ) : myProposalPreview.loading && myPreviewItems.length === 0 ? (
+              <div className="flex items-center gap-2 rounded-2xl border border-dashed border-sky-200 bg-white/80 px-4 py-6 text-sm text-muted-foreground dark:border-sky-900 dark:bg-zinc-950/60">
+                <Loader2Icon className="size-4 animate-spin" />
+                {t("あなたの提案を読み込み中です。", "Loading your proposals.")}
+              </div>
+            ) : myPreviewItems.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-sky-200 bg-white/80 px-4 py-6 text-sm text-muted-foreground dark:border-sky-900 dark:bg-zinc-950/60">
+                {t(
+                  "まだお題の提案はありません。気になったテーマを送ってみましょう。",
+                  "You have not submitted any themes yet. Send one when you have an idea.",
+                )}
+              </div>
+            ) : (
+              <div className="grid gap-3 lg:grid-cols-3">
+                {myPreviewItems.map((proposal) => (
+                  <Link
+                    key={proposal.id}
+                    to="/themes/proposals/mine"
+                    className="rounded-2xl border border-sky-200 bg-white/90 p-4 shadow-sm transition hover:border-sky-300 hover:shadow-md dark:border-sky-900 dark:bg-zinc-950/70 dark:hover:border-sky-700"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <Badge className={getStatusBadgeClassName(proposal.status)}>
+                        {getStatusLabel(t, proposal.status)}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">
+                        {proposal.targetDate.replaceAll("-", "/")}
+                      </span>
+                    </div>
+                    <p className="mt-3 line-clamp-2 font-semibold text-foreground dark:text-zinc-100">
+                      {proposal.inputTheme}
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground dark:text-zinc-300">
+                      {getPictorPreviewMessage(t, proposal)}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex-1 rounded-3xl border border-orange-200 bg-linear-to-br from-orange-50 via-white to-amber-50 p-4 shadow-sm dark:border-orange-900 dark:from-orange-950/30 dark:via-zinc-950 dark:to-amber-950/20">
@@ -336,7 +475,20 @@ export default function ThemeProposalsPage() {
           </div>
         </div>
 
-        <div className="flex shrink-0 justify-end">
+        <div className="flex shrink-0 flex-wrap justify-end gap-2">
+          {isMinePage ? (
+            <Button asChild variant="secondary">
+              <Link to="/themes/proposals">
+                {t("みんなの提案を見る", "Browse all proposals")}
+              </Link>
+            </Button>
+          ) : authContext.isLoggedIn ? (
+            <Button asChild variant="secondary">
+              <Link to="/themes/proposals/mine">
+                {t("あなたの提案", "Your proposals")}
+              </Link>
+            </Button>
+          ) : null}
           <Button asChild>
             <Link to="/themes/proposals/new">
               {t("お題を提案する", "Submit a proposal")}
@@ -360,7 +512,24 @@ export default function ThemeProposalsPage() {
         </p>
       </div>
 
-      {loading && proposals.length === 0 ? (
+      {isMinePage && authContext.isLoading ? (
+        <div className="flex items-center justify-center py-16 text-muted-foreground">
+          <Loader2Icon className="mr-2 animate-spin" />
+          {t("読み込み中", "Loading")}
+        </div>
+      ) : isMinePage && authContext.isNotLoggedIn ? (
+        <div className="rounded-3xl border border-dashed border-orange-200 bg-white/80 px-6 py-14 text-center text-sm text-muted-foreground dark:border-orange-900 dark:bg-zinc-950/60">
+          <p className="font-medium text-foreground dark:text-zinc-100">
+            {t("あなたの提案を見るにはログインが必要です。", "You need to sign in to view your proposals.")}
+          </p>
+          <p className="mt-2">
+            {t(
+              "ログイン後、このページで自分の提案したお題だけをまとめて確認できます。",
+              "After signing in, this page will show only the themes you submitted.",
+            )}
+          </p>
+        </div>
+      ) : loading && proposals.length === 0 ? (
         <div className="flex items-center justify-center py-16 text-muted-foreground">
           <Loader2Icon className="mr-2 animate-spin" />
           {t("読み込み中", "Loading")}
@@ -368,13 +537,20 @@ export default function ThemeProposalsPage() {
       ) : proposals.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-orange-200 bg-white/80 px-6 py-14 text-center text-sm text-muted-foreground dark:border-orange-900 dark:bg-zinc-950/60">
           <p className="font-medium text-foreground dark:text-zinc-100">
-            {t("条件に合う提案はありません。", "No proposals match this filter.")}
+            {isMinePage
+              ? t("あなたの提案はまだありません。", "You have not submitted any proposals yet.")
+              : t("条件に合う提案はありません。", "No proposals match this filter.")}
           </p>
           <p className="mt-2">
-            {t(
-              "別の日付や週・月に切り替えるか、絞り込みを解除してください。",
-              "Try another day, week, or month, or clear the filter.",
-            )}
+            {isMinePage
+              ? t(
+                  "お題を提案すると、ここで自分の提案履歴を確認できます。",
+                  "Once you submit a theme, you will be able to review it here.",
+                )
+              : t(
+                  "別の日付や週・月に切り替えるか、絞り込みを解除してください。",
+                  "Try another day, week, or month, or clear the filter.",
+                )}
           </p>
         </div>
       ) : (
@@ -850,6 +1026,7 @@ const ThemeProposalsQuery = gql`
   query ThemeProposals(
     $offset: Int!
     $limit: Int!
+    $proposerUserId: ID
     $date: String
     $year: Int
     $month: Int
@@ -859,6 +1036,7 @@ const ThemeProposalsQuery = gql`
     themeProposals(
       offset: $offset
       limit: $limit
+      proposerUserId: $proposerUserId
       date: $date
       year: $year
       month: $month
@@ -885,6 +1063,7 @@ const ThemeProposalsQuery = gql`
       isLiked
     }
     themeProposalsCount(
+      proposerUserId: $proposerUserId
       date: $date
       year: $year
       month: $month
