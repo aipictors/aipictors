@@ -380,7 +380,7 @@ export function SensitiveWorkArticle(props: Props) {
                 variant="secondary"
                 className="flex items-center space-x-2"
               >
-                {t("ウィークリー入賞", "Weekly Rank")} {props.work.dailyRanking}{" "}
+                  {t("ウィークリー入賞", "Weekly Rank")} {props.work.weeklyRanking}{" "}
                 {t("位", "Rank")}
               </Badge>
             )}
@@ -393,7 +393,7 @@ export function SensitiveWorkArticle(props: Props) {
                   className="flex items-center space-x-2"
                 >
                   {t("マンスリー入賞", "Monthly Rank")}{" "}
-                  {props.work.dailyRanking} {t("位", "Rank")}
+                  {props.work.monthlyRanking} {t("位", "Rank")}
                 </Badge>
               </Link>
             )}
