@@ -107,7 +107,7 @@ export function AiEvaluationSection (props: Props) {
     {
       value: "pictor_chan",
       label: t("ぴくたーちゃん", "Pictor-chan"),
-      icon: "https://assets.aipictors.com/pictorchan-icon_11zon.webp",
+      icon: "https://assets.aipictors.com/pictorchanicon.webp",
     },
   ] as const
 

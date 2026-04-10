@@ -50,7 +50,7 @@ type QueryData = {
 }
 
 const PICTOR_CHAN_ICON_URL =
-  "https://assets.aipictors.com/pictorchan-icon_11zon.webp"
+  "https://assets.aipictors.com/pictorchanicon.webp"
 
 export default function ThemeProposalsPage() {
   const t = useTranslation()

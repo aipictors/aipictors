@@ -248,7 +248,7 @@ export function AiEvaluationDisplay (props: Props) {
       case "pictor_chan":
         return {
           type: "image",
-          value: "https://assets.aipictors.com/pictorchan-icon_11zon.webp",
+          value: "https://assets.aipictors.com/pictorchanicon.webp",
           bg: "from-amber-500 to-orange-500",
         }
       default:
