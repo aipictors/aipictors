@@ -34,7 +34,6 @@ type ThemeProposal = {
   proposerUserId: string
   proposerName: string
   proposerIconUrl: string
-  precheckComment?: string | null
   decisionComment?: string | null
   createdAt: number
   updatedAt: number
@@ -123,8 +122,8 @@ export default function ThemeProposalsPage() {
       <div className="rounded-2xl border border-orange-200 bg-orange-50 p-3 text-sm text-orange-950 dark:border-orange-800 dark:bg-orange-950/30 dark:text-orange-100">
         <p className="font-medium dark:text-orange-100">
           {t(
-            "保留中のお題案にはログインユーザーがいいねできます。採用判定ではAIが内容に加えていいね数も参考にし、近い案ならいいねが多い案を優先します。",
-            "Signed-in users can like pending theme proposals. Adoption AI now considers likes as well, and will prefer higher-liked proposals when ideas are similarly strong.",
+            "保留中のお題案にはログインユーザーがいいねできます。採用判定では X (Grok) が内容に加えていいね数も参考にし、近い案ならいいねが多い案を優先します。",
+            "Signed-in users can like pending theme proposals. X (Grok) also considers likes and will prefer higher-liked proposals when ideas are similarly strong.",
           )}
         </p>
         <p className="mt-1 text-xs text-orange-800 dark:text-orange-200/80">
@@ -314,16 +313,6 @@ export default function ThemeProposalsPage() {
                               )}
                             </div>
                           </div>
-
-                          {proposal.precheckComment && (
-                            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-900 text-sm dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-100">
-                              <p className="mb-0.5 font-medium text-[11px] uppercase tracking-wide dark:text-emerald-200">
-                                {t("一次チェック", "Initial check")}
-                              </p>
-                              <p className="leading-5">{proposal.precheckComment}</p>
-                            </div>
-                          )}
-
                           {proposal.decisionComment && (
                             <div className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-1.5 text-sky-900 text-sm dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-100">
                               <p className="mb-0.5 font-medium text-[11px] uppercase tracking-wide dark:text-sky-200">
@@ -392,7 +381,6 @@ const ThemeProposalsQuery = gql`
       proposerUserId
       proposerName
       proposerIconUrl
-      precheckComment
       decisionComment
       createdAt
       updatedAt

@@ -54,7 +54,6 @@ type MutationData = {
     id: string
     title: string
     targetDate: string
-    precheckComment?: string | null
   }
 }
 
@@ -182,10 +181,7 @@ export default function NewThemeProposalPage() {
       },
     })
 
-    toast(
-      result.data?.createThemeProposal.precheckComment ||
-        t("提案を送信しました", "Submitted the proposal"),
-    )
+    toast(t("提案を送信しました", "Submitted the proposal"))
     navigate("/themes/proposals")
   }
 
@@ -248,8 +244,8 @@ export default function NewThemeProposalPage() {
             </CardTitle>
             <CardDescription className="dark:text-zinc-400">
               {t(
-                "英語でも日本語でも送信できます。送信時に一次チェックと翻訳整形を行います。",
-                "You can submit in Japanese or English. A pre-check and translation normalization will run on submit.",
+                "英語でも日本語でも送信できます。送信時に翻訳とタイトル整形を行います。",
+                "You can submit in Japanese or English. Translation and title normalization will run on submit.",
               )}
             </CardDescription>
           </CardHeader>
@@ -275,8 +271,8 @@ export default function NewThemeProposalPage() {
             <Alert>
               <AlertDescription>
                 {t(
-                  "提案一覧ではログインユーザーが保留中の案にいいねできます。採用判定ではAIが内容に加えていいね数も参考にし、近い案ならいいねの多い案を優先します。",
-                  "Signed-in users can like pending proposals in the list. Adoption AI now considers likes too, and will prefer higher-liked proposals when candidates are otherwise close.",
+                  "提案一覧ではログインユーザーが保留中の案にいいねできます。採用判定では X (Grok) が内容に加えていいね数も参考にし、近い案ならいいねの多い案を優先します。",
+                  "Signed-in users can like pending proposals in the list. X (Grok) also considers likes during adoption and will prefer higher-liked proposals when candidates are otherwise close.",
                 )}
               </AlertDescription>
             </Alert>
@@ -752,7 +748,6 @@ const CreateThemeProposalMutation = gql`
       id
       title
       targetDate
-      precheckComment
     }
   }
 `
