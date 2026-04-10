@@ -113,7 +113,7 @@ type AppConfig = {
 export const config: AppConfig = {
   cacheControl: {
     get home(): string {
-      return "no-store, no-cache, must-revalidate, max-age=0"
+      return "public, max-age=0, s-maxage=60, stale-while-revalidate=300"
     },
     get short(): string {
       return "no-store, no-cache, must-revalidate, max-age=0"

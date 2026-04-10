@@ -4,7 +4,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
-import { redirect } from "@remix-run/cloudflare"
+import { json, redirect } from "@remix-run/cloudflare"
 import {
   Link,
   useLoaderData,
@@ -65,6 +65,7 @@ import {
   HomeDeferredSection,
   HomeWorkSectionPlaceholder,
 } from "~/routes/($lang)._main._index/components/home-deferred-section"
+import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import { HomeLoginNoticeMarquee } from "~/routes/($lang)._main._index/components/home-login-notice-marquee"
@@ -89,10 +90,13 @@ import {
   HomeTagFragment,
   HomeTagsSection,
 } from "~/routes/($lang)._main._index/components/home-tags-section"
+import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
 import { HomeWorksTagSection } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import type {
   MicroCmsApiRelease,
   MicroCmsApiReleaseResponse,
@@ -104,6 +108,7 @@ import {
   fetchReleaseList,
 } from "~/utils/micro-cms-release"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
+import { PER_IMG } from "~/routes/($lang)._main._index/utils/works-utils"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -203,20 +208,21 @@ const createBaseHomeLoaderData = (props: {
 }) => ({
   awardDateText: props.awardDateText,
   dailyTheme: null,
-  eventPreviews: [],
+  eventPreviews: [] as HomePreviewEvent[],
   firstTag: props.firstTag,
   featuredReleaseList: props.featuredReleaseList,
-  hotTags: [],
-  newComments: [],
-  newPostedUsers: [],
-  newUserWorks: [],
-  promotionWorks: [],
-  recommendedTags: [],
+  hotTags: [] as FragmentOf<typeof HomeTagListItemFragment>[],
+  initialNewWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  newComments: [] as FragmentOf<typeof HomeNewCommentsFragment>[],
+  newPostedUsers: [] as FragmentOf<typeof HomeNewPostedUsersFragment>[],
+  newUserWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  promotionWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
+  recommendedTags: [] as FragmentOf<typeof HomeTagFragment>[],
   releaseList: props.releaseList,
   secondTag: props.secondTag,
-  secondTagWorks: [],
-  workAwards: [],
-  firstTagWorks: [],
+  secondTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
+  workAwards: [] as FragmentOf<typeof HomeWorkAwardFragment>[],
+  firstTagWorks: [] as FragmentOf<typeof HomeTagWorkFragment>[],
 })
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -224,6 +230,10 @@ export async function loader(props: LoaderFunctionArgs) {
   const legacyTab = url.searchParams.get("tab")
   const currentPathLeaf = url.pathname.split("/").filter(Boolean).at(-1) ?? ""
   const isHomeRoute = currentPathLeaf === "home"
+  const isFollowUserRoute = currentPathLeaf === "follow-user-works"
+  const isFollowTagRoute = currentPathLeaf === "follow-tag-works"
+  const isDefaultTopRoute =
+    !isHomeRoute && !isFollowUserRoute && !isFollowTagRoute
 
   if (
     legacyTab === "home" ||
@@ -295,7 +305,42 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   if (!isHomeRoute) {
-    return baseLoaderData
+    if (!isDefaultTopRoute) {
+      return json(baseLoaderData, {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+        },
+      })
+    }
+
+    const initialWorksResult = await loaderClient.query({
+      query: initialNewWorksQuery,
+      errorPolicy: "all",
+      variables: {
+        limit: PER_IMG,
+        offset: 0,
+        where: {
+          beforeCreatedAt: new Date().toISOString(),
+          isNowCreatedAt: true,
+          orderBy: "DATE_CREATED",
+          ratings: ["G", "R15"],
+        },
+      },
+    })
+
+    return json(
+      {
+        ...baseLoaderData,
+        initialNewWorks: Array.isArray(initialWorksResult.data?.works)
+          ? initialWorksResult.data.works
+          : [],
+      },
+      {
+        headers: {
+          "Cache-Control": config.cacheControl.home,
+        },
+      },
+    )
   }
 
   const result = await loaderClient.query({
@@ -321,24 +366,31 @@ export async function loader(props: LoaderFunctionArgs) {
     : []
   const eventPreviews = buildHomeEventPreviews(appEvents, userEvents)
 
-  return {
-    ...baseLoaderData,
-    ...(resultData ?? {}),
-    eventPreviews,
-    hotTags: Array.isArray(resultData?.hotTags) ? resultData.hotTags : [],
-    newComments: Array.isArray(resultData?.newComments)
-      ? resultData.newComments
-      : [],
-    newPostedUsers: Array.isArray(resultData?.newPostedUsers)
-      ? resultData.newPostedUsers
-      : [],
-    recommendedTags: Array.isArray(resultData?.recommendedTags)
-      ? resultData.recommendedTags
-      : [],
-    workAwards: Array.isArray(resultData?.workAwards)
-      ? resultData.workAwards
-      : [],
-  }
+  return json(
+    {
+      ...baseLoaderData,
+      ...(resultData ?? {}),
+      eventPreviews,
+      hotTags: Array.isArray(resultData?.hotTags) ? resultData.hotTags : [],
+      newComments: Array.isArray(resultData?.newComments)
+        ? resultData.newComments
+        : [],
+      newPostedUsers: Array.isArray(resultData?.newPostedUsers)
+        ? resultData.newPostedUsers
+        : [],
+      recommendedTags: Array.isArray(resultData?.recommendedTags)
+        ? resultData.recommendedTags
+        : [],
+      workAwards: Array.isArray(resultData?.workAwards)
+        ? resultData.workAwards
+        : [],
+    },
+    {
+      headers: {
+        "Cache-Control": config.cacheControl.home,
+      },
+    },
+  )
 }
 
 // カスタムフック: スクロール位置の保存・復元（windowオブジェクトを使用しない）
@@ -574,18 +626,52 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
     // ページ
     if (currentTab === "new") {
-      newSearchParams.set("page", newWorksPage.toString())
+      if (newWorksPage === 0) {
+        newSearchParams.delete("page")
+      } else {
+        newSearchParams.set("page", newWorksPage.toString())
+      }
     } else if (currentTab === "follow-user") {
-      newSearchParams.set("page", followUserFeedPage.toString())
+      if (followUserFeedPage === 0) {
+        newSearchParams.delete("page")
+      } else {
+        newSearchParams.set("page", followUserFeedPage.toString())
+      }
     } else if (currentTab === "follow-tag") {
-      newSearchParams.set("page", followTagFeedPage.toString())
+      if (followTagFeedPage === 0) {
+        newSearchParams.delete("page")
+      } else {
+        newSearchParams.set("page", followTagFeedPage.toString())
+      }
     } else {
       newSearchParams.delete("page")
     }
 
     // 期間指定
     if (currentTab === "new") {
-      newSearchParams.set("timeRange", timeRange)
+      if (timeRange === "ALL") {
+        newSearchParams.delete("timeRange")
+      } else {
+        newSearchParams.set("timeRange", timeRange)
+      }
+    } else {
+      newSearchParams.delete("timeRange")
+    }
+
+    if (currentTab === "new") {
+      if (workView === "new") {
+        newSearchParams.delete("view")
+      } else {
+        newSearchParams.set("view", workView)
+      }
+    } else {
+      newSearchParams.delete("view")
+    }
+
+    if (internalIsPagination) {
+      newSearchParams.delete("isPagination")
+    } else {
+      newSearchParams.set("isPagination", "false")
     }
 
     // ユーザー毎に1作品フィルター
@@ -595,6 +681,8 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
       } else {
         newSearchParams.delete("isOneWorkPerUser")
       }
+    } else {
+      newSearchParams.delete("isOneWorkPerUser")
     }
 
     updateQueryParams(newSearchParams)
@@ -606,6 +694,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     isMounted,
     timeRange,
     isOneWorkPerUser,
+    workView,
     updateQueryParams,
     searchParams,
     internalIsPagination,
@@ -638,7 +727,11 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
   const handleWorkViewChange = (view: string) => {
     setWorkView(view)
     const newSearchParams = new URLSearchParams(searchParams)
-    newSearchParams.set("view", view)
+    if (view === "new") {
+      newSearchParams.delete("view")
+    } else {
+      newSearchParams.set("view", view)
+    }
     updateQueryParams(newSearchParams)
   }
 
@@ -655,7 +748,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
     }
 
     // ページリセット
-    newSearchParams.set("page", "0")
+    newSearchParams.delete("page")
     setNewWorksPage(0)
 
     updateQueryParams(newSearchParams)
@@ -1317,6 +1410,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
               >
                 {internalIsPagination ? (
                   <HomePaginationWorksSection
+                    initialWorks={data.initialNewWorks}
                     page={newWorksPage}
                     setPage={setNewWorksPage}
                     workType={workType}
@@ -1725,9 +1819,26 @@ export default function Index() {
   return <HomeIndexPage forcedTab="new" />
 }
 
-export const headers: HeadersFunction = () => ({
-  "Cache-Control": config.cacheControl.home,
+export const headers: HeadersFunction = ({ loaderHeaders }) => ({
+  "Cache-Control":
+    loaderHeaders.get("Cache-Control") ??
+    "no-store, no-cache, must-revalidate, max-age=0",
 })
+
+const initialNewWorksQuery = graphql(
+  `query InitialNewWorks($offset:Int!,$limit:Int!,$where:WorksWhereInput!) {
+     works(offset:$offset,limit:$limit,where:$where){
+       ...HomeWork
+       ...HomeNovelsWorkListItem
+       ...HomeVideosWorkListItem
+     }
+   }`,
+  [
+    HomeWorkFragment,
+    HomeNovelsWorkListItemFragment,
+    HomeVideosWorkListItemFragment,
+  ],
+)
 
 const query = graphql(
   `query HomeQuery(

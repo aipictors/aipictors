@@ -23,6 +23,7 @@ type Props = {
   tooltip?: string
   link?: string
   isCropped?: boolean
+  priorityCount?: number
   targetRowHeight?: number
   isShowProfile?: boolean
   onSelect?: (index: string) => void
@@ -65,6 +66,7 @@ export function HomeWorkSection (props: Props) {
         <ResponsivePhotoWorksAlbum
           works={props.works}
           size="large"
+          priorityCount={props.priorityCount}
           targetRowHeight={props.targetRowHeight}
           isShowProfile={props.isShowProfile}
           onSelect={props.onSelect}

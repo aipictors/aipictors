@@ -9,6 +9,7 @@ type Props = {
   videoUrl?: string | null
   alt: string
   className?: string
+  fetchPriority?: "high" | "low" | "auto"
   to?: string
   onClick?: () => void
   width?: number
@@ -50,6 +51,7 @@ export function HoverVideoImage (props: Props): React.ReactNode {
         alt={props.alt}
         width={props.width}
         height={props.height}
+        fetchPriority={props.fetchPriority}
         loading={props.loading}
         className="h-full w-full transition-transform duration-300 ease-in-out hover:scale-105"
         style={{

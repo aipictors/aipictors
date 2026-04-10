@@ -25,6 +25,39 @@ const hasUserSpecificHeaders = (request: Request): boolean => {
   return false
 }
 
+const normalizeTopPageCacheUrl = (url: URL): URL => {
+  const normalized = new URL(url.toString())
+  const currentPathLeaf =
+    normalized.pathname.split("/").filter(Boolean).at(-1) ?? ""
+  const isHomeRoute = currentPathLeaf === "home"
+  const isFollowUserRoute = currentPathLeaf === "follow-user-works"
+  const isFollowTagRoute = currentPathLeaf === "follow-tag-works"
+  const isDefaultTopRoute =
+    !isHomeRoute && !isFollowUserRoute && !isFollowTagRoute
+
+  if (!isDefaultTopRoute) {
+    return normalized
+  }
+
+  if (normalized.searchParams.get("page") === "0") {
+    normalized.searchParams.delete("page")
+  }
+
+  if (normalized.searchParams.get("timeRange") === "ALL") {
+    normalized.searchParams.delete("timeRange")
+  }
+
+  if (normalized.searchParams.get("isPagination") === "true") {
+    normalized.searchParams.delete("isPagination")
+  }
+
+  if (normalized.searchParams.get("view") === "new") {
+    normalized.searchParams.delete("view")
+  }
+
+  return normalized
+}
+
 const parseCacheControlMaxAgeSeconds = (
   cacheControl: string,
 ): number | null => {
@@ -61,9 +94,10 @@ export default async function handleRequest(
   loadContext: AppLoadContext,
 ) {
   const url = new URL(request.url)
+  const normalizedCacheUrl = normalizeTopPageCacheUrl(url)
 
   const cacheKey = new Request(
-    url.toString(),
+    normalizedCacheUrl.toString(),
     new Request(request.url, request),
   )
 

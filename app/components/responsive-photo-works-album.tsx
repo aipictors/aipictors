@@ -20,6 +20,7 @@ type Props = {
   works: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   targetRowHeight?: number
   direction?: "rows" | "columns"
+  priorityCount?: number
   size?: "small" | "medium" | "large"
   isShowProfile?: boolean
   /** 作品クリック時に index を返す。未指定なら従来通りリンク遷移 */
@@ -99,7 +100,12 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                 props.size === "large"
                   ? work.largeThumbnailImageHeight
                   : work.smallThumbnailImageHeight,
-              context: work,
+              context: {
+                ...work,
+                _priority: props.priorityCount !== undefined
+                  ? props.works.findIndex((item) => item.id === work.id) < props.priorityCount
+                  : false,
+              },
             }))}
             targetRowHeight={
               props.targetRowHeight !== undefined
@@ -140,7 +146,14 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                             ? Number.parseInt(imageProps.height)
                             : imageProps.height
                         }
-                        loading={imageProps.loading as "lazy" | "eager"}
+                        fetchPriority={
+                          photo.context._priority === true ? "high" : undefined
+                        }
+                        loading={
+                          photo.context._priority === true
+                            ? "eager"
+                            : (imageProps.loading as "lazy" | "eager")
+                        }
                         className="h-full w-full"
                       />
                     </button>
@@ -161,7 +174,14 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           ? Number.parseInt(imageProps.height)
                           : imageProps.height
                       }
-                      loading={imageProps.loading as "lazy" | "eager"}
+                      fetchPriority={
+                        photo.context._priority === true ? "high" : undefined
+                      }
+                      loading={
+                        photo.context._priority === true
+                          ? "eager"
+                          : (imageProps.loading as "lazy" | "eager")
+                      }
                       className="h-full w-full overflow-hidden rounded"
                     />
                   )}

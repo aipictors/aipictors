@@ -5,6 +5,7 @@ type Props = {
   src: string
   alt: string
   className?: string
+  fetchPriority?: "high" | "low" | "auto"
   loading?: "lazy" | "eager"
   width?: number
   height?: number
@@ -65,6 +66,7 @@ const OptimizedImage = memo((props: Props) => {
         src={optimizedSrc}
         alt={props.alt}
         className={props.className}
+        fetchPriority={props.fetchPriority}
         loading={props.loading || "eager"}
         width={props.width}
         height={props.height}
@@ -93,6 +95,7 @@ const OptimizedImage = memo((props: Props) => {
           src={optimizedSrc}
           alt={props.alt}
           className={props.className}
+          fetchPriority={props.fetchPriority}
           loading={props.loading || "lazy"}
           width={props.width}
           height={props.height}

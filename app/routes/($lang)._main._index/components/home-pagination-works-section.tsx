@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
@@ -62,6 +62,7 @@ function getTimeRangeDates(timeRange: string) {
 
 type Props = {
   isCropped?: boolean
+  initialWorks?: FragmentOf<typeof PhotoAlbumWorkFragment>[]
   page: number
   setPage: (page: number) => void
   workType: IntrospectionEnum<"WorkType"> | null
@@ -80,6 +81,16 @@ type Props = {
 export function HomePaginationWorksSection(props: Props) {
   const appContext = useContext(AuthContext)
 
+  const canUseInitialWorks =
+    props.page === 0 &&
+    props.workType === null &&
+    props.isPromptPublic === null &&
+    props.sortType === null &&
+    (props.timeRange === undefined || props.timeRange === "ALL") &&
+    !props.style &&
+    !props.isOneWorkPerUser &&
+    (props.initialWorks?.length ?? 0) > 0
+
   // 1ページあたりの件数（映像は少なめに）
   const perPageCount = props.workType === "VIDEO" ? 8 : 32
 
@@ -88,10 +99,11 @@ export function HomePaginationWorksSection(props: Props) {
     props.timeRange || "ALL",
   )
 
-  const { data: worksResp } = useSuspenseQuery(WorksQuery, {
-    skip: appContext.isLoading,
+  const { data: worksResp } = useQuery(WorksQuery, {
+    skip: appContext.isLoading || canUseInitialWorks,
     errorPolicy: "all",
-    returnPartialData: true,
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-first",
     variables: {
       offset: props.page * perPageCount,
       limit: perPageCount,
@@ -122,11 +134,15 @@ export function HomePaginationWorksSection(props: Props) {
     },
   })
 
+  const displayedWorks = canUseInitialWorks
+    ? (props.initialWorks ?? [])
+    : (worksResp?.works ?? [])
+
   useEffect(() => {
-    if (worksResp?.works) {
-      props.updateWorks(worksResp.works)
+    if (displayedWorks.length > 0) {
+      props.updateWorks(displayedWorks)
     }
-  }, [worksResp, props])
+  }, [displayedWorks, props])
 
   return (
     <div className="space-y-4">
@@ -134,9 +150,10 @@ export function HomePaginationWorksSection(props: Props) {
       {(props.workType === "WORK" || props.workType === null) && (
         <HomeWorkSection
           title={""}
-          works={worksResp?.works || []}
+          works={displayedWorks}
           isCropped={props.isCropped}
           isShowProfile={true}
+          priorityCount={canUseInitialWorks ? 4 : 0}
           onSelect={props.onSelect}
         />
       )}
@@ -144,7 +161,7 @@ export function HomePaginationWorksSection(props: Props) {
       {(props.workType === "NOVEL" || props.workType === "COLUMN") && (
         <HomeNovelsWorksSection
           title={""}
-          works={worksResp?.works || []}
+          works={displayedWorks}
           onSelect={props.onSelect}
         />
       )}
@@ -152,7 +169,7 @@ export function HomePaginationWorksSection(props: Props) {
       {props.workType === "VIDEO" && (
         <HomeVideosWorksSection
           title={""}
-          works={worksResp?.works || []}
+          works={displayedWorks}
           isAutoPlay={true}
           onSelect={props.onSelect}
         />

@@ -91,7 +91,7 @@ const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
         provider: "aipictors",
         platform: "web",
       },
-      signal: getTimeoutSignal(3000),
+      signal: getTimeoutSignal(1200),
       body: JSON.stringify({
         query: MAINTENANCE_STATUS_QUERY,
         variables: {},
