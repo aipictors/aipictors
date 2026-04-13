@@ -7,7 +7,9 @@ export interface MicroCmsApiRelease {
   }
   platform: string
   tag?: string
+  is_important?: boolean | null
   createdAt: number
+  publishedAt?: string | null
 }
 
 export interface MicroCmsApiReleaseResponse {

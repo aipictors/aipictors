@@ -31,6 +31,7 @@ import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
   postId: string
+  buttonClassName?: string
 }
 
 /**
@@ -86,7 +87,10 @@ export function ReportDialog (props: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2" variant="outline">
+        <Button
+          className={props.buttonClassName ?? "flex items-center gap-2"}
+          variant="outline"
+        >
           <FlagIcon />
           {t("問題を報告する", "Report an issue")}
         </Button>

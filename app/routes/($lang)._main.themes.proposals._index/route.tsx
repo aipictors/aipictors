@@ -44,6 +44,8 @@ type ThemeProposal = {
   proposerUserId: string
   proposerName: string
   proposerIconUrl: string
+  allowOtherDate: boolean
+  note?: string | null
   decisionComment?: string | null
   createdAt: number
   updatedAt: number
@@ -343,6 +345,11 @@ export function ThemeProposalsPageContent(
                     <p className="mt-3 line-clamp-2 font-semibold text-foreground dark:text-zinc-100">
                       {proposal.inputTheme}
                     </p>
+                    {proposal.note && proposal.note.length > 0 && (
+                      <p className="mt-2 line-clamp-2 text-sm text-muted-foreground dark:text-zinc-300">
+                        {t("備考", "Note")}: {proposal.note}
+                      </p>
+                    )}
                     <p className="mt-2 text-sm text-muted-foreground dark:text-zinc-300">
                       {getPictorPreviewMessage(t, proposal)}
                     </p>
@@ -612,6 +619,11 @@ export function ThemeProposalsPageContent(
                     <Badge className={getStatusBadgeClassName(proposal.status)}>
                       {getStatusLabel(t, proposal.status)}
                     </Badge>
+                    {proposal.allowOtherDate && (
+                      <Badge variant="outline" className="px-2.5 py-1 text-[11px]">
+                        {t("他の日でもOK", "Other dates OK")}
+                      </Badge>
+                    )}
                     <span className="text-xs text-muted-foreground">
                       {t("提案の会話ログ", "Proposal conversation")}
                     </span>
@@ -696,6 +708,12 @@ export function ThemeProposalsPageContent(
                         <p className="mt-2 text-base font-semibold text-slate-900 dark:text-white">
                           「{proposal.inputTheme}」
                         </p>
+                        {proposal.note && proposal.note.length > 0 && (
+                          <div className="mt-3 rounded-2xl border border-sky-200/80 bg-white/70 px-3 py-2 text-xs leading-5 text-slate-700 dark:border-sky-800 dark:bg-zinc-900/40 dark:text-zinc-200">
+                            <p className="font-medium">{t("備考", "Note")}</p>
+                            <p className="mt-1 whitespace-pre-wrap">{proposal.note}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -753,6 +771,12 @@ export function ThemeProposalsPageContent(
                         <p className="mt-1 text-sm text-muted-foreground dark:text-zinc-300">
                           <span className="font-medium text-foreground dark:text-zinc-100">Prompt:</span>{" "}
                           {proposal.promptName}
+                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground dark:text-zinc-300">
+                          <span className="font-medium text-foreground dark:text-zinc-100">
+                            {t("他の日でもOK", "Other dates OK")}: 
+                          </span>
+                          {proposal.allowOtherDate ? t("はい", "Yes") : t("いいえ", "No")}
                         </p>
                       </div>
 
@@ -1109,6 +1133,8 @@ const ThemeProposalsQuery = gql`
       proposerUserId
       proposerName
       proposerIconUrl
+      allowOtherDate
+      note
       decisionComment
       createdAt
       updatedAt

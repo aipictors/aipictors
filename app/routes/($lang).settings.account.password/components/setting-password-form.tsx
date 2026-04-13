@@ -1,6 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import { ApolloError, useMutation } from "@apollo/client/index"
+import { useMutation } from "@apollo/client/index"
+import { isApolloError } from "@apollo/client/errors"
 import { graphql } from "gql.tada"
 import { EyeIcon } from "lucide-react"
 import { useState } from "react"
@@ -35,7 +36,7 @@ export function AccountPasswordForm () {
       setNewPassword("")
       toast(t("パスワードを変更しました", "Password changed successfully"))
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (error instanceof Error && isApolloError(error)) {
         toast(error.message)
       }
     }

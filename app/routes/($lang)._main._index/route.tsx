@@ -72,6 +72,7 @@ import {
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
+import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
 import { HomeLoginNoticeMarquee } from "~/routes/($lang)._main._index/components/home-login-notice-marquee"
 import {
   HomeNewCommentsFragment,
@@ -108,8 +109,10 @@ import type {
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import {
+  fetchLatestImportantRelease,
   fetchFeaturedTaggedReleases,
   fetchReleaseList,
+  isImportantReleaseVisible,
 } from "~/utils/micro-cms-release"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
 import { PER_IMG } from "~/routes/($lang)._main._index/utils/works-utils"
@@ -209,6 +212,7 @@ const createBaseHomeLoaderData = (props: {
   secondTag: string
   releaseList: MicroCmsApiReleaseResponse
   featuredReleaseList: MicroCmsApiRelease[]
+  importantRelease: MicroCmsApiRelease | null
 }) => ({
   awardDateText: props.awardDateText,
   dailyTheme: null,
@@ -216,6 +220,7 @@ const createBaseHomeLoaderData = (props: {
   firstTag: props.firstTag,
   featuredReleaseList: props.featuredReleaseList,
   hotTags: [] as FragmentOf<typeof HomeTagListItemFragment>[],
+  importantRelease: props.importantRelease,
   initialNewWorks: [] as FragmentOf<typeof PhotoAlbumWorkFragment>[],
   newComments: [] as FragmentOf<typeof HomeNewCommentsFragment>[],
   newPostedUsers: [] as FragmentOf<typeof HomeNewPostedUsersFragment>[],
@@ -281,7 +286,7 @@ export async function loader(props: LoaderFunctionArgs) {
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   const awardDateText = getUtcDateString(yesterday)
 
-  const [releaseList, featuredReleaseList] = await Promise.all([
+  const [releaseList, featuredReleaseList, latestImportantRelease] = await Promise.all([
     fetchReleaseList({
       limit: 4,
     }).catch(() => ({
@@ -291,6 +296,7 @@ export async function loader(props: LoaderFunctionArgs) {
       limit: 4,
     })),
     fetchFeaturedTaggedReleases().catch(() => []),
+    fetchLatestImportantRelease().catch(() => null),
   ])
 
   const safeReleaseList =
@@ -306,6 +312,9 @@ export async function loader(props: LoaderFunctionArgs) {
     featuredReleaseList: Array.isArray(featuredReleaseList)
       ? featuredReleaseList
       : [],
+    importantRelease: isImportantReleaseVisible(latestImportantRelease, now.getTime())
+      ? latestImportantRelease
+      : null,
   })
 
   if (!isHomeRoute) {
@@ -935,6 +944,9 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         onValueChange={handleTabChange}
         className="space-y-6"
       >
+        {data.importantRelease && (
+          <HomeImportantReleaseBanner release={data.importantRelease} />
+        )}
         {authContext.isLoggedIn && (
           <HomeLoginNoticeMarquee releases={loginNoticeReleases} />
         )}

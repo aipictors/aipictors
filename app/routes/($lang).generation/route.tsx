@@ -9,7 +9,7 @@ import {
   GenerationQueryProvider,
 } from "~/routes/($lang).generation._index/components/generation-query-provider"
 import { SidebarProvider } from "~/components/sidebar-provider"
-import { ApolloError } from "@apollo/client/index"
+import { isApolloError } from "@apollo/client/errors"
 import type { HeadersFunction, MetaFunction } from "@remix-run/cloudflare"
 import { Outlet, useLoaderData } from "@remix-run/react"
 import { Suspense, useContext } from "react"
@@ -31,7 +31,7 @@ export async function loader() {
       data: result.data,
     }
   } catch (error) {
-    if (error instanceof ApolloError) {
+    if (error instanceof Error && isApolloError(error)) {
       throw new Response(error.message, { status: 500 })
     }
     if (error instanceof Error) {

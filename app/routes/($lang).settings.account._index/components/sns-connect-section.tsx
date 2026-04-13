@@ -1,4 +1,5 @@
-import { useSuspenseQuery, useMutation, ApolloError } from "@apollo/client"
+import { useSuspenseQuery, useMutation } from "@apollo/client/index"
+import { isApolloError } from "@apollo/client/errors"
 import { graphql } from "gql.tada"
 import {
   GoogleAuthProvider,
@@ -107,7 +108,7 @@ export function SNSConnectSection() {
         )
       }
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (error instanceof Error && isApolloError(error)) {
         toast.error(
           error.message ||
             t("紐付けに失敗しました", "Failed to link account"),
@@ -137,7 +138,7 @@ export function SNSConnectSection() {
         ),
       )
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (error instanceof Error && isApolloError(error)) {
         toast.error(
           error.message ||
             t("紐付け解除に失敗しました", "Failed to unlink account"),

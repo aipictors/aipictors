@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, Keyboard, XIcon } from "lucide-react"
 import type React from "react"
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { Button } from "~/components/ui/button"
 
 type Props = {
@@ -275,6 +276,19 @@ export function ImagesPreview(props: Props): React.ReactNode {
     }
   }, [isOpen, props.currentIndex])
 
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isOpen])
+
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       closePreview()
@@ -323,167 +337,154 @@ export function ImagesPreview(props: Props): React.ReactNode {
     setTranslate({ x: 0, y: 0 })
   }
 
+  const previewOverlay = isOpen ? (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
+    <div
+      className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-black/90"
+      onClick={handleBackgroundClick}
+    >
+      <Button
+        className="absolute top-4 right-4 z-10"
+        onClick={closePreview}
+        size={"icon"}
+      >
+        <XIcon />
+      </Button>
+      <img
+        ref={imgRef}
+        src={props.imageURLs[props.currentIndex]}
+        alt={`image-${props.currentIndex}`}
+        className="max-h-[92vh] max-w-[92vw] cursor-pointer object-contain"
+        style={{
+          transform: `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
+          transition: isDragging ? "none" : "transform 0.1s ease-out",
+          userSelect: "none",
+        }}
+        draggable={false}
+        onDoubleClick={handleDoubleClick}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onTouchEndCapture={handleDoubleTap}
+      />
+      {props.imageURLs.length > 1 && (
+        <>
+          {showKeyboardHint && (
+            <div className="absolute top-6 left-6 hidden items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm md:flex">
+              <Keyboard className="h-4 w-4" />
+              <div className="flex items-center gap-1 text-xs">
+                {mode === "dialog" ? (
+                  <>
+                    <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                      A
+                    </kbd>
+                    <span className="mx-1">•</span>
+                    <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                      D
+                    </kbd>
+                  </>
+                ) : (
+                  <>
+                    <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                      A
+                    </kbd>
+                    <span>/</span>
+                    <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                      ←
+                    </kbd>
+                    <span className="mx-1">•</span>
+                    <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                      D
+                    </kbd>
+                    <span>/</span>
+                    <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                      →
+                    </kbd>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="absolute bottom-4 flex w-full items-center justify-center">
+            <Button
+              className="mr-4 transform rounded-full"
+              size={"icon"}
+              onClick={prevImage}
+              disabled={!(props.currentIndex > 0)}
+            >
+              <ChevronLeft />
+            </Button>
+            <Button
+              className="ml-4 transform rounded-full"
+              size={"icon"}
+              onClick={nextImage}
+              disabled={!(props.currentIndex < props.imageURLs.length - 1)}
+            >
+              <ChevronRight />
+            </Button>
+          </div>
+
+          <div className="absolute right-6 bottom-6 text-right text-sm text-white">
+            {props.currentIndex + 1}/{props.imageURLs.length}
+          </div>
+        </>
+      )}
+    </div>
+  ) : null
+
   return (
-    <div className="flex flex-col space-y-4">
-      {" "}
-      <div className="relative">
-        <div className="m-auto flex h-full max-h-[64vh] w-auto cursor-pointer justify-center overflow-x-auto rounded bg-zinc-100 object-contain dark:bg-zinc-900 ">
-          <div className="inline-block overflow-hidden text-center">
-            <img
-              className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain dark:bg-zinc-900"
-              draggable={false}
-              key={props.thumbnailUrl}
-              alt="thumbnail"
-              src={props.thumbnailUrl}
-              // onClick={openPreview}
-              onMouseUp={handleMainMouseUp}
-              onMouseDown={handleMainMouseDown}
-              onTouchEnd={handleMainTouchEnd}
-              style={{ userSelect: "none" }}
-            />
-            {props.imageURLs.map((url, index) => (
-              // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
+    <>
+      <div className="flex flex-col space-y-4">
+        <div className="relative">
+          <div className="m-auto flex h-full max-h-[64vh] w-full cursor-pointer justify-center overflow-hidden rounded-2xl bg-zinc-100 object-contain dark:bg-zinc-900">
+            <div className="inline-block overflow-hidden text-center">
               <img
-                key={index.toString()}
                 className="m-auto h-full max-h-[64vh] w-auto cursor-pointer bg-zinc-100 object-contain md:max-h-[72vh] dark:bg-zinc-900"
                 draggable={false}
-                alt={`thumbnail-${index}`}
-                src={url}
-                onClick={openPreview}
+                key={props.thumbnailUrl}
+                alt="thumbnail"
+                src={props.thumbnailUrl}
+                loading="lazy"
+                onMouseUp={handleMainMouseUp}
+                onMouseDown={handleMainMouseDown}
+                onTouchEnd={handleMainTouchEnd}
                 style={{ userSelect: "none" }}
               />
-            ))}
-          </div>
-        </div>
-
-        {/* キーボードショートカットヒント */}
-        {props.imageURLs.length > 1 && showKeyboardHint && (
-          <div className="absolute top-3 left-3 hidden items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm md:flex">
-            <Keyboard className="h-4 w-4" />
-            <div className="flex items-center gap-1 text-xs">
-              <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                A
-              </kbd>
-              <span>/</span>
-              <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                ←
-              </kbd>
-              <span className="mx-1">•</span>
-              <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                D
-              </kbd>
-              <span>/</span>
-              <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                →
-              </kbd>
             </div>
           </div>
-        )}
-        {/* Display full-screen preview */}
-        {isOpen && (
-          // biome-ignore lint/a11y/useKeyWithClickEvents: keyboard navigation required
-          <div
-            className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black bg-opacity-80"
-            onClick={handleBackgroundClick}
-          >
-            <Button
-              className="cursor absolute top-4 right-4 z-10"
-              onClick={closePreview}
-              size={"icon"}
-            >
-              <XIcon />
-            </Button>
-            <img
-              ref={imgRef}
-              src={props.imageURLs[props.currentIndex]}
-              alt={`image-${props.currentIndex}`}
-              className="cursor object-contain"
-              style={{
-                transform: `scale(${scale}) translate(${translate.x}px, ${translate.y}px)`,
-                transition: isDragging ? "none" : "transform 0.1s ease-out",
-                userSelect: "none",
-              }}
-              draggable={false}
-              onDoubleClick={handleDoubleClick}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onMouseDown={handleMouseDown}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              onTouchEndCapture={handleDoubleTap}
-            />
-            {props.imageURLs.length > 1 && (
-              <>
-                {/* キーボードショートカットヒント（フルスクリーン） */}
-                {showKeyboardHint && (
-                  <div className="absolute top-6 left-6 hidden items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm md:flex">
-                    <Keyboard className="h-4 w-4" />
-                    <div className="flex items-center gap-1 text-xs">
-                      {mode === "dialog" ? (
-                        // ダイアログモード: ADキーのみ
-                        <>
-                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                            A
-                          </kbd>
-                          <span className="mx-1">•</span>
-                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                            D
-                          </kbd>
-                        </>
-                      ) : (
-                        // ページモード: ADキー + 矢印キー
-                        <>
-                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                            A
-                          </kbd>
-                          <span>/</span>
-                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                            ←
-                          </kbd>
-                          <span className="mx-1">•</span>
-                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                            D
-                          </kbd>
-                          <span>/</span>
-                          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
-                            →
-                          </kbd>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
 
-                <div className="absolute bottom-4 flex w-full items-center justify-center">
-                  <Button
-                    className="mr-4 transform rounded-full"
-                    size={"icon"}
-                    onClick={prevImage}
-                    disabled={!(props.currentIndex > 0)}
-                  >
-                    <ChevronLeft />
-                  </Button>
-                  <Button
-                    className="ml-4 transform rounded-full"
-                    size={"icon"}
-                    onClick={nextImage}
-                    disabled={
-                      !(props.currentIndex < props.imageURLs.length - 1)
-                    }
-                  >
-                    <ChevronRight />
-                  </Button>
-                </div>
-                {/* ページ */}
-                <div className="absolute right-6 bottom-6 text-right text-sm text-white">
-                  {props.currentIndex + 1}/{props.imageURLs.length}
-                </div>
-              </>
-            )}
-          </div>
-        )}
+          {/* キーボードショートカットヒント */}
+          {props.imageURLs.length > 1 && showKeyboardHint && (
+            <div className="absolute top-3 left-3 hidden items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur-sm md:flex">
+              <Keyboard className="h-4 w-4" />
+              <div className="flex items-center gap-1 text-xs">
+                <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                  A
+                </kbd>
+                <span>/</span>
+                <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                  ←
+                </kbd>
+                <span className="mx-1">•</span>
+                <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                  D
+                </kbd>
+                <span>/</span>
+                <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-xs">
+                  →
+                </kbd>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+      {typeof document !== "undefined" && previewOverlay
+        ? createPortal(previewOverlay, document.body)
+        : null}
+    </>
   )
 }

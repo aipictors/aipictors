@@ -52,6 +52,11 @@ const quickActions = [
     title: "作品一覧管理",
     subtitle: "非公開処理と通知を実行",
   },
+  {
+    href: "/admin/reports",
+    title: "作品通報一覧",
+    subtitle: "通報理由と対象作品を確認",
+  },
 ] as const
 
 const operationCards = [

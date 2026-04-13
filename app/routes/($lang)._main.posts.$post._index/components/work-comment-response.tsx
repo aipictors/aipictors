@@ -8,6 +8,7 @@ import {
   EyeOff,
   Heart,
   Loader2Icon,
+  Reply,
   ThumbsUpIcon,
 } from "lucide-react"
 import React from "react"
@@ -324,7 +325,7 @@ export function WorkCommentResponse(props: Props) {
           {props.stickerImageURL && props.stickerAccessType !== "PUBLIC" && (
             <img className="w-32 py-2" alt="" src={props.stickerImageURL} />
           )}
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <p className="text-xs opacity-50">
               {toDateTimeText(props.createdAt, true)}
             </p>
@@ -344,9 +345,9 @@ export function WorkCommentResponse(props: Props) {
               </div>
             )}
             {
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center">
                 <Button
-                  size={"icon"}
+                  size={"sm"}
                   variant={"ghost"}
                   onClick={
                     props.isLiked
@@ -354,11 +355,11 @@ export function WorkCommentResponse(props: Props) {
                       : props.onCreateCommentLike
                   }
                   disabled={props.isDisabledCommentLike}
-                  className={"flex items-center space-x-1"}
+                  className={"h-7 gap-1 px-2 text-xs"}
                 >
                   <ThumbsUpIcon
                     className={cn(
-                      "w-3",
+                      "size-3",
                       props.isLiked || props.isNowLiked
                         ? "fill-black dark:fill-white"
                         : "",
@@ -380,11 +381,24 @@ export function WorkCommentResponse(props: Props) {
               )
             ) : (
               <>
-                {/* biome-ignore lint/a11y/useButtonType: Reply button doesn't need explicit type */}
-                <button onClick={() => setOpenReplyInput(!openReplyInput)}>
-                  <p className="cursor-pointer text-xs">{t("返信", "Reply")}</p>
-                </button>
-                <CommentReportDialog commentId={props.replyId} />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={openReplyInput ? "secondary" : "outline"}
+                  className="h-7 gap-1 px-2 text-xs"
+                  onClick={() => setOpenReplyInput(!openReplyInput)}
+                >
+                  <Reply className="size-3" />
+                  {openReplyInput
+                    ? t("閉じる", "Close")
+                    : t("返信", "Reply")}
+                </Button>
+                <div className="ml-auto flex items-center gap-1">
+                  <CommentReportDialog
+                    commentId={props.replyId}
+                    iconOnly
+                    buttonClassName="h-7 text-muted-foreground hover:text-foreground"
+                  />
                 {props.stickerImageURL &&
                   props.stickerAccessType === "PUBLIC" && (
                     <StickerInfoDialog
@@ -396,6 +410,7 @@ export function WorkCommentResponse(props: Props) {
                       <ArrowDownToLine className="size-4" />
                     </StickerInfoDialog>
                   )}
+                </div>
               </>
             )}
             {props.isMuted && (

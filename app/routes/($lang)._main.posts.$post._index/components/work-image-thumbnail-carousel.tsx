@@ -30,7 +30,7 @@ export function WorkImageThumbnailCarousel ({
   return (
     <div className="flex flex-col">
       {allImageURLs.length > 1 && (
-        <div className="rounded-none bg-card bg-zinc-100 text-center dark:bg-zinc-900">
+        <div className="rounded-none bg-zinc-100 text-center dark:bg-zinc-900">
           <p className="m-auto text-center text-sm opacity-50">
             {currentIndex + 1} / {allImageURLs.length}
           </p>
@@ -56,6 +56,7 @@ export function WorkImageThumbnailCarousel ({
                   alt=""
                   key={imageURL}
                   src={imageURL}
+                  loading="lazy"
                   onClick={() => onSelectImage(imageURL)}
                   onKeyUp={(event) => handleKeyPress(imageURL, event)}
                   // biome-ignore lint/a11y/noNoninteractiveTabindex: Intentional

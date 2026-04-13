@@ -1,4 +1,5 @@
-import { ApolloError, useMutation, useQuery } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
+import { isApolloError } from "@apollo/client/errors"
 import { getAuth, signOut } from "firebase/auth"
 import { graphql } from "gql.tada"
 import { AlertTriangle } from "lucide-react"
@@ -85,7 +86,7 @@ export function WithdrawAccountForm() {
 
       window.location.assign("/")
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (error instanceof Error && isApolloError(error)) {
         toast(error.message)
         return
       }

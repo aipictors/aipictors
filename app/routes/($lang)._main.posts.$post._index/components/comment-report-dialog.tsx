@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { Button } from "~/components/ui/button"
+import { cn } from "~/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -26,6 +27,8 @@ import { Textarea } from "~/components/ui/textarea"
 
 type Props = {
   commentId: string
+  buttonClassName?: string
+  iconOnly?: boolean
 }
 
 export function CommentReportDialog(props: Props) {
@@ -77,9 +80,18 @@ export function CommentReportDialog(props: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="ghost" className="h-auto px-1 text-xs">
-          <FlagIcon className="mr-1 size-3" />
-          {t("報告", "Report")}
+        <Button
+          size="sm"
+          variant="ghost"
+          className={cn(
+            props.iconOnly ? "size-7 px-0" : undefined,
+            props.buttonClassName,
+          )}
+          aria-label={t("問題を報告", "Report")}
+          title={t("問題を報告", "Report")}
+        >
+          <FlagIcon className={cn("size-3", !props.iconOnly && "mr-1")} />
+          {!props.iconOnly && t("問題を報告", "Report")}
         </Button>
       </DialogTrigger>
       <DialogContent>

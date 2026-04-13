@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
+import { gql, useLazyQuery } from "@apollo/client/index"
 import {
   AwardIcon,
   BookImageIcon,
@@ -12,11 +13,12 @@ import {
   MenuIcon,
   RocketIcon,
   SearchIcon,
+  Shield,
   StampIcon,
   StarIcon,
   TagIcon,
 } from "lucide-react"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { SidebarNavigationButton } from "~/components/sidebar-navigation-button"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
@@ -32,11 +34,32 @@ type Props = {
 
 export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const authContext = useContext(AuthContext)
+  const [loadViewerModerator, { data: viewerData }] = useLazyQuery(
+    viewerIsModeratorQuery,
+    {
+      fetchPolicy: "network-only",
+      nextFetchPolicy: "cache-first",
+      errorPolicy: "all",
+    },
+  )
   const navigation = useNavigation()
   const location = useLocation()
   const navigate = useNavigate()
   const t = useTranslation()
   const { sidebarState, toggleSidebar, minimizeSidebar } = useSidebar()
+
+  useEffect(() => {
+    if (authContext.isLoading || authContext.isNotLoggedIn) {
+      return
+    }
+
+    void loadViewerModerator()
+  }, [authContext.isLoading, authContext.isNotLoggedIn, loadViewerModerator])
+
+  const isModerator =
+    authContext.isLoggedIn &&
+    viewerData?.viewer?.id === authContext.userId &&
+    viewerData.viewer.isModerator
 
   const sensitivePath =
     typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
@@ -211,12 +234,23 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         {t("イベント", "Events")}
       </SidebarNavigationButton>
 
+      {!isSensitive && isModerator && (
+        <SidebarNavigationButton
+          href="/admin"
+          icon={Shield}
+          onClick={closeHeaderMenu}
+        >
+          {t("管理", "Admin")}
+        </SidebarNavigationButton>
+      )}
+
+
       <SidebarNavigationButton
         href={createLink("/releases")}
         icon={RocketIcon}
         onClick={closeHeaderMenu}
       >
-        {t("更新情報", "Update Information")}
+        {t("お知らせ", "Update Information")}
       </SidebarNavigationButton>
 
       <SidebarNavigationButton
@@ -319,3 +353,12 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
     </div>
   )
 }
+
+const viewerIsModeratorQuery = gql`
+  query HomeRouteListViewerIsModerator {
+    viewer {
+      id
+      isModerator
+    }
+  }
+`

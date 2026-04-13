@@ -2,10 +2,10 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
 import {
-  ApolloError,
   useMutation,
   useSuspenseQuery,
 } from "@apollo/client/index"
+import { isApolloError } from "@apollo/client/errors"
 import { graphql } from "gql.tada"
 import { useContext, useState } from "react"
 import { toast } from "sonner"
@@ -54,7 +54,7 @@ export function AccountLoginForm () {
       setUserId("")
       toast(t("ユーザIDを変更しました", "User ID updated successfully"))
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (error instanceof Error && isApolloError(error)) {
         toast(t("ユーザIDの変更に失敗しました", "Failed to update User ID"))
       }
     }

@@ -1,6 +1,7 @@
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
-import { ApolloError, useMutation, useQuery } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
+import { isApolloError } from "@apollo/client/errors"
 import { graphql, type FragmentOf } from "gql.tada"
 import { type SetStateAction, useContext, useState } from "react"
 import { toast } from "sonner"
@@ -147,7 +148,7 @@ export function SettingAdvertisementsForm () {
         offset: 0,
       })
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (error instanceof Error && isApolloError(error)) {
         toast(error.message)
       }
     }
@@ -282,7 +283,7 @@ export function SettingAdvertisementsForm () {
       })
       setViewMode("list")
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (error instanceof Error && isApolloError(error)) {
         toast(error.message)
       }
     }
@@ -297,7 +298,7 @@ export function SettingAdvertisementsForm () {
       })
       toast(t("広告を削除しました", "Advertisement deleted"))
     } catch (error) {
-      if (error instanceof ApolloError) {
+      if (error instanceof Error && isApolloError(error)) {
         toast(error.message)
       }
     }

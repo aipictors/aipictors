@@ -27,6 +27,7 @@ import { AppPageHeader } from "~/components/app/app-page-header"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import { Checkbox } from "~/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
@@ -85,6 +86,8 @@ type CalendarThemeProposal = {
   proposerName: string
   createdAt: number
   likesCount: number
+  allowOtherDate: boolean
+  note?: string | null
 }
 
 type CalendarThemeProposalsQueryData = {
@@ -99,6 +102,8 @@ export default function NewThemeProposalPage() {
   const minimumProposalDate = addDays(today, 8)
   const [date, setDate] = useState(format(minimumProposalDate, "yyyy-MM-dd"))
   const [theme, setTheme] = useState("")
+  const [allowOtherDate, setAllowOtherDate] = useState(true)
+  const [note, setNote] = useState("")
   const [visibleMonth, setVisibleMonth] = useState(startOfMonth(today))
   const [checkedTheme, setCheckedTheme] = useState<string | null>(null)
 
@@ -178,6 +183,8 @@ export default function NewThemeProposalPage() {
       variables: {
         date: date,
         theme: theme.trim(),
+        allowOtherDate: allowOtherDate,
+        note: note.trim().length > 0 ? note.trim() : undefined,
       },
     })
 
@@ -306,6 +313,56 @@ export default function NewThemeProposalPage() {
                 disabled={authContext.isNotLoggedIn || loading}
                 rows={5}
               />
+            </div>
+
+            <div className="rounded-3xl border bg-background/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/60">
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  id="proposal-allow-other-date"
+                  checked={allowOtherDate}
+                  onCheckedChange={(checked) => setAllowOtherDate(checked !== false)}
+                  disabled={authContext.isNotLoggedIn || loading}
+                  className="mt-0.5"
+                />
+                <div className="space-y-1">
+                  <label
+                    className="font-medium text-sm"
+                    htmlFor="proposal-allow-other-date"
+                  >
+                    {t("他の日でもOK", "Other dates are also OK")}
+                  </label>
+                  <p className="text-muted-foreground text-xs dark:text-zinc-400">
+                    {t(
+                      "ON の場合、この日が見送りでも未提案の別日に回して採用候補として検討します。記念日っぽい日は避けます。",
+                      "When enabled, even if this date is not selected, the proposal can still be reconsidered for another future date with no proposals yet. Anniversary-like dates are avoided.",
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="font-medium text-sm" htmlFor="proposal-note">
+                {t("備考", "Note")}
+              </label>
+              <Textarea
+                id="proposal-note"
+                placeholder={t(
+                  "例: 季節感は秋寄りでお願いします、人物以外だと参加しやすいと思います など",
+                  "Example: Autumn mood would fit well, or non-character themes may be easier to join",
+                )}
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+                disabled={authContext.isNotLoggedIn || loading}
+                rows={4}
+                maxLength={500}
+              />
+              <p className="text-muted-foreground text-xs dark:text-zinc-400">
+                {t(
+                  "補足条件や意図があれば書いてください。採用判定でも参考にします。",
+                  "Add any constraints or intent here. It will also be considered during adoption.",
+                )}
+              </p>
             </div>
 
             <div className="rounded-3xl border bg-background/80 p-4 dark:border-zinc-800 dark:bg-zinc-950/60">
@@ -662,6 +719,11 @@ export default function NewThemeProposalPage() {
                           <Badge variant="outline" className="px-2 py-0 text-[11px]">
                             {t("いいね", "Likes")}: {proposal.likesCount}
                           </Badge>
+                          {proposal.allowOtherDate && (
+                            <Badge variant="outline" className="px-2 py-0 text-[11px]">
+                              {t("他の日でもOK", "Other dates OK")}
+                            </Badge>
+                          )}
                           <span className="text-muted-foreground text-[11px] dark:text-zinc-400">
                             {t("提案者", "Proposer")}: {proposal.proposerName}
                           </span>
@@ -677,6 +739,12 @@ export default function NewThemeProposalPage() {
                           {proposal.title}
                           {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
                         </p>
+                        {proposal.note && proposal.note.length > 0 && (
+                          <div className="mt-2 rounded-xl border border-amber-200/80 bg-white/80 px-3 py-2 text-[11px] leading-5 text-slate-700 dark:border-amber-900/70 dark:bg-zinc-900/70 dark:text-zinc-200">
+                            <p className="font-medium">{t("備考", "Note")}</p>
+                            <p className="mt-1 whitespace-pre-wrap">{proposal.note}</p>
+                          </div>
+                        )}
                       </div>
                     ))
                   )}
@@ -738,13 +806,20 @@ const CalendarThemeProposalsQuery = gql`
       proposerName
       createdAt
       likesCount
+      allowOtherDate
+      note
     }
   }
 `
 
 const CreateThemeProposalMutation = gql`
-  mutation CreateThemeProposal($date: String!, $theme: String!) {
-    createThemeProposal(date: $date, theme: $theme) {
+  mutation CreateThemeProposal($date: String!, $theme: String!, $allowOtherDate: Boolean, $note: String) {
+    createThemeProposal(
+      date: $date
+      theme: $theme
+      allowOtherDate: $allowOtherDate
+      note: $note
+    ) {
       id
       title
       targetDate
