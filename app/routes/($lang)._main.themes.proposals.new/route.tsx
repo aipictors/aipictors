@@ -27,6 +27,7 @@ import { AppPageHeader } from "~/components/app/app-page-header"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
 import {
   Dialog,
@@ -35,13 +36,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { Textarea } from "~/components/ui/textarea"
 import { AuthContext } from "~/contexts/auth-context"
@@ -94,6 +88,31 @@ type CalendarThemeProposalsQueryData = {
   themeProposals: CalendarThemeProposal[]
 }
 
+type CalendarCell =
+  | {
+      key: string
+      isEmpty: true
+    }
+  | {
+      key: string
+      isEmpty: false
+      day: number
+      dateText: string
+      weekDayLabel: string
+      themeForDay?: DailyTheme
+      proposalsForDay: CalendarThemeProposal[]
+      hasAdoptedProposal: boolean
+      hasProposals: boolean
+      isSelectable: boolean
+      isSelected: boolean
+      isHistoryWindow: boolean
+      cellStatusLabel: string
+    }
+
+type FilledCalendarCell = Extract<CalendarCell, { isEmpty: false }>
+
+type MobileCalendarFilter = "ALL" | "NO_PROPOSALS" | "HAS_PROPOSALS" | "ADOPTED"
+
 export default function NewThemeProposalPage() {
   const t = useTranslation()
   const navigate = useNavigate()
@@ -106,6 +125,8 @@ export default function NewThemeProposalPage() {
   const [note, setNote] = useState("")
   const [visibleMonth, setVisibleMonth] = useState(startOfMonth(today))
   const [checkedTheme, setCheckedTheme] = useState<string | null>(null)
+  const [selectedProposalDate, setSelectedProposalDate] = useState<string | null>(null)
+  const [mobileCalendarFilter, setMobileCalendarFilter] = useState<MobileCalendarFilter>("ALL")
 
   const [createThemeProposal, { loading, error }] = useMutation<MutationData>(
     CreateThemeProposalMutation,
@@ -140,7 +161,6 @@ export default function NewThemeProposalPage() {
       fetchPolicy: "no-cache",
     },
   )
-  const [selectedProposalDate, setSelectedProposalDate] = useState<string | null>(null)
 
   const dailyThemes = calendarData?.dailyThemes ?? []
   const monthThemeProposals = proposalCalendarData?.themeProposals ?? []
@@ -170,16 +190,97 @@ export default function NewThemeProposalPage() {
     },
     new Map<string, CalendarThemeProposal[]>(),
   )
+  const calendarCells: CalendarCell[] = cells.map((day, index) => {
+    if (day === null) {
+      return {
+        key: `empty-${index}`,
+        isEmpty: true,
+      }
+    }
+
+    const cellDate = new Date(
+      visibleMonth.getFullYear(),
+      visibleMonth.getMonth(),
+      day,
+    )
+    const dateText = format(cellDate, "yyyy-MM-dd")
+    const themeForDay = dailyThemes.find((item) => item.dateText === dateText)
+    const proposalsForDay = proposalsByDate.get(dateText) ?? []
+    const hasAdoptedProposal = proposalsForDay.some((proposal) => {
+      return proposal.status === "ADOPTED"
+    })
+    const hasProposals = proposalsForDay.length > 0
+    const isSelectable = !isBefore(cellDate, minimumProposalDate) && !hasAdoptedProposal
+    const isSelected = dateText === date
+    const isHistoryWindow = isBefore(cellDate, minimumProposalDate)
+    const cellStatusLabel = isSelectable
+      ? hasProposals
+        ? t("提案あり", "Has proposals")
+        : t("未提案", "No proposals")
+      : hasAdoptedProposal
+        ? t("採用済み", "Adopted")
+        : isHistoryWindow
+          ? t("公開中", "Visible")
+          : t("受付前", "Closed")
+
+    return {
+      key: dateText,
+      isEmpty: false,
+      day: day,
+      dateText: dateText,
+      weekDayLabel: format(cellDate, "EEE", { locale: ja }),
+      themeForDay: themeForDay,
+      proposalsForDay: proposalsForDay,
+      hasAdoptedProposal: hasAdoptedProposal,
+      hasProposals: hasProposals,
+      isSelectable: isSelectable,
+      isSelected: isSelected,
+      isHistoryWindow: isHistoryWindow,
+      cellStatusLabel: cellStatusLabel,
+    }
+  })
+  const mobileCalendarDays = calendarCells.filter((cell): cell is FilledCalendarCell => {
+    return !cell.isEmpty
+  })
+  const filteredMobileCalendarDays = mobileCalendarDays.filter((cell) => {
+    if (mobileCalendarFilter === "NO_PROPOSALS") {
+      return cell.isSelectable && !cell.hasProposals
+    }
+
+    if (mobileCalendarFilter === "HAS_PROPOSALS") {
+      return cell.isSelectable && cell.hasProposals
+    }
+
+    if (mobileCalendarFilter === "ADOPTED") {
+      return cell.hasAdoptedProposal
+    }
+
+    return true
+  })
   const selectedDateProposals = selectedProposalDate
     ? (proposalsByDate.get(selectedProposalDate) ?? [])
     : []
+  const selectedTargetDateProposals = proposalsByDate.get(date) ?? []
+  const selectedDateHasAdoptedProposal = selectedTargetDateProposals.some((proposal) => {
+    return proposal.status === "ADOPTED"
+  })
 
   const onSubmit = async () => {
     if (!theme.trim()) {
       return
     }
 
-    const result = await createThemeProposal({
+    if (selectedDateHasAdoptedProposal) {
+      toast.error(
+        t(
+          "この日付は採用済みのお題があるため選択できません。別の日付を選んでください。",
+          "This date already has an adopted theme and cannot be selected. Please choose another date.",
+        ),
+      )
+      return
+    }
+
+    await createThemeProposal({
       variables: {
         date: date,
         theme: theme.trim(),
@@ -297,6 +398,17 @@ export default function NewThemeProposalPage() {
                 disabled={authContext.isNotLoggedIn || loading}
               />
             </div>
+
+            {selectedDateHasAdoptedProposal && (
+              <Alert variant="destructive">
+                <AlertDescription>
+                  {t(
+                    "この日付には採用済みのお題があります。別の日付を選んでください。",
+                    "This date already has an adopted theme. Please choose another date.",
+                  )}
+                </AlertDescription>
+              </Alert>
+            )}
 
             <div className="space-y-2">
               <label className="font-medium text-sm" htmlFor="proposal-theme">
@@ -472,7 +584,7 @@ export default function NewThemeProposalPage() {
             <div className="flex justify-end">
               <Button
                 onClick={onSubmit}
-                disabled={authContext.isNotLoggedIn || loading || theme.trim().length === 0}
+                disabled={authContext.isNotLoggedIn || loading || theme.trim().length === 0 || selectedDateHasAdoptedProposal}
               >
                 {loading ? t("送信中", "Submitting") : t("提案を送信", "Submit proposal")}
               </Button>
@@ -520,6 +632,7 @@ export default function NewThemeProposalPage() {
               <Badge variant="secondary" className="whitespace-nowrap">{t("過去と7日後まで", "Past to +7 days")}</Badge>
               <Badge className="whitespace-nowrap bg-emerald-600 text-white">{t("未提案", "No proposals yet")}</Badge>
               <Badge className="whitespace-nowrap bg-amber-500 text-white">{t("提案あり", "Has proposals")}</Badge>
+              <Badge className="whitespace-nowrap bg-rose-600 text-white">{t("採用済み", "Adopted")}</Badge>
               <Badge className="whitespace-nowrap bg-slate-500 text-white">{t("受付前", "Not open yet")}</Badge>
             </div>
 
@@ -530,149 +643,196 @@ export default function NewThemeProposalPage() {
               )}
             </p>
 
+            <p className="text-muted-foreground text-xs md:hidden dark:text-zinc-400">
+              {t(
+                "スマホでは1日ごとのカード一覧で表示しています。文字が見やすい大きさで、タップしやすくしています。",
+                "On phones, the calendar is shown as a daily card list with larger text and tap targets.",
+              )}
+            </p>
+
+            <div className="md:hidden">
+              <div className="flex flex-wrap gap-2">
+                {getMobileCalendarFilters(t).map((filter) => (
+                  <Button
+                    key={filter.value}
+                    type="button"
+                    size="sm"
+                    variant={mobileCalendarFilter === filter.value ? "default" : "secondary"}
+                    className="rounded-full px-3 text-xs"
+                    onClick={() => setMobileCalendarFilter(filter.value)}
+                  >
+                    {filter.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
             {isCalendarLoading && isProposalCalendarLoading && dailyThemes.length === 0 && monthThemeProposals.length === 0 ? (
               <div className="flex min-h-64 items-center justify-center text-muted-foreground">
                 <Loader2Icon className="mr-2 size-4 animate-spin" />
                 {t("カレンダーを読み込み中", "Loading calendar")}
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <div className="grid min-w-[320px] grid-cols-7 gap-2">
-                  {["日", "月", "火", "水", "木", "金", "土"].map((weekDay) => (
-                    <div key={weekDay} className="pb-1 text-center font-medium text-muted-foreground text-xs">
-                      {weekDay}
+              <>
+                <div className="space-y-3 md:hidden">
+                  {filteredMobileCalendarDays.length === 0 ? (
+                    <div className="rounded-3xl border border-dashed bg-background/70 p-4 text-sm text-muted-foreground dark:border-zinc-800 dark:text-zinc-400">
+                      {t(
+                        "この条件に一致する日付はありません。フィルタを切り替えて確認してください。",
+                        "No dates match this filter. Change the filter to view other dates.",
+                      )}
                     </div>
-                  ))}
-                  {cells.map((day, index) => {
-                    if (day === null) {
-                      return <div key={`empty-${index}`} className="aspect-square rounded-3xl bg-white/20 dark:bg-zinc-900/20" />
-                    }
-
-                    const cellDate = new Date(
-                      visibleMonth.getFullYear(),
-                      visibleMonth.getMonth(),
-                      day,
-                    )
-                    const dateText = format(cellDate, "yyyy-MM-dd")
-                    const themeForDay = dailyThemes.find((item) => item.dateText === dateText)
-                    const proposalsForDay = proposalsByDate.get(dateText) ?? []
-                    const hasProposals = proposalsForDay.length > 0
-                    const isSelectable = !isBefore(cellDate, minimumProposalDate)
-                    const isSelected = dateText === date
-                    const isHistoryWindow = isBefore(cellDate, minimumProposalDate)
-                    const cellStatusLabel = isSelectable
-                      ? hasProposals
-                        ? t("提案あり", "Has proposals")
-                        : t("未提案", "No proposals")
-                      : isHistoryWindow
-                        ? t("公開中", "Visible")
-                        : t("受付前", "Closed")
-
-                    return (
+                  ) : (
+                    filteredMobileCalendarDays.map((cell) => (
                       <div
-                        key={dateText}
-                        role={isSelectable ? "button" : undefined}
-                        tabIndex={isSelectable ? 0 : undefined}
+                        key={cell.key}
+                        role={cell.isSelectable ? "button" : undefined}
+                        tabIndex={cell.isSelectable ? 0 : undefined}
                         onClick={() => {
-                          if (!isSelectable) {
+                          if (!cell.isSelectable) {
                             return
                           }
 
-                          onSelectDate(dateText)
+                          onSelectDate(cell.dateText)
                         }}
                         onKeyDown={(event) => {
-                          if (!isSelectable) {
+                          if (!cell.isSelectable) {
                             return
                           }
 
                           if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault()
-                            onSelectDate(dateText)
+                            onSelectDate(cell.dateText)
                           }
                         }}
-                        className={cn(
-                          "relative flex aspect-square flex-col rounded-3xl border p-2 text-left transition",
-                          {
-                            "cursor-pointer border-emerald-500 bg-emerald-50 shadow-sm dark:border-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-100": isSelectable && !hasProposals,
-                            "cursor-pointer border-amber-400 bg-amber-50 shadow-sm dark:border-amber-700 dark:bg-amber-950/35 dark:text-amber-100": isSelectable && hasProposals,
-                            "cursor-default border-slate-200 bg-white/80 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-100": !isSelectable,
-                            "ring-2 ring-orange-400 dark:ring-orange-500": isSelected,
-                          },
-                        )}
+                        className={getCalendarCellCardClassName(cell, true)}
                       >
-                        <div className="flex items-start justify-between gap-1 overflow-hidden">
-                          <span className="font-semibold text-sm">{day}</span>
-                          {isSelectable ? (
-                            <Badge
-                              className={cn(
-                                "h-5 whitespace-nowrap px-1.5 text-[10px] text-white",
-                                hasProposals ? "bg-amber-500" : "bg-emerald-600",
-                              )}
-                            >
-                              {cellStatusLabel}
-                            </Badge>
-                          ) : (
-                            <Badge className="h-5 whitespace-nowrap bg-slate-500 px-1.5 text-[10px] text-white">
-                              {cellStatusLabel}
-                            </Badge>
-                          )}
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-base leading-none">
+                              {format(parseISO(cell.dateText), "M/d", { locale: ja })}
+                              <span className="ml-2 text-muted-foreground text-sm dark:text-zinc-400">
+                                ({cell.weekDayLabel})
+                              </span>
+                            </p>
+                            <p className="mt-2 text-muted-foreground text-xs dark:text-zinc-400">
+                              {format(parseISO(cell.dateText), "yyyy/MM/dd", { locale: ja })}
+                            </p>
+                          </div>
+                          <Badge className={getCalendarCellBadgeClassName(cell)}>
+                            {cell.cellStatusLabel}
+                          </Badge>
                         </div>
 
-                        <div className="mt-2 flex-1 text-[11px] leading-4">
-                          {themeForDay && isHistoryWindow ? (
-                            <>
-                              <p className="truncate whitespace-nowrap font-medium" title={themeForDay.title}>{themeForDay.title}</p>
-                              <p className="mt-1 truncate whitespace-nowrap text-muted-foreground text-[10px] dark:text-zinc-400">
-                                {t("過去または近日公開のお題", "Past or upcoming official theme")}
-                              </p>
-                            </>
-                          ) : isSelectable && hasProposals ? (
-                            <>
-                              <p className="truncate whitespace-nowrap font-medium text-amber-800 text-xs dark:text-amber-200">
-                                {t("この日に提案があります", "Proposals already submitted")}
-                              </p>
-                              <p className="mt-1 truncate whitespace-nowrap text-[10px] text-amber-700/80 dark:text-amber-200/80">
-                                {t(
-                                  `${proposalsForDay.length}件の提案が集まっています。`,
-                                  `${proposalsForDay.length} proposals already exist for this date.`,
-                                )}
-                              </p>
-                            </>
-                          ) : isSelectable ? (
-                            <p className="truncate whitespace-nowrap text-emerald-700 text-xs dark:text-emerald-300">
-                              {t("この日付に提案できます", "You can propose for this date")}
-                            </p>
-                          ) : (
-                            <p className="truncate whitespace-nowrap text-muted-foreground text-xs dark:text-zinc-400">
-                              {t("この期間は既存お題の確認用です", "This period is for checking official themes")}
-                            </p>
-                          )}
+                        <div className="mt-3 space-y-2">
+                          <p className={getCalendarCellHeadlineClassName(cell)}>
+                            {getCalendarCellHeadline(t, cell)}
+                          </p>
+                          <p className={getCalendarCellDescriptionClassName(cell)}>
+                            {getCalendarCellDescription(t, cell)}
+                          </p>
                         </div>
 
-                        {hasProposals && (
-                          <div className="mt-2 flex justify-end">
+                        {cell.hasProposals && (
+                          <div className="mt-4 flex justify-end">
                             <Button
                               type="button"
-                              size="sm"
                               variant="secondary"
-                              className="h-6 rounded-full px-2 text-[10px]"
+                              className="min-h-9 rounded-full px-3 text-xs"
                               onClick={(event) => {
                                 event.stopPropagation()
-                                setSelectedProposalDate(dateText)
+                                setSelectedProposalDate(cell.dateText)
                               }}
                             >
                               {t(
-                                `${proposalsForDay.length}件を見る`,
-                                `View ${proposalsForDay.length}`,
+                                `${cell.proposalsForDay.length}件の提案を見る`,
+                                `View ${cell.proposalsForDay.length} proposals`,
                               )}
                             </Button>
                           </div>
                         )}
                       </div>
-                    )
-                  })}
+                    ))
+                  )}
                 </div>
-              </div>
+
+                <div className="hidden overflow-x-auto md:block">
+                  <div className="grid min-w-[700px] grid-cols-7 gap-2">
+                    {["日", "月", "火", "水", "木", "金", "土"].map((weekDay) => (
+                      <div key={weekDay} className="pb-1 text-center font-medium text-muted-foreground text-xs">
+                        {weekDay}
+                      </div>
+                    ))}
+                    {calendarCells.map((cell) => {
+                      if (cell.isEmpty) {
+                        return <div key={cell.key} className="aspect-square rounded-3xl bg-white/20 dark:bg-zinc-900/20" />
+                      }
+
+                      return (
+                        <div
+                          key={cell.key}
+                          role={cell.isSelectable ? "button" : undefined}
+                          tabIndex={cell.isSelectable ? 0 : undefined}
+                          onClick={() => {
+                            if (!cell.isSelectable) {
+                              return
+                            }
+
+                            onSelectDate(cell.dateText)
+                          }}
+                          onKeyDown={(event) => {
+                            if (!cell.isSelectable) {
+                              return
+                            }
+
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault()
+                              onSelectDate(cell.dateText)
+                            }
+                          }}
+                          className={getCalendarCellCardClassName(cell, false)}
+                        >
+                          <div className="flex items-start justify-between gap-1 overflow-hidden">
+                            <span className="font-semibold text-sm">{cell.day}</span>
+                            <Badge className={getCalendarCellBadgeClassName(cell)}>
+                              {cell.cellStatusLabel}
+                            </Badge>
+                          </div>
+
+                          <div className="mt-2 flex-1 text-[11px] leading-4">
+                            <p className={getCalendarCellHeadlineClassName(cell)} title={getCalendarCellHeadline(t, cell)}>
+                              {getCalendarCellHeadline(t, cell)}
+                            </p>
+                            <p className="mt-1 truncate whitespace-nowrap text-[10px] text-muted-foreground dark:text-zinc-400">
+                              {getCalendarCellDescription(t, cell)}
+                            </p>
+                          </div>
+
+                          {cell.hasProposals && (
+                            <div className="mt-2 flex justify-end">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="secondary"
+                                className="h-6 rounded-full px-2 text-[10px]"
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  setSelectedProposalDate(cell.dateText)
+                                }}
+                              >
+                                {t(
+                                  `${cell.proposalsForDay.length}件を見る`,
+                                  `View ${cell.proposalsForDay.length}`,
+                                )}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </>
             )}
 
             <Dialog
@@ -767,6 +927,30 @@ function DuplicateSummaryCard(props: { label: string, count: number }) {
   )
 }
 
+function getMobileCalendarFilters(t: ReturnType<typeof useTranslation>): Array<{
+  value: MobileCalendarFilter
+  label: string
+}> {
+  return [
+    {
+      value: "ALL",
+      label: t("すべて", "All"),
+    },
+    {
+      value: "NO_PROPOSALS",
+      label: t("未提案", "No proposals yet"),
+    },
+    {
+      value: "HAS_PROPOSALS",
+      label: t("提案あり", "Has proposals"),
+    },
+    {
+      value: "ADOPTED",
+      label: t("採用済み", "Adopted"),
+    },
+  ]
+}
+
 const DailyThemesQuery = gql`
   query ProposalCalendarDailyThemes($offset: Int!, $limit: Int!, $where: DailyThemesWhereInput!) {
     dailyThemes(offset: $offset, limit: $limit, where: $where) {
@@ -826,6 +1010,106 @@ const CreateThemeProposalMutation = gql`
     }
   }
 `
+
+function getCalendarCellCardClassName(cell: FilledCalendarCell, isMobile: boolean) {
+  return cn(
+    "relative rounded-3xl border text-left transition",
+    isMobile ? "p-4" : "flex aspect-square flex-col p-2",
+    {
+      "cursor-pointer border-emerald-500 bg-emerald-50 shadow-sm dark:border-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-100": cell.isSelectable && !cell.hasProposals,
+      "cursor-pointer border-amber-400 bg-amber-50 shadow-sm dark:border-amber-700 dark:bg-amber-950/35 dark:text-amber-100": cell.isSelectable && cell.hasProposals,
+      "cursor-default border-rose-300 bg-rose-50 shadow-sm dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-100": cell.hasAdoptedProposal,
+      "cursor-default border-slate-200 bg-white/80 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-100": !cell.isSelectable && !cell.hasAdoptedProposal,
+      "ring-2 ring-orange-400 dark:ring-orange-500": cell.isSelected,
+    },
+  )
+}
+
+function getCalendarCellBadgeClassName(cell: FilledCalendarCell) {
+  return cn("whitespace-nowrap text-white h-5 px-1.5 text-[10px]", {
+    "bg-emerald-600": cell.isSelectable && !cell.hasProposals,
+    "bg-amber-500": cell.isSelectable && cell.hasProposals,
+    "bg-rose-600": cell.hasAdoptedProposal,
+    "bg-slate-500": !cell.isSelectable && !cell.hasAdoptedProposal,
+  })
+}
+
+function getCalendarCellHeadlineClassName(cell: FilledCalendarCell) {
+  return cn("font-medium", {
+    "text-emerald-700 dark:text-emerald-300": cell.isSelectable && !cell.hasProposals,
+    "text-amber-800 dark:text-amber-200": cell.isSelectable && cell.hasProposals,
+    "text-rose-800 dark:text-rose-200": cell.hasAdoptedProposal,
+    "text-zinc-900 dark:text-zinc-100": cell.themeForDay && cell.isHistoryWindow,
+    "text-muted-foreground dark:text-zinc-400": !cell.isSelectable && !cell.hasAdoptedProposal && !(cell.themeForDay && cell.isHistoryWindow),
+  })
+}
+
+function getCalendarCellDescriptionClassName(cell: FilledCalendarCell) {
+  return cn("text-sm leading-5", {
+    "text-emerald-700/80 dark:text-emerald-200/90": cell.isSelectable && !cell.hasProposals,
+    "text-amber-700/80 dark:text-amber-200/80": cell.isSelectable && cell.hasProposals,
+    "text-rose-700/80 dark:text-rose-200/80": cell.hasAdoptedProposal,
+    "text-muted-foreground dark:text-zinc-400": !cell.isSelectable && !cell.hasAdoptedProposal,
+  })
+}
+
+function getCalendarCellHeadline(
+  t: ReturnType<typeof useTranslation>,
+  cell: FilledCalendarCell,
+) {
+  if (cell.themeForDay && cell.isHistoryWindow) {
+    return cell.themeForDay.title
+  }
+
+  if (cell.hasAdoptedProposal) {
+    return t("採用済みのお題があります", "An adopted theme already exists")
+  }
+
+  if (cell.isSelectable && cell.hasProposals) {
+    return t("この日に提案があります", "Proposals already submitted")
+  }
+
+  if (cell.isSelectable) {
+    return t("この日付に提案できます", "You can propose for this date")
+  }
+
+  return t("この期間は既存お題の確認用です", "This period is for checking official themes")
+}
+
+function getCalendarCellDescription(
+  t: ReturnType<typeof useTranslation>,
+  cell: FilledCalendarCell,
+) {
+  if (cell.themeForDay && cell.isHistoryWindow) {
+    return t("過去または近日公開のお題", "Past or upcoming official theme")
+  }
+
+  if (cell.hasAdoptedProposal) {
+    return t(
+      "この日付は新しい提案を受け付けていません。",
+      "This date is no longer accepting new proposals.",
+    )
+  }
+
+  if (cell.isSelectable && cell.hasProposals) {
+    return t(
+      `${cell.proposalsForDay.length}件の提案が集まっています。`,
+      `${cell.proposalsForDay.length} proposals already exist for this date.`,
+    )
+  }
+
+  if (cell.isSelectable) {
+    return t(
+      "カード全体をタップするとこの日付を選択できます。",
+      "Tap the card to select this date.",
+    )
+  }
+
+  return t(
+    "この期間は既存お題の確認用です。",
+    "This period is for checking official themes.",
+  )
+}
 
 function getProposalStatusLabel(
   t: ReturnType<typeof useTranslation>,

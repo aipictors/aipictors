@@ -947,9 +947,6 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
         {data.importantRelease && (
           <HomeImportantReleaseBanner release={data.importantRelease} />
         )}
-        {authContext.isLoggedIn && (
-          <HomeLoginNoticeMarquee releases={loginNoticeReleases} />
-        )}
         {/* ヘッダー部分: タブ */}
         <div className="-mx-4 bg-background/98 px-4 py-2">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
