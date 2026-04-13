@@ -8,7 +8,7 @@ import {
   Users,
 } from "lucide-react"
 import { Link, useLocation } from "@remix-run/react"
-import type { ReactNode } from "react"
+import { type ReactNode, useMemo, useState } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
@@ -57,6 +57,22 @@ type Props = {
 export function AdminPageShell(props: Props) {
   const location = useLocation()
   const HeaderIcon = props.icon ?? Shield
+  const [menuQuery, setMenuQuery] = useState("")
+
+  const filteredNavItems = useMemo(() => {
+    const normalizedQuery = menuQuery.trim().toLowerCase()
+
+    if (normalizedQuery.length === 0) {
+      return adminNavItems
+    }
+
+    return adminNavItems.filter((item) => {
+      return [item.title, item.description, item.href]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedQuery)
+    })
+  }, [menuQuery])
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#11182a_0%,#182235_100%)] text-slate-100">
@@ -66,8 +82,9 @@ export function AdminPageShell(props: Props) {
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
               <Input
-                readOnly
-                value="メニューを検索"
+                value={menuQuery}
+                onChange={(event) => setMenuQuery(event.target.value)}
+                placeholder="メニューを検索"
                 className="border-white/10 bg-white/5 pl-9 text-slate-200"
               />
             </div>
@@ -77,7 +94,7 @@ export function AdminPageShell(props: Props) {
           <Separator className="my-4 bg-white/10" />
 
           <nav className="space-y-3">
-            {adminNavItems.map((item) => {
+            {filteredNavItems.map((item) => {
               const Icon = item.icon
               const isCurrent =
                 item.href === "/admin"
@@ -105,6 +122,12 @@ export function AdminPageShell(props: Props) {
                 </Link>
               )
             })}
+
+            {filteredNavItems.length === 0 && (
+              <div className="rounded-3xl border border-dashed border-white/10 bg-white/5 px-4 py-6 text-sm text-slate-400">
+                一致するメニューがありません。
+              </div>
+            )}
           </nav>
         </aside>
 

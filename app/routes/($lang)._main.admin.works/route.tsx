@@ -244,6 +244,7 @@ export default function AdminWorksPage() {
           <Button
             size="sm"
             variant="outline"
+            className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
             disabled={page <= 0}
             onClick={() => onMovePage(page - 1)}
           >
@@ -252,6 +253,7 @@ export default function AdminWorksPage() {
           <Button
             size="sm"
             variant="outline"
+            className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
             disabled={page >= maxPage}
             onClick={() => onMovePage(page + 1)}
           >
@@ -297,6 +299,7 @@ export default function AdminWorksPage() {
         <Button
           size="sm"
           variant="outline"
+          className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
           disabled={page <= 0}
           onClick={() => onMovePage(page - 1)}
         >
@@ -305,6 +308,7 @@ export default function AdminWorksPage() {
         <Button
           size="sm"
           variant="outline"
+          className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
           disabled={page >= maxPage}
           onClick={() => onMovePage(page + 1)}
         >
@@ -459,8 +463,12 @@ function WorkModerationCard(props: WorkModerationCardProps) {
               {props.work.title || "(無題)"}
             </CardTitle>
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
-              <Badge variant="outline">#{props.work.id}</Badge>
-              <Badge variant="secondary" className="bg-white/10 text-slate-200">{props.work.type}</Badge>
+              <Badge variant="outline" className="border-white/20 bg-slate-950/50 text-slate-100">
+                #{props.work.id}
+              </Badge>
+              <Badge variant="secondary" className="bg-white/10 text-slate-100">
+                {props.work.type}
+              </Badge>
               <Badge variant={props.work.accessType === "PRIVATE" ? "destructive" : "default"}>
                 {props.work.accessType}
               </Badge>
@@ -472,6 +480,7 @@ function WorkModerationCard(props: WorkModerationCardProps) {
           <Button
             size="sm"
             variant="outline"
+            className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
             onClick={() => setExpanded((prev) => !prev)}
           >
             {expanded ? (
@@ -517,14 +526,24 @@ function WorkModerationCard(props: WorkModerationCardProps) {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button asChild size="sm" variant="secondary">
+              <Button
+                asChild
+                size="sm"
+                variant="secondary"
+                className="bg-white/10 text-slate-100 hover:bg-white/20"
+              >
                 <Link to={`/posts/${props.work.id}`} target="_blank" rel="noreferrer noopener">
                   作品ページ
                 </Link>
               </Button>
 
               {props.showLikeOption && (
-                <Button asChild size="sm" variant="outline">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
+                >
                   <Link to={`/posts/${props.work.id}`} target="_blank" rel="noreferrer noopener">
                     いいね対応
                   </Link>
@@ -532,7 +551,12 @@ function WorkModerationCard(props: WorkModerationCardProps) {
               )}
 
               {props.showCommentOption && (
-                <Button asChild size="sm" variant="outline">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
+                >
                   <Link
                     to={`/posts/${props.work.id}#comments`}
                     target="_blank"
@@ -544,7 +568,12 @@ function WorkModerationCard(props: WorkModerationCardProps) {
               )}
 
               {props.showStampOption && (
-                <Button asChild size="sm" variant="outline">
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
+                >
                   <Link
                     to={`/posts/${props.work.id}#comments`}
                     target="_blank"
@@ -690,6 +719,7 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                 <Button
                   size="sm"
                   variant="destructive"
+                  className="bg-rose-600 text-white hover:bg-rose-500"
                   disabled={isUpdating || isSendingMessage}
                   onClick={() => onChangeAccessType("PRIVATE")}
                 >
@@ -699,6 +729,7 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                 <Button
                   size="sm"
                   variant="outline"
+                  className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
                   disabled={isUpdating || isSendingMessage}
                   onClick={() => onChangeAccessType("PUBLIC")}
                 >

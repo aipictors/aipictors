@@ -412,7 +412,12 @@ export default function AdminUsersPage () {
                   <AlertDialogTrigger asChild>
                     <Button
                       variant={user.isCommentBanned ? "destructive" : "outline"}
-                      className="w-full"
+                      className={[
+                        "w-full text-slate-100",
+                        user.isCommentBanned
+                          ? "bg-rose-600 hover:bg-rose-500"
+                          : "border-white/10 bg-white/5 hover:bg-white/10",
+                      ].join(" ")}
                       disabled={commentBanLoading}
                     >
                       <MessageSquareOff className="mr-2 h-4 w-4" />
@@ -463,7 +468,12 @@ export default function AdminUsersPage () {
                   <AlertDialogTrigger asChild>
                     <Button
                       variant={user.isPostBanned ? "destructive" : "outline"}
-                      className="w-full"
+                      className={[
+                        "w-full text-slate-100",
+                        user.isPostBanned
+                          ? "bg-rose-600 hover:bg-rose-500"
+                          : "border-white/10 bg-white/5 hover:bg-white/10",
+                      ].join(" ")}
                       disabled={postBanLoading}
                     >
                       <ImageOff className="mr-2 h-4 w-4" />

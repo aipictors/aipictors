@@ -38,7 +38,7 @@ export function HomeMenuRouteList({
 }: Props) {
   const authContext = useContext(AuthContext)
   const { data: viewerData } = useQuery(viewerIsModeratorQuery, {
-    skip: authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const navigation = useNavigation()

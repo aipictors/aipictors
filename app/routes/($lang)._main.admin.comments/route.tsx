@@ -165,7 +165,9 @@ export default function AdminCommentsPage() {
                 <CardTitle className="text-base">
                   {item.kind === "REPORT" ? "コメント報告" : "異議申し立て"}
                 </CardTitle>
-                <Badge variant="outline">comment #{item.commentId}</Badge>
+                <Badge variant="outline" className="border-white/20 bg-slate-950/50 text-slate-100">
+                  comment #{item.commentId}
+                </Badge>
                 {item.moderationStatus && (
                   <Badge variant="secondary" className="bg-white/10 text-slate-200">
                     {item.moderationStatus}
@@ -207,6 +209,7 @@ export default function AdminCommentsPage() {
                 <Button
                   size="sm"
                   variant="default"
+                  className="bg-cyan-500 text-slate-950 hover:bg-cyan-400"
                   disabled={processingCommentId === String(item.commentId)}
                   onClick={() => onModerate(String(item.commentId), "APPROVE")}
                 >
@@ -215,6 +218,7 @@ export default function AdminCommentsPage() {
                 <Button
                   size="sm"
                   variant="secondary"
+                  className="bg-white/10 text-slate-100 hover:bg-white/20"
                   disabled={processingCommentId === String(item.commentId)}
                   onClick={() => onModerate(String(item.commentId), "REQUEUE")}
                 >
@@ -223,6 +227,7 @@ export default function AdminCommentsPage() {
                 <Button
                   size="sm"
                   variant="destructive"
+                  className="bg-rose-600 text-white hover:bg-rose-500"
                   disabled={processingCommentId === String(item.commentId)}
                   onClick={() => onModerate(String(item.commentId), "REJECT")}
                 >
