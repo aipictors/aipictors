@@ -385,6 +385,22 @@ export function WorkComment(props: Props) {
               )
             ) : (
               <>
+                {props.stickerImageURL &&
+                  props.stickerAccessType === "PUBLIC" && (
+                    <StickerInfoDialog
+                      isDownloaded={props.isStickerDownloadable ?? false}
+                      stickerId={props.stickerId ?? ""}
+                      title={props.stickerTitle ?? ""}
+                      imageUrl={props.stickerImageURL}
+                    >
+                      <ArrowDownToLine className="size-4" />
+                    </StickerInfoDialog>
+                  )}
+                <CommentReportDialog
+                  commentId={props.commentId}
+                  iconOnly
+                  buttonClassName="h-7 text-muted-foreground hover:text-foreground"
+                />
                 <Button
                   type="button"
                   size="sm"
@@ -397,24 +413,6 @@ export function WorkComment(props: Props) {
                     ? t("閉じる", "Close")
                     : t("返信", "Reply")}
                 </Button>
-                <div className="ml-auto flex items-center gap-1">
-                  <CommentReportDialog
-                    commentId={props.commentId}
-                    iconOnly
-                    buttonClassName="h-7 text-muted-foreground hover:text-foreground"
-                  />
-                {props.stickerImageURL &&
-                  props.stickerAccessType === "PUBLIC" && (
-                    <StickerInfoDialog
-                      isDownloaded={props.isStickerDownloadable ?? false}
-                      stickerId={props.stickerId ?? ""}
-                      title={props.stickerTitle ?? ""}
-                      imageUrl={props.stickerImageURL}
-                    >
-                      <ArrowDownToLine className="size-4" />
-                    </StickerInfoDialog>
-                  )}
-                </div>
               </>
             )}
             {props.isMuted && (
