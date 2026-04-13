@@ -1,4 +1,5 @@
 import { Button } from "~/components/ui/button"
+import { Textarea } from "~/components/ui/textarea"
 import {
   Popover,
   PopoverContent,
@@ -7,7 +8,7 @@ import {
 import { ReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/report-dialog"
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { DownloadIcon, MoreHorizontal } from "lucide-react"
+import { DownloadIcon, MoreHorizontal, SendIcon, ShieldAlert } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { ModerationRatingReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/moderation-rating-report-dialog"
@@ -21,6 +22,7 @@ type Props = {
   disabledZipDownload: boolean
   isEnabledDelete: boolean
   postId: string
+  targetWorkOwnerUserId: string
 }
 
 /**
@@ -29,7 +31,14 @@ type Props = {
 export function WorkActionMenu (props: Props) {
   const [deleteWork, { loading: isLoadingDeleteAlbum }] =
     useMutation(DeleteWorkMutation)
+  const [changeWorkSettingsWithAdmin, { loading: isUpdatingWork }] =
+    useMutation(ChangeWorkSettingsWithAdminMutation)
+  const [createMessage, { loading: isSendingMessage }] = useMutation(
+    CreateModeratorMessageMutation,
+  )
   const [_isDeleted, setIsDeleted] = useState(false)
+  const [moderatorMessage, setModeratorMessage] = useState("")
+  const [isModeratorMessageOpen, setIsModeratorMessageOpen] = useState(false)
 
   const t = useTranslation()
 
@@ -48,6 +57,66 @@ export function WorkActionMenu (props: Props) {
       ),
     )
     setIsDeleted(true)
+  }
+
+  const onHideWorkByModerator = async () => {
+    try {
+      await changeWorkSettingsWithAdmin({
+        variables: {
+          input: {
+            workId: props.postId,
+            accessType: "PRIVATE",
+          },
+        },
+      })
+
+      toast(
+        t(
+          "作品をモデレーター権限で非公開にしました",
+          "The work has been hidden by moderator action",
+        ),
+      )
+    } catch (error) {
+      toast(
+        error instanceof Error
+          ? error.message
+          : t("非公開化に失敗しました", "Failed to hide the work"),
+      )
+    }
+  }
+
+  const onSendModeratorMessage = async () => {
+    const trimmedMessage = moderatorMessage.trim()
+    if (trimmedMessage.length < 5) {
+      toast(t("通知内容を入力してください", "Please enter a message"))
+      return
+    }
+
+    try {
+      await createMessage({
+        variables: {
+          input: {
+            recipientId: props.targetWorkOwnerUserId,
+            text: trimmedMessage,
+          },
+        },
+      })
+
+      toast(
+        t(
+          "投稿者に通知を送信しました",
+          "A moderator message has been sent to the post owner",
+        ),
+      )
+      setModeratorMessage("")
+      setIsModeratorMessageOpen(false)
+    } catch (error) {
+      toast(
+        error instanceof Error
+          ? error.message
+          : t("通知送信に失敗しました", "Failed to send the message"),
+      )
+    }
   }
 
   const { data: isModeratorData } = useQuery(IsModeratorQuery, {})
@@ -87,6 +156,49 @@ export function WorkActionMenu (props: Props) {
             {isModeratorData?.viewer?.isModerator && (
               <ModerationStyleReportDialog postId={props.postId} />
             )}
+            {isModeratorData?.viewer?.isModerator && (
+              <Button
+                onClick={onHideWorkByModerator}
+                className="flex items-center gap-2"
+                variant="outline"
+                disabled={isUpdatingWork}
+              >
+                <ShieldAlert className="size-4" />
+                {t("モデレーター: 作品を非公開", "Moderator: Hide work")}
+              </Button>
+            )}
+            {isModeratorData?.viewer?.isModerator && (
+              <Button
+                onClick={() =>
+                  setIsModeratorMessageOpen((previous) => !previous)
+                }
+                className="flex items-center gap-2"
+                variant="outline"
+              >
+                <SendIcon className="size-4" />
+                {t("モデレーター: 投稿者へ通知", "Moderator: Notify owner")}
+              </Button>
+            )}
+            {isModeratorData?.viewer?.isModerator && isModeratorMessageOpen && (
+              <div className="space-y-2 rounded-md border p-3">
+                <Textarea
+                  value={moderatorMessage}
+                  onChange={(event) => setModeratorMessage(event.target.value)}
+                  placeholder={t(
+                    "作品の非公開理由や修正依頼を入力してください",
+                    "Enter the reason for hiding the work or a moderator request",
+                  )}
+                  className="min-h-28 resize-none"
+                />
+                <Button
+                  onClick={onSendModeratorMessage}
+                  className="w-full"
+                  disabled={isSendingMessage}
+                >
+                  {t("通知を送信", "Send moderator message")}
+                </Button>
+              </div>
+            )}
             {props.isEnabledDelete && (
               <DeleteWorkConfirmDialog postId={props.postId} />
             )}
@@ -110,6 +222,20 @@ const IsModeratorQuery = graphql(
     viewer {
       id
       isModerator
+    }
+  }`,
+)
+
+const ChangeWorkSettingsWithAdminMutation = graphql(
+  `mutation ChangeWorkSettingsWithAdminForMenu($input: WorkSettingsWithAdminInput!) {
+    changeWorkSettingsWithAdmin(input: $input)
+  }`,
+)
+
+const CreateModeratorMessageMutation = graphql(
+  `mutation CreateModeratorMessage($input: CreateMessageInput!) {
+    createMessage(input: $input) {
+      id
     }
   }`,
 )

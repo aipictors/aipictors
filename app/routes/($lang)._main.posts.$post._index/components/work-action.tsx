@@ -155,6 +155,7 @@ export function WorkAction(props: Props) {
                 props.targetWorkOwnerUserId === appContext.userId
               }
               postId={props.targetWorkId}
+              targetWorkOwnerUserId={props.targetWorkOwnerUserId}
               disabledZipDownload={(props.imageUrls?.length ?? 0) <= 1}
             />
           </>
