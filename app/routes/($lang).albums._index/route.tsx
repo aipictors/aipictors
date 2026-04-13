@@ -184,14 +184,14 @@ export default function AlbumsIndex() {
   )
 
   useEffect(() => {
-    if (!needsViewerFilters) {
-      setViewerAlbums(data.albums)
-      setViewerAlbumsCount(data.albumsCount)
-      setIsViewerQueryLoading(false)
+    if (authContext.isLoading) {
       return
     }
 
-    if (authContext.isLoading || !authContext.isLoggedIn) {
+    if (!authContext.isLoggedIn) {
+      setViewerAlbums(data.albums)
+      setViewerAlbumsCount(data.albumsCount)
+      setIsViewerQueryLoading(false)
       return
     }
 
@@ -201,31 +201,34 @@ export default function AlbumsIndex() {
       setIsViewerQueryLoading(true)
 
       try {
-        const [albumsResp, countResp] = await Promise.all([
-          apolloClient.query({
-            query: albumsQuery,
-            variables: {
-              offset: data.page * PER_PAGE,
-              limit: PER_PAGE,
-              where: clientWhere as never,
-            },
-            fetchPolicy: "network-only",
-          }),
-          apolloClient.query({
-            query: albumsCountQuery,
-            variables: {
-              where: clientWhere as never,
-            },
-            fetchPolicy: "network-only",
-          }),
-        ])
+        const albumsResp = await apolloClient.query({
+          query: albumsQuery,
+          variables: {
+            offset: data.page * PER_PAGE,
+            limit: PER_PAGE,
+            where: clientWhere as never,
+          },
+          fetchPolicy: "network-only",
+        })
+
+        const countResp = needsViewerFilters
+          ? await apolloClient.query({
+              query: albumsCountQuery,
+              variables: {
+                where: clientWhere as never,
+              },
+              fetchPolicy: "network-only",
+            })
+          : null
 
         if (isCancelled) {
           return
         }
 
         setViewerAlbums(albumsResp.data.albums ?? [])
-        setViewerAlbumsCount(countResp.data.albumsCount ?? 0)
+        setViewerAlbumsCount(
+          countResp?.data.albumsCount ?? data.albumsCount ?? 0,
+        )
       } catch (error) {
         console.error("Error fetching viewer filtered albums", error)
 
@@ -233,8 +236,8 @@ export default function AlbumsIndex() {
           return
         }
 
-        setViewerAlbums([])
-        setViewerAlbumsCount(0)
+        setViewerAlbums(data.albums)
+        setViewerAlbumsCount(data.albumsCount)
       } finally {
         if (!isCancelled) {
           setIsViewerQueryLoading(false)
@@ -261,14 +264,14 @@ export default function AlbumsIndex() {
   const albums =
     needsViewerFilters && !authContext.isLoggedIn && authContext.isNotLoading
       ? []
-      : needsViewerFilters
+      : authContext.isLoggedIn
         ? viewerAlbums
         : data.albums
 
   const albumsCount =
     needsViewerFilters && !authContext.isLoggedIn && authContext.isNotLoading
       ? 0
-      : needsViewerFilters
+      : authContext.isLoggedIn
         ? viewerAlbumsCount
         : data.albumsCount
 
