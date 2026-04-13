@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client/index"
+import { useApolloClient } from "@apollo/client/index"
 import type {
   HeadersFunction,
   LoaderFunctionArgs,
@@ -7,7 +7,7 @@ import type {
 import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { Heart, Search, Users, X } from "lucide-react"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import {
   PublicAlbumList,
   PublicAlbumListItemFragment,
@@ -154,58 +154,125 @@ export default function AlbumsIndex() {
   const data = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const apolloClient = useApolloClient()
   const authContext = useContext(AuthContext)
   const [searchText, setSearchText] = useState(data.search ?? "")
+  const [viewerAlbums, setViewerAlbums] = useState(data.albums)
+  const [viewerAlbumsCount, setViewerAlbumsCount] = useState(data.albumsCount)
+  const [isViewerQueryLoading, setIsViewerQueryLoading] = useState(false)
 
   const needsViewerFilters = data.followingOnly || data.favoritesOnly
 
-  const clientWhere = {
-    ...(data.rating && { ratings: [data.rating] }),
-    ...(data.search && { search: data.search }),
-    orderBy: data.orderBy,
-    sort: "DESC",
-    needsThumbnailImage: true,
-    needInspected: false,
-    ...(data.followingOnly && { isFollowing: true }),
-    ...(data.favoritesOnly && { isWatched: true }),
-  }
-
-  const shouldSkipClientQuery =
-    authContext.isLoading || (needsViewerFilters && !authContext.isLoggedIn)
-
-  const { data: clientAlbumsData, loading: isAlbumsLoading } = useQuery(
-    albumsQuery,
-    {
-      variables: {
-        offset: data.page * PER_PAGE,
-        limit: PER_PAGE,
-        where: clientWhere as never,
-      },
-      fetchPolicy: "cache-and-network",
-      skip: shouldSkipClientQuery,
-    },
+  const clientWhere = useMemo(
+    () => ({
+      ...(data.rating && { ratings: [data.rating] }),
+      ...(data.search && { search: data.search }),
+      orderBy: data.orderBy,
+      sort: "DESC",
+      needsThumbnailImage: true,
+      needInspected: false,
+      ...(data.followingOnly && { isFollowing: true }),
+      ...(data.favoritesOnly && { isWatched: true }),
+    }),
+    [
+      data.favoritesOnly,
+      data.followingOnly,
+      data.orderBy,
+      data.rating,
+      data.search,
+    ],
   )
 
-  const { data: clientAlbumsCountData, loading: isAlbumsCountLoading } =
-    useQuery(albumsCountQuery, {
-      variables: {
-        where: clientWhere as never,
-      },
-      fetchPolicy: "cache-and-network",
-      skip: shouldSkipClientQuery,
-    })
+  useEffect(() => {
+    if (!needsViewerFilters) {
+      setViewerAlbums(data.albums)
+      setViewerAlbumsCount(data.albumsCount)
+      setIsViewerQueryLoading(false)
+      return
+    }
+
+    if (authContext.isLoading || !authContext.isLoggedIn) {
+      return
+    }
+
+    let isCancelled = false
+
+    const fetchViewerAlbums = async () => {
+      setIsViewerQueryLoading(true)
+
+      try {
+        const [albumsResp, countResp] = await Promise.all([
+          apolloClient.query({
+            query: albumsQuery,
+            variables: {
+              offset: data.page * PER_PAGE,
+              limit: PER_PAGE,
+              where: clientWhere as never,
+            },
+            fetchPolicy: "network-only",
+          }),
+          apolloClient.query({
+            query: albumsCountQuery,
+            variables: {
+              where: clientWhere as never,
+            },
+            fetchPolicy: "network-only",
+          }),
+        ])
+
+        if (isCancelled) {
+          return
+        }
+
+        setViewerAlbums(albumsResp.data.albums ?? [])
+        setViewerAlbumsCount(countResp.data.albumsCount ?? 0)
+      } catch (error) {
+        console.error("Error fetching viewer filtered albums", error)
+
+        if (isCancelled) {
+          return
+        }
+
+        setViewerAlbums([])
+        setViewerAlbumsCount(0)
+      } finally {
+        if (!isCancelled) {
+          setIsViewerQueryLoading(false)
+        }
+      }
+    }
+
+    fetchViewerAlbums()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [
+    apolloClient,
+    authContext.isLoading,
+    authContext.isLoggedIn,
+    clientWhere,
+    data.albums,
+    data.albumsCount,
+    data.page,
+    needsViewerFilters,
+  ])
 
   const albums =
     needsViewerFilters && !authContext.isLoggedIn && authContext.isNotLoading
       ? []
-      : (clientAlbumsData?.albums ?? data.albums)
+      : needsViewerFilters
+        ? viewerAlbums
+        : data.albums
 
   const albumsCount =
     needsViewerFilters && !authContext.isLoggedIn && authContext.isNotLoading
       ? 0
-      : (clientAlbumsCountData?.albumsCount ?? data.albumsCount)
+      : needsViewerFilters
+        ? viewerAlbumsCount
+        : data.albumsCount
 
-  const isClientRefreshing = isAlbumsLoading || isAlbumsCountLoading
+  const isClientRefreshing = isViewerQueryLoading
 
   const updateSearchParams = (updates: Record<string, string | null>) => {
     const nextSearchParams = new URLSearchParams(searchParams)
