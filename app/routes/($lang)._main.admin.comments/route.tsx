@@ -1,6 +1,7 @@
 import { useMutation, useQuery, gql } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
+import { Link } from "@remix-run/react"
 import { useContext, useState } from "react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
@@ -114,6 +115,14 @@ export default function AdminCommentsPage() {
         <Shield className="size-6 text-orange-500" />
         <h1 className="font-bold text-2xl">コメント審査</h1>
         <Badge variant="secondary">noindex</Badge>
+      </div>
+      <div className="flex gap-2">
+        <Button asChild size="sm" variant="outline">
+          <Link to="/admin">管理トップ</Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link to="/admin/users">ユーザ管理</Link>
+        </Button>
       </div>
       <Separator />
       {loading ? (

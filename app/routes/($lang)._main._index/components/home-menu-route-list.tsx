@@ -13,10 +13,12 @@ import {
   RefreshCcwIcon,
   RocketIcon,
   SearchIcon,
+  Shield,
   StampIcon,
   StarIcon,
   TagIcon,
 } from "lucide-react"
+import { gql, useQuery } from "@apollo/client/index"
 import { useContext } from "react"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
@@ -35,6 +37,9 @@ export function HomeMenuRouteList({
   onClickMenuItem,
 }: Props) {
   const authContext = useContext(AuthContext)
+  const { data: viewerData } = useQuery(viewerIsModeratorQuery, {
+    skip: authContext.isNotLoggedIn,
+  })
 
   const navigation = useNavigation()
 
@@ -168,6 +173,16 @@ export function HomeMenuRouteList({
       >
         {t("更新情報", "Update Information")}
       </HomeMenuNavigationButton>
+
+      {!isSensitive && viewerData?.viewer?.isModerator && (
+        <HomeMenuNavigationButton
+          href="/admin"
+          icon={Shield}
+          onClick={closeHeaderMenu}
+        >
+          {t("管理", "Admin")}
+        </HomeMenuNavigationButton>
+      )}
 
       <HomeMenuNavigationButton
         href={createLink("/about")}
@@ -312,3 +327,12 @@ export function HomeMenuRouteList({
     </div>
   )
 }
+
+const viewerIsModeratorQuery = gql`
+  query HomeMenuRouteListViewerIsModerator {
+    viewer {
+      id
+      isModerator
+    }
+  }
+`

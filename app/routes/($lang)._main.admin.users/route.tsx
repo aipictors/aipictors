@@ -1,5 +1,5 @@
-import { json, type LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { useLoaderData } from "@remix-run/react"
+import { json, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/cloudflare"
+import { Link, useLoaderData } from "@remix-run/react"
 import { useState, useContext } from "react"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { Button, buttonVariants } from "~/components/ui/button"
@@ -28,6 +28,21 @@ import {
 import { Search, Shield, UserX, MessageSquareOff, ImageOff } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { graphql } from "gql.tada"
+import { createMeta } from "~/utils/create-meta"
+
+export const meta: MetaFunction = (props) => {
+  return createMeta(
+    {
+      title: "ユーザ管理",
+      enTitle: "User Moderation",
+      description: "モデレーター専用のユーザ管理ページ",
+      enDescription: "Moderator-only user moderation page",
+      isIndex: false,
+    },
+    undefined,
+    props.params.lang,
+  )
+}
 
 // GraphQLクエリ: 現在のユーザー情報とモデレーター権限を取得
 const ViewerQuery = graphql(`
@@ -251,6 +266,15 @@ export default function AdminUsersPage () {
         <Shield className="h-6 w-6 text-orange-500" />
         <h1 className="font-bold text-2xl">モデレーター管理画面</h1>
         <Badge variant="secondary">管理者専用</Badge>
+      </div>
+
+      <div className="flex gap-2">
+        <Button asChild variant="outline">
+          <Link to="/admin">管理トップ</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link to="/admin/comments">コメント審査</Link>
+        </Button>
       </div>
 
       <Separator />

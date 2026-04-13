@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover"
 import { ReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/report-dialog"
-import { useMutation, useQuery } from "@apollo/client/index"
+import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { DownloadIcon, MoreHorizontal, SendIcon, ShieldAlert } from "lucide-react"
 import { useState } from "react"
@@ -226,11 +226,11 @@ const IsModeratorQuery = graphql(
   }`,
 )
 
-const ChangeWorkSettingsWithAdminMutation = graphql(
-  `mutation ChangeWorkSettingsWithAdminForMenu($input: WorkSettingsWithAdminInput!) {
+const ChangeWorkSettingsWithAdminMutation = gql`
+  mutation ChangeWorkSettingsWithAdminForMenu($input: WorkSettingsWithAdminInput!) {
     changeWorkSettingsWithAdmin(input: $input)
-  }`,
-)
+  }
+`
 
 const CreateModeratorMessageMutation = graphql(
   `mutation CreateModeratorMessage($input: CreateMessageInput!) {
