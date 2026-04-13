@@ -6,8 +6,8 @@ import type {
 } from "@remix-run/cloudflare"
 import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
-import { Heart, Users } from "lucide-react"
-import { useContext } from "react"
+import { Heart, Search, Users, X } from "lucide-react"
+import { useContext, useState } from "react"
 import {
   PublicAlbumList,
   PublicAlbumListItemFragment,
@@ -15,6 +15,7 @@ import {
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -66,6 +67,11 @@ const toBooleanSearchFlag = (value: string | null) => {
   return value === "1"
 }
 
+const toSearch = (value: string | null) => {
+  const normalizedValue = value?.trim() ?? ""
+  return normalizedValue.length > 0 ? normalizedValue : null
+}
+
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
   const page = toPage(url.searchParams.get("page"))
@@ -73,11 +79,13 @@ export async function loader(props: LoaderFunctionArgs) {
   const orderBy = toOrderBy(url.searchParams.get("orderBy"))
   const followingOnly = toBooleanSearchFlag(url.searchParams.get("following"))
   const favoritesOnly = toBooleanSearchFlag(url.searchParams.get("favorites"))
+  const search = toSearch(url.searchParams.get("search"))
 
   const needsViewerFilters = followingOnly || favoritesOnly
 
   const where = {
     ...(rating && { ratings: [rating] }),
+    ...(search && { search }),
     orderBy,
     sort: "DESC",
     needsThumbnailImage: true,
@@ -90,6 +98,7 @@ export async function loader(props: LoaderFunctionArgs) {
       albumsCount: 0,
       page,
       rating,
+      search,
       orderBy,
       followingOnly,
       favoritesOnly,
@@ -116,6 +125,7 @@ export async function loader(props: LoaderFunctionArgs) {
     albumsCount: countResp.data.albumsCount,
     page,
     rating,
+    search,
     orderBy,
     followingOnly,
     favoritesOnly,
@@ -145,11 +155,13 @@ export default function AlbumsIndex() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const authContext = useContext(AuthContext)
+  const [searchText, setSearchText] = useState(data.search ?? "")
 
   const needsViewerFilters = data.followingOnly || data.favoritesOnly
 
   const clientWhere = {
     ...(data.rating && { ratings: [data.rating] }),
+    ...(data.search && { search: data.search }),
     orderBy: data.orderBy,
     sort: "DESC",
     needsThumbnailImage: true,
@@ -207,6 +219,13 @@ export default function AlbumsIndex() {
     }
 
     navigate(`?${nextSearchParams.toString()}`)
+  }
+
+  const submitSearch = () => {
+    updateSearchParams({
+      search: searchText.trim() || null,
+      page: null,
+    })
   }
 
   const renderViewerFilterButton = (props: {
@@ -283,6 +302,46 @@ export default function AlbumsIndex() {
             )}
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
+          <div className="flex w-full gap-2 md:w-auto md:min-w-[320px]">
+            <Input
+              value={searchText}
+              onChange={(event) => {
+                setSearchText(event.target.value)
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault()
+                  submitSearch()
+                }
+              }}
+              placeholder={t(
+                "シリーズ名・タグで検索",
+                "Search by series name or tag",
+              )}
+              className="h-9"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="h-9 px-3"
+              onClick={submitSearch}
+            >
+              <Search className="size-4" />
+            </Button>
+            {data.search && (
+              <Button
+                type="button"
+                variant="outline"
+                className="h-9 px-3"
+                onClick={() => {
+                  setSearchText("")
+                  updateSearchParams({ search: null, page: null })
+                }}
+              >
+                <X className="size-4" />
+              </Button>
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             {renderViewerFilterButton({
               active: data.followingOnly,
