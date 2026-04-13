@@ -1,57 +1,78 @@
 import { Button, type ButtonProps } from "~/components/ui/button"
+import { useApolloClient, useMutation } from "@apollo/client/index"
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { LoaderIcon } from "lucide-react"
 import { useTranslation } from "~/hooks/use-translation"
 import { graphql } from "gql.tada"
-import { useMutation } from "@apollo/client/index"
 
 type Props = {
   id: string
   isBlocked: boolean
+  onChange?: (nextValue: boolean) => void
 } & Pick<ButtonProps, "variant">
 
 export function UserBlockButton (props: Props) {
   const t = useTranslation()
+  const apolloClient = useApolloClient()
   const [block, { loading: isBlockLoading }] = useMutation(blockUserMutation)
   const [unBlock, { loading: isUnBlockLoading }] =
     useMutation(unBlockUserMutation)
 
-  const [isBlocked, setIsBlocked] = useState(props.isBlocked)
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    setIsBlocked(props.isBlocked)
-  }, [props.isBlocked])
+  const isBlocked = props.isBlocked
 
-  const blockUser = async () => {
-    setIsLoading(true)
-    await block({
-      variables: {
-        input: {
-          userId: props.id,
+  const updateBlockedState = (nextValue: boolean) => {
+    props.onChange?.(nextValue)
+    apolloClient.cache.modify({
+      id: apolloClient.cache.identify({ __typename: "UserNode", id: props.id }),
+      fields: {
+        isBlocked() {
+          return nextValue
         },
       },
     })
-    toast(t("ユーザーをブロックしました", "Blocked the user"))
-    setIsBlocked(true)
-    setIsLoading(false)
-    console.log("Blocking user:", props.id)
+  }
+
+  const blockUser = async () => {
+    setIsLoading(true)
+    updateBlockedState(true)
+    try {
+      await block({
+        variables: {
+          input: {
+            userId: props.id,
+          },
+        },
+      })
+      toast(t("ユーザーをブロックしました", "Blocked the user"))
+    } catch {
+      updateBlockedState(false)
+      toast(t("ブロックの設定に失敗しました", "Failed to update block setting"))
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const unBlockUser = async () => {
     setIsLoading(true)
-    await unBlock({
-      variables: {
-        input: {
-          userId: props.id,
+    updateBlockedState(false)
+    try {
+      await unBlock({
+        variables: {
+          input: {
+            userId: props.id,
+          },
         },
-      },
-    })
-    toast(t("ユーザーのブロックを解除しました", "Unblocked the user"))
-    setIsBlocked(false)
-    setIsLoading(false)
-    console.log("Unblocking user:", props.id)
+      })
+      toast(t("ユーザーのブロックを解除しました", "Unblocked the user"))
+    } catch {
+      updateBlockedState(true)
+      toast(t("ブロックの設定に失敗しました", "Failed to update block setting"))
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -59,7 +80,7 @@ export function UserBlockButton (props: Props) {
       variant={props.variant ?? "secondary"}
       onClick={isBlocked ? unBlockUser : blockUser}
     >
-      {isLoading ? (
+      {isLoading || isBlockLoading || isUnBlockLoading ? (
         <span className="ml-2 animate-spin">
           <LoaderIcon />
         </span>
@@ -76,6 +97,7 @@ const blockUserMutation = graphql(
   `mutation blockUser($input: BlockUserInput!) {
     blockUser(input: $input) {
       id
+      isBlocked
     }
   }`,
 )
@@ -84,6 +106,7 @@ const unBlockUserMutation = graphql(
   `mutation unBlockUser($input: UnblockUserInput!) {
     unblockUser(input: $input) {
       id
+      isBlocked
     }
   }`,
 )

@@ -1,5 +1,5 @@
 import { EllipsisIcon } from "lucide-react"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import {
   Popover,
@@ -27,6 +27,17 @@ export function UserActionOther(props: Props) {
   const authContext = useContext(AuthContext)
 
   const t = useTranslation()
+
+  const [isMuted, setIsMuted] = useState(props.isMuted)
+  const [isBlocked, setIsBlocked] = useState(props.isBlocked ?? false)
+
+  useEffect(() => {
+    setIsMuted(props.isMuted)
+  }, [props.isMuted])
+
+  useEffect(() => {
+    setIsBlocked(props.isBlocked ?? false)
+  }, [props.isBlocked])
 
   if (
     authContext.isLoading ||
@@ -71,7 +82,8 @@ export function UserActionOther(props: Props) {
             </div>
             <UserMuteButton
               id={props.id}
-              isMuted={props.isMuted}
+              isMuted={isMuted}
+              onChange={setIsMuted}
               variant="secondary"
             />
           </div>
@@ -87,7 +99,8 @@ export function UserActionOther(props: Props) {
             </div>
             <UserBlockButton
               id={props.id}
-              isBlocked={props.isBlocked ?? false}
+              isBlocked={isBlocked}
+              onChange={setIsBlocked}
               variant="secondary"
             />
           </div>

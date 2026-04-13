@@ -14,19 +14,19 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Get current date
         env:
           TZ: 'Asia/Tokyo' # タイムゾーン指定
         id: date
-        run: echo "RELEASE_DATE=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+        run: echo "release_date=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ env.RELEASE_DATE }}
+          tag_name: ${{ steps.date.outputs.release_date }}
           draft: false
           prerelease: false
           generate_release_notes: true

@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Fetch metadata
         id: prepare
-        uses: dependabot/fetch-metadata@v1.6.0
+        uses: dependabot/fetch-metadata@v3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
