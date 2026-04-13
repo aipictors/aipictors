@@ -2,6 +2,7 @@ import { useLazyQuery, useMutation, useQuery, gql } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
 import { Link, useSearchParams } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import { useContext, useEffect, useMemo, useState } from "react"
 import {
   BookText,
@@ -11,7 +12,6 @@ import {
   Lock,
   LockOpen,
   MessageSquare,
-  Shield,
   ThumbsUp,
   Video,
 } from "lucide-react"
@@ -32,8 +32,15 @@ import {
 } from "~/components/ui/select"
 import { Separator } from "~/components/ui/separator"
 import { Textarea } from "~/components/ui/textarea"
+import { LikeButton } from "~/components/like-button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useToast } from "~/hooks/use-toast"
+import { ReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/report-dialog"
+import {
+  CommentListItemFragment,
+  WorkCommentList,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
+import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
 import { createMeta } from "~/utils/create-meta"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 
@@ -92,12 +99,54 @@ type WorkItem = {
   likesCount: number
   commentsCount: number
   subWorksCount: number
+  imageURL: string | null
+  isCommentsEditable: boolean
+  isLiked: boolean
+  isSensitive: boolean
   smallThumbnailImageURL: string | null
+  subWorks: Array<{
+    id: string
+    imageUrl: string | null
+  }>
   user: {
     id: string
     name: string
     login: string
+    iconUrl: string | null
+    isBlocked: boolean
   } | null
+}
+
+const toAccessTypeText = (accessType: string) => {
+  switch (accessType) {
+    case "PUBLIC":
+      return "公開"
+    case "PRIVATE":
+      return "非公開"
+    case "DRAFT":
+      return "下書き"
+    case "LIMITED":
+      return "限定公開"
+    case "SILENT":
+      return "サイレント"
+    default:
+      return accessType
+  }
+}
+
+const toWorkTypeText = (type: WorkItem["type"]) => {
+  switch (type) {
+    case "WORK":
+      return "イラスト"
+    case "VIDEO":
+      return "動画"
+    case "NOVEL":
+      return "小説"
+    case "COLUMN":
+      return "コラム"
+    default:
+      return type
+  }
 }
 
 export default function AdminWorksPage() {
@@ -109,10 +158,6 @@ export default function AdminWorksPage() {
     Number.parseInt(searchParams.get("page") ?? "0", 10) || 0,
     0,
   )
-
-  const [showLikeOption, setShowLikeOption] = useState(false)
-  const [showCommentOption, setShowCommentOption] = useState(false)
-  const [showStampOption, setShowStampOption] = useState(false)
 
   const { data: viewerData, loading: viewerLoading } = useQuery(viewerQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
@@ -198,44 +243,6 @@ export default function AdminWorksPage() {
       description={pageDescription}
       icon={ImageIcon}
     >
-      <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
-        <CardHeader>
-          <CardTitle className="text-base">オプション（軽量運用）</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="show-like-option"
-                checked={showLikeOption}
-                onCheckedChange={(checked) => setShowLikeOption(Boolean(checked))}
-              />
-              <Label htmlFor="show-like-option">いいね操作リンクを表示</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="show-comment-option"
-                checked={showCommentOption}
-                onCheckedChange={(checked) =>
-                  setShowCommentOption(Boolean(checked))
-                }
-              />
-              <Label htmlFor="show-comment-option">コメント導線を表示</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="show-stamp-option"
-                checked={showStampOption}
-                onCheckedChange={(checked) => setShowStampOption(Boolean(checked))}
-              />
-              <Label htmlFor="show-stamp-option">スタンプ導線を表示</Label>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Separator className="bg-white/10" />
-
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-400">
           全 {worksCount} 件 / {page + 1} ページ目
@@ -280,9 +287,6 @@ export default function AdminWorksPage() {
             <WorkModerationCard
               key={work.id}
               work={work}
-              showLikeOption={showLikeOption}
-              showCommentOption={showCommentOption}
-              showStampOption={showStampOption}
               onDone={async () => {
                 await refetch()
                 toast({
@@ -321,9 +325,6 @@ export default function AdminWorksPage() {
 
 type WorkModerationCardProps = {
   work: WorkItem
-  showLikeOption: boolean
-  showCommentOption: boolean
-  showStampOption: boolean
   onDone: () => Promise<void>
 }
 
@@ -348,6 +349,16 @@ function WorkModerationCard(props: WorkModerationCardProps) {
   const [createMessage, { loading: isSendingMessage }] = useMutation(
     createModeratorMessageMutation,
   )
+  const { data: commentsData, loading: commentsLoading } = useQuery(
+    adminWorkCommentsQuery,
+    {
+      skip: !expanded || !props.work.isCommentsEditable,
+      fetchPolicy: "network-only",
+      variables: {
+        workId: props.work.id,
+      },
+    },
+  )
 
   const selectedReason = useMemo(
     () => REASON_TEMPLATES.find((item) => item.key === reasonKey),
@@ -356,6 +367,9 @@ function WorkModerationCard(props: WorkModerationCardProps) {
 
   useEffect(() => {
     if (!expanded) {
+      return
+    }
+    if (props.work.type === "WORK") {
       return
     }
     if (detailData?.work || detailLoading) {
@@ -449,10 +463,10 @@ function WorkModerationCard(props: WorkModerationCardProps) {
   }
 
   const detail = detailData?.work
-  const mediaImages = [
-    detail?.imageURL ?? null,
-    ...(detail?.subWorks?.map((item: any) => item.imageUrl) ?? []),
-  ].filter(Boolean) as string[]
+  const mediaImages = [props.work.imageURL, ...props.work.subWorks.map((item) => item.imageUrl)]
+    .filter(Boolean) as string[]
+  const comments =
+    (commentsData?.work?.comments ?? []) as FragmentOf<typeof CommentListItemFragment>[]
 
   return (
     <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
@@ -467,10 +481,10 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                 #{props.work.id}
               </Badge>
               <Badge variant="secondary" className="bg-white/10 text-slate-100">
-                {props.work.type}
+                {toWorkTypeText(props.work.type)}
               </Badge>
               <Badge variant={props.work.accessType === "PRIVATE" ? "destructive" : "default"}>
-                {props.work.accessType}
+                {toAccessTypeText(props.work.accessType)}
               </Badge>
               <span>投稿者: {props.work.user?.name ?? "-"}</span>
               <span>@{props.work.user?.login ?? "-"}</span>
@@ -497,8 +511,18 @@ function WorkModerationCard(props: WorkModerationCardProps) {
       </CardHeader>
 
       <CardContent className="space-y-3">
-        <div className="grid gap-3 md:grid-cols-[180px_1fr]">
-          {props.work.smallThumbnailImageURL ? (
+        <div className="grid gap-3 md:grid-cols-[320px_1fr]">
+          {props.work.type === "WORK" && (props.work.imageURL || props.work.subWorks.length > 0) ? (
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-black/20 p-2">
+              <WorkImageView
+                workImageURL={props.work.imageURL ?? undefined}
+                subWorkImageURLs={props.work.subWorks
+                  .map((subWork) => subWork.imageUrl)
+                  .filter(Boolean) as string[]}
+                mode="dialog"
+              />
+            </div>
+          ) : props.work.smallThumbnailImageURL ? (
             <img
               src={props.work.smallThumbnailImageURL}
               alt={props.work.title}
@@ -537,52 +561,30 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                 </Link>
               </Button>
 
-              {props.showLikeOption && (
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
-                >
-                  <Link to={`/posts/${props.work.id}`} target="_blank" rel="noreferrer noopener">
-                    いいね対応
-                  </Link>
-                </Button>
+              {props.work.user && (
+                <LikeButton
+                  size={36}
+                  text={`いいね ${props.work.likesCount}`}
+                  defaultLiked={props.work.isLiked}
+                  defaultLikedCount={props.work.likesCount}
+                  isSensitive={props.work.isSensitive}
+                  targetWorkId={props.work.id}
+                  targetWorkOwnerUserId={props.work.user.id}
+                  isTargetUserBlocked={props.work.user.isBlocked}
+                />
               )}
 
-              {props.showCommentOption && (
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
-                >
-                  <Link
-                    to={`/posts/${props.work.id}#comments`}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    コメント対応
-                  </Link>
-                </Button>
-              )}
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
+                onClick={() => setExpanded((prev) => !prev)}
+              >
+                <MessageSquare className="mr-1 size-4" />
+                コメント {props.work.commentsCount}
+              </Button>
 
-              {props.showStampOption && (
-                <Button
-                  asChild
-                  size="sm"
-                  variant="outline"
-                  className="border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
-                >
-                  <Link
-                    to={`/posts/${props.work.id}#comments`}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    スタンプ対応
-                  </Link>
-                </Button>
-              )}
+              <ReportDialog postId={props.work.id} />
             </div>
           </div>
         </div>
@@ -592,12 +594,12 @@ function WorkModerationCard(props: WorkModerationCardProps) {
             <Separator className="bg-white/10" />
 
             <div className="space-y-2">
-              <p className="font-medium text-sm">展開プレビュー（遅延読み込み）</p>
+              <p className="font-medium text-sm">作品詳細</p>
               {detailLoading && (
                 <p className="text-slate-400 text-sm">詳細を読み込み中...</p>
               )}
 
-              {!detailLoading && detail?.type === "WORK" && (
+              {props.work.type === "WORK" && mediaImages.length > 0 && (
                 <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                   {mediaImages.map((url, index) => (
                     <img
@@ -648,9 +650,31 @@ function WorkModerationCard(props: WorkModerationCardProps) {
               )}
 
               {!detailLoading && !detail && (
-                <p className="text-slate-400 text-sm">詳細データが取得できませんでした。</p>
+                props.work.type !== "WORK" ? (
+                  <p className="text-slate-400 text-sm">詳細データが取得できませんでした。</p>
+                ) : null
               )}
             </div>
+
+            <Separator className="bg-white/10" />
+
+            {props.work.isCommentsEditable ? (
+              <div className="space-y-3 rounded-[24px] border border-white/10 bg-slate-950/35 p-4">
+                <p className="font-medium text-sm">コメント</p>
+                <WorkCommentList
+                  workId={props.work.id}
+                  comments={comments}
+                  isLoadingComments={commentsLoading}
+                  workOwnerIconImageURL={props.work.user?.iconUrl ?? undefined}
+                  isWorkOwnerBlocked={props.work.user?.isBlocked ?? false}
+                  defaultShowCommentCount={6}
+                />
+              </div>
+            ) : (
+              <div className="rounded-[24px] border border-white/10 bg-slate-950/35 p-4 text-sm text-slate-400">
+                この作品はコメント不可です。
+              </div>
+            )}
 
             <Separator className="bg-white/10" />
 
@@ -766,11 +790,21 @@ const adminWorksQuery = gql`
       likesCount
       commentsCount
       subWorksCount
+      imageURL
+      isCommentsEditable
+      isLiked
+      isSensitive
       smallThumbnailImageURL
+      subWorks {
+        id
+        imageUrl
+      }
       user {
         id
         name
         login
+        iconUrl
+        isBlocked
       }
     }
     worksCount(where: {})
@@ -792,6 +826,18 @@ const adminWorkDetailQuery = gql`
     }
   }
 `
+
+const adminWorkCommentsQuery = graphql(
+  `query AdminWorkComments($workId: ID!) {
+    work(id: $workId) {
+      id
+      comments(offset: 0, limit: 128) {
+        ...Comment
+      }
+    }
+  }`,
+  [CommentListItemFragment],
+)
 
 const changeWorkAccessTypeMutation = gql`
   mutation AdminChangeWorkAccessType($input: WorkSettingsWithAdminInput!) {

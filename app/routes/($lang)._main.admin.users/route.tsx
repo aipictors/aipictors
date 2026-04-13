@@ -70,8 +70,8 @@ const GetUserForModerationQuery = graphql(`
 
 // GraphQLクエリ: モデレーション用のユーザー情報を取得（ログイン名検索）
 const GetUserByLoginQuery = graphql(`
-  query GetUserByLogin($where: UsersWhereInput!) {
-    users(offset: 0, limit: 1, where: $where) {
+  query GetUserByLogin($where: UsersWhereInput!, $limit: Int!) {
+    users(offset: 0, limit: $limit, where: $where) {
       id
       name
       login
@@ -96,6 +96,64 @@ const ToggleUserPostBanMutation = graphql(
 )
 
 type BanAction = "toggleCommentBan" | "togglePostBan"
+
+type UserType = {
+  id: string
+  name: string
+  login: string
+  isCommentBanned: boolean
+  isPostBanned: boolean
+}
+
+function normalizeUserSearchQuery(query: string) {
+  return query.trim().replace(/^@+/, "").toLowerCase()
+}
+
+function selectBestMatchedUser(users: UserType[], query: string) {
+  const normalizedQuery = normalizeUserSearchQuery(query)
+
+  return [...users].sort((left, right) => {
+    const leftScore = getUserSearchScore(left, normalizedQuery)
+    const rightScore = getUserSearchScore(right, normalizedQuery)
+
+    if (leftScore !== rightScore) {
+      return leftScore - rightScore
+    }
+
+    return Number(left.id) - Number(right.id)
+  })[0] ?? null
+}
+
+function getUserSearchScore(user: UserType, normalizedQuery: string) {
+  const normalizedLogin = normalizeUserSearchQuery(user.login)
+  const normalizedName = normalizeUserSearchQuery(user.name)
+
+  if (normalizedLogin === normalizedQuery) {
+    return 0
+  }
+
+  if (normalizedName === normalizedQuery) {
+    return 1
+  }
+
+  if (normalizedLogin.startsWith(normalizedQuery)) {
+    return 2
+  }
+
+  if (normalizedName.startsWith(normalizedQuery)) {
+    return 3
+  }
+
+  if (normalizedLogin.includes(normalizedQuery)) {
+    return 4
+  }
+
+  if (normalizedName.includes(normalizedQuery)) {
+    return 5
+  }
+
+  return 6
+}
 
 type LoaderData = {
   searchUserId?: string
@@ -145,7 +203,7 @@ export default function AdminUsersPage () {
     loading: userLoadingByLogin,
     error: userErrorByLogin,
   } = useQuery(GetUserByLoginQuery, {
-    variables: { where: { search: searchedUserId } },
+    variables: { where: { search: searchedUserId }, limit: 20 },
     skip:
       authContext.isLoading ||
       !searchedUserId ||
@@ -156,19 +214,12 @@ export default function AdminUsersPage () {
   // どちらかのクエリ結果を使用
   const userLoading = isNumericId ? userLoadingById : userLoadingByLogin
   const userError = isNumericId ? userErrorById : userErrorByLogin // ユーザー情報を取得
-  type UserType = {
-    id: string
-    name: string
-    login: string
-    isCommentBanned: boolean
-    isPostBanned: boolean
-  }
 
   let user: UserType | null = null
   if (isNumericId && userDataById?.user) {
     user = userDataById.user as UserType
-  } else if (!isNumericId && userDataByLogin?.users?.[0]) {
-    user = userDataByLogin.users[0] as UserType
+  } else if (!isNumericId && userDataByLogin?.users?.length) {
+    user = selectBestMatchedUser(userDataByLogin.users as UserType[], searchedUserId)
   }
 
   // コメントBAN切り替えミューテーション
@@ -293,19 +344,19 @@ export default function AdminUsersPage () {
             <span>ユーザー検索</span>
           </CardTitle>
           <CardDescription>
-            ユーザーIDで検索してBAN操作を行います
+            ユーザーIDまたはログイン名で検索してBAN操作を行います
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex space-x-2">
             <div className="flex-1">
               <label htmlFor="userId" className="sr-only">
-                ユーザーID
+                ユーザーIDまたはログイン名
               </label>
               <Input
                 id="userId"
                 type="text"
-                placeholder="ユーザーIDを入力"
+                placeholder="ユーザーIDまたはログイン名を入力"
                 value={inputUserId}
                 onChange={(e) => setInputUserId(e.target.value)}
                 onKeyDown={(e) => {

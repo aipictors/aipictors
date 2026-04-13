@@ -18,8 +18,8 @@ import {
   StarIcon,
   TagIcon,
 } from "lucide-react"
-import { gql, useQuery } from "@apollo/client/index"
-import { useContext } from "react"
+import { gql, useLazyQuery } from "@apollo/client/index"
+import { useContext, useEffect } from "react"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
@@ -37,9 +37,27 @@ export function HomeMenuRouteList({
   onClickMenuItem,
 }: Props) {
   const authContext = useContext(AuthContext)
-  const { data: viewerData } = useQuery(viewerIsModeratorQuery, {
-    skip: authContext.isLoading || authContext.isNotLoggedIn,
-  })
+  const [loadViewerModerator, { data: viewerData }] = useLazyQuery(
+    viewerIsModeratorQuery,
+    {
+      fetchPolicy: "network-only",
+      nextFetchPolicy: "cache-first",
+      errorPolicy: "all",
+    },
+  )
+
+  useEffect(() => {
+    if (authContext.isLoading || authContext.isNotLoggedIn) {
+      return
+    }
+
+    void loadViewerModerator()
+  }, [authContext.isLoading, authContext.isNotLoggedIn, loadViewerModerator])
+
+  const isModerator =
+    authContext.isLoggedIn &&
+    viewerData?.viewer?.id === authContext.userId &&
+    viewerData.viewer.isModerator
 
   const navigation = useNavigation()
 
@@ -166,7 +184,7 @@ export function HomeMenuRouteList({
         {t("イベント", "Events")}
       </HomeMenuNavigationButton>
 
-      {!isSensitive && viewerData?.viewer?.isModerator && (
+      {!isSensitive && isModerator && (
         <HomeMenuNavigationButton
           href="/admin"
           icon={Shield}
