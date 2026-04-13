@@ -1,8 +1,9 @@
 import { json, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/cloudflare"
-import { Link, useLoaderData } from "@remix-run/react"
+import { useLoaderData } from "@remix-run/react"
 import { useState, useContext } from "react"
 import { useQuery, useMutation } from "@apollo/client/index"
 import { Button, buttonVariants } from "~/components/ui/button"
+import { AdminPageShell } from "~/components/admin-page-shell"
 import { Input } from "~/components/ui/input"
 import {
   Card,
@@ -25,7 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog"
-import { Search, Shield, UserX, MessageSquareOff, ImageOff } from "lucide-react"
+import { Search, UserX, MessageSquareOff, ImageOff, Users } from "lucide-react"
 import { AuthContext } from "~/contexts/auth-context"
 import { graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
@@ -107,6 +108,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json<LoaderData>({ searchUserId: searchUserId || undefined })
 }
+
+const pageDescription = "コメントBAN・投稿BANの確認と切り替えを行います。"
 
 export default function AdminUsersPage () {
   const { searchUserId } = useLoaderData<typeof loader>()
@@ -230,68 +233,60 @@ export default function AdminUsersPage () {
   // ローディング中
   if (authContext.isLoading || viewerLoading) {
     return (
-      <div className="container mx-auto max-w-4xl py-8">
+      <AdminPageShell
+        title="ユーザ管理"
+        description={pageDescription}
+        icon={Users}
+      >
         <div className="animate-pulse space-y-6">
-          <div className="h-8 w-1/3 rounded bg-gray-200" />
-          <div className="h-64 rounded bg-gray-200" />
+          <div className="h-8 w-1/3 rounded bg-white/10" />
+          <div className="h-64 rounded-[28px] bg-white/5" />
         </div>
-      </div>
+      </AdminPageShell>
     )
   }
 
   // 未ログイン
   if (authContext.isNotLoggedIn) {
     return (
-      <div className="container mx-auto max-w-4xl py-8">
-        <Alert className="border-red-200 bg-red-50">
-          <Shield className="h-4 w-4" />
-          <AlertDescription>
+      <AdminPageShell
+        title="ユーザ管理"
+        description={pageDescription}
+        icon={Users}
+      >
+        <Alert className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
+          <AlertDescription className="text-slate-300">
             このページにアクセスするにはログインが必要です。
           </AlertDescription>
         </Alert>
-      </div>
+      </AdminPageShell>
     )
   }
 
   // モデレーター権限なし
   if (!viewerData?.viewer?.isModerator) {
     return (
-      <div className="container mx-auto max-w-4xl py-8">
-        <Alert className="border-red-200 bg-red-50">
-          <Shield className="h-4 w-4" />
-          <AlertDescription>
+      <AdminPageShell
+        title="ユーザ管理"
+        description={pageDescription}
+        icon={Users}
+      >
+        <Alert className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
+          <AlertDescription className="text-slate-300">
             このページにアクセスする権限がありません。
           </AlertDescription>
         </Alert>
-      </div>
+      </AdminPageShell>
     )
   }
 
   return (
-    <div className="container mx-auto max-w-4xl space-y-6 py-8">
-      {/* ヘッダー */}
-      <div className="flex items-center space-x-2">
-        <Shield className="h-6 w-6 text-orange-500" />
-        <h1 className="font-bold text-2xl">モデレーター管理画面</h1>
-        <Badge variant="secondary">管理者専用</Badge>
-      </div>
-
-      <div className="flex gap-2">
-        <Button asChild variant="outline">
-          <Link to="/admin">管理トップ</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link to="/admin/works">作品管理</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link to="/admin/comments">コメント審査</Link>
-        </Button>
-      </div>
-
-      <Separator />
-
-      {/* ユーザー検索セクション */}
-      <Card>
+    <AdminPageShell
+      title="ユーザ管理"
+      description={pageDescription}
+      icon={Users}
+    >
+      <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Search className="h-5 w-5" />
@@ -318,7 +313,7 @@ export default function AdminUsersPage () {
                     handleSearch()
                   }
                 }}
-                className="w-full"
+                className="w-full border-white/10 bg-slate-950/40 text-slate-100"
               />
             </div>
             <Button onClick={handleSearch} disabled={!inputUserId.trim()}>
@@ -331,8 +326,8 @@ export default function AdminUsersPage () {
 
       {/* エラー表示 */}
       {userError && (
-        <Alert className="border-red-200 bg-red-50">
-          <AlertDescription>
+        <Alert className="rounded-[28px] border-rose-300/20 bg-rose-500/10 text-rose-100">
+          <AlertDescription className="text-rose-100">
             ユーザー情報の取得に失敗しました: {userError.message}
           </AlertDescription>
         </Alert>
@@ -340,16 +335,16 @@ export default function AdminUsersPage () {
 
       {/* ユーザー情報表示セクション */}
       {userLoading && searchedUserId && (
-        <Card>
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
           <CardContent className="py-12 text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600" />
-            <p className="text-gray-500">ユーザー情報を読み込み中...</p>
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-white/20 border-t-cyan-300" />
+            <p className="text-slate-400">ユーザー情報を読み込み中...</p>
           </CardContent>
         </Card>
       )}
 
       {user && (
-        <Card>
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <UserX className="h-5 w-5" />
@@ -360,44 +355,46 @@ export default function AdminUsersPage () {
             {/* ユーザー基本情報 */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div>
-                <p className="font-medium text-gray-500 text-sm">ユーザーID</p>
+                <p className="font-medium text-slate-400 text-sm">ユーザーID</p>
                 <p className="font-mono text-sm">{user.id}</p>
               </div>
               <div>
-                <p className="font-medium text-gray-500 text-sm">ユーザー名</p>
+                <p className="font-medium text-slate-400 text-sm">ユーザー名</p>
                 <p className="font-medium">{user.name}</p>
               </div>
               <div>
-                <p className="font-medium text-gray-500 text-sm">ログイン名</p>
+                <p className="font-medium text-slate-400 text-sm">ログイン名</p>
                 <p className="font-mono text-sm">@{user.login}</p>
               </div>
             </div>
 
-            <Separator />
+            <Separator className="bg-white/10" />
 
             {/* BAN状態表示 */}
             <div>
               <h3 className="mb-4 font-semibold text-lg">現在のBAN状態</h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-slate-950/35 p-4">
                   <div className="flex items-center space-x-2">
-                    <MessageSquareOff className="h-5 w-5 text-gray-500" />
+                    <MessageSquareOff className="h-5 w-5 text-slate-400" />
                     <span className="font-medium">コメントBAN</span>
                   </div>
                   <Badge
                     variant={user.isCommentBanned ? "destructive" : "secondary"}
+                    className={user.isCommentBanned ? undefined : "bg-white/10 text-slate-200"}
                   >
                     {user.isCommentBanned ? "BAN中" : "正常"}
                   </Badge>
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg border p-4">
+                <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-slate-950/35 p-4">
                   <div className="flex items-center space-x-2">
-                    <ImageOff className="h-5 w-5 text-gray-500" />
+                    <ImageOff className="h-5 w-5 text-slate-400" />
                     <span className="font-medium">投稿BAN</span>
                   </div>
                   <Badge
                     variant={user.isPostBanned ? "destructive" : "secondary"}
+                    className={user.isPostBanned ? undefined : "bg-white/10 text-slate-200"}
                   >
                     {user.isPostBanned ? "BAN中" : "正常"}
                   </Badge>
@@ -405,7 +402,7 @@ export default function AdminUsersPage () {
               </div>
             </div>
 
-            <Separator />
+            <Separator className="bg-white/10" />
 
             {/* BAN操作ボタン */}
             <div>
@@ -424,14 +421,14 @@ export default function AdminUsersPage () {
                         : `コメントBAN${user.isCommentBanned ? "解除" : "設定"}`}
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="border-white/10 bg-slate-950/95 text-slate-100 shadow-2xl backdrop-blur">
                     <AlertDialogHeader>
                       <AlertDialogTitle>
                         {user.isCommentBanned
                           ? "コメントBAN解除"
                           : "コメントBAN設定"}
                       </AlertDialogTitle>
-                      <AlertDialogDescription>
+                      <AlertDialogDescription className="text-slate-400">
                         {user.isCommentBanned
                           ? `ユーザー「${user.name}」(@${user.login})のコメントBANを解除しますか？`
                           : `ユーザー「${user.name}」(@${user.login})をコメントBANしますか？`}
@@ -440,14 +437,21 @@ export default function AdminUsersPage () {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                      <AlertDialogCancel className="border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white">
+                        キャンセル
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleBanToggle("toggleCommentBan")}
-                        className={buttonVariants({
-                          variant: user.isCommentBanned
-                            ? "default"
-                            : "destructive",
-                        })}
+                        className={[
+                          buttonVariants({
+                            variant: user.isCommentBanned
+                              ? "default"
+                              : "destructive",
+                          }),
+                          user.isCommentBanned
+                            ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400"
+                            : "bg-rose-600 hover:bg-rose-500",
+                        ].join(" ")}
                       >
                         {user.isCommentBanned ? "BAN解除" : "BAN設定"}
                       </AlertDialogAction>
@@ -468,12 +472,12 @@ export default function AdminUsersPage () {
                         : `投稿BAN${user.isPostBanned ? "解除" : "設定"}`}
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="border-white/10 bg-slate-950/95 text-slate-100 shadow-2xl backdrop-blur">
                     <AlertDialogHeader>
                       <AlertDialogTitle>
                         {user.isPostBanned ? "投稿BAN解除" : "投稿BAN設定"}
                       </AlertDialogTitle>
-                      <AlertDialogDescription>
+                      <AlertDialogDescription className="text-slate-400">
                         {user.isPostBanned
                           ? `ユーザー「${user.name}」(@${user.login})の投稿BANを解除しますか？`
                           : `ユーザー「${user.name}」(@${user.login})を投稿BANしますか？`}
@@ -482,14 +486,21 @@ export default function AdminUsersPage () {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                      <AlertDialogCancel className="border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white">
+                        キャンセル
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleBanToggle("togglePostBan")}
-                        className={buttonVariants({
-                          variant: user.isPostBanned
-                            ? "default"
-                            : "destructive",
-                        })}
+                        className={[
+                          buttonVariants({
+                            variant: user.isPostBanned
+                              ? "default"
+                              : "destructive",
+                          }),
+                          user.isPostBanned
+                            ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400"
+                            : "bg-rose-600 hover:bg-rose-500",
+                        ].join(" ")}
                       >
                         {user.isPostBanned ? "BAN解除" : "BAN設定"}
                       </AlertDialogAction>
@@ -504,10 +515,10 @@ export default function AdminUsersPage () {
 
       {/* 検索が実行されていない場合の案内 */}
       {!searchedUserId && (
-        <Card>
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
           <CardContent className="py-12 text-center">
-            <Search className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-            <p className="text-gray-500">
+            <Search className="mx-auto mb-4 h-12 w-12 text-slate-500" />
+            <p className="text-slate-400">
               ユーザーIDを入力して検索してください
             </p>
           </CardContent>
@@ -516,13 +527,13 @@ export default function AdminUsersPage () {
 
       {/* ユーザーが見つからない場合 */}
       {searchedUserId && !userLoading && !user && !userError && (
-        <Card>
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
           <CardContent className="py-12 text-center">
-            <UserX className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-            <p className="text-gray-500">ユーザーが見つかりませんでした</p>
+            <UserX className="mx-auto mb-4 h-12 w-12 text-slate-500" />
+            <p className="text-slate-400">ユーザーが見つかりませんでした</p>
           </CardContent>
         </Card>
       )}
-    </div>
+    </AdminPageShell>
   )
 }

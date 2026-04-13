@@ -16,8 +16,9 @@ import {
   Video,
 } from "lucide-react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
-import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
+import { AdminPageShell } from "~/components/admin-page-shell"
+import { Badge } from "~/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Input } from "~/components/ui/input"
@@ -136,6 +137,8 @@ export default function AdminWorksPage() {
   const worksCount = worksData?.worksCount ?? 0
   const maxPage = Math.max(Math.ceil(worksCount / PAGE_SIZE) - 1, 0)
 
+  const pageDescription = "作品の確認、非公開化、投稿者通知を行います。"
+
   const onMovePage = (nextPage: number) => {
     const targetPage = Math.max(0, Math.min(nextPage, maxPage))
     const next = new URLSearchParams(searchParams)
@@ -144,50 +147,58 @@ export default function AdminWorksPage() {
   }
 
   if (authContext.isLoading || viewerLoading) {
-    return <div className="container mx-auto max-w-6xl py-8" />
+    return (
+      <AdminPageShell
+        title="作品管理"
+        description={pageDescription}
+        icon={ImageIcon}
+      >
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
+          <CardContent className="py-8 text-sm text-slate-400">読み込み中...</CardContent>
+        </Card>
+      </AdminPageShell>
+    )
   }
 
   if (authContext.isNotLoggedIn) {
     return (
-      <div className="container mx-auto max-w-6xl py-8">
-        <Alert>
-          <AlertDescription>このページにアクセスするにはログインが必要です。</AlertDescription>
+      <AdminPageShell
+        title="作品管理"
+        description={pageDescription}
+        icon={ImageIcon}
+      >
+        <Alert className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
+          <AlertDescription className="text-slate-300">
+            このページにアクセスするにはログインが必要です。
+          </AlertDescription>
         </Alert>
-      </div>
+      </AdminPageShell>
     )
   }
 
   if (!viewerData?.viewer?.isModerator) {
     return (
-      <div className="container mx-auto max-w-6xl py-8">
-        <Alert>
-          <AlertDescription>このページにアクセスする権限がありません。</AlertDescription>
+      <AdminPageShell
+        title="作品管理"
+        description={pageDescription}
+        icon={ImageIcon}
+      >
+        <Alert className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
+          <AlertDescription className="text-slate-300">
+            このページにアクセスする権限がありません。
+          </AlertDescription>
         </Alert>
-      </div>
+      </AdminPageShell>
     )
   }
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-4 py-8">
-      <div className="flex items-center gap-2">
-        <Shield className="size-6 text-cyan-500" />
-        <h1 className="font-bold text-2xl">作品管理</h1>
-        <Badge variant="secondary">noindex</Badge>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <Button asChild size="sm" variant="outline">
-          <Link to="/admin">管理トップ</Link>
-        </Button>
-        <Button asChild size="sm" variant="outline">
-          <Link to="/admin/comments">コメント審査</Link>
-        </Button>
-        <Button asChild size="sm" variant="outline">
-          <Link to="/admin/users">ユーザ管理</Link>
-        </Button>
-      </div>
-
-      <Card>
+    <AdminPageShell
+      title="作品管理"
+      description={pageDescription}
+      icon={ImageIcon}
+    >
+      <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
         <CardHeader>
           <CardTitle className="text-base">オプション（軽量運用）</CardTitle>
         </CardHeader>
@@ -223,10 +234,10 @@ export default function AdminWorksPage() {
         </CardContent>
       </Card>
 
-      <Separator />
+      <Separator className="bg-white/10" />
 
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-slate-400">
           全 {worksCount} 件 / {page + 1} ページ目
         </p>
         <div className="flex items-center gap-2">
@@ -250,14 +261,14 @@ export default function AdminWorksPage() {
       </div>
 
       {worksLoading ? (
-        <Card>
-          <CardContent className="py-8 text-sm text-muted-foreground">
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
+          <CardContent className="py-8 text-sm text-slate-400">
             読み込み中...
           </CardContent>
         </Card>
       ) : works.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-sm text-muted-foreground">
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
+          <CardContent className="py-8 text-sm text-slate-400">
             対象の作品はありません。
           </CardContent>
         </Card>
@@ -300,7 +311,7 @@ export default function AdminWorksPage() {
           次へ
         </Button>
       </div>
-    </div>
+    </AdminPageShell>
   )
 }
 
@@ -440,16 +451,16 @@ function WorkModerationCard(props: WorkModerationCardProps) {
   ].filter(Boolean) as string[]
 
   return (
-    <Card>
+    <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
       <CardHeader className="space-y-2">
         <div className="flex items-start justify-between gap-2">
           <div className="space-y-1">
             <CardTitle className="break-all text-base">
               {props.work.title || "(無題)"}
             </CardTitle>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400">
               <Badge variant="outline">#{props.work.id}</Badge>
-              <Badge variant="secondary">{props.work.type}</Badge>
+              <Badge variant="secondary" className="bg-white/10 text-slate-200">{props.work.type}</Badge>
               <Badge variant={props.work.accessType === "PRIVATE" ? "destructive" : "default"}>
                 {props.work.accessType}
               </Badge>
@@ -483,19 +494,19 @@ function WorkModerationCard(props: WorkModerationCardProps) {
               src={props.work.smallThumbnailImageURL}
               alt={props.work.title}
               loading="lazy"
-              className="h-32 w-full rounded-md border object-cover"
+              className="h-32 w-full rounded-2xl border border-white/10 object-cover"
             />
           ) : (
-            <div className="flex h-32 items-center justify-center rounded-md border text-muted-foreground text-xs">
+            <div className="flex h-32 items-center justify-center rounded-2xl border border-white/10 text-slate-400 text-xs">
               サムネイルなし
             </div>
           )}
 
           <div className="space-y-2">
-            <p className="line-clamp-3 text-sm text-muted-foreground">
+            <p className="line-clamp-3 text-sm text-slate-300">
               {props.work.description || "説明文なし"}
             </p>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
               <span>複数画像: {props.work.subWorksCount}</span>
               <span className="inline-flex items-center gap-1">
                 <ThumbsUp className="size-3" /> {props.work.likesCount}
@@ -549,12 +560,12 @@ function WorkModerationCard(props: WorkModerationCardProps) {
 
         {expanded && (
           <>
-            <Separator />
+            <Separator className="bg-white/10" />
 
             <div className="space-y-2">
               <p className="font-medium text-sm">展開プレビュー（遅延読み込み）</p>
               {detailLoading && (
-                <p className="text-muted-foreground text-sm">詳細を読み込み中...</p>
+                <p className="text-slate-400 text-sm">詳細を読み込み中...</p>
               )}
 
               {!detailLoading && detail?.type === "WORK" && (
@@ -565,7 +576,7 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                       src={url}
                       alt={`work-${index}`}
                       loading="lazy"
-                      className="h-28 w-full rounded border object-cover"
+                      className="h-28 w-full rounded-2xl border border-white/10 object-cover"
                     />
                   ))}
                 </div>
@@ -581,10 +592,10 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                       controls
                       preload="none"
                       src={detail.url}
-                      className="max-h-80 w-full rounded border bg-black"
+                      className="max-h-80 w-full rounded-2xl border border-white/10 bg-black"
                     />
                   ) : (
-                    <p className="text-muted-foreground text-sm">動画URLがありません。</p>
+                    <p className="text-slate-400 text-sm">動画URLがありません。</p>
                   )}
                 </div>
               )}
@@ -596,25 +607,25 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                     {detail.type === "NOVEL" ? "小説" : "テキスト"}
                   </div>
                   {isMarkdownLoading ? (
-                    <p className="text-muted-foreground text-sm">本文を読み込み中...</p>
+                    <p className="text-slate-400 text-sm">本文を読み込み中...</p>
                   ) : markdown.length > 0 ? (
-                    <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded border bg-muted p-3 text-xs">
+                    <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-2xl border border-white/10 bg-slate-950/40 p-3 text-xs text-slate-200">
                       {markdown.slice(0, 2000)}
                     </pre>
                   ) : (
-                    <p className="text-muted-foreground text-sm">本文を取得できませんでした。</p>
+                    <p className="text-slate-400 text-sm">本文を取得できませんでした。</p>
                   )}
                 </div>
               )}
 
               {!detailLoading && !detail && (
-                <p className="text-muted-foreground text-sm">詳細データが取得できませんでした。</p>
+                <p className="text-slate-400 text-sm">詳細データが取得できませんでした。</p>
               )}
             </div>
 
-            <Separator />
+            <Separator className="bg-white/10" />
 
-            <div className="space-y-3 rounded-md border p-3">
+            <div className="space-y-3 rounded-[24px] border border-white/10 bg-slate-950/35 p-4">
               <p className="font-medium text-sm">非公開処理と通知</p>
 
               <div className="grid gap-3 md:grid-cols-2">
@@ -624,12 +635,16 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                     value={reasonKey}
                     onValueChange={(value) => setReasonKey(value as ReasonKey)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="border-white/10 bg-white/5 text-slate-100">
                       <SelectValue placeholder="理由を選択" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="border-white/10 bg-slate-950/95 text-slate-100 backdrop-blur">
                       {REASON_TEMPLATES.map((reason) => (
-                        <SelectItem key={reason.key} value={reason.key}>
+                        <SelectItem
+                          key={reason.key}
+                          value={reason.key}
+                          className="text-slate-100 focus:bg-white/10 focus:text-white"
+                        >
                           {reason.label}
                         </SelectItem>
                       ))}
@@ -644,6 +659,7 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                     onChange={(event) => setCustomReason(event.target.value)}
                     placeholder="必要なら具体的な理由を入力"
                     disabled={reasonKey !== "CUSTOM"}
+                    className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500"
                   />
                 </div>
               </div>
@@ -666,6 +682,7 @@ function WorkModerationCard(props: WorkModerationCardProps) {
                   onChange={(event) => setNotifyMessage(event.target.value)}
                   placeholder={defaultNotice}
                   rows={3}
+                  className="border-white/10 bg-white/5 text-slate-100 placeholder:text-slate-500"
                 />
               </div>
 

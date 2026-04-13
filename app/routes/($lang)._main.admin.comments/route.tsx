@@ -7,12 +7,12 @@ import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { Separator } from "~/components/ui/separator"
+import { AdminPageShell } from "~/components/admin-page-shell"
 import { AuthContext } from "~/contexts/auth-context"
 import { useToast } from "~/hooks/use-toast"
 import { createMeta } from "~/utils/create-meta"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { Shield, Flag, MessageSquareWarning } from "lucide-react"
+import { Flag, MessageSquareWarning } from "lucide-react"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(
@@ -31,6 +31,8 @@ export const meta: MetaFunction = (props) => {
 export async function loader(_props: LoaderFunctionArgs) {
   return json({})
 }
+
+const pageDescription = "コメント通報と異議申し立ての確認・対応を行います。"
 
 export default function AdminCommentsPage() {
   const { toast } = useToast()
@@ -87,61 +89,72 @@ export default function AdminCommentsPage() {
   }
 
   if (authContext.isLoading || viewerLoading) {
-    return <div className="container mx-auto max-w-5xl py-8" />
+    return (
+      <AdminPageShell
+        title="コメント審査"
+        description={pageDescription}
+        icon={MessageSquareWarning}
+      >
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
+          <CardContent className="py-8 text-sm text-slate-400">読み込み中...</CardContent>
+        </Card>
+      </AdminPageShell>
+    )
   }
 
   if (authContext.isNotLoggedIn) {
     return (
-      <div className="container mx-auto max-w-5xl py-8">
-        <Alert>
-          <AlertDescription>このページにアクセスするにはログインが必要です。</AlertDescription>
+      <AdminPageShell
+        title="コメント審査"
+        description={pageDescription}
+        icon={MessageSquareWarning}
+      >
+        <Alert className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
+          <AlertDescription className="text-slate-300">
+            このページにアクセスするにはログインが必要です。
+          </AlertDescription>
         </Alert>
-      </div>
+      </AdminPageShell>
     )
   }
 
   if (!viewerData?.viewer?.isModerator) {
     return (
-      <div className="container mx-auto max-w-5xl py-8">
-        <Alert>
-          <AlertDescription>このページにアクセスする権限がありません。</AlertDescription>
+      <AdminPageShell
+        title="コメント審査"
+        description={pageDescription}
+        icon={MessageSquareWarning}
+      >
+        <Alert className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
+          <AlertDescription className="text-slate-300">
+            このページにアクセスする権限がありません。
+          </AlertDescription>
         </Alert>
-      </div>
+      </AdminPageShell>
     )
   }
 
   const items = data?.adminCommentModerationItems ?? []
 
   return (
-    <div className="container mx-auto max-w-5xl space-y-6 py-8">
-      <div className="flex items-center gap-2">
-        <Shield className="size-6 text-orange-500" />
-        <h1 className="font-bold text-2xl">コメント審査</h1>
-        <Badge variant="secondary">noindex</Badge>
-      </div>
-      <div className="flex gap-2">
-        <Button asChild size="sm" variant="outline">
-          <Link to="/admin">管理トップ</Link>
-        </Button>
-        <Button asChild size="sm" variant="outline">
-          <Link to="/admin/works">作品管理</Link>
-        </Button>
-        <Button asChild size="sm" variant="outline">
-          <Link to="/admin/users">ユーザ管理</Link>
-        </Button>
-      </div>
-      <Separator />
+    <AdminPageShell
+      title="コメント審査"
+      description={pageDescription}
+      icon={MessageSquareWarning}
+    >
       {loading ? (
-        <div className="text-sm text-muted-foreground">Loading...</div>
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
+          <CardContent className="py-8 text-sm text-slate-400">読み込み中...</CardContent>
+        </Card>
       ) : items.length === 0 ? (
-        <Card>
-          <CardContent className="py-8 text-sm text-muted-foreground">
+        <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
+          <CardContent className="py-8 text-sm text-slate-400">
             対応待ちのコメント報告・異議申し立てはありません。
           </CardContent>
         </Card>
       ) : (
         items.map((item: any) => (
-          <Card key={item.id}>
+          <Card key={item.id} className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
             <CardHeader>
               <div className="flex items-center gap-2">
                 {item.kind === "REPORT" ? (
@@ -154,15 +167,17 @@ export default function AdminCommentsPage() {
                 </CardTitle>
                 <Badge variant="outline">comment #{item.commentId}</Badge>
                 {item.moderationStatus && (
-                  <Badge variant="secondary">{item.moderationStatus}</Badge>
+                  <Badge variant="secondary" className="bg-white/10 text-slate-200">
+                    {item.moderationStatus}
+                  </Badge>
                 )}
               </div>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <div className="rounded-md bg-muted p-3 whitespace-pre-wrap break-words">
+              <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4 whitespace-pre-wrap break-words text-slate-100">
                 {item.commentText}
               </div>
-              <div className="flex flex-wrap gap-3 text-muted-foreground text-xs">
+              <div className="flex flex-wrap gap-3 text-slate-400 text-xs">
                 <span>作成: {toDateTimeText(item.commentCreatedAt, true)}</span>
                 <span>投稿者: {item.commentOwnerName ?? "-"}</span>
                 <span>login: {item.commentOwnerLogin ?? "-"}</span>
@@ -170,22 +185,22 @@ export default function AdminCommentsPage() {
                 <span>open reports: {item.reportCount}</span>
               </div>
               {item.reportReason && (
-                <div className="text-xs">理由: {item.reportReason}</div>
+                <div className="text-xs text-slate-300">理由: {item.reportReason}</div>
               )}
               {item.violationCategory && (
-                <div className="text-xs">判定カテゴリ: {item.violationCategory}</div>
+                <div className="text-xs text-slate-300">判定カテゴリ: {item.violationCategory}</div>
               )}
               {item.userNotice && (
-                <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs">
+                <div className="rounded-2xl border border-amber-300/20 bg-amber-500/10 p-4 text-xs text-amber-100">
                   ユーザー表示メモ: {item.userNotice}
                 </div>
               )}
               {item.details && (
-                <div className="rounded-md border p-3 whitespace-pre-wrap break-words text-xs">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 whitespace-pre-wrap break-words text-xs text-slate-300">
                   {item.details}
                 </div>
               )}
-              <div className="text-muted-foreground text-xs">
+              <div className="text-slate-400 text-xs">
                 受付日時: {toDateTimeText(item.createdAt, true)}
               </div>
               <div className="flex flex-wrap gap-2">
@@ -218,7 +233,7 @@ export default function AdminCommentsPage() {
           </Card>
         ))
       )}
-    </div>
+    </AdminPageShell>
   )
 }
 
