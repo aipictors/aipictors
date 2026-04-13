@@ -9,7 +9,7 @@ import {
 import { Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { useBoolean } from "usehooks-ts"
-import { useMutation, useQuery } from "@apollo/client/index"
+import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { type FragmentOf, graphql } from "gql.tada"
@@ -21,6 +21,7 @@ import {
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
+import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-response"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 
@@ -125,6 +126,31 @@ export function WorkCommentList (props: Props) {
 
   const authContext = useContext(AuthContext)
 
+  const moderationCommentIds = Array.from(
+    new Set(
+      props.comments.flatMap((comment) => [
+        comment.id,
+        ...(comment.responses?.map((reply) => reply.id) ?? []),
+      ]),
+    ),
+  )
+
+  const { data: moderationData } = useQuery(commentModerationSummariesQuery, {
+    skip:
+      authContext.isLoading ||
+      authContext.isNotLoggedIn ||
+      moderationCommentIds.length === 0,
+    variables: {
+      commentIds: moderationCommentIds,
+    },
+  })
+
+  const moderationSummaryMap = new Map<string, CommentModerationSummaryState>(
+    (moderationData?.commentModerationSummaries ?? []).map(
+      (summary: CommentModerationSummaryState) => [summary.commentId, summary],
+    ),
+  )
+
   const userResp = useQuery(userQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
@@ -201,12 +227,14 @@ export function WorkCommentList (props: Props) {
         ])
       }
     } catch (_e) {
-      // toast(
-      //   t(
-      //     "送信に失敗しました。同じコメントを何度も送信しようとしているか、通信エラーが発生しています。",
-      //     "Failed to send. Please try again.",
-      //   ),
-      // )
+      toast(
+        _e instanceof Error
+          ? _e.message
+          : t(
+              "送信に失敗しました。しばらくしてから再度お試しください。",
+              "Failed to send. Please try again later.",
+            ),
+      )
     }
   }
 
@@ -417,6 +445,7 @@ export function WorkCommentList (props: Props) {
                   }
                   isMuted={comment.isLiked}
                   isSensitive={comment.isSensitive}
+                  moderationSummary={moderationSummaryMap.get(comment.id) ?? null}
                   isNowLiked={likedCommentIds.includes(comment.id)}
                   likesCount={
                     comment.likesCount -
@@ -483,6 +512,7 @@ export function WorkCommentList (props: Props) {
               }
               isMuted={Boolean(comment.isMuted)}
               isSensitive={Boolean(comment.isSensitive)}
+              moderationSummary={moderationSummaryMap.get(comment.id) ?? null}
               isNowLiked={likedCommentIds.includes(comment.id)}
               likesCount={
                 comment.likesCount -
@@ -553,6 +583,7 @@ export function WorkCommentList (props: Props) {
                   }
                   isMuted={newReply.isMuted}
                   isSensitive={newReply.isSensitive}
+                  moderationSummary={moderationSummaryMap.get(newReply.id) ?? null}
                   isNowLiked={likedCommentIds.includes(newReply.id)}
                   likesCount={
                     newReply.likesCount -
@@ -597,6 +628,7 @@ export function WorkCommentList (props: Props) {
                     }
                     isMuted={Boolean(reply.isMuted)}
                     isSensitive={Boolean(reply.isSensitive)}
+                    moderationSummary={moderationSummaryMap.get(reply.id) ?? null}
                     isNowLiked={likedCommentIds.includes(reply.id)}
                     likesCount={
                       reply.likesCount -
@@ -679,6 +711,7 @@ export function WorkCommentList (props: Props) {
                   }
                   isMuted={Boolean(comment.isMuted)}
                   isSensitive={Boolean(comment.isSensitive)}
+                  moderationSummary={moderationSummaryMap.get(comment.id) ?? null}
                   isNowLiked={likedCommentIds.includes(comment.id)}
                   likesCount={
                     comment.likesCount -
@@ -752,6 +785,7 @@ export function WorkCommentList (props: Props) {
                       }
                       isMuted={newReply.isMuted}
                       isSensitive={newReply.isSensitive}
+                      moderationSummary={moderationSummaryMap.get(newReply.id) ?? null}
                       likesCount={
                         newReply.likesCount -
                         (canceledCommentIds.includes(newReply.id) ? 1 : 0)
@@ -801,6 +835,7 @@ export function WorkCommentList (props: Props) {
                         }
                         isMuted={Boolean(reply.isMuted)}
                         isSensitive={Boolean(reply.isSensitive)}
+                        moderationSummary={moderationSummaryMap.get(reply.id) ?? null}
                         likesCount={
                           reply.likesCount -
                           (canceledCommentIds.includes(reply.id) ? 1 : 0)
@@ -937,3 +972,15 @@ const viewerUserQuery = graphql(
   }`,
   [StickerButtonFragment],
 )
+
+const commentModerationSummariesQuery = gql`
+  query CommentModerationSummaries($commentIds: [ID!]!) {
+    commentModerationSummaries(commentIds: $commentIds) {
+      commentId
+      moderationStatus
+      userNotice
+      canAppeal
+      appealedAt
+    }
+  }
+`

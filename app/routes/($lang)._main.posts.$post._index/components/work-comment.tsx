@@ -15,6 +15,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
+import { CommentAppealDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-appeal-dialog"
+import { CommentReportDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-report-dialog"
+import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import { DeleteCommentConfirmDialog } from "~/routes/($lang)._main.posts.$post._index/components/delete-comment-confirm-dialog"
 import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-input"
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
@@ -45,6 +48,7 @@ type Props = {
   isStickerDownloadable?: boolean
   isMuted: boolean
   isSensitive?: boolean
+  moderationSummary?: CommentModerationSummaryState | null
   onDeleteComment: () => void
   onReplyCompleted: (
     id: string,
@@ -263,6 +267,25 @@ export function WorkComment(props: Props) {
               <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
                 {props.text}
               </p>
+              {props.moderationSummary?.moderationStatus === "REJECTED" && (
+                <div className="rounded-md border border-amber-200 bg-amber-50 p-2 text-xs text-amber-900">
+                  <p>
+                    {props.moderationSummary.userNotice ??
+                      t(
+                        "このコメントは審査により他のユーザーには表示されていません。",
+                        "This comment is hidden from other users after moderation.",
+                      )}
+                  </p>
+                  {props.moderationSummary.appealedAt && (
+                    <p className="mt-1 opacity-80">
+                      {t(
+                        "異議申し立てを受け付けています。確認をお待ちください。",
+                        "Your appeal has been received.",
+                      )}
+                    </p>
+                  )}
+                </div>
+              )}
               {shouldShowTranslateLink && (
                 <button
                   type="button"
@@ -365,6 +388,7 @@ export function WorkComment(props: Props) {
                 <button onClick={() => setOpenReplyInput(!openReplyInput)}>
                   <p className="cursor-pointer text-xs">{t("返信", "Reply")}</p>
                 </button>
+                <CommentReportDialog commentId={props.commentId} />
                 {props.stickerImageURL &&
                   props.stickerAccessType === "PUBLIC" && (
                     <StickerInfoDialog
@@ -397,6 +421,9 @@ export function WorkComment(props: Props) {
                 <EyeOff className="mr-1 size-3" />
                 {t("非表示", "Hide")}
               </Button>
+            )}
+            {props.isMine && props.moderationSummary?.canAppeal && (
+              <CommentAppealDialog commentId={props.commentId} />
             )}
           </div>
         </div>

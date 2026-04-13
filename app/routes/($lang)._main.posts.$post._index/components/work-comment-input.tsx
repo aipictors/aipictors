@@ -71,9 +71,14 @@ export function ReplyCommentInput (props: Props) {
         )
       }
     } catch (_e) {
-      // toast(
-      //   t("送信に失敗しました。同じコメントを何度も送信しようとしているか、通信エラーが発生しています。", "Failed to send. Please try again or check your connection.")
-      // )
+      toast(
+        _e instanceof Error
+          ? _e.message
+          : t(
+              "送信に失敗しました。しばらくしてから再度お試しください。",
+              "Failed to send. Please try again later.",
+            ),
+      )
     }
   }
 
