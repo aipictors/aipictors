@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
+import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
@@ -103,12 +104,15 @@ const operationCards = [
 export default function AdminDashboardPage() {
   const authContext = useContext(AuthContext)
   const { data: viewerData, loading: viewerLoading } = useQuery(viewerQuery, {
-    skip: authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
   const { data: moderationData, loading: moderationLoading } = useQuery(
     adminCommentModerationItemsQuery,
     {
-      skip: authContext.isNotLoggedIn || !viewerData?.viewer?.isModerator,
+      skip:
+        authContext.isLoading ||
+        authContext.isNotLoggedIn ||
+        !viewerData?.viewer?.isModerator,
     },
   )
   const { data: worksPreviewData, loading: worksPreviewLoading } = useQuery(
@@ -118,7 +122,10 @@ export default function AdminDashboardPage() {
         offset: 0,
         limit: 6,
       },
-      skip: authContext.isNotLoggedIn || !viewerData?.viewer?.isModerator,
+      skip:
+        authContext.isLoading ||
+        authContext.isNotLoggedIn ||
+        !viewerData?.viewer?.isModerator,
     },
   )
 

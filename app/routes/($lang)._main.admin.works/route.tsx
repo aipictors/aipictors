@@ -114,7 +114,7 @@ export default function AdminWorksPage() {
   const [showStampOption, setShowStampOption] = useState(false)
 
   const { data: viewerData, loading: viewerLoading } = useQuery(viewerQuery, {
-    skip: authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const { data: worksData, loading: worksLoading, refetch } = useQuery(
@@ -124,7 +124,10 @@ export default function AdminWorksPage() {
         offset: page * PAGE_SIZE,
         limit: PAGE_SIZE,
       },
-      skip: authContext.isNotLoggedIn || !viewerData?.viewer?.isModerator,
+      skip:
+        authContext.isLoading ||
+        authContext.isNotLoggedIn ||
+        !viewerData?.viewer?.isModerator,
       fetchPolicy: "cache-and-network",
     },
   )

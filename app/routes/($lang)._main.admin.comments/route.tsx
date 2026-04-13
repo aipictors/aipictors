@@ -39,10 +39,13 @@ export default function AdminCommentsPage() {
     null,
   )
   const { data: viewerData, loading: viewerLoading } = useQuery(viewerQuery, {
-    skip: authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
   const { data, loading } = useQuery(adminCommentModerationItemsQuery, {
-    skip: authContext.isNotLoggedIn || !viewerData?.viewer?.isModerator,
+    skip:
+      authContext.isLoading ||
+      authContext.isNotLoggedIn ||
+      !viewerData?.viewer?.isModerator,
   })
   const [reviewCommentModeration] = useMutation(reviewCommentModerationMutation)
 

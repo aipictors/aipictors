@@ -116,7 +116,7 @@ export default function AdminUsersPage () {
 
   // 現在のユーザー情報とモデレーター権限を取得
   const { data: viewerData, loading: viewerLoading } = useQuery(ViewerQuery, {
-    skip: authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   // 入力値が数字かどうかを判定
@@ -129,7 +129,11 @@ export default function AdminUsersPage () {
     error: userErrorById,
   } = useQuery(GetUserForModerationQuery, {
     variables: { userId: searchedUserId },
-    skip: !searchedUserId || !isNumericId || !viewerData?.viewer?.isModerator,
+    skip:
+      authContext.isLoading ||
+      !searchedUserId ||
+      !isNumericId ||
+      !viewerData?.viewer?.isModerator,
   })
 
   // 検索されたユーザー情報を取得（ログイン名検索）
@@ -139,7 +143,11 @@ export default function AdminUsersPage () {
     error: userErrorByLogin,
   } = useQuery(GetUserByLoginQuery, {
     variables: { where: { search: searchedUserId } },
-    skip: !searchedUserId || isNumericId || !viewerData?.viewer?.isModerator,
+    skip:
+      authContext.isLoading ||
+      !searchedUserId ||
+      isNumericId ||
+      !viewerData?.viewer?.isModerator,
   })
 
   // どちらかのクエリ結果を使用

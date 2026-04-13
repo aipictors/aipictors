@@ -166,14 +166,6 @@ export function HomeMenuRouteList({
         {t("イベント", "Events")}
       </HomeMenuNavigationButton>
 
-      <HomeMenuNavigationButton
-        href={createLink("/releases")}
-        icon={RocketIcon}
-        onClick={closeHeaderMenu}
-      >
-        {t("更新情報", "Update Information")}
-      </HomeMenuNavigationButton>
-
       {!isSensitive && viewerData?.viewer?.isModerator && (
         <HomeMenuNavigationButton
           href="/admin"
@@ -183,6 +175,14 @@ export function HomeMenuRouteList({
           {t("管理", "Admin")}
         </HomeMenuNavigationButton>
       )}
+
+      <HomeMenuNavigationButton
+        href={createLink("/releases")}
+        icon={RocketIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("お知らせ", "Announcements")}
+      </HomeMenuNavigationButton>
 
       <HomeMenuNavigationButton
         href={createLink("/about")}
