@@ -468,7 +468,7 @@ export function ThemeProposalsPageContent(
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="date">{t("日付順", "By date")}</SelectItem>
+                    <SelectItem value="date">{t("提案日時順", "By proposal time")}</SelectItem>
                     <SelectItem value="likes">{t("いいね順", "By likes")}</SelectItem>
                   </SelectContent>
                 </Select>
@@ -1073,7 +1073,7 @@ function getSortSummary(
     return t("いいね順", "By likes")
   }
 
-  return t("日付順", "By date")
+  return t("提案日時順", "By proposal time")
 }
 
 const ThemeProposalsQuery = gql`
