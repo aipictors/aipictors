@@ -1,15 +1,15 @@
-import type { SortType } from "~/types/sort-type"
+import { useState } from "react"
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "~/components/ui/select"
-import { useState } from "react"
-import { toRatingText } from "~/utils/work/to-rating-text"
-import { AlbumsListSortableSetting } from "~/routes/($lang).my._index/components/albums-list-sortable-setting"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { AlbumsListSortableSetting } from "~/routes/($lang).my._index/components/albums-list-sortable-setting"
+import type { SortType } from "~/types/sort-type"
+import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
   sort: SortType
@@ -25,7 +25,7 @@ type Props = {
 /**
  * アルバム設定
  */
-export function AlbumsSetting (props: Props) {
+export function AlbumsSetting(props: Props) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const [maxHeight, setMaxHeight] = useState("0px")
@@ -83,7 +83,9 @@ export function AlbumsSetting (props: Props) {
               <SelectContent>
                 <SelectItem value="ALL">{"すべての年齢制限"}</SelectItem>
                 <SelectItem value="G">{"全年齢"}</SelectItem>
+                <SelectItem value="R15">{"R15"}</SelectItem>
                 <SelectItem value="R18">{"R18"}</SelectItem>
+                <SelectItem value="R18G">{"R18G"}</SelectItem>
               </SelectContent>
             </Select>
           </div>

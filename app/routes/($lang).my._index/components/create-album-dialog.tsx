@@ -1,29 +1,38 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
 import { PlusIcon } from "lucide-react"
 import { Suspense, useContext, useState } from "react"
+import { toast } from "sonner"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { CropImageField } from "~/components/crop-image-field"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "~/components/ui/dialog"
-import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
-import { CropImageField } from "~/components/crop-image-field"
 import { Input } from "~/components/ui/input"
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { Button } from "~/components/ui/button"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
+import { AuthContext } from "~/contexts/auth-context"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
 import {
   type DialogWorkFragment,
   SelectCreatedWorksDialog,
 } from "~/routes/($lang).my._index/components/select-created-works-dialog"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { ScrollArea } from "~/components/ui/scroll-area"
-import { AuthContext } from "~/contexts/auth-context"
-import { useMutation, useQuery } from "@apollo/client/index"
-import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
-import { toast } from "sonner"
+import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { uploadPublicImage } from "~/utils/upload-public-image"
-import { type FragmentOf, graphql } from "gql.tada"
+import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
   children: React.ReactNode
@@ -33,7 +42,7 @@ type Props = {
 /**
  * シリーズ一覧テーブルの項目
  */
-export function CreateAlbumDialog (props: Props) {
+export function CreateAlbumDialog(props: Props) {
   const appContext = useContext(AuthContext)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -45,6 +54,8 @@ export function CreateAlbumDialog (props: Props) {
   const [slug, setSlug] = useState<string>("")
 
   const [description, setDescription] = useState<string>("")
+
+  const [rating, setRating] = useState<IntrospectionEnum<"AlbumRating">>("G")
 
   const [selectedWorks, setSelectedWorks] = useState<
     FragmentOf<typeof DialogWorkFragment>[]
@@ -129,6 +140,7 @@ export function CreateAlbumDialog (props: Props) {
               description: description,
               thumbnailUrl: thumbnailUrl,
               workIds: selectedWorks.map((work) => work.id),
+              rating,
             },
           },
         })
@@ -146,6 +158,7 @@ export function CreateAlbumDialog (props: Props) {
             slug: trimmedSlug,
             description: description,
             workIds: selectedWorks.map((work) => work.id),
+            rating,
           },
         },
       })
@@ -236,6 +249,27 @@ export function CreateAlbumDialog (props: Props) {
                   }}
                   maxLength={160}
                 />
+              </div>
+              <div className="space-y-1">
+                <div className="flex space-x-2">
+                  <p className="font-bold text-sm">レーティング</p>
+                </div>
+                <Select
+                  value={rating}
+                  onValueChange={(value) => {
+                    setRating(value as IntrospectionEnum<"AlbumRating">)
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="レーティングを選択" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="G">{toRatingText("G")}</SelectItem>
+                    <SelectItem value="R15">{toRatingText("R15")}</SelectItem>
+                    <SelectItem value="R18">{toRatingText("R18")}</SelectItem>
+                    <SelectItem value="R18G">{toRatingText("R18G")}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-1">
                 <div className="flex space-x-2">

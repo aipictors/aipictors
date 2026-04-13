@@ -1,9 +1,3 @@
-import { AppLoadingPage } from "~/components/app/app-loading-page"
-import { AuthContext } from "~/contexts/auth-context"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import type { SortType } from "~/types/sort-type"
-import { AlbumsListContainer } from "~/routes/($lang).my._index/components/albums-list-container"
-import { AlbumsSetting } from "~/routes/($lang).my._index/components/albums-settings"
 import { useQuery } from "@apollo/client/index"
 import type {
   HeadersFunction,
@@ -11,10 +5,15 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
-import React, { useContext } from "react"
-import { Suspense } from "react"
-import { createMeta } from "~/utils/create-meta"
+import React, { Suspense, useContext } from "react"
+import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { AlbumsListContainer } from "~/routes/($lang).my._index/components/albums-list-container"
+import { AlbumsSetting } from "~/routes/($lang).my._index/components/albums-settings"
+import type { SortType } from "~/types/sort-type"
+import { createMeta } from "~/utils/create-meta"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.MY_ALBUMS, undefined, props.params.lang)
@@ -35,7 +34,7 @@ export const headers: HeadersFunction = () => ({
   // "Cache-Control": config.cacheControl.oneHour,
 })
 
-export default function MyAlbums () {
+export default function MyAlbums() {
   const authContext = useContext(AuthContext)
 
   const [albumPage, setAlbumPage] = React.useState(0)
@@ -56,7 +55,7 @@ export default function MyAlbums () {
       variables: {
         where: {
           ownerUserId: authContext.userId,
-          isSensitive: albumRating !== "G",
+          ...(albumRating !== null && { ratings: [albumRating] }),
           needInspected: false,
           needsThumbnailImage: false,
         },

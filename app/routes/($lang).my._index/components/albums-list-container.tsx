@@ -1,15 +1,15 @@
-import type { SortType } from "~/types/sort-type"
-import { AuthContext } from "~/contexts/auth-context"
+import { useSuspenseQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { ResponsivePagination } from "~/components/responsive-pagination"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { AuthContext } from "~/contexts/auth-context"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import {
   AlbumListItemFragment,
   AlbumsList,
 } from "~/routes/($lang).my._index/components/albums-list"
 import { WorksSeriesAddButton } from "~/routes/($lang).my._index/components/works-series-add-button"
-import type { IntrospectionEnum } from "~/lib/introspection-enum"
-import { graphql } from "gql.tada"
+import type { SortType } from "~/types/sort-type"
 
 type Props = {
   page: number
@@ -25,7 +25,7 @@ type Props = {
 /**
  * シリーズ一覧コンテナ
  */
-export function AlbumsListContainer (props: Props) {
+export function AlbumsListContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   if (
@@ -45,6 +45,7 @@ export function AlbumsListContainer (props: Props) {
       where: {
         orderBy: props.orderBy,
         sort: props.sort,
+        ...(props.rating !== null && { ratings: [props.rating] }),
       },
     },
   })

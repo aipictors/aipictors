@@ -1,5 +1,5 @@
-import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
 import { gql, useLazyQuery } from "@apollo/client/index"
+import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
 import {
   AwardIcon,
   BookImageIcon,
@@ -8,6 +8,7 @@ import {
   HomeIcon,
   Image,
   ImageIcon,
+  LibraryBigIcon,
   LightbulbIcon,
   Loader2Icon,
   MenuIcon,
@@ -211,6 +212,14 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
       </SidebarNavigationButton>
 
       <SidebarNavigationButton
+        href={createLink("/albums")}
+        icon={LibraryBigIcon}
+        onClick={closeHeaderMenu}
+      >
+        {t("シリーズ", "Series")}
+      </SidebarNavigationButton>
+
+      <SidebarNavigationButton
         href={createLink("/follow-user-works")}
         icon={Image}
         onClick={closeHeaderMenu}
@@ -243,7 +252,6 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
           {t("管理", "Admin")}
         </SidebarNavigationButton>
       )}
-
 
       <SidebarNavigationButton
         href={createLink("/releases")}

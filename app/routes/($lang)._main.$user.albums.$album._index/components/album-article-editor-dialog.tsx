@@ -1,20 +1,29 @@
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { Button } from "~/components/ui/button"
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "~/components/ui/dialog"
-import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
 import { useMutation } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { Button } from "~/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
 import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
+import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
@@ -23,7 +32,7 @@ type Props = {
   userNanoid: string
 }
 
-export function AlbumArticleEditorDialog (props: Props) {
+export function AlbumArticleEditorDialog(props: Props) {
   const t = useTranslation()
 
   const [selectedWorks, setSelectedWorks] = useState<string[]>(
@@ -33,6 +42,10 @@ export function AlbumArticleEditorDialog (props: Props) {
   const [title, setTitle] = useState(props.album.title)
 
   const [description, setDescription] = useState(props.album.description)
+
+  const [rating, setRating] = useState<IntrospectionEnum<"AlbumRating">>(
+    props.album.rating,
+  )
 
   const [updateAlbum, { loading: isUpdating }] =
     useMutation(updateAlbumMutation)
@@ -61,6 +74,7 @@ export function AlbumArticleEditorDialog (props: Props) {
           albumId: props.album.id,
           title: title,
           description: description,
+          rating,
           ...(selectedWorks && { workIds: selectedWorks }),
         },
       },
@@ -94,6 +108,30 @@ export function AlbumArticleEditorDialog (props: Props) {
             className="rounded-md border px-2 py-1"
             defaultValue="Aipictors/AIイラスト投稿サイト・AI小説投稿サイト・AI絵"
           />
+        </div>
+        <div className="flex flex-col justify-between space-y-2">
+          <label
+            htmlFor="album-rating"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {t("レーティング", "Rating")}
+          </label>
+          <Select
+            value={rating}
+            onValueChange={(value) => {
+              setRating(value as IntrospectionEnum<"AlbumRating">)
+            }}
+          >
+            <SelectTrigger id="album-rating">
+              <SelectValue placeholder={t("レーティング", "Rating")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="G">{toRatingText("G")}</SelectItem>
+              <SelectItem value="R15">{toRatingText("R15")}</SelectItem>
+              <SelectItem value="R18">{toRatingText("R18")}</SelectItem>
+              <SelectItem value="R18G">{toRatingText("R18G")}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className="flex flex-col justify-between space-y-2">
           <label
@@ -146,6 +184,7 @@ export const AlbumArticleEditorDialogFragment = graphql(
     }
     createdAt
     isSensitive
+    rating
     thumbnailImageURL
     slug
     worksCount
