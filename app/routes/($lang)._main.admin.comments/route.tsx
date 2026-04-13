@@ -121,6 +121,9 @@ export default function AdminCommentsPage() {
           <Link to="/admin">管理トップ</Link>
         </Button>
         <Button asChild size="sm" variant="outline">
+          <Link to="/admin/works">作品管理</Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
           <Link to="/admin/users">ユーザ管理</Link>
         </Button>
       </div>

@@ -12,6 +12,7 @@ import {
   Search,
   Shield,
   Users,
+  ImageIcon,
 } from "lucide-react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
@@ -58,6 +59,12 @@ const primaryMenu = [
     description: "コメントBAN・投稿BAN",
     icon: Users,
   },
+  {
+    href: "/admin/works",
+    title: "作品管理",
+    description: "非公開処理・理由通知",
+    icon: ImageIcon,
+  },
 ] as const
 
 const quickActions = [
@@ -70,6 +77,11 @@ const quickActions = [
     href: "/admin/users",
     title: "ユーザBAN管理",
     subtitle: "コメントBAN・投稿BANを切替",
+  },
+  {
+    href: "/admin/works",
+    title: "作品一覧管理",
+    subtitle: "非公開処理と通知を実行",
   },
 ] as const
 
@@ -96,6 +108,16 @@ export default function AdminDashboardPage() {
   const { data: moderationData, loading: moderationLoading } = useQuery(
     adminCommentModerationItemsQuery,
     {
+      skip: authContext.isNotLoggedIn || !viewerData?.viewer?.isModerator,
+    },
+  )
+  const { data: worksPreviewData, loading: worksPreviewLoading } = useQuery(
+    adminWorksPreviewQuery,
+    {
+      variables: {
+        offset: 0,
+        limit: 6,
+      },
       skip: authContext.isNotLoggedIn || !viewerData?.viewer?.isModerator,
     },
   )
@@ -127,6 +149,7 @@ export default function AdminDashboardPage() {
   const moderationItems = moderationData?.adminCommentModerationItems ?? []
   const reportCount = moderationItems.filter((item: any) => item.kind === "REPORT").length
   const appealCount = moderationItems.filter((item: any) => item.kind === "APPEAL").length
+  const previewWorks = worksPreviewData?.works ?? []
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#11182a_0%,#182235_100%)] text-slate-100">
@@ -284,6 +307,66 @@ export default function AdminDashboardPage() {
               })}
             </div>
           </section>
+
+          <Separator className="bg-white/10" />
+
+          <section className="space-y-4 py-8">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="font-semibold text-2xl">作品一覧（簡易）</h2>
+                <p className="mt-1 text-sm text-slate-400">
+                  最新6件を軽量表示。詳細操作は作品管理へ移動します。
+                </p>
+              </div>
+              <Button asChild variant="secondary" className="bg-white/10 text-slate-100 hover:bg-white/20">
+                <Link to="/admin/works">作品管理を開く</Link>
+              </Button>
+            </div>
+
+            {worksPreviewLoading ? (
+              <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
+                <CardContent className="py-6 text-sm text-slate-300">読み込み中...</CardContent>
+              </Card>
+            ) : previewWorks.length === 0 ? (
+              <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
+                <CardContent className="py-6 text-sm text-slate-300">表示できる作品がありません。</CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-3 md:grid-cols-2">
+                {previewWorks.map((work: any) => (
+                  <Link
+                    key={work.id}
+                    to="/admin/works"
+                    className="rounded-2xl border border-white/10 bg-white/5 p-3 transition hover:bg-white/10"
+                  >
+                    <div className="flex items-start gap-3">
+                      {work.smallThumbnailImageURL ? (
+                        <img
+                          src={work.smallThumbnailImageURL}
+                          alt={work.title ?? "work"}
+                          loading="lazy"
+                          className="h-16 w-16 rounded-md border border-white/10 object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-16 w-16 items-center justify-center rounded-md border border-white/10 text-xs text-slate-400">
+                          no image
+                        </div>
+                      )}
+                      <div className="min-w-0 space-y-1">
+                        <p className="truncate font-medium text-sm text-white">{work.title || "(無題)"}</p>
+                        <p className="text-xs text-slate-400">
+                          #{work.id} / {work.type} / {work.accessType}
+                        </p>
+                        <p className="truncate text-xs text-slate-400">
+                          投稿者: {work.user?.name ?? "-"}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
         </main>
       </div>
     </div>
@@ -304,6 +387,22 @@ const adminCommentModerationItemsQuery = gql`
     adminCommentModerationItems {
       id
       kind
+    }
+  }
+`
+
+const adminWorksPreviewQuery = gql`
+  query AdminDashboardWorksPreview($offset: Int!, $limit: Int!) {
+    works(offset: $offset, limit: $limit, where: {}) {
+      id
+      title
+      type
+      accessType
+      smallThumbnailImageURL
+      user {
+        id
+        name
+      }
     }
   }
 `

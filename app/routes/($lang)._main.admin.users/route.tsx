@@ -273,6 +273,9 @@ export default function AdminUsersPage () {
           <Link to="/admin">管理トップ</Link>
         </Button>
         <Button asChild variant="outline">
+          <Link to="/admin/works">作品管理</Link>
+        </Button>
+        <Button asChild variant="outline">
           <Link to="/admin/comments">コメント審査</Link>
         </Button>
       </div>
