@@ -23,6 +23,7 @@ type Props = {
   priorityCount?: number
   size?: "small" | "medium" | "large"
   isShowProfile?: boolean
+  compactWhenFew?: boolean
   /** 作品クリック時に index を返す。未指定なら従来通りリンク遷移 */
   onSelect?: (index: string) => void
   /** ユーザリンクのプレフィックス（例: "/users" または "/posts/gallery/users"） */
@@ -36,14 +37,14 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
-  if (props.works.length <= 2) {
+  if (props.compactWhenFew && props.works.length <= 4) {
     return (
-      <div className="flex flex-wrap justify-center gap-x-8 gap-y-8">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         {props.works.map((workItem, _index) => {
           return (
             <div
               key={workItem.id.toString()}
-              className="relative flex flex-col space-y-2"
+              className="relative flex min-w-0 flex-col space-y-2"
             >
               <div className="relative">
                 <CroppedWorkSquare
@@ -52,7 +53,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   commentsCount={workItem.commentsCount}
                   imageUrl={workItem.smallThumbnailImageURL}
                   thumbnailImagePosition={workItem.thumbnailImagePosition ?? 0}
-                  size="lg"
+                  size="auto"
                   imageWidth={workItem.smallThumbnailImageWidth}
                   imageHeight={workItem.smallThumbnailImageHeight}
                   isPromptPublic={
@@ -73,6 +74,58 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   />
                 </div>
               </div>
+              {props.isShowProfile && (
+                <>
+                  {props.onSelect ? (
+                    <button
+                      type="button"
+                      className="min-w-0 cursor-pointer text-left font-bold"
+                      onClick={() => props.onSelect?.(workItem.id.toString())}
+                      aria-label={`Open ${workItem.title}`}
+                    >
+                      <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
+                        {workItem.title}
+                      </p>
+                    </button>
+                  ) : (
+                    <Link
+                      className="min-w-0 font-bold"
+                      to={`/posts/${workItem.id}`}
+                    >
+                      <p className="overflow-hidden text-ellipsis text-nowrap text-sm">
+                        {workItem.title}
+                      </p>
+                    </Link>
+                  )}
+
+                  {workItem.user && (
+                    <div className="flex items-center justify-between gap-2">
+                      <Link
+                        className="min-w-0"
+                        to={`${props.userLinkPrefix || "/users"}/${workItem.user.id}`}
+                      >
+                        <div className="flex min-w-0 items-center space-x-2">
+                          <Avatar className="size-6">
+                            <AvatarImage
+                              className="size-6 rounded-full"
+                              src={withIconUrlFallback(workItem.user.iconUrl)}
+                              alt=""
+                            />
+                            <AvatarFallback />
+                          </Avatar>
+                          <span className="block max-w-24 truncate text-sm">
+                            {workItem.user.name}
+                          </span>
+                        </div>
+                      </Link>
+                      <div className="flex shrink-0 items-center space-x-1 rounded-md bg-card p-1">
+                        <Heart className="size-3 fill-gray-400 text-gray-400" />
+                        <span className="text-xs">{workItem.likesCount}</span>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )
         })}
@@ -102,9 +155,11 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   : work.smallThumbnailImageHeight,
               context: {
                 ...work,
-                _priority: props.priorityCount !== undefined
-                  ? props.works.findIndex((item) => item.id === work.id) < props.priorityCount
-                  : false,
+                _priority:
+                  props.priorityCount !== undefined
+                    ? props.works.findIndex((item) => item.id === work.id) <
+                      props.priorityCount
+                    : false,
               },
             }))}
             targetRowHeight={

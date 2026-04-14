@@ -1,10 +1,11 @@
 // LikeButton は CroppedWorkSquare 内部での表示に統合されたため未使用
-import { graphql, type FragmentOf } from "gql.tada"
+
 import { Link } from "@remix-run/react"
+import { type FragmentOf, graphql } from "gql.tada"
+import { CroppedWorkSquare } from "~/components/cropped-work-square"
+import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useTranslation } from "~/hooks/use-translation"
-import { CroppedWorkSquare } from "~/components/cropped-work-square"
 
 type Props = {
   works: FragmentOf<typeof HomeCoppedWorkFragment>[]
@@ -16,7 +17,7 @@ type Props = {
 /**
  * クロップ済み作品一覧
  */
-export function HomeCroppedWorkList (props: Props) {
+export function HomeCroppedWorkList(props: Props) {
   const t = useTranslation()
 
   if (!props.works || props.works.length === 0) {
@@ -25,7 +26,7 @@ export function HomeCroppedWorkList (props: Props) {
 
   return (
     <>
-      <section className="hidden grid-cols-2 gap-4 md:grid md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <section className="hidden grid-cols-2 gap-3 md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {props.works
           .filter(
             (work, index, self) =>
@@ -50,24 +51,24 @@ export function HomeCroppedWorkList (props: Props) {
             )
 
             return (
-              <div className="flex flex-col space-y-2" key={work.id}>
+              <div className="flex min-w-0 flex-col space-y-2" key={work.id}>
                 {props.onSelect ? (
                   <button
                     type="button"
                     onClick={() => props.onSelect?.(work.id)}
-                    className="group relative overflow-hidden rounded-md border-none bg-transparent p-0"
+                    className="group relative w-full overflow-hidden rounded-md border-none bg-transparent p-0"
                   >
-                    {content}
+                    <div className="w-full">{content}</div>
                   </button>
                 ) : (
                   <Link
                     to={`/posts/${work.id}`}
-                    className="group relative overflow-hidden rounded-md"
+                    className="group relative block w-full overflow-hidden rounded-md"
                   >
-                    {content}
+                    <div className="w-full">{content}</div>
                   </Link>
                 )}
-                <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
                   {t(
                     work.title,
                     work.enTitle.length > 0 ? work.enTitle : work.title,

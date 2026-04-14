@@ -1,3 +1,6 @@
+import { Link } from "@remix-run/react"
+import { RiQuestionLine } from "@remixicon/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
@@ -9,13 +12,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import { Link } from "@remix-run/react"
-import { RiQuestionLine } from "@remixicon/react"
-import { graphql, type FragmentOf } from "gql.tada"
-import { cn } from "~/lib/utils"
-import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
-import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
+import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
 import type { HomePromotionWorkFragment } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
 
 type Props = {
@@ -29,7 +29,7 @@ type Props = {
   onSelect?: (index: string) => void
 }
 
-export function HomeRecommendedWorkList (props: Props) {
+export function HomeRecommendedWorkList(props: Props) {
   const t = useTranslation()
 
   if (props.works.length === 0) {
@@ -71,6 +71,7 @@ export function HomeRecommendedWorkList (props: Props) {
           works={props.works}
           targetRowHeight={props.targetRowHeight}
           isShowProfile={props.isShowProfile}
+          compactWhenFew={true}
           onSelect={props.onSelect}
         />
       )}

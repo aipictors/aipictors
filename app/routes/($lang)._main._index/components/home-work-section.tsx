@@ -1,3 +1,6 @@
+import { Link } from "@remix-run/react"
+import { RiQuestionLine } from "@remixicon/react"
+import { type FragmentOf, graphql } from "gql.tada"
 import {
   PhotoAlbumWorkFragment,
   ResponsivePhotoWorksAlbum,
@@ -9,13 +12,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip"
-import { Link } from "@remix-run/react"
-import { RiQuestionLine } from "@remixicon/react"
-import { graphql, type FragmentOf } from "gql.tada"
-import { cn } from "~/lib/utils"
-import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
-import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
+import { HomeCroppedWorkList } from "~/routes/($lang)._main._index/components/home-cropped-work-list"
+import { HomeCoppedWorkFragment } from "~/routes/($lang)._main._index/components/home-cropped-work-list-with-scroll"
 
 type Props = {
   works: FragmentOf<typeof HomeWorkFragment>[]
@@ -29,7 +29,7 @@ type Props = {
   onSelect?: (index: string) => void
 }
 
-export function HomeWorkSection (props: Props) {
+export function HomeWorkSection(props: Props) {
   const t = useTranslation()
 
   return (
@@ -69,6 +69,7 @@ export function HomeWorkSection (props: Props) {
           priorityCount={props.priorityCount}
           targetRowHeight={props.targetRowHeight}
           isShowProfile={props.isShowProfile}
+          compactWhenFew={true}
           onSelect={props.onSelect}
         />
       )}
