@@ -14,6 +14,7 @@ export type Env = {
   VITE_SENTRY_VERSION: string
   VITE_WORKERS_UPLOADER: string
   VITE_WORKERS_TEXT_UPLOADER: string
+  VITE_WORKERS_STREAM_UPLOADER?: string
   VITE_WORKERS_CORS_DOWNLOAD?: string
   VITE_MICRO_CMS_API_KEY: string
 }
@@ -32,6 +33,7 @@ const envSchema: ReturnType<typeof object> = object({
   VITE_SENTRY_VERSION: string(),
   VITE_WORKERS_UPLOADER: string(),
   VITE_WORKERS_TEXT_UPLOADER: string(),
+  VITE_WORKERS_STREAM_UPLOADER: optional(string()),
   VITE_WORKERS_CORS_DOWNLOAD: optional(string()),
   VITE_MICRO_CMS_API_KEY: string(),
 })

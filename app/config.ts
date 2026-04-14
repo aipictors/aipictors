@@ -93,6 +93,7 @@ type AppConfig = {
   uploader: {
     uploadImage: string
     uploadText: string
+    uploadVideo: string
   }
   downloader: {
     corsDownload: string
@@ -398,6 +399,9 @@ export const config: AppConfig = {
   uploader: {
     uploadImage: env.VITE_WORKERS_UPLOADER,
     uploadText: env.VITE_WORKERS_TEXT_UPLOADER,
+    uploadVideo:
+      (env.VITE_WORKERS_STREAM_UPLOADER ??
+        "/api/upload-stream-video") as string,
   },
   downloader: {
     corsDownload:

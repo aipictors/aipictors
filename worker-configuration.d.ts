@@ -6,4 +6,10 @@ export type Env = {
   VITE_GRAPHQL_ENDPOINT_REMIX?: string
   /** ブラウザ向け GraphQL エンドポイント（フォールバック用） */
   VITE_GRAPHQL_ENDPOINT?: string
+  /** ブラウザ向け動画アップロードエンドポイント（省略時は /api/upload-stream-video） */
+  VITE_WORKERS_STREAM_UPLOADER?: string
+  /** Cloudflare Stream アップロードAPIで使用するアカウントID */
+  CLOUDFLARE_ACCOUNT_ID?: string
+  /** Cloudflare Stream アップロードAPIで使用するサーバー側トークン */
+  CLOUDFLARE_STREAM_API_TOKEN?: string
 }

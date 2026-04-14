@@ -9,6 +9,7 @@ import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { isCloudflareStreamUrl } from "~/utils/cloudflare-stream"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
@@ -70,25 +71,27 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
             onMouseEnter={() => handleMouseEnter(Number(props.works[0].id))}
             onMouseLeave={() => handleMouseLeave(Number(props.works[0].id))}
           >
-            <video
-              src={props.works[0].url ?? ""}
-              // biome-ignore lint/suspicious/noAssignInExpressions: ref assignment
-              ref={(el) => (videoRefs.current[Number(props.works[0].id)] = el)}
-              className="absolute top-0 left-0 max-h-72 w-full overflow-hidden rounded object-contain"
-              style={
-                isAutoPlay || isMobile ? { zIndex: "10" } : { zIndex: "-1" }
-              }
-              muted
-              autoPlay={isAutoPlay || isMobile}
-              loop
-              playsInline
-            >
-              <track
-                kind="captions"
+            {!isCloudflareStreamUrl(props.works[0].url) && (
+              <video
                 src={props.works[0].url ?? ""}
-                label="English"
-              />
-            </video>
+                // biome-ignore lint/suspicious/noAssignInExpressions: ref assignment
+                ref={(el) => (videoRefs.current[Number(props.works[0].id)] = el)}
+                className="absolute top-0 left-0 max-h-72 w-full overflow-hidden rounded object-contain"
+                style={
+                  isAutoPlay || isMobile ? { zIndex: "10" } : { zIndex: "-1" }
+                }
+                muted
+                autoPlay={isAutoPlay || isMobile}
+                loop
+                playsInline
+              >
+                <track
+                  kind="captions"
+                  src={props.works[0].url ?? ""}
+                  label="English"
+                />
+              </video>
+            )}
 
             <div className="absolute top-1 left-1 opacity-50">
               <Badge variant={"secondary"} className="text-xs">
@@ -201,27 +204,29 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
                       alt={props.alt}
                       className="h-full w-full overflow-hidden rounded"
                     />
-                    <video
-                      src={context.photo.url ?? ""}
-                      // biome-ignore lint/suspicious/noAssignInExpressions: ref assignment
-                      ref={(el) => (videoRefs.current[context.index] = el)}
-                      className="absolute top-0 left-0 w-full overflow-hidden rounded object-contain"
-                      style={
-                        isAutoPlay || isMobile
-                          ? { zIndex: "10" }
-                          : { zIndex: "-1" }
-                      }
-                      muted
-                      autoPlay={isAutoPlay || isMobile}
-                      loop
-                      playsInline
-                    >
-                      <track
-                        kind="captions"
+                    {!isCloudflareStreamUrl(context.photo.url) && (
+                      <video
                         src={context.photo.url ?? ""}
-                        label="English"
-                      />
-                    </video>
+                        // biome-ignore lint/suspicious/noAssignInExpressions: ref assignment
+                        ref={(el) => (videoRefs.current[context.index] = el)}
+                        className="absolute top-0 left-0 w-full overflow-hidden rounded object-contain"
+                        style={
+                          isAutoPlay || isMobile
+                            ? { zIndex: "10" }
+                            : { zIndex: "-1" }
+                        }
+                        muted
+                        autoPlay={isAutoPlay || isMobile}
+                        loop
+                        playsInline
+                      >
+                        <track
+                          kind="captions"
+                          src={context.photo.url ?? ""}
+                          label="English"
+                        />
+                      </video>
+                    )}
 
                     <div className="absolute top-1 left-1 opacity-50">
                       <Badge variant={"secondary"} className="text-xs">

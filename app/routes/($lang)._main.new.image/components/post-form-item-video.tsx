@@ -4,6 +4,10 @@ import { toast } from "sonner"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { VideoItem } from "~/routes/($lang)._main.new.image/components/video-item"
+import {
+  isCloudflareStreamUrl,
+  toCloudflareStreamEmbedUrl,
+} from "~/utils/cloudflare-stream"
 import { formatFileSize, MAX_VIDEO_FILE_SIZE_BYTES } from "~/utils/file-size"
 
 type Props = {
@@ -23,6 +27,8 @@ type Props = {
  */
 export function PostFormItemVideo(props: Props) {
   const t = useTranslation()
+  const previewEmbedUrl = toCloudflareStreamEmbedUrl(props.previewVideoUrl)
+  const isStreamPreview = isCloudflareStreamUrl(props.previewVideoUrl)
 
   // ファイルの最大サイズ(バイト単位)
   const maxSize = MAX_VIDEO_FILE_SIZE_BYTES
@@ -215,15 +221,30 @@ export function PostFormItemVideo(props: Props) {
             }}
           />
         )}
-        {props.previewVideoUrl && (
-          <video
-            controls
-            className="m-auto mt-4 mb-4 w-64"
-            src={props.previewVideoUrl}
-          >
-            <track kind="captions" src="path_to_captions.vtt" label="English" />
-          </video>
-        )}
+        {props.previewVideoUrl &&
+          (isStreamPreview && previewEmbedUrl ? (
+            <div className="m-auto mt-4 mb-4 aspect-video w-full max-w-xl">
+              <iframe
+                src={previewEmbedUrl}
+                title="Cloudflare Stream Preview"
+                className="h-full w-full"
+                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          ) : (
+            <video
+              controls
+              className="m-auto mt-4 mb-4 w-64"
+              src={props.previewVideoUrl}
+            >
+              <track
+                kind="captions"
+                src="path_to_captions.vtt"
+                label="English"
+              />
+            </video>
+          ))}
       </div>
     </>
   )

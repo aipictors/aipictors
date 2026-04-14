@@ -2,6 +2,7 @@ import { Link } from "@remix-run/react"
 import { useState, useRef, useCallback } from "react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { cn } from "~/lib/utils"
+import { isCloudflareStreamUrl } from "~/utils/cloudflare-stream"
 
 type Props = {
   workId: string
@@ -26,15 +27,17 @@ type Props = {
 export function HoverVideoImage (props: Props): React.ReactNode {
   const [isHovered, setIsHovered] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const isPreviewableVideo =
+    Boolean(props.videoUrl) && !isCloudflareStreamUrl(props.videoUrl)
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true)
     // 動画再生（スマホでも再生するが全画面表示は防ぐ）
-    if (props.videoUrl && videoRef.current) {
+    if (isPreviewableVideo && videoRef.current) {
       videoRef.current.currentTime = 0 // 最初から再生
       videoRef.current.play()
     }
-  }, [props.videoUrl])
+  }, [isPreviewableVideo])
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false)
@@ -64,7 +67,7 @@ export function HoverVideoImage (props: Props): React.ReactNode {
       />
 
       {/* 動画表示（Safari対応：動画再生エラー時の画像フォールバック強化） */}
-      {props.videoUrl && (
+      {isPreviewableVideo && props.videoUrl && (
         <video
           ref={videoRef}
           src={props.videoUrl}

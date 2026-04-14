@@ -1,5 +1,5 @@
 import { config } from "~/config"
-import { object, string, safeParse, nullable } from "valibot"
+import { object, string, safeParse, nullable, optional } from "valibot"
 
 /**
  * 動画アップロード
@@ -12,14 +12,21 @@ export const uploadPublicVideo = async (
   file: Blob,
   token: string | undefined | null,
 ): Promise<string> => {
+  if (token === null || token === undefined) {
+    throw new Error(
+      "ログイン情報が正しく取得できていません、画面更新もしくはログインしなおしてください",
+    )
+  }
+
   try {
-    const endpoint = config.uploader.uploadImage
+    const endpoint = config.uploader.uploadVideo
+    const contentType = file.type || "video/mp4"
 
     const response = await fetch(endpoint, {
-      method: "PUT",
+      method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "video/mp4",
+        "Content-Type": contentType,
       },
       body: file,
     })
@@ -30,7 +37,7 @@ export const uploadPublicVideo = async (
       // Valibotでレスポンスデータのバリデーションを実行
       const schema = object({
         data: object({
-          fileId: string(),
+          uid: optional(string()),
           url: string(),
         }),
         error: nullable(string()),
