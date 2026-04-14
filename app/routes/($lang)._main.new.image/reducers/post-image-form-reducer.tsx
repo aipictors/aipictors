@@ -62,6 +62,12 @@ export const postImageFormReducer = (
         progress: action.payload,
       }
     }
+    case "SET_VIDEO_FILE": {
+      return {
+        ...state,
+        videoFile: action.payload ? (action.payload as File) : null,
+      }
+    }
     case "OPEN_IMAGE_GENERATION_DIALOG": {
       return {
         ...state,

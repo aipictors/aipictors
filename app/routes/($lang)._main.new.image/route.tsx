@@ -51,6 +51,7 @@ import { getJstDate } from "~/utils/jst-date"
 import { resizeImage } from "~/utils/resize-image"
 import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
+import { uploadPublicVideo } from "~/utils/upload-public-video"
 
 type EventRating = "G" | "R15" | "R18" | "R18G"
 
@@ -76,6 +77,9 @@ export default function NewImage() {
   const authContext = useContext(AuthContext)
 
   const [searchParams] = useSearchParams()
+  const requestedMediaType = searchParams.get("media") === "video"
+    ? "video"
+    : "image"
 
   const ref = searchParams.get("generation")
   const generationNanoids = ref?.split("|").filter(Boolean) ?? []
@@ -208,6 +212,15 @@ export default function NewImage() {
   })
 
   const [isInitialized, setIsInitialized] = useState(false)
+  const [mediaType, setMediaType] = useState<"image" | "video">(
+    requestedMediaType,
+  )
+
+  useEffect(() => {
+    if (state.videoFile === null && state.items.length === 0) {
+      setMediaType(requestedMediaType)
+    }
+  }, [requestedMediaType, state.items.length, state.videoFile])
 
   // localStorageから設定を読み込む関数
   const loadBotSettings = () => {
@@ -590,6 +603,42 @@ export default function NewImage() {
     return imageUrls
   }
 
+  const uploadVideo = async () => {
+    if (state.videoFile === null) {
+      return null
+    }
+
+    return uploadPublicVideo(state.videoFile as File, viewerData?.viewer?.token)
+  }
+
+  const resetImageSelectionForVideo = () => {
+    dispatch({ type: "SET_ITEMS", payload: [] })
+    dispatch({ type: "SET_INDEX_LIST", payload: [] })
+    dispatch({ type: "SET_PNG_INFO", payload: null })
+    dispatch({ type: "IS_SELECTED_GENERATION_IMAGE", payload: false })
+    dispatch({ type: "SET_EDIT_TARGET_IMAGE_BASE64", payload: null })
+    dispatchInput({ type: "SET_IMAGE_INFORMATION", payload: null })
+  }
+
+  const onVideoChange = (videoFile: File | null) => {
+    if (videoFile !== null && state.items.length > 0) {
+      resetImageSelectionForVideo()
+    }
+
+    dispatch({ type: "SET_VIDEO_FILE", payload: videoFile })
+    setMediaType(videoFile ? "video" : requestedMediaType)
+  }
+
+  const onImageSelectionChange = (itemsCount: number) => {
+    if (itemsCount > 0 && state.videoFile) {
+      dispatch({ type: "SET_VIDEO_FILE", payload: null })
+    }
+
+    if (itemsCount > 0) {
+      setMediaType("image")
+    }
+  }
+
   const onPost = async () => {
     if (authContext.isNotLoggedIn) {
       toast(t("ログインしてください", "Please log in"))
@@ -635,6 +684,168 @@ export default function NewImage() {
       inputState.ratingRestriction === undefined
     ) {
       toast(t("年齢制限を選択してください", "Please select an age restriction"))
+      return
+    }
+
+    if (mediaType === "video" && state.videoFile === null) {
+      toast(t("動画ファイルを選択してください", "Please select a video file"))
+      return
+    }
+
+    if (mediaType === "image" && state.items.length === 0) {
+      toast(t("画像を選択してください", "Please select at least one image"))
+      return
+    }
+
+    if (mediaType === "video") {
+      const uploadedImageUrls: string[] = []
+
+      try {
+        dispatch({ type: "SET_PROGRESS", payload: 10 })
+
+        const smallThumbnail = state.isThumbnailLandscape
+          ? await resizeImage(formResult.output.thumbnailBase64, 400, 0, "webp")
+          : await resizeImage(formResult.output.thumbnailBase64, 0, 400, "webp")
+
+        dispatch({ type: "SET_PROGRESS", payload: 20 })
+
+        const largeThumbnail = state.isThumbnailLandscape
+          ? await resizeImage(formResult.output.thumbnailBase64, 600, 0, "webp")
+          : await resizeImage(formResult.output.thumbnailBase64, 0, 600, "webp")
+
+        dispatch({ type: "SET_PROGRESS", payload: 30 })
+
+        const thumbnailUrl = await uploadPublicImage(
+          formResult.output.thumbnailBase64,
+          viewerData?.viewer?.token,
+        )
+
+        dispatch({ type: "SET_PROGRESS", payload: 40 })
+        uploadedImageUrls.push(thumbnailUrl)
+
+        const smallThumbnailUrl = await uploadPublicImage(
+          smallThumbnail.base64,
+          viewerData?.viewer?.token,
+        )
+
+        dispatch({ type: "SET_PROGRESS", payload: 45 })
+        uploadedImageUrls.push(smallThumbnailUrl)
+
+        const largeThumbnailUrl = await uploadPublicImage(
+          largeThumbnail.base64,
+          viewerData?.viewer?.token,
+        )
+
+        dispatch({ type: "SET_PROGRESS", payload: 50 })
+        uploadedImageUrls.push(largeThumbnailUrl)
+
+        const ogpBase64Url = state.ogpBase64
+          ? await uploadPublicImage(state.ogpBase64, viewerData?.viewer?.token)
+          : null
+
+        dispatch({ type: "SET_PROGRESS", payload: 60 })
+
+        if (ogpBase64Url !== null) {
+          uploadedImageUrls.push(ogpBase64Url)
+        }
+
+        const reservedAt =
+          inputState.reservationDate !== null &&
+          inputState.reservationTime !== null
+            ? new Date(
+                `${inputState.reservationDate}T${inputState.reservationTime}`,
+              ).getTime() +
+              3600000 * 9
+            : undefined
+
+        const mainImageSha256 = await sha256(formResult.output.thumbnailBase64)
+        const mainImageSize = await getSizeFromBase64(
+          formResult.output.thumbnailBase64,
+        )
+
+        dispatch({ type: "SET_PROGRESS", payload: 70 })
+
+        const uploadedVideo = await uploadVideo()
+
+        if (!uploadedVideo) {
+          throw new Error(
+            t("動画のアップロードに失敗しました", "Failed to upload the video"),
+          )
+        }
+
+        const work = await createWork({
+          variables: {
+            input: {
+              title: formResult.output.title,
+              entitle: formResult.output.enTitle,
+              explanation: formResult.output.caption,
+              enExplanation: formResult.output.enCaption,
+              rating: inputState.ratingRestriction || "G",
+              prompt: null,
+              negativePrompt: null,
+              seed: null,
+              sampler: null,
+              strength: null,
+              noise: null,
+              modelName: null,
+              modelHash: null,
+              otherGenerationParams: null,
+              pngInfo: null,
+              imageStyle: inputState.imageStyle,
+              relatedUrl: inputState.link,
+              tags: inputState.tags.map((tag) => tag.text),
+              isTagEditable: inputState.useTagFeature,
+              isCommentEditable: inputState.useCommentFeature,
+              thumbnailPosition: state.isThumbnailLandscape
+                ? state.thumbnailPosX
+                : state.thumbnailPosY,
+              modelId: inputState.aiModelId,
+              type: "WORK",
+              subjectId: inputState.themeId,
+              albumId: inputState.albumId,
+              isPromotion: inputState.usePromotionFeature,
+              reservedAt,
+              mainImageSha256,
+              accessType: inputState.accessType,
+              imageUrls: [thumbnailUrl],
+              smallThumbnailImageURL: smallThumbnailUrl,
+              smallThumbnailImageWidth: smallThumbnail.width,
+              smallThumbnailImageHeight: smallThumbnail.height,
+              largeThumbnailImageURL: largeThumbnailUrl,
+              largeThumbnailImageWidth: largeThumbnail.width,
+              largeThumbnailImageHeight: largeThumbnail.height,
+              videoUrl: uploadedVideo.url,
+              streamUid: uploadedVideo.uid,
+              ogpImageUrl: ogpBase64Url,
+              imageHeight: mainImageSize.height,
+              imageWidth: mainImageSize.width,
+              accessGenerationType: "PUBLIC",
+            },
+          },
+        })
+
+        if (work.data?.createWork === undefined) {
+          throw new Error(t("作品の投稿に失敗しました", "Failed to post the work"))
+        }
+
+        dispatch({
+          type: "MARK_AS_DONE",
+          payload: {
+            uploadedWorkId: work.data.createWork.id,
+            uploadedWorkUuid: work.data.createWork.uuid,
+          },
+        })
+
+        toast(t("作品を投稿しました", "Work has been posted"))
+      } catch (error) {
+        if (error instanceof Error) {
+          toast(error.message)
+        }
+
+        await Promise.all(uploadedImageUrls.map((url) => deleteUploadedImage(url)))
+        dispatch({ type: "SET_PROGRESS", payload: 0 })
+      }
+
       return
     }
 
@@ -962,6 +1173,7 @@ export default function NewImage() {
       inputState.enCaption.trim() !== "" ||
       inputState.tags.length > 0 ||
       state.items.length > 0 ||
+      state.videoFile !== null ||
       inputState.link.trim() !== "" ||
       inputState.reservationDate !== null ||
       inputState.reservationTime !== null
@@ -969,6 +1181,7 @@ export default function NewImage() {
   }, [
     state.thumbnailBase64,
     state.items.length,
+    state.videoFile,
     inputState.title,
     inputState.caption,
     inputState.enTitle,
@@ -1070,7 +1283,7 @@ export default function NewImage() {
           </p>
         )}
         <div className="relative">
-          <PostFormHeader type="image" />
+          <PostFormHeader type="media" />
           {state.isOpenLoadingAi && (
             <div className="absolute top-12 right-2 z-10 flex items-center space-x-2 opacity-80">
               <Loader2Icon className="size-4 animate-spin text-white" />
@@ -1083,7 +1296,11 @@ export default function NewImage() {
             </div>
           )}
           <PostImageFormUploader
+            mediaType={mediaType}
             onChangeImageInformation={onChangeImageInformation}
+            onChangeMediaType={setMediaType}
+            onImageSelectionChange={onImageSelectionChange}
+            onVideoChange={onVideoChange}
             state={state}
             dispatch={dispatch}
             onInputFiles={onInputFiles}
@@ -1093,6 +1310,7 @@ export default function NewImage() {
         </div>
         <PostImageFormInput
           imageInformation={inputState.imageInformation}
+          mediaType={mediaType}
           state={inputState}
           dispatch={dispatchInput}
           albums={viewerData?.albums ?? []}

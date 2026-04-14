@@ -44,6 +44,7 @@ type AiEvaluationProps = {
 
 type Props = {
   imageInformation: InferInput<typeof vImageInformation> | null
+  mediaType?: "image" | "video"
   dispatch: Dispatch<PostImageFormInputAction>
   state: PostImageFormInputState
   albums: FragmentOf<typeof PostImageFormAlbumFragment>[]
@@ -103,6 +104,8 @@ const intersectRatings = (
 
 export function PostImageFormInput(props: Props) {
   const t = useTranslation() // 翻訳対応
+  const mediaType = props.mediaType ?? "image"
+  const isVideoPost = mediaType === "video"
   const jstDate = getJSTDate()
   const reservationDate = props.state.reservationDate || jstDate
   const [isUserEventsVisible, setIsUserEventsVisible] = useState(false)
@@ -124,7 +127,7 @@ export function PostImageFormInput(props: Props) {
     }
   }, [loading])
 
-  const hasImageInfo = props.imageInformation
+  const hasImageInfo = !isVideoPost && props.imageInformation
 
   const onChangeTheme = (value: boolean) => {
     if (props.themes === null) {
@@ -503,7 +506,7 @@ export function PostImageFormInput(props: Props) {
         }}
       />
       {/* AI評価セクション - 編集モードでは専用コンポーネントを使用、新規投稿では標準コンポーネントを使用 */}
-      {props.isEditMode && props.aiEvaluationProps ? (
+      {!isVideoPost && props.isEditMode && props.aiEvaluationProps ? (
         <AiEvaluationSection
           workId={props.aiEvaluationProps.workId}
           isAlreadyRequested={props.aiEvaluationProps.isAlreadyRequested}
@@ -526,7 +529,7 @@ export function PostImageFormInput(props: Props) {
             props.aiEvaluationProps.onChangeBotGradingRankingEnabled
           }
         />
-      ) : (
+      ) : !isVideoPost ? (
         <PostFormItemBotGrading
           isBotGradingEnabled={props.state.isBotGradingEnabled}
           isBotGradingPublic={props.state.isBotGradingPublic}
@@ -562,7 +565,7 @@ export function PostImageFormInput(props: Props) {
             props.dispatch({ type: "SET_BOT_GRADING_TYPE", payload: type })
           }}
         />
-      )}
+      ) : null}
       {props.albums.length !== 0 && (
         <PostFormItemAlbum
           album={props.state.albumId}

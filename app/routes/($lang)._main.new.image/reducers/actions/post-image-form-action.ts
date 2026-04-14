@@ -1,3 +1,4 @@
+import { vFile } from "~/routes/($lang)._main.new.image/validations/file"
 import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
 import { vSortableItem } from "~/routes/($lang)._main.new.image/validations/sortable-item"
 import {
@@ -72,6 +73,10 @@ export const vPostImageFormAction = union([
   object({
     type: literal("SET_PROGRESS"),
     payload: number(),
+  }),
+  object({
+    type: literal("SET_VIDEO_FILE"),
+    payload: nullable(vFile),
   }),
   object({
     type: literal("OPEN_IMAGE_GENERATION_DIALOG"),
