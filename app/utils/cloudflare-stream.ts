@@ -6,6 +6,14 @@ const STREAM_IFRAME_HOST = "iframe.videodelivery.net"
 const STREAM_DELIVERY_HOST = "videodelivery.net"
 const STREAM_HOST_SUFFIX = ".cloudflarestream.com"
 
+export function isCloudflareStreamUid(value: string | null | undefined): boolean {
+  if (!value) {
+    return false
+  }
+
+  return /^[0-9a-f]{32}$/i.test(value.trim())
+}
+
 function getPathFirstSegment(pathname: string): string | null {
   const [first] = pathname.split("/").filter(Boolean)
   return first ?? null
@@ -60,4 +68,24 @@ export function toCloudflareStreamEmbedUrl(
   }
 
   return `https://${STREAM_IFRAME_HOST}/${uid}`
+}
+
+export function toCloudflareStreamEmbedUrlFromUid(
+  uid: string | null | undefined,
+): string | null {
+  if (!isCloudflareStreamUid(uid)) {
+    return null
+  }
+
+  return `https://${STREAM_IFRAME_HOST}/${uid}`
+}
+
+export function toCloudflareStreamHlsUrlFromUid(
+  uid: string | null | undefined,
+): string | null {
+  if (!isCloudflareStreamUid(uid)) {
+    return null
+  }
+
+  return `https://${STREAM_DELIVERY_HOST}/${uid}/manifest/video.m3u8`
 }

@@ -1,13 +1,18 @@
 import { Link } from "@remix-run/react"
 import { useState, useRef, useCallback } from "react"
 import { OptimizedImage } from "~/components/optimized-image"
+import { StreamPreviewVideo } from "~/components/stream-preview-video"
 import { cn } from "~/lib/utils"
-import { isCloudflareStreamUrl } from "~/utils/cloudflare-stream"
+import {
+  isCloudflareStreamUrl,
+  toCloudflareStreamHlsUrlFromUid,
+} from "~/utils/cloudflare-stream"
 
 type Props = {
   workId: string
   imageUrl: string
   videoUrl?: string | null
+  streamUid?: string | null
   alt: string
   className?: string
   fetchPriority?: "high" | "low" | "auto"
@@ -27,15 +32,17 @@ type Props = {
 export function HoverVideoImage (props: Props): React.ReactNode {
   const [isHovered, setIsHovered] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const streamHlsUrl = toCloudflareStreamHlsUrlFromUid(props.streamUid)
   const isPreviewableVideo =
     Boolean(props.videoUrl) && !isCloudflareStreamUrl(props.videoUrl)
+  const isPreviewableStream = Boolean(streamHlsUrl)
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true)
     // 動画再生（スマホでも再生するが全画面表示は防ぐ）
     if (isPreviewableVideo && videoRef.current) {
       videoRef.current.currentTime = 0 // 最初から再生
-      videoRef.current.play()
+      void videoRef.current.play()
     }
   }, [isPreviewableVideo])
 
@@ -90,6 +97,17 @@ export function HoverVideoImage (props: Props): React.ReactNode {
               videoRef.current.style.display = "none"
             }
           }}
+        />
+      )}
+
+      {isPreviewableStream && streamHlsUrl && (
+        <StreamPreviewVideo
+          src={streamHlsUrl}
+          className={cn(
+            "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
+            isHovered ? "opacity-100" : "opacity-0",
+          )}
+          isActive={isHovered}
         />
       )}
     </>

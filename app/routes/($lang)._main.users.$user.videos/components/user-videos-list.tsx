@@ -67,6 +67,7 @@ export const UserVideosItemFragment = graphql(
     id
     title
     url
+    streamUid
     smallThumbnailImageHeight
     smallThumbnailImageWidth
     smallThumbnailImageURL

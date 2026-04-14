@@ -190,6 +190,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         workId={photo.context.id}
                         imageUrl={imageProps.src}
                         videoUrl={photo.context.url}
+                        streamUid={photo.context.streamUid}
                         alt={photo.context.title}
                         width={
                           typeof imageProps.width === "string"
@@ -217,6 +218,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       workId={photo.context.id}
                       imageUrl={imageProps.src}
                       videoUrl={photo.context.url}
+                      streamUid={photo.context.streamUid}
                       alt={photo.context.title}
                       to={`/posts/${photo.context.id}`}
                       width={
@@ -413,6 +415,7 @@ export const PhotoAlbumWorkFragment = graphql(
     thumbnailImagePosition
     subWorksCount
     url
+    streamUid
     isDeleted
     user {
       id

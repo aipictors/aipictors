@@ -4,12 +4,16 @@ import SSR from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
 import { LikeButton } from "~/components/like-button"
+import { StreamPreviewVideo } from "~/components/stream-preview-video"
 import { useRef, useCallback, useEffect, useState } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import { isCloudflareStreamUrl } from "~/utils/cloudflare-stream"
+import {
+  isCloudflareStreamUrl,
+  toCloudflareStreamHlsUrlFromUid,
+} from "~/utils/cloudflare-stream"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
@@ -23,6 +27,7 @@ type Props = {
 export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
   const [isMobile, setIsMobile] = useState(false)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   const isAutoPlay = props.isAutoPlay ?? true
 
@@ -40,6 +45,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
   }, [])
 
   const handleMouseEnter = useCallback((index: number) => {
+    setHoveredIndex(index)
     if (isAutoPlay) {
       return
     }
@@ -51,6 +57,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
   }, [])
 
   const handleMouseLeave = useCallback((index: number) => {
+    setHoveredIndex((current) => (current === index ? null : current))
     if (isAutoPlay) {
       return
     }
@@ -62,6 +69,9 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
   }, [])
 
   if (props.works.length === 1) {
+    const singleStreamHlsUrl = toCloudflareStreamHlsUrlFromUid(
+      props.works[0].streamUid,
+    )
     return (
       <div className="relative transition-all" style={{ position: "relative" }}>
         <div className="relative inline-block h-full w-full">
@@ -93,6 +103,21 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
               </video>
             )}
 
+            {singleStreamHlsUrl && (
+              <StreamPreviewVideo
+                src={singleStreamHlsUrl}
+                className="absolute top-0 left-0 max-h-72 w-full overflow-hidden rounded object-contain"
+                style={
+                  isAutoPlay || isMobile || hoveredIndex === Number(props.works[0].id)
+                    ? { zIndex: "10" }
+                    : { zIndex: "-1" }
+                }
+                isActive={
+                  isAutoPlay || isMobile || hoveredIndex === Number(props.works[0].id)
+                }
+              />
+            )}
+
             <div className="absolute top-1 left-1 opacity-50">
               <Badge variant={"secondary"} className="text-xs">
                 {"video"}
@@ -111,6 +136,7 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
           key: work.id,
           src: work.smallThumbnailImageURL,
           url: work.url,
+          streamUid: work.streamUid,
           width: work.smallThumbnailImageWidth,
           height: work.smallThumbnailImageHeight,
           context: work,
@@ -228,6 +254,21 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
                       </video>
                     )}
 
+                    {toCloudflareStreamHlsUrlFromUid(context.photo.context.streamUid) && (
+                      <StreamPreviewVideo
+                        src={toCloudflareStreamHlsUrlFromUid(context.photo.context.streamUid) ?? ""}
+                        className="absolute top-0 left-0 w-full overflow-hidden rounded object-contain"
+                        style={
+                          isAutoPlay || isMobile || hoveredIndex === context.index
+                            ? { zIndex: "10" }
+                            : { zIndex: "-1" }
+                        }
+                        isActive={
+                          isAutoPlay || isMobile || hoveredIndex === context.index
+                        }
+                      />
+                    )}
+
                     <div className="absolute top-1 left-1 opacity-50">
                       <Badge variant={"secondary"} className="text-xs">
                         {"video"}
@@ -249,6 +290,7 @@ export const PhotoAlbumVideoWorkFragment = graphql(
     id
     title
     url
+    streamUid
     smallThumbnailImageHeight
     smallThumbnailImageWidth
     smallThumbnailImageURL

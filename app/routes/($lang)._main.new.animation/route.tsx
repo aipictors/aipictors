@@ -174,12 +174,12 @@ export default function NewAnimation() {
       return null
     }
 
-    const videoUrl = await uploadPublicVideo(
+    const uploadedVideo = await uploadPublicVideo(
       state.videoFile as File,
       viewer?.viewer?.token,
     )
 
-    return videoUrl
+    return uploadedVideo
   }
 
   const onPost = async () => {
@@ -304,9 +304,9 @@ export default function NewAnimation() {
 
       dispatch({ type: "SET_PROGRESS", payload: 70 })
 
-      const uploadedUrl = await uploadVideo()
+      const uploadedVideo = await uploadVideo()
 
-      if (!uploadedUrl) {
+      if (!uploadedVideo) {
         toast(
           t("動画のアップロードに失敗しました", "Failed to upload the video"),
         )
@@ -354,7 +354,8 @@ export default function NewAnimation() {
             largeThumbnailImageURL: largeThumbnailUrl,
             largeThumbnailImageWidth: largeThumbnail.width,
             largeThumbnailImageHeight: largeThumbnail.height,
-            videoUrl: uploadedUrl,
+            videoUrl: uploadedVideo.url,
+            streamUid: uploadedVideo.uid,
             ogpImageUrl: ogpBase64Url,
             imageHeight: mainImageSize.height,
             imageWidth: mainImageSize.width,

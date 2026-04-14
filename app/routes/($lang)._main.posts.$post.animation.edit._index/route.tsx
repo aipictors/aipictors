@@ -406,6 +406,7 @@ export default function EditImage () {
               ? largeThumbnail.height
               : (work.largeThumbnailImageHeight ?? 0),
             videoUrl: work?.url ?? "",
+            streamUid: work?.streamUid ?? null,
             ogpImageUrl: ogpBase64Url,
             imageHeight: mainImageSize.height,
             imageWidth: mainImageSize.width,
@@ -656,6 +657,7 @@ const workQuery = graphql(
       pngInfo
       style
       url
+      streamUid
       relatedUrl
       user {
         id

@@ -297,6 +297,7 @@ export const PhotoAlbumWorkFragment = graphql(
     thumbnailImagePosition
     subWorksCount
     url
+    streamUid
     isDeleted
     user {
       id

@@ -98,6 +98,7 @@
     "google-libphonenumber": "^3.2.38",
     "gql.tada": "^1.8.6",
     "graphql": "^16.9.0",
+    "hls.js": "^1.6.16",
     "immer": "^10.1.1",
     "input-otp": "^1.2.4",
     "isbot": "^5.1.17",

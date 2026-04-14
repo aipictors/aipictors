@@ -1,6 +1,11 @@
 import { config } from "~/config"
 import { object, string, safeParse, nullable, optional } from "valibot"
 
+export type UploadedStreamVideo = {
+  uid: string | null
+  url: string
+}
+
 /**
  * 動画アップロード
  * @param file Blob形式のファイル
@@ -11,7 +16,7 @@ import { object, string, safeParse, nullable, optional } from "valibot"
 export const uploadPublicVideo = async (
   file: Blob,
   token: string | undefined | null,
-): Promise<string> => {
+): Promise<UploadedStreamVideo> => {
   if (token === null || token === undefined) {
     throw new Error(
       "ログイン情報が正しく取得できていません、画面更新もしくはログインしなおしてください",
@@ -48,7 +53,10 @@ export const uploadPublicVideo = async (
         throw new Error("動画のアップロードに失敗いたしました")
       }
 
-      return validationResult.output.data.url
+      return {
+        uid: validationResult.output.data.uid ?? null,
+        url: validationResult.output.data.url,
+      }
     }
   } catch (error) {
     console.error(error)

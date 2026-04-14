@@ -78,6 +78,7 @@
         "google-libphonenumber": "^3.2.38",
         "gql.tada": "^1.8.6",
         "graphql": "^16.9.0",
+        "hls.js": "^1.6.16",
         "immer": "^10.1.1",
         "input-otp": "^1.2.4",
         "isbot": "^5.1.17",
@@ -1688,6 +1689,8 @@
     "hermes-estree": ["hermes-estree@0.21.1", "", {}, "sha512-ayfESdfG0wZM32uGw0CMfcW6pW6RM8htLXZI56A4rr7hIOjmKw+wd3+71wUc1uQfn90ZyY1NMCbQeMnunrIidg=="],
 
     "hermes-parser": ["hermes-parser@0.21.1", "", { "dependencies": { "hermes-estree": "0.21.1" } }, "sha512-ANsRSBqQHzca7AXbsuwKApSQhAdljPip63MgqLebSVzNUI+A3NDzfiH9Ny4df4fA7Ndso3kPR1V/x1YEc7BYxA=="],
+
+    "hls.js": ["hls.js@1.6.16", "", {}, "sha512-VSIRpLfRwlAAdGL4wiTucx2ScRipo0ed1FBatWkyt832jC4CReKstga6yIhYVwGu9LOBjuX9wzmRMeQdBJtzEA=="],
 
     "hoist-non-react-statics": ["hoist-non-react-statics@3.3.2", "", { "dependencies": { "react-is": "^16.7.0" } }, "sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw=="],
 

@@ -739,6 +739,7 @@ export const workArticleFragment =
   thumbnailImagePosition
   subWorksCount
   url
+  streamUid
   isDeleted
   user {
     id
