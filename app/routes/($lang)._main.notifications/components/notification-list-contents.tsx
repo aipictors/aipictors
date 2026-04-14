@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Suspense, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -13,6 +13,10 @@ export function NotificationListContents() {
 
   const [page, setPage] = useState(0)
 
+  useEffect(() => {
+    setPage(0)
+  }, [notifyType])
+
   const { data: notificationsCount } = useSuspenseQuery(ViewerQuery, {
     variables: {
       where: {
@@ -24,7 +28,7 @@ export function NotificationListContents() {
   })
 
   return (
-    <>
+    <div className="space-y-4 pt-2 pb-20">
       <NotificationListSetting
         notificationType={notifyType}
         setNotificationType={setNotifyType}
@@ -32,7 +36,6 @@ export function NotificationListContents() {
       <Suspense fallback={<AppLoadingPage />}>
         <NotificationListItems type={notifyType} page={page} />
       </Suspense>
-      <div className="h-8" />
       <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
         <ResponsivePagination
           perPage={160}
@@ -43,7 +46,7 @@ export function NotificationListContents() {
           }}
         />
       </div>
-    </>
+    </div>
   )
 }
 

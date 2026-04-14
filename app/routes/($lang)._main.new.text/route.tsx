@@ -40,6 +40,22 @@ import { sha256 } from "~/utils/sha256"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { uploadTextFile } from "~/utils/upload-text-file"
 
+type EventRating = "G" | "R15" | "R18" | "R18G"
+
+type EventOption = {
+  title: string | null
+  description: string | null
+  thumbnailImageUrl?: string | null
+  headerImageUrl?: string | null
+  tag: string | null
+  ratings?: EventRating[] | null
+  endAt: number
+  slug: string | null
+  source: "OFFICIAL" | "USER"
+}
+
+type RawEventOption = Omit<EventOption, "source">
+
 export default function NewText() {
   const data = useLoaderData<typeof loader>()
 
@@ -50,6 +66,7 @@ export default function NewText() {
   const [searchParams] = useSearchParams()
 
   const ref = searchParams.get("generation")
+  const eventSlug = searchParams.get("event")
 
   const generationNanoids = ref?.split("|").filter(Boolean) ?? []
 
@@ -73,6 +90,47 @@ export default function NewText() {
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
+
+  const { data: userEventsData } = useQuery(UserEventsQuery, {
+    errorPolicy: "all",
+    variables: {
+      limit: 8,
+      offset: 0,
+    },
+  })
+
+  const { data: selectedUserEventData } = useQuery(SelectedUserEventQuery, {
+    skip: !eventSlug,
+    errorPolicy: "all",
+    variables: {
+      slug: eventSlug ?? "",
+    },
+  })
+
+  const appEvents: RawEventOption[] = Array.isArray(viewerData?.appEvents)
+    ? (viewerData.appEvents as RawEventOption[])
+    : Array.isArray(data.appEvents)
+      ? (data.appEvents as RawEventOption[])
+      : []
+  const userEvents: RawEventOption[] = Array.isArray(userEventsData?.userEvents)
+    ? (userEventsData.userEvents as RawEventOption[])
+    : []
+  const selectedUserEvent = selectedUserEventData?.userEvent as
+    | RawEventOption
+    | undefined
+  const mergedUserEvents =
+    selectedUserEvent &&
+    !userEvents.some(
+      (event) =>
+        event.slug === selectedUserEvent.slug ||
+        event.tag === selectedUserEvent.tag,
+    )
+      ? [selectedUserEvent, ...userEvents]
+      : userEvents
+  const events: EventOption[] = [
+    ...appEvents.map((event) => ({ ...event, source: "OFFICIAL" as const })),
+    ...mergedUserEvents.map((event) => ({ ...event, source: "USER" as const })),
+  ]
 
   const [state, dispatch] = useReducer(postTextFormReducer, {
     editTargetImageBase64: null,
@@ -480,8 +538,6 @@ export default function NewText() {
       }))
     : null
 
-  const events = viewerData?.appEvents ?? []
-
   return (
     <div className="m-auto w-full max-w-[1200px] space-y-4 pb-4">
       <div className="space-y-4">
@@ -677,6 +733,8 @@ const viewerQuery = graphql(
       id
       description
       title
+      thumbnailImageUrl
+      headerImageUrl
       tag
       slug
       endAt
@@ -688,6 +746,44 @@ const viewerQuery = graphql(
     PostTextFormPassFragment,
     PostTextFormRecentlyUsedTagsFragment,
   ],
+)
+
+const UserEventsQuery = graphql(
+  `query UserEventsQuery($limit: Int!, $offset: Int!) {
+    userEvents(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        status: "ONGOING",
+      }
+    ) {
+      id
+      description
+      title
+      thumbnailImageUrl
+      headerImageUrl
+      ratings
+      tag: mainTag
+      slug
+      endAt
+    }
+  }`,
+)
+
+const SelectedUserEventQuery = graphql(
+  `query SelectedUserEvent($slug: String!) {
+    userEvent(slug: $slug) {
+      id
+      description
+      title
+      thumbnailImageUrl
+      headerImageUrl
+      ratings
+      tag: mainTag
+      slug
+      endAt
+    }
+  }`,
 )
 
 const CreateWorkMutation = graphql(

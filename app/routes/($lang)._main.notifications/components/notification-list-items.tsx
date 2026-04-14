@@ -66,8 +66,6 @@ export function NotificationListItems(props: Props) {
         })
       : notifications
 
-  console.log(filteredNotifications)
-
   return (
     <div className="flex flex-col space-y-4 overflow-hidden">
       {props.type === "WORK_COMMENT" && (

@@ -1,16 +1,16 @@
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { ChevronDownIcon, ChevronUpIcon, StampIcon } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
 import { ScrollArea } from "~/components/ui/scroll-area"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { AuthContext } from "~/contexts/auth-context"
-import { useQuery } from "@apollo/client/index"
-import { useContext, useState, useEffect } from "react"
-import { graphql } from "gql.tada"
-import { useTranslation } from "~/hooks/use-translation"
-import { ChevronDownIcon, ChevronUpIcon, StampIcon } from "lucide-react"
-import { cn } from "~/lib/utils"
 
 type Props = {
   onStickerClick?: (stickerId: string, stickerImageURL: string) => void
@@ -35,7 +35,7 @@ export function PersistentStickerPanel(props: Props): React.ReactNode {
     variables: {
       limit: maxStickersPage,
       offset: stickerPage * maxStickersPage,
-      orderBy: "DATE_CREATED",
+      orderBy: "DATE_USED",
     },
   })
 

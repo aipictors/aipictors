@@ -27,7 +27,13 @@ import { AppPageHeader } from "~/components/app/app-page-header"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
 import { Checkbox } from "~/components/ui/checkbox"
 import {
   Dialog,
@@ -125,8 +131,11 @@ export default function NewThemeProposalPage() {
   const [note, setNote] = useState("")
   const [visibleMonth, setVisibleMonth] = useState(startOfMonth(today))
   const [checkedTheme, setCheckedTheme] = useState<string | null>(null)
-  const [selectedProposalDate, setSelectedProposalDate] = useState<string | null>(null)
-  const [mobileCalendarFilter, setMobileCalendarFilter] = useState<MobileCalendarFilter>("ALL")
+  const [selectedProposalDate, setSelectedProposalDate] = useState<
+    string | null
+  >(null)
+  const [mobileCalendarFilter, setMobileCalendarFilter] =
+    useState<MobileCalendarFilter>("ALL")
 
   const [createThemeProposal, { loading, error }] = useMutation<MutationData>(
     CreateThemeProposalMutation,
@@ -155,18 +164,17 @@ export default function NewThemeProposalPage() {
       },
       fetchPolicy: "cache-and-network",
     })
-  const [runDuplicateCheck, duplicateCheck] = useLazyQuery<DuplicateCheckQueryData>(
-    ThemeProposalDuplicateThemesQuery,
-    {
+  const [runDuplicateCheck, duplicateCheck] =
+    useLazyQuery<DuplicateCheckQueryData>(ThemeProposalDuplicateThemesQuery, {
       fetchPolicy: "no-cache",
-    },
-  )
+    })
 
   const dailyThemes = calendarData?.dailyThemes ?? []
   const monthThemeProposals = proposalCalendarData?.themeProposals ?? []
-  const duplicateThemes = checkedTheme === theme.trim()
-    ? (duplicateCheck.data?.themeProposalDuplicateThemes ?? [])
-    : []
+  const duplicateThemes =
+    checkedTheme === theme.trim()
+      ? (duplicateCheck.data?.themeProposalDuplicateThemes ?? [])
+      : []
   const duplicateCount3Months = duplicateThemes.filter((item) => {
     return parseISO(item.dateText) >= subMonths(today, 3)
   }).length
@@ -181,15 +189,12 @@ export default function NewThemeProposalPage() {
     visibleMonth.getFullYear(),
     visibleMonth.getMonth() + 1,
   )
-  const proposalsByDate = monthThemeProposals.reduce(
-    (map, proposal) => {
-      const items = map.get(proposal.targetDate) ?? []
-      items.push(proposal)
-      map.set(proposal.targetDate, items)
-      return map
-    },
-    new Map<string, CalendarThemeProposal[]>(),
-  )
+  const proposalsByDate = monthThemeProposals.reduce((map, proposal) => {
+    const items = map.get(proposal.targetDate) ?? []
+    items.push(proposal)
+    map.set(proposal.targetDate, items)
+    return map
+  }, new Map<string, CalendarThemeProposal[]>())
   const calendarCells: CalendarCell[] = cells.map((day, index) => {
     if (day === null) {
       return {
@@ -210,7 +215,8 @@ export default function NewThemeProposalPage() {
       return proposal.status === "ADOPTED"
     })
     const hasProposals = proposalsForDay.length > 0
-    const isSelectable = !isBefore(cellDate, minimumProposalDate) && !hasAdoptedProposal
+    const isSelectable =
+      !isBefore(cellDate, minimumProposalDate) && !hasAdoptedProposal
     const isSelected = dateText === date
     const isHistoryWindow = isBefore(cellDate, minimumProposalDate)
     const cellStatusLabel = isSelectable
@@ -239,9 +245,11 @@ export default function NewThemeProposalPage() {
       cellStatusLabel: cellStatusLabel,
     }
   })
-  const mobileCalendarDays = calendarCells.filter((cell): cell is FilledCalendarCell => {
-    return !cell.isEmpty
-  })
+  const mobileCalendarDays = calendarCells.filter(
+    (cell): cell is FilledCalendarCell => {
+      return !cell.isEmpty
+    },
+  )
   const filteredMobileCalendarDays = mobileCalendarDays.filter((cell) => {
     if (mobileCalendarFilter === "NO_PROPOSALS") {
       return cell.isSelectable && !cell.hasProposals
@@ -261,9 +269,11 @@ export default function NewThemeProposalPage() {
     ? (proposalsByDate.get(selectedProposalDate) ?? [])
     : []
   const selectedTargetDateProposals = proposalsByDate.get(date) ?? []
-  const selectedDateHasAdoptedProposal = selectedTargetDateProposals.some((proposal) => {
-    return proposal.status === "ADOPTED"
-  })
+  const selectedDateHasAdoptedProposal = selectedTargetDateProposals.some(
+    (proposal) => {
+      return proposal.status === "ADOPTED"
+    },
+  )
 
   const onSubmit = async () => {
     if (!theme.trim()) {
@@ -338,7 +348,10 @@ export default function NewThemeProposalPage() {
       {!authContext.isLoading && authContext.isNotLoggedIn && (
         <Alert>
           <AlertDescription>
-            {t("提案するにはログインが必要です。", "You need to sign in to submit a proposal.")}
+            {t(
+              "提案するにはログインが必要です。",
+              "You need to sign in to submit a proposal.",
+            )}
           </AlertDescription>
         </Alert>
       )}
@@ -432,7 +445,9 @@ export default function NewThemeProposalPage() {
                 <Checkbox
                   id="proposal-allow-other-date"
                   checked={allowOtherDate}
-                  onCheckedChange={(checked) => setAllowOtherDate(checked !== false)}
+                  onCheckedChange={(checked) =>
+                    setAllowOtherDate(checked !== false)
+                  }
                   disabled={authContext.isNotLoggedIn || loading}
                   className="mt-0.5"
                 />
@@ -494,7 +509,12 @@ export default function NewThemeProposalPage() {
                   type="button"
                   variant="secondary"
                   onClick={onCheckDuplicates}
-                  disabled={authContext.isNotLoggedIn || loading || duplicateCheck.loading || theme.trim().length < 2}
+                  disabled={
+                    authContext.isNotLoggedIn ||
+                    loading ||
+                    duplicateCheck.loading ||
+                    theme.trim().length < 2
+                  }
                 >
                   {duplicateCheck.loading ? (
                     <>
@@ -512,7 +532,9 @@ export default function NewThemeProposalPage() {
 
               {duplicateCheck.error && (
                 <Alert variant="destructive" className="mt-3">
-                  <AlertDescription>{duplicateCheck.error.message}</AlertDescription>
+                  <AlertDescription>
+                    {duplicateCheck.error.message}
+                  </AlertDescription>
                 </Alert>
               )}
 
@@ -553,7 +575,9 @@ export default function NewThemeProposalPage() {
                             className="max-w-full truncate whitespace-nowrap rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-sm transition hover:bg-orange-100 dark:border-orange-800 dark:bg-orange-950/40 dark:text-orange-100 dark:hover:bg-orange-950/60"
                             title={`${format(parseISO(item.dateText), "yyyy/MM/dd", { locale: ja })} · ${item.title}`}
                           >
-                            {format(parseISO(item.dateText), "yyyy/MM/dd", { locale: ja })}
+                            {format(parseISO(item.dateText), "yyyy/MM/dd", {
+                              locale: ja,
+                            })}
                             {" · "}
                             {item.title}
                           </Link>
@@ -584,9 +608,16 @@ export default function NewThemeProposalPage() {
             <div className="flex justify-end">
               <Button
                 onClick={onSubmit}
-                disabled={authContext.isNotLoggedIn || loading || theme.trim().length === 0 || selectedDateHasAdoptedProposal}
+                disabled={
+                  authContext.isNotLoggedIn ||
+                  loading ||
+                  theme.trim().length === 0 ||
+                  selectedDateHasAdoptedProposal
+                }
               >
-                {loading ? t("送信中", "Submitting") : t("提案を送信", "Submit proposal")}
+                {loading
+                  ? t("送信中", "Submitting")
+                  : t("提案を送信", "Submit proposal")}
               </Button>
             </div>
           </CardContent>
@@ -596,7 +627,9 @@ export default function NewThemeProposalPage() {
           <CardHeader>
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <CardTitle className="dark:text-zinc-50">{t("お題カレンダー", "Theme calendar")}</CardTitle>
+                <CardTitle className="dark:text-zinc-50">
+                  {t("お題カレンダー", "Theme calendar")}
+                </CardTitle>
                 <CardDescription className="dark:text-zinc-400">
                   {t(
                     "過去のお題と7日後までの予定を見ながら、8日後以降のセルを選べます。",
@@ -629,11 +662,21 @@ export default function NewThemeProposalPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-wrap gap-2 text-xs">
-              <Badge variant="secondary" className="whitespace-nowrap">{t("過去と7日後まで", "Past to +7 days")}</Badge>
-              <Badge className="whitespace-nowrap bg-emerald-600 text-white">{t("未提案", "No proposals yet")}</Badge>
-              <Badge className="whitespace-nowrap bg-amber-500 text-white">{t("提案あり", "Has proposals")}</Badge>
-              <Badge className="whitespace-nowrap bg-rose-600 text-white">{t("採用済み", "Adopted")}</Badge>
-              <Badge className="whitespace-nowrap bg-slate-500 text-white">{t("受付前", "Not open yet")}</Badge>
+              <Badge variant="secondary" className="whitespace-nowrap">
+                {t("過去と7日後まで", "Past to +7 days")}
+              </Badge>
+              <Badge className="whitespace-nowrap bg-emerald-600 text-white">
+                {t("未提案", "No proposals yet")}
+              </Badge>
+              <Badge className="whitespace-nowrap bg-amber-500 text-white">
+                {t("提案あり", "Has proposals")}
+              </Badge>
+              <Badge className="whitespace-nowrap bg-rose-600 text-white">
+                {t("採用済み", "Adopted")}
+              </Badge>
+              <Badge className="whitespace-nowrap bg-slate-500 text-white">
+                {t("公開中", "Visible")}
+              </Badge>
             </div>
 
             <p className="text-muted-foreground text-xs dark:text-zinc-400">
@@ -657,7 +700,11 @@ export default function NewThemeProposalPage() {
                     key={filter.value}
                     type="button"
                     size="sm"
-                    variant={mobileCalendarFilter === filter.value ? "default" : "secondary"}
+                    variant={
+                      mobileCalendarFilter === filter.value
+                        ? "default"
+                        : "secondary"
+                    }
                     className="rounded-full px-3 text-xs"
                     onClick={() => setMobileCalendarFilter(filter.value)}
                   >
@@ -667,7 +714,10 @@ export default function NewThemeProposalPage() {
               </div>
             </div>
 
-            {isCalendarLoading && isProposalCalendarLoading && dailyThemes.length === 0 && monthThemeProposals.length === 0 ? (
+            {isCalendarLoading &&
+            isProposalCalendarLoading &&
+            dailyThemes.length === 0 &&
+            monthThemeProposals.length === 0 ? (
               <div className="flex min-h-64 items-center justify-center text-muted-foreground">
                 <Loader2Icon className="mr-2 size-4 animate-spin" />
                 {t("カレンダーを読み込み中", "Loading calendar")}
@@ -710,16 +760,22 @@ export default function NewThemeProposalPage() {
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="min-w-0">
                             <p className="font-semibold text-base leading-none">
-                              {format(parseISO(cell.dateText), "M/d", { locale: ja })}
+                              {format(parseISO(cell.dateText), "M/d", {
+                                locale: ja,
+                              })}
                               <span className="ml-2 text-muted-foreground text-sm dark:text-zinc-400">
                                 ({cell.weekDayLabel})
                               </span>
                             </p>
                             <p className="mt-2 text-muted-foreground text-xs dark:text-zinc-400">
-                              {format(parseISO(cell.dateText), "yyyy/MM/dd", { locale: ja })}
+                              {format(parseISO(cell.dateText), "yyyy/MM/dd", {
+                                locale: ja,
+                              })}
                             </p>
                           </div>
-                          <Badge className={getCalendarCellBadgeClassName(cell)}>
+                          <Badge
+                            className={getCalendarCellBadgeClassName(cell)}
+                          >
                             {cell.cellStatusLabel}
                           </Badge>
                         </div>
@@ -728,7 +784,11 @@ export default function NewThemeProposalPage() {
                           <p className={getCalendarCellHeadlineClassName(cell)}>
                             {getCalendarCellHeadline(t, cell)}
                           </p>
-                          <p className={getCalendarCellDescriptionClassName(cell)}>
+                          <p
+                            className={getCalendarCellDescriptionClassName(
+                              cell,
+                            )}
+                          >
                             {getCalendarCellDescription(t, cell)}
                           </p>
                         </div>
@@ -758,14 +818,24 @@ export default function NewThemeProposalPage() {
 
                 <div className="hidden overflow-x-auto md:block">
                   <div className="grid min-w-[700px] grid-cols-7 gap-2">
-                    {["日", "月", "火", "水", "木", "金", "土"].map((weekDay) => (
-                      <div key={weekDay} className="pb-1 text-center font-medium text-muted-foreground text-xs">
-                        {weekDay}
-                      </div>
-                    ))}
+                    {["日", "月", "火", "水", "木", "金", "土"].map(
+                      (weekDay) => (
+                        <div
+                          key={weekDay}
+                          className="pb-1 text-center font-medium text-muted-foreground text-xs"
+                        >
+                          {weekDay}
+                        </div>
+                      ),
+                    )}
                     {calendarCells.map((cell) => {
                       if (cell.isEmpty) {
-                        return <div key={cell.key} className="aspect-square rounded-3xl bg-white/20 dark:bg-zinc-900/20" />
+                        return (
+                          <div
+                            key={cell.key}
+                            className="aspect-square rounded-3xl bg-white/20 dark:bg-zinc-900/20"
+                          />
+                        )
                       }
 
                       return (
@@ -793,14 +863,21 @@ export default function NewThemeProposalPage() {
                           className={getCalendarCellCardClassName(cell, false)}
                         >
                           <div className="flex items-start justify-between gap-1 overflow-hidden">
-                            <span className="font-semibold text-sm">{cell.day}</span>
-                            <Badge className={getCalendarCellBadgeClassName(cell)}>
+                            <span className="font-semibold text-sm">
+                              {cell.day}
+                            </span>
+                            <Badge
+                              className={getCalendarCellBadgeClassName(cell)}
+                            >
                               {cell.cellStatusLabel}
                             </Badge>
                           </div>
 
                           <div className="mt-2 flex-1 text-[11px] leading-4">
-                            <p className={getCalendarCellHeadlineClassName(cell)} title={getCalendarCellHeadline(t, cell)}>
+                            <p
+                              className={getCalendarCellHeadlineClassName(cell)}
+                              title={getCalendarCellHeadline(t, cell)}
+                            >
                               {getCalendarCellHeadline(t, cell)}
                             </p>
                             <p className="mt-1 truncate whitespace-nowrap text-[10px] text-muted-foreground dark:text-zinc-400">
@@ -864,7 +941,10 @@ export default function NewThemeProposalPage() {
                 <div className="max-h-[65vh] space-y-2 overflow-y-auto pr-1">
                   {selectedDateProposals.length === 0 ? (
                     <div className="rounded-2xl border border-dashed p-4 text-center text-muted-foreground text-sm dark:border-zinc-700 dark:text-zinc-400">
-                      {t("この日付の提案はまだありません。", "There are no proposals for this date yet.")}
+                      {t(
+                        "この日付の提案はまだありません。",
+                        "There are no proposals for this date yet.",
+                      )}
                     </div>
                   ) : (
                     selectedDateProposals.map((proposal) => (
@@ -873,14 +953,24 @@ export default function NewThemeProposalPage() {
                         className="rounded-2xl border border-amber-200 bg-amber-50/70 p-3 dark:border-amber-800 dark:bg-amber-950/20"
                       >
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <Badge className={getProposalStatusBadgeClassName(proposal.status)}>
+                          <Badge
+                            className={getProposalStatusBadgeClassName(
+                              proposal.status,
+                            )}
+                          >
                             {getProposalStatusLabel(t, proposal.status)}
                           </Badge>
-                          <Badge variant="outline" className="px-2 py-0 text-[11px]">
+                          <Badge
+                            variant="outline"
+                            className="px-2 py-0 text-[11px]"
+                          >
                             {t("いいね", "Likes")}: {proposal.likesCount}
                           </Badge>
                           {proposal.allowOtherDate && (
-                            <Badge variant="outline" className="px-2 py-0 text-[11px]">
+                            <Badge
+                              variant="outline"
+                              className="px-2 py-0 text-[11px]"
+                            >
                               {t("他の日でもOK", "Other dates OK")}
                             </Badge>
                           )}
@@ -888,7 +978,8 @@ export default function NewThemeProposalPage() {
                             {t("提案者", "Proposer")}: {proposal.proposerName}
                           </span>
                           <span className="text-muted-foreground text-[11px] dark:text-zinc-400">
-                            {t("送信", "Submitted")}: {formatUnixTime(proposal.createdAt)}
+                            {t("送信", "Submitted")}:{" "}
+                            {formatUnixTime(proposal.createdAt)}
                           </span>
                         </div>
 
@@ -897,12 +988,15 @@ export default function NewThemeProposalPage() {
                         </p>
                         <p className="mt-1 text-[11px] leading-4 text-muted-foreground dark:text-zinc-400">
                           {proposal.title}
-                          {proposal.enTitle.length > 0 && ` / ${proposal.enTitle}`}
+                          {proposal.enTitle.length > 0 &&
+                            ` / ${proposal.enTitle}`}
                         </p>
                         {proposal.note && proposal.note.length > 0 && (
                           <div className="mt-2 rounded-xl border border-amber-200/80 bg-white/80 px-3 py-2 text-[11px] leading-5 text-slate-700 dark:border-amber-900/70 dark:bg-zinc-900/70 dark:text-zinc-200">
                             <p className="font-medium">{t("備考", "Note")}</p>
-                            <p className="mt-1 whitespace-pre-wrap">{proposal.note}</p>
+                            <p className="mt-1 whitespace-pre-wrap">
+                              {proposal.note}
+                            </p>
                           </div>
                         )}
                       </div>
@@ -918,11 +1012,15 @@ export default function NewThemeProposalPage() {
   )
 }
 
-function DuplicateSummaryCard(props: { label: string, count: number }) {
+function DuplicateSummaryCard(props: { label: string; count: number }) {
   return (
     <div className="rounded-2xl border bg-white p-3 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-900/80">
-      <p className="text-muted-foreground text-xs dark:text-zinc-400">{props.label}</p>
-      <p className="mt-1 font-semibold text-2xl dark:text-zinc-50">{props.count}</p>
+      <p className="text-muted-foreground text-xs dark:text-zinc-400">
+        {props.label}
+      </p>
+      <p className="mt-1 font-semibold text-2xl dark:text-zinc-50">
+        {props.count}
+      </p>
     </div>
   )
 }
@@ -1011,15 +1109,22 @@ const CreateThemeProposalMutation = gql`
   }
 `
 
-function getCalendarCellCardClassName(cell: FilledCalendarCell, isMobile: boolean) {
+function getCalendarCellCardClassName(
+  cell: FilledCalendarCell,
+  isMobile: boolean,
+) {
   return cn(
     "relative rounded-3xl border text-left transition",
     isMobile ? "p-4" : "flex aspect-square flex-col p-2",
     {
-      "cursor-pointer border-emerald-500 bg-emerald-50 shadow-sm dark:border-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-100": cell.isSelectable && !cell.hasProposals,
-      "cursor-pointer border-amber-400 bg-amber-50 shadow-sm dark:border-amber-700 dark:bg-amber-950/35 dark:text-amber-100": cell.isSelectable && cell.hasProposals,
-      "cursor-default border-rose-300 bg-rose-50 shadow-sm dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-100": cell.hasAdoptedProposal,
-      "cursor-default border-slate-200 bg-white/80 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-100": !cell.isSelectable && !cell.hasAdoptedProposal,
+      "cursor-pointer border-emerald-500 bg-emerald-50 shadow-sm dark:border-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-100":
+        cell.isSelectable && !cell.hasProposals,
+      "cursor-pointer border-amber-400 bg-amber-50 shadow-sm dark:border-amber-700 dark:bg-amber-950/35 dark:text-amber-100":
+        cell.isSelectable && cell.hasProposals,
+      "cursor-default border-rose-300 bg-rose-50 shadow-sm dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-100":
+        cell.hasAdoptedProposal,
+      "cursor-default border-slate-200 bg-white/80 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-100":
+        !cell.isSelectable && !cell.hasAdoptedProposal,
       "ring-2 ring-orange-400 dark:ring-orange-500": cell.isSelected,
     },
   )
@@ -1036,20 +1141,29 @@ function getCalendarCellBadgeClassName(cell: FilledCalendarCell) {
 
 function getCalendarCellHeadlineClassName(cell: FilledCalendarCell) {
   return cn("font-medium", {
-    "text-emerald-700 dark:text-emerald-300": cell.isSelectable && !cell.hasProposals,
-    "text-amber-800 dark:text-amber-200": cell.isSelectable && cell.hasProposals,
+    "text-emerald-700 dark:text-emerald-300":
+      cell.isSelectable && !cell.hasProposals,
+    "text-amber-800 dark:text-amber-200":
+      cell.isSelectable && cell.hasProposals,
     "text-rose-800 dark:text-rose-200": cell.hasAdoptedProposal,
-    "text-zinc-900 dark:text-zinc-100": cell.themeForDay && cell.isHistoryWindow,
-    "text-muted-foreground dark:text-zinc-400": !cell.isSelectable && !cell.hasAdoptedProposal && !(cell.themeForDay && cell.isHistoryWindow),
+    "text-zinc-900 dark:text-zinc-100":
+      cell.themeForDay && cell.isHistoryWindow,
+    "text-muted-foreground dark:text-zinc-400":
+      !cell.isSelectable &&
+      !cell.hasAdoptedProposal &&
+      !(cell.themeForDay && cell.isHistoryWindow),
   })
 }
 
 function getCalendarCellDescriptionClassName(cell: FilledCalendarCell) {
   return cn("text-sm leading-5", {
-    "text-emerald-700/80 dark:text-emerald-200/90": cell.isSelectable && !cell.hasProposals,
-    "text-amber-700/80 dark:text-amber-200/80": cell.isSelectable && cell.hasProposals,
+    "text-emerald-700/80 dark:text-emerald-200/90":
+      cell.isSelectable && !cell.hasProposals,
+    "text-amber-700/80 dark:text-amber-200/80":
+      cell.isSelectable && cell.hasProposals,
     "text-rose-700/80 dark:text-rose-200/80": cell.hasAdoptedProposal,
-    "text-muted-foreground dark:text-zinc-400": !cell.isSelectable && !cell.hasAdoptedProposal,
+    "text-muted-foreground dark:text-zinc-400":
+      !cell.isSelectable && !cell.hasAdoptedProposal,
   })
 }
 
@@ -1073,7 +1187,10 @@ function getCalendarCellHeadline(
     return t("この日付に提案できます", "You can propose for this date")
   }
 
-  return t("この期間は既存お題の確認用です", "This period is for checking official themes")
+  return t(
+    "この期間は既存お題の確認用です",
+    "This period is for checking official themes",
+  )
 }
 
 function getCalendarCellDescription(

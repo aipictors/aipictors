@@ -1,15 +1,24 @@
-import { Button } from "~/components/ui/button"
-import { AuthContext } from "~/contexts/auth-context"
-import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
-import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
-import { resizeImage } from "~/utils/resize-image"
-import { sha256 } from "~/utils/sha256"
-import { uploadPublicImage } from "~/utils/upload-public-image"
-import { uploadPublicVideo } from "~/utils/upload-public-video"
+import { useMutation, useQuery } from "@apollo/client/index"
+import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import {
-  PostAnimationFormInput,
+  type MetaFunction,
+  useBeforeUnload,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react"
+import { graphql } from "gql.tada"
+import React, { useContext, useReducer } from "react"
+import { toast } from "sonner"
+import { safeParse } from "valibot"
+import { Button } from "~/components/ui/button"
+import { META } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { loaderClient } from "~/lib/loader-client"
+import {
   PostAnimationFormAiModelFragment,
   PostAnimationFormAlbumFragment,
+  PostAnimationFormInput,
   PostAnimationFormPassFragment,
   PostAnimationFormRecentlyUsedTagsFragment,
 } from "~/routes/($lang)._main.new.animation/components/post-animation-form-input"
@@ -17,33 +26,43 @@ import { PostAnimationFormUploader } from "~/routes/($lang)._main.new.animation/
 import { postAnimationFormInputReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-input-reducer"
 import { postAnimationFormReducer } from "~/routes/($lang)._main.new.animation/reducers/post-animation-form-reducer"
 import { CreatingWorkDialog } from "~/routes/($lang)._main.new.image/components/creating-work-dialog"
+import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
-import { useQuery, useMutation } from "@apollo/client/index"
-import {
-  type MetaFunction,
-  useBeforeUnload,
-  useLoaderData,
-} from "@remix-run/react"
-import { graphql } from "gql.tada"
-import React from "react"
-import { useContext, useReducer } from "react"
-import { toast } from "sonner"
-import { safeParse } from "valibot"
-import { PostFormHeader } from "~/routes/($lang)._main.new.image/components/post-form-header"
-import { META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { deleteUploadedImage } from "~/utils/delete-uploaded-image"
+import { getSizeFromBase64 } from "~/utils/get-size-from-base64"
 import { getJstDate } from "~/utils/jst-date"
-import { useTranslation } from "~/hooks/use-translation"
-import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
-import { loaderClient } from "~/lib/loader-client"
+import { resizeImage } from "~/utils/resize-image"
+import { sha256 } from "~/utils/sha256"
+import { uploadPublicImage } from "~/utils/upload-public-image"
+import { uploadPublicVideo } from "~/utils/upload-public-video"
 
-export default function NewAnimation () {
+type EventRating = "G" | "R15" | "R18" | "R18G"
+
+type EventOption = {
+  title: string | null
+  description: string | null
+  thumbnailImageUrl?: string | null
+  headerImageUrl?: string | null
+  tag: string | null
+  ratings?: EventRating[] | null
+  endAt: number
+  slug: string | null
+  source: "OFFICIAL" | "USER"
+}
+
+type RawEventOption = Omit<EventOption, "source">
+
+export default function NewAnimation() {
   const data = useLoaderData<typeof loader>()
 
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
+
+  const [searchParams] = useSearchParams()
+  const eventSlug = searchParams.get("event")
 
   const [state, dispatch] = useReducer(postAnimationFormReducer, {
     isThumbnailLandscape: false,
@@ -99,6 +118,45 @@ export default function NewAnimation () {
       endDate: afterDate.toISOString().split("T")[0],
     },
   })
+
+  const { data: userEventsData } = useQuery(UserEventsQuery, {
+    errorPolicy: "all",
+    variables: {
+      limit: 8,
+      offset: 0,
+    },
+  })
+
+  const { data: selectedUserEventData } = useQuery(SelectedUserEventQuery, {
+    skip: !eventSlug,
+    errorPolicy: "all",
+    variables: {
+      slug: eventSlug ?? "",
+    },
+  })
+
+  const appEvents: RawEventOption[] = Array.isArray(viewer?.appEvents)
+    ? (viewer.appEvents as RawEventOption[])
+    : []
+  const userEvents: RawEventOption[] = Array.isArray(userEventsData?.userEvents)
+    ? (userEventsData.userEvents as RawEventOption[])
+    : []
+  const selectedUserEvent = selectedUserEventData?.userEvent as
+    | RawEventOption
+    | undefined
+  const mergedUserEvents =
+    selectedUserEvent &&
+    !userEvents.some(
+      (event) =>
+        event.slug === selectedUserEvent.slug ||
+        event.tag === selectedUserEvent.tag,
+    )
+      ? [selectedUserEvent, ...userEvents]
+      : userEvents
+  const events: EventOption[] = [
+    ...appEvents.map((event) => ({ ...event, source: "OFFICIAL" as const })),
+    ...mergedUserEvents.map((event) => ({ ...event, source: "USER" as const })),
+  ]
 
   const [createWork, { loading: isCreatedLoading }] =
     useMutation(CreateWorkMutation)
@@ -384,7 +442,7 @@ export default function NewAnimation () {
               : null
           }
           aiModels={viewer?.aiModels ?? []}
-          events={viewer?.appEvents ?? []}
+          events={events}
           needFix={false}
         />
         <div className="h-4" />
@@ -508,6 +566,8 @@ const ViewerQuery = graphql(
       id
       description
       title
+      thumbnailImageUrl
+      headerImageUrl
       tag
       slug
       endAt
@@ -519,6 +579,44 @@ const ViewerQuery = graphql(
     PostAnimationFormPassFragment,
     PostAnimationFormRecentlyUsedTagsFragment,
   ],
+)
+
+const UserEventsQuery = graphql(
+  `query UserEventsQuery($limit: Int!, $offset: Int!) {
+    userEvents(
+      limit: $limit,
+      offset: $offset,
+      where: {
+        status: "ONGOING",
+      }
+    ) {
+      id
+      description
+      title
+      thumbnailImageUrl
+      headerImageUrl
+      ratings
+      tag: mainTag
+      slug
+      endAt
+    }
+  }`,
+)
+
+const SelectedUserEventQuery = graphql(
+  `query SelectedUserEvent($slug: String!) {
+    userEvent(slug: $slug) {
+      id
+      description
+      title
+      thumbnailImageUrl
+      headerImageUrl
+      ratings
+      tag: mainTag
+      slug
+      endAt
+    }
+  }`,
 )
 
 const CreateWorkMutation = graphql(

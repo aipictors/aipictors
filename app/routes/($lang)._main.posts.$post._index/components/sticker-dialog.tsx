@@ -1,3 +1,8 @@
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
+import { MinusIcon, PlusIcon } from "lucide-react"
+import { useContext, useEffect, useRef, useState } from "react"
+import { ResponsivePagination } from "~/components/responsive-pagination"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -7,21 +12,15 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { AuthContext } from "~/contexts/auth-context"
-import { useQuery } from "@apollo/client/index"
-import { useContext, useState, useEffect, useRef } from "react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { AuthContext } from "~/contexts/auth-context"
+import { useFocusTimeout } from "~/hooks/use-focus-timeout"
+import { useTranslation } from "~/hooks/use-translation"
+import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
 import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-
-import { ResponsivePagination } from "~/components/responsive-pagination"
-import { graphql } from "gql.tada"
-import { AddStickerButton } from "~/routes/($lang)._main.posts.$post._index/components/add-sticker-button"
-import { useTranslation } from "~/hooks/use-translation"
-import { useFocusTimeout } from "~/hooks/use-focus-timeout"
-import { MinusIcon, PlusIcon } from "lucide-react"
 
 type Props = {
   isOpen: boolean
@@ -60,7 +59,7 @@ function setCookie(name: string, value: string, days: number) {
 /**
  * スタンプ送信ダイアログ
  */
-export function StickerDialog (props: Props) {
+export function StickerDialog(props: Props) {
   const appContext = useContext(AuthContext)
 
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
@@ -80,7 +79,7 @@ export function StickerDialog (props: Props) {
     variables: {
       limit: maxStickersPage,
       offset: createdSortStickerPage * maxStickersPage,
-      orderBy: "DATE_CREATED",
+      orderBy: type === "RELATED" ? "DATE_USED" : "DATE_CREATED",
     },
     notifyOnNetworkStatusChange: true,
   })
@@ -190,6 +189,10 @@ export function StickerDialog (props: Props) {
       setSavedScrollPositions({})
     }
   }, [props.isOpen])
+
+  useEffect(() => {
+    setCreatedSortStickerPage(0)
+  }, [type])
 
   const sizeMap = {
     80: "large",

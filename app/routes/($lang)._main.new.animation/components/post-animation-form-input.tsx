@@ -1,24 +1,26 @@
-import { useEffect, type Dispatch } from "react"
-import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
-import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
-import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
-import { PostFormItemTitle } from "~/routes/($lang)._main.new.image/components/post-form-item-title"
 import { useQuery } from "@apollo/client/index"
-import { PostFormItemTheme } from "~/routes/($lang)._main.new.image/components/post-form-item-theme"
-import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
-import { PostFormItemView } from "~/routes/($lang)._main.new.image/components/post-form-item-view"
-import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
-import { PostFormItemTags } from "~/routes/($lang)._main.new.image/components/post-form-item-tags"
-import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/post-form-item-event"
-import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
-import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
-import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
 import { type FragmentOf, graphql } from "gql.tada"
-import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
-import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
+import { type Dispatch, useEffect, useState } from "react"
+import { useTranslation } from "~/hooks/use-translation"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import type { PostAnimationFormInputAction } from "~/routes/($lang)._main.new.animation/reducers/actions/post-animation-form-input-action"
 import type { PostAnimationFormInputState } from "~/routes/($lang)._main.new.animation/reducers/states/post-animation-form-input-state"
+import { PostFormItemAdvertising } from "~/routes/($lang)._main.new.image/components/post-form-item-advertising"
+import { PostFormItemAlbum } from "~/routes/($lang)._main.new.image/components/post-form-item-album"
+import { PostFormItemCaption } from "~/routes/($lang)._main.new.image/components/post-form-item-caption"
+import { PostFormItemDate } from "~/routes/($lang)._main.new.image/components/post-form-item-date"
+import { PostFormItemEnglish } from "~/routes/($lang)._main.new.image/components/post-form-item-english"
+import { PostFormItemEvent } from "~/routes/($lang)._main.new.image/components/post-form-item-event"
 import { PostFormItemFix } from "~/routes/($lang)._main.new.image/components/post-form-item-fix"
+import { PostFormItemModel } from "~/routes/($lang)._main.new.image/components/post-form-item-model"
+import { PostFormItemRating } from "~/routes/($lang)._main.new.image/components/post-form-item-rating"
+import { PostFormItemRelatedLink } from "~/routes/($lang)._main.new.image/components/post-form-item-related-link"
+import { PostFormItemTags } from "~/routes/($lang)._main.new.image/components/post-form-item-tags"
+import { PostFormItemTaste } from "~/routes/($lang)._main.new.image/components/post-form-item-taste"
+import { PostFormItemTheme } from "~/routes/($lang)._main.new.image/components/post-form-item-theme"
+import { PostFormItemTitle } from "~/routes/($lang)._main.new.image/components/post-form-item-title"
+import { PostFormItemView } from "~/routes/($lang)._main.new.image/components/post-form-item-view"
+import { PostFormPermissionSetting } from "~/routes/($lang)._main.new.image/components/post-form-permission-setting"
 
 type Props = {
   dispatch: Dispatch<PostAnimationFormInputAction>
@@ -34,9 +36,13 @@ type Props = {
   events: {
     title: string | null
     description: string | null
+    thumbnailImageUrl?: string | null
+    headerImageUrl?: string | null
     tag: string | null
+    ratings?: IntrospectionEnum<"Rating">[] | null
     endAt: number
     slug: string | null
+    source: "OFFICIAL" | "USER"
   }[]
   aiModels: FragmentOf<typeof PostAnimationFormAiModelFragment>[]
   needFix: boolean
@@ -56,9 +62,18 @@ const getJSTDate = () => {
   return `${year}-${month}-${day}`
 }
 
-export function PostAnimationFormInput (props: Props) {
+const allRatings: IntrospectionEnum<"Rating">[] = ["G", "R15", "R18", "R18G"]
+
+const intersectRatings = (
+  current: IntrospectionEnum<"Rating">[],
+  next: IntrospectionEnum<"Rating">[],
+) => current.filter((rating) => next.includes(rating))
+
+export function PostAnimationFormInput(props: Props) {
+  const t = useTranslation()
   const jstDate = getJSTDate()
   const reservationDate = props.state.reservationDate || jstDate
+  const [isUserEventsVisible, setIsUserEventsVisible] = useState(false)
 
   const { data, loading } = useQuery(pageQuery, {
     variables: {
@@ -166,6 +181,55 @@ export function PostAnimationFormInput (props: Props) {
       })
   }
 
+  const officialEvents = props.events.filter(
+    (event) => event.source === "OFFICIAL",
+  )
+  const userEvents = props.events.filter((event) => event.source === "USER")
+  const selectedTagTexts = props.state.tags.map((tag) => tag.text)
+  const matchedUserEvents = userEvents.filter(
+    (event) => event.tag && selectedTagTexts.includes(event.tag),
+  )
+  const matchedUserEventAllowedRatings = matchedUserEvents
+    .map((event) => event.ratings ?? allRatings)
+    .reduce<IntrospectionEnum<"Rating">[]>((current, ratings, index) => {
+      if (index === 0) {
+        return ratings
+      }
+
+      return intersectRatings(current, ratings)
+    }, allRatings)
+  const hasNoSharedRatings =
+    matchedUserEvents.length > 0 && matchedUserEventAllowedRatings.length === 0
+  const allowedRatings =
+    matchedUserEvents.length > 0 ? matchedUserEventAllowedRatings : allRatings
+  const shouldAutoAdjustRating =
+    allowedRatings.length === 1 ? allowedRatings[0] : null
+  const ratingNote = hasNoSharedRatings
+    ? t(
+        "適用中のユーザーイベントタグ同士で共通の対象年齢種別がありません。イベントタグを見直してください。",
+        "The applied user event tags do not share any common age category. Review the event tags.",
+      )
+    : matchedUserEvents.length > 0
+      ? t(
+          `イベントタグ適用中のため、年齢種別は ${allowedRatings.join(", ")} のみ選択できます。タグを外すと通常の選択に戻ります。`,
+          `Because event tags are applied, only ${allowedRatings.join(", ")} can be selected. Remove the tag to restore normal selection.`,
+        )
+      : null
+
+  useEffect(() => {
+    if (
+      !shouldAutoAdjustRating ||
+      props.state.ratingRestriction === shouldAutoAdjustRating
+    ) {
+      return
+    }
+
+    props.dispatch({
+      type: "SET_RATING_RESTRICTION",
+      payload: shouldAutoAdjustRating,
+    })
+  }, [props.dispatch, props.state.ratingRestriction, shouldAutoAdjustRating])
+
   return (
     <div className="space-y-4">
       {props.needFix && (
@@ -203,6 +267,8 @@ export function PostAnimationFormInput (props: Props) {
           props.dispatch({ type: "SET_RATING_RESTRICTION", payload: value })
         }}
         rating={props.state.ratingRestriction}
+        allowedRatings={allowedRatings}
+        note={ratingNote}
       />
       <PostFormItemView
         accessType={props.state.accessType}
@@ -257,12 +323,16 @@ export function PostAnimationFormInput (props: Props) {
           }
         />
       )}
-      {props.events.map((event) => (
+      {officialEvents.map((event) => (
         <div key={event.slug}>
           <PostFormItemEvent
             eventName={event.title ?? null}
             eventDescription={event.description ?? null}
+            thumbnailImageUrl={
+              event.thumbnailImageUrl ?? event.headerImageUrl ?? null
+            }
             eventTag={event.tag ?? null}
+            ratings={event.ratings ?? null}
             endAt={event.endAt ?? 0}
             slug={event.slug ?? null}
             addTag={(tag) => {
@@ -275,6 +345,65 @@ export function PostAnimationFormInput (props: Props) {
           />
         </div>
       ))}
+      {userEvents.length > 0 && (
+        <div className="space-y-3 rounded-lg border border-dashed p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-medium text-sm">
+                {t("ユーザーイベント企画", "User-created events")}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {t(
+                  "通常は閉じています。参加したい企画があるときだけ表示してください。",
+                  "Hidden by default. Open this only when you want to join a user-created event.",
+                )}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setIsUserEventsVisible((prev) => !prev)}
+            >
+              {isUserEventsVisible
+                ? t("閉じる", "Hide")
+                : t(
+                    `見る（${userEvents.length}件）`,
+                    `View (${userEvents.length})`,
+                  )}
+            </Button>
+          </div>
+
+          {isUserEventsVisible && (
+            <div className="space-y-3">
+              {userEvents.map((event) => (
+                <div key={event.slug}>
+                  <PostFormItemEvent
+                    eventName={event.title ?? null}
+                    eventDescription={event.description ?? null}
+                    thumbnailImageUrl={
+                      event.thumbnailImageUrl ?? event.headerImageUrl ?? null
+                    }
+                    eventTag={event.tag ?? null}
+                    ratings={event.ratings ?? null}
+                    endAt={event.endAt ?? 0}
+                    slug={event.slug ?? null}
+                    addTag={(tag) => {
+                      props.dispatch({ type: "ADD_TAG", payload: tag })
+                    }}
+                    removeTag={(tag) => {
+                      props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
+                    }}
+                    isAttending={props.state.tags.some(
+                      (tag) => tag.text === event.tag,
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
       <PostFormItemTags
         whiteListTags={tagOptions()}
         tags={props.state.tags}

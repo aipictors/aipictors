@@ -42,19 +42,17 @@ export function NotificationListSetting(props: Props) {
   }
 
   return (
-    <>
-      <div className="-mx-4 sticky top-24 z-20 bg-background/95 px-4 py-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-        <AppAnimatedTabs
-          tabs={notificationTypes.map((t) => ({
-            label: t.label,
-            value: t.value,
-          }))}
-          value={props.notificationType}
-          onChange={(value) =>
-            handlePageChange(value as IntrospectionEnum<"NotificationType">)
-          }
-        />
-      </div>
-    </>
+    <div className="sticky top-24 z-20 bg-background/95 py-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
+      <AppAnimatedTabs
+        tabs={notificationTypes.map((t) => ({
+          label: t.label,
+          value: t.value,
+        }))}
+        value={props.notificationType}
+        onChange={(value) =>
+          handlePageChange(value as IntrospectionEnum<"NotificationType">)
+        }
+      />
+    </div>
   )
 }
