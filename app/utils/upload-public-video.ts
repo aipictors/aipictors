@@ -36,18 +36,18 @@ export const uploadPublicVideo = async (
       body: file,
     })
 
+    const responseText = await response.text()
+    const responseData = responseText ? JSON.parse(responseText) : null
+
+    const schema = object({
+      data: object({
+        uid: optional(string()),
+        url: string(),
+      }),
+      error: nullable(string()),
+    })
+
     if (response.ok) {
-      const responseData = await response.json()
-
-      // Valibotでレスポンスデータのバリデーションを実行
-      const schema = object({
-        data: object({
-          uid: optional(string()),
-          url: string(),
-        }),
-        error: nullable(string()),
-      })
-
       const validationResult = safeParse(schema, responseData)
       if (!validationResult.success) {
         throw new Error("動画のアップロードに失敗いたしました")
@@ -58,8 +58,21 @@ export const uploadPublicVideo = async (
         url: validationResult.output.data.url,
       }
     }
+
+    const responseError =
+      responseData && typeof responseData === "object" && "error" in responseData
+        ? responseData.error
+        : null
+
+    if (typeof responseError === "string" && responseError.length > 0) {
+      throw new Error(responseError)
+    }
   } catch (error) {
     console.error(error)
+
+    if (error instanceof Error) {
+      throw error
+    }
   }
   throw new Error("動画のアップロードに失敗いたしました")
 }

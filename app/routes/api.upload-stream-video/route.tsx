@@ -65,6 +65,11 @@ export async function action({ request, context }: ActionFunctionArgs) {
     )
   }
 
+  const body = await request.arrayBuffer()
+  if (body.byteLength === 0) {
+    return toJsonResponse({ error: "Empty body", data: null }, 400)
+  }
+
   const accountId = getSecretFromContextOrBuild(context, "CLOUDFLARE_ACCOUNT_ID")
   const streamApiToken = getSecretFromContextOrBuild(
     context,
@@ -80,11 +85,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
       },
       500,
     )
-  }
-
-  const body = await request.arrayBuffer()
-  if (body.byteLength === 0) {
-    return toJsonResponse({ error: "Empty body", data: null }, 400)
   }
 
   const uploadUrl = `https://api.cloudflare.com/client/v4/accounts/${accountId}/stream`
