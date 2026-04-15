@@ -323,6 +323,7 @@ export default function NewImage() {
     viewerData?.viewer?.imageGenerationResults?.map((r) => r.id).join("|") ?? ""
   const processedGenerationKeyRef = useRef<string>("")
   const appliedInitialTagParamsRef = useRef<Set<string>>(new Set())
+  const isPostingRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -640,6 +641,10 @@ export default function NewImage() {
   }
 
   const onPost = async () => {
+    if (isPostingRef.current) {
+      return
+    }
+
     if (authContext.isNotLoggedIn) {
       toast(t("ログインしてください", "Please log in"))
       return
@@ -695,6 +700,12 @@ export default function NewImage() {
     if (mediaType === "image" && state.items.length === 0) {
       toast(t("画像を選択してください", "Please select at least one image"))
       return
+    }
+
+    isPostingRef.current = true
+
+    const finishPosting = () => {
+      isPostingRef.current = false
     }
 
     if (mediaType === "video") {
@@ -844,6 +855,8 @@ export default function NewImage() {
 
         await Promise.all(uploadedImageUrls.map((url) => deleteUploadedImage(url)))
         dispatch({ type: "SET_PROGRESS", payload: 0 })
+      } finally {
+        finishPosting()
       }
 
       return
@@ -970,6 +983,7 @@ export default function NewImage() {
               })
 
               toast(t("作品を投稿しました", "Work has been posted"))
+              finishPosting()
               return
             }
           } catch (error) {
@@ -1067,6 +1081,7 @@ export default function NewImage() {
         })
 
         toast(t("作品を投稿しました", "Work has been posted"))
+        finishPosting()
       } catch (error) {
         if (retryCount < MAX_RETRIES) {
           // リトライ前に少し待機
@@ -1091,6 +1106,7 @@ export default function NewImage() {
           })
           await Promise.all(promises)
           dispatch({ type: "SET_PROGRESS", payload: 0 })
+          finishPosting()
         }
       }
     }
@@ -1337,6 +1353,7 @@ export default function NewImage() {
           className="fixed bottom-0 left-0 z-30 ml-0 w-full rounded-none p-0 md:ml-[72px] md:pr-[72px] lg:ml-[224px] lg:pr-[224px] xl:left-auto xl:m-0 xl:max-w-[1200px] xl:pl-[8%]"
           size={"lg"}
           type="submit"
+          disabled={state.progress !== 0 || state.uploadedWorkId !== null}
           onClick={onPost}
         >
           {t("投稿", "Post")}

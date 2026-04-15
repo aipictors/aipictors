@@ -15,7 +15,7 @@ import { PostFormItemOgp } from "~/routes/($lang)._main.new.image/components/pos
 import { PostFormItemVideo } from "~/routes/($lang)._main.new.image/components/post-form-item-video"
 import type { PostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import type { PostImageFormState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-state"
-import type { Dispatch } from "react"
+import { type Dispatch, useEffect } from "react"
 import { toast } from "sonner"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PaintCanvas } from "~/components/paint-canvas"
@@ -352,6 +352,49 @@ export function PostImageFormUploader (props: Props) {
     }
     input.click()
   }
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      const activeElement = document.activeElement
+      if (
+        activeElement &&
+        (activeElement.tagName === "INPUT" ||
+          activeElement.tagName === "TEXTAREA" ||
+          (activeElement as HTMLElement).isContentEditable)
+      ) {
+        return
+      }
+
+      const clipboardItems = event.clipboardData?.items
+      if (!clipboardItems || clipboardItems.length === 0) {
+        return
+      }
+
+      const imageFiles: File[] = []
+      for (const item of clipboardItems) {
+        if (!item.type.startsWith("image/")) {
+          continue
+        }
+
+        const file = item.getAsFile()
+        if (file) {
+          imageFiles.push(file)
+        }
+      }
+
+      if (imageFiles.length === 0) {
+        return
+      }
+
+      event.preventDefault()
+      void applyImageFiles(imageFiles)
+    }
+
+    document.addEventListener("paste", handlePaste)
+    return () => {
+      document.removeEventListener("paste", handlePaste)
+    }
+  }, [applyImageFiles])
 
   return (
     <div className="space-y-4">
