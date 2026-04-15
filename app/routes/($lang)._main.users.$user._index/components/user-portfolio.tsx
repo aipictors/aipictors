@@ -101,7 +101,12 @@ export function UserPortfolio (props: Props) {
   return (
     <div className="space-y-4">
       {works.length !== 0 && (
-        <HomeWorkSection works={works} title={"人気作品"} isCropped={false} />
+        <HomeWorkSection
+          works={works}
+          title={"人気作品"}
+          isCropped={false}
+          autoPlayVideoPreview={true}
+        />
       )}
       {novelWorks.length !== 0 && (
         <HomeNovelsWorksSection
@@ -123,6 +128,7 @@ export function UserPortfolio (props: Props) {
           works={videoWorks}
           title={"人気動画"}
           isCropped={false}
+          isAutoPlay={true}
         />
       )}
     </div>

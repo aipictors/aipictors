@@ -17,6 +17,7 @@ interface Props {
   setPage?: (p: number) => void
   isPagination?: boolean
   onPaginationModeChange?: (isPagination: boolean) => void
+  autoPlayVideoPreview?: boolean
   onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
   isOneWorkPerUser?: boolean

@@ -14,6 +14,9 @@ export function WorkVideoView ({ videoUrl }: Props) {
   const isStream = isCloudflareStreamUrl(videoUrl)
   const embedUrl = toCloudflareStreamEmbedUrl(videoUrl)
   const uid = getCloudflareStreamUid(videoUrl)
+  const embedAutoplayUrl = embedUrl
+    ? `${embedUrl}?autoplay=true&muted=true&loop=true&preload=auto`
+    : null
 
   // null = checking, true = ready, false = not ready yet
   const [streamReady, setStreamReady] = useState<boolean | null>(
@@ -89,7 +92,7 @@ export function WorkVideoView ({ videoUrl }: Props) {
       <div className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900">
         <div className="mx-auto aspect-video w-full max-w-[1280px]">
           <iframe
-            src={embedUrl}
+            src={embedAutoplayUrl ?? embedUrl}
             title="Cloudflare Stream Video"
             className="h-full w-full"
             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"

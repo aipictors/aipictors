@@ -381,6 +381,7 @@ export function DashboardHomeContents () {
                   works={latestWorks ?? []}
                   targetRowHeight={140}
                   isShowProfile={false}
+                  autoPlayVideoPreview={true}
                 />
               </div>
             </DashboardHomeContentContainer>

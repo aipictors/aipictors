@@ -52,6 +52,7 @@ export function HomeNewUsersWorksSection (props: Props) {
           works={workDisplayed}
           isCropped={true}
           isShowProfile={false}
+          autoPlayVideoPreview={true}
           onSelect={props.onSelect}
         />
       )}

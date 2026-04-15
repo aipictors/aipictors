@@ -61,6 +61,7 @@ export function HomeNewUsersWorkListSection(props: Props) {
           works={worksResp?.newUserWorks || []}
           isCropped={props.isCropped}
           isShowProfile={true}
+          autoPlayVideoPreview={true}
           onSelect={props.onSelect}
         />
       )}

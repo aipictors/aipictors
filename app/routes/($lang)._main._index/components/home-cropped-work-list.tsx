@@ -11,6 +11,7 @@ type Props = {
   works: FragmentOf<typeof HomeCoppedWorkFragment>[]
   isRanking?: boolean
   isShowProfile?: boolean
+  autoPlayVideoPreview?: boolean
   onSelect?: (index: string) => void
 }
 
@@ -37,6 +38,9 @@ export function HomeCroppedWorkList(props: Props) {
               <CroppedWorkSquare
                 workId={work.id}
                 imageUrl={work.smallThumbnailImageURL}
+                videoUrl={work.url}
+                streamUid={work.streamUid}
+                isAutoPlay={props.autoPlayVideoPreview}
                 thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
                 size="lg"
                 imageWidth={work.smallThumbnailImageWidth}
@@ -44,7 +48,7 @@ export function HomeCroppedWorkList(props: Props) {
                 subWorksCount={work.subWorksCount}
                 commentsCount={work.commentsCount}
                 isPromptPublic={false}
-                hasVideoUrl={false}
+                hasVideoUrl={Boolean(work.url || work.streamUid)}
                 isGeneration={false}
                 hasReferenceButton={false}
               />
@@ -102,6 +106,9 @@ export function HomeCroppedWorkList(props: Props) {
                 <CroppedWorkSquare
                   workId={work.id}
                   imageUrl={work.smallThumbnailImageURL}
+                  videoUrl={work.url}
+                  streamUid={work.streamUid}
+                  isAutoPlay={props.autoPlayVideoPreview}
                   thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
                   size="lg"
                   imageWidth={work.smallThumbnailImageWidth}
@@ -109,7 +116,7 @@ export function HomeCroppedWorkList(props: Props) {
                   subWorksCount={work.subWorksCount}
                   commentsCount={work.commentsCount}
                   isPromptPublic={false}
-                  hasVideoUrl={false}
+                  hasVideoUrl={Boolean(work.url || work.streamUid)}
                   isGeneration={false}
                   hasReferenceButton={false}
                 />
@@ -149,6 +156,8 @@ export const HomeCoppedWorkFragment = graphql(
     largeThumbnailImageHeight
     largeThumbnailImageWidth
     thumbnailImagePosition
+    url
+    streamUid
     subWorksCount
     commentsCount
     user {

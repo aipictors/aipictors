@@ -913,6 +913,7 @@ function GridView({
         works={works as unknown as FragmentOf<typeof PhotoAlbumWorkFragment>[]}
         size="large"
         isShowProfile
+        autoPlayVideoPreview={true}
         onSelect={onSelect}
       />
     </div>

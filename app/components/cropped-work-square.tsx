@@ -1,9 +1,15 @@
 import { Link } from "@remix-run/react"
+import { useEffect, useRef } from "react"
 import { Images, MessageCircleIcon } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
+import { StreamPreviewVideo } from "~/components/stream-preview-video"
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { cn } from "~/lib/utils"
+import {
+  isCloudflareStreamUrl,
+  toCloudflareStreamHlsUrlFromUid,
+} from "~/utils/cloudflare-stream"
 
 type Props = {
   workId: string
@@ -17,6 +23,9 @@ type Props = {
   commentsCount?: number
   isPromptPublic?: boolean
   hasVideoUrl?: boolean
+  videoUrl?: string | null
+  streamUid?: string | null
+  isAutoPlay?: boolean
   isGeneration?: boolean
   hasReferenceButton?: boolean
   onSelect?: (workId: string) => void
@@ -98,6 +107,26 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
     imageHeight: props.imageHeight,
     thumbnailPosition: props.thumbnailImagePosition,
   })
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const streamHlsUrl = toCloudflareStreamHlsUrlFromUid(props.streamUid)
+  const isPreviewableVideo =
+    props.isAutoPlay === true &&
+    Boolean(props.videoUrl) &&
+    !isCloudflareStreamUrl(props.videoUrl)
+  const isPreviewableStream =
+    props.isAutoPlay === true && Boolean(streamHlsUrl)
+
+  useEffect(() => {
+    if (!isPreviewableVideo || !videoRef.current) {
+      return
+    }
+
+    void videoRef.current.play()
+
+    return () => {
+      videoRef.current?.pause()
+    }
+  }, [isPreviewableVideo])
 
   const backgroundColor = () => {
     if (props.ranking === 1) return "#d6ba49"
@@ -118,6 +147,42 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
   const chipClassName =
     "gap-x-1 border-border/40 bg-background/70 text-foreground backdrop-blur-sm"
 
+  const mediaContent = (
+    <>
+      <OptimizedImage
+        src={props.imageUrl}
+        alt=""
+        key={props.imageUrl}
+        loading="lazy"
+        width={props.imageWidth}
+        height={props.imageHeight}
+        style={cropStyle}
+        className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
+      />
+
+      {isPreviewableVideo && props.videoUrl && (
+        <video
+          ref={videoRef}
+          src={props.videoUrl}
+          className="absolute inset-0 h-full w-full object-cover"
+          muted
+          autoPlay
+          loop
+          playsInline
+          preload="metadata"
+        />
+      )}
+
+      {isPreviewableStream && streamHlsUrl && (
+        <StreamPreviewVideo
+          src={streamHlsUrl}
+          className="absolute inset-0 h-full w-full object-cover"
+          isActive={true}
+        />
+      )}
+    </>
+  )
+
   if (props.size === "auto") {
     // フォールバック: aspect-ratio が環境/親レイアウト影響で期待通り効かないケースに対応
     // padding-bottom 100% で正方形スペースを確保し、その上に絶対配置でサムネイルを載せる
@@ -132,32 +197,14 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
                 onClick={() => props.onSelect?.(props.workId)}
                 className="block h-full w-full cursor-pointer transition-all duration-300 ease-in-out"
               >
-                <OptimizedImage
-                  src={props.imageUrl}
-                  alt=""
-                  key={props.imageUrl}
-                  loading="lazy"
-                  width={props.imageWidth}
-                  height={props.imageHeight}
-                  style={cropStyle}
-                  className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
-                />
+                {mediaContent}
               </button>
             ) : (
               <Link
                 to={`/posts/${props.workId}`}
                 className="block h-full w-full transition-all duration-300 ease-in-out"
               >
-                <OptimizedImage
-                  src={props.imageUrl}
-                  alt=""
-                  key={props.imageUrl}
-                  loading="lazy"
-                  width={props.imageWidth}
-                  height={props.imageHeight}
-                  style={cropStyle}
-                  className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
-                />
+                {mediaContent}
               </Link>
             )}
 
@@ -234,16 +281,7 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         to={`/posts/${props.workId}`}
         className="block h-full w-full transition-all duration-300 ease-in-out"
       >
-        <OptimizedImage
-          src={props.imageUrl}
-          alt=""
-          key={props.imageUrl}
-          loading="lazy"
-          width={props.imageWidth}
-          height={props.imageHeight}
-          style={cropStyle}
-          className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
-        />
+        {mediaContent}
       </Link>
 
       {props.ranking && (

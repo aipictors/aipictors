@@ -1474,6 +1474,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                     sortType={sortType}
                     timeRange={timeRange}
                     isOneWorkPerUser={isOneWorkPerUser}
+                    autoPlayVideoPreview={true}
                     onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                     updateWorks={updateCurrentWorks}
                   />
@@ -1488,6 +1489,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                     isOneWorkPerUser={isOneWorkPerUser}
                     isPagination={false}
                     onPaginationModeChange={setInternalIsPagination}
+                    autoPlayVideoPreview={true}
                     onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                     updateWorks={updateCurrentWorks}
                   />

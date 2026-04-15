@@ -24,6 +24,7 @@ type Props = {
   size?: "small" | "medium" | "large"
   isShowProfile?: boolean
   compactWhenFew?: boolean
+  autoPlayVideoPreview?: boolean
   /** 作品クリック時に index を返す。未指定なら従来通りリンク遷移 */
   onSelect?: (index: string) => void
   /** ユーザリンクのプレフィックス（例: "/users" または "/posts/gallery/users"） */
@@ -52,6 +53,9 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                   subWorksCount={workItem.subWorksCount}
                   commentsCount={workItem.commentsCount}
                   imageUrl={workItem.smallThumbnailImageURL}
+                  videoUrl={workItem.url}
+                  streamUid={workItem.streamUid}
+                  isAutoPlay={props.autoPlayVideoPreview}
                   thumbnailImagePosition={workItem.thumbnailImagePosition ?? 0}
                   size="auto"
                   imageWidth={workItem.smallThumbnailImageWidth}
@@ -60,7 +64,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                     workItem.promptAccessType === "PUBLIC" ||
                     workItem.isGeneration
                   }
-                  hasVideoUrl={Boolean(workItem.url)}
+                  hasVideoUrl={Boolean(workItem.url || workItem.streamUid)}
                 />
                 <div className="absolute right-0 bottom-0">
                   <LikeButton
@@ -191,6 +195,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         imageUrl={imageProps.src}
                         videoUrl={photo.context.url}
                         streamUid={photo.context.streamUid}
+                        isAutoPlay={props.autoPlayVideoPreview}
                         alt={photo.context.title}
                         width={
                           typeof imageProps.width === "string"
@@ -219,6 +224,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                       imageUrl={imageProps.src}
                       videoUrl={photo.context.url}
                       streamUid={photo.context.streamUid}
+                      isAutoPlay={props.autoPlayVideoPreview}
                       alt={photo.context.title}
                       to={`/posts/${photo.context.id}`}
                       width={

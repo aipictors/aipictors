@@ -26,6 +26,7 @@ type Props = {
   priorityCount?: number
   targetRowHeight?: number
   isShowProfile?: boolean
+  autoPlayVideoPreview?: boolean
   onSelect?: (index: string) => void
 }
 
@@ -61,7 +62,11 @@ export function HomeWorkSection(props: Props) {
         )}
       </div>
       {props.isCropped ? (
-        <HomeCroppedWorkList works={props.works} onSelect={props.onSelect} />
+        <HomeCroppedWorkList
+          works={props.works}
+          autoPlayVideoPreview={props.autoPlayVideoPreview}
+          onSelect={props.onSelect}
+        />
       ) : (
         <ResponsivePhotoWorksAlbum
           works={props.works}
@@ -69,6 +74,7 @@ export function HomeWorkSection(props: Props) {
           priorityCount={props.priorityCount}
           targetRowHeight={props.targetRowHeight}
           isShowProfile={props.isShowProfile}
+          autoPlayVideoPreview={props.autoPlayVideoPreview}
           compactWhenFew={true}
           onSelect={props.onSelect}
         />

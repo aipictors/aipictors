@@ -717,6 +717,7 @@ function FeedContent({
             }
             size="large"
             isShowProfile={true}
+            autoPlayVideoPreview={true}
             onSelect={onSelect}
           />
         </div>

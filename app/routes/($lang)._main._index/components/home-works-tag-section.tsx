@@ -83,6 +83,7 @@ export function HomeWorksTagSection (props: Props) {
         title={t("タグ作品", "Tag Works")}
         works={combinedWorks}
         isCropped={props.isCropped}
+        autoPlayVideoPreview={true}
         onSelect={props.onSelect}
       />
     </>

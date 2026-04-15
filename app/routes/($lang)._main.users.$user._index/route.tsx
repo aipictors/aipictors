@@ -12,6 +12,10 @@ import {
   HomeNovelsWorksSection,
 } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import {
+  HomeVideosWorkListItemFragment,
+  HomeVideosWorksSection,
+} from "~/routes/($lang)._main._index/components/home-video-works-section"
+import {
   HomeWorkFragment,
   HomeWorkSection,
 } from "~/routes/($lang)._main._index/components/home-work-section"
@@ -72,6 +76,13 @@ export async function loader(props: LoaderFunctionArgs) {
         orderBy: "LIKES_COUNT",
         isNowCreatedAt: true,
       },
+      videoWhere: {
+        userId: userIdResp.data.user.id,
+        workType: "VIDEO",
+        ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
     },
   })
 
@@ -81,6 +92,7 @@ export async function loader(props: LoaderFunctionArgs) {
     userId: userIdResp.data.user.id,
     novelWorks: userResp.data.novelWorks,
     columnWorks: userResp.data.columnWorks,
+    videoWorks: userResp.data.videoWorks,
   }
 }
 
@@ -150,6 +162,21 @@ export default function UserLayout() {
     },
   })
 
+  const { data: videoWorkRes } = useQuery(worksQuery, {
+    skip: authContext.isLoading || !isDataReady,
+    variables: {
+      offset: 0,
+      limit: 16,
+      where: {
+        userId: userId,
+        workType: "VIDEO",
+        ratings: ["G", "R15"],
+        orderBy: "LIKES_COUNT",
+        isNowCreatedAt: true,
+      },
+    },
+  })
+
   if (!isDataReady) {
     return null
   }
@@ -163,6 +190,8 @@ export default function UserLayout() {
   const novelWorks = novelWorkRes?.works || data.novelWorks
 
   const columnWorks = columnWorkRes?.works || data.columnWorks
+
+  const videoWorks = videoWorkRes?.works || data.videoWorks
 
   return (
     <div className="flex w-full flex-col justify-center">
@@ -179,6 +208,7 @@ export default function UserLayout() {
               works={works}
               isCropped={false}
               isShowProfile={true}
+              autoPlayVideoPreview={true}
             />
           )}
           {novelWorks.length !== 0 && (
@@ -186,6 +216,13 @@ export default function UserLayout() {
           )}
           {columnWorks.length !== 0 && (
             <HomeNovelsWorksSection works={columnWorks} isCropped={false} />
+          )}
+          {videoWorks.length !== 0 && (
+            <HomeVideosWorksSection
+              works={videoWorks}
+              isCropped={false}
+              isAutoPlay={true}
+            />
           )}
         </div>
       </div>
@@ -208,7 +245,8 @@ const combinedUserAndWorksQuery = graphql(
     $limit: Int!,
     $portfolioWhere: WorksWhereInput!,
     $novelWhere: WorksWhereInput!,
-    $columnWhere: WorksWhereInput!
+    $columnWhere: WorksWhereInput!,
+    $videoWhere: WorksWhereInput!
   ) {
     user(id: $userId) {
       ...UserAboutCard
@@ -223,10 +261,14 @@ const combinedUserAndWorksQuery = graphql(
     columnWorks: works(offset: $offset, limit: $limit, where: $columnWhere) {
       ...HomeWork
     }
+    videoWorks: works(offset: $offset, limit: $limit, where: $videoWhere) {
+      ...HomeVideosWorkListItem
+    }
   }`,
   [
     HomeWorkFragment,
     HomeNovelsWorkListItemFragment,
+    HomeVideosWorkListItemFragment,
     UserAboutCardFragment,
     UserPickupFragment,
   ],
@@ -237,7 +279,12 @@ const worksQuery = graphql(
     works(offset: $offset, limit: $limit, where: $where) {
       ...HomeWork,
       ...HomeNovelsWorkListItem
+      ...HomeVideosWorkListItem
     }
   }`,
-  [HomeWorkFragment, HomeNovelsWorkListItemFragment],
+  [
+    HomeWorkFragment,
+    HomeNovelsWorkListItemFragment,
+    HomeVideosWorkListItemFragment,
+  ],
 )

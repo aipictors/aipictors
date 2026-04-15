@@ -32,6 +32,7 @@ interface Props {
   sortType: WorkOrderBy | null
   timeRange?: string
   style?: ImageStyle
+  autoPlayVideoPreview?: boolean
   onSelect?: (index: string) => void
   updateWorks?: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
@@ -163,6 +164,7 @@ export function WorksInfiniteMode ({ anchorAt, ...rest }: Props) {
           workType={rest.workType}
           works={page}
           isCropped={rest.isCropped}
+          autoPlayVideoPreview={rest.autoPlayVideoPreview}
           onSelect={rest.onSelect}
         />
       ))}

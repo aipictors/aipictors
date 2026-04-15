@@ -1,5 +1,5 @@
 import { Link } from "@remix-run/react"
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { StreamPreviewVideo } from "~/components/stream-preview-video"
 import { cn } from "~/lib/utils"
@@ -21,6 +21,7 @@ type Props = {
   width?: number
   height?: number
   loading?: "lazy" | "eager"
+  isAutoPlay?: boolean
 }
 
 /**
@@ -36,23 +37,28 @@ export function HoverVideoImage (props: Props): React.ReactNode {
   const isPreviewableVideo =
     Boolean(props.videoUrl) && !isCloudflareStreamUrl(props.videoUrl)
   const isPreviewableStream = Boolean(streamHlsUrl)
+  const isVideoActive = props.isAutoPlay || isHovered
 
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true)
-    // 動画再生（スマホでも再生するが全画面表示は防ぐ）
-    if (isPreviewableVideo && videoRef.current) {
-      videoRef.current.currentTime = 0 // 最初から再生
-      void videoRef.current.play()
-    }
-  }, [isPreviewableVideo])
+  }, [])
 
   const handleMouseLeave = useCallback(() => {
     setIsHovered(false)
-    // 動画停止
-    if (videoRef.current) {
-      videoRef.current.pause()
-    }
   }, [])
+
+  useEffect(() => {
+    if (!isPreviewableVideo || !videoRef.current) {
+      return
+    }
+
+    if (isVideoActive) {
+      void videoRef.current.play()
+      return
+    }
+
+    videoRef.current.pause()
+  }, [isPreviewableVideo, isVideoActive])
 
   const imageContent = (
     <>
@@ -80,9 +86,10 @@ export function HoverVideoImage (props: Props): React.ReactNode {
           src={props.videoUrl}
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
-            isHovered ? "opacity-100" : "opacity-0",
+            isVideoActive ? "opacity-100" : "opacity-0",
           )}
           muted
+          autoPlay={props.isAutoPlay}
           loop
           playsInline
           preload="metadata"
@@ -105,9 +112,9 @@ export function HoverVideoImage (props: Props): React.ReactNode {
           src={streamHlsUrl}
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
-            isHovered ? "opacity-100" : "opacity-0",
+            isVideoActive ? "opacity-100" : "opacity-0",
           )}
-          isActive={isHovered}
+          isActive={isVideoActive}
         />
       )}
     </>

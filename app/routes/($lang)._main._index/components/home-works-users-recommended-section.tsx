@@ -56,6 +56,7 @@ export function HomeWorksUsersRecommendedSection (props: Props) {
           works={workDisplayed}
           isCropped={false}
           isShowProfile={true}
+          autoPlayVideoPreview={true}
           onSelect={props.onSelect}
         />
       )}

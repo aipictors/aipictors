@@ -26,6 +26,7 @@ type Props = {
   isCropped?: boolean
   targetRowHeight?: number
   isShowProfile?: boolean
+  autoPlayVideoPreview?: boolean
   onSelect?: (index: string) => void
 }
 
@@ -71,6 +72,7 @@ export function HomeRecommendedWorkList(props: Props) {
           works={props.works}
           targetRowHeight={props.targetRowHeight}
           isShowProfile={props.isShowProfile}
+          autoPlayVideoPreview={props.autoPlayVideoPreview}
           compactWhenFew={true}
           onSelect={props.onSelect}
         />

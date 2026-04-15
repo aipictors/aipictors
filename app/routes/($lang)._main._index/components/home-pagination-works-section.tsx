@@ -71,6 +71,7 @@ type Props = {
   timeRange?: string
   style?: IntrospectionEnum<"ImageStyle">
   isOneWorkPerUser?: boolean
+  autoPlayVideoPreview?: boolean
   onSelect?: (index: string) => void
   updateWorks: (works: FragmentOf<typeof PhotoAlbumWorkFragment>[]) => void
 }
@@ -153,6 +154,7 @@ export function HomePaginationWorksSection(props: Props) {
           works={displayedWorks}
           isCropped={props.isCropped}
           isShowProfile={true}
+          autoPlayVideoPreview={props.autoPlayVideoPreview}
           priorityCount={canUseInitialWorks ? 4 : 0}
           onSelect={props.onSelect}
         />

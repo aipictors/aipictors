@@ -14,10 +14,11 @@ interface Props {
   workType: WorkType | null
   works: WorkItem[]
   isCropped?: boolean
+  autoPlayVideoPreview?: boolean
   onSelect?: (index: string) => void
 }
 
-export function WorksRenderer ({ workType, works, isCropped, onSelect }: Props) {
+export function WorksRenderer ({ workType, works, isCropped, autoPlayVideoPreview, onSelect }: Props) {
   if (workType === "NOVEL" || workType === "COLUMN") {
     return (
       <HomeNovelsWorksSection
@@ -45,6 +46,7 @@ export function WorksRenderer ({ workType, works, isCropped, onSelect }: Props) 
       works={works as FragmentOf<typeof HomeWorkFragment>[]}
       isCropped={isCropped}
       isShowProfile
+      autoPlayVideoPreview={autoPlayVideoPreview}
       onSelect={onSelect}
     />
   )
