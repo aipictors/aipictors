@@ -417,6 +417,13 @@ export function PostAnimationFormInput(props: Props) {
           props.dispatch({ type: "REMOVE_TAG", payload: tag.id })
         }}
       />
+      <PostFormItemAlbum
+        album={props.state.albumId}
+        albums={albumOptions()}
+        setAlbumId={(albumId) => {
+          props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
+        }}
+      />
       <PostFormPermissionSetting
         isTagEditableChecked={props.state.useTagFeature}
         onTagEditableChange={(value) => {
@@ -427,15 +434,6 @@ export function PostAnimationFormInput(props: Props) {
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
         }}
       />
-      {props.albums.length !== 0 && (
-        <PostFormItemAlbum
-          album={props.state.albumId}
-          albums={albumOptions()}
-          setAlbumId={(albumId) => {
-            props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-          }}
-        />
-      )}
       <PostFormItemRelatedLink
         link={props.state.link}
         onChange={(link) => {

@@ -310,6 +310,13 @@ export function PostTextFormInput(props: Props) {
           props.dispatch({ type: "SET_ACCESS_TYPE", payload: accessType })
         }}
       />
+      <PostFormItemAlbum
+        album={props.state.albumId}
+        albums={albumOptions()}
+        setAlbumId={(albumId) => {
+          props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
+        }}
+      />
       <div className="flex flex-col justify-between gap-4 md:flex-row">
         <div className="flex-1">
           <PostFormItemTaste
@@ -458,15 +465,6 @@ export function PostTextFormInput(props: Props) {
           props.dispatch({ type: "ENABLE_COMMENT_FEATURE", payload: value })
         }}
       />
-      {props.albums.length !== 0 && (
-        <PostFormItemAlbum
-          album={props.state.albumId}
-          albums={albumOptions()}
-          setAlbumId={(albumId) => {
-            props.dispatch({ type: "SET_ALBUM_ID", payload: albumId })
-          }}
-        />
-      )}
       <PostFormItemRelatedLink
         link={props.state.link}
         onChange={(link) => {

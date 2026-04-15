@@ -21,19 +21,28 @@ type Props = {
  */
 export function PostFormItemAlbum (props: Props) {
   const t = useTranslation()
+  const hasAlbums = props.albums.length > 0
 
   return (
     <Card>
       <CardContent className="space-y-2 p-4">
         <p className="font-bold text-sm">{t("シリーズ", "Album")}</p>
         <Select
+          disabled={!hasAlbums}
           value={props.album ?? ""}
           onValueChange={(value) => {
             props.setAlbumId(value)
           }}
         >
           <SelectTrigger className="w-full">
-            <SelectValue />
+            <SelectValue
+              placeholder={hasAlbums
+                ? t("シリーズを選択", "Select a series")
+                : t(
+                    "利用可能なシリーズがありません",
+                    "No series available",
+                  )}
+            />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -45,6 +54,14 @@ export function PostFormItemAlbum (props: Props) {
             </SelectGroup>
           </SelectContent>
         </Select>
+        {!hasAlbums && (
+          <p className="text-muted-foreground text-xs">
+            {t(
+              "シリーズがまだない場合は、マイページのシリーズ管理から追加できます。",
+              "If you do not have any series yet, create one from your series management page.",
+            )}
+          </p>
+        )}
       </CardContent>
     </Card>
   )
