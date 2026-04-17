@@ -191,6 +191,7 @@ const viewerIsBlurSensitiveImageQuery = graphql(`
 const updateUserSettingMutation = graphql(`
   mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
     updateUserSetting(input: $input) {
+      id
       preferenceRating
     }
   }

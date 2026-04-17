@@ -250,6 +250,7 @@ const userSettingQuery = graphql(`
 const updateUserSettingMutation = graphql(`
   mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
     updateUserSetting(input: $input) {
+      id
       preferenceRating
     }
   }
