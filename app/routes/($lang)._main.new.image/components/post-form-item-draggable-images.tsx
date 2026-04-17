@@ -49,6 +49,44 @@ export function PostFormItemDraggableImages(props: Props) {
   // ドラッグ中して画像一覧にホバー中かどうか
   const [isHovered, setIsHovered] = useState(false)
 
+  const readFileAsDataUrl = (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        if (typeof event.target?.result === "string") {
+          resolve(event.target.result)
+          return
+        }
+        reject(new Error("Failed to read image"))
+      }
+      reader.onerror = () => reject(new Error("Failed to read image"))
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const toWebpDataUrl = (dataUrl: string) => {
+    return new Promise<string>((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement("canvas")
+        canvas.width = img.width
+        canvas.height = img.height
+        const ctx = canvas.getContext("2d")
+        if (!ctx) {
+          reject(new Error("Failed to get canvas context"))
+          return
+        }
+        ctx.drawImage(img, 0, 0)
+        resolve(canvas.toDataURL("image/webp"))
+      }
+      img.onerror = () => reject(new Error("Failed to load image"))
+      img.src = dataUrl
+    })
+  }
+
+  const nextFrame = () =>
+    new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+
   /**
    * 選択中の画像一覧が変更されたときはサムネイルを更新する
    */
@@ -177,7 +215,7 @@ export function PostFormItemDraggableImages(props: Props) {
     }
   }
 
-  const handleAcceptedFiles = (acceptedFiles: File[]) => {
+  const handleAcceptedFiles = async (acceptedFiles: File[]) => {
     if (props.isOnlyMove) {
       return
     }
@@ -192,7 +230,7 @@ export function PostFormItemDraggableImages(props: Props) {
       return
     }
 
-    acceptedFiles.forEach(async (file) => {
+    for (const file of acceptedFiles) {
       if (props.maxItemsCount && props.maxItemsCount < props.items.length + 1) {
         toast(
           t(
@@ -200,7 +238,17 @@ export function PostFormItemDraggableImages(props: Props) {
             `Maximum ${props.maxItemsCount} items allowed`,
           ),
         )
-        return
+        break
+      }
+
+      if (file.size > maxSize) {
+        toast(
+          t(
+            `${maxSizeLabel}以内の画像を選択してください`,
+            `Please choose an image under ${maxSizeLabel}`,
+          ),
+        )
+        continue
       }
 
       if (props.items.length === 0 && file.type === "image/png") {
@@ -210,29 +258,27 @@ export function PostFormItemDraggableImages(props: Props) {
         }
       }
 
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        if (event.target) {
-          const img = new Image()
-          img.onload = () => {
-            const canvas = document.createElement("canvas")
-            canvas.width = img.width
-            canvas.height = img.height
-            const ctx = canvas.getContext("2d")
-            ctx?.drawImage(img, 0, 0)
-            const webpDataURL = canvas.toDataURL("image/webp")
-            props.items.push({
-              id: props.items.length,
-              content: webpDataURL,
-            })
-            props.onChangeItems([...props.items])
-            updateThumbnail()
-          }
-          img.src = event.target.result as string
-        }
+      try {
+        const dataUrl = await readFileAsDataUrl(file)
+        const webpDataUrl = await toWebpDataUrl(dataUrl)
+        props.items.push({
+          id: props.items.length,
+          content: webpDataUrl,
+        })
+        props.onChangeItems([...props.items])
+        updateThumbnail()
+        await nextFrame()
+      } catch (error) {
+        console.error(error)
+        toast(
+          t(
+            "一部の画像の読み込みに失敗しました。別の画像でお試しください",
+            "Failed to load one of the images. Please try a different file.",
+          ),
+        )
+        continue
       }
-      reader.readAsDataURL(file)
-    })
+    }
 
     const inputElement = document.getElementById(
       "images_input",
@@ -263,7 +309,7 @@ export function PostFormItemDraggableImages(props: Props) {
     },
     noClick: true,
     onDrop: (acceptedFiles) => {
-      handleAcceptedFiles(acceptedFiles)
+      void handleAcceptedFiles(acceptedFiles)
     },
     onDragEnter: () => {
       setIsHovered(true)
@@ -282,7 +328,7 @@ export function PostFormItemDraggableImages(props: Props) {
     if (files.length === 0) return
 
     // 外部ドロップされた画像を、既存の選択ロジックに流し込む
-    handleAcceptedFiles(files)
+    void handleAcceptedFiles(files)
   }, [])
 
   return (

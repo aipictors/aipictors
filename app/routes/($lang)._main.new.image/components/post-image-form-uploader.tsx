@@ -50,6 +50,43 @@ export function PostImageFormUploader (props: Props) {
   const maxImageSizeLabel = formatFileSize(MAX_IMAGE_FILE_SIZE_BYTES)
   const maxVideoSizeLabel = formatFileSize(MAX_VIDEO_FILE_SIZE_BYTES)
 
+  const readFileAsDataUrl = (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        if (typeof event.target?.result === "string") {
+          resolve(event.target.result)
+          return
+        }
+        reject(new Error("Failed to read image"))
+      }
+      reader.onerror = () => reject(new Error("Failed to read image"))
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const toWebpDataUrl = (dataUrl: string) => {
+    return new Promise<string>((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement("canvas")
+        canvas.width = img.width
+        canvas.height = img.height
+        const ctx = canvas.getContext("2d")
+        if (!ctx) {
+          reject(new Error("Failed to get canvas context"))
+          return
+        }
+        ctx.drawImage(img, 0, 0)
+        resolve(canvas.toDataURL("image/webp"))
+      }
+      img.onerror = () => reject(new Error("Failed to load image"))
+      img.src = dataUrl
+    })
+  }
+
+  const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+
   const selectedFilesSizeText = () => {
     const totalBytes = props.state.items
       .map((item) => item.content)
@@ -141,59 +178,55 @@ export function PostImageFormUploader (props: Props) {
         props.onChangeImageInformation(pngInfo)
       }
 
-      const dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = (event) => {
-          if (typeof event.target?.result === "string") {
-            resolve(event.target.result)
-            return
-          }
-          reject(new Error("Failed to read image"))
-        }
-        reader.onerror = () => reject(new Error("Failed to read image"))
-        reader.readAsDataURL(file)
-      })
+      try {
+        const dataUrl = await readFileAsDataUrl(file)
+        const webpDataUrl = await toWebpDataUrl(dataUrl)
 
-      const webpDataUrl = await new Promise<string>((resolve, reject) => {
-        const img = new Image()
-        img.onload = () => {
-          const canvas = document.createElement("canvas")
-          canvas.width = img.width
-          canvas.height = img.height
-          const ctx = canvas.getContext("2d")
-          if (!ctx) {
-            reject(new Error("Failed to get canvas context"))
-            return
-          }
-          ctx.drawImage(img, 0, 0)
-          resolve(canvas.toDataURL("image/webp"))
-        }
-        img.onerror = () => reject(new Error("Failed to load image"))
-        img.src = dataUrl
-      })
-
-      nextItems.push({
-        id: Math.floor(Math.random() * 10000),
-        content: webpDataUrl,
-      })
-    }
-
-    props.dispatch({ type: "SET_ITEMS", payload: nextItems })
-    props.onImageSelectionChange?.(nextItems.length)
-
-    if (nextItems.length > 0) {
-      props.dispatch({ type: "SET_THUMBNAIL_BASE64", payload: nextItems[0].content })
-      props.dispatch({ type: "SET_OGP_BASE64", payload: "" })
-
-      const img = new Image()
-      img.onload = () => {
-        props.dispatch({
-          type: "SET_IS_THUMBNAIL_LANDSCAPE",
-          payload: img.width > img.height,
+        nextItems.push({
+          id: nextItems.length,
+          content: webpDataUrl,
         })
+
+        // 逐次反映して「選択後に何も出ない」状態を避ける
+        props.dispatch({ type: "SET_ITEMS", payload: [...nextItems] })
+        props.onImageSelectionChange?.(nextItems.length)
+
+        // 最初の1枚が入ったタイミングでサムネも即座に更新
+        if (nextItems.length === 1 && nextItems[0].content) {
+          props.dispatch({
+            type: "SET_THUMBNAIL_BASE64",
+            payload: nextItems[0].content,
+          })
+          props.dispatch({ type: "SET_OGP_BASE64", payload: "" })
+
+          const img = new Image()
+          img.onload = () => {
+            props.dispatch({
+              type: "SET_IS_THUMBNAIL_LANDSCAPE",
+              payload: img.width > img.height,
+            })
+          }
+          img.src = nextItems[0].content
+        }
+
+        // UIスレッドを譲ってフリーズを軽減
+        await nextFrame()
+      } catch (error) {
+        // 1枚失敗しても全体が反映されない状態を避ける
+        console.error(error)
+        toast(
+          t(
+            "一部の画像の読み込みに失敗しました。別の画像でお試しください",
+            "Failed to load one of the images. Please try a different file.",
+          ),
+        )
+        continue
       }
-      img.src = nextItems[0].content ?? ""
     }
+
+    // 念のため最終状態を確定
+    props.dispatch({ type: "SET_ITEMS", payload: [...nextItems] })
+    props.onImageSelectionChange?.(nextItems.length)
 
     if (props.onInputFiles) {
       const transfer = new DataTransfer()
@@ -334,7 +367,15 @@ export function PostImageFormUploader (props: Props) {
     input.multiple = true
     input.onchange = () => {
       const files = Array.from(input.files ?? [])
-      void applyImageFiles(files)
+      void applyImageFiles(files).catch((error) => {
+        console.error(error)
+        toast(
+          t(
+            "画像の読み込みに失敗しました。別の画像でお試しください",
+            "Failed to load images. Please try again.",
+          ),
+        )
+      })
     }
     input.click()
   }
