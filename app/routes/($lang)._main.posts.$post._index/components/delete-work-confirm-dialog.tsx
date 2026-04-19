@@ -26,12 +26,10 @@ type Props = {
 export function DeleteWorkConfirmDialog (props: Props) {
   const t = useTranslation()
 
-  const [deleteWork, { loading: isLoadingDeleteAlbum }] =
+  const [deleteWork, { loading: isDeletingWork }] =
     useMutation(DeleteWorkMutation)
 
   const [isOpen, setIsOpen] = useState(false)
-
-  const [isLoading, _setIsLoading] = useState(false)
 
   const [isDeleted, setIsDeleted] = useState(false)
 
@@ -58,10 +56,10 @@ export function DeleteWorkConfirmDialog (props: Props) {
         <Button
           className="flex items-center gap-2"
           variant="destructive"
-          disabled={isDeleted}
+          disabled={isDeleted || isDeletingWork}
           onClick={() => setIsOpen(true)}
         >
-          {isLoading ? <Loader2Icon className="animate-spin" /> : <Trash />}
+          {isDeletingWork ? <Loader2Icon className="animate-spin" /> : <Trash />}
           {isDeleted ? t("削除済み", "Deleted") : t("削除", "Delete")}
         </Button>
       </AlertDialogTrigger>

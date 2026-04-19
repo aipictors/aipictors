@@ -29,35 +29,15 @@ type Props = {
  * 作品のポップオーバーメニュー
  */
 export function WorkActionMenu (props: Props) {
-  const [deleteWork, { loading: isLoadingDeleteAlbum }] =
-    useMutation(DeleteWorkMutation)
   const [changeWorkSettingsWithAdmin, { loading: isUpdatingWork }] =
     useMutation(ChangeWorkSettingsWithAdminMutation)
   const [createMessage, { loading: isSendingMessage }] = useMutation(
     CreateModeratorMessageMutation,
   )
-  const [_isDeleted, setIsDeleted] = useState(false)
   const [moderatorMessage, setModeratorMessage] = useState("")
   const [isModeratorMessageOpen, setIsModeratorMessageOpen] = useState(false)
 
   const t = useTranslation()
-
-  const _onDeleteWork = async (workId: string) => {
-    await deleteWork({
-      variables: {
-        input: {
-          workId: workId,
-        },
-      },
-    })
-    toast(
-      t(
-        "作品を削除しました、しばらくしたらアクセスできなくなります",
-        "The post has been deleted",
-      ),
-    )
-    setIsDeleted(true)
-  }
 
   const onHideWorkByModerator = async () => {
     try {
@@ -208,14 +188,6 @@ export function WorkActionMenu (props: Props) {
     </Popover>
   )
 }
-
-const DeleteWorkMutation = graphql(
-  `mutation DeleteWork($input: DeleteWorkInput!) {
-    deleteWork(input: $input) {
-      id
-    }
-  }`,
-)
 
 const IsModeratorQuery = graphql(
   `query ViewerIsModerator {

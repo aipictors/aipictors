@@ -217,8 +217,8 @@ export function PostFormItemVideo(props: Props) {
               </p>
               <p className="text-center text-xs text-zinc-300">
                 {t(
-                  `無料ユーザは1日2本まで、サブスク加入ユーザは1日3本まで`,
-                  `Free users: up to 2 uploads/day. Subscribers: up to 3 uploads/day.`,
+                  "無料ユーザは1日2本まで、サブスク加入ユーザは1日3本まで",
+                  "Free users: up to 2 uploads/day. Subscribers: up to 3 uploads/day.",
                 )}
               </p>
             </div>

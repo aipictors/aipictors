@@ -59,7 +59,7 @@ import { FollowTagsFeedContents } from "~/routes/($lang)._main._index/components
 import { FollowUserFeedContents } from "~/routes/($lang)._main._index/components/follow-user-feed-contents"
 import {
   HomeAwardWorkSection,
-  HomeWorkAwardFragment,
+  type HomeWorkAwardFragment,
 } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import {
   HomeAwardWorksFragment,
@@ -95,7 +95,7 @@ import {
   HomeTagFragment,
   HomeTagsSection,
 } from "~/routes/($lang)._main._index/components/home-tags-section"
-import { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
+import type { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"

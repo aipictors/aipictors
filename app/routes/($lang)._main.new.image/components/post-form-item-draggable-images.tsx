@@ -275,7 +275,6 @@ export function PostFormItemDraggableImages(props: Props) {
             "Failed to load one of the images. Please try a different file.",
           ),
         )
-        continue
       }
     }
 

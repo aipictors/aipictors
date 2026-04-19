@@ -363,7 +363,6 @@ export function WorkCommentList (props: Props) {
 
         <div className="space-y-2">
           <div className="flex w-full items-center space-x-4">
-            <Avatar>
             <UserAvatarWithFrame
               alt={appContext.displayName ?? ""}
               frame={userAvatarFrame}

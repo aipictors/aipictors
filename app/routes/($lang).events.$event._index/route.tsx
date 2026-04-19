@@ -73,7 +73,7 @@ type NormalizedEvent = {
   awardWorks: any[]
 }
 
-const URL_REGEXP = /(https?:\/\/[^\s<]+[^\s<.,:;!?()\[\]{}"'])/g
+const URL_REGEXP = /(https?:\/\/[^\s<]+[^\s<.,:;!?()[\]{}"'])/g
 
 const buildEventAnnouncementText = (props: {
   title: string
