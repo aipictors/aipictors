@@ -96,7 +96,6 @@ export default function NewImage() {
     variables: {
       offset: 0,
       limit: 128,
-      ownerUserId: authContext.userId ?? "-1",
       withGenerationResults: generationNanoids.length > 0,
       generationLimit: 64,
       generationOffset: 0,
@@ -1329,7 +1328,7 @@ export default function NewImage() {
           mediaType={mediaType}
           state={inputState}
           dispatch={dispatchInput}
-          albums={viewerData?.albums ?? []}
+          albums={viewerData?.viewer?.albums ?? []}
           currentPass={viewerData?.viewer?.currentPass ?? null}
           recentlyUsedTags={viewerData?.viewer?.recentlyUsedTags ?? []}
           themes={
@@ -1398,7 +1397,6 @@ export async function loader(_props: LoaderFunctionArgs) {
     variables: {
       offset: 0,
       limit: 128,
-      ownerUserId: "-1",
       withGenerationResults: false,
       generationLimit: 64,
       generationOffset: 0,
@@ -1423,7 +1421,6 @@ const ViewerQuery = graphql(
   `query ViewerQuery(
     $limit: Int!,
     $offset: Int!,
-    $ownerUserId: ID
     $withGenerationResults: Boolean!
     $generationOffset: Int!
     $generationLimit: Int!
@@ -1435,6 +1432,9 @@ const ViewerQuery = graphql(
     viewer {
       id
       token
+      albums(offset: $offset, limit: $limit) {
+        ...PostImageFormAlbum
+      }
       currentPass {
         ...PostImageFormPass
       }
@@ -1488,17 +1488,6 @@ const ViewerQuery = graphql(
         imageUrl
         thumbnailUrl
       }
-    }
-    albums(
-      offset: $offset,
-      limit: $limit,
-      where: {
-        ownerUserId: $ownerUserId,
-        needInspected: false,
-        needsThumbnailImage: false,
-      }
-    ) {
-      ...PostImageFormAlbum
     }
     aiModels(offset: 0, limit: 124, where: {}) {
       id
