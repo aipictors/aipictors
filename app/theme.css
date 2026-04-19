@@ -57,13 +57,13 @@ html {
 
 @keyframes avatar-frame-rainbow {
   0% {
-    background-position: 0% 50%;
+    transform: rotate(0deg) scale(1.04);
   }
   50% {
-    background-position: 100% 50%;
+    transform: rotate(180deg) scale(1.08);
   }
   100% {
-    background-position: 0% 50%;
+    transform: rotate(360deg) scale(1.04);
   }
 }
 
@@ -130,8 +130,35 @@ html {
 }
 
 .avatar-frame {
-  background-size: 180% 180%;
+  overflow: hidden;
   box-shadow: 0 1px 10px rgba(15, 23, 42, 0.08);
+}
+
+.avatar-frame-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 9999px;
+  background-size: 180% 180%;
+}
+
+.avatar-frame-background-rainbow {
+  animation: avatar-frame-rainbow 12s linear infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.avatar-frame-background-aurora {
+  animation: avatar-frame-aurora 10s ease-in-out infinite;
+  background-size: 220% 220%;
+}
+
+.avatar-frame-background-pearl {
+  background-size: 200% 200%;
+}
+
+.avatar-frame-background-starlight {
+  background-size: 220% 220%;
 }
 
 .avatar-frame-ambient {
@@ -139,21 +166,15 @@ html {
 }
 
 .avatar-frame-animated-rainbow {
-  animation:
-    avatar-frame-ambient 7.2s ease-in-out infinite,
-    avatar-frame-rainbow 9s linear infinite;
-  background-size: 240% 240%;
+  animation: avatar-frame-ambient 7.2s ease-in-out infinite;
 }
 
 .avatar-frame-aurora {
-  animation:
-    avatar-frame-ambient 7.2s ease-in-out infinite,
-    avatar-frame-aurora 10s ease-in-out infinite;
-  background-size: 220% 220%;
+  animation: avatar-frame-ambient 7.2s ease-in-out infinite;
 }
 
 .avatar-frame-pearl-shine {
-  background-size: 200% 200%;
+  animation: avatar-frame-ambient 7.2s ease-in-out infinite;
 }
 
 .avatar-frame-starlight {
@@ -165,6 +186,7 @@ html {
 .avatar-frame-gloss {
   position: absolute;
   inset: 8%;
+  z-index: 1;
   border-radius: 9999px;
   background: linear-gradient(
     112deg,
