@@ -17,16 +17,16 @@ export function checkLocaleRedirect(request: Request): LocaleRedirect | null {
   const cookieHeader = request.headers.get("Cookie")
   const cookies = cookieHeader ? parse(cookieHeader) : {}
 
-  // クッキーの locale を優先し、なければブラウザの Accept-Language を参照
-  const browserLocale =
-    request.headers.get("Accept-Language")?.split(",")[0].toLowerCase() || "ja"
+  // ブラウザ言語を優先し、明示的なヘッダーが取れない場合のみ cookie を補助的に使う
+  const acceptLanguage = request.headers.get("Accept-Language")?.toLowerCase()
 
-  const locale: SupportedLocale =
-    cookies.locale === "en" || cookies.locale === "ja"
+  const locale: SupportedLocale = acceptLanguage
+    ? acceptLanguage.startsWith("en")
+      ? "en"
+      : "ja"
+    : cookies.locale === "en" || cookies.locale === "ja"
       ? cookies.locale
-      : browserLocale.startsWith("en")
-        ? "en"
-        : "ja"
+      : "ja"
 
   const url = new URL(request.url)
   const pathname = url.pathname
