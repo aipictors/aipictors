@@ -1,14 +1,17 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { cn } from "~/lib/utils"
+import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 
 type UserProfileAvatarProps = {
   alt: string
+  frame?: UserAvatarFramePresentation | null
   src?: string
   size?: "sm" | "md" | "lg" | "auto"
 }
 
 export function UserProfileAvatar ({
   alt,
+  frame,
   src,
   size = "md",
 }: UserProfileAvatarProps) {
@@ -28,9 +31,11 @@ export function UserProfileAvatar ({
   }
 
   return (
-    <Avatar className={cn(getSize(size), "border-2")}>
-      <AvatarImage alt={alt} src={src} />
-      <AvatarFallback />
-    </Avatar>
+    <UserAvatarWithFrame
+      alt={alt}
+      frame={frame}
+      sizeClassName={cn(getSize(size), "border-2")}
+      src={src}
+    />
   )
 }

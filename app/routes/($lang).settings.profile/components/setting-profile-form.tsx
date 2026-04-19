@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
@@ -16,6 +17,10 @@ import {
   SelectCreatedWorksDialog,
 } from "~/routes/($lang).my._index/components/select-created-works-dialog"
 import { uploadPublicImage } from "~/utils/upload-public-image"
+import {
+  canUseUserAvatarFrame,
+  toUserAvatarFramePassLabel,
+} from "~/utils/user-avatar-frame"
 
 /**
  * プロフィール設定フォーム
@@ -48,6 +53,9 @@ export function SettingProfileForm() {
   const [mail, setMail] = useState("")
   const [profileImage, setProfileImage] = useState("")
   const [headerImage, setHeaderImage] = useState("")
+  const [selectedUserAvatarFrameId, setSelectedUserAvatarFrameId] = useState<
+    string | null
+  >(null)
   const [selectedPickupWorks, setSelectedPickupWorks] = useState<
     Array<{
       id: string
@@ -65,10 +73,22 @@ export function SettingProfileForm() {
     >([])
 
   const { data: token } = useQuery(viewerTokenQuery)
+  const { data: avatarFrameSettingsData } = useQuery(
+    profileAvatarFrameSettingsQuery,
+    {
+      skip:
+        authContext.isLoading ||
+        authContext.isNotLoggedIn ||
+        !authContext.userId,
+      fetchPolicy: "cache-first",
+    },
+  )
 
   const [updateProfile, { loading: isUpdating }] = useMutation(
     updateUserProfileMutation,
   )
+  const [updateUserSetting] = useMutation(updateUserSettingMutation)
+  const profileAvatarFrameSettings = avatarFrameSettingsData
 
   // userInfoが取得されたらstateを初期化
   useEffect(() => {
@@ -97,6 +117,12 @@ export function SettingProfileForm() {
       )
     }
   }, [userInfo, authContext.displayName])
+
+  useEffect(() => {
+    setSelectedUserAvatarFrameId(
+      avatarFrameSettingsData?.userSetting?.selectedUserAvatarFrame?.id ?? null,
+    )
+  }, [avatarFrameSettingsData])
 
   // ローディング状態をフック呼び出し後に確認
   if (loading || authContext.isLoading || authContext.isNotLoggedIn) {
@@ -154,6 +180,16 @@ export function SettingProfileForm() {
       awaitRefetchQueries: true,
     })
 
+    await updateUserSetting({
+      variables: {
+        input: {
+          selectedUserAvatarFrameId,
+        },
+      },
+      refetchQueries: [{ query: profileAvatarFrameSettingsQuery }],
+      awaitRefetchQueries: true,
+    })
+
     toast(t("プロフィールを更新しました。", "Profile updated."))
   }
 
@@ -162,6 +198,15 @@ export function SettingProfileForm() {
 
   const headerImageSrc =
     headerImage.length > 0 ? headerImage : userInfo?.headerImageUrl
+
+  const currentPassType =
+    profileAvatarFrameSettings?.viewer?.currentPass?.type ?? null
+  const avatarFrames = profileAvatarFrameSettings?.userAvatarFrames ?? []
+  const selectedAvatarFrame =
+    avatarFrames.find((frame) => frame.id === selectedUserAvatarFrameId) ??
+    profileAvatarFrameSettings?.userSetting?.selectedUserAvatarFrame ??
+    null
+  const canUseAvatarFrames = canUseUserAvatarFrame(currentPassType, "LITE")
 
   return (
     <>
@@ -178,15 +223,12 @@ export function SettingProfileForm() {
               <div className="h-40 w-full bg-gray-700" />
             )}
             <div className="absolute bottom-[-24px] left-2 size-32">
-              {profileImageSrc ? (
-                <img
-                  className="absolute size-32 rounded-full border-2"
-                  src={profileImageSrc}
-                  alt={t("プロフィール画像", "Profile Image")}
-                />
-              ) : (
-                <div className="size-32 rounded-full border-2 bg-gray-700" />
-              )}
+              <UserAvatarWithFrame
+                alt={t("プロフィール画像", "Profile Image")}
+                frame={selectedAvatarFrame}
+                sizeClassName="size-32"
+                src={profileImageSrc}
+              />
 
               <CropImageField
                 isHidePreviewImage={false}
@@ -239,6 +281,84 @@ export function SettingProfileForm() {
           </p>
         </div>
 
+        <div className="flex flex-col justify-between space-y-2">
+          <label className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+            {t("アイコン枠", "Avatar Frame")}
+          </label>
+          <div className="space-y-3 rounded-md border p-3">
+            <p className="text-muted-foreground text-sm">
+              {canUseAvatarFrames
+                ? t(
+                    "ライト以上のサブスクユーザはアイコン枠を選択できます。枠の内容はテーブル管理された一覧から読み込みます。",
+                    "Lite and above subscribers can choose an avatar frame. The available frames are loaded from the managed frame table.",
+                  )
+                : t(
+                    "アイコン枠の利用はライト以上のサブスクユーザ向け機能です。",
+                    "Avatar frames are available for Lite and higher subscribers.",
+                  )}
+            </p>
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <button
+                className="rounded-lg border p-3 text-left"
+                disabled={!canUseAvatarFrames}
+                onClick={() => setSelectedUserAvatarFrameId(null)}
+                type="button"
+              >
+                <div className="flex items-center gap-3">
+                  <UserAvatarWithFrame
+                    alt={t("枠なし", "No Frame")}
+                    sizeClassName="size-14"
+                    src={profileImageSrc}
+                  />
+                  <div>
+                    <p className="font-medium">{t("枠なし", "No Frame")}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {t("通常のアイコン表示", "Show the normal avatar")}
+                    </p>
+                  </div>
+                </div>
+              </button>
+              {avatarFrames.map((frame) => {
+                const isAllowed = canUseUserAvatarFrame(
+                  currentPassType,
+                  frame.requiredPassType,
+                )
+
+                return (
+                  <button
+                    key={frame.id}
+                    className="rounded-lg border p-3 text-left disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={!isAllowed}
+                    onClick={() => setSelectedUserAvatarFrameId(frame.id)}
+                    type="button"
+                  >
+                    <div className="flex items-center gap-3">
+                      <UserAvatarWithFrame
+                        alt={frame.name}
+                        frame={frame}
+                        sizeClassName="size-14"
+                        src={profileImageSrc}
+                      />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="truncate font-medium">{frame.name}</p>
+                          <span className="rounded bg-secondary px-2 py-0.5 text-[10px]">
+                            {toUserAvatarFramePassLabel(frame.requiredPassType)}+
+                          </span>
+                        </div>
+                        {frame.description && (
+                          <p className="line-clamp-2 text-muted-foreground text-xs">
+                            {frame.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col justify-between space-y-2">
           <label
             htmlFor="nickname"
@@ -473,6 +593,50 @@ const viewerTokenQuery = graphql(
     viewer {
       id
       token
+    }
+  }`,
+)
+
+const profileAvatarFrameSettingsQuery = graphql(
+  `query ProfileAvatarFrameSettings {
+    viewer {
+      id
+      currentPass {
+        id
+        type
+      }
+    }
+    userSetting {
+      id
+      selectedUserAvatarFrame {
+        id
+        name
+        description
+        requiredPassType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
+    }
+    userAvatarFrames {
+      id
+      name
+      description
+      requiredPassType
+      backgroundStyle
+      overlayImageUrl
+      borderPadding
+    }
+  }`,
+)
+
+const updateUserSettingMutation = graphql(
+  `mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
+    updateUserSetting(input: $input) {
+      id
+      selectedUserAvatarFrame {
+        id
+      }
     }
   }`,
 )

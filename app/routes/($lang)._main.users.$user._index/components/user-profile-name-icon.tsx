@@ -101,6 +101,7 @@ export function UserProfileNameIcon(props: Props) {
       <div className="-top-5 md:-top-10 absolute left-0">
         <UserProfileAvatar
           alt={user.name}
+          frame={user.avatarFrame}
           src={withIconUrlFallback(user.iconUrl)}
           size={"auto"}
         />
@@ -380,6 +381,12 @@ export const UserProfileIconFragment = graphql(
     awardsCount
     receivedViewsCount
     iconUrl
+    avatarFrame {
+      id
+      backgroundStyle
+      overlayImageUrl
+      borderPadding
+    }
     twitterAccountId
     instagramAccountId
     githubAccountId
