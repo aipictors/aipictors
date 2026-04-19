@@ -1,9 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useContext, useState, lazy, Suspense } from "react"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -58,6 +58,7 @@ export function FastUserNavigationMenu (props: Props) {
   const iconUrl =
     data?.viewer?.user?.iconUrl ?? authContext.avatarPhotoURL ?? ""
   const displayName = data?.viewer?.user?.name ?? authContext.displayName ?? ""
+  const avatarFrame = data?.viewer?.user?.avatarFrame ?? null
 
   // デバッグ用ログ（モバイル含む詳細情報）
   debugLog.user("FastUserNavigationMenu render:", {
@@ -99,12 +100,14 @@ export function FastUserNavigationMenu (props: Props) {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-10 w-10 cursor-pointer">
-          <AvatarImage src={withIconUrlFallback(iconUrl)} />
-          <AvatarFallback>
-            {displayName ? displayName.charAt(0).toUpperCase() : "U"}
-          </AvatarFallback>
-        </Avatar>
+        <button type="button" className="rounded-full">
+          <UserAvatarWithFrame
+            alt={displayName || "User"}
+            frame={avatarFrame}
+            sizeClassName="h-10 w-10 cursor-pointer"
+            src={withIconUrlFallback(iconUrl)}
+          />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {/* UserNavigationMenuContentが自分でローディング状態を管理 */}

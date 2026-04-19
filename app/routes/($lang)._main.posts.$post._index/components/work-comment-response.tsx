@@ -1,5 +1,4 @@
 import { useMutation } from "@apollo/client/index"
-import { Avatar } from "@radix-ui/react-avatar"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import {
@@ -13,6 +12,7 @@ import {
 } from "lucide-react"
 import React from "react"
 import { toast } from "sonner"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useTranslation } from "~/hooks/use-translation"

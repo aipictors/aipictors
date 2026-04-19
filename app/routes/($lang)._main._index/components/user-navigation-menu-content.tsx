@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import {
   DropdownMenuPortal,
   DropdownMenuRadioGroup,
@@ -10,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "~/components/ui/dropdown-menu"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import {
   CoffeeIcon,
@@ -102,6 +102,7 @@ export function UserNavigationMenuContent (props: Props) {
   const followCount = data?.viewer?.user?.followCount ?? 0
   const headerImageUrl = data?.viewer?.user.headerImageUrl ?? ""
   const iconUrl = data?.viewer?.user?.iconUrl ?? ""
+  const avatarFrame = data?.viewer?.user?.avatarFrame ?? null
   const featurePromptonRequest =
     userSetting?.userSetting?.featurePromptonRequest ?? false
   const viewerUserToken = tokenData?.viewer?.token
@@ -203,14 +204,13 @@ export function UserNavigationMenuContent (props: Props) {
             to={getSensitiveLink(`/users/${fallbackLogin}`)}
             className="absolute bottom-[-24px] left-3"
           >
-            <Avatar className="h-12 w-12 cursor-pointer border-2 border-white">
-              <AvatarImage src={withIconUrlFallback(fallbackIconUrl)} />
-              <AvatarFallback>
-                {fallbackDisplayName
-                  ? fallbackDisplayName.charAt(0).toUpperCase()
-                  : "U"}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatarWithFrame
+              alt={fallbackDisplayName || "User"}
+              frame={null}
+              frameClassName="border-2 border-white"
+              sizeClassName="h-12 w-12 cursor-pointer"
+              src={withIconUrlFallback(fallbackIconUrl)}
+            />
           </Link>
         </div>
 
@@ -291,14 +291,13 @@ export function UserNavigationMenuContent (props: Props) {
             to={getSensitiveLink(`/users/${fallbackLogin}`)}
             className="absolute bottom-[-24px] left-3"
           >
-            <Avatar className="h-12 w-12 cursor-pointer border-2 border-white">
-              <AvatarImage src={withIconUrlFallback(fallbackIconUrl)} />
-              <AvatarFallback>
-                {fallbackDisplayName
-                  ? fallbackDisplayName.charAt(0).toUpperCase()
-                  : "U"}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatarWithFrame
+              alt={fallbackDisplayName || "User"}
+              frame={null}
+              frameClassName="border-2 border-white"
+              sizeClassName="h-12 w-12 cursor-pointer"
+              src={withIconUrlFallback(fallbackIconUrl)}
+            />
           </Link>
         </div>
 
@@ -461,10 +460,13 @@ export function UserNavigationMenuContent (props: Props) {
           to={getSensitiveLink(`/users/${data?.viewer?.user?.login}`)}
           className="absolute bottom-[-24px] left-3"
         >
-          <Avatar className="h-12 w-12 cursor-pointer border-2 border-white">
-            <AvatarImage src={withIconUrlFallback(iconUrl)} />
-            <AvatarFallback />
-          </Avatar>
+          <UserAvatarWithFrame
+            alt={data?.viewer?.user?.name || authContext.displayName || "User"}
+            frame={avatarFrame}
+            frameClassName="border-2 border-white"
+            sizeClassName="h-12 w-12 cursor-pointer"
+            src={withIconUrlFallback(iconUrl)}
+          />
         </Link>
       </div>
 
@@ -687,6 +689,13 @@ const viewerUserQuery = graphql(
         followCount
         iconUrl
         headerImageUrl
+        avatarFrame {
+          id
+          frameType
+          backgroundStyle
+          overlayImageUrl
+          borderPadding
+        }
         promptonUser {
           id
           name

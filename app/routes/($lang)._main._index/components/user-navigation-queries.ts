@@ -10,6 +10,13 @@ export const viewerBasicUserQuery = graphql(
         login
         name
         iconUrl
+        avatarFrame {
+          id
+          frameType
+          backgroundStyle
+          overlayImageUrl
+          borderPadding
+        }
       }
     }
   }`,
