@@ -45,7 +45,7 @@ export function createMeta(
       ? replacePlaceholders(
           metaEnDescription && metaEnDescription.length > 155
             ? `${metaEnDescription.substring(0, 152)}...`
-            : metaEnDescription || "",
+            : metaEnDescription || metadata.descriptionEN,
         )
       : replacePlaceholders(
           metaDescription.length > 155
@@ -105,7 +105,7 @@ export const metadata = {
     return `${this.nameEN} - ${this.catchphraseEN}`
   },
   catchphraseJA: "AI画像投稿サイト・生成サイト",
-  catchphraseEN: "AI Art Community & Image Generator",
+  catchphraseEN: "AI Illustration & Generation",
   descriptionJA:
     "AI画像投稿サイト・生成サイト「Aipictors」で作品を公開してみよう！AIイラスト、AIフォト、AIグラビアなどプロンプトが数多く投稿されています！数十万作品の中からお気に入りの作品を見つけよう！",
   descriptionEN:
