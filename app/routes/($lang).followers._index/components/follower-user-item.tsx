@@ -1,8 +1,9 @@
 import { FollowButton } from "~/components/button/follow-button"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Link } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { LikeButton } from "~/components/like-button"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof FollowerListItemFragment>
@@ -23,10 +24,14 @@ export function FollowerUserItem (props: Props) {
     <div className="flex flex-col space-y-2 md:flex-row">
       <div className="md:mr-4 md:flex">
         <Link to={`/users/${props.user.id}`}>
-          <Avatar className="mt-2 mr-2">
-            <AvatarImage src={props.user.iconUrl ?? ""} alt={props.user.name} />
-            <AvatarFallback />
-          </Avatar>
+          <UserAvatarWithFrame
+            alt={props.user.name}
+            frame={props.user.avatarFrame}
+            isAnimated={false}
+            frameClassName="mt-2 mr-2"
+            sizeClassName="size-10"
+            src={withIconUrlFallback(props.user.iconUrl)}
+          />
         </Link>
         <div className="w-full md:w-48">
           <p className="mb-1 font-bold text-md">{props.user.name}</p>
@@ -79,6 +84,13 @@ export const FollowerListItemFragment = graphql(
     id
     name
     iconUrl
+    avatarFrame {
+      id
+      frameType
+      backgroundStyle
+      overlayImageUrl
+      borderPadding
+    }
     biography
     isFollowee
     finalPostedAt

@@ -5,8 +5,8 @@ import {
   CardDescription,
   CardContent,
 } from "~/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { graphql, readFragment, type FragmentOf } from "gql.tada"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import {
   PhotoAlbumWorkFragment,
@@ -26,15 +26,13 @@ export function UserCard (props: Props) {
       <CardHeader>
         <Link to={`/users/${user.login}`}>
           <div className="flex h-24 items-center space-x-4">
-            <Avatar>
-              <AvatarImage
-                src={withIconUrlFallback(user.iconUrl)}
-                alt={user.name || user.login}
-              />
-              <AvatarFallback>
-                {user.name ? user.name.charAt(0) : user.login.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatarWithFrame
+              alt={user.name || user.login}
+              frame={user.avatarFrame}
+              isAnimated={false}
+              sizeClassName="size-10"
+              src={withIconUrlFallback(user.iconUrl)}
+            />
             <div>
               <CardTitle className="font-semibold text-xl">
                 {user.name}
@@ -60,6 +58,13 @@ export const UserCardFragment = graphql(
     login
     name
     iconUrl
+    avatarFrame {
+      id
+      frameType
+      backgroundStyle
+      overlayImageUrl
+      borderPadding
+    }
     biography
     works(limit: 3, offset: 0) {
       ...PhotoAlbumWork

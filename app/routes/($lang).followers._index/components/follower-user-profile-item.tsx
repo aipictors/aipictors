@@ -1,7 +1,8 @@
 import { FollowButton } from "~/components/button/follow-button"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 import { Link } from "@remix-run/react"
 import { graphql, type FragmentOf } from "gql.tada"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   user: FragmentOf<typeof FollowerListItemFragment>
@@ -23,13 +24,14 @@ export function FollowerUserProfileItem (props: Props) {
       <div className="flex flex-col space-y-2 md:hidden md:flex-row">
         <Link to={`/users/${props.user.id}`} className="md:mr-4 md:flex">
           <div className="flex">
-            <Avatar className="mt-2 mr-2">
-              <AvatarImage
-                src={props.user.iconUrl ?? ""}
-                alt={props.user.name}
-              />
-              <AvatarFallback />
-            </Avatar>
+            <UserAvatarWithFrame
+              alt={props.user.name}
+              frame={props.user.avatarFrame}
+              isAnimated={false}
+              frameClassName="mt-2 mr-2"
+              sizeClassName="size-10"
+              src={withIconUrlFallback(props.user.iconUrl)}
+            />
             <div className="w-full md:w-48">
               <p className="mb-1 font-bold text-md">{props.user.name}</p>
               <p className="mb-2 max-h-16 overflow-hidden text-sm opacity-80">
@@ -51,10 +53,14 @@ export function FollowerUserProfileItem (props: Props) {
           to={`/users/${props.user.id}`}
           className="items-center md:mr-4 md:flex"
         >
-          <Avatar className="mt-2 mr-2">
-            <AvatarImage src={props.user.iconUrl ?? ""} alt={props.user.name} />
-            <AvatarFallback />
-          </Avatar>
+          <UserAvatarWithFrame
+            alt={props.user.name}
+            frame={props.user.avatarFrame}
+            isAnimated={false}
+            frameClassName="mt-2 mr-2"
+            sizeClassName="size-10"
+            src={withIconUrlFallback(props.user.iconUrl)}
+          />
           <div className="w-full">
             <p className="mb-1 font-bold text-md">{props.user.name}</p>
             <p className="mb-2 max-h-16 overflow-hidden text-sm opacity-80">
@@ -78,6 +84,13 @@ export const FollowerListItemFragment = graphql(
     id
     name
     iconUrl
+    avatarFrame {
+      id
+      frameType
+      backgroundStyle
+      overlayImageUrl
+      borderPadding
+    }
     biography
     isFollowee
   }`,

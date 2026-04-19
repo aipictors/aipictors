@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client/index"
+import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { Check, Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { Suspense, useContext, useEffect, useState } from "react"
@@ -299,6 +300,29 @@ export function SettingProfileForm() {
                     "Avatar frames are available for Lite and higher subscribers.",
                   )}
             </p>
+            {!canUseAvatarFrames && (
+              <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 p-3">
+                <div className="space-y-1">
+                  <p className="font-medium text-sm">
+                    {t(
+                      "サブスク登録でアイコン枠を使えます",
+                      "Subscribe to unlock avatar frames",
+                    )}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    {t(
+                      "ライトプラン以上で、プロフィールや各一覧にアイコン枠を表示できます。",
+                      "With Lite or above, you can show avatar frames on your profile and across user lists.",
+                    )}
+                  </p>
+                </div>
+                <Link to="/plus">
+                  <Button size="sm" variant="secondary">
+                    {t("プランを見る", "View plans")}
+                  </Button>
+                </Link>
+              </div>
+            )}
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               <button
                 aria-pressed={isNoFrameSelected}
