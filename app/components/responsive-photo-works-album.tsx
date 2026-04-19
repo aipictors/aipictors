@@ -112,6 +112,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           <UserAvatarWithFrame
                             alt={workItem.user.name}
                             frame={workItem.user.avatarFrame}
+                            isAnimated={false}
                             sizeClassName="size-6"
                             src={withIconUrlFallback(workItem.user.iconUrl)}
                           />
@@ -355,6 +356,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                             <UserAvatarWithFrame
                               alt={photo.context.user?.name ?? ""}
                               frame={photo.context.user?.avatarFrame}
+                              isAnimated={false}
                               sizeClassName="size-6"
                               src={withIconUrlFallback(
                                 photo.context.user?.iconUrl,

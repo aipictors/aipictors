@@ -109,6 +109,7 @@ export function ReplyCommentInput (props: Props) {
           <UserAvatarWithFrame
             alt={authContext.displayName ?? ""}
             frame={avatarFrame}
+            isAnimated={false}
             sizeClassName="size-10"
             src={withIconUrlFallback(iconUrl)}
           />

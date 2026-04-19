@@ -264,6 +264,7 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                             <UserAvatarWithFrame
                               alt={photo.context.user?.name ?? ""}
                               frame={photo.context.user?.avatarFrame}
+                              isAnimated={false}
                               sizeClassName="size-6"
                               src={withIconUrlFallback(
                                 photo.context.user?.iconUrl,
@@ -372,6 +373,7 @@ function HomeCroppedWorksWithGenerationButton(props: {
                   <UserAvatarWithFrame
                     alt={work.user?.name ?? ""}
                     frame={work.user?.avatarFrame}
+                    isAnimated={false}
                     sizeClassName="size-4"
                     src={withIconUrlFallback(work.user?.iconUrl)}
                   />

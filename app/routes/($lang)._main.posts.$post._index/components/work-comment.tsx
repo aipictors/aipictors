@@ -245,6 +245,7 @@ export function WorkComment(props: Props) {
           <UserAvatarWithFrame
             alt={props.userName ?? ""}
             frame={props.userAvatarFrame}
+            isAnimated={false}
             sizeClassName="size-10"
             src={props.userIconImageURL}
           />

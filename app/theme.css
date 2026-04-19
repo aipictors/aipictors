@@ -67,6 +67,24 @@ html {
   }
 }
 
+@keyframes avatar-frame-ambient {
+  0% {
+    transform: translateY(0);
+    box-shadow: 0 1px 10px rgba(15, 23, 42, 0.08);
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    transform: translateY(-0.5px);
+    box-shadow: 0 2px 14px rgba(15, 23, 42, 0.12);
+    filter: saturate(1.03) brightness(1.02);
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 1px 10px rgba(15, 23, 42, 0.08);
+    filter: saturate(1) brightness(1);
+  }
+}
+
 @keyframes avatar-frame-aurora {
   0% {
     background-position: 0% 30%;
@@ -116,13 +134,21 @@ html {
   box-shadow: 0 1px 10px rgba(15, 23, 42, 0.08);
 }
 
+.avatar-frame-ambient {
+  animation: avatar-frame-ambient 7.2s ease-in-out infinite;
+}
+
 .avatar-frame-animated-rainbow {
-  animation: avatar-frame-rainbow 9s linear infinite;
+  animation:
+    avatar-frame-ambient 7.2s ease-in-out infinite,
+    avatar-frame-rainbow 9s linear infinite;
   background-size: 240% 240%;
 }
 
 .avatar-frame-aurora {
-  animation: avatar-frame-aurora 10s ease-in-out infinite;
+  animation:
+    avatar-frame-ambient 7.2s ease-in-out infinite,
+    avatar-frame-aurora 10s ease-in-out infinite;
   background-size: 220% 220%;
 }
 
@@ -131,7 +157,9 @@ html {
 }
 
 .avatar-frame-starlight {
-  animation: avatar-frame-starlight 4.8s ease-in-out infinite;
+  animation:
+    avatar-frame-ambient 7.2s ease-in-out infinite,
+    avatar-frame-starlight 4.8s ease-in-out infinite;
 }
 
 .avatar-frame-gloss {

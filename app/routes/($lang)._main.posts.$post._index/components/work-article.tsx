@@ -6,7 +6,7 @@ import { Heart, ShieldAlert } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { ToggleContent } from "~/components/toggle-content"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
@@ -305,6 +305,7 @@ export function WorkArticle(props: Props) {
                     <WorkLikedUser
                       key={user.id}
                       name={user.name}
+                      avatarFrame={user.avatarFrame}
                       iconUrl={user.iconUrl}
                       login={user.login}
                     />
@@ -515,12 +516,13 @@ export function WorkArticle(props: Props) {
                 className="flex items-center space-x-2"
                 to={`/users/${props.work.user.login}`}
               >
-                <Avatar>
-                  <AvatarImage
-                    src={withIconUrlFallback(props.work.user.iconUrl)}
-                  />
-                  <AvatarFallback />
-                </Avatar>
+                <UserAvatarWithFrame
+                  alt={props.work.user.name}
+                  frame={props.work.user.avatarFrame}
+                  isAnimated={false}
+                  sizeClassName="size-10"
+                  src={withIconUrlFallback(props.work.user.iconUrl)}
+                />
                 <span>{props.work.user.name}</span>
               </Link>
               {props.work.user.promptonUser?.id !== undefined &&
@@ -585,6 +587,13 @@ export const workArticleFragment = graphql(
       followersCount
       worksCount
       iconUrl
+      avatarFrame {
+        id
+        frameType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
       headerImageUrl
       webFcmToken
       isFollower
@@ -618,6 +627,13 @@ export const workArticleFragment = graphql(
       name
       iconUrl
       login
+      avatarFrame {
+        id
+        frameType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
     }
     dailyTheme {
       id
@@ -735,6 +751,13 @@ export const sensitiveWorkArticleFragment = graphql(
       followersCount
       worksCount
       iconUrl
+      avatarFrame {
+        id
+        frameType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
       headerImageUrl
       webFcmToken
       isFollower
@@ -768,6 +791,13 @@ export const sensitiveWorkArticleFragment = graphql(
       name
       iconUrl
       login
+      avatarFrame {
+        id
+        frameType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
     }
     album {
       id

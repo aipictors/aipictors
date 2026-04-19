@@ -366,6 +366,7 @@ export function WorkCommentList (props: Props) {
             <UserAvatarWithFrame
               alt={appContext.displayName ?? ""}
               frame={userAvatarFrame}
+              isAnimated={false}
               sizeClassName="size-10"
               src={withIconUrlFallback(userIcon)}
             />

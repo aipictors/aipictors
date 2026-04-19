@@ -6,6 +6,7 @@ type Props = {
   alt: string
   src?: string | null
   frame?: UserAvatarFramePresentation | null
+  isAnimated?: boolean
   frameClassName?: string
   imageClassName?: string
   sizeClassName: string
@@ -14,11 +15,15 @@ type Props = {
 export function UserAvatarWithFrame(props: Props) {
   const padding = Math.max(0, props.frame?.borderPadding ?? 3)
   const frameType = props.frame?.frameType ?? "GRADIENT"
+  const isAnimated = props.isAnimated ?? true
   const showGlossLayer =
-    frameType === "ANIMATED_RAINBOW" ||
-    frameType === "AURORA" ||
-    frameType === "PEARL_SHINE" ||
-    frameType === "STARLIGHT"
+    isAnimated &&
+    (frameType === "ANIMATED_RAINBOW" ||
+      frameType === "AURORA" ||
+      frameType === "PEARL_SHINE" ||
+      frameType === "STARLIGHT" ||
+      frameType === "DECORATED" ||
+      frameType === "GRADIENT")
 
   if (props.frame === null || props.frame === undefined) {
     return (
@@ -37,10 +42,15 @@ export function UserAvatarWithFrame(props: Props) {
     <div
       className={cn(
         "avatar-frame relative inline-flex shrink-0 rounded-full",
-        frameType === "ANIMATED_RAINBOW" && "avatar-frame-animated-rainbow",
-        frameType === "AURORA" && "avatar-frame-aurora",
-        frameType === "PEARL_SHINE" && "avatar-frame-pearl-shine",
-        frameType === "STARLIGHT" && "avatar-frame-starlight",
+        isAnimated && "avatar-frame-ambient",
+        isAnimated &&
+          frameType === "ANIMATED_RAINBOW" &&
+          "avatar-frame-animated-rainbow",
+        isAnimated && frameType === "AURORA" && "avatar-frame-aurora",
+        isAnimated &&
+          frameType === "PEARL_SHINE" &&
+          "avatar-frame-pearl-shine",
+        isAnimated && frameType === "STARLIGHT" && "avatar-frame-starlight",
         props.sizeClassName,
         props.frameClassName,
       )}

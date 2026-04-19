@@ -36,6 +36,7 @@ export function UserNameBadge (props: Props) {
           <UserAvatarWithFrame
             alt={props.name}
             frame={props.frame}
+            isAnimated={false}
             sizeClassName={cn("rounded-full", {
               "size-4": props.width === "sm",
               "size-6": props.width === "md",

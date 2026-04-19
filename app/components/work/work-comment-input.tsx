@@ -98,6 +98,7 @@ export function WorkCommentInput (props: Props): React.ReactNode {
           <UserAvatarWithFrame
             alt={authContext.displayName ?? ""}
             frame={avatarFrame}
+            isAnimated={false}
             sizeClassName="size-10"
             src={withIconUrlFallback(iconUrl)}
           />

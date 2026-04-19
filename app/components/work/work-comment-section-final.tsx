@@ -388,6 +388,7 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
             <UserAvatarWithFrame
               alt={comment.user?.name ?? ""}
               frame={comment.user?.avatarFrame}
+              isAnimated={false}
               sizeClassName="size-10"
               src={withIconUrlFallback(comment.user?.iconUrl)}
             />
@@ -565,6 +566,7 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
               <UserAvatarWithFrame
                 alt={authContext.displayName ?? ""}
                 frame={userAvatarFrame}
+                isAnimated={false}
                 sizeClassName="size-10"
                 src={withIconUrlFallback(userIcon)}
               />

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { Loader2Icon, Pencil, PlusIcon } from "lucide-react"
+import { Check, Loader2Icon, Pencil, PlusIcon } from "lucide-react"
 import { Suspense, useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
@@ -11,6 +11,7 @@ import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { cn } from "~/lib/utils"
 import { SelectCreatedSensitiveWorksDialog } from "~/routes/($lang).my._index/components/select-created-sensitive-works-dialog"
 import {
   DialogWorkFragment,
@@ -206,6 +207,7 @@ export function SettingProfileForm() {
     avatarFrames.find((frame) => frame.id === selectedUserAvatarFrameId) ??
     profileAvatarFrameSettings?.userSetting?.selectedUserAvatarFrame ??
     null
+  const isNoFrameSelected = selectedUserAvatarFrameId === null
   const canUseAvatarFrames = canUseUserAvatarFrame(currentPassType, "LITE")
 
   return (
@@ -299,11 +301,23 @@ export function SettingProfileForm() {
             </p>
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               <button
-                className="rounded-lg border p-3 text-left"
+                aria-pressed={isNoFrameSelected}
+                className={cn(
+                  "relative rounded-xl border p-3 text-left transition-all",
+                  isNoFrameSelected
+                    ? "border-primary bg-primary/5 ring-2 ring-primary/20 shadow-sm"
+                    : "hover:border-primary/40 hover:bg-muted/40",
+                )}
                 disabled={!canUseAvatarFrames}
                 onClick={() => setSelectedUserAvatarFrameId(null)}
                 type="button"
               >
+                {isNoFrameSelected && (
+                  <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 font-medium text-[10px] text-primary-foreground">
+                    <Check className="size-3" />
+                    {t("選択中", "Selected")}
+                  </span>
+                )}
                 <div className="flex items-center gap-3">
                   <UserAvatarWithFrame
                     alt={t("枠なし", "No Frame")}
@@ -323,15 +337,28 @@ export function SettingProfileForm() {
                   currentPassType,
                   frame.requiredPassType,
                 )
+                const isSelected = selectedUserAvatarFrameId === frame.id
 
                 return (
                   <button
                     key={frame.id}
-                    className="rounded-lg border p-3 text-left disabled:cursor-not-allowed disabled:opacity-50"
+                    aria-pressed={isSelected}
+                    className={cn(
+                      "relative rounded-xl border p-3 text-left transition-all disabled:cursor-not-allowed disabled:opacity-50",
+                      isSelected
+                        ? "border-primary bg-primary/5 ring-2 ring-primary/20 shadow-sm"
+                        : "hover:border-primary/40 hover:bg-muted/40",
+                    )}
                     disabled={!isAllowed}
                     onClick={() => setSelectedUserAvatarFrameId(frame.id)}
                     type="button"
                   >
+                    {isSelected && (
+                      <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 font-medium text-[10px] text-primary-foreground">
+                        <Check className="size-3" />
+                        {t("選択中", "Selected")}
+                      </span>
+                    )}
                     <div className="flex items-center gap-3">
                       <UserAvatarWithFrame
                         alt={frame.name}
@@ -342,7 +369,14 @@ export function SettingProfileForm() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="truncate font-medium">{frame.name}</p>
-                          <span className="rounded bg-secondary px-2 py-0.5 text-[10px]">
+                          <span
+                            className={cn(
+                              "rounded px-2 py-0.5 text-[10px]",
+                              isSelected
+                                ? "bg-primary/10 text-primary"
+                                : "bg-secondary",
+                            )}
+                          >
                             {toUserAvatarFramePassLabel(frame.requiredPassType)}+
                           </span>
                         </div>
@@ -351,6 +385,17 @@ export function SettingProfileForm() {
                             {frame.description}
                           </p>
                         )}
+                        <p className="mt-1 text-[11px] text-muted-foreground">
+                          {isAllowed
+                            ? t(
+                                "クリックでこの枠をプロフィールに適用します。",
+                                "Click to apply this frame to your profile.",
+                              )
+                            : t(
+                                "この枠は必要プラン未満のため選択できません。",
+                                "This frame requires a higher subscription plan.",
+                              )}
+                        </p>
                       </div>
                     </div>
                   </button>

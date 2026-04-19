@@ -108,6 +108,7 @@ export function WorkCommentInputFixed (props: Props): React.ReactNode {
             <UserAvatarWithFrame
               alt={authContext.displayName ?? ""}
               frame={userAvatarFrame}
+              isAnimated={false}
               sizeClassName="size-10 flex-shrink-0"
               src={withIconUrlFallback(userIcon)}
             />

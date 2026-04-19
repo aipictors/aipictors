@@ -1,12 +1,14 @@
-import { Avatar, AvatarImage } from "~/components/ui/avatar"
 import { Card } from "~/components/ui/card"
 import { Link } from "@remix-run/react"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   name: string
   iconUrl: string | null
   login: string
+  avatarFrame?: UserAvatarFramePresentation | null
 }
 
 /**
@@ -17,12 +19,14 @@ export function WorkLikedUser (props: Props) {
     <Link to={`/users/${props.login}`}>
       <Card className="p-4">
         <div className="flex max-h-16 flex-col space-y-1">
-          <Avatar className="m-auto">
-            <AvatarImage
-              src={withIconUrlFallback(props.iconUrl)}
-              alt={props.name}
-            />
-          </Avatar>
+          <UserAvatarWithFrame
+            alt={props.name}
+            frame={props.avatarFrame}
+            isAnimated={false}
+            frameClassName="m-auto"
+            sizeClassName="size-10"
+            src={withIconUrlFallback(props.iconUrl)}
+          />
           <span className="max-w-12 overflow-hidden text-ellipsis">
             {props.name}
           </span>
