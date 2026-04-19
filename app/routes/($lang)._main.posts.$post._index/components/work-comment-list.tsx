@@ -1,30 +1,30 @@
+import { gql, useMutation, useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Loader2Icon, StampIcon } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
+import { toast } from "sonner"
+import { useBoolean } from "usehooks-ts"
+import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { ExpansionTransition } from "~/components/expansion-transition"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
-import {
-  WorkComment,
-  WorkCommentFragment,
-} from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
-import { Loader2Icon, StampIcon } from "lucide-react"
-import { useContext, useEffect, useState } from "react"
-import { useBoolean } from "usehooks-ts"
-import { gql, useMutation, useQuery } from "@apollo/client/index"
-import { toast } from "sonner"
-import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
-import { type FragmentOf, graphql } from "gql.tada"
-import { ExpansionTransition } from "~/components/expansion-transition"
-import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
+import { useTranslation } from "~/hooks/use-translation"
+import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { useTranslation } from "~/hooks/use-translation"
-import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
+import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
+import {
+  WorkComment,
+  WorkCommentFragment,
+} from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-response"
-import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   workId: string
@@ -94,7 +94,7 @@ const getJSTDate = () => {
 /**
  * 作品へのコメント一覧
  */
-export function WorkCommentList (props: Props) {
+export function WorkCommentList(props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
 
   const t = useTranslation()
@@ -324,7 +324,8 @@ export function WorkCommentList (props: Props) {
           showComments.length === 0 &&
           (showNewComments?.length ?? 0) === 0
             ? "..."
-            : showComments.length + (showNewComments?.length ?? 0)})
+            : showComments.length + (showNewComments?.length ?? 0)}
+          )
         </p>
         {props.isWorkOwnerBlocked && (
           <div className="rounded-md bg-gray-100 p-3 text-gray-600 text-sm dark:bg-gray-800 dark:text-gray-400">
@@ -454,7 +455,9 @@ export function WorkCommentList (props: Props) {
                   }
                   isMuted={comment.isLiked}
                   isSensitive={comment.isSensitive}
-                  moderationSummary={moderationSummaryMap.get(comment.id) ?? null}
+                  moderationSummary={
+                    moderationSummaryMap.get(comment.id) ?? null
+                  }
                   isNowLiked={likedCommentIds.includes(comment.id)}
                   likesCount={
                     comment.likesCount -
@@ -594,7 +597,9 @@ export function WorkCommentList (props: Props) {
                   }
                   isMuted={newReply.isMuted}
                   isSensitive={newReply.isSensitive}
-                  moderationSummary={moderationSummaryMap.get(newReply.id) ?? null}
+                  moderationSummary={
+                    moderationSummaryMap.get(newReply.id) ?? null
+                  }
                   isNowLiked={likedCommentIds.includes(newReply.id)}
                   likesCount={
                     newReply.likesCount -
@@ -634,13 +639,15 @@ export function WorkCommentList (props: Props) {
                     isDisabledCommentLike={!appContext.isLoggedIn}
                     text={reply.text}
                     userIconImageURL={withIconUrlFallback(reply.user?.iconUrl)}
-                      userAvatarFrame={reply.user?.avatarFrame}
+                    userAvatarFrame={reply.user?.avatarFrame}
                     isLiked={
                       reply.isLiked && !canceledCommentIds.includes(reply.id)
                     }
                     isMuted={Boolean(reply.isMuted)}
                     isSensitive={Boolean(reply.isSensitive)}
-                    moderationSummary={moderationSummaryMap.get(reply.id) ?? null}
+                    moderationSummary={
+                      moderationSummaryMap.get(reply.id) ?? null
+                    }
                     isNowLiked={likedCommentIds.includes(reply.id)}
                     likesCount={
                       reply.likesCount -
@@ -725,7 +732,9 @@ export function WorkCommentList (props: Props) {
                   }
                   isMuted={Boolean(comment.isMuted)}
                   isSensitive={Boolean(comment.isSensitive)}
-                  moderationSummary={moderationSummaryMap.get(comment.id) ?? null}
+                  moderationSummary={
+                    moderationSummaryMap.get(comment.id) ?? null
+                  }
                   isNowLiked={likedCommentIds.includes(comment.id)}
                   likesCount={
                     comment.likesCount -
@@ -800,7 +809,9 @@ export function WorkCommentList (props: Props) {
                       }
                       isMuted={newReply.isMuted}
                       isSensitive={newReply.isSensitive}
-                      moderationSummary={moderationSummaryMap.get(newReply.id) ?? null}
+                      moderationSummary={
+                        moderationSummaryMap.get(newReply.id) ?? null
+                      }
                       likesCount={
                         newReply.likesCount -
                         (canceledCommentIds.includes(newReply.id) ? 1 : 0)
@@ -850,7 +861,9 @@ export function WorkCommentList (props: Props) {
                         }
                         isMuted={Boolean(reply.isMuted)}
                         isSensitive={Boolean(reply.isSensitive)}
-                        moderationSummary={moderationSummaryMap.get(reply.id) ?? null}
+                        moderationSummary={
+                          moderationSummaryMap.get(reply.id) ?? null
+                        }
                         likesCount={
                           reply.likesCount -
                           (canceledCommentIds.includes(reply.id) ? 1 : 0)
@@ -983,13 +996,6 @@ const viewerUserQuery = graphql(
         iconUrl
       }
       userStickers(offset: 0, limit: 5, orderBy: DATE_USED) {
-        avatarFrame {
-          id
-          frameType
-          backgroundStyle
-          overlayImageUrl
-          borderPadding
-        }
         ...StickerButton
       }
     }

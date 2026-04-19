@@ -67,7 +67,18 @@ export function createMeta(
     { property: "og:title", content: title },
     { property: "og:description", content: description },
     { property: "og:image", content: imageUrl },
-    { property: "og:site_name", content: metadata.nameJA },
+    {
+      property: "og:site_name",
+      content: lang === "en" ? metadata.nameEN : metadata.nameJA,
+    },
+    {
+      property: "og:locale",
+      content: lang === "en" ? "en_US" : "ja_JP",
+    },
+    {
+      property: "og:locale:alternate",
+      content: lang === "en" ? "ja_JP" : "en_US",
+    },
     { property: "og:type", content: isTop ? "website" : "article" },
     {
       property: "og:url",
@@ -94,7 +105,9 @@ export const metadata = {
     return `${this.nameEN} - ${this.catchphraseEN}`
   },
   catchphraseJA: "AI画像投稿サイト・生成サイト",
-  catchphraseEN: "AI Illustration & Generation",
+  catchphraseEN: "AI Art Community & Image Generator",
   descriptionJA:
     "AI画像投稿サイト・生成サイト「Aipictors」で作品を公開してみよう！AIイラスト、AIフォト、AIグラビアなどプロンプトが数多く投稿されています！数十万作品の中からお気に入りの作品を見つけよう！",
+  descriptionEN:
+    "Discover, post, and generate AI art on Aipictors. Explore AI illustrations, prompts, rankings, and creator communities in English and Japanese.",
 }

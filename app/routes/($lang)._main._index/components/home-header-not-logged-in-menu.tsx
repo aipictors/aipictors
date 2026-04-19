@@ -25,7 +25,8 @@ import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
-import { useNavigate } from "@remix-run/react"
+import { useLocation, useNavigate } from "@remix-run/react"
+import { buildLocalePath } from "~/utils/locale-path"
 
 export const HomeHeaderNotLoggedInMenu = () => {
   const authContext = useContext(AuthContext)
@@ -33,6 +34,7 @@ export const HomeHeaderNotLoggedInMenu = () => {
   const { theme, setTheme } = useTheme()
 
   const navigate = useNavigate()
+  const location = useLocation()
 
   const setColorTheme = (newMode: string) => {
     if (newMode === "system") {
@@ -84,25 +86,14 @@ export const HomeHeaderNotLoggedInMenu = () => {
   const _isR18Mode = /\/r($|\/)/.test(location.pathname)
 
   const setLocale = (locale: string) => {
-    // URLの先頭にある /ja または /en を正しく検出
-    const currentLocale = location.pathname.match(/^\/(ja|en)(\/|$)/)?.[1] || ""
+    document.cookie = `locale=${locale}; path=/; max-age=31536000; SameSite=Lax`
 
-    // 現在のロケール部分を削除したURLのベースパスを取得
-    const basePath = location.pathname.replace(/^\/(ja|en)(\/|$)/, "/")
+    const newUrl = `${buildLocalePath(
+      locale === "en" ? "en" : "ja",
+      location.pathname,
+    )}${location.search}${location.hash}`
 
-    // クッキーにロケールを保存
-    document.cookie = `locale=${locale}; path=/;`
-
-    // 新しいURLを条件に応じて設定
-    const newUrl =
-      locale === "ja" && currentLocale
-        ? basePath // 日本語の場合はロケールを削除してベースパスを使用
-        : locale !== "ja" && currentLocale
-          ? location.pathname.replace(`/${currentLocale}`, `/${locale}`) // 英語の場合はロケールを置き換え
-          : `/${locale}${basePath}` // 新しいロケールを追加
-
-    // navigateを使用してURLを変更
-    if (location.pathname !== newUrl) {
+    if (`${location.pathname}${location.search}${location.hash}` !== newUrl) {
       navigate(newUrl)
     }
   }

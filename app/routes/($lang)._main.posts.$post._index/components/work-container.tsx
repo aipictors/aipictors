@@ -1,39 +1,39 @@
+import { useMutation, useQuery } from "@apollo/client/index"
+import { type FragmentOf, graphql } from "gql.tada"
+import { useContext } from "react"
+import { Link } from "react-router-dom"
+import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
 import {
+  type HomeAwardWorksFragment,
+  HomeAwardWorksSection,
+  homeAwardWorksQuery,
+} from "~/routes/($lang)._main._index/components/home-award-works"
+import {
+  type HomeNewCommentsFragment,
+  HomeNewCommentsSection,
+} from "~/routes/($lang)._main._index/components/home-new-comments"
+import {
+  userSettingFragment,
   WorkArticle,
   workArticleFragment,
-  userSettingFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-article"
-import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
-import { useContext } from "react"
-import { graphql, type FragmentOf } from "gql.tada"
-import { AuthContext } from "~/contexts/auth-context"
-import { useMutation, useQuery } from "@apollo/client/index"
-import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
-import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
-import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
 import {
   type CommentListItemFragment,
   WorkCommentList,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-list"
-import {
-  HomeNewCommentsSection,
-  type HomeNewCommentsFragment,
-} from "~/routes/($lang)._main._index/components/home-new-comments"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import {
-  HomeAwardWorksSection,
-  type HomeAwardWorksFragment,
-  homeAwardWorksQuery,
-} from "~/routes/($lang)._main._index/components/home-award-works"
-import type { HomeWorkAwardFragment } from "~/routes/($lang)._main._index/components/home-award-work-section"
-import { useTranslation } from "~/hooks/use-translation"
-import { Link } from "react-router-dom"
-import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { WorkNextAndPrevious } from "~/routes/($lang)._main.posts.$post._index/components/work-next-and-previous"
+import { WorkRelatedList } from "~/routes/($lang)._main.posts.$post._index/components/work-related-list"
+import { WorkTagsWorks } from "~/routes/($lang)._main.posts.$post._index/components/work-tags-works"
+import { WorkUser } from "~/routes/($lang)._main.posts.$post._index/components/work-user"
 import {
   newCommentsQuery,
   workCommentsQuery,
 } from "~/routes/($lang)._main.posts.$post._index/route"
 import { getJstDate } from "~/utils/jst-date"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   post: string
@@ -43,7 +43,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function WorkContainer (props: Props) {
+export function WorkContainer(props: Props) {
   const authContext = useContext(AuthContext)
 
   const isWorkOwner =
@@ -77,7 +77,8 @@ export function WorkContainer (props: Props) {
   })
 
   const workBase = workRet?.work ?? props.work
-  const likedUsers = likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
+  const likedUsers =
+    likedUsersData?.work?.likedUsers ?? workBase?.likedUsers ?? []
   const work = workBase ? { ...workBase, likedUsers } : workBase
 
   const { data: workCommentsRet, loading: isLoadingComments } = useQuery(
@@ -211,6 +212,7 @@ export function WorkContainer (props: Props) {
                   userLogin={work.user.login}
                   userName={work.user.name}
                   userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
+                  avatarFrame={work.user.avatarFrame}
                   userFollowersCount={work.user.followersCount}
                   userBiography={work.user.biography ?? ""}
                   userEnBiography={work.user.enBiography ?? null}
@@ -229,6 +231,7 @@ export function WorkContainer (props: Props) {
                 userName={work.user.name}
                 userLogin={work.user.login}
                 userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
+                avatarFrame={work.user.avatarFrame}
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography ?? ""}
                 userEnBiography={work.user.enBiography ?? null}

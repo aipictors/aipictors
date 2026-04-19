@@ -31,6 +31,7 @@ import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item
 import { useLocation, useNavigate, Link } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocale } from "~/hooks/use-locale"
+import { buildLocalePath } from "~/utils/locale-path"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { ScrollArea } from "~/components/ui/scroll-area"
 import { graphql } from "gql.tada"
@@ -130,22 +131,16 @@ export function UserNavigationMenuContent (props: Props) {
   }
 
   const setLocale = (locale: string) => {
-    const currentLocale = location.pathname.match(/^\/(ja|en)(\/|$)/)?.[1] || ""
-    const basePath = location.pathname.replace(/^\/(ja|en)(\/|$)/, "/")
-
     if (typeof document !== "undefined") {
-      // @ts-ignore - クッキーの設定のため必要
-      document.cookie = `locale=${locale}; path=/; SameSite=Lax`
+      document.cookie = `locale=${locale}; path=/; max-age=31536000; SameSite=Lax`
     }
 
-    const newUrl =
-      locale === "ja" && currentLocale
-        ? basePath
-        : locale !== "ja" && currentLocale
-          ? location.pathname.replace(`/${currentLocale}`, `/${locale}`)
-          : `/${locale}${basePath}`
+    const newUrl = `${buildLocalePath(
+      locale === "en" ? "en" : "ja",
+      location.pathname,
+    )}${location.search}${location.hash}`
 
-    if (location.pathname !== newUrl) {
+    if (`${location.pathname}${location.search}${location.hash}` !== newUrl) {
       navigate(newUrl)
     }
   }

@@ -54,6 +54,7 @@ describe("createMeta", () => {
       content: "https://example.com/test-image.jpg",
     })
     expect(metaTags).toContainEqual({ property: "og:type", content: "website" })
+    expect(metaTags).toContainEqual({ property: "og:locale", content: "en_US" })
   })
 
   test("動的データが正しく置換される", () => {
@@ -99,6 +100,20 @@ describe("createMeta", () => {
     expect(metaTags).toContainEqual({
       name: "twitter:image",
       content: config.defaultOgpImageUrl,
+    })
+  })
+
+  test("英語のデフォルト説明文が使われる", () => {
+    const metaTags = createMeta({}, undefined, "en")
+
+    expect(metaTags).toContainEqual({ title: metadata.titleEN })
+    expect(metaTags).toContainEqual({
+      name: "description",
+      content: metadata.descriptionEN,
+    })
+    expect(metaTags).toContainEqual({
+      property: "og:site_name",
+      content: metadata.nameEN,
     })
   })
 })

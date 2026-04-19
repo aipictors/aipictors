@@ -1,20 +1,21 @@
-import { FollowButton } from "~/components/button/follow-button"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
-import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-text-button"
 import { useQuery } from "@apollo/client/index"
-import { useContext } from "react"
-import { AuthContext } from "~/contexts/auth-context"
 import { Link } from "@remix-run/react"
-import { Skeleton } from "~/components/ui/skeleton"
-import { useTranslation } from "~/hooks/use-translation"
 import { graphql } from "gql.tada"
+import { useContext } from "react"
+import { FollowButton } from "~/components/button/follow-button"
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { AuthContext } from "~/contexts/auth-context"
+import { useTranslation } from "~/hooks/use-translation"
+import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-text-button"
+import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 
 type Props = {
   userId: string
   userLogin: string
   userName: string
   userIconImageURL?: string
+  avatarFrame?: UserAvatarFramePresentation | null
   userFollowersCount: number
   userBiography: string | null
   userEnBiography: string | null
@@ -25,7 +26,7 @@ type Props = {
 /**
  * 作品へ投稿しているユーザの投稿数、フォロワ数、フォローするボタン等の情報
  */
-export function WorkUser (props: Props) {
+export function WorkUser(props: Props) {
   const appContext = useContext(AuthContext)
 
   const t = useTranslation()
@@ -44,12 +45,13 @@ export function WorkUser (props: Props) {
       <CardHeader>
         <CardTitle className="gap-x-2 p-4">
           <Link to={`/users/${props.userLogin}`}>
-            <Avatar className="m-auto h-auto w-24">
-              <AvatarImage src={props.userIconImageURL} alt="" />
-              <AvatarFallback>
-                <Skeleton className="size-24 rounded-full" />
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatarWithFrame
+              alt={props.userName}
+              frame={props.avatarFrame}
+              frameClassName="m-auto"
+              sizeClassName="size-24"
+              src={props.userIconImageURL}
+            />
             <p className="mt-2 text-center font-bold text-md">
               {props.userName}
             </p>

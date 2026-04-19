@@ -5,6 +5,7 @@ import {
   json,
   type LinksFunction,
   type LoaderFunctionArgs,
+  redirect,
 } from "@remix-run/cloudflare"
 import {
   isRouteErrorResponse,
@@ -31,7 +32,12 @@ import { ProgressBar } from "~/components/progress-bar"
 import { config } from "~/config"
 import { cn } from "~/lib/utils"
 import styles from "~/tailwind.css?url"
+import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 import { stashDroppedImageFiles } from "~/utils/dropped-image-files"
+import {
+  buildAlternateLocaleUrls,
+  getPathLocale,
+} from "~/utils/locale-path"
 
 // パフォーマンス監視コンポーネントを遅延読み込み
 const PerformanceMonitor = lazy(() =>
@@ -154,6 +160,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     })
   }
 
+  const localeRedirect = checkLocaleRedirect(request)
+
+  if (localeRedirect !== null) {
+    throw redirect(localeRedirect.headers.Location, localeRedirect.status)
+  }
+
   const maintenanceStatus = await getMaintenanceStatus()
 
   if (maintenanceStatus.isMaintenance) {
@@ -239,10 +251,12 @@ export function Layout(props: Props): React.ReactNode {
   const [isDraggingFiles, setIsDraggingFiles] = useState(false)
   const dragCounterRef = useRef(0)
 
-  const htmlLang =
-    location.pathname === "/en" || location.pathname.startsWith("/en/")
-      ? "en"
-      : "ja"
+  const htmlLang = getPathLocale(location.pathname)
+  const alternateLocaleUrls = buildAlternateLocaleUrls(
+    location.pathname,
+    config.siteURL,
+    location.search,
+  )
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -431,6 +445,14 @@ export function Layout(props: Props): React.ReactNode {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        <link rel="canonical" href={alternateLocaleUrls.canonical} />
+        <link rel="alternate" hrefLang="ja" href={alternateLocaleUrls.ja} />
+        <link rel="alternate" hrefLang="en" href={alternateLocaleUrls.en} />
+        <link
+          rel="alternate"
+          hrefLang="x-default"
+          href={alternateLocaleUrls.xDefault}
+        />
         {loaderData.isMaintenance && (
           <>
             <title>メンテナンス中 | Aipictors</title>

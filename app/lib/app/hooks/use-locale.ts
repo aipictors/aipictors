@@ -1,4 +1,5 @@
 import { useLocation } from "@remix-run/react"
+import { getPathLocale } from "~/utils/locale-path"
 
 /**
  * 現在の言語を取得する
@@ -6,9 +7,5 @@ import { useLocation } from "@remix-run/react"
 export function useLocale() {
   const { pathname } = useLocation()
 
-  if (pathname.startsWith("/en")) {
-    return "en"
-  }
-
-  return "ja"
+  return getPathLocale(pathname)
 }
