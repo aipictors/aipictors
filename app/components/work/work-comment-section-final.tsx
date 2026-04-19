@@ -30,6 +30,7 @@ import { toast } from "sonner"
 import { cn } from "~/lib/utils"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { useBoolean } from "usehooks-ts"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 
 type Comment = {
   id: string
@@ -37,6 +38,12 @@ type Comment = {
     id: string
     name: string
     iconUrl?: string | null
+    avatarFrame?: {
+      frameType?: string | null
+      backgroundStyle?: string | null
+      overlayImageUrl?: string | null
+      borderPadding?: number | null
+    } | null
   }
   text?: string | null
   createdAt: number
@@ -58,6 +65,12 @@ type Comment = {
       id: string
       name: string
       iconUrl?: string | null
+      avatarFrame?: {
+        frameType?: string | null
+        backgroundStyle?: string | null
+        overlayImageUrl?: string | null
+        borderPadding?: number | null
+      } | null
     }
     text?: string | null
     createdAt: number
@@ -126,6 +139,7 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
   })
 
   const userIcon = userResp?.data?.user?.iconUrl
+  const userAvatarFrame = userResp?.data?.user?.avatarFrame ?? null
 
   // 新しいコメントの送信
   const sendComment = async (
@@ -159,6 +173,7 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
             id: authContext.userId ?? "",
             name: authContext.displayName ?? "",
             iconUrl: userIcon,
+            avatarFrame: userAvatarFrame,
           },
           sticker: stickerId
             ? {
@@ -271,6 +286,7 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
         id: authContext.userId ?? "",
         name: authContext.displayName ?? "",
         iconUrl: userIcon,
+        avatarFrame: userAvatarFrame,
       },
       sticker: stickerId
         ? {
@@ -369,13 +385,12 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
       >
         <div className="flex items-start space-x-3">
           <Link to={`/users/${comment.user?.id}`}>
-            <Avatar className="size-10">
-              <AvatarImage
-                src={withIconUrlFallback(comment.user?.iconUrl)}
-                alt=""
-              />
-              <AvatarFallback />
-            </Avatar>
+            <UserAvatarWithFrame
+              alt={comment.user?.name ?? ""}
+              frame={comment.user?.avatarFrame}
+              sizeClassName="size-10"
+              src={withIconUrlFallback(comment.user?.iconUrl)}
+            />
           </Link>
 
           <div className="flex-1 space-y-2">
@@ -547,10 +562,12 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
         {!props.isWorkOwnerBlocked && !props.isFixedInput && (
           <div className="space-y-2">
             <div className="flex w-full items-center space-x-3">
-              <Avatar>
-                <AvatarImage src={withIconUrlFallback(userIcon)} alt="" />
-                <AvatarFallback />
-              </Avatar>
+              <UserAvatarWithFrame
+                alt={authContext.displayName ?? ""}
+                frame={userAvatarFrame}
+                sizeClassName="size-10"
+                src={withIconUrlFallback(userIcon)}
+              />
               <AutoResizeTextarea
                 onChange={(event) => setComment(event.target.value)}
                 value={comment}
@@ -661,6 +678,13 @@ const userQuery = graphql(
     user(id: $userId) {
       id
       iconUrl
+      avatarFrame {
+        id
+        frameType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
     }
   }`,
 )

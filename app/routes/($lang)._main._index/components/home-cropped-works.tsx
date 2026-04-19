@@ -72,6 +72,7 @@ export function HomeCroppedWorks (props: Props) {
               {work.user && (
                 <UserNameBadge
                   userId={work.user.id}
+                  frame={work.user.avatarFrame}
                   userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                   name={work.user.name}
                   width={"lg"}
@@ -159,6 +160,7 @@ export function HomeCroppedWorks (props: Props) {
                   </p>
                   <UserNameBadge
                     userId={work.user.id}
+                    frame={work.user.avatarFrame}
                     userIconImageURL={withIconUrlFallback(work.user.iconUrl)}
                     name={work.user.name}
                     width={"md"}

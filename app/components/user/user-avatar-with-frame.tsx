@@ -12,7 +12,13 @@ type Props = {
 }
 
 export function UserAvatarWithFrame(props: Props) {
-  const padding = Math.max(0, props.frame?.borderPadding ?? 4)
+  const padding = Math.max(0, props.frame?.borderPadding ?? 3)
+  const frameType = props.frame?.frameType ?? "GRADIENT"
+  const showGlossLayer =
+    frameType === "ANIMATED_RAINBOW" ||
+    frameType === "AURORA" ||
+    frameType === "PEARL_SHINE" ||
+    frameType === "STARLIGHT"
 
   if (props.frame === null || props.frame === undefined) {
     return (
@@ -30,7 +36,11 @@ export function UserAvatarWithFrame(props: Props) {
   return (
     <div
       className={cn(
-        "relative inline-flex shrink-0 rounded-full",
+        "avatar-frame relative inline-flex shrink-0 rounded-full",
+        frameType === "ANIMATED_RAINBOW" && "avatar-frame-animated-rainbow",
+        frameType === "AURORA" && "avatar-frame-aurora",
+        frameType === "PEARL_SHINE" && "avatar-frame-pearl-shine",
+        frameType === "STARLIGHT" && "avatar-frame-starlight",
         props.sizeClassName,
         props.frameClassName,
       )}
@@ -39,6 +49,7 @@ export function UserAvatarWithFrame(props: Props) {
         padding: `${padding}px`,
       }}
     >
+      {showGlossLayer && <span aria-hidden className="avatar-frame-gloss" />}
       {props.frame.overlayImageUrl && (
         <img
           alt=""
@@ -47,7 +58,7 @@ export function UserAvatarWithFrame(props: Props) {
           src={props.frame.overlayImageUrl}
         />
       )}
-      <Avatar className="h-full w-full border border-background/70 bg-background">
+      <Avatar className="relative z-[1] h-full w-full border border-background/40 bg-background shadow-[inset_0_0_0_0.5px_rgba(255,255,255,0.32)]">
         <AvatarImage
           alt={props.alt}
           src={props.src ?? undefined}

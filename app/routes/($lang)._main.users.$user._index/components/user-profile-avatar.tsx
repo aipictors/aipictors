@@ -34,7 +34,7 @@ export function UserProfileAvatar ({
     <UserAvatarWithFrame
       alt={alt}
       frame={frame}
-      sizeClassName={cn(getSize(size), "border-2")}
+      sizeClassName={cn(getSize(size))}
       src={src}
     />
   )

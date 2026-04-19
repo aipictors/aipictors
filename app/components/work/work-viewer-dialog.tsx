@@ -849,6 +849,13 @@ export const WorkCommentFragment =
     name
     login
     iconUrl
+    avatarFrame {
+      id
+      frameType
+      backgroundStyle
+      overlayImageUrl
+      borderPadding
+    }
     nanoid
   }
   sticker {

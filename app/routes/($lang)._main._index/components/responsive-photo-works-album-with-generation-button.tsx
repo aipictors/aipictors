@@ -8,7 +8,7 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { OptimizedImage } from "~/components/optimized-image"
 import type { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { cn } from "~/lib/utils"
@@ -261,16 +261,14 @@ export function ResponsivePhotoWorksAlbumWithGenerationButton(props: Props) {
                       <div className="flex items-center justify-between">
                         <Link to={`/users/${photo.context.user?.id}`}>
                           <div className="flex items-center space-x-2">
-                            <Avatar className="size-6">
-                              <AvatarImage
-                                className="size-6 rounded-full"
-                                src={withIconUrlFallback(
-                                  photo.context.user?.iconUrl,
-                                )}
-                                alt=""
-                              />
-                              <AvatarFallback />
-                            </Avatar>
+                            <UserAvatarWithFrame
+                              alt={photo.context.user?.name ?? ""}
+                              frame={photo.context.user?.avatarFrame}
+                              sizeClassName="size-6"
+                              src={withIconUrlFallback(
+                                photo.context.user?.iconUrl,
+                              )}
+                            />
                             <span className="truncate text-sm">
                               {photo.context.user?.name}
                             </span>
@@ -371,14 +369,12 @@ function HomeCroppedWorksWithGenerationButton(props: {
               )}
               <Link to={`/users/${work.user?.id}`}>
                 <div className="flex items-center space-x-2">
-                  <Avatar className="size-4">
-                    <AvatarImage
-                      className="size-4 rounded-full"
-                      src={withIconUrlFallback(work.user?.iconUrl)}
-                      alt={work.user?.name}
-                    />
-                    <AvatarFallback />
-                  </Avatar>
+                  <UserAvatarWithFrame
+                    alt={work.user?.name ?? ""}
+                    frame={work.user?.avatarFrame}
+                    sizeClassName="size-4"
+                    src={withIconUrlFallback(work.user?.iconUrl)}
+                  />
                   <span className="truncate text-xs">{work.user?.name}</span>
                 </div>
               </Link>

@@ -613,6 +613,7 @@ const profileAvatarFrameSettingsQuery = graphql(
         name
         description
         requiredPassType
+        frameType
         backgroundStyle
         overlayImageUrl
         borderPadding
@@ -623,6 +624,7 @@ const profileAvatarFrameSettingsQuery = graphql(
       name
       description
       requiredPassType
+      frameType
       backgroundStyle
       overlayImageUrl
       borderPadding

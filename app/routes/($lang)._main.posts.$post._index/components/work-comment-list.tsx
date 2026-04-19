@@ -1,6 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import {
   WorkComment,
@@ -24,6 +24,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-response"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 
 type Props = {
   workId: string
@@ -48,6 +49,7 @@ type Comment = {
     id: string
     name: string
     iconUrl: string
+    avatarFrame?: UserAvatarFramePresentation | null
   }
   sticker: {
     image: {
@@ -71,6 +73,7 @@ type ReplyComment = {
     id: string
     name: string
     iconUrl: string
+    avatarFrame?: UserAvatarFramePresentation | null
   }
   sticker: {
     image: {
@@ -159,6 +162,7 @@ export function WorkCommentList (props: Props) {
   })
 
   const userIcon = userResp?.data?.user?.iconUrl
+  const userAvatarFrame = userResp?.data?.user?.avatarFrame ?? null
 
   const showNewComments = newComments?.filter(
     (comment) => !hideCommentIds.includes(comment.id),
@@ -214,6 +218,7 @@ export function WorkCommentList (props: Props) {
               id: appContext.userId ?? "",
               name: appContext.displayName ?? "",
               iconUrl: withIconUrlFallback(iconUrl),
+              avatarFrame: userAvatarFrame,
             },
             sticker: {
               image: {
@@ -359,9 +364,12 @@ export function WorkCommentList (props: Props) {
         <div className="space-y-2">
           <div className="flex w-full items-center space-x-4">
             <Avatar>
-              <AvatarImage src={withIconUrlFallback(userIcon)} alt="" />
-              <AvatarFallback />
-            </Avatar>
+            <UserAvatarWithFrame
+              alt={appContext.displayName ?? ""}
+              frame={userAvatarFrame}
+              sizeClassName="size-10"
+              src={withIconUrlFallback(userIcon)}
+            />
             <AutoResizeTextarea
               onChange={(event) => {
                 setComment(event.target.value)
@@ -438,6 +446,7 @@ export function WorkCommentList (props: Props) {
                     props.workOwnerIconImageURL,
                   )}
                   userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
+                  userAvatarFrame={comment.user?.avatarFrame}
                   userName={comment.user?.name}
                   commentId={comment.id}
                   isLiked={
@@ -477,6 +486,7 @@ export function WorkCommentList (props: Props) {
                           id: appContext.userId ?? "",
                           name: appContext.displayName ?? "",
                           iconUrl: withIconUrlFallback(userIcon),
+                          avatarFrame: userAvatarFrame,
                         },
                         sticker: {
                           image: {
@@ -529,6 +539,7 @@ export function WorkCommentList (props: Props) {
                 props.workOwnerIconImageURL,
               )}
               userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
+              userAvatarFrame={comment.user?.avatarFrame}
               onDeleteComment={() => onDeleteComment(comment.id)}
               isWorkOwnerBlocked={props.isWorkOwnerBlocked}
               onReplyCompleted={(
@@ -623,6 +634,7 @@ export function WorkCommentList (props: Props) {
                     isDisabledCommentLike={!appContext.isLoggedIn}
                     text={reply.text}
                     userIconImageURL={withIconUrlFallback(reply.user?.iconUrl)}
+                      userAvatarFrame={reply.user?.avatarFrame}
                     isLiked={
                       reply.isLiked && !canceledCommentIds.includes(reply.id)
                     }
@@ -667,6 +679,7 @@ export function WorkCommentList (props: Props) {
                             id: appContext.userId ?? "",
                             name: appContext.displayName ?? "",
                             iconUrl: withIconUrlFallback(userIcon),
+                            avatarFrame: userAvatarFrame,
                           },
                           sticker: {
                             image: {
@@ -706,6 +719,7 @@ export function WorkCommentList (props: Props) {
                     props.workOwnerIconImageURL,
                   )}
                   userIconImageURL={withIconUrlFallback(comment.user?.iconUrl)}
+                  userAvatarFrame={comment.user?.avatarFrame}
                   isLiked={
                     comment.isLiked && !canceledCommentIds.includes(comment.id)
                   }
@@ -779,6 +793,7 @@ export function WorkCommentList (props: Props) {
                       userIconImageURL={withIconUrlFallback(
                         newReply.user.iconUrl,
                       )}
+                      userAvatarFrame={newReply.user?.avatarFrame}
                       isLiked={
                         newReply.isLiked &&
                         !canceledCommentIds.includes(newReply.id)
@@ -850,6 +865,7 @@ export function WorkCommentList (props: Props) {
                         userIconImageURL={withIconUrlFallback(
                           reply.user?.iconUrl,
                         )}
+                        userAvatarFrame={reply.user?.avatarFrame}
                         userName={reply.user?.name}
                         replyId={reply.id}
                         targetCommentId={comment.id}
@@ -881,6 +897,7 @@ export function WorkCommentList (props: Props) {
                                 id: appContext.userId ?? "",
                                 name: appContext.displayName ?? "",
                                 iconUrl: withIconUrlFallback(userIcon),
+                                avatarFrame: userAvatarFrame,
                               },
                               sticker: {
                                 image: {
@@ -966,6 +983,13 @@ const viewerUserQuery = graphql(
         iconUrl
       }
       userStickers(offset: 0, limit: 5, orderBy: DATE_USED) {
+        avatarFrame {
+          id
+          frameType
+          backgroundStyle
+          overlayImageUrl
+          borderPadding
+        }
         ...StickerButton
       }
     }

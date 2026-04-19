@@ -7,6 +7,7 @@ export type UserAvatarFramePassType =
   | undefined
 
 export type UserAvatarFramePresentation = {
+  frameType?: string | null
   backgroundStyle?: string | null
   borderPadding?: number | null
   overlayImageUrl?: string | null

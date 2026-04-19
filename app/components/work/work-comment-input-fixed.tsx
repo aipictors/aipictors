@@ -1,11 +1,11 @@
 import { useContext, useState } from "react"
 import { useMutation, useQuery } from "@apollo/client/index"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { StickerDialog } from "~/components/work/sticker-dialog"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
@@ -44,6 +44,7 @@ export function WorkCommentInputFixed (props: Props): React.ReactNode {
   })
 
   const userIcon = userResp?.data?.user?.iconUrl
+  const userAvatarFrame = userResp?.data?.user?.avatarFrame ?? null
 
   // コメント送信処理
   const sendComment = async (
@@ -104,10 +105,12 @@ export function WorkCommentInputFixed (props: Props): React.ReactNode {
       ) : (
         <div className="mt-3 space-y-2">
           <div className="flex w-full items-start space-x-2 md:space-x-3">
-            <Avatar className="flex-shrink-0">
-              <AvatarImage src={withIconUrlFallback(userIcon)} alt="" />
-              <AvatarFallback />
-            </Avatar>
+            <UserAvatarWithFrame
+              alt={authContext.displayName ?? ""}
+              frame={userAvatarFrame}
+              sizeClassName="size-10 flex-shrink-0"
+              src={withIconUrlFallback(userIcon)}
+            />
             <div className="min-w-0 flex-1">
               <AutoResizeTextarea
                 onChange={(event) => setComment(event.target.value)}
@@ -193,6 +196,13 @@ const userQuery = graphql(
     user(id: $userId) {
       id
       iconUrl
+      avatarFrame {
+        id
+        frameType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
     }
   }`,
 )

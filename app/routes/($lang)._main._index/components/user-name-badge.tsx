@@ -1,13 +1,15 @@
 import { Link } from "@remix-run/react"
 import { Heart } from "lucide-react"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { cn } from "~/lib/utils"
+import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   userId: string
   name: string
   userIconImageURL?: string
+  frame?: UserAvatarFramePresentation | null
   width: "sm" | "md" | "lg"
   padding?: "sm" | "md" | "lg"
   likesCount?: number
@@ -31,24 +33,16 @@ export function UserNameBadge (props: Props) {
         })}
       >
         <div className="flex items-center space-x-2">
-          <Avatar
-            className={cn("rounded-full", {
+          <UserAvatarWithFrame
+            alt={props.name}
+            frame={props.frame}
+            sizeClassName={cn("rounded-full", {
               "size-4": props.width === "sm",
               "size-6": props.width === "md",
               "size-8": props.width === "lg",
             })}
-          >
-            <AvatarImage
-              className={cn("rounded-full", {
-                "size-4": props.width === "sm",
-                "size-6": props.width === "md",
-                "size-8": props.width === "lg",
-              })}
-              src={withIconUrlFallback(props.userIconImageURL)}
-              alt="user icon"
-            />
-            <AvatarFallback />
-          </Avatar>
+            src={withIconUrlFallback(props.userIconImageURL)}
+          />
           <p
             className={cn("overflow-hidden text-ellipsis text-nowrap", {
               "max-w-16 text-xs":

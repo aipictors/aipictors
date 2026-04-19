@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { AuthContext } from "~/contexts/auth-context"
@@ -10,6 +9,7 @@ import { graphql } from "gql.tada"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { useTranslation } from "~/hooks/use-translation"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { useBoolean } from "usehooks-ts"
@@ -89,15 +89,18 @@ export function WorkCommentInput (props: Props): React.ReactNode {
   })
 
   const iconUrl = data?.viewer?.user?.iconUrl ?? ""
+  const avatarFrame = data?.viewer?.user?.avatarFrame ?? null
 
   return (
     <>
       <div className="space-y-2 pl-16">
         <div className="flex w-full items-center space-x-4">
-          <Avatar>
-            <AvatarImage src={withIconUrlFallback(iconUrl)} alt="" />
-            <AvatarFallback />
-          </Avatar>
+          <UserAvatarWithFrame
+            alt={authContext.displayName ?? ""}
+            frame={avatarFrame}
+            sizeClassName="size-10"
+            src={withIconUrlFallback(iconUrl)}
+          />
           <AutoResizeTextarea
             onChange={(event) => {
               setComment(event.target.value)
@@ -186,6 +189,13 @@ const viewerUserQuery = graphql(
       user {
         id
         iconUrl
+        avatarFrame {
+          id
+          frameType
+          backgroundStyle
+          overlayImageUrl
+          borderPadding
+        }
       }
     }
   }`,

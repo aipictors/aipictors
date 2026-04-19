@@ -13,8 +13,8 @@ import {
 } from "lucide-react"
 import React from "react"
 import { toast } from "sonner"
-import { AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { CommentAppealDialog } from "~/routes/($lang)._main.posts.$post._index/components/comment-appeal-dialog"
@@ -25,11 +25,13 @@ import { ReplyCommentInput } from "~/routes/($lang)._main.posts.$post._index/com
 import { StickerInfoDialog } from "~/routes/($lang)._main.users.$user._index/components/sticker-info-dialog"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
+import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   isMine: boolean
   userIconImageURL?: string
+  userAvatarFrame?: UserAvatarFramePresentation | null
   userName?: string
   text?: string
   createdAt: number
@@ -238,14 +240,12 @@ export function WorkCommentResponse(props: Props) {
         )}
       >
         <Link className="block size-10" to={`/users/${props.userId}`}>
-          <Avatar className="block size-10">
-            <AvatarImage
-              className="size-10 rounded-full"
-              src={props.userIconImageURL}
-              alt=""
-            />
-            <AvatarFallback />
-          </Avatar>
+          <UserAvatarWithFrame
+            alt={props.userName ?? ""}
+            frame={props.userAvatarFrame}
+            sizeClassName="size-10"
+            src={props.userIconImageURL}
+          />
         </Link>
         <div className="flex flex-col space-y-2">
           <div className="flex items-center space-x-2">

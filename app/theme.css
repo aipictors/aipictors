@@ -55,6 +55,102 @@ html {
   }
 }
 
+@keyframes avatar-frame-rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes avatar-frame-aurora {
+  0% {
+    background-position: 0% 30%;
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    background-position: 100% 70%;
+    filter: saturate(1.08) brightness(1.03);
+  }
+  100% {
+    background-position: 0% 30%;
+    filter: saturate(1) brightness(1);
+  }
+}
+
+@keyframes avatar-frame-starlight {
+  0% {
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0.08);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.18);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+@keyframes avatar-frame-gloss {
+  0% {
+    transform: translateX(-120%) rotate(18deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.18;
+  }
+  45% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(160%) rotate(18deg);
+    opacity: 0;
+  }
+}
+
+.avatar-frame {
+  background-size: 180% 180%;
+  box-shadow: 0 1px 10px rgba(15, 23, 42, 0.08);
+}
+
+.avatar-frame-animated-rainbow {
+  animation: avatar-frame-rainbow 9s linear infinite;
+  background-size: 240% 240%;
+}
+
+.avatar-frame-aurora {
+  animation: avatar-frame-aurora 10s ease-in-out infinite;
+  background-size: 220% 220%;
+}
+
+.avatar-frame-pearl-shine {
+  background-size: 200% 200%;
+}
+
+.avatar-frame-starlight {
+  animation: avatar-frame-starlight 4.8s ease-in-out infinite;
+}
+
+.avatar-frame-gloss {
+  position: absolute;
+  inset: 8%;
+  border-radius: 9999px;
+  background: linear-gradient(
+    112deg,
+    transparent 24%,
+    rgba(255, 255, 255, 0.08) 38%,
+    rgba(255, 255, 255, 0.34) 48%,
+    rgba(255, 255, 255, 0.08) 58%,
+    transparent 72%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: avatar-frame-gloss 5.4s ease-in-out infinite;
+}
+
 /**
  * いいねボタンのスプライトアニメーション用のベース64背景
  * アップロードされたスプライトシート画像を使用

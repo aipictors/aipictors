@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Loader2Icon, StampIcon } from "lucide-react"
@@ -10,6 +9,7 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { graphql } from "gql.tada"
 import { AuthContext } from "~/contexts/auth-context"
 import { StickerDialog } from "~/routes/($lang)._main.posts.$post._index/components/sticker-dialog"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -100,15 +100,18 @@ export function ReplyCommentInput (props: Props) {
   })
 
   const iconUrl = data?.viewer?.user?.iconUrl ?? ""
+  const avatarFrame = data?.viewer?.user?.avatarFrame ?? null
 
   return (
     <>
       <div className="space-y-2 pl-16">
         <div className="flex w-full items-center space-x-4">
-          <Avatar>
-            <AvatarImage src={withIconUrlFallback(iconUrl)} alt="" />
-            <AvatarFallback />
-          </Avatar>
+          <UserAvatarWithFrame
+            alt={authContext.displayName ?? ""}
+            frame={avatarFrame}
+            sizeClassName="size-10"
+            src={withIconUrlFallback(iconUrl)}
+          />
           <AutoResizeTextarea
             onChange={(event) => {
               setComment(event.target.value)
@@ -198,6 +201,13 @@ const viewerUserQuery = graphql(
       user {
         id
         iconUrl
+        avatarFrame {
+          id
+          frameType
+          backgroundStyle
+          overlayImageUrl
+          borderPadding
+        }
       }
     }
   }`,

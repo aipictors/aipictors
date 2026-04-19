@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <defs>
+    <linearGradient id="ribbonPink" x1="164" y1="150" x2="856" y2="884" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFBCD5"/>
+      <stop offset="0.48" stop-color="#FFC8A4"/>
+      <stop offset="1" stop-color="#FFDFF1"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#E88AB7" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <circle cx="512" cy="512" r="404" stroke="url(#ribbonPink)" stroke-width="34" stroke-linecap="round" stroke-dasharray="20 18"/>
+  </g>
+
+  <g opacity="0.95">
+    <path d="M184 300C184 248 226 206 278 206H362C389 206 414 218 431 238L466 278C482 296 507 306 533 306H742C790 306 830 345 830 394C830 443 790 482 742 482H522C489 482 457 470 433 448L392 410C381 401 366 396 351 396H278C226 396 184 353 184 300Z" fill="#FFF3FA"/>
+    <path d="M182 674C182 622 224 580 276 580H345C375 580 404 592 425 613L463 651C478 666 498 674 520 674H742C790 674 830 713 830 762C830 810 790 850 742 850H527C489 850 452 837 424 813L386 780C375 771 361 766 346 766H276C224 766 182 724 182 674Z" fill="#FFF7E8"/>
+  </g>
+
+  <g fill="#FFE8F4" filter="url(#softShadow)">
+    <path d="M183 177C212 140 266 133 303 161L339 188L375 161C412 133 466 140 495 177C524 214 517 268 479 297L441 326L479 355C517 384 524 438 495 475C466 512 412 519 375 491L339 464L303 491C266 519 212 512 183 475C154 438 161 384 199 355L237 326L199 297C161 268 154 214 183 177Z"/>
+    <path d="M712 176C741 139 795 132 832 160L868 187L904 160C941 132 995 139 1024 176C1053 213 1046 267 1008 296L970 325L1008 354C1046 383 1053 437 1024 474C995 511 941 518 904 490L868 463L832 490C795 518 741 511 712 474C683 437 690 383 728 354L766 325L728 296C690 267 683 213 712 176Z" transform="translate(-173 0)"/>
+  </g>
+
+  <g fill="#FFFDFE">
+    <circle cx="246" cy="500" r="12"/>
+    <circle cx="286" cy="532" r="8"/>
+    <circle cx="780" cy="526" r="12"/>
+    <circle cx="738" cy="494" r="8"/>
+    <circle cx="248" cy="838" r="12"/>
+    <circle cx="788" cy="838" r="12"/>
+    <path d="M515 112L527 146L561 158L527 170L515 204L503 170L469 158L503 146L515 112Z"/>
+  </g>
+</svg>

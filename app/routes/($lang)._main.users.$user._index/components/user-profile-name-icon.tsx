@@ -383,6 +383,7 @@ export const UserProfileIconFragment = graphql(
     iconUrl
     avatarFrame {
       id
+      frameType
       backgroundStyle
       overlayImageUrl
       borderPadding

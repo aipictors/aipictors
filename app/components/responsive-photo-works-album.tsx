@@ -7,7 +7,7 @@ import { Heart, Images, MessageCircle } from "lucide-react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { HoverVideoImage } from "~/components/hover-video-image"
 import { LikeButton } from "~/components/like-button"
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { cn } from "~/lib/utils"
@@ -109,14 +109,12 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                         to={`${props.userLinkPrefix || "/users"}/${workItem.user.id}`}
                       >
                         <div className="flex min-w-0 items-center space-x-2">
-                          <Avatar className="size-6">
-                            <AvatarImage
-                              className="size-6 rounded-full"
-                              src={withIconUrlFallback(workItem.user.iconUrl)}
-                              alt=""
-                            />
-                            <AvatarFallback />
-                          </Avatar>
+                          <UserAvatarWithFrame
+                            alt={workItem.user.name}
+                            frame={workItem.user.avatarFrame}
+                            sizeClassName="size-6"
+                            src={withIconUrlFallback(workItem.user.iconUrl)}
+                          />
                           <span className="block max-w-24 truncate text-sm">
                             {workItem.user.name}
                           </span>
@@ -354,16 +352,14 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           to={`${props.userLinkPrefix || "/users"}/${photo.context.user?.id}`}
                         >
                           <div className="flex items-center space-x-2">
-                            <Avatar className="size-6">
-                              <AvatarImage
-                                className="size-6 rounded-full"
-                                src={withIconUrlFallback(
-                                  photo.context.user?.iconUrl,
-                                )}
-                                alt=""
-                              />
-                              <AvatarFallback />
-                            </Avatar>
+                            <UserAvatarWithFrame
+                              alt={photo.context.user?.name ?? ""}
+                              frame={photo.context.user?.avatarFrame}
+                              sizeClassName="size-6"
+                              src={withIconUrlFallback(
+                                photo.context.user?.iconUrl,
+                              )}
+                            />
                             <span className="truncate text-sm">
                               {photo.context.user?.name}
                             </span>
@@ -436,6 +432,13 @@ export const PhotoAlbumWorkFragment = graphql(
       followersCount
       worksCount
       iconUrl
+      avatarFrame {
+        id
+        frameType
+        backgroundStyle
+        overlayImageUrl
+        borderPadding
+      }
       headerImageUrl
       webFcmToken
       isFollower
