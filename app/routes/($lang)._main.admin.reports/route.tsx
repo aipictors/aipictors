@@ -30,7 +30,7 @@ import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { AuthContext } from "~/contexts/auth-context"
 import { createMeta } from "~/utils/create-meta"
 import { toDateTimeText } from "~/utils/to-date-time-text"
-import { ImageOff, Lock, MessageSquareOff, ShieldAlert } from "lucide-react"
+import { ImageOff, Lock, LockOpen, MessageSquareOff, ShieldAlert } from "lucide-react"
 import { toast } from "sonner"
 
 export const meta: MetaFunction = (props) => {
@@ -308,6 +308,28 @@ function ReportedWorkGroupCard(props: {
     }
   }
 
+  const handleRestoreWork = async () => {
+    if (!work || work.isDeleted) {
+      return
+    }
+
+    try {
+      await changeWorkSettingsWithAdmin({
+        variables: {
+          input: {
+            workId: work.id,
+            accessType: "PUBLIC",
+          },
+        },
+      })
+
+      toast.success(`作品 #${work.id} を公開に戻しました`)
+      await props.onRefresh()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "作品の再公開に失敗しました")
+    }
+  }
+
   const handleToggleCommentBan = async () => {
     if (!owner) {
       return
@@ -440,6 +462,38 @@ function ReportedWorkGroupCard(props: {
             </div>
             {work ? (
               <div className="space-y-4">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full border-sky-400/30 bg-sky-500/10 text-sky-100 hover:bg-sky-500/20"
+                      disabled={isUpdatingWork || work.isDeleted}
+                    >
+                      <LockOpen className="mr-2 size-4" />
+                      {work.isDeleted ? "削除済みのため再公開不可" : "作品を公開に戻す"}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="border-white/10 bg-slate-950/95 text-slate-100">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>作品を公開に戻す</AlertDialogTitle>
+                      <AlertDialogDescription className="text-slate-400">
+                        作品「{work.title || "(無題)"}」を公開状態に戻します。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="border-white/10 bg-white/5 text-slate-200 hover:bg-white/10 hover:text-white">
+                        キャンセル
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleRestoreWork}
+                        className={[buttonVariants({ variant: "default" }), "bg-sky-500 text-slate-950 hover:bg-sky-400"].join(" ")}
+                      >
+                        公開に戻す
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
                 <div className="space-y-2">
                   <p className="text-sm text-rose-100/80">テンプレートを選んで理由文を確認してから非公開にします。</p>
                   <Select value={templateKey} onValueChange={(value) => setTemplateKey(value as ModerationMessageTemplateKey)}>

@@ -301,6 +301,7 @@ export default function AdminWorksPage() {
   const worksWhere = useMemo(() => {
     const where: Record<string, unknown> = {
       isIncludePrivate: true,
+      ratings: ["G", "R15", "R18", "R18G"],
     }
 
     const ids = parseWorkIds(workIdFilter)

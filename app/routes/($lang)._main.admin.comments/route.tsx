@@ -2,17 +2,17 @@ import { useMutation, useQuery, gql } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
 import { Link } from "@remix-run/react"
-import { useContext, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { AdminPageShell } from "~/components/admin-page-shell"
 import { AuthContext } from "~/contexts/auth-context"
-import { useToast } from "~/hooks/use-toast"
 import { createMeta } from "~/utils/create-meta"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { Flag, MessageSquareWarning } from "lucide-react"
+import { toast } from "sonner"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(
@@ -35,30 +35,36 @@ export async function loader(_props: LoaderFunctionArgs) {
 const pageDescription = "コメント通報と異議申し立ての確認・対応を行います。"
 
 export default function AdminCommentsPage() {
-  const { toast } = useToast()
   const authContext = useContext(AuthContext)
-  const [processingCommentId, setProcessingCommentId] = useState<string | null>(
+  const [processingItemId, setProcessingItemId] = useState<string | null>(
     null,
   )
   const { data: viewerData, loading: viewerLoading } = useQuery(viewerQuery, {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
-  const { data, loading } = useQuery(adminCommentModerationItemsQuery, {
+  const { data, loading, refetch } = useQuery(adminCommentModerationItemsQuery, {
     skip:
       authContext.isLoading ||
       authContext.isNotLoggedIn ||
       !viewerData?.viewer?.isModerator,
+    fetchPolicy: "network-only",
   })
   const [reviewCommentModeration] = useMutation(reviewCommentModerationMutation)
 
+  const items = useMemo(() => {
+    return data?.adminCommentModerationItems ?? []
+  }, [data])
+
   const onModerate = async (
+    itemId: string,
+    kind: "REPORT" | "APPEAL",
     commentId: string,
     action: "APPROVE" | "REJECT" | "REQUEUE",
   ) => {
-    setProcessingCommentId(commentId)
+    setProcessingItemId(itemId)
 
     try {
-      await reviewCommentModeration({
+      const result = await reviewCommentModeration({
         variables: {
           input: {
             commentId,
@@ -70,21 +76,19 @@ export default function AdminCommentsPage() {
                 : null,
           },
         },
-        refetchQueries: [{ query: adminCommentModerationItemsQuery }],
-        awaitRefetchQueries: true,
       })
 
-      toast({
-        title: "更新しました",
-        description: `comment #${commentId} を ${action} に設定しました。`,
-      })
+      if (result.data?.reviewCommentModeration !== true) {
+        throw new Error("更新に失敗しました。")
+      }
+
+      await refetch()
+
+      toast.success(`${toActionText(kind, action)}に更新しました`) 
     } catch (error) {
-      toast({
-        title: "操作に失敗しました",
-        description: error instanceof Error ? error.message : "不明なエラーです。",
-      })
+      toast.error(error instanceof Error ? error.message : "不明なエラーです。")
     } finally {
-      setProcessingCommentId(null)
+      setProcessingItemId(null)
     }
   }
 
@@ -134,8 +138,6 @@ export default function AdminCommentsPage() {
     )
   }
 
-  const items = data?.adminCommentModerationItems ?? []
-
   return (
     <AdminPageShell
       title="コメント審査"
@@ -170,7 +172,7 @@ export default function AdminCommentsPage() {
                 </Badge>
                 {item.moderationStatus && (
                   <Badge variant="secondary" className="bg-white/10 text-slate-200">
-                    {item.moderationStatus}
+                    {toModerationStatusText(item.moderationStatus)}
                   </Badge>
                 )}
               </div>
@@ -184,7 +186,7 @@ export default function AdminCommentsPage() {
                 <span>投稿者: {item.commentOwnerName ?? "-"}</span>
                 <span>login: {item.commentOwnerLogin ?? "-"}</span>
                 <span>work: {item.workTitle ?? "-"}</span>
-                <span>open reports: {item.reportCount}</span>
+                <span>未解決通報: {item.reportCount}</span>
               </div>
               {item.reportReason && (
                 <div className="text-xs text-slate-300">理由: {item.reportReason}</div>
@@ -210,28 +212,28 @@ export default function AdminCommentsPage() {
                   size="sm"
                   variant="default"
                   className="bg-cyan-500 text-slate-950 hover:bg-cyan-400"
-                  disabled={processingCommentId === String(item.commentId)}
-                  onClick={() => onModerate(String(item.commentId), "APPROVE")}
+                  disabled={processingItemId === item.id}
+                  onClick={() => onModerate(item.id, item.kind, String(item.commentId), "APPROVE")}
                 >
-                  承認
+                  {toActionText(item.kind, "APPROVE")}
                 </Button>
                 <Button
                   size="sm"
                   variant="secondary"
                   className="bg-white/10 text-slate-100 hover:bg-white/20"
-                  disabled={processingCommentId === String(item.commentId)}
-                  onClick={() => onModerate(String(item.commentId), "REQUEUE")}
+                  disabled={processingItemId === item.id}
+                  onClick={() => onModerate(item.id, item.kind, String(item.commentId), "REQUEUE")}
                 >
-                  差し戻し
+                  {toActionText(item.kind, "REQUEUE")}
                 </Button>
                 <Button
                   size="sm"
                   variant="destructive"
                   className="bg-rose-600 text-white hover:bg-rose-500"
-                  disabled={processingCommentId === String(item.commentId)}
-                  onClick={() => onModerate(String(item.commentId), "REJECT")}
+                  disabled={processingItemId === item.id}
+                  onClick={() => onModerate(item.id, item.kind, String(item.commentId), "REJECT")}
                 >
-                  却下
+                  {toActionText(item.kind, "REJECT")}
                 </Button>
               </div>
             </CardContent>
@@ -240,6 +242,44 @@ export default function AdminCommentsPage() {
       )}
     </AdminPageShell>
   )
+}
+
+const toModerationStatusText = (status: string) => {
+  switch (status) {
+    case "PENDING":
+      return "審査待ち"
+    case "APPROVED":
+      return "問題なし"
+    case "REJECTED":
+      return "非表示"
+    default:
+      return status
+  }
+}
+
+const toActionText = (
+  kind: "REPORT" | "APPEAL",
+  action: "APPROVE" | "REJECT" | "REQUEUE",
+) => {
+  if (kind === "APPEAL") {
+    switch (action) {
+      case "APPROVE":
+        return "再表示"
+      case "REJECT":
+        return "非表示のまま"
+      case "REQUEUE":
+        return "審査待ちに戻す"
+    }
+  }
+
+  switch (action) {
+    case "APPROVE":
+      return "問題なし"
+    case "REJECT":
+      return "非表示"
+    case "REQUEUE":
+      return "審査待ちに戻す"
+  }
 }
 
 const viewerQuery = gql`

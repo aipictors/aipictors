@@ -10,12 +10,14 @@ import {
   Shield,
   Users,
 } from "lucide-react"
+import { gql, useQuery } from "@apollo/client/index"
 import { Link, useLocation } from "@remix-run/react"
-import { type CSSProperties, type ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { type CSSProperties, type ReactNode, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
+import { AuthContext } from "~/contexts/auth-context"
 
 type AdminNavItem = {
   href: string
@@ -66,6 +68,7 @@ type Props = {
 
 export function AdminPageShell(props: Props) {
   const location = useLocation()
+  const authContext = useContext(AuthContext)
   const HeaderIcon = props.icon ?? Shield
   const [menuQuery, setMenuQuery] = useState("")
   const [sidebarWidth, setSidebarWidth] = useState(320)
@@ -89,6 +92,35 @@ export function AdminPageShell(props: Props) {
         .includes(normalizedQuery)
     })
   }, [menuQuery])
+
+  const { data: viewerData } = useQuery(adminShellViewerQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+  })
+
+  const { data: badgeData } = useQuery(adminShellBadgeQuery, {
+    skip:
+      authContext.isLoading ||
+      authContext.isNotLoggedIn ||
+      !viewerData?.viewer?.isModerator,
+    fetchPolicy: "network-only",
+  })
+
+  const badgeMap = useMemo(() => {
+    const map = new Map<string, number>()
+
+    const commentCount = badgeData?.adminCommentModerationItemsCount ?? 0
+    const workReportCount = badgeData?.adminWorkReportsCount ?? 0
+
+    if (commentCount > 0) {
+      map.set("/admin/comments", commentCount)
+    }
+
+    if (workReportCount > 0) {
+      map.set("/admin/reports", workReportCount)
+    }
+
+    return map
+  }, [badgeData])
 
   useEffect(() => {
     const savedWidth = window.localStorage.getItem("admin-sidebar-width")
@@ -197,8 +229,15 @@ export function AdminPageShell(props: Props) {
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-3">
                     <Icon className="size-5 text-slate-100" />
                   </div>
-                  <div className="min-w-0">
-                    <div className="font-medium text-sm text-white">{item.title}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 font-medium text-sm text-white">
+                      <span>{item.title}</span>
+                      {badgeMap.get(item.href) ? (
+                        <Badge className="bg-rose-500 text-white hover:bg-rose-500">
+                          {badgeMap.get(item.href)}
+                        </Badge>
+                      ) : null}
+                    </div>
                     <div className="text-xs text-slate-400">{item.description}</div>
                   </div>
                 </Link>
@@ -253,3 +292,19 @@ export function AdminPageShell(props: Props) {
     </div>
   )
 }
+
+const adminShellViewerQuery = gql`
+  query AdminShellViewer {
+    viewer {
+      id
+      isModerator
+    }
+  }
+`
+
+const adminShellBadgeQuery = gql`
+  query AdminShellBadges {
+    adminCommentModerationItemsCount
+    adminWorkReportsCount(onlyUnhandled: true)
+  }
+`
