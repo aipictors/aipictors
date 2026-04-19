@@ -128,6 +128,8 @@ export default function NewImage() {
   })
 
   const viewer = data
+  const currentViewer = viewerData?.viewer ?? viewer?.viewer ?? null
+  const currentAiModels = viewerData?.aiModels ?? viewer?.aiModels ?? []
 
   const eventDataSource = viewerData ?? viewer
 
@@ -597,7 +599,7 @@ export default function NewImage() {
       if (image === null) {
         return null
       }
-      return uploadPublicImage(image, viewerData?.viewer?.token)
+      return uploadPublicImage(image, currentViewer?.token)
     })
     const imageUrls = await Promise.all(uploads)
     return imageUrls
@@ -608,7 +610,7 @@ export default function NewImage() {
       return null
     }
 
-    return uploadPublicVideo(state.videoFile as File, viewerData?.viewer?.token)
+    return uploadPublicVideo(state.videoFile as File, currentViewer?.token)
   }
 
   const resetImageSelectionForVideo = () => {
@@ -727,7 +729,7 @@ export default function NewImage() {
 
         const thumbnailUrl = await uploadPublicImage(
           formResult.output.thumbnailBase64,
-          viewerData?.viewer?.token,
+          currentViewer?.token,
         )
 
         dispatch({ type: "SET_PROGRESS", payload: 40 })
@@ -735,7 +737,7 @@ export default function NewImage() {
 
         const smallThumbnailUrl = await uploadPublicImage(
           smallThumbnail.base64,
-          viewerData?.viewer?.token,
+          currentViewer?.token,
         )
 
         dispatch({ type: "SET_PROGRESS", payload: 45 })
@@ -743,14 +745,14 @@ export default function NewImage() {
 
         const largeThumbnailUrl = await uploadPublicImage(
           largeThumbnail.base64,
-          viewerData?.viewer?.token,
+          currentViewer?.token,
         )
 
         dispatch({ type: "SET_PROGRESS", payload: 50 })
         uploadedImageUrls.push(largeThumbnailUrl)
 
         const ogpBase64Url = state.ogpBase64
-          ? await uploadPublicImage(state.ogpBase64, viewerData?.viewer?.token)
+          ? await uploadPublicImage(state.ogpBase64, currentViewer?.token)
           : null
 
         dispatch({ type: "SET_PROGRESS", payload: 60 })
@@ -889,14 +891,14 @@ export default function NewImage() {
         if (retryCount === 0) {
           const smallThumbnailUrl = await uploadPublicImage(
             smallThumbnail.base64,
-            viewerData?.viewer?.token,
+            currentViewer?.token,
           )
 
           dispatch({ type: "SET_PROGRESS", payload: 40 })
 
           const largeThumbnailUrl = await uploadPublicImage(
             largeThumbnail.base64,
-            viewerData?.viewer?.token,
+            currentViewer?.token,
           )
 
           dispatch({ type: "SET_PROGRESS", payload: 50 })
@@ -904,7 +906,7 @@ export default function NewImage() {
           const ogpBase64Url = state.ogpBase64
             ? await uploadPublicImage(
                 state.ogpBase64,
-                viewerData?.viewer?.token,
+                currentViewer?.token,
               )
             : null
 
@@ -920,7 +922,7 @@ export default function NewImage() {
 
           const botGradingImageUrl = await uploadPublicImage(
             botGradingImage.base64,
-            viewerData?.viewer?.token,
+            currentViewer?.token,
           )
 
           const uploadResults = await uploadImages()
@@ -1312,7 +1314,7 @@ export default function NewImage() {
           )}
           <PostImageFormUploader
             mediaType={mediaType}
-            currentPassType={viewerData?.viewer?.currentPass?.type ?? null}
+            currentPassType={currentViewer?.currentPass?.type ?? null}
             onChangeImageInformation={onChangeImageInformation}
             onChangeMediaType={setMediaType}
             onImageSelectionChange={onImageSelectionChange}
@@ -1320,7 +1322,7 @@ export default function NewImage() {
             state={state}
             dispatch={dispatch}
             onInputFiles={onInputFiles}
-            token={viewerData?.viewer?.token}
+            token={currentViewer?.token}
             onContentGenerated={onContentGenerated}
           />
         </div>
@@ -1329,9 +1331,9 @@ export default function NewImage() {
           mediaType={mediaType}
           state={inputState}
           dispatch={dispatchInput}
-          albums={viewerData?.viewer?.albums ?? []}
-          currentPass={viewerData?.viewer?.currentPass ?? null}
-          recentlyUsedTags={viewerData?.viewer?.recentlyUsedTags ?? []}
+          albums={currentViewer?.albums ?? []}
+          currentPass={currentViewer?.currentPass ?? null}
+          recentlyUsedTags={currentViewer?.recentlyUsedTags ?? []}
           themes={
             viewer?.dailyThemes
               ? viewer.dailyThemes.map((theme) => ({
@@ -1341,11 +1343,11 @@ export default function NewImage() {
                 }))
               : null
           }
-          aiModels={viewerData?.aiModels ?? []}
+          aiModels={currentAiModels}
           events={events}
           needFix={false}
           imageBase64={state.thumbnailBase64}
-          token={viewerData?.viewer?.token}
+          token={currentViewer?.token}
           onContentGenerated={onContentGenerated}
         />
         <div className="h-4" />
