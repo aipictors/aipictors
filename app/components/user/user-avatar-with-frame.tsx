@@ -16,6 +16,16 @@ export function UserAvatarWithFrame(props: Props) {
   const padding = Math.max(0, props.frame?.borderPadding ?? 3)
   const frameType = props.frame?.frameType ?? "GRADIENT"
   const isAnimated = props.isAnimated ?? true
+  const frameAnimationClassName =
+    isAnimated && frameType === "ANIMATED_RAINBOW"
+      ? "avatar-frame-background-rainbow"
+      : isAnimated && frameType === "AURORA"
+        ? "avatar-frame-background-aurora"
+        : isAnimated && frameType === "PEARL_SHINE"
+          ? "avatar-frame-background-pearl"
+          : isAnimated && frameType === "STARLIGHT"
+            ? "avatar-frame-background-starlight"
+            : undefined
   const shouldRenderBackgroundLayer =
     props.frame?.backgroundStyle !== null &&
     props.frame?.backgroundStyle !== undefined
@@ -45,15 +55,6 @@ export function UserAvatarWithFrame(props: Props) {
     <div
       className={cn(
         "avatar-frame relative inline-flex shrink-0 rounded-full",
-        isAnimated && "avatar-frame-ambient",
-        isAnimated &&
-          frameType === "ANIMATED_RAINBOW" &&
-          "avatar-frame-animated-rainbow",
-        isAnimated && frameType === "AURORA" && "avatar-frame-aurora",
-        isAnimated &&
-          frameType === "PEARL_SHINE" &&
-          "avatar-frame-pearl-shine",
-        isAnimated && frameType === "STARLIGHT" && "avatar-frame-starlight",
         props.sizeClassName,
         props.frameClassName,
       )}
@@ -64,21 +65,7 @@ export function UserAvatarWithFrame(props: Props) {
       {shouldRenderBackgroundLayer && (
         <span
           aria-hidden
-          className={cn(
-            "avatar-frame-background",
-            isAnimated &&
-              frameType === "ANIMATED_RAINBOW" &&
-              "avatar-frame-background-rainbow",
-            isAnimated &&
-              frameType === "AURORA" &&
-              "avatar-frame-background-aurora",
-            isAnimated &&
-              frameType === "PEARL_SHINE" &&
-              "avatar-frame-background-pearl",
-            isAnimated &&
-              frameType === "STARLIGHT" &&
-              "avatar-frame-background-starlight",
-          )}
+          className={cn("avatar-frame-background", frameAnimationClassName)}
           style={{
             background: props.frame.backgroundStyle ?? undefined,
           }}

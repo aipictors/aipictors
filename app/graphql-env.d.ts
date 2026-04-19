@@ -5023,6 +5023,9 @@ input UpdateUserSettingInput {
   """閲覧コンテンツ"""
   preferenceRating: PreferenceRating
 
+  """選択中のユーザーアイコン枠ID"""
+  selectedUserAvatarFrameId: ID
+
   """セーフモード（全年齢のみ表示）"""
   safetyMode: Boolean
 }

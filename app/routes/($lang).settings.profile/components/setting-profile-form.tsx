@@ -204,10 +204,13 @@ export function SettingProfileForm() {
   const currentPassType =
     profileAvatarFrameSettings?.viewer?.currentPass?.type ?? null
   const avatarFrames = profileAvatarFrameSettings?.userAvatarFrames ?? []
+  const savedSelectedAvatarFrame =
+    profileAvatarFrameSettings?.userSetting?.selectedUserAvatarFrame ?? null
   const selectedAvatarFrame =
-    avatarFrames.find((frame) => frame.id === selectedUserAvatarFrameId) ??
-    profileAvatarFrameSettings?.userSetting?.selectedUserAvatarFrame ??
-    null
+    selectedUserAvatarFrameId === null
+      ? null
+      : avatarFrames.find((frame) => frame.id === selectedUserAvatarFrameId) ??
+        savedSelectedAvatarFrame
   const isNoFrameSelected = selectedUserAvatarFrameId === null
   const canUseAvatarFrames = canUseUserAvatarFrame(currentPassType, "LITE")
 

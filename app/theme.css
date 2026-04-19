@@ -57,31 +57,13 @@ html {
 
 @keyframes avatar-frame-rainbow {
   0% {
-    transform: rotate(0deg) scale(1.04);
+    transform: rotate(0deg) scale(1.02);
   }
   50% {
-    transform: rotate(180deg) scale(1.08);
+    transform: rotate(180deg) scale(1.04);
   }
   100% {
-    transform: rotate(360deg) scale(1.04);
-  }
-}
-
-@keyframes avatar-frame-ambient {
-  0% {
-    transform: translateY(0);
-    box-shadow: 0 1px 10px rgba(15, 23, 42, 0.08);
-    filter: saturate(1) brightness(1);
-  }
-  50% {
-    transform: translateY(-0.5px);
-    box-shadow: 0 2px 14px rgba(15, 23, 42, 0.12);
-    filter: saturate(1.03) brightness(1.02);
-  }
-  100% {
-    transform: translateY(0);
-    box-shadow: 0 1px 10px rgba(15, 23, 42, 0.08);
-    filter: saturate(1) brightness(1);
+    transform: rotate(360deg) scale(1.02);
   }
 }
 
@@ -102,13 +84,16 @@ html {
 
 @keyframes avatar-frame-starlight {
   0% {
-    box-shadow: 0 0 0 rgba(255, 255, 255, 0.08);
+    opacity: 0.72;
+    filter: brightness(1);
   }
   50% {
-    box-shadow: 0 0 16px rgba(255, 255, 255, 0.18);
+    opacity: 1;
+    filter: brightness(1.08);
   }
   100% {
-    box-shadow: 0 0 0 rgba(255, 255, 255, 0.08);
+    opacity: 0.72;
+    filter: brightness(1);
   }
 }
 
@@ -159,28 +144,7 @@ html {
 
 .avatar-frame-background-starlight {
   background-size: 220% 220%;
-}
-
-.avatar-frame-ambient {
-  animation: avatar-frame-ambient 7.2s ease-in-out infinite;
-}
-
-.avatar-frame-animated-rainbow {
-  animation: avatar-frame-ambient 7.2s ease-in-out infinite;
-}
-
-.avatar-frame-aurora {
-  animation: avatar-frame-ambient 7.2s ease-in-out infinite;
-}
-
-.avatar-frame-pearl-shine {
-  animation: avatar-frame-ambient 7.2s ease-in-out infinite;
-}
-
-.avatar-frame-starlight {
-  animation:
-    avatar-frame-ambient 7.2s ease-in-out infinite,
-    avatar-frame-starlight 4.8s ease-in-out infinite;
+  animation: avatar-frame-starlight 4.8s ease-in-out infinite;
 }
 
 .avatar-frame-gloss {
