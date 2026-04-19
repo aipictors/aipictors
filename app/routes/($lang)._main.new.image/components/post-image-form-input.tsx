@@ -27,6 +27,7 @@ import type { PostImageFormInputAction } from "~/routes/($lang)._main.new.image/
 import type { PostImageFormInputState } from "~/routes/($lang)._main.new.image/reducers/states/post-image-form-input-state"
 import type { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
 import { AiEvaluationSection } from "~/routes/($lang)._main.posts.$post.image.edit._index/components/ai-evaluation-section"
+import { getVideoUploadLimits } from "~/utils/video-upload-limit"
 
 // AI評価セクション用のprops型
 type AiEvaluationProps = {
@@ -106,6 +107,7 @@ export function PostImageFormInput(props: Props) {
   const t = useTranslation() // 翻訳対応
   const mediaType = props.mediaType ?? "image"
   const isVideoPost = mediaType === "video"
+  const videoUploadLimits = getVideoUploadLimits(props.currentPass?.type ?? null)
   const jstDate = getJSTDate()
   const reservationDate = props.state.reservationDate || jstDate
   const [isUserEventsVisible, setIsUserEventsVisible] = useState(false)
@@ -274,6 +276,19 @@ export function PostImageFormInput(props: Props) {
 
   return (
     <div className="space-y-4">
+      {isVideoPost && (
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm dark:border-emerald-900 dark:bg-emerald-950/30">
+          <p className="font-medium text-emerald-900 dark:text-emerald-100">
+            {t("動画投稿の上限", "Video posting limits")}
+          </p>
+          <p className="mt-2 text-emerald-800 dark:text-emerald-200">
+            {t(
+              `現在の上限は動画${videoUploadLimits.maxDurationSeconds}秒まで、1日${videoUploadLimits.dailyUploadLimit}本までです。無料ユーザは30秒・1日2本、サブスク加入ユーザは60秒・1日3本まで投稿できます。`,
+              `Your current limit is ${videoUploadLimits.maxDurationSeconds} seconds per video and ${videoUploadLimits.dailyUploadLimit} uploads per day. Free users can post up to 30 seconds and 2 videos per day, while subscribers can post up to 60 seconds and 3 videos per day.`,
+            )}
+          </p>
+        </div>
+      )}
       {props.needFix && (
         <PostFormItemFix
           onChange={(value) => {

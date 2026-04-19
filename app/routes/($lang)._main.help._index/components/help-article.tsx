@@ -459,9 +459,21 @@ export function HelpArticle () {
                   </p>
                   <ul className="space-y-1 text-xs">
                     <li>
-                      • {t("対応形式: MP4, WEBM", "Supported: MP4, WEBM")}
+                      • {t("対応形式: MP4", "Supported: MP4")}
                     </li>
                     <li>• {t("最大32MB", "Max 32MB")}</li>
+                    <li>
+                      • {t(
+                        "無料ユーザは30秒まで、サブスク加入ユーザは60秒まで",
+                        "Free users: up to 30 seconds, subscribers: up to 60 seconds",
+                      )}
+                    </li>
+                    <li>
+                      • {t(
+                        "1日あたり無料ユーザは2本まで、サブスク加入ユーザは3本まで",
+                        "Per day: free users up to 2 uploads, subscribers up to 3 uploads",
+                      )}
+                    </li>
                     <li>
                       • {t("サムネイル自動生成", "Auto thumbnail generation")}
                     </li>

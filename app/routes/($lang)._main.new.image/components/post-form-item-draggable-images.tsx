@@ -7,7 +7,6 @@ import { SortableItems } from "~/components/drag/sortable-items"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { consumeDroppedImageFiles } from "~/utils/dropped-image-files"
 import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES } from "~/utils/file-size"
 import {
   getExtractInfoFromPNG,
@@ -322,14 +321,6 @@ export function PostFormItemDraggableImages(props: Props) {
     },
     disabled: props.isOnlyMove,
   })
-
-  useEffect(() => {
-    const files = consumeDroppedImageFiles()
-    if (files.length === 0) return
-
-    // 外部ドロップされた画像を、既存の選択ロジックに流し込む
-    void handleAcceptedFiles(files)
-  }, [])
 
   return (
     <>

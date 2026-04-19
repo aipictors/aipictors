@@ -22,6 +22,13 @@ import {
 } from "~/routes/($lang).events._index/components/app-event-card"
 import { createMeta } from "~/utils/create-meta"
 
+type EventSortType =
+  | "SCHEDULE"
+  | "ONGOING_FIRST"
+  | "POPULAR"
+  | "CLOSING_SOON"
+  | "NEWEST"
+
 const EVENTS_PAGE_LIMIT = 16
 
 const ONGOING_EVENTS_SUMMARY_LIMIT = 200
@@ -99,8 +106,28 @@ const buildUserEventIconMap = async (userIds: string[]) => {
   return new Map<string, string | null>(responses)
 }
 
-const sortEvents = (events: EventCardItem[], sort: string) => {
+const sortEventsBySchedule = (events: EventCardItem[]) => {
+  return [...events].sort((a, b) => {
+    const priorityDiff = getEventPriority(a.status) - getEventPriority(b.status)
+
+    if (priorityDiff !== 0) {
+      return priorityDiff
+    }
+
+    if (a.status === "ENDED") {
+      return b.endAt - a.endAt
+    }
+
+    return a.startAt - b.startAt
+  })
+}
+
+const sortEvents = (events: EventCardItem[], sort: EventSortType) => {
   const copied = [...events]
+
+  if (sort === "SCHEDULE") {
+    return sortEventsBySchedule(copied)
+  }
 
   if (sort === "POPULAR") {
     return copied.sort((a, b) => {
@@ -463,7 +490,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const ranking = urlParams.get("ranking")?.trim() ?? "ALL"
 
-  const sort = urlParams.get("sort")?.trim() ?? "ONGOING_FIRST"
+  const sort = (urlParams.get("sort")?.trim() ?? "SCHEDULE") as EventSortType
 
   const [resp, ongoingEventsSummaryResp] = await Promise.all([
     loaderClient.query({
@@ -480,7 +507,7 @@ export async function loader(props: LoaderFunctionArgs) {
           ...(status.length > 0 && { status }),
           ...(ranking === "RANKING" && { rankingEnabled: true }),
           ...(ranking === "CASUAL" && { rankingEnabled: false }),
-          sort,
+          ...(sort !== "SCHEDULE" && { sort }),
         },
       },
     }),
@@ -508,13 +535,19 @@ export async function loader(props: LoaderFunctionArgs) {
     userIconUrl: event.userId ? (userIconMap.get(event.userId) ?? null) : null,
   }))
 
-  const mergedEvents = [
-    ...resp.data.appEvents.map(normalizeOfficialEvent),
-    ...userEventsWithIcons.map(normalizeUserEvent),
-  ]
+  const officialEvents = sortEvents(
+    resp.data.appEvents.map(normalizeOfficialEvent),
+    sort,
+  )
+
+  const userEvents = sortEvents(
+    userEventsWithIcons.map(normalizeUserEvent),
+    sort,
+  )
 
   return {
-    appEvents: sortEvents(mergedEvents, sort),
+    officialEvents,
+    userEvents,
     ongoingSummary: buildOngoingEventSummary({
       officialEvents: ongoingEventsSummaryResp.data.appEvents,
       userEvents: ongoingEventsSummaryResp.data.userEvents,
@@ -541,11 +574,11 @@ export default function FollowingLayout() {
     return value.toLocaleString()
   }
 
-  const officialEvents = data.appEvents.filter((event) => event.isOfficial)
+  const officialEvents = data.officialEvents
 
-  const userEvents = data.appEvents.filter((event) => !event.isOfficial)
+  const userEvents = data.userEvents
 
-  const featuredEvents = data.appEvents.filter(
+  const featuredEvents = [...officialEvents, ...userEvents].filter(
     (event) => event.status === "ONGOING" || event.status === "UPCOMING",
   )
 
@@ -637,6 +670,9 @@ export default function FollowingLayout() {
             defaultValue={data.filters.sort}
             className="h-10 rounded-md border bg-background px-3 py-2 text-sm"
           >
+            <option value="SCHEDULE">
+              {t("開催順", "Schedule order")}
+            </option>
             <option value="ONGOING_FIRST">
               {t("開催中優先", "Ongoing first")}
             </option>
@@ -680,6 +716,12 @@ export default function FollowingLayout() {
             <EventListSection events={officialEvents} />
           </TabsContent>
           <TabsContent value="user" className="m-0">
+            <div className="mb-3 rounded-xl border bg-muted/20 px-4 py-3 text-sm text-muted-foreground leading-relaxed">
+              {t(
+                "ユーザーイベント一覧は開催順を初期表示にして、検索・状態・ランキング条件で絞り込めます。",
+                "User events default to schedule order and can be filtered by keyword, status, and ranking.",
+              )}
+            </div>
             <EventListSection events={userEvents} />
           </TabsContent>
         </Tabs>

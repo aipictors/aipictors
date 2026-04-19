@@ -20,11 +20,14 @@ import { toast } from "sonner"
 import { PostFormItemDraggableImages } from "~/routes/($lang)._main.new.image/components/post-form-item-draggable-images"
 import { PaintCanvas } from "~/components/paint-canvas"
 import { useTranslation } from "~/hooks/use-translation"
+import { consumeDroppedImageFiles } from "~/utils/dropped-image-files"
 import { formatFileSize, MAX_IMAGE_FILE_SIZE_BYTES, MAX_VIDEO_FILE_SIZE_BYTES } from "~/utils/file-size"
+import { getVideoUploadLimits, type VideoUploadPassType } from "~/utils/video-upload-limit"
 
 type Props = {
   dispatch: Dispatch<PostImageFormAction>
   mediaType: "image" | "video"
+  currentPassType?: VideoUploadPassType
   onChangeImageInformation: (imageInformation: PNGInfo) => void
   onChangeMediaType: (mediaType: "image" | "video") => void
   onImageSelectionChange?: (itemsCount: number) => void
@@ -49,6 +52,7 @@ export function PostImageFormUploader (props: Props) {
     : props.state.items.length > 0
   const maxImageSizeLabel = formatFileSize(MAX_IMAGE_FILE_SIZE_BYTES)
   const maxVideoSizeLabel = formatFileSize(MAX_VIDEO_FILE_SIZE_BYTES)
+  const videoUploadLimits = getVideoUploadLimits(props.currentPassType)
 
   const readFileAsDataUrl = (file: File) => {
     return new Promise<string>((resolve, reject) => {
@@ -259,12 +263,12 @@ export function PostImageFormUploader (props: Props) {
 
     await new Promise<void>((resolve, reject) => {
       video.onloadedmetadata = () => {
-        if (video.duration > 12) {
+        if (video.duration > videoUploadLimits.maxDurationSeconds) {
           reject(
             new Error(
               t(
-                "動画は12秒以下にしてください",
-                "Video length should be under 12 seconds",
+                `動画は${videoUploadLimits.maxDurationSeconds}秒以下にしてください`,
+                `Video length should be under ${videoUploadLimits.maxDurationSeconds} seconds`,
               ),
             ),
           )
@@ -395,6 +399,16 @@ export function PostImageFormUploader (props: Props) {
   }
 
   useEffect(() => {
+    const files = consumeDroppedImageFiles()
+
+    if (files.length === 0) {
+      return
+    }
+
+    void handleMixedFiles(files)
+  }, [])
+
+  useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
       const activeElement = document.activeElement
       if (
@@ -454,8 +468,14 @@ export function PostImageFormUploader (props: Props) {
             </p>
             <p className="text-sm text-zinc-300">
               {t(
-                `画像は1枚${maxImageSizeLabel}以内で最大${config.post.maxImageCount}枚、動画はMP4で${maxVideoSizeLabel}以内・12秒までです`,
-                `Images: up to ${config.post.maxImageCount} files, ${maxImageSizeLabel} each. Video: MP4, up to ${maxVideoSizeLabel}, 12 seconds max.`,
+                `画像は1枚${maxImageSizeLabel}以内で最大${config.post.maxImageCount}枚、動画はMP4で${maxVideoSizeLabel}以内・${videoUploadLimits.maxDurationSeconds}秒までです`,
+                `Images: up to ${config.post.maxImageCount} files, ${maxImageSizeLabel} each. Video: MP4, up to ${maxVideoSizeLabel}, ${videoUploadLimits.maxDurationSeconds} seconds max.`,
+              )}
+            </p>
+            <p className="text-xs text-zinc-400">
+              {t(
+                `動画投稿は無料ユーザは1日${videoUploadLimits.isSubscribed ? 2 : videoUploadLimits.dailyUploadLimit}本まで、サブスク加入ユーザは1日${videoUploadLimits.isSubscribed ? videoUploadLimits.dailyUploadLimit : 3}本までです。`,
+                `Video uploads are limited to ${videoUploadLimits.isSubscribed ? 2 : videoUploadLimits.dailyUploadLimit} per day for free users and ${videoUploadLimits.isSubscribed ? videoUploadLimits.dailyUploadLimit : 3} per day for subscribers.`,
               )}
             </p>
             <p className="text-xs text-zinc-400">
@@ -570,6 +590,7 @@ export function PostImageFormUploader (props: Props) {
             ) : (
               <PostFormItemVideo
                 videoFile={props.state.videoFile ? (props.state.videoFile as File) : null}
+                currentPassType={props.currentPassType}
                 setThumbnailBase64={(base64) => {
                   props.dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
                 }}

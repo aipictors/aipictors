@@ -9,9 +9,11 @@ import {
   toCloudflareStreamEmbedUrl,
 } from "~/utils/cloudflare-stream"
 import { formatFileSize, MAX_VIDEO_FILE_SIZE_BYTES } from "~/utils/file-size"
+import { getVideoUploadLimits, type VideoUploadPassType } from "~/utils/video-upload-limit"
 
 type Props = {
   videoFile: File | null
+  currentPassType?: VideoUploadPassType
   setThumbnailBase64(thumbnailBase64: string | null): void
   setOgpBase64?(ogpBase64: string | null): void
   setIsThumbnailLandscape?(isThumbnailLandscape: boolean): void
@@ -33,6 +35,7 @@ export function PostFormItemVideo(props: Props) {
   // ファイルの最大サイズ(バイト単位)
   const maxSize = MAX_VIDEO_FILE_SIZE_BYTES
   const maxSizeLabel = formatFileSize(maxSize)
+  const videoUploadLimits = getVideoUploadLimits(props.currentPassType)
 
   // ドラッグ中して画像一覧にホバー中かどうか
   const [isHovered, setIsHovered] = useState(false)
@@ -94,11 +97,11 @@ export function PostFormItemVideo(props: Props) {
               videoHeight: video.videoHeight,
             })
 
-            if (video.duration > 12) {
+            if (video.duration > videoUploadLimits.maxDurationSeconds) {
               toast(
                 t(
-                  "動画は12秒以下にしてください",
-                  "Video length should be under 12 seconds",
+                  `動画は${videoUploadLimits.maxDurationSeconds}秒以下にしてください`,
+                  `Video length should be under ${videoUploadLimits.maxDurationSeconds} seconds`,
                 ),
               )
               return
@@ -207,7 +210,16 @@ export function PostFormItemVideo(props: Props) {
             <div className="m-4 flex flex-col text-white">
               <p className="text-center text-sm">{"MP4"}</p>
               <p className="text-center text-sm">
-                {t("12秒まで", "Up to 12 seconds")}
+                {t(
+                  `${videoUploadLimits.maxDurationSeconds}秒まで`,
+                  `Up to ${videoUploadLimits.maxDurationSeconds} seconds`,
+                )}
+              </p>
+              <p className="text-center text-xs text-zinc-300">
+                {t(
+                  `無料ユーザは1日2本まで、サブスク加入ユーザは1日3本まで`,
+                  `Free users: up to 2 uploads/day. Subscribers: up to 3 uploads/day.`,
+                )}
               </p>
             </div>
           </>

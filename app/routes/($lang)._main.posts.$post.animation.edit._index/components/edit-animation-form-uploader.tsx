@@ -9,6 +9,7 @@ import { PostFormItemVideo } from "~/routes/($lang)._main.new.image/components/p
 type Props = {
   dispatch: Dispatch<PostAnimationFormAction>
   state: PostAnimationFormState
+  currentPassType?: "LITE" | "STANDARD" | "PREMIUM" | null
   previewVideoUrl?: string
 }
 
@@ -26,6 +27,7 @@ export function EditAnimationFormUploader (props: Props) {
             videoFile={
               props.state.videoFile ? (props.state.videoFile as File) : null
             }
+            currentPassType={props.currentPassType}
             setThumbnailBase64={(base64) => {
               props.dispatch({ type: "SET_THUMBNAIL_BASE64", payload: base64 })
             }}

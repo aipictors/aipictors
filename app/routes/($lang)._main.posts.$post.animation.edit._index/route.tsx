@@ -471,6 +471,7 @@ export default function EditImage () {
         <EditAnimationFormUploader
           state={state}
           dispatch={dispatch}
+          currentPassType={viewer?.viewer?.currentPass?.type ?? null}
           previewVideoUrl={work?.url ?? ""}
         />
         <PostAnimationFormInput

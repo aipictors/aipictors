@@ -1312,6 +1312,7 @@ export default function NewImage() {
           )}
           <PostImageFormUploader
             mediaType={mediaType}
+            currentPassType={viewerData?.viewer?.currentPass?.type ?? null}
             onChangeImageInformation={onChangeImageInformation}
             onChangeMediaType={setMediaType}
             onImageSelectionChange={onImageSelectionChange}

@@ -10,6 +10,7 @@ import { Share2 } from "lucide-react"
 import React, { useContext, useEffect } from "react"
 import { toast } from "sonner"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -41,6 +42,7 @@ import {
 } from "~/routes/($lang).events.$event._index/components/event-work-list"
 import type { SortType } from "~/types/sort-type"
 import { createMeta } from "~/utils/create-meta"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type NormalizedEvent = {
   eventSource: "OFFICIAL" | "USER"
@@ -66,9 +68,12 @@ type NormalizedEvent = {
   isSensitive: boolean
   userId?: string | null
   userName?: string | null
+  userIconUrl?: string | null
   works: any[]
   awardWorks: any[]
 }
+
+const URL_REGEXP = /(https?:\/\/[^\s<]+[^\s<.,:;!?()\[\]{}"'])/g
 
 const buildEventAnnouncementText = (props: {
   title: string
@@ -149,6 +154,7 @@ const normalizeUserEvent = (event: any): NormalizedEvent => ({
   isSensitive: event.isSensitive ?? false,
   userId: event.userId,
   userName: event.userName,
+  userIconUrl: event.userIconUrl ?? null,
   works: event.works ?? [],
   awardWorks: event.awardWorks ?? [],
 })
@@ -381,6 +387,52 @@ function EventMetaRow(props: { label: string; value: React.ReactNode }) {
       <div className="text-foreground text-sm leading-relaxed">
         {props.value}
       </div>
+    </div>
+  )
+}
+
+function LinkifiedTextBlock(props: {
+  text: string
+  className?: string
+  linkClassName?: string
+}) {
+  const lines = props.text.split("\n")
+
+  return (
+    <div className={props.className}>
+      {lines.map((line, lineIndex) => {
+        const parts = line.split(URL_REGEXP)
+
+        return (
+          <div key={`${lineIndex}-${line}`}>
+            {parts.map((part, partIndex) => {
+              if (!part) {
+                return null
+              }
+
+              if (/^https?:\/\//.test(part)) {
+                return (
+                  <a
+                    key={`${lineIndex}-${partIndex}-${part}`}
+                    href={part}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className={props.linkClassName}
+                  >
+                    {part}
+                  </a>
+                )
+              }
+
+              return (
+                <React.Fragment key={`${lineIndex}-${partIndex}-${part}`}>
+                  {part}
+                </React.Fragment>
+              )
+            })}
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -772,9 +824,11 @@ export default function EventDetailPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="whitespace-pre-wrap text-sm leading-7 md:text-[15px]">
-                  {data.appEvent.participationGuide}
-                </div>
+                <LinkifiedTextBlock
+                  text={data.appEvent.participationGuide}
+                  className="text-sm leading-7 md:text-[15px]"
+                  linkClassName="break-all font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700"
+                />
               </CardContent>
             </Card>
           )}
@@ -793,13 +847,11 @@ export default function EventDetailPage() {
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="rounded-xl border bg-muted/30 p-4 font-mono text-xs leading-6 md:text-sm">
-                {data.appEvent.announcementText
-                  .split("\n")
-                  .map((line, index) => (
-                    <div key={`${index}-${line}`}>{line}</div>
-                  ))}
-              </div>
+              <LinkifiedTextBlock
+                text={data.appEvent.announcementText}
+                className="rounded-xl border bg-muted/30 p-4 font-mono text-xs leading-6 md:text-sm"
+                linkClassName="break-all font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700"
+              />
             </CardContent>
           </Card>
         </div>
@@ -842,12 +894,27 @@ export default function EventDetailPage() {
                 <EventMetaRow
                   label={t("主催者", "Host")}
                   value={
-                    <Link
-                      className="font-medium underline underline-offset-2"
-                      to={`/users/${data.appEvent.userId}`}
-                    >
-                      {data.appEvent.userName ?? data.appEvent.userId}
-                    </Link>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="size-10 border bg-muted/30">
+                        {data.appEvent.userIconUrl && (
+                          <AvatarImage
+                            src={withIconUrlFallback(data.appEvent.userIconUrl)}
+                            alt={data.appEvent.userName ?? data.appEvent.userId}
+                          />
+                        )}
+                        <AvatarFallback>
+                          {(data.appEvent.userName ?? data.appEvent.userId)
+                            ?.slice(0, 1)
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Link
+                        className="font-medium underline underline-offset-2"
+                        to={`/users/${data.appEvent.userId}`}
+                      >
+                        {data.appEvent.userName ?? data.appEvent.userId}
+                      </Link>
+                    </div>
                   }
                 />
               )}
@@ -985,6 +1052,7 @@ const eventDetailQuery = graphql(
       isSensitive
       userId
       userName
+      userIconUrl
       works(offset: $offset, limit: $limit, where: $where) {
         ...EventWorkListItem
       }
