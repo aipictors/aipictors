@@ -17,7 +17,8 @@ export function UserAvatarWithFrame(props: Props) {
   const frameType = props.frame?.frameType ?? "GRADIENT"
   const isAnimated = props.isAnimated ?? true
   const shouldRenderBackgroundLayer =
-    props.frame.backgroundStyle !== null && props.frame.backgroundStyle !== undefined
+    props.frame?.backgroundStyle !== null &&
+    props.frame?.backgroundStyle !== undefined
   const showGlossLayer =
     isAnimated &&
     (frameType === "ANIMATED_RAINBOW" ||
