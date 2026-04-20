@@ -16,8 +16,8 @@ export function PassBenefitList (props: Props) {
       <li>{t("認証マークの表示", "Display of verification badge")}</li>
       <li>
         {t(
-          `動画投稿の上限が${videoUploadLimits.maxDurationSeconds}秒・1日${videoUploadLimits.dailyUploadLimit}本に拡張`,
-          `Video posting expands to ${videoUploadLimits.maxDurationSeconds} seconds and ${videoUploadLimits.dailyUploadLimit} uploads per day`,
+          `動画投稿の上限が${videoUploadLimits.maxDurationSeconds}秒/本・1日合計${videoUploadLimits.dailyTotalDurationSeconds}秒に拡張`,
+          `Video posting expands to ${videoUploadLimits.maxDurationSeconds} seconds per video and ${videoUploadLimits.dailyTotalDurationSeconds} total seconds per day`,
         )}
       </li>
     </ul>

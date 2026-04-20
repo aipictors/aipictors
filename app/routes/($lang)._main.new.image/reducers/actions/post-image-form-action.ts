@@ -79,6 +79,10 @@ export const vPostImageFormAction = union([
     payload: nullable(vFile),
   }),
   object({
+    type: literal("SET_VIDEO_DURATION_SECONDS"),
+    payload: nullable(number()),
+  }),
+  object({
     type: literal("OPEN_IMAGE_GENERATION_DIALOG"),
     payload: boolean(),
   }),

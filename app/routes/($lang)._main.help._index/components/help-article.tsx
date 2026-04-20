@@ -464,14 +464,14 @@ export function HelpArticle () {
                     <li>• {t("最大32MB", "Max 32MB")}</li>
                     <li>
                       • {t(
-                        "無料ユーザは30秒まで、サブスク加入ユーザは60秒まで",
-                        "Free users: up to 30 seconds, subscribers: up to 60 seconds",
+                        "無料ユーザは30秒/本まで、サブスク加入ユーザは60秒/本まで",
+                        "Free users: up to 30 seconds per video, subscribers: up to 60 seconds per video",
                       )}
                     </li>
                     <li>
                       • {t(
-                        "1日あたり無料ユーザは2本まで、サブスク加入ユーザは3本まで",
-                        "Per day: free users up to 2 uploads, subscribers up to 3 uploads",
+                        "1日あたり無料ユーザは合計60秒まで、サブスク加入ユーザは合計180秒まで",
+                        "Per day: free users up to 60 total seconds, subscribers up to 180 total seconds",
                       )}
                     </li>
                     <li>

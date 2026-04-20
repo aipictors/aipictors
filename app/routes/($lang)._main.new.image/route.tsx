@@ -178,6 +178,7 @@ export default function NewImage() {
     uploadedWorkId: null,
     uploadedWorkUuid: null,
     videoFile: null,
+    videoDurationSeconds: null,
     isOpenLoadingAi: false,
   })
 
@@ -622,18 +623,23 @@ export default function NewImage() {
     dispatchInput({ type: "SET_IMAGE_INFORMATION", payload: null })
   }
 
-  const onVideoChange = (videoFile: File | null) => {
+  const onVideoChange = (
+    videoFile: File | null,
+    videoDurationSeconds: number | null = null,
+  ) => {
     if (videoFile !== null && state.items.length > 0) {
       resetImageSelectionForVideo()
     }
 
     dispatch({ type: "SET_VIDEO_FILE", payload: videoFile })
+    dispatch({ type: "SET_VIDEO_DURATION_SECONDS", payload: videoDurationSeconds })
     setMediaType(videoFile ? "video" : requestedMediaType)
   }
 
   const onImageSelectionChange = (itemsCount: number) => {
     if (itemsCount > 0 && state.videoFile) {
       dispatch({ type: "SET_VIDEO_FILE", payload: null })
+      dispatch({ type: "SET_VIDEO_DURATION_SECONDS", payload: null })
     }
 
     if (itemsCount > 0) {
@@ -827,6 +833,7 @@ export default function NewImage() {
               largeThumbnailImageWidth: largeThumbnail.width,
               largeThumbnailImageHeight: largeThumbnail.height,
               videoUrl: uploadedVideo.url,
+              videoDurationSeconds: state.videoDurationSeconds,
               streamUid: uploadedVideo.uid,
               ogpImageUrl: ogpBase64Url,
               imageHeight: mainImageSize.height,

@@ -283,8 +283,8 @@ export function PostImageFormInput(props: Props) {
           </p>
           <p className="mt-2 text-emerald-800 dark:text-emerald-200">
             {t(
-              `現在の上限は動画${videoUploadLimits.maxDurationSeconds}秒まで、1日${videoUploadLimits.dailyUploadLimit}本までです。無料ユーザは30秒・1日2本、サブスク加入ユーザは60秒・1日3本まで投稿できます。`,
-              `Your current limit is ${videoUploadLimits.maxDurationSeconds} seconds per video and ${videoUploadLimits.dailyUploadLimit} uploads per day. Free users can post up to 30 seconds and 2 videos per day, while subscribers can post up to 60 seconds and 3 videos per day.`,
+              `現在の上限は動画${videoUploadLimits.maxDurationSeconds}秒/本、1日合計${videoUploadLimits.dailyTotalDurationSeconds}秒までです。無料ユーザは30秒/本・1日合計60秒、サブスク加入ユーザは60秒/本・1日合計180秒まで投稿できます。`,
+              `Your current limit is ${videoUploadLimits.maxDurationSeconds} seconds per video and ${videoUploadLimits.dailyTotalDurationSeconds} total seconds per day. Free users can post up to 30 seconds per video and 60 total seconds per day, while subscribers can post up to 60 seconds per video and 180 total seconds per day.`,
             )}
           </p>
         </div>

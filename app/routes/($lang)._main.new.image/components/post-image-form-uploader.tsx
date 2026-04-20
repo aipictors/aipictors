@@ -32,7 +32,10 @@ type Props = {
   onChangeMediaType: (mediaType: "image" | "video") => void
   onImageSelectionChange?: (itemsCount: number) => void
   state: PostImageFormState
-  onVideoChange?: (videoFile: File | null) => void
+  onVideoChange?: (
+    videoFile: File | null,
+    videoDurationSeconds?: number | null,
+  ) => void
   onInputFiles?: (files: FileList) => void
   token?: string | undefined | null
   onContentGenerated?: (data: {
@@ -151,7 +154,7 @@ export function PostImageFormUploader (props: Props) {
     props.onChangeMediaType("image")
 
     if (props.state.videoFile) {
-      props.onVideoChange?.(null)
+      props.onVideoChange?.(null, null)
     }
 
     const nextItems = [...props.state.items]
@@ -300,7 +303,7 @@ export function PostImageFormUploader (props: Props) {
           payload: video.videoWidth > video.videoHeight,
         })
 
-        props.onVideoChange?.(file)
+        props.onVideoChange?.(file, Math.ceil(video.duration))
         props.onChangeMediaType("video")
         resolve()
       }
@@ -473,8 +476,8 @@ export function PostImageFormUploader (props: Props) {
             </p>
             <p className="text-xs text-zinc-400">
               {t(
-                `動画投稿は無料ユーザは1日${videoUploadLimits.isSubscribed ? 2 : videoUploadLimits.dailyUploadLimit}本まで、サブスク加入ユーザは1日${videoUploadLimits.isSubscribed ? videoUploadLimits.dailyUploadLimit : 3}本までです。`,
-                `Video uploads are limited to ${videoUploadLimits.isSubscribed ? 2 : videoUploadLimits.dailyUploadLimit} per day for free users and ${videoUploadLimits.isSubscribed ? videoUploadLimits.dailyUploadLimit : 3} per day for subscribers.`,
+                "動画投稿は無料ユーザは1日合計60秒まで、サブスク加入ユーザは1日合計180秒までです。",
+                "Video uploads are limited to 60 total seconds per day for free users and 180 total seconds per day for subscribers.",
               )}
             </p>
             <p className="text-xs text-zinc-400">
@@ -602,8 +605,8 @@ export function PostImageFormUploader (props: Props) {
                     payload: value,
                   })
                 }}
-                onVideoChange={(videoFile) => {
-                  props.onVideoChange?.(videoFile)
+                onVideoChange={(videoFile, videoDurationSeconds) => {
+                  props.onVideoChange?.(videoFile, videoDurationSeconds)
                 }}
               />
             )}

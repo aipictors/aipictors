@@ -33,4 +33,5 @@ export const vPostImageFormState = object({
   uploadedWorkId: nullable(string()),
   uploadedWorkUuid: nullable(string()),
   videoFile: nullable(vFile),
+  videoDurationSeconds: nullable(number()),
 })

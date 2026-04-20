@@ -17,7 +17,10 @@ type Props = {
   setThumbnailBase64(thumbnailBase64: string | null): void
   setOgpBase64?(ogpBase64: string | null): void
   setIsThumbnailLandscape?(isThumbnailLandscape: boolean): void
-  onVideoChange(videoFile: File | null): void
+  onVideoChange(
+    videoFile: File | null,
+    videoDurationSeconds?: number | null,
+  ): void
   isEnabledSelectVideo?: boolean
   previewVideoUrl?: string
 }
@@ -107,7 +110,7 @@ export function PostFormItemVideo(props: Props) {
               return
             }
 
-            props.onVideoChange(file)
+            props.onVideoChange(file, Math.ceil(video.duration))
 
             const canvas = document.createElement("canvas")
             canvas.width = video.videoWidth
@@ -217,8 +220,8 @@ export function PostFormItemVideo(props: Props) {
               </p>
               <p className="text-center text-xs text-zinc-300">
                 {t(
-                  "無料ユーザは1日2本まで、サブスク加入ユーザは1日3本まで",
-                  "Free users: up to 2 uploads/day. Subscribers: up to 3 uploads/day.",
+                  "無料ユーザは1日合計60秒まで、サブスク加入ユーザは1日合計180秒まで",
+                  "Free users: up to 60 total seconds/day. Subscribers: up to 180 total seconds/day.",
                 )}
               </p>
             </div>
@@ -228,7 +231,7 @@ export function PostFormItemVideo(props: Props) {
           <VideoItem
             videoFile={props.videoFile}
             onDelete={() => {
-              props.onVideoChange(null)
+              props.onVideoChange(null, null)
               updateThumbnail(null)
             }}
           />

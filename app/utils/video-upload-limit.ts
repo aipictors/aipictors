@@ -12,6 +12,6 @@ export const getVideoUploadLimits = (passType: VideoUploadPassType) => {
   return {
     isSubscribed,
     maxDurationSeconds: isSubscribed ? 60 : 30,
-    dailyUploadLimit: isSubscribed ? 3 : 2,
+    dailyTotalDurationSeconds: isSubscribed ? 180 : 60,
   }
 }

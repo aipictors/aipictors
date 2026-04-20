@@ -68,6 +68,12 @@ export const postImageFormReducer = (
         videoFile: action.payload ? (action.payload as File) : null,
       }
     }
+    case "SET_VIDEO_DURATION_SECONDS": {
+      return {
+        ...state,
+        videoDurationSeconds: action.payload,
+      }
+    }
     case "OPEN_IMAGE_GENERATION_DIALOG": {
       return {
         ...state,
@@ -189,6 +195,7 @@ export const postImageFormReducer = (
         thumbnailPosX: action.payload.thumbnailPosX,
         thumbnailPosY: action.payload.thumbnailPosY,
         isSelectedGenerationImage: action.payload.isSelectedGenerationImage,
+        videoDurationSeconds: null,
       }
   }
 

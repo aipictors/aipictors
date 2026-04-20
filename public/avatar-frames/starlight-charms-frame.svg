@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <defs>
+    <linearGradient id="nightRing" x1="200" y1="128" x2="832" y2="892" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8AB4FF"/>
+      <stop offset="0.45" stop-color="#BFA8FF"/>
+      <stop offset="1" stop-color="#FFBEE6"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="16" flood-color="#D5C8FF" flood-opacity="0.45"/>
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#688BFF" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#glow)">
+    <circle cx="512" cy="512" r="400" stroke="url(#nightRing)" stroke-width="30"/>
+  </g>
+
+  <g fill="#F8F7FF" opacity="0.98">
+    <path d="M512 124L526 168L570 182L526 196L512 240L498 196L454 182L498 168L512 124Z"/>
+    <path d="M824 262L836 298L872 310L836 322L824 358L812 322L776 310L812 298L824 262Z"/>
+    <path d="M206 270L218 306L254 318L218 330L206 366L194 330L158 318L194 306L206 270Z"/>
+    <path d="M794 738L806 774L842 786L806 798L794 834L782 798L746 786L782 774L794 738Z"/>
+    <path d="M228 736L240 772L276 784L240 796L228 832L216 796L180 784L216 772L228 736Z"/>
+  </g>
+
+  <g stroke="#FFF8FF" stroke-width="16" stroke-linecap="round" opacity="0.95">
+    <path d="M312 198L332 218"/>
+    <path d="M688 198L708 218"/>
+    <path d="M312 826L332 806"/>
+    <path d="M688 826L708 806"/>
+  </g>
+
+  <g fill="#FFFFFF" opacity="0.9">
+    <circle cx="160" cy="514" r="10"/>
+    <circle cx="214" cy="514" r="6"/>
+    <circle cx="864" cy="514" r="10"/>
+    <circle cx="810" cy="514" r="6"/>
+    <circle cx="512" cy="866" r="9"/>
+    <circle cx="512" cy="158" r="9"/>
+  </g>
+</svg>
