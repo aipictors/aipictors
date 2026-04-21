@@ -15,6 +15,20 @@ import { type FragmentOf, graphql } from "gql.tada"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 
+type AlbumWorkOrderParam = "DATE_CREATED" | "LIKES_COUNT" | "MANUAL"
+
+const toAlbumWorkOrder = (value: string | null): AlbumWorkOrderParam => {
+  if (
+    value === "DATE_CREATED" ||
+    value === "LIKES_COUNT" ||
+    value === "MANUAL"
+  ) {
+    return value
+  }
+
+  return "MANUAL"
+}
+
 export async function loader(props: LoaderFunctionArgs) {
   if (!props.params.album || !props.params.user) {
     throw new Response(null, { status: 404 })
@@ -33,6 +47,7 @@ export async function loader(props: LoaderFunctionArgs) {
       ? 0
       : Number.parseInt(url.searchParams.get("page") as string)
     : 0
+  const orderBy = toAlbumWorkOrder(url.searchParams.get("orderBy"))
 
   const result = await loaderClient.query({
     query: LoaderQuery,
@@ -43,6 +58,8 @@ export async function loader(props: LoaderFunctionArgs) {
       },
       offset: 0,
       limit: 16,
+      orderBy,
+      sort: "DESC",
     },
   })
 
@@ -115,10 +132,10 @@ export default function albums () {
 }
 
 const LoaderQuery = graphql(
-  `query AlbumWorks($where: AlbumWhereInput!, $offset: Int!, $limit: Int!) {
+  `query AlbumWorks($where: AlbumWhereInput!, $offset: Int!, $limit: Int!, $orderBy: AlbumWorkOrderBy, $sort: Sort) {
     album(where: $where) {
       id
-      works(offset: $offset, limit: $limit) {
+      works(offset: $offset, limit: $limit, orderBy: $orderBy, sort: $sort) {
         ...AlbumWorkListItem
       }
       ...AlbumArticleHeader

@@ -17,6 +17,7 @@ import { AiEvaluationDisplay } from "~/routes/($lang)._main.posts.$post._index/c
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
 import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-button"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
+import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
 import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
 import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
@@ -509,6 +510,8 @@ export function WorkArticle(props: Props) {
           />
         </div>
 
+        {props.work.album && <WorkAlbumCard album={props.work.album} />}
+
         {props.work.user && (
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -633,6 +636,15 @@ export const workArticleFragment = graphql(
         backgroundStyle
         overlayImageUrl
         borderPadding
+      }
+    }
+    album {
+      id
+      title
+      description
+      slug
+      user {
+        login
       }
     }
     dailyTheme {
@@ -803,6 +815,10 @@ export const sensitiveWorkArticleFragment = graphql(
       id
       title
       description
+      slug
+      user {
+        login
+      }
     }
     dailyTheme {
       id

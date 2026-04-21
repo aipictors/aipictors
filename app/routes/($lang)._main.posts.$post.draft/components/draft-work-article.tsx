@@ -18,6 +18,7 @@ import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
+import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { toRatingText } from "~/utils/work/to-rating-text"
 import { Badge } from "~/components/ui/badge"
@@ -344,6 +345,8 @@ export function DraftWorkArticle (props: Props) {
           otherGenerationParams={props.work.otherGenerationParams}
         />
 
+        {props.work.album && <WorkAlbumCard album={props.work.album} />}
+
         {props.work.user !== null && (
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -469,6 +472,10 @@ export const workArticleFragment = graphql(
       id
       title
       description
+      slug
+      user {
+        login
+      }
     }
     dailyTheme {
       id
@@ -618,6 +625,10 @@ export const sensitiveWorkArticleFragment = graphql(
       id
       title
       description
+      slug
+      user {
+        login
+      }
     }
     dailyTheme {
       id

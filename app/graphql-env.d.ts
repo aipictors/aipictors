@@ -142,10 +142,22 @@ type AlbumNode implements Node {
   作品
   ※キャッシュ不可
   """
-  works(limit: Int!, offset: Int!): [WorkNode!]!
+  works(limit: Int!, offset: Int!, orderBy: AlbumWorkOrderBy, sort: Sort): [WorkNode!]!
 
   """作品数"""
   worksCount: Int!
+}
+
+"""シリーズ内作品の並び順"""
+enum AlbumWorkOrderBy {
+  """投稿日でソート"""
+  DATE_CREATED
+
+  """いいね数でソート"""
+  LIKES_COUNT
+
+  """手動でソート"""
+  MANUAL
 }
 
 """アルバムの並び順"""
@@ -155,6 +167,9 @@ enum AlbumOrderBy {
 
   """更新日時"""
   DATE_UPDATED
+
+  """手動"""
+  MANUAL
 
   """名前"""
   NAME
@@ -3254,6 +3269,9 @@ type Mutation {
   """シリーズを更新する"""
   updateAlbum(input: UpdateAlbumInput!): AlbumNode!
 
+  """シリーズ一覧の手動並び順を更新する"""
+  updateAlbumsOrder(input: UpdateAlbumsOrderInput!): Boolean!
+
   """お気に入りスタンプを更新する"""
   updateBookmarkedSticker(input: UpdateBookmarkedStickerInput!): StickerNode
 
@@ -4833,6 +4851,11 @@ input UpdateAlbumInput {
   rating: AlbumRating
   title: String
   workIds: [ID!]
+}
+
+input UpdateAlbumsOrderInput {
+  """並び順どおりのシリーズID一覧"""
+  albumIds: [ID!]!
 }
 
 """お気に入りスタンプを更新する"""

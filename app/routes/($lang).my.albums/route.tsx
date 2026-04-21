@@ -67,13 +67,42 @@ export default function MyAlbums() {
 
   // アルバム一覧のソートボタンクリック時の処理
   const onClickAlbumTitleSortButton = () => {
+    setAlbumPage(0)
+    if (AlbumOrderby === "NAME") {
+      setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+      return
+    }
+
     setAlbumOrderby("NAME")
-    setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+    setAlbumOrderDeskAsc("DESC")
   }
 
   const onClickAlbumDateSortButton = () => {
+    setAlbumPage(0)
+    if (AlbumOrderby === "DATE_CREATED") {
+      setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+      return
+    }
+
     setAlbumOrderby("DATE_CREATED")
-    setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+    setAlbumOrderDeskAsc("DESC")
+  }
+
+  const onClickAlbumUpdatedSortButton = () => {
+    setAlbumPage(0)
+    if (AlbumOrderby === "DATE_UPDATED") {
+      setAlbumOrderDeskAsc(albumOrderDeskAsc === "ASC" ? "DESC" : "ASC")
+      return
+    }
+
+    setAlbumOrderby("DATE_UPDATED")
+    setAlbumOrderDeskAsc("DESC")
+  }
+
+  const onClickAlbumManualSortButton = () => {
+    setAlbumOrderby("MANUAL")
+    setAlbumPage(0)
+    setAlbumOrderDeskAsc("DESC")
   }
 
   return (
@@ -85,6 +114,8 @@ export default function MyAlbums() {
         rating={albumRating}
         onClickAlbumTitleSortButton={onClickAlbumTitleSortButton}
         onClickAlbumDateSortButton={onClickAlbumDateSortButton}
+        onClickAlbumUpdatedSortButton={onClickAlbumUpdatedSortButton}
+        onClickAlbumManualSortButton={onClickAlbumManualSortButton}
         setRating={setAlbumRating}
         setSort={setAlbumOrderDeskAsc}
       />

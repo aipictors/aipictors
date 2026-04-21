@@ -20,6 +20,8 @@ type Props = {
   setSort: (sort: SortType) => void
   onClickAlbumTitleSortButton: () => void
   onClickAlbumDateSortButton: () => void
+  onClickAlbumUpdatedSortButton: () => void
+  onClickAlbumManualSortButton: () => void
 }
 
 /**
@@ -34,8 +36,31 @@ export function AlbumsSetting(props: Props) {
 
   const allSortType = [
     "DATE_CREATED",
+    "DATE_UPDATED",
+    "MANUAL",
     "NAME",
   ] as IntrospectionEnum<"AlbumOrderBy">[]
+
+  const onValueChangeOrderBy = (value: string) => {
+    if (value === "NAME") {
+      props.onClickAlbumTitleSortButton()
+      return
+    }
+
+    if (value === "DATE_CREATED") {
+      props.onClickAlbumDateSortButton()
+      return
+    }
+
+    if (value === "DATE_UPDATED") {
+      props.onClickAlbumUpdatedSortButton()
+      return
+    }
+
+    if (value === "MANUAL") {
+      props.onClickAlbumManualSortButton()
+    }
+  }
 
   const _onToggleFilterButton = () => {
     if (isFilterOpen) {
@@ -60,7 +85,18 @@ export function AlbumsSetting(props: Props) {
             opacity: opacity,
           }}
         >
-          <div className="flex space-x-4">
+          <div className="flex flex-col gap-4 md:flex-row">
+            <Select value={props.orderBy} onValueChange={onValueChangeOrderBy}>
+              <SelectTrigger>
+                <SelectValue placeholder="並び順" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NAME">{"タイトル順"}</SelectItem>
+                <SelectItem value="DATE_CREATED">{"作成日順"}</SelectItem>
+                <SelectItem value="DATE_UPDATED">{"更新日順"}</SelectItem>
+                <SelectItem value="MANUAL">{"手動"}</SelectItem>
+              </SelectContent>
+            </Select>
             <Select
               value={props.rating ? props.rating : ""}
               onValueChange={(value) => {
@@ -98,6 +134,8 @@ export function AlbumsSetting(props: Props) {
             setSort={props.setSort}
             onClickAlbumTitleSortButton={props.onClickAlbumTitleSortButton}
             onClickAlbumDateSortButton={props.onClickAlbumDateSortButton}
+            onClickAlbumUpdatedSortButton={props.onClickAlbumUpdatedSortButton}
+            onClickAlbumManualSortButton={props.onClickAlbumManualSortButton}
           />
         </div>
       </div>

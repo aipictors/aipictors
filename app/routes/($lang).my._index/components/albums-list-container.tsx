@@ -27,6 +27,7 @@ type Props = {
  */
 export function AlbumsListContainer(props: Props) {
   const authContext = useContext(AuthContext)
+  const isManualOrder = props.orderBy === "MANUAL"
 
   if (
     authContext.isLoading ||
@@ -40,8 +41,8 @@ export function AlbumsListContainer(props: Props) {
     skip:
       authContext.isLoading || authContext.isNotLoggedIn || !authContext.userId,
     variables: {
-      offset: 16 * props.page,
-      limit: 16,
+      offset: isManualOrder ? 0 : 16 * props.page,
+      limit: isManualOrder ? Math.max(props.albumsMaxCount, 16) : 16,
       where: {
         orderBy: props.orderBy,
         sort: props.sort,
@@ -63,22 +64,27 @@ export function AlbumsListContainer(props: Props) {
       </div>
       <AlbumsList
         albums={albums}
+        refetch={refetchAlbums}
         sort={props.sort}
         orderBy={props.orderBy}
         onClickTitleSortButton={props.onClickAlbumTitleSortButton}
         onClickDateSortButton={props.onClickAlbumDateSortButton}
       />
-      <div className="h-8" />
-      <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
-        <ResponsivePagination
-          perPage={16}
-          maxCount={props.albumsMaxCount}
-          currentPage={props.page}
-          onPageChange={(page: number) => {
-            props.setAlbumPage(page)
-          }}
-        />
-      </div>
+      {!isManualOrder && (
+        <>
+          <div className="h-8" />
+          <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
+            <ResponsivePagination
+              perPage={16}
+              maxCount={props.albumsMaxCount}
+              currentPage={props.page}
+              onPageChange={(page: number) => {
+                props.setAlbumPage(page)
+              }}
+            />
+          </div>
+        </>
+      )}
     </>
   )
 }

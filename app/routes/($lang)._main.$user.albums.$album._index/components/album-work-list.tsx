@@ -7,7 +7,15 @@ import { LikeButton } from "~/components/like-button"
 import { MasonryWorkGrid } from "~/components/masonry-work-grid"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { PhotoAlbumWorkFragment } from "~/components/responsive-photo-works-album"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group"
+import type { IntrospectionEnum } from "~/lib/introspection-enum"
 
 type Props = {
   albumId: string
@@ -17,6 +25,7 @@ type Props = {
 }
 
 type ViewMode = "square" | "natural"
+type AlbumWorkOrder = IntrospectionEnum<"AlbumWorkOrderBy">
 
 const toPage = (value: string | null) => {
   const parsedValue = Number.parseInt(value ?? "1", 10)
@@ -32,14 +41,24 @@ const toViewMode = (value: string | null): ViewMode => {
   return value === "natural" ? "natural" : "square"
 }
 
+const toOrderBy = (value: string | null): AlbumWorkOrder => {
+  if (value === "DATE_CREATED" || value === "LIKES_COUNT" || value === "MANUAL") {
+    return value
+  }
+
+  return "MANUAL"
+}
+
 export function AlbumWorkList(props: Props) {
   const [searchParams, setSearchParams] = useSearchParams()
   const page = toPage(searchParams.get("page"))
   const viewMode = toViewMode(searchParams.get("view"))
+  const orderBy = toOrderBy(searchParams.get("orderBy"))
 
   const updateSearchParams = (updates: {
     page?: string | null
     view?: ViewMode | null
+    orderBy?: AlbumWorkOrder | null
   }) => {
     const params = new URLSearchParams(searchParams)
 
@@ -59,6 +78,15 @@ export function AlbumWorkList(props: Props) {
       }
     }
 
+    if (updates.orderBy !== undefined) {
+      if (updates.orderBy === null || updates.orderBy === "MANUAL") {
+        params.delete("orderBy")
+      } else {
+        params.set("orderBy", updates.orderBy)
+      }
+      params.delete("page")
+    }
+
     setSearchParams(params)
   }
 
@@ -67,6 +95,8 @@ export function AlbumWorkList(props: Props) {
       albumId: props.albumId,
       offset: 32 * page,
       limit: 32,
+      orderBy,
+      sort: "DESC",
     },
     fetchPolicy: "cache-first",
   })
@@ -76,37 +106,56 @@ export function AlbumWorkList(props: Props) {
   return (
     <>
       <div className="mb-4 flex items-center justify-end">
-        <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/90 p-1 pr-1.5 shadow-sm backdrop-blur-sm">
-          <span className="pl-2 font-medium text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
-            View
-          </span>
-          <ToggleGroup
-            type="single"
-            value={viewMode}
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Select
+            value={orderBy}
             onValueChange={(value) => {
-              if (value === "square" || value === "natural") {
-                updateSearchParams({ view: value })
+              if (value === "DATE_CREATED" || value === "LIKES_COUNT" || value === "MANUAL") {
+                updateSearchParams({ orderBy: value })
               }
             }}
-            className="gap-1"
           >
-            <ToggleGroupItem
-              value="square"
-              aria-label="正方形表示"
-              className="rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="並び順" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="MANUAL">手動順</SelectItem>
+              <SelectItem value="DATE_CREATED">投稿日順</SelectItem>
+              <SelectItem value="LIKES_COUNT">いいね順</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/90 p-1 pr-1.5 shadow-sm backdrop-blur-sm">
+            <span className="pl-2 font-medium text-[11px] text-muted-foreground uppercase tracking-[0.18em]">
+              View
+            </span>
+            <ToggleGroup
+              type="single"
+              value={viewMode}
+              onValueChange={(value) => {
+                if (value === "square" || value === "natural") {
+                  updateSearchParams({ view: value })
+                }
+              }}
+              className="gap-1"
             >
-              <SquareViewIcon className="size-4" />
-              <span className="hidden sm:inline">正方形</span>
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="natural"
-              aria-label="比率維持表示"
-              className="rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
-            >
-              <NaturalViewIcon className="size-4" />
-              <span className="hidden sm:inline">比率維持</span>
-            </ToggleGroupItem>
-          </ToggleGroup>
+              <ToggleGroupItem
+                value="square"
+                aria-label="正方形表示"
+                className="rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              >
+                <SquareViewIcon className="size-4" />
+                <span className="hidden sm:inline">正方形</span>
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="natural"
+                aria-label="比率維持表示"
+                className="rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              >
+                <NaturalViewIcon className="size-4" />
+                <span className="hidden sm:inline">比率維持</span>
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
         </div>
       </div>
 
@@ -222,11 +271,11 @@ export const AlbumWorkListItemFragment = graphql(
 )
 
 const query = graphql(
-  `query AlbumWorks($albumId: ID!, $offset: Int!, $limit: Int!) {
+  `query AlbumWorksList($albumId: ID!, $offset: Int!, $limit: Int!, $orderBy: AlbumWorkOrderBy, $sort: Sort) {
     album(id: $albumId) {
       id
       worksCount
-      works(offset: $offset, limit: $limit) {
+      works(offset: $offset, limit: $limit, orderBy: $orderBy, sort: $sort) {
         ...AlbumWorkListItem
       }
     }

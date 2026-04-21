@@ -1,9 +1,10 @@
-import { useMutation } from "@apollo/client/index"
+import { useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -23,6 +24,7 @@ import {
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
+import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toRatingText } from "~/utils/work/to-rating-text"
 
 type Props = {
@@ -46,9 +48,12 @@ export function AlbumArticleEditorDialog(props: Props) {
   const [rating, setRating] = useState<IntrospectionEnum<"AlbumRating">>(
     props.album.rating,
   )
+  const [thumbnailImageBase64, setThumbnailImageBase64] = useState("")
+  const [isThumbnailCleared, setIsThumbnailCleared] = useState(false)
 
   const [updateAlbum, { loading: isUpdating }] =
     useMutation(updateAlbumMutation)
+  const { data: token } = useQuery(viewerTokenQuery)
 
   const onSubmit = async () => {
     if (title.length === 0) {
@@ -68,6 +73,12 @@ export function AlbumArticleEditorDialog(props: Props) {
       return null
     }
 
+    const headerImageUrl = isThumbnailCleared
+      ? ""
+      : thumbnailImageBase64
+        ? await uploadPublicImage(thumbnailImageBase64, token?.viewer?.token)
+        : undefined
+
     await updateAlbum({
       variables: {
         input: {
@@ -75,6 +86,7 @@ export function AlbumArticleEditorDialog(props: Props) {
           title: title,
           description: description,
           rating,
+          ...(headerImageUrl && { headerImageUrl }),
           ...(selectedWorks && { workIds: selectedWorks }),
         },
       },
@@ -91,6 +103,29 @@ export function AlbumArticleEditorDialog(props: Props) {
           <DialogTitle>{t("シリーズ更新", "Update Album")}</DialogTitle>
         </DialogHeader>
 
+        <div className="flex flex-col justify-between space-y-2">
+          <label
+            htmlFor="album-cover"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {t("カバー", "Cover")}
+          </label>
+          <CropImageField
+            isHidePreviewImage={false}
+            cropWidth={1200}
+            cropHeight={627}
+            defaultCroppedImage={props.thumbnail}
+            fileExtension={"webp"}
+            onDeleteImage={() => {
+              setThumbnailImageBase64("")
+              setIsThumbnailCleared(true)
+            }}
+            onCropToBase64={(croppedImage) => {
+              setThumbnailImageBase64(croppedImage)
+              setIsThumbnailCleared(false)
+            }}
+          />
+        </div>
         <div className="flex flex-col justify-between space-y-2">
           <label
             htmlFor="nickname"
@@ -197,6 +232,15 @@ const updateAlbumMutation = graphql(
     updateAlbum(input: $input) {
       id
       title
+    }
+  }`,
+)
+
+const viewerTokenQuery = graphql(
+  `query ViewerAlbumToken {
+    viewer {
+      id
+      token
     }
   }`,
 )

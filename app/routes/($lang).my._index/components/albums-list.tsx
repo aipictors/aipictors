@@ -7,9 +7,14 @@ import { AlbumsSpList } from "~/routes/($lang).my._index/components/albums-sp-li
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { type FragmentOf, graphql } from "gql.tada"
 import { MobileAlbumListItemFragment } from "~/routes/($lang).my._index/components/albums-sp-list-item"
+import {
+  SortableAlbumListItemFragment,
+  SortableAlbumsList,
+} from "~/routes/($lang).my._index/components/albums-sortable-list"
 
 type Props = {
   albums: FragmentOf<typeof AlbumListItemFragment>[]
+  refetch: () => void
   sort: SortType
   orderBy: IntrospectionEnum<"AlbumOrderBy">
   onClickTitleSortButton: () => void
@@ -33,17 +38,22 @@ export function AlbumsList (props: Props) {
 
   return (
     <>
+      {props.orderBy === "MANUAL" && (
+        <SortableAlbumsList albums={props.albums} refetch={props.refetch} />
+      )}
       <div className="hidden md:block">
-        <AlbumsListTable
-          albums={displayAlbums}
-          sort={props.sort}
-          orderBy={props.orderBy}
-          onClickTitleSortButton={props.onClickTitleSortButton}
-          onClickDateSortButton={props.onClickDateSortButton}
-        />
+        {props.orderBy !== "MANUAL" && (
+          <AlbumsListTable
+            albums={displayAlbums}
+            sort={props.sort}
+            orderBy={props.orderBy}
+            onClickTitleSortButton={props.onClickTitleSortButton}
+            onClickDateSortButton={props.onClickDateSortButton}
+          />
+        )}
       </div>
       <div className="block md:hidden">
-        <AlbumsSpList albums={props.albums} />
+        {props.orderBy !== "MANUAL" && <AlbumsSpList albums={props.albums} />}
       </div>
     </>
   )
@@ -53,6 +63,11 @@ export const AlbumListItemFragment = graphql(
   `fragment AlbumListItem on AlbumNode @_unmask {
     ...AlbumTableItem
     ...MobileAlbumListItem
+    ...SortableAlbumListItem
   }`,
-  [AlbumTableItemFragment, MobileAlbumListItemFragment],
+  [
+    AlbumTableItemFragment,
+    MobileAlbumListItemFragment,
+    SortableAlbumListItemFragment,
+  ],
 )
