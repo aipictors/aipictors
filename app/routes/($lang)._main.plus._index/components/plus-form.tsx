@@ -1,3 +1,4 @@
+import { getAuth, getIdToken } from "firebase/auth"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
@@ -7,30 +8,111 @@ import { PassBenefitList } from "~/routes/($lang)._main.plus._index/components/p
 import { PassImageGenerationBenefitList } from "~/routes/($lang)._main.plus._index/components/pass-image-generation-benefit-list"
 import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-about"
 import { toPassName } from "~/routes/($lang)._main.plus._index/utils/to-pass-name"
-import { useMutation, useSuspenseQuery } from "@apollo/client/index"
+import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
+import { useState } from "react"
 import { toast } from "sonner"
 
 export function PlusForm () {
-  const [mutation, { loading: isLoading }] = useMutation(
-    createCustomerPortalSessionMutation,
-  )
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { data } = useSuspenseQuery(viewerCurrentPassQuery, {})
+  const { data } = useSuspenseQuery<{
+    viewer: {
+      id: string
+      currentPass: {
+        id: string
+        type: "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS"
+        price: number
+        periodEnd: number
+      } | null
+    } | null
+  }>(viewerCurrentPassQuery, {})
 
-  const onOpenCustomerPortal = async () => {
+  const withAuthHeader = async () => {
+    const currentUser = getAuth().currentUser
+    if (!currentUser) {
+      throw new Error("ログインが必要です")
+    }
+
+    const idToken = await getIdToken(currentUser)
+
+    return {
+      authorization: `Bearer ${idToken}`,
+      "content-type": "application/json",
+    }
+  }
+
+  const onCancelCurrentSubscription = async () => {
+    if (!window.confirm("現在のサブスクを解約します。よろしいですか？")) {
+      return
+    }
+
     try {
-      const result = await mutation({})
-      const pageURL = result.data?.createCustomerPortalSession ?? null
-      if (pageURL === null) {
-        toast("セッションの作成に失敗しました。")
+      setIsSubmitting(true)
+      const headers = await withAuthHeader()
+      const response = await fetch("/api/stripe/subscription-cancel", {
+        method: "POST",
+        headers,
+      })
+
+      const json = (await response.json()) as {
+        error: string | null
+        data: { status: string } | null
+      }
+
+      if (!response.ok || json.error || !json.data) {
+        toast(json.error ?? "解約に失敗しました。")
         return
       }
-      window.location.assign(pageURL)
+
+      toast("解約手続きを受け付けました。次回更新日まで利用できます。")
+      window.location.reload()
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
       }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const onChangeCurrentPlan = async (
+    passType: "LITE" | "STANDARD" | "PREMIUM",
+    currentPassType: "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS",
+  ) => {
+    try {
+      setIsSubmitting(true)
+      const headers = await withAuthHeader()
+      const response = await fetch("/api/stripe/subscription-change-plan", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          passType,
+          currentPassType,
+        }),
+      })
+
+      const json = (await response.json()) as {
+        error: string | null
+        data: {
+          passType: string
+          amountJpy: number
+        } | null
+      }
+
+      if (!response.ok || json.error || !json.data) {
+        toast(json.error ?? "プラン変更に失敗しました。")
+        return
+      }
+
+      toast("プランを変更しました。")
+      window.location.reload()
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -72,16 +154,46 @@ export function PlusForm () {
               </div>
               <p>
                 {
-                  "決済方法の変更やプランのキャンセル及び変更はこちらのリンクから行えます。"
+                  "この画面からサブスクのキャンセルとプラン変更を行えます。"
                 }
               </p>
-              <Button
-                className="w-full"
-                onClick={onOpenCustomerPortal}
-                disabled={isLoading}
-              >
-                {"プランをキャンセルまたは変更する"}
-              </Button>
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                <Button
+                  className="w-full"
+                  onClick={onCancelCurrentSubscription}
+                  disabled={isSubmitting}
+                  variant="destructive"
+                >
+                  {"サブスクをキャンセルする"}
+                </Button>
+                {currentPass.type === "LITE" && (
+                  <Button
+                    className="w-full"
+                    onClick={() => onChangeCurrentPlan("STANDARD", currentPass.type)}
+                    disabled={isSubmitting}
+                  >
+                    {"スタンダードに変更する"}
+                  </Button>
+                )}
+                {currentPass.type === "LITE" && (
+                  <Button
+                    className="w-full"
+                    onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
+                    disabled={isSubmitting}
+                  >
+                    {"プレミアムに変更する"}
+                  </Button>
+                )}
+                {currentPass.type === "STANDARD" && (
+                  <Button
+                    className="w-full"
+                    onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
+                    disabled={isSubmitting}
+                  >
+                    {"プレミアムに変更する"}
+                  </Button>
+                )}
+              </div>
             </div>
             <Card className="flex-1">
               <CardHeader>
@@ -105,7 +217,7 @@ export function PlusForm () {
             </Card>
           </div>
           {currentPass.type !== "PREMIUM" && (
-            <PlusAbout hideSubmitButton={true} showUpgradePlansOnly={true} />
+            <PlusAbout showUpgradePlansOnly={true} />
           )}
         </>
       ) : (
@@ -126,11 +238,5 @@ const viewerCurrentPassQuery = graphql(
         periodEnd
       }
     }
-  }`,
-)
-
-const createCustomerPortalSessionMutation = graphql(
-  `mutation CreateCustomerPortalSession {
-    createCustomerPortalSession
   }`,
 )
