@@ -5,6 +5,7 @@ import {
   BellIcon,
   BookmarkXIcon,
   ChevronRight,
+  CoinsIcon,
   ImageIcon,
   MedalIcon,
   PaletteIcon,
@@ -117,6 +118,14 @@ export function SettingsNavigation() {
       <SettingNavigationButton href={"/settings/request"} icon={MedalIcon}>
         <div className="flex w-full items-center justify-between">
           {t("サポートを受け取る", "Receive Support")}
+          <div className="ml-auto text-right md:hidden">
+            <ChevronRight />
+          </div>
+        </div>
+      </SettingNavigationButton>
+      <SettingNavigationButton href={"/settings/points"} icon={CoinsIcon}>
+        <div className="flex w-full items-center justify-between">
+          {t("ポイント", "Points")}
           <div className="ml-auto text-right md:hidden">
             <ChevronRight />
           </div>
