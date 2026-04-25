@@ -105,8 +105,13 @@ export function PlusForm () {
         return
       }
 
-      toast("プランを変更しました。")
-      window.location.reload()
+      const nextPassName = toPassName(
+        (json.data.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS") ?? passType,
+      )
+      toast(`プラン変更が完了しました: ${nextPassName}（${json.data.amountJpy}円）`)
+      setTimeout(() => {
+        window.location.reload()
+      }, 1200)
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -159,10 +164,10 @@ export function PlusForm () {
               </p>
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 <Button
-                  className="w-full"
+                  className="w-full border-black text-black hover:bg-black/5 dark:border-black dark:bg-white dark:text-black dark:hover:bg-white/90"
                   onClick={onCancelCurrentSubscription}
                   disabled={isSubmitting}
-                  variant="destructive"
+                  variant="outline"
                 >
                   {"サブスクをキャンセルする"}
                 </Button>

@@ -77,56 +77,85 @@ export async function action({ request, context }: ActionFunctionArgs) {
     )
   }
 
-  const apiResponse = await fetch(
-    `${apiBaseUrl}/internal/subscriptions/change-plan`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${internalToken}`,
-        "Content-Type": "application/json",
-        ...(cfAccessClientId && cfAccessClientSecret
-          ? {
-              "CF-Access-Client-Id": cfAccessClientId,
-              "CF-Access-Client-Secret": cfAccessClientSecret,
-            }
-          : {}),
+  try {
+    const apiResponse = await fetch(
+      `${apiBaseUrl}/internal/subscriptions/change-plan`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${internalToken}`,
+          "Content-Type": "application/json",
+          ...(cfAccessClientId && cfAccessClientSecret
+            ? {
+                "CF-Access-Client-Id": cfAccessClientId,
+                "CF-Access-Client-Secret": cfAccessClientSecret,
+              }
+            : {}),
+        },
+        body: JSON.stringify({
+          userId: viewer.userId,
+          passType: parsedBody.output.passType,
+        }),
       },
-      body: JSON.stringify({
-        userId: viewer.userId,
-        passType: parsedBody.output.passType,
-      }),
-    },
-  )
+    )
 
-  const apiJson = (await apiResponse.json()) as {
-    error: string | null
-    data: {
-      passType: string
-      amountJpy: number
-      status: string
-    } | null
-  }
+    const responseText = await apiResponse.text()
+    const apiJson = (() => {
+      if (!responseText) {
+        return null
+      }
+      try {
+        return JSON.parse(responseText) as {
+          error: string | null
+          data: {
+            passType: string
+            amountJpy: number
+            status: string
+          } | null
+        }
+      } catch {
+        return null
+      }
+    })()
 
-  if (!apiResponse.ok || apiJson.error) {
+    if (!apiResponse.ok || apiJson?.error) {
+      const fallbackError =
+        responseText && !responseText.trim().startsWith("<")
+          ? responseText
+          : "Failed to change plan"
+      console.error("subscription-change-plan upstream error", {
+        status: apiResponse.status,
+        statusText: apiResponse.statusText,
+        error: apiJson?.error ?? fallbackError,
+      })
+      return toJsonResponse(
+        {
+          error: apiJson?.error ?? fallbackError,
+          data: null,
+        },
+        502,
+      )
+    }
+
     return toJsonResponse(
       {
-        error: apiJson.error ?? "Failed to change plan",
+        error: null,
+        data: {
+          passType: apiJson?.data?.passType ?? parsedBody.output.passType,
+          amountJpy: apiJson?.data?.amountJpy ?? null,
+        },
+      },
+      200,
+    )
+  } catch (error) {
+    return toJsonResponse(
+      {
+        error: error instanceof Error ? error.message : "Failed to change plan",
         data: null,
       },
       502,
     )
   }
-
-  return toJsonResponse(
-    {
-      error: null,
-      data: {
-        passType: apiJson.data?.passType ?? parsedBody.output.passType,
-        amountJpy: apiJson.data?.amountJpy ?? null,
-      },
-    },
-    200,
-  )
 }
 
 export default function Route() {

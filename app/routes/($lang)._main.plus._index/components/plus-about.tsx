@@ -27,13 +27,25 @@ export function PlusAbout (props: Props) {
       })
       const pageURL = result.data?.createPassCheckoutSession ?? null
       if (pageURL === null) {
+        console.error("Checkout URL is null. Mutation result:", result)
         toast("セッションの作成に失敗しました。")
         return
       }
+      // Verify URL is valid before redirect
+      if (typeof pageURL !== 'string' || pageURL.length === 0) {
+        console.error("Invalid checkout URL:", pageURL)
+        toast("セッションURLが無効です。")
+        return
+      }
+      console.log("Redirecting to checkout URL:", pageURL)
       window.location.assign(pageURL)
     } catch (error) {
       if (error instanceof Error) {
+        console.error("Checkout error:", error)
         toast(error.message)
+      } else {
+        console.error("Unknown error:", error)
+        toast("エラーが発生しました。")
       }
     }
   }
