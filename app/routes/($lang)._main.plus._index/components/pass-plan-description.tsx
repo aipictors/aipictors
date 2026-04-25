@@ -41,7 +41,7 @@ export function PassPlanDescription (props: Props) {
         {(props.isHide === false || props.isHide === undefined) &&
           !props.isCurrent && (
             <Button
-              className="w-full bg-[#FFBE11] font-bold text-black hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-black dark:hover:bg-[#e5ab0f]"
+              className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
               disabled={props.isDisabled ?? props.isLoading}
               onClick={props.onClick}
             >

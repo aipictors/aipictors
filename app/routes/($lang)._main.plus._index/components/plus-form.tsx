@@ -248,7 +248,7 @@ export function PlusForm () {
                 </Button>
                 {currentPass.type === "LITE" && (
                   <Button
-                    className="w-full bg-[#FFBE11] font-bold text-black hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-black dark:hover:bg-[#e5ab0f]"
+                    className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
                     onClick={() => onChangeCurrentPlan("STANDARD", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -257,7 +257,7 @@ export function PlusForm () {
                 )}
                 {currentPass.type === "LITE" && (
                   <Button
-                    className="w-full bg-[#FFBE11] font-bold text-black hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-black dark:hover:bg-[#e5ab0f]"
+                    className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
                     onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -266,7 +266,7 @@ export function PlusForm () {
                 )}
                 {currentPass.type === "STANDARD" && (
                   <Button
-                    className="w-full bg-[#FFBE11] font-bold text-black hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-black dark:hover:bg-[#e5ab0f]"
+                    className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
                     onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
