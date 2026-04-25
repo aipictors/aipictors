@@ -112,16 +112,30 @@ export function PlusForm () {
         }),
       })
 
-      const json = (await response.json()) as {
-        error: string | null
-        data: {
-          passType: string
-          amountJpy: number
-        } | null
-      }
+      const responseText = await response.text()
+      const json = (() => {
+        if (!responseText) {
+          return null
+        }
+        try {
+          return JSON.parse(responseText) as {
+            error: string | null
+            data: {
+              passType: string
+              amountJpy: number | null
+            } | null
+          }
+        } catch {
+          return null
+        }
+      })()
 
-      if (!response.ok || json.error || !json.data) {
-        toast(json.error ?? "プラン変更に失敗しました。")
+      if (!response.ok || json?.error || !json?.data) {
+        const fallbackError =
+          responseText && !responseText.trim().startsWith("<")
+            ? responseText
+            : "プラン変更に失敗しました。"
+        toast(json?.error ?? fallbackError)
         return
       }
 

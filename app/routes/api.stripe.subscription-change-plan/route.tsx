@@ -45,7 +45,19 @@ export async function action({ request, context }: ActionFunctionArgs) {
     return toJsonResponse({ error: "Unauthorized", data: null }, 401)
   }
 
-  const parsedBody = safeParse(bodySchema, await request.json())
+  const requestText = await request.text()
+  const parsedRequestBody = (() => {
+    if (!requestText) {
+      return null
+    }
+    try {
+      return JSON.parse(requestText) as unknown
+    } catch {
+      return null
+    }
+  })()
+
+  const parsedBody = safeParse(bodySchema, parsedRequestBody)
   if (!parsedBody.success) {
     return toJsonResponse({ error: "Invalid request body", data: null }, 400)
   }
