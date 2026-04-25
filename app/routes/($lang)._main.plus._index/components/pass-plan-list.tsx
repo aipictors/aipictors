@@ -8,6 +8,7 @@ type Props = {
   isLoading: boolean
   showUpgradePlansOnly?: boolean
   hideSubmitButton?: boolean
+  treatAsNoCurrentPass?: boolean
   onSelect(passType: IntrospectionEnum<"PassType">): Promise<void>
 }
 
@@ -51,10 +52,12 @@ export function PassPlanList (props: Props) {
       : null
     : null
 
+  const effectiveCurrentPass = props.treatAsNoCurrentPass ? null : currentPass
+
   return (
     <div className="flex flex-col space-y-2 lg:flex-row lg:space-x-2 lg:space-y-0">
       {(!props.showUpgradePlansOnly ||
-        isUpgradeOrEqualPlan(currentPass?.type, "LITE")) && (
+        isUpgradeOrEqualPlan(effectiveCurrentPass?.type, "LITE")) && (
         <div className="flex-1">
           <PassPlanDescription
             title="ライト"
@@ -62,13 +65,13 @@ export function PassPlanList (props: Props) {
             features={toPassFeatures("LITE")}
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
-            isCurrent={currentPass?.type === "LITE"}
+            isCurrent={effectiveCurrentPass?.type === "LITE"}
             onClick={() => props.onSelect("LITE")}
           />
         </div>
       )}
       {(!props.showUpgradePlansOnly ||
-        isUpgradeOrEqualPlan(currentPass?.type, "STANDARD")) && (
+        isUpgradeOrEqualPlan(effectiveCurrentPass?.type, "STANDARD")) && (
         <div className="flex-1">
           <PassPlanDescription
             isPrimary
@@ -77,13 +80,13 @@ export function PassPlanList (props: Props) {
             features={toPassFeatures("STANDARD")}
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
-            isCurrent={currentPass?.type === "STANDARD"}
+            isCurrent={effectiveCurrentPass?.type === "STANDARD"}
             onClick={() => props.onSelect("STANDARD")}
           />
         </div>
       )}
       {(!props.showUpgradePlansOnly ||
-        isUpgradeOrEqualPlan(currentPass?.type, "PREMIUM")) && (
+        isUpgradeOrEqualPlan(effectiveCurrentPass?.type, "PREMIUM")) && (
         <div className="flex-1">
           <PassPlanDescription
             title="プレミアム"
@@ -91,7 +94,7 @@ export function PassPlanList (props: Props) {
             features={toPassFeatures("PREMIUM")}
             isLoading={props.isLoading}
             isHide={props.hideSubmitButton === true}
-            isCurrent={currentPass?.type === "PREMIUM"}
+            isCurrent={effectiveCurrentPass?.type === "PREMIUM"}
             onClick={() => props.onSelect("PREMIUM")}
           />
         </div>

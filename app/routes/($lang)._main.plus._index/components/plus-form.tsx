@@ -227,7 +227,7 @@ export function PlusForm () {
               </div>
               {isCancelScheduled && (
                 <p className="font-semibold text-green-700 text-sm dark:text-green-400">
-                  {"次回更新日までは有効です。解約手続きは完了しています。"}
+                  {"次回更新日までは有効です。ほかのプランへは再契約で変更できます。"}
                 </p>
               )}
               <p>
@@ -246,7 +246,7 @@ export function PlusForm () {
                     ? "解約手続き済み"
                     : "サブスクをキャンセルする"}
                 </Button>
-                {currentPass.type === "LITE" && (
+                {!isCancelScheduled && currentPass.type === "LITE" && (
                   <Button
                     className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
                     onClick={() => onChangeCurrentPlan("STANDARD", currentPass.type)}
@@ -255,7 +255,7 @@ export function PlusForm () {
                     {"スタンダードに変更する"}
                   </Button>
                 )}
-                {currentPass.type === "LITE" && (
+                {!isCancelScheduled && currentPass.type === "LITE" && (
                   <Button
                     className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
                     onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
@@ -264,7 +264,7 @@ export function PlusForm () {
                     {"プレミアムに変更する"}
                   </Button>
                 )}
-                {currentPass.type === "STANDARD" && (
+                {!isCancelScheduled && currentPass.type === "STANDARD" && (
                   <Button
                     className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
                     onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
@@ -296,8 +296,11 @@ export function PlusForm () {
               </CardContent>
             </Card>
           </div>
-          {currentPass.type !== "PREMIUM" && (
-            <PlusAbout showUpgradePlansOnly={true} />
+          {(isCancelScheduled || currentPass.type !== "PREMIUM") && (
+            <PlusAbout
+              showUpgradePlansOnly={!isCancelScheduled}
+              treatAsNoCurrentPass={isCancelScheduled}
+            />
           )}
         </>
       ) : (
