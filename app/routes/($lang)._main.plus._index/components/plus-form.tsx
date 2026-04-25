@@ -10,11 +10,12 @@ import { PlusAbout } from "~/routes/($lang)._main.plus._index/components/plus-ab
 import { toPassName } from "~/routes/($lang)._main.plus._index/utils/to-pass-name"
 import { useSuspenseQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 export function PlusForm () {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isCancelScheduled, setIsCancelScheduled] = useState(false)
 
   const { data } = useSuspenseQuery<{
     viewer: {
@@ -43,6 +44,11 @@ export function PlusForm () {
   }
 
   const onCancelCurrentSubscription = async () => {
+    if (isCancelScheduled) {
+      toast("すでに解約手続き済みです。次回更新日までは利用できます。")
+      return
+    }
+
     if (!window.confirm("現在のサブスクを解約します。よろしいですか？")) {
       return
     }
@@ -55,18 +61,32 @@ export function PlusForm () {
         headers,
       })
 
-      const json = (await response.json()) as {
-        error: string | null
-        data: { status: string } | null
-      }
+      const responseText = await response.text()
+      const json = (() => {
+        if (!responseText) {
+          return null
+        }
+        try {
+          return JSON.parse(responseText) as {
+            error: string | null
+            data: { status: string } | null
+          }
+        } catch {
+          return null
+        }
+      })()
 
-      if (!response.ok || json.error || !json.data) {
-        toast(json.error ?? "解約に失敗しました。")
+      if (!response.ok || json?.error || !json?.data) {
+        const fallbackError =
+          responseText && !responseText.trim().startsWith("<")
+            ? responseText
+            : "解約に失敗しました。"
+        toast(json?.error ?? fallbackError)
         return
       }
 
+      setIsCancelScheduled(true)
       toast("解約手続きを受け付けました。次回更新日まで利用できます。")
-      window.location.reload()
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -131,6 +151,50 @@ export function PlusForm () {
 
   const currentPassName = currentPass ? toPassName(currentPass.type) : ""
 
+  useEffect(() => {
+    const loadCancellationStatus = async () => {
+      if (!currentPass) {
+        return
+      }
+
+      try {
+        const headers = await withAuthHeader()
+        const response = await fetch("/api/stripe/subscription-status", {
+          method: "POST",
+          headers,
+        })
+
+        const responseText = await response.text()
+        const json = (() => {
+          if (!responseText) {
+            return null
+          }
+          try {
+            return JSON.parse(responseText) as {
+              error: string | null
+              data: { status: string | null } | null
+            }
+          } catch {
+            return null
+          }
+        })()
+
+        if (!response.ok || json?.error || !json?.data) {
+          return
+        }
+
+        setIsCancelScheduled(
+          json.data.status === "cancellation_requested" ||
+            json.data.status === "canceled",
+        )
+      } catch {
+        // no-op: fallback to optimistic local state
+      }
+    }
+
+    loadCancellationStatus()
+  }, [currentPass])
+
   return (
     <>
       {currentPass ? (
@@ -152,11 +216,20 @@ export function PlusForm () {
                 </div>
                 <div className="flex">
                   <span className="mr-2 mb-2 rounded-full bg-gray-200 px-3 py-1 font-semibold text-gray-700 text-sm">
-                    {"次回の請求額"}
+                    {isCancelScheduled ? "解約状況" : "次回の請求額"}
                   </span>
-                  <p>{`${currentPass.price}円（税込）`}</p>
+                  <p>
+                    {isCancelScheduled
+                      ? "解約手続き済み（次回請求は行われません）"
+                      : `${currentPass.price}円（税込）`}
+                  </p>
                 </div>
               </div>
+              {isCancelScheduled && (
+                <p className="font-semibold text-green-700 text-sm dark:text-green-400">
+                  {"次回更新日までは有効です。解約手続きは完了しています。"}
+                </p>
+              )}
               <p>
                 {
                   "この画面からサブスクのキャンセルとプラン変更を行えます。"
@@ -166,14 +239,16 @@ export function PlusForm () {
                 <Button
                   className="w-full border-black text-black hover:bg-black/5 dark:border-black dark:bg-white dark:text-black dark:hover:bg-white/90"
                   onClick={onCancelCurrentSubscription}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isCancelScheduled}
                   variant="outline"
                 >
-                  {"サブスクをキャンセルする"}
+                  {isCancelScheduled
+                    ? "解約手続き済み"
+                    : "サブスクをキャンセルする"}
                 </Button>
                 {currentPass.type === "LITE" && (
                   <Button
-                    className="w-full"
+                    className="w-full bg-[#FFBE11] font-bold text-white hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-white dark:hover:bg-[#e5ab0f]"
                     onClick={() => onChangeCurrentPlan("STANDARD", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -182,7 +257,7 @@ export function PlusForm () {
                 )}
                 {currentPass.type === "LITE" && (
                   <Button
-                    className="w-full"
+                    className="w-full bg-[#FFBE11] font-bold text-white hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-white dark:hover:bg-[#e5ab0f]"
                     onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -191,7 +266,7 @@ export function PlusForm () {
                 )}
                 {currentPass.type === "STANDARD" && (
                   <Button
-                    className="w-full"
+                    className="w-full bg-[#FFBE11] font-bold text-white hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-white dark:hover:bg-[#e5ab0f]"
                     onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
