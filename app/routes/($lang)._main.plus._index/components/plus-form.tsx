@@ -248,7 +248,7 @@ export function PlusForm () {
                 </Button>
                 {currentPass.type === "LITE" && (
                   <Button
-                    className="w-full bg-[#FFBE11] font-bold text-white hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-white dark:hover:bg-[#e5ab0f]"
+                    className="w-full bg-[#FFBE11] font-bold text-black hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-black dark:hover:bg-[#e5ab0f]"
                     onClick={() => onChangeCurrentPlan("STANDARD", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -257,7 +257,7 @@ export function PlusForm () {
                 )}
                 {currentPass.type === "LITE" && (
                   <Button
-                    className="w-full bg-[#FFBE11] font-bold text-white hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-white dark:hover:bg-[#e5ab0f]"
+                    className="w-full bg-[#FFBE11] font-bold text-black hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-black dark:hover:bg-[#e5ab0f]"
                     onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
@@ -266,7 +266,7 @@ export function PlusForm () {
                 )}
                 {currentPass.type === "STANDARD" && (
                   <Button
-                    className="w-full bg-[#FFBE11] font-bold text-white hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-white dark:hover:bg-[#e5ab0f]"
+                    className="w-full bg-[#FFBE11] font-bold text-black hover:bg-[#e5ab0f] dark:bg-[#FFBE11] dark:text-black dark:hover:bg-[#e5ab0f]"
                     onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
