@@ -160,10 +160,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     })
   }
 
-  const localeRedirect = checkLocaleRedirect(request)
+  if (request.method === "GET" || request.method === "HEAD") {
+    const localeRedirect = checkLocaleRedirect(request)
 
-  if (localeRedirect !== null) {
-    throw redirect(localeRedirect.headers.Location, localeRedirect.status)
+    if (localeRedirect !== null) {
+      throw redirect(localeRedirect.headers.Location, localeRedirect.status)
+    }
   }
 
   const maintenanceStatus = await getMaintenanceStatus()

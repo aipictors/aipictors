@@ -50,6 +50,18 @@ describe("checkLocaleRedirect", () => {
     })
     const result = checkLocaleRedirect(request)
 
-    expect(result).toBeNull()
+    expect(result).not.toBeNull()
+    expect(result?.headers.Location).toBe("/en")
+  })
+
+  test("locale cookie が ja なら英語ブラウザでも日本語を維持する", () => {
+    const request = createMockRequest("http://example.com/en", {
+      "Accept-Language": "en-US,en;q=0.9",
+      Cookie: "locale=ja",
+    })
+    const result = checkLocaleRedirect(request)
+
+    expect(result).not.toBeNull()
+    expect(result?.headers.Location).toBe("/")
   })
 })
