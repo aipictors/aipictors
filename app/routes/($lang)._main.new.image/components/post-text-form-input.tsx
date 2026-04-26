@@ -37,7 +37,7 @@ type Props = {
   recentlyUsedTags: FragmentOf<typeof PostTextFormRecentlyUsedTagsFragment>[]
   eventInputHidden?: boolean
   setDisabledSubmit?: (value: boolean) => void
-  themes: { date: string; title: string; id: string }[] | null
+  themes: { date: string; title: string; id: string; note?: string | null }[] | null
   events: {
     title: string | null
     description: string | null
@@ -351,6 +351,7 @@ export function PostTextFormInput(props: Props) {
           titles={props.themes.map((theme) => ({
             date: theme.date,
             title: theme.title,
+            note: theme.note ?? null,
           }))}
           targetDate={reservationDate}
           isLoading={loading}

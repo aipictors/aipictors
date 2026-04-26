@@ -1,4 +1,4 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
@@ -40,6 +40,7 @@ type Props = {
   selectedWorkIds: string[]
   setSelectedWorkIds: (workIds: string[]) => void
   limit?: number
+  currentAlbumId?: string
 }
 
 type SortableItemProps = {
@@ -55,6 +56,10 @@ function SortableItem(props: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: props.work.id })
 
+  const sortableProps = props.isDragMode
+    ? { ...attributes, ...listeners }
+    : undefined
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -65,8 +70,7 @@ function SortableItem(props: SortableItemProps) {
       type="button"
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
+      {...sortableProps}
       // 「並び替えモード」でないときはクリックで"選択解除"
       onClick={
         !props.isDragMode
@@ -80,7 +84,7 @@ function SortableItem(props: SortableItemProps) {
       }
       className={
         props.isDragMode
-          ? "relative m-2 cursor-grab bg-transparent p-0" // 並び替えON: grabカーソル
+          ? "relative m-2 cursor-grab touch-none bg-transparent p-0" // 並び替えON: grabカーソル
           : "relative m-2 cursor-pointer bg-transparent p-0" // 並び替えOFF: クリック解除用
       }
     >
@@ -123,7 +127,10 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         sort: "DESC",
       },
     },
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   })
+  const { refetch: refetchWorks } = worksResult
   const works = worksResult.data?.works ?? []
 
   // ======== 全作品数 (未選択タブのページネーション) ========
@@ -134,7 +141,10 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         userId: appContext.userId,
       },
     },
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   })
+  const { refetch: refetchWorksCount } = worksCountResp
   const worksMaxCount = worksCountResp.data?.worksCount ?? 0
 
   // ======== 選択中タブ用クエリ (selectedWorkIds に合致する作品) ========
@@ -149,7 +159,10 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         sort: "DESC",
       },
     },
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   })
+  const { refetch: refetchSelectedWorks } = selectedWorksResult
 
   const selectedWorksQueryData = selectedWorksResult.data?.works ?? []
 
@@ -161,7 +174,31 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         ids: props.selectedWorkIds,
       },
     },
+    fetchPolicy: "cache-and-network",
+    nextFetchPolicy: "cache-first",
   })
+  const { refetch: refetchSelectedWorksCount } = selectedWorksCountResp
+
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    refetchWorks().catch(() => undefined)
+    refetchWorksCount().catch(() => undefined)
+
+    if (props.selectedWorkIds.length > 0) {
+      refetchSelectedWorks().catch(() => undefined)
+      refetchSelectedWorksCount().catch(() => undefined)
+    }
+  }, [
+    isOpen,
+    props.selectedWorkIds.length,
+    refetchSelectedWorks,
+    refetchSelectedWorksCount,
+    refetchWorks,
+    refetchWorksCount,
+  ])
   const selectedWorksMaxCount = selectedWorksCountResp.data?.worksCount ?? 0
 
   // ======== タイトルを省略するヘルパー ========
@@ -216,6 +253,11 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
           <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
             {truncateTitle(work.title, 8)}
           </div>
+          {work.album && work.album.id !== props.currentAlbumId && (
+            <div className="absolute right-1 bottom-1 rounded bg-background/90 px-1 py-0.5 text-[10px] text-foreground shadow-sm">
+              {t("他シリーズ", "Other series")}
+            </div>
+          )}
           {/* 選択済みだったらチェックアイコン */}
           {props.selectedWorkIds.includes(work.id) && (
             <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
@@ -232,7 +274,19 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     typeof DialogWorkFragment
   > | null>(null)
 
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor))
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 180,
+        tolerance: 8,
+      },
+    }),
+  )
 
   // ドラッグ開始
   const handleDragStart = (event: DragStartEvent) => {
@@ -365,12 +419,16 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
 
       {/* ダイアログ */}
       <Dialog open={isOpen} onOpenChange={(opened) => setIsOpen(opened)}>
-        <DialogContent className="min-h-[40vw] min-w-[88vw] pl-2">
-          <DialogHeader>
+        <DialogContent className="flex max-h-[90svh] w-[calc(100vw-1rem)] max-w-5xl flex-col overflow-hidden p-0 sm:w-full">
+          <DialogHeader className="shrink-0 px-4 pt-4 pr-12 sm:px-6 sm:pt-6">
             <DialogTitle>{t("作品選択", "Select Works")}</DialogTitle>
           </DialogHeader>
 
-          <Tabs className="mt-2 mb-8" value={tab} defaultValue="NO_SELECTED">
+          <Tabs
+            className="shrink-0 px-4 pt-2 sm:px-6"
+            value={tab}
+            defaultValue="NO_SELECTED"
+          >
             <TabsList>
               <TabsTrigger
                 onClick={() => setTab("NO_SELECTED")}
@@ -389,7 +447,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             </TabsList>
           </Tabs>
 
-          <ScrollArea className="max-h-80 overflow-y-auto md:max-h-[100%]">
+          <ScrollArea className="min-h-0 flex-1 overflow-y-auto px-4 sm:px-6">
             {tab === "NO_SELECTED" && (
               <div className="flex flex-wrap">{renderWorks(works)}</div>
             )}
@@ -418,23 +476,24 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             )}
           </ScrollArea>
 
-          {/* ページネーション */}
-          {tab === "NO_SELECTED" && (
-            <ResponsivePagination
-              perPage={32}
-              maxCount={worksMaxCount}
-              currentPage={page}
-              onPageChange={(p: number) => setPage(p)}
-            />
-          )}
-          {tab === "SELECTED" && (
-            <ResponsivePagination
-              perPage={32}
-              maxCount={selectedWorksMaxCount}
-              currentPage={selectedPage}
-              onPageChange={(p: number) => setSelectedPage(p)}
-            />
-          )}
+          <div className="shrink-0 border-t px-4 py-4 sm:px-6">
+            {/* ページネーション */}
+            {tab === "NO_SELECTED" && (
+              <ResponsivePagination
+                perPage={32}
+                maxCount={worksMaxCount}
+                currentPage={page}
+                onPageChange={(p: number) => setPage(p)}
+              />
+            )}
+            {tab === "SELECTED" && (
+              <ResponsivePagination
+                perPage={32}
+                maxCount={selectedWorksMaxCount}
+                currentPage={selectedPage}
+                onPageChange={(p: number) => setSelectedPage(p)}
+              />
+            )}
 
           <div className="mt-4 flex gap-2">
             <Button onClick={() => setIsOpen(false)}>
@@ -443,6 +502,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             <Button variant="secondary" onClick={() => setIsOpen(false)}>
               {t("キャンセル", "Cancel")}
             </Button>
+          </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -457,6 +517,10 @@ export const DialogWorkFragment = graphql(`
     id
     title
     smallThumbnailImageURL
+    album {
+      id
+      title
+    }
   }
 `)
 

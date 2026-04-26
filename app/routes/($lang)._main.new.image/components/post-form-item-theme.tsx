@@ -3,7 +3,7 @@ import { Card, CardContent } from "~/components/ui/card"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  titles: { date: string; title: string }[] | null
+  titles: { date: string; title: string; note?: string | null }[] | null
   isChecked?: boolean
   onChange: (value: boolean) => void
   isLoading?: boolean
@@ -19,9 +19,11 @@ export function PostFormItemTheme (props: Props) {
   }
 
   // Extract the title(s) that match the target date
-  const matchingTitles = props.titles
-    .filter((item) => item.date === props.targetDate)
-    .map((item) => item.title)
+  const matchingThemes = props.titles.filter((item) => item.date === props.targetDate)
+  const matchingTitles = matchingThemes.map((item) => item.title)
+  const matchingNotes = matchingThemes
+    .map((item) => item.note?.trim())
+    .filter((note): note is string => Boolean(note))
 
   if (matchingTitles.length === 0) {
     return null
@@ -48,6 +50,16 @@ export function PostFormItemTheme (props: Props) {
             )}
           </label>
         </div>
+        {matchingNotes.length > 0 && (
+          <div className="rounded-md border border-border/50 bg-muted/35 px-3 py-2 text-muted-foreground text-xs leading-5">
+            <p className="mb-1 font-medium text-[11px] uppercase tracking-[0.12em] opacity-70">
+              {t("備考", "Note")}
+            </p>
+            {matchingNotes.map((note, index) => (
+              <p key={`${props.targetDate}-${index}`}>{note}</p>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

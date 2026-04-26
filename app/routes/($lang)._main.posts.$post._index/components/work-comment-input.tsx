@@ -65,7 +65,7 @@ export function ReplyCommentInput (props: Props) {
 
         props.onReplyCompleted(
           commentRes.data?.createResponseComment.id ?? "",
-          comment,
+          text,
           stickerId ?? "",
           stickerImageURL ?? "",
         )

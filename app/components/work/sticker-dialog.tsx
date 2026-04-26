@@ -21,6 +21,11 @@ import {
   StickerButton,
   StickerButtonFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/sticker-button"
+import {
+  readRecentStickerIds,
+  recordRecentStickerId,
+  sortStickersByRecent,
+} from "~/utils/sticker-recent"
 
 type Props = {
   isOpen: boolean
@@ -56,7 +61,8 @@ export function StickerDialog(props: Props): React.ReactNode {
 
   const [createdSortStickerPage, setCreatedSortStickerPage] = useState(0)
 
-  const [type, setType] = useState("CREATED")
+  const [type, setType] = useState("RELATED")
+  const [recentStickerIds, setRecentStickerIds] = useState<string[]>([])
 
   // スクロール位置を保持するためのref
   const scrollAreaRef = useRef<React.ElementRef<typeof ScrollArea>>(null)
@@ -77,6 +83,13 @@ export function StickerDialog(props: Props): React.ReactNode {
     errorPolicy: "all",
   })
 
+  const { data: replyBookmarkedStickers = null } = useQuery(
+    viewerReplyBookmarkedStickersQuery,
+    {
+      skip: !props.isOpen || appContext.isNotLoggedIn,
+    },
+  )
+
   const { data: stickersCount = null } = useQuery(
     viewerUserStickersCountQuery,
     {
@@ -94,6 +107,7 @@ export function StickerDialog(props: Props): React.ReactNode {
   // ダイアログが開かれた時やログイン状態が変化した時にリフェッチ
   useEffect(() => {
     if (props.isOpen && appContext.isLoggedIn && !appContext.isLoading) {
+      setRecentStickerIds(readRecentStickerIds())
       refetch()
     }
   }, [props.isOpen, appContext.isLoggedIn, appContext.isLoading, refetch])
@@ -192,6 +206,50 @@ export function StickerDialog(props: Props): React.ReactNode {
     120: "2x-large",
   } as const
   const stickerSize = sizeMap[sizeOptions[sizeIndex]]
+  const allStickers = stickers?.viewer?.userStickers ?? []
+  const sortedStickers = sortStickersByRecent(allStickers, recentStickerIds)
+  const recentStickers = sortedStickers.slice(0, 24)
+  const replyStickers = (replyBookmarkedStickers?.viewer?.bookmarkedStickers ?? []).filter(
+    (sticker) => !recentStickers.some((recentSticker) => recentSticker.id === sticker.id),
+  )
+  const remainingStickers = sortedStickers.filter(
+    (sticker) =>
+      !recentStickers.some((recentSticker) => recentSticker.id === sticker.id) &&
+      !replyStickers.some((replySticker) => replySticker.id === sticker.id),
+  )
+
+  const renderStickerSection = (
+    title: string,
+    sectionStickers: typeof allStickers,
+  ) => {
+    if (sectionStickers.length === 0) {
+      return null
+    }
+
+    return (
+      <div className="mb-4 w-full">
+        <p className="mb-2 px-2 font-medium text-sm opacity-80">{title}</p>
+        <div className="flex flex-wrap overflow-y-auto">
+          {sectionStickers.map((sticker) => (
+            <StickerButton
+              key={sticker.id}
+              imageUrl={sticker.imageUrl ?? ""}
+              title={sticker.title}
+              onClick={() => {
+                if (!props.isTargetUserBlocked) {
+                  setRecentStickerIds(recordRecentStickerId(sticker.id))
+                  props.onSend(sticker.id, sticker.imageUrl ?? "")
+                  props.onClose()
+                }
+              }}
+              size={stickerSize}
+              disabled={props.isTargetUserBlocked}
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <Dialog onOpenChange={props.onClose} open={props.isOpen}>
@@ -208,17 +266,8 @@ export function StickerDialog(props: Props): React.ReactNode {
           </div>
         )}
         <div className="flex items-center space-x-2">
-          <Tabs value={type} defaultValue={"CREATED"}>
+          <Tabs value={type} defaultValue={"RELATED"}>
             <TabsList>
-              <TabsTrigger
-                onClick={() => {
-                  setType("CREATED")
-                }}
-                className="w-full"
-                value="CREATED"
-              >
-                {t("保存日", "Date saved")}
-              </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
                   setType("RELATED")
@@ -227,6 +276,15 @@ export function StickerDialog(props: Props): React.ReactNode {
                 value="RELATED"
               >
                 {t("最近の使用", "Recently used")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setType("CREATED")
+                }}
+                className="w-full"
+                value="CREATED"
+              >
+                {t("すべて", "All")}
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -249,21 +307,30 @@ export function StickerDialog(props: Props): React.ReactNode {
                 refetch()
               }}
             />
-            {stickers?.viewer?.userStickers?.map((sticker) => (
-              <StickerButton
-                key={sticker.id}
-                imageUrl={sticker.imageUrl ?? ""}
-                title={sticker.title}
-                onClick={() => {
-                  if (!props.isTargetUserBlocked) {
-                    props.onSend(sticker.id, sticker.imageUrl ?? "")
-                    props.onClose()
-                  }
-                }}
-                size={stickerSize}
-                disabled={props.isTargetUserBlocked}
-              />
-            ))}
+            {type === "RELATED" ? (
+              <div className="w-full">
+                {renderStickerSection(t("最近使用", "Recently used"), recentStickers)}
+                {renderStickerSection(t("返信用", "For replies"), replyStickers)}
+                {renderStickerSection(t("その他", "Others"), remainingStickers)}
+              </div>
+            ) : (
+              allStickers.map((sticker) => (
+                <StickerButton
+                  key={sticker.id}
+                  imageUrl={sticker.imageUrl ?? ""}
+                  title={sticker.title}
+                  onClick={() => {
+                    if (!props.isTargetUserBlocked) {
+                      setRecentStickerIds(recordRecentStickerId(sticker.id))
+                      props.onSend(sticker.id, sticker.imageUrl ?? "")
+                      props.onClose()
+                    }
+                  }}
+                  size={stickerSize}
+                  disabled={props.isTargetUserBlocked}
+                />
+              ))
+            )}
           </div>
         </ScrollArea>
         {type === "CREATED" && (
@@ -305,6 +372,18 @@ const viewerUserStickersQuery = graphql(
     viewer {
       id
       userStickers(offset: $offset, limit: $limit, orderBy: $orderBy, where: $where) {
+        ...StickerButton
+      }
+    }
+  }`,
+  [StickerButtonFragment],
+)
+
+const viewerReplyBookmarkedStickersQuery = graphql(
+  `query ViewerReplyBookmarkedStickers {
+    viewer {
+      id
+      bookmarkedStickers(offset: 0, limit: 24, type: reply) {
         ...StickerButton
       }
     }

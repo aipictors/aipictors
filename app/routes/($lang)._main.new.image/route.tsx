@@ -1347,6 +1347,7 @@ export default function NewImage() {
                   date: theme.dateText,
                   title: theme.title,
                   id: theme.id,
+                  note: theme.note ?? null,
                 }))
               : null
           }
@@ -1513,6 +1514,7 @@ const ViewerQuery = graphql(
       id
       title
       dateText
+      note
     }
     appEvents(
       limit: 8,

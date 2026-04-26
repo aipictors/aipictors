@@ -12,6 +12,7 @@ import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import type { MetaFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
+import { useEffect, useState } from "react"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 
@@ -109,21 +110,39 @@ export const headers: HeadersFunction = () => ({
  */
 export default function albums () {
   const data = useLoaderData<typeof loader>()
+  const [album, setAlbum] = useState(data.album)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   if (data === null) {
     return null
   }
 
+  useEffect(() => {
+    setAlbum(data.album)
+    setRefreshKey(0)
+  }, [data.album])
+
   return (
     <>
       <article className="flex flex-col md:flex-row">
         <div className="flex w-full flex-col">
-          <AlbumArticleHeader album={data.album} />
+          <AlbumArticleHeader
+            album={album}
+            onUpdatedAlbum={(nextAlbum) => {
+              setAlbum((currentAlbum) => ({
+                ...currentAlbum,
+                ...nextAlbum,
+              }))
+              setRefreshKey((prev) => prev + 1)
+            }}
+          />
           <AlbumWorkList
-            albumWorks={data.album.works}
-            maxCount={data.album.worksCount}
-            albumId={data.album.id}
+            key={refreshKey}
+            albumWorks={album.works}
+            maxCount={album.worksCount}
+            albumId={album.id}
             page={data.page}
+            refreshKey={refreshKey}
           />
         </div>
       </article>

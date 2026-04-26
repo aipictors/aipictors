@@ -528,13 +528,19 @@ export default function NewText() {
     return null
   }
 
-  type DailyTheme = { id: string; title: string; dateText: string }
+  type DailyTheme = {
+    id: string
+    title: string
+    dateText: string
+    note?: string | null
+  }
 
   const themes = viewerData?.dailyThemes
     ? (viewerData.dailyThemes as DailyTheme[]).map((theme) => ({
         date: theme.dateText,
         title: theme.title,
         id: theme.id,
+        note: theme.note ?? null,
       }))
     : null
 
@@ -722,6 +728,7 @@ const viewerQuery = graphql(
       id
       title
       dateText
+      note
     }
     appEvents(
       limit: 8,

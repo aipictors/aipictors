@@ -23,6 +23,11 @@ import {
   WorkCommentFragment,
 } from "~/routes/($lang)._main.posts.$post._index/components/work-comment"
 import { WorkCommentResponse } from "~/routes/($lang)._main.posts.$post._index/components/work-comment-response"
+import {
+  readRecentStickerIds,
+  recordRecentStickerId,
+  sortStickersByRecent,
+} from "~/utils/sticker-recent"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -175,12 +180,17 @@ export function WorkCommentList(props: Props) {
   const [likedCommentIds, setLikedCommentIds] = useState<string[]>([])
 
   const [canceledCommentIds, setCanceledCommentIds] = useState<string[]>([])
+  const [recentStickerIds, setRecentStickerIds] = useState<string[]>([])
 
   useEffect(() => {
     if (newComments !== null) {
       setNewComments([])
     }
   }, [props.workId])
+
+  useEffect(() => {
+    setRecentStickerIds(readRecentStickerIds())
+  }, [])
 
   const sendComment = async (
     text: string,
@@ -313,7 +323,10 @@ export function WorkCommentList(props: Props) {
     skip: authContext.isLoading,
   })
 
-  const stickers = data?.viewer?.userStickers ?? []
+  const stickers = sortStickersByRecent(
+    data?.viewer?.userStickers ?? [],
+    recentStickerIds,
+  )
 
   return (
     <>
@@ -344,6 +357,7 @@ export function WorkCommentList(props: Props) {
                 title={sticker.title}
                 onClick={async () => {
                   try {
+                    setRecentStickerIds(recordRecentStickerId(sticker.id))
                     await sendComment(
                       comment,
                       sticker.id,
@@ -931,6 +945,7 @@ export function WorkCommentList(props: Props) {
         isOpen={isOpen}
         onClose={onClose}
         onSend={async (stickerId: string, url: string) => {
+          setRecentStickerIds(recordRecentStickerId(stickerId))
           await sendComment(comment, stickerId, url, props.workId, userIcon)
         }}
         isTargetUserBlocked={props.isWorkOwnerBlocked}

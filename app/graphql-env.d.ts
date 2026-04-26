@@ -1482,6 +1482,9 @@ type DailyThemeNode implements Node {
   """月"""
   month: Int!
 
+  """採用されたお題の備考"""
+  note: String
+
   """提案者"""
   proposer: UserNode
 

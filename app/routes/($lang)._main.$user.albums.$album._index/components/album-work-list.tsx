@@ -22,10 +22,23 @@ type Props = {
   albumWorks: FragmentOf<typeof AlbumWorkListItemFragment>[]
   maxCount: number
   page: number
+  refreshKey?: number
 }
 
 type ViewMode = "square" | "natural"
 type AlbumWorkOrder = IntrospectionEnum<"AlbumWorkOrderBy">
+
+const getOrderLabel = (orderBy: AlbumWorkOrder) => {
+  if (orderBy === "DATE_CREATED") {
+    return "投稿日順"
+  }
+
+  if (orderBy === "LIKES_COUNT") {
+    return "いいね順"
+  }
+
+  return "デフォルト順"
+}
 
 const toPage = (value: string | null) => {
   const parsedValue = Number.parseInt(value ?? "1", 10)
@@ -98,7 +111,8 @@ export function AlbumWorkList(props: Props) {
       orderBy,
       sort: "DESC",
     },
-    fetchPolicy: "cache-first",
+    fetchPolicy: props.refreshKey ? "network-only" : "cache-first",
+    nextFetchPolicy: "cache-first",
   })
 
   const albumWorks = data.album?.works ?? props.albumWorks
@@ -116,10 +130,12 @@ export function AlbumWorkList(props: Props) {
             }}
           >
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="並び順" />
+              <SelectValue placeholder="並び順">
+                {getOrderLabel(orderBy)}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="MANUAL">手動順</SelectItem>
+              <SelectItem value="MANUAL">デフォルト順</SelectItem>
               <SelectItem value="DATE_CREATED">投稿日順</SelectItem>
               <SelectItem value="LIKES_COUNT">いいね順</SelectItem>
             </SelectContent>

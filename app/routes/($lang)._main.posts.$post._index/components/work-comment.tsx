@@ -453,6 +453,7 @@ export function WorkComment(props: Props) {
             stickerImageURL: string,
           ) => {
             props.onReplyCompleted(id, text, stickerId, stickerImageURL)
+            setOpenReplyInput(false)
           }}
           iconUrl={withIconUrlFallback(props.userIconImageURL)}
           isWorkOwnerBlocked={props.isWorkOwnerBlocked}

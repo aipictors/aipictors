@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Loader2Icon } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
@@ -32,10 +32,12 @@ type Props = {
   thumbnail?: string
   children: React.ReactNode
   userNanoid: string
+  onUpdated?: (album: FragmentOf<typeof AlbumArticleEditorDialogFragment>) => void
 }
 
 export function AlbumArticleEditorDialog(props: Props) {
   const t = useTranslation()
+  const [isOpen, setIsOpen] = useState(false)
 
   const [selectedWorks, setSelectedWorks] = useState<string[]>(
     props.album.workIds.map((work) => work.toString()),
@@ -54,6 +56,19 @@ export function AlbumArticleEditorDialog(props: Props) {
   const [updateAlbum, { loading: isUpdating }] =
     useMutation(updateAlbumMutation)
   const { data: token } = useQuery(viewerTokenQuery)
+
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    setSelectedWorks(props.album.workIds.map((work) => work.toString()))
+    setTitle(props.album.title)
+    setDescription(props.album.description)
+    setRating(props.album.rating)
+    setThumbnailImageBase64("")
+    setIsThumbnailCleared(false)
+  }, [isOpen, props.album])
 
   const onSubmit = async () => {
     if (title.length === 0) {
@@ -79,7 +94,13 @@ export function AlbumArticleEditorDialog(props: Props) {
         ? await uploadPublicImage(thumbnailImageBase64, token?.viewer?.token)
         : undefined
 
-    await updateAlbum({
+    const hasWorkSelectionChanged =
+      selectedWorks.length !== props.album.workIds.length ||
+      selectedWorks.some(
+        (workId, index) => workId !== props.album.workIds[index]?.toString(),
+      )
+
+    const result = await updateAlbum({
       variables: {
         input: {
           albumId: props.album.id,
@@ -87,22 +108,28 @@ export function AlbumArticleEditorDialog(props: Props) {
           description: description,
           rating,
           ...(headerImageUrl && { headerImageUrl }),
-          ...(selectedWorks && { workIds: selectedWorks }),
+          ...(hasWorkSelectionChanged && { workIds: selectedWorks }),
         },
       },
     })
 
+    if (result.data?.updateAlbum) {
+      props.onUpdated?.(result.data.updateAlbum)
+    }
+
+    setIsOpen(false)
     toast(t("シリーズを更新しました", "Album updated successfully"))
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className="flex max-h-[90svh] w-[calc(100vw-1rem)] max-w-2xl flex-col overflow-hidden p-0">
+        <DialogHeader className="shrink-0 px-4 pt-4 pr-12 sm:px-6 sm:pt-6">
           <DialogTitle>{t("シリーズ更新", "Update Album")}</DialogTitle>
         </DialogHeader>
 
+        <div className="flex-1 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-6">
         <div className="flex flex-col justify-between space-y-2">
           <label
             htmlFor="album-cover"
@@ -187,11 +214,13 @@ export function AlbumArticleEditorDialog(props: Props) {
           {t("選択中の作品", "Selected works")}（{selectedWorks.length}）
         </p>
         <SelectCreatedWorksDialogWithIds
+          currentAlbumId={props.album.id}
           selectedWorkIds={selectedWorks}
           setSelectedWorkIds={setSelectedWorks}
         />
+        </div>
 
-        <DialogFooter>
+        <DialogFooter className="shrink-0 border-t px-4 py-4 sm:px-6">
           <Button disabled={isUpdating} className="w-full" onClick={onSubmit}>
             {isUpdating ? (
               <Loader2Icon className="m-auto size-4 animate-spin" />
@@ -230,10 +259,10 @@ export const AlbumArticleEditorDialogFragment = graphql(
 const updateAlbumMutation = graphql(
   `mutation UpdateAlbum($input: UpdateAlbumInput!) {
     updateAlbum(input: $input) {
-      id
-      title
+      ...AlbumArticleEditorDialog
     }
   }`,
+  [AlbumArticleEditorDialogFragment],
 )
 
 const viewerTokenQuery = graphql(

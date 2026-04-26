@@ -16,6 +16,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleHeaderFragment>
+  onUpdatedAlbum?: (
+    album: FragmentOf<typeof AlbumArticleEditorDialogFragment>,
+  ) => void
 }
 
 export function AlbumArticleHeader (props: Props) {
@@ -65,6 +68,7 @@ export function AlbumArticleHeader (props: Props) {
                 album={props.album}
                 thumbnail={props.album.thumbnailImageURL ?? ""}
                 userNanoid={props.album.user.nanoid}
+                onUpdated={props.onUpdatedAlbum}
               >
                 <Button
                   className="absolute right-1 bottom-1 size-12 rounded-full p-0"

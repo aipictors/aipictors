@@ -227,6 +227,9 @@ function WorkDetailContent(props: {
   }
 }) {
   const { work, data } = props
+  const sharePath =
+    work.accessType === "LIMITED" && work.uuid ? work.uuid : work.id
+  const shareUrl = `https://www.aipictors.com/posts/${sharePath}`
 
   // ダウンロード機能
   const onDownload = async () => {
@@ -294,11 +297,11 @@ function WorkDetailContent(props: {
                           </div>
                           <div className="grid gap-2">
                             <CopyWorkUrlButton
-                              currentUrl={`https://www.aipictors.com/posts/${work.id}`}
+                              currentUrl={shareUrl}
                             />
                             <XIntent
                               text={`AIイラスト投稿サイトAipictorsに投稿された作品\n「${work.title}」\n\n${work.description ?? ""}`}
-                              url={`https://www.aipictors.com/posts/${work.id}`}
+                              url={shareUrl}
                               hashtags={["Aipictors", "AIイラスト"]}
                             />
                           </div>

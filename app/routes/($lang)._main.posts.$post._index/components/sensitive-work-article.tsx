@@ -550,6 +550,7 @@ const viewerBookmarkFolderIdQuery = graphql(
 export const workArticleFragment = graphql(
   `fragment WorkArticle on WorkNode @_unmask {
     id
+    uuid
     isMyRecommended
     title
     mdUrl
