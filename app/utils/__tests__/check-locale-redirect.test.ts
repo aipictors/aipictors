@@ -2,9 +2,18 @@ import { describe, expect, test } from "bun:test"
 import { checkLocaleRedirect } from "~/utils/check-locale-redirect"
 
 function createMockRequest(url: string, headers: Record<string, string> = {}) {
-  return new Request(url, {
-    headers: new Headers(headers),
-  })
+  const normalizedHeaders = new Map(
+    Object.entries(headers).map(([key, value]) => [key.toLowerCase(), value]),
+  )
+
+  return {
+    url,
+    headers: {
+      get(key: string) {
+        return normalizedHeaders.get(key.toLowerCase()) ?? null
+      },
+    },
+  } as Request
 }
 
 describe("checkLocaleRedirect", () => {
