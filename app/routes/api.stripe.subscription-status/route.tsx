@@ -151,7 +151,3 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
   return handleRequest(request, context)
 }
-
-export default function Route() {
-  return null
-}

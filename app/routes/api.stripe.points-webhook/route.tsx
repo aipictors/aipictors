@@ -173,7 +173,3 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   return toJsonResponse({ received: true, ignored: true }, 200)
 }
-
-export default function Route() {
-  return null
-}

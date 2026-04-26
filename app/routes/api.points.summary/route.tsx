@@ -70,7 +70,3 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     200,
   )
 }
-
-export default function Route() {
-  return null
-}

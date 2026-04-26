@@ -106,7 +106,3 @@ export async function action({ request, context }: ActionFunctionArgs) {
     200,
   )
 }
-
-export default function Route() {
-  return null
-}
