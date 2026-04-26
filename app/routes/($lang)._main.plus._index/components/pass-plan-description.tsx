@@ -47,7 +47,7 @@ export function PassPlanDescription (props: Props) {
             >
               {props.isDisabled
                 ? t("準備中", "Coming Soon")
-                : t("決済する", "Proceed to Payment")}
+                : t("登録する", "Register")}
             </Button>
           )}
         <div className="space-y-1">
