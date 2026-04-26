@@ -27,6 +27,8 @@ import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/comp
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toRatingText } from "~/utils/work/to-rating-text"
 
+const ALBUM_WORKS_MAX = 32
+
 type Props = {
   album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
   thumbnail?: string
@@ -215,6 +217,7 @@ export function AlbumArticleEditorDialog(props: Props) {
         </p>
         <SelectCreatedWorksDialogWithIds
           currentAlbumId={props.album.id}
+          limit={ALBUM_WORKS_MAX}
           selectedWorkIds={selectedWorks}
           setSelectedWorkIds={setSelectedWorks}
         />
