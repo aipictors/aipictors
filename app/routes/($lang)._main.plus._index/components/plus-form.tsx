@@ -22,6 +22,7 @@ async function parseActionResponse<T>(response: Response): Promise<{
   ok: boolean
   json: T | null
   isHtmlWrapped: boolean
+  statusHint: string | null
 }> {
   const responseText = await response.text()
   const isHtmlWrapped =
@@ -29,11 +30,17 @@ async function parseActionResponse<T>(response: Response): Promise<{
     responseText.trim().startsWith("<html")
 
   if (isHtmlWrapped) {
+    const statusMatch = responseText.match(/"status","([^"]+)"/)
     // Remix SSR ラップされた場合: streamController の enqueue 内に JSON が埋め込まれている
     // 例: "\"error\",\"data\",{...},\"status\",\"cancellation_requested\""
     // action が成功していれば "\"error\"" の次に null が来る
     // ここでは response.ok + HTML = action 成功とみなす
-    return { ok: response.ok, json: null, isHtmlWrapped: true }
+    return {
+      ok: response.ok,
+      json: null,
+      isHtmlWrapped: true,
+      statusHint: statusMatch?.[1] ?? null,
+    }
   }
 
   const json = (() => {
@@ -45,7 +52,7 @@ async function parseActionResponse<T>(response: Response): Promise<{
     }
   })()
 
-  return { ok: response.ok, json, isHtmlWrapped: false }
+  return { ok: response.ok, json, isHtmlWrapped: false, statusHint: null }
 }
 
 export function PlusForm () {
@@ -249,22 +256,20 @@ export function PlusForm () {
           headers,
         })
 
-        const responseText = await response.text()
-        const json = (() => {
-          if (!responseText) {
-            return null
-          }
-          try {
-            return JSON.parse(responseText) as {
-              error: string | null
-              data: { status: string | null } | null
-            }
-          } catch {
-            return null
-          }
-        })()
+        const { ok, json, isHtmlWrapped, statusHint } = await parseActionResponse<{
+          error: string | null
+          data: { status: string | null } | null
+        }>(response)
 
-        if (!response.ok || json?.error || !json?.data) {
+        if (isHtmlWrapped) {
+          setIsCancelScheduled(
+            statusHint === "cancellation_requested" ||
+              statusHint === "canceled",
+          )
+          return
+        }
+
+        if (!ok || json?.error || !json?.data) {
           return
         }
 
