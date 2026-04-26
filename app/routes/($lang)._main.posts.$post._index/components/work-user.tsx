@@ -43,12 +43,14 @@ export function WorkUser(props: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="gap-x-2 p-4">
-          <Link to={`/users/${props.userLogin}`}>
+        <CardTitle className="p-4">
+          <Link
+            to={`/users/${props.userLogin}`}
+            className="flex flex-col items-center text-center"
+          >
             <UserAvatarWithFrame
               alt={props.userName}
               frame={props.avatarFrame}
-              frameClassName="m-auto"
               sizeClassName="size-24"
               src={props.userIconImageURL}
             />
