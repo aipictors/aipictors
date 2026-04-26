@@ -55,5 +55,14 @@ export function checkLocaleRedirect(request: Request): LocaleRedirect | null {
     }
   }
 
+  if (locale === "ja" && getPathLocale(pathname) === "en") {
+    return {
+      status: 302,
+      headers: {
+        Location: `${buildLocalePath("ja", pathname)}${url.search}`,
+      },
+    }
+  }
+
   return null // リダイレクト不要の場合は null を返す
 }

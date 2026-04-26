@@ -43,7 +43,7 @@ describe("checkLocaleRedirect", () => {
     expect(result).toBeNull() // デフォルトが ja なのでリダイレクトは不要
   })
 
-  test("日本語ブラウザでは en cookie が残っていても英語にリダイレクトしない", () => {
+  test("locale cookie が en なら日本語ブラウザでも英語にリダイレクトする", () => {
     const request = createMockRequest("http://example.com/", {
       "Accept-Language": "ja-JP,ja;q=0.9",
       Cookie: "locale=en",
