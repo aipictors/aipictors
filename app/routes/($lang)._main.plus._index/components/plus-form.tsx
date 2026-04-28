@@ -198,7 +198,8 @@ export function PlusForm () {
         error: string | null
         data: {
           passType: string
-          amountJpy: number | null
+          renewalAmountJpy: number | null
+          chargedNowAmountJpy: number
         } | null
       }>(response)
 
@@ -220,7 +221,18 @@ export function PlusForm () {
       const nextPassName = toPassName(
         (json.data.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS") ?? passType,
       )
-      toast(`プラン変更が完了しました: ${nextPassName}（${json.data.amountJpy}円）`)
+      const chargedNowAmountJpy = json.data.chargedNowAmountJpy ?? 0
+      const renewalAmountJpy = json.data.renewalAmountJpy ?? null
+
+      if (chargedNowAmountJpy > 0) {
+        toast(
+          `プラン変更が完了しました。${nextPassName}に即時変更し、今回 ${chargedNowAmountJpy}円を決済しました。次回以降は月額${renewalAmountJpy}円です。`,
+        )
+      } else {
+        toast(
+          `プラン変更が完了しました。${nextPassName}に変更しました。今回の即時請求はなく、次回以降は月額${renewalAmountJpy}円です。`,
+        )
+      }
       setTimeout(() => {
         window.location.reload()
       }, 1200)

@@ -121,7 +121,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
           error: string | null
           data: {
             passType: string
-            amountJpy: number
+            renewalAmountJpy: number
+            chargedNowAmountJpy: number
             status: string
           } | null
         }
@@ -154,7 +155,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
         error: null,
         data: {
           passType: apiJson?.data?.passType ?? parsedBody.output.passType,
-          amountJpy: apiJson?.data?.amountJpy ?? null,
+          renewalAmountJpy: apiJson?.data?.renewalAmountJpy ?? null,
+          chargedNowAmountJpy: apiJson?.data?.chargedNowAmountJpy ?? 0,
         },
       },
       200,
