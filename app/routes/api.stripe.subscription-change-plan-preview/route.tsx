@@ -1,12 +1,11 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
-import { object, safeParse, string, union, literal } from "valibot"
+import { literal, object, safeParse, string, union } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 
 const bodySchema = object({
   passType: union([literal("LITE"), literal("STANDARD"), literal("PREMIUM")]),
   currentPassType: string(),
-  prorationDate: union([literal(null), string(),]),
 })
 
 function toJsonResponse(body: unknown, status: number): Response {
@@ -64,10 +63,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
   }
 
   if (parsedBody.output.passType === parsedBody.output.currentPassType) {
-    return toJsonResponse(
-      { error: "現在のプランと同じです", data: null },
-      400,
-    )
+    return toJsonResponse({ error: "現在のプランと同じです", data: null }, 400)
   }
 
   const apiBaseUrl =
@@ -92,7 +88,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   try {
     const apiResponse = await fetch(
-      `${apiBaseUrl}/internal/subscriptions/change-plan`,
+      `${apiBaseUrl}/internal/subscriptions/change-plan-preview`,
       {
         method: "POST",
         headers: {
@@ -108,10 +104,6 @@ export async function action({ request, context }: ActionFunctionArgs) {
         body: JSON.stringify({
           userId: viewer.userId,
           passType: parsedBody.output.passType,
-          prorationDate:
-            parsedBody.output.prorationDate !== null
-              ? Number(parsedBody.output.prorationDate)
-              : undefined,
         }),
       },
     )
@@ -128,7 +120,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
             passType: string
             renewalAmountJpy: number
             chargedNowAmountJpy: number
-            status: string
+            prorationDate: number
           } | null
         }
       } catch {
@@ -140,12 +132,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       const fallbackError =
         responseText && !responseText.trim().startsWith("<")
           ? responseText
-          : "Failed to change plan"
-      console.error("subscription-change-plan upstream error", {
-        status: apiResponse.status,
-        statusText: apiResponse.statusText,
-        error: apiJson?.error ?? fallbackError,
-      })
+          : "Failed to preview plan change"
       return toJsonResponse(
         {
           error: apiJson?.error ?? fallbackError,
@@ -162,6 +149,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
           passType: apiJson?.data?.passType ?? parsedBody.output.passType,
           renewalAmountJpy: apiJson?.data?.renewalAmountJpy ?? null,
           chargedNowAmountJpy: apiJson?.data?.chargedNowAmountJpy ?? 0,
+          prorationDate: apiJson?.data?.prorationDate ?? null,
         },
       },
       200,
@@ -169,7 +157,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
   } catch (error) {
     return toJsonResponse(
       {
-        error: error instanceof Error ? error.message : "Failed to change plan",
+        error:
+          error instanceof Error ? error.message : "Failed to preview plan change",
         data: null,
       },
       502,

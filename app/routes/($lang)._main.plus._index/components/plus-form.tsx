@@ -2,6 +2,16 @@ import { getAuth, getIdToken } from "firebase/auth"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "~/components/ui/alert-dialog"
 import { cn } from "~/lib/utils"
 import { toDateText } from "~/utils/to-date-text"
 import { PassBenefitList } from "~/routes/($lang)._main.plus._index/components/pass-benefit-list"
@@ -58,6 +68,18 @@ async function parseActionResponse<T>(response: Response): Promise<{
 export function PlusForm () {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCancelScheduled, setIsCancelScheduled] = useState(false)
+  const [isPlanChangeDialogOpen, setIsPlanChangeDialogOpen] = useState(false)
+  const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
+  const [planChangeRequest, setPlanChangeRequest] = useState<{
+    passType: "LITE" | "STANDARD" | "PREMIUM"
+    currentPassType: "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS"
+  } | null>(null)
+  const [planChangePreview, setPlanChangePreview] = useState<{
+    passType: string
+    renewalAmountJpy: number | null
+    chargedNowAmountJpy: number
+    prorationDate: number | null
+  } | null>(null)
   const { data } = useSuspenseQuery<{
     viewer: {
       id: string
@@ -181,6 +203,7 @@ export function PlusForm () {
   const onChangeCurrentPlan = async (
     passType: "LITE" | "STANDARD" | "PREMIUM",
     currentPassType: "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS",
+    prorationDate: number | null = null,
   ) => {
     try {
       setIsSubmitting(true)
@@ -191,6 +214,7 @@ export function PlusForm () {
         body: JSON.stringify({
           passType,
           currentPassType,
+          prorationDate: prorationDate === null ? null : String(prorationDate),
         }),
       })
 
@@ -245,6 +269,53 @@ export function PlusForm () {
     }
   }
 
+  const openPlanChangeDialog = async (
+    passType: "LITE" | "STANDARD" | "PREMIUM",
+    currentPassType: "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS",
+  ) => {
+    try {
+      setIsPlanChangePreviewLoading(true)
+      setPlanChangeRequest({ passType, currentPassType })
+      setPlanChangePreview(null)
+      setIsPlanChangeDialogOpen(true)
+
+      const headers = await withAuthHeader()
+      const response = await fetch("/api/stripe/subscription-change-plan-preview", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          passType,
+          currentPassType,
+        }),
+      })
+
+      const { ok, json } = await parseActionResponse<{
+        error: string | null
+        data: {
+          passType: string
+          renewalAmountJpy: number | null
+          chargedNowAmountJpy: number
+          prorationDate: number | null
+        } | null
+      }>(response)
+
+      if (!ok || json?.error || !json?.data) {
+        setIsPlanChangeDialogOpen(false)
+        toast(json?.error ?? "プラン変更内容の確認に失敗しました。")
+        return
+      }
+
+      setPlanChangePreview(json.data)
+    } catch (error) {
+      setIsPlanChangeDialogOpen(false)
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    } finally {
+      setIsPlanChangePreviewLoading(false)
+    }
+  }
+
   if (data.viewer === null) {
     return null
   }
@@ -254,6 +325,11 @@ export function PlusForm () {
   const nextDateText = currentPass ? toDateText(currentPass.periodEnd) : ""
 
   const currentPassName = currentPass ? toPassName(currentPass.type) : ""
+  const nextPassName = planChangePreview
+    ? toPassName(
+      (planChangePreview.passType as "LITE" | "STANDARD" | "PREMIUM" | "TWO_DAYS"),
+    )
+    : ""
 
   useEffect(() => {
     const loadCancellationStatus = async () => {
@@ -299,6 +375,70 @@ export function PlusForm () {
 
   return (
     <>
+      <AlertDialog
+        open={isPlanChangeDialogOpen}
+        onOpenChange={(open) => {
+          if (isSubmitting) {
+            return
+          }
+          setIsPlanChangeDialogOpen(open)
+          if (!open) {
+            setPlanChangeRequest(null)
+            setPlanChangePreview(null)
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{"プラン変更の確認"}</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              {isPlanChangePreviewLoading || !planChangeRequest ? (
+                <p>{"Stripe の請求内容を確認しています..."}</p>
+              ) : (
+                <>
+                  <p>{`現在の${currentPassName}から${nextPassName}へ、すぐに切り替えます。`}</p>
+                  <p>
+                    {planChangePreview?.chargedNowAmountJpy && planChangePreview.chargedNowAmountJpy > 0
+                      ? `今回の即時決済額は ${planChangePreview.chargedNowAmountJpy}円 です。未使用期間分の調整を反映した日割り差額として Stripe で決済します。`
+                      : "今回は即時請求は発生しません。"}
+                  </p>
+                  <p>
+                    {`次回更新日 ${nextDateText} 以降は、月額 ${planChangePreview?.renewalAmountJpy ?? 0}円 で継続されます。`}
+                  </p>
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isSubmitting || isPlanChangePreviewLoading}>
+              {"キャンセル"}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={
+                isSubmitting ||
+                isPlanChangePreviewLoading ||
+                !planChangeRequest ||
+                !planChangePreview
+              }
+              onClick={(event) => {
+                event.preventDefault()
+                if (!planChangeRequest || !planChangePreview) {
+                  return
+                }
+                void onChangeCurrentPlan(
+                  planChangeRequest.passType,
+                  planChangeRequest.currentPassType,
+                  planChangePreview.prorationDate,
+                )
+              }}
+            >
+              {planChangePreview?.chargedNowAmountJpy && planChangePreview.chargedNowAmountJpy > 0
+                ? `${planChangePreview.chargedNowAmountJpy}円 を決済して変更する`
+                : "この内容で変更する"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {currentPass ? (
         <>
           {/* 解約予約中バナー */}
@@ -373,7 +513,7 @@ export function PlusForm () {
                 {!isCancelScheduled && currentPass.type === "LITE" && (
                   <Button
                     className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
-                    onClick={() => onChangeCurrentPlan("STANDARD", currentPass.type)}
+                    onClick={() => openPlanChangeDialog("STANDARD", currentPass.type)}
                     disabled={isSubmitting}
                   >
                     {"スタンダードに変更する"}
@@ -382,7 +522,7 @@ export function PlusForm () {
                 {!isCancelScheduled && currentPass.type === "LITE" && (
                   <Button
                     className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
-                    onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
+                    onClick={() => openPlanChangeDialog("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
                     {"プレミアムに変更する"}
@@ -391,7 +531,7 @@ export function PlusForm () {
                 {!isCancelScheduled && currentPass.type === "STANDARD" && (
                   <Button
                     className="w-full bg-[#00A3FF] font-extrabold text-white tracking-wide shadow-[0_8px_20px_rgba(0,163,255,0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0089d9] hover:shadow-[0_12px_28px_rgba(0,137,217,0.45)] dark:bg-[#00A3FF] dark:text-white dark:hover:bg-[#0089d9]"
-                    onClick={() => onChangeCurrentPlan("PREMIUM", currentPass.type)}
+                    onClick={() => openPlanChangeDialog("PREMIUM", currentPass.type)}
                     disabled={isSubmitting}
                   >
                     {"プレミアムに変更する"}
