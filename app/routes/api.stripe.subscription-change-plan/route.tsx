@@ -129,6 +129,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
             renewalAmountJpy: number
             chargedNowAmountJpy: number
             status: string
+            requiresAction?: boolean
+            paymentPageUrl?: string | null
+            paymentIntentStatus?: string | null
           } | null
         }
       } catch {
@@ -162,6 +165,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
           passType: apiJson?.data?.passType ?? parsedBody.output.passType,
           renewalAmountJpy: apiJson?.data?.renewalAmountJpy ?? null,
           chargedNowAmountJpy: apiJson?.data?.chargedNowAmountJpy ?? 0,
+          requiresAction: apiJson?.data?.requiresAction ?? false,
+          paymentPageUrl: apiJson?.data?.paymentPageUrl ?? null,
+          paymentIntentStatus: apiJson?.data?.paymentIntentStatus ?? null,
         },
       },
       200,

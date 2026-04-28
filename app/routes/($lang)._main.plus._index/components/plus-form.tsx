@@ -224,6 +224,9 @@ export function PlusForm () {
           passType: string
           renewalAmountJpy: number | null
           chargedNowAmountJpy: number
+          requiresAction?: boolean
+          paymentPageUrl?: string | null
+          paymentIntentStatus?: string | null
         } | null
       }>(response)
 
@@ -239,6 +242,17 @@ export function PlusForm () {
 
       if (!ok || json?.error || !json?.data) {
         toast(json?.error ?? "プラン変更に失敗しました。")
+        return
+      }
+
+      if (json.data.requiresAction) {
+        if (json.data.paymentPageUrl) {
+          toast("追加のカード認証が必要です。Stripe の決済画面へ移動します。")
+          window.location.href = json.data.paymentPageUrl
+          return
+        }
+
+        toast("追加のカード認証が必要ですが、決済画面を開けませんでした。時間をおいて再度お試しください。")
         return
       }
 
