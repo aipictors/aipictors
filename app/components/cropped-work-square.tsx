@@ -2,6 +2,7 @@ import { Link } from "@remix-run/react"
 import { useEffect, useRef } from "react"
 import { Images, MessageCircleIcon } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
+import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"
 import { StreamPreviewVideo } from "~/components/stream-preview-video"
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
@@ -29,6 +30,7 @@ type Props = {
   isGeneration?: boolean
   hasReferenceButton?: boolean
   onSelect?: (workId: string) => void
+  shouldMaskSensitive?: boolean
 }
 
 /**
@@ -180,6 +182,13 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
           isActive={true}
         />
       )}
+
+      <SensitiveThumbnailOverlay
+        imageUrl={props.imageUrl}
+        imageWidth={props.imageWidth}
+        imageHeight={props.imageHeight}
+        isHidden={props.shouldMaskSensitive === true}
+      />
     </>
   )
 

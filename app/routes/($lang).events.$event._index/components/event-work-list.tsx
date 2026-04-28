@@ -14,6 +14,13 @@ import { useTranslation } from "~/hooks/use-translation"
 import { EventWorksListSortableSetting } from "~/routes/($lang).events.$event._index/components/event-works-list-sortable-setting"
 import type { SortType } from "~/types/sort-type"
 
+const DEFAULT_EVENT_WORK_RATINGS: IntrospectionEnum<"Rating">[] = [
+  "G",
+  "R15",
+  "R18",
+  "R18G",
+]
+
 type Props = {
   works: any[]
   maxCount: number
@@ -38,6 +45,7 @@ type Props = {
   onClickDateSortButton: () => void
   onClickWorkTypeSortButton: () => void
   onClickIsPromotionSortButton: () => void
+  revealSensitiveThumbnails?: boolean
 }
 
 /**
@@ -55,7 +63,7 @@ export function EventWorkList (props: Props) {
       offset: props.page * 64,
       limit: 64,
       where: {
-        ratings: ["G", "R15"],
+        ratings: props.rating ? [props.rating] : DEFAULT_EVENT_WORK_RATINGS,
         orderBy: props.orderBy,
         sort: props.sort,
       },
@@ -107,7 +115,11 @@ export function EventWorkList (props: Props) {
           </div>
         </div>
       )}
-      <ResponsivePhotoWorksAlbum works={works} isShowProfile={true} />
+      <ResponsivePhotoWorksAlbum
+        works={works}
+        isShowProfile={true}
+        shouldMaskSensitiveWorks={!props.revealSensitiveThumbnails}
+      />
       <div className="h-8" />
       <div className="-translate-x-1/2 fixed bottom-0 left-1/2 z-10 w-full border-border/40 bg-background/95 p-2 backdrop-blur-sm supports-backdrop-filter:bg-background/80">
         <ResponsivePagination
@@ -115,7 +127,20 @@ export function EventWorkList (props: Props) {
           perPage={64}
           currentPage={props.page}
           onPageChange={(page: number) => {
-            navigate(`/events/${props.slug}?page=${page}`)
+            const params = new URLSearchParams()
+            params.set("page", String(page))
+            params.set("WorkOrderby", props.orderBy)
+            params.set("worksOrderDeskAsc", props.sort)
+
+            if (props.workType) {
+              params.set("workType", props.workType)
+            }
+
+            if (props.rating) {
+              params.set("rating", props.rating)
+            }
+
+            navigate(`/events/${props.slug}?${params.toString()}`)
           }}
         />
       </div>

@@ -29,6 +29,11 @@ type Props = {
   onSelect?: (index: string) => void
   /** ユーザリンクのプレフィックス（例: "/users" または "/posts/gallery/users"） */
   userLinkPrefix?: string
+  shouldMaskSensitiveWorks?: boolean
+}
+
+const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
+  return work.isSensitive || work.rating === "R18" || work.rating === "R18G"
 }
 
 /**
@@ -65,6 +70,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                     workItem.isGeneration
                   }
                   hasVideoUrl={Boolean(workItem.url || workItem.streamUid)}
+                  shouldMaskSensitive={
+                    props.shouldMaskSensitiveWorks === true &&
+                    isSensitiveWork(workItem)
+                  }
                 />
                 <div className="absolute right-0 bottom-0">
                   <LikeButton
@@ -215,6 +224,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                             : (imageProps.loading as "lazy" | "eager")
                         }
                         className="h-full w-full"
+                        shouldMaskSensitive={
+                          props.shouldMaskSensitiveWorks === true &&
+                          isSensitiveWork(photo.context)
+                        }
                       />
                     </button>
                   ) : (
@@ -245,6 +258,10 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
                           : (imageProps.loading as "lazy" | "eager")
                       }
                       className="h-full w-full overflow-hidden rounded"
+                      shouldMaskSensitive={
+                        props.shouldMaskSensitiveWorks === true &&
+                        isSensitiveWork(photo.context)
+                      }
                     />
                   )}
                   {/* biome-ignore lint/a11y/useKeyWithClickEvents: overlay is not an actionable control; LikeButton handles keyboard/mouse interaction */}
@@ -388,6 +405,7 @@ export function ResponsivePhotoWorksAlbum(props: Props): React.ReactNode {
           isShowProfile={true}
           hasReferenceButton={false}
           onSelect={props.onSelect}
+          shouldMaskSensitiveWorks={props.shouldMaskSensitiveWorks}
         />
       </div>
     </>

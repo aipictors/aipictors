@@ -203,6 +203,28 @@ const shuffleEvents = (events: EventCardItem[]) => {
   return copied
 }
 
+const buildVisiblePages = (currentPage: number, hasNextPage: boolean) => {
+  const pages = new Set<number>([0, currentPage])
+
+  if (currentPage > 0) {
+    pages.add(currentPage - 1)
+  }
+
+  if (currentPage > 1) {
+    pages.add(1)
+  }
+
+  if (hasNextPage) {
+    pages.add(currentPage + 1)
+  }
+
+  if (hasNextPage && currentPage === 0) {
+    pages.add(2)
+  }
+
+  return [...pages].filter((page) => page >= 0).sort((a, b) => a - b)
+}
+
 function FeaturedEventRotator(props: { events: EventCardItem[] }) {
   const t = useTranslation()
 
@@ -619,6 +641,8 @@ export default function FollowingLayout() {
     return query.length > 0 ? `?${query}` : "."
   }
 
+  const visiblePages = buildVisiblePages(data.page, data.hasNextPage)
+
   if (data === null) {
     return null
   }
@@ -673,8 +697,8 @@ export default function FollowingLayout() {
             name="q"
             defaultValue={data.filters.keyword}
             placeholder={t(
-              "イベント名・説明・タグで検索",
-              "Search by event title, description, or tag",
+              "イベント名・主催者ユーザ名・説明・タグで検索",
+              "Search by event title, organizer username, description, or tag",
             )}
           />
           <select
@@ -753,8 +777,8 @@ export default function FollowingLayout() {
           <TabsContent value="user" className="m-0">
             <div className="mb-3 rounded-xl border bg-muted/20 px-4 py-3 text-sm text-muted-foreground leading-relaxed">
               {t(
-                "ユーザーイベント一覧は開催順を初期表示にして、検索・状態・ランキング条件で絞り込めます。",
-                "User events default to schedule order and can be filtered by keyword, status, and ranking.",
+                "ユーザーイベント一覧は開催順を初期表示にして、イベント名や主催者ユーザ名でも検索できます。",
+                "User events default to schedule order and can also be searched by event title or organizer username.",
               )}
             </div>
             <EventListSection events={userEvents} />
@@ -764,7 +788,7 @@ export default function FollowingLayout() {
           <div className="text-muted-foreground text-sm">
             {t("ページ", "Page")} {data.page + 1}
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button asChild variant="secondary" disabled={!data.hasPreviousPage}>
               <a
                 aria-disabled={!data.hasPreviousPage}
@@ -773,6 +797,30 @@ export default function FollowingLayout() {
                 {t("前へ", "Prev")}
               </a>
             </Button>
+            {visiblePages.map((page, index) => {
+              const previousPage = visiblePages[index - 1]
+              const shouldRenderGap =
+                typeof previousPage === "number" && page - previousPage > 1
+
+              return (
+                <div key={page} className="flex items-center gap-2">
+                  {shouldRenderGap && (
+                    <span className="px-1 text-muted-foreground text-sm">...</span>
+                  )}
+                  <Button
+                    asChild
+                    variant={page === data.page ? "default" : "outline"}
+                  >
+                    <a
+                      aria-current={page === data.page ? "page" : undefined}
+                      href={buildPageHref(page)}
+                    >
+                      {page + 1}
+                    </a>
+                  </Button>
+                </div>
+              )
+            })}
             <Button asChild variant="secondary" disabled={!data.hasNextPage}>
               <a
                 aria-disabled={!data.hasNextPage}

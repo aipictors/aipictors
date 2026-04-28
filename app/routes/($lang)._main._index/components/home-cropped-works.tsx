@@ -13,6 +13,11 @@ type Props = {
   isShowProfile?: boolean
   hasReferenceButton?: boolean
   onSelect?: (index: string) => void
+  shouldMaskSensitiveWorks?: boolean
+}
+
+const isSensitiveWork = (work: FragmentOf<typeof PhotoAlbumWorkFragment>) => {
+  return work.isSensitive || work.rating === "R18" || work.rating === "R18G"
 }
 
 /**
@@ -49,6 +54,10 @@ export function HomeCroppedWorks (props: Props) {
                   hasVideoUrl={Boolean(work.url)}
                   isGeneration={work.isGeneration}
                   hasReferenceButton={props.hasReferenceButton}
+                  shouldMaskSensitive={
+                    props.shouldMaskSensitiveWorks === true &&
+                    isSensitiveWork(work)
+                  }
                 />
                 <div className="absolute right-2 bottom-2 z-10">
                   <LikeButton
@@ -109,6 +118,10 @@ export function HomeCroppedWorks (props: Props) {
                     hasVideoUrl={Boolean(work.url)}
                     isGeneration={work.isGeneration}
                     hasReferenceButton={props.hasReferenceButton}
+                    shouldMaskSensitive={
+                      props.shouldMaskSensitiveWorks === true &&
+                      isSensitiveWork(work)
+                    }
                   />
                   <div className="absolute right-2 bottom-2 z-10">
                     <LikeButton
@@ -138,6 +151,10 @@ export function HomeCroppedWorks (props: Props) {
                     hasVideoUrl={Boolean(work.url)}
                     isGeneration={work.isGeneration}
                     hasReferenceButton={props.hasReferenceButton}
+                    shouldMaskSensitive={
+                      props.shouldMaskSensitiveWorks === true &&
+                      isSensitiveWork(work)
+                    }
                   />
                   <div className="absolute right-2 bottom-2 z-10">
                     <LikeButton

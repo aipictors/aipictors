@@ -10,6 +10,7 @@ import { Share2 } from "lucide-react"
 import React, { useContext, useEffect } from "react"
 import { toast } from "sonner"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
+import { Checkbox } from "~/components/ui/checkbox"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
@@ -27,6 +28,7 @@ import {
 } from "~/components/ui/tooltip"
 import { config, META } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
+import { usePersistentState } from "~/hooks/use-persistent-state"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { loaderClient } from "~/lib/loader-client"
@@ -43,6 +45,13 @@ import {
 import type { SortType } from "~/types/sort-type"
 import { createMeta } from "~/utils/create-meta"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+
+const DEFAULT_EVENT_WORK_RATINGS: IntrospectionEnum<"Rating">[] = [
+  "G",
+  "R15",
+  "R18",
+  "R18G",
+]
 
 type NormalizedEvent = {
   eventSource: "OFFICIAL" | "USER"
@@ -498,6 +507,8 @@ export async function loader(props: LoaderFunctionArgs) {
     ? (urlParams.get("worksOrderDeskAsc") as SortType)
     : "DESC"
 
+  const rating = urlParams.get("rating") as IntrospectionEnum<"Rating"> | null
+
   const eventsResp = await loaderClient.query({
     query: eventDetailQuery,
     variables: {
@@ -505,12 +516,12 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 64,
       slug: event,
       where: {
-        ratings: ["G", "R15"],
+        ratings: rating ? [rating] : DEFAULT_EVENT_WORK_RATINGS,
         isNowCreatedAt: true,
         orderBy,
         sort,
       },
-      isSensitive: false,
+      isSensitive: true,
     },
   })
 
@@ -577,6 +588,9 @@ export default function EventDetailPage() {
     React.useState<IntrospectionEnum<"Rating"> | null>(
       (searchParams.get("rating") as IntrospectionEnum<"Rating">) || null,
     )
+
+  const [revealSensitiveThumbnails, setRevealSensitiveThumbnails] =
+    usePersistentState<boolean>("event-sensitive-thumbnails-revealed", false)
 
   useEffect(() => {
     const params = new URLSearchParams()
@@ -674,6 +688,20 @@ export default function EventDetailPage() {
               )}
             </h2>
           </div>
+          <label className="flex items-center gap-3 rounded-xl border bg-muted/20 px-4 py-3 text-sm">
+            <Checkbox
+              checked={revealSensitiveThumbnails}
+              onCheckedChange={(checked) =>
+                setRevealSensitiveThumbnails(checked === true)
+              }
+            />
+            <span className="leading-relaxed">
+              {t(
+                "R18/R18G作品のモザイクを外す（他のイベントでも保持）",
+                "Reveal R18/R18G thumbnails and keep this setting for other events",
+              )}
+            </span>
+          </label>
         </div>
 
         <EventWorkList
@@ -726,6 +754,7 @@ export default function EventDetailPage() {
             setWorkOrderBy("IS_PROMOTION")
             setWorksOrderDeskAsc(worksOrderDeskAsc === "ASC" ? "DESC" : "ASC")
           }}
+          revealSensitiveThumbnails={revealSensitiveThumbnails}
         />
       </section>
 
@@ -734,6 +763,7 @@ export default function EventDetailPage() {
           works={data.appEvent.awardWorks}
           slug={data.appEvent.slug}
           eventSource={data.appEvent.eventSource}
+          revealSensitiveThumbnails={revealSensitiveThumbnails}
         />
       )}
 

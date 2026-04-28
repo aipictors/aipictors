@@ -1,6 +1,7 @@
 import { Link } from "@remix-run/react"
 import { useState, useRef, useCallback, useEffect } from "react"
 import { OptimizedImage } from "~/components/optimized-image"
+import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"
 import { StreamPreviewVideo } from "~/components/stream-preview-video"
 import { cn } from "~/lib/utils"
 import {
@@ -22,6 +23,7 @@ type Props = {
   height?: number
   loading?: "lazy" | "eager"
   isAutoPlay?: boolean
+  shouldMaskSensitive?: boolean
 }
 
 /**
@@ -117,6 +119,13 @@ export function HoverVideoImage (props: Props): React.ReactNode {
           isActive={isVideoActive}
         />
       )}
+
+      <SensitiveThumbnailOverlay
+        imageUrl={props.imageUrl}
+        imageWidth={props.width}
+        imageHeight={props.height}
+        isHidden={props.shouldMaskSensitive === true}
+      />
     </>
   )
 

@@ -22,6 +22,11 @@ type Props = {
   works: any[]
   slug: string
   eventSource: "OFFICIAL" | "USER"
+  revealSensitiveThumbnails?: boolean
+}
+
+const isSensitiveWork = (work: { rating?: string | null }) => {
+  return work.rating === "R18" || work.rating === "R18G"
 }
 
 /**
@@ -34,7 +39,7 @@ export function EventAwardWorkList (props: Props) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       slug: props.slug,
-      isSensitive: false,
+      isSensitive: true,
     },
   })
 
@@ -75,6 +80,9 @@ export function EventAwardWorkList (props: Props) {
                     imageWidth={work.smallThumbnailImageWidth}
                     imageHeight={work.smallThumbnailImageHeight}
                     ranking={index + 1}
+                    shouldMaskSensitive={
+                      !props.revealSensitiveThumbnails && isSensitiveWork(work)
+                    }
                   />
                   <div className="absolute right-0 bottom-0">
                     <LikeButton
