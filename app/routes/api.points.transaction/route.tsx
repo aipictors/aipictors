@@ -1,12 +1,8 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
 import { object, string, number, safeParse, optional } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
-import {
-  addPointsTransaction,
-  ensurePointsSchema,
-  getUserPointsSummary,
-} from "~/lib/server/points-d1.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { applyPointsTransactionViaApi } from "~/lib/server/points-api.server"
 
 const bodySchema = object({
   type: string(),
@@ -27,13 +23,6 @@ function toJsonResponse(body: unknown, status: number): Response {
 export async function action({ request, context }: ActionFunctionArgs) {
   if (request.method !== "POST") {
     return toJsonResponse({ error: "Method not allowed", data: null }, 405)
-  }
-
-  const db = (context as { cloudflare?: { env?: { POINTS_DB?: D1Database } } })
-    .cloudflare?.env?.POINTS_DB
-
-  if (!db) {
-    return toJsonResponse({ error: "POINTS_DB is not configured", data: null }, 500)
   }
 
   const authorization = request.headers.get("authorization")
@@ -77,32 +66,28 @@ export async function action({ request, context }: ActionFunctionArgs) {
     return toJsonResponse({ error: "Unsupported type", data: null }, 400)
   }
 
-  await ensurePointsSchema(db)
+  try {
+    const summary = await applyPointsTransactionViaApi({
+      context,
+      userId: viewer.userId,
+      type: body.type === "consume" ? "consume" : "grant",
+      points,
+      reason: body.reason ?? null,
+    })
 
-  const delta = kind === "CONSUME" ? -points : points
-
-  const writeResult = await addPointsTransaction({
-    db,
-    userId: viewer.userId,
-    delta,
-    kind,
-    reason: body.reason ?? null,
-  })
-
-  if (!writeResult.ok && writeResult.code === "INSUFFICIENT_POINTS") {
-    return toJsonResponse({ error: "Insufficient points", data: null }, 409)
-  }
-
-  const summary = await getUserPointsSummary({ db, userId: viewer.userId, limit: 20 })
-
-  return toJsonResponse(
-    {
-      error: null,
-      data: {
-        balance: summary.balance,
-        ledger: summary.rows,
+    return toJsonResponse(
+      {
+        error: null,
+        data: {
+          balance: summary.balance,
+          ledger: summary.ledger,
+        },
       },
-    },
-    200,
-  )
+      200,
+    )
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update points"
+    const status = message === "Insufficient points" ? 409 : 502
+    return toJsonResponse({ error: message, data: null }, status)
+  }
 }

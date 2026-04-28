@@ -23,15 +23,13 @@ For preview/dev, replace the domain with your deployed domain.
 ## Required Cloudflare Variables
 
 - `STRIPE_SECRET_KEY`
-- `STRIPE_POINTS_WEBHOOK_SECRET`
-- `STRIPE_POINTS_PRICE_100`
-- `STRIPE_POINTS_PRICE_300`
-- `STRIPE_POINTS_PRICE_1000`
 
-## Required D1 Binding
+## Required Internal API Variables
 
-- Binding name: `POINTS_DB`
-- D1 database name: `aipictors-points`
-- D1 database id: `04dfe201-ad19-493e-9a93-bdbac483cebb`
+- `AIPICTORS_API_BASE_URL`
+- `AIPICTORS_API_INTERNAL_TOKEN`
+- `AIPICTORS_API_CF_ACCESS_CLIENT_ID` (optional)
+- `AIPICTORS_API_CF_ACCESS_CLIENT_SECRET` (optional)
 
-Use `docs/d1-points-schema.sql` for manual schema creation if needed.
+Points balance, ledger, and Stripe webhook processing are handled by `aipictors-api` on Neon.
+The `/api/stripe/points-webhook` route now forwards the raw Stripe payload to `aipictors-api` for signature verification and persistence.

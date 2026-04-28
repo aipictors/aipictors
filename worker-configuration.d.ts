@@ -12,16 +12,14 @@ export type Env = {
   CLOUDFLARE_ACCOUNT_ID?: string
   /** Cloudflare Stream アップロードAPIで使用するサーバー側トークン */
   CLOUDFLARE_STREAM_API_TOKEN?: string
-  /** D1 points ledger database binding */
-  POINTS_DB?: D1Database
   /** Stripe secret key for server-side checkout/webhook */
   STRIPE_SECRET_KEY?: string
-  /** Stripe webhook endpoint secret for signature verification */
-  STRIPE_POINTS_WEBHOOK_SECRET?: string
-  /** Stripe price id for 100 points package */
-  STRIPE_POINTS_PRICE_100?: string
-  /** Stripe price id for 300 points package */
-  STRIPE_POINTS_PRICE_300?: string
-  /** Stripe price id for 1000 points package */
-  STRIPE_POINTS_PRICE_1000?: string
+  /** Internal aipictors-api base URL */
+  AIPICTORS_API_BASE_URL?: string
+  /** Internal aipictors-api bearer token */
+  AIPICTORS_API_INTERNAL_TOKEN?: string
+  /** Optional Cloudflare Access client id for aipictors-api */
+  AIPICTORS_API_CF_ACCESS_CLIENT_ID?: string
+  /** Optional Cloudflare Access client secret for aipictors-api */
+  AIPICTORS_API_CF_ACCESS_CLIENT_SECRET?: string
 }

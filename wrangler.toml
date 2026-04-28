@@ -7,23 +7,14 @@ assets = { directory = "./build/client" }
 [vars]
 VITE_GRAPHQL_ENDPOINT = "https://aipics.fly.dev"
 VITE_GRAPHQL_ENDPOINT_REMIX = "https://aipics.fly.dev"
+AIPICTORS_API_BASE_URL = "https://backend.aipictors.com"
 
 # Server-side secrets/vars for points payment API.
 # Set these in Cloudflare dashboard (Pages project > Settings > Variables) for production.
 # STRIPE_SECRET_KEY = ""
-# STRIPE_POINTS_WEBHOOK_SECRET = ""
-# STRIPE_POINTS_PRICE_100 = ""
-# STRIPE_POINTS_PRICE_300 = ""
-# STRIPE_POINTS_PRICE_1000 = ""
-# AIPICTORS_API_BASE_URL = "https://backend.aipictors.com"
 # AIPICTORS_API_INTERNAL_TOKEN = ""
 # AIPICTORS_API_CF_ACCESS_CLIENT_ID = ""
 # AIPICTORS_API_CF_ACCESS_CLIENT_SECRET = ""
-
-[[d1_databases]]
-binding = "POINTS_DB"
-database_name = "aipictors-points"
-database_id = "04dfe201-ad19-493e-9a93-bdbac483cebb"
 
 [observability]
 enabled = true
