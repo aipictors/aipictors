@@ -762,7 +762,27 @@ export default function FollowingLayout() {
         </Tabs>
         <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/20 px-4 py-3">
           <div className="text-muted-foreground text-sm">
-            {t("ページ
+            {t("ページ", "Page")} {data.page + 1}
+          </div>
+          <div className="flex gap-2">
+            <Button asChild variant="secondary" disabled={!data.hasPreviousPage}>
+              <a
+                aria-disabled={!data.hasPreviousPage}
+                href={data.hasPreviousPage ? buildPageHref(data.page - 1) : undefined}
+              >
+                {t("前へ", "Prev")}
+              </a>
+            </Button>
+            <Button asChild variant="secondary" disabled={!data.hasNextPage}>
+              <a
+                aria-disabled={!data.hasNextPage}
+                href={data.hasNextPage ? buildPageHref(data.page + 1) : undefined}
+              >
+                {t("次へ", "Next")}
+              </a>
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   )
