@@ -104,7 +104,8 @@ export const meta: MetaFunction = () => {
 export async function loader(props: LoaderFunctionArgs) {
   const url = new URL(props.request.url)
 
-  const page = Number(url.searchParams.get("page") ?? "0")
+  const rawPage = Number(url.searchParams.get("page") ?? "0")
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 0
   const keyword = url.searchParams.get("q")?.trim() ?? ""
   const status = url.searchParams.get("status")?.trim() ?? ""
   const ranking = url.searchParams.get("ranking")?.trim() ?? "ALL"
@@ -140,6 +141,9 @@ export async function loader(props: LoaderFunctionArgs) {
 
   return {
     userEvents: sortUserEvents(userEvents, sort),
+    page,
+    hasPreviousPage: page > 0,
+    hasNextPage: resp.data.userEvents.length === EVENTS_PAGE_LIMIT,
     filters: {
       keyword,
       status,
@@ -158,6 +162,33 @@ export default function EventsUserEventsIndexRoute() {
   const t = useTranslation()
 
   const title = useMemo(() => t("ユーザー主催投稿企画一覧", "User events"), [t])
+
+  const buildPageHref = (page: number) => {
+    const params = new URLSearchParams()
+
+    if (data.filters.keyword) {
+      params.set("q", data.filters.keyword)
+    }
+
+    if (data.filters.status) {
+      params.set("status", data.filters.status)
+    }
+
+    if (data.filters.ranking && data.filters.ranking !== "ALL") {
+      params.set("ranking", data.filters.ranking)
+    }
+
+    if (data.filters.sort && data.filters.sort !== "ONGOING_FIRST") {
+      params.set("sort", data.filters.sort)
+    }
+
+    if (page > 0) {
+      params.set("page", String(page))
+    }
+
+    const query = params.toString()
+    return query.length > 0 ? `?${query}` : "."
+  }
 
   return (
     <>
@@ -243,6 +274,30 @@ export default function EventsUserEventsIndexRoute() {
             )}
           </div>
         )}
+
+        <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/20 px-4 py-3">
+          <div className="text-muted-foreground text-sm">
+            {t("ページ", "Page")} {data.page + 1}
+          </div>
+          <div className="flex gap-2">
+            <Button asChild variant="secondary" disabled={!data.hasPreviousPage}>
+              <a
+                aria-disabled={!data.hasPreviousPage}
+                href={data.hasPreviousPage ? buildPageHref(data.page - 1) : undefined}
+              >
+                {t("前へ", "Prev")}
+              </a>
+            </Button>
+            <Button asChild variant="secondary" disabled={!data.hasNextPage}>
+              <a
+                aria-disabled={!data.hasNextPage}
+                href={data.hasNextPage ? buildPageHref(data.page + 1) : undefined}
+              >
+                {t("次へ", "Next")}
+              </a>
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   )

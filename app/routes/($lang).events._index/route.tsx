@@ -482,7 +482,8 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const pageParam = urlParams.get("page")
 
-  const page = pageParam ? Number(pageParam) : 0
+  const rawPage = pageParam ? Number(pageParam) : 0
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 0
 
   const keyword = urlParams.get("q")?.trim() ?? ""
 
@@ -545,9 +546,16 @@ export async function loader(props: LoaderFunctionArgs) {
     sort,
   )
 
+  const hasNextPage =
+    resp.data.appEvents.length === EVENTS_PAGE_LIMIT ||
+    resp.data.userEvents.length === EVENTS_PAGE_LIMIT
+
   return {
     officialEvents,
     userEvents,
+    page,
+    hasPreviousPage: page > 0,
+    hasNextPage,
     ongoingSummary: buildOngoingEventSummary({
       officialEvents: ongoingEventsSummaryResp.data.appEvents,
       userEvents: ongoingEventsSummaryResp.data.userEvents,
@@ -583,6 +591,33 @@ export default function FollowingLayout() {
   )
 
   const defaultTab = officialEvents.length > 0 ? "official" : "user"
+
+  const buildPageHref = (page: number) => {
+    const params = new URLSearchParams()
+
+    if (data.filters.keyword) {
+      params.set("q", data.filters.keyword)
+    }
+
+    if (data.filters.status) {
+      params.set("status", data.filters.status)
+    }
+
+    if (data.filters.ranking && data.filters.ranking !== "ALL") {
+      params.set("ranking", data.filters.ranking)
+    }
+
+    if (data.filters.sort && data.filters.sort !== "SCHEDULE") {
+      params.set("sort", data.filters.sort)
+    }
+
+    if (page > 0) {
+      params.set("page", String(page))
+    }
+
+    const query = params.toString()
+    return query.length > 0 ? `?${query}` : "."
+  }
 
   if (data === null) {
     return null
@@ -725,6 +760,9 @@ export default function FollowingLayout() {
             <EventListSection events={userEvents} />
           </TabsContent>
         </Tabs>
+        <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/20 px-4 py-3">
+          <div className="text-muted-foreground text-sm">
+            {t("ページ
       </div>
     </>
   )

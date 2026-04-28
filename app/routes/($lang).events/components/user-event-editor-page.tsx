@@ -79,6 +79,7 @@ type CreateUserEventMutationData = {
   createUserEvent: {
     id: string
     slug: string
+    visibilityType: UserEventVisibilityType
   } | null
 }
 
@@ -106,6 +107,7 @@ type UpdateUserEventMutationData = {
   updateUserEvent: {
     id: string
     slug: string
+    visibilityType: UserEventVisibilityType
   } | null
 }
 
@@ -250,6 +252,21 @@ const createInitialState = (): EditorState => ({
   ratings: ["G"],
   slug: "",
 })
+
+const resolveSavedUserEventPath = (props: {
+  slug?: string | null
+  visibilityType?: UserEventVisibilityType | null
+}) => {
+  if (!props.slug) {
+    return "/my/events"
+  }
+
+  if (props.visibilityType === "PUBLIC") {
+    return `/events/${props.slug}`
+  }
+
+  return `/events/${props.slug}/edit`
+}
 
 const eventRatingOptions: { value: UserEventRating; label: string }[] = [
   { value: "G", label: "全年齢 / All Ages" },
@@ -522,8 +539,14 @@ export function UserEventEditorPage(props: Props) {
         })
 
         const nextSlug = result.data?.createUserEvent?.slug
+        const nextVisibilityType = result.data?.createUserEvent?.visibilityType
         toast(t("イベントを作成しました", "Event created"))
-        navigate(nextSlug ? `/events/${nextSlug}` : "/my/events")
+        navigate(
+          resolveSavedUserEventPath({
+            slug: nextSlug,
+            visibilityType: nextVisibilityType,
+          }),
+        )
       } else {
         const result = await updateUserEvent({
           variables: {
@@ -536,8 +559,14 @@ export function UserEventEditorPage(props: Props) {
         })
 
         const nextSlug = result.data?.updateUserEvent?.slug
+        const nextVisibilityType = result.data?.updateUserEvent?.visibilityType
         toast(t("イベントを更新しました", "Event updated"))
-        navigate(nextSlug ? `/events/${nextSlug}` : "/my/events")
+        navigate(
+          resolveSavedUserEventPath({
+            slug: nextSlug,
+            visibilityType: nextVisibilityType,
+          }),
+        )
       }
     } catch {
       toast(t("保存に失敗しました", "Failed to save event"))
@@ -916,6 +945,7 @@ const createUserEventMutation = graphql(
     createUserEvent(input: $input) {
       id
       slug
+      visibilityType
     }
   }`,
 )
@@ -925,6 +955,7 @@ const updateUserEventMutation = graphql(
     updateUserEvent(input: $input) {
       id
       slug
+      visibilityType
     }
   }`,
 )
