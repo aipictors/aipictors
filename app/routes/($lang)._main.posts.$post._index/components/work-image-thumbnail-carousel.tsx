@@ -37,19 +37,19 @@ export function WorkImageThumbnailCarousel ({
         </div>
       )}
       <Carousel opts={{ dragFree: true }}>
-        <CarouselContent>
+        <CarouselContent className="ml-0">
           {allImageURLs.map((imageURL, index) => {
             // 選択された画像かどうかを判定し、対応するスタイルを適用
             const isSelected = imageURL === selectedImage
             const imageClassName = isSelected
-              ? "w-40 h-16 cursor-pointer object-cover border-2 border-clear-bright-blue m-auto"
-              : "w-40 h-16 cursor-pointer object-cover border-2 border-transparent m-auto"
+              ? "h-20 w-full cursor-pointer border-2 border-clear-bright-blue object-cover"
+              : "h-20 w-full cursor-pointer border-2 border-transparent object-cover"
 
             return (
               <CarouselItem
                 // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
                 key={index}
-                className={"basis-1/8"}
+                className="basis-[6.5rem] pl-1 sm:basis-[7.5rem] md:basis-[8.5rem]"
               >
                 <img
                   className={imageClassName}
