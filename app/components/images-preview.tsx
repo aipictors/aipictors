@@ -313,6 +313,14 @@ export function ImagesPreview(props: Props): React.ReactNode {
     setTranslate({ x: 0, y: 0 })
   }
 
+  const handleMainTouchStart: React.TouchEventHandler<HTMLImageElement> = (e) => {
+    startCoord.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    }
+    prevTranslate.current = { ...translate }
+  }
+
   const handleMainMouseDown = (e: React.MouseEvent) => {
     startCoord.current = { x: e.clientX, y: e.clientY }
     prevTranslate.current = { ...translate }
@@ -449,6 +457,7 @@ export function ImagesPreview(props: Props): React.ReactNode {
                 alt="thumbnail"
                 src={props.thumbnailUrl}
                 loading="lazy"
+                onTouchStart={handleMainTouchStart}
                 onMouseUp={handleMainMouseUp}
                 onMouseDown={handleMainMouseDown}
                 onTouchEnd={handleMainTouchEnd}
