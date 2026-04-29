@@ -32,10 +32,18 @@ export const writeRecentStickerIds = (stickerIds: string[]) => {
     return
   }
 
-  window.localStorage.setItem(
-    RECENT_STICKER_STORAGE_KEY,
-    JSON.stringify(stickerIds.slice(0, MAX_RECENT_STICKERS)),
-  )
+  const serialized = JSON.stringify(stickerIds.slice(0, MAX_RECENT_STICKERS))
+
+  try {
+    window.localStorage.setItem(RECENT_STICKER_STORAGE_KEY, serialized)
+  } catch {
+    try {
+      window.localStorage.removeItem(RECENT_STICKER_STORAGE_KEY)
+      window.localStorage.setItem(RECENT_STICKER_STORAGE_KEY, serialized)
+    } catch {
+      // localStorage が満杯でもコメント・スタンプ送信自体は継続させる。
+    }
+  }
 }
 
 export const recordRecentStickerId = (stickerId: string) => {
