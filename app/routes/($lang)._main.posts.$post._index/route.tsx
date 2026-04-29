@@ -112,6 +112,13 @@ export const meta: MetaFunction = (props) => {
         ? ` - ${work.work.user?.name}の作品`
         : ""
 
+  const metaImageUrl =
+    work.work.ogpThumbnailImageUrl ||
+    work.work.largeThumbnailImageURL ||
+    work.work.smallThumbnailImageURL ||
+    work.work.imageURL ||
+    config.defaultOgpImageUrl
+
   return createMeta(
     META.POSTS,
     {
@@ -131,7 +138,7 @@ export const meta: MetaFunction = (props) => {
             "Aipictors work page"
           : work.work.description ||
             "Aipictorsの作品ページです、AIイラストなどの作品を閲覧することができます",
-      url: work.work.smallThumbnailImageURL,
+      url: metaImageUrl,
       pageUrl,
     },
     props.params.lang,
