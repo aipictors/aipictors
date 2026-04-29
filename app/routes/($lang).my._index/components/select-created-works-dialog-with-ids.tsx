@@ -8,7 +8,7 @@ import {
 import { Button } from "~/components/ui/button"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
-import { ImageIcon, CheckIcon, PlusIcon } from "lucide-react"
+import { CheckIcon, GripVerticalIcon, ImageIcon, PlusIcon, XIcon } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
@@ -32,7 +32,7 @@ import {
   SortableContext,
   useSortable,
   arrayMove,
-  rectSortingStrategy,
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 
@@ -45,58 +45,77 @@ type Props = {
 
 type SortableItemProps = {
   work: FragmentOf<typeof DialogWorkFragment>
-  isDragMode: boolean
   selectedWorkIds: string[]
   setSelectedWorkIds: (workIds: string[]) => void
-  truncateTitle: (title: string, maxLength: number) => string
+  isInOtherAlbum: boolean
 }
 
 function SortableItem(props: SortableItemProps) {
-  // drag/drop の動作管理
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props.work.id })
-
-  const sortableProps = props.isDragMode
-    ? { ...attributes, ...listeners }
-    : undefined
+  const {
+    attributes,
+    listeners,
+    setActivatorNodeRef,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: props.work.id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   }
 
+  const removeWork = () => {
+    props.setSelectedWorkIds(
+      props.selectedWorkIds.filter((id) => id !== props.work.id),
+    )
+  }
+
   return (
-    <button
-      type="button"
+    <div
       ref={setNodeRef}
       style={style}
-      {...sortableProps}
-      // 「並び替えモード」でないときはクリックで"選択解除"
-      onClick={
-        !props.isDragMode
-          ? () => {
-              const newIds = props.selectedWorkIds.filter(
-                (id) => id !== props.work.id,
-              )
-              props.setSelectedWorkIds(newIds)
-            }
-          : undefined
-      }
-      className={
-        props.isDragMode
-          ? "relative m-2 cursor-grab touch-none bg-transparent p-0" // 並び替えON: grabカーソル
-          : "relative m-2 cursor-pointer bg-transparent p-0" // 並び替えOFF: クリック解除用
-      }
+      className="flex items-center gap-3 rounded-xl border bg-card p-3 shadow-sm"
     >
       <img
-        className="size-24 rounded-md object-cover"
+        className="size-20 rounded-lg object-cover sm:size-24"
         src={props.work.smallThumbnailImageURL}
         alt=""
       />
-      <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
-        {props.truncateTitle(props.work.title, 8)}
+      <div className="min-w-0 flex-1">
+        <p className="line-clamp-2 font-medium text-sm">{props.work.title}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          長押しまたはドラッグで並び替え
+        </p>
+        {props.isInOtherAlbum && (
+          <p className="mt-1 text-xs text-amber-600">{`他シリーズにも登録済み`}</p>
+        )}
       </div>
-    </button>
+      <div className="flex items-center gap-1 self-stretch">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-10 shrink-0"
+          onClick={removeWork}
+          aria-label="作品を選択解除"
+        >
+          <XIcon className="size-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-10 shrink-0 touch-none cursor-grab"
+          ref={setActivatorNodeRef}
+          aria-label="作品を並び替え"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVerticalIcon className="size-5" />
+        </Button>
+      </div>
+    </div>
   )
 }
 
@@ -111,9 +130,9 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   const [page, setPage] = useState(0) // "未選択"タブ用ページ
   const [selectedPage, setSelectedPage] = useState(0) // "選択中"タブ用ページ
   const [tab, setTab] = useState<"NO_SELECTED" | "SELECTED">("NO_SELECTED")
-
-  // 並び替えトグル (true でドラッグモード)
-  const [isDragMode, setIsDragMode] = useState(false)
+  const [selectedWorksCache, setSelectedWorksCache] = useState<
+    Record<string, FragmentOf<typeof DialogWorkFragment>>
+  >({})
 
   // ======== 未選択タブ用クエリ (全作品 + ページング) ========
   const worksResult = useQuery(worksQuery, {
@@ -159,8 +178,9 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         sort: "DESC",
       },
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
     nextFetchPolicy: "cache-first",
+    returnPartialData: true,
   })
   const { refetch: refetchSelectedWorks } = selectedWorksResult
 
@@ -199,11 +219,24 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
     refetchWorks,
     refetchWorksCount,
   ])
-  const selectedWorksMaxCount = selectedWorksCountResp.data?.worksCount ?? 0
 
-  // ======== タイトルを省略するヘルパー ========
-  const truncateTitle = (title: string, maxLength: number) =>
-    title.length > maxLength ? `${title.slice(0, maxLength)}...` : title
+  useEffect(() => {
+    if (selectedWorksQueryData.length === 0) {
+      return
+    }
+
+    setSelectedWorksCache((prev) => {
+      const next = { ...prev }
+
+      for (const work of selectedWorksQueryData) {
+        next[work.id] = work
+      }
+
+      return next
+    })
+  }, [selectedWorksQueryData])
+
+  const selectedWorksMaxCount = selectedWorksCountResp.data?.worksCount ?? 0
 
   // ======== (未選択タブ) 作品クリック ========
   const handleWorkClick = (work: FragmentOf<typeof DialogWorkFragment>) => {
@@ -231,7 +264,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   // ======== 「選択中」タブで表示する作品を ID の順番に並び替えた配列を生成 ========
   // DnD などで並び順を変更するときは、props.selectedWorkIds こそが順序のソースになる想定。
   const sortedSelectedWorks = props.selectedWorkIds
-    .map((id) => selectedWorksQueryData.find((w) => w.id === id))
+    .map((id) => selectedWorksCache[id] ?? selectedWorksQueryData.find((w) => w.id === id))
     .filter(Boolean) as FragmentOf<typeof DialogWorkFragment>[]
 
   // ======== 未選択タブの描画 ========
@@ -250,8 +283,8 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             src={work.smallThumbnailImageURL}
             alt=""
           />
-          <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
-            {truncateTitle(work.title, 8)}
+          <div className="absolute inset-x-0 bottom-0 bg-gray-800/70 px-1 py-0.5 text-white text-xs">
+            <span className="line-clamp-1">{work.title}</span>
           </div>
           {work.album && work.album.id !== props.currentAlbumId && (
             <div className="absolute right-1 bottom-1 rounded bg-background/90 px-1 py-0.5 text-[10px] text-foreground shadow-sm">
@@ -327,30 +360,37 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
       >
         <SortableContext
           items={props.selectedWorkIds} // 順番どおりに
-          strategy={rectSortingStrategy}
+          strategy={verticalListSortingStrategy}
         >
-          <div className="flex flex-wrap">
-            {sortedSelectedWorks.map((work) => (
-              <SortableItem
-                key={work.id}
-                work={work}
-                isDragMode={isDragMode}
-                selectedWorkIds={props.selectedWorkIds}
-                setSelectedWorkIds={props.setSelectedWorkIds}
-                truncateTitle={truncateTitle}
-              />
-            ))}
+          <div className="space-y-3 pb-2">
+            {sortedSelectedWorks.map((work) => {
+              const isInOtherAlbum =
+                Boolean(work.album) && work.album?.id !== props.currentAlbumId
+
+              return (
+                <SortableItem
+                  key={work.id}
+                  work={work}
+                  selectedWorkIds={props.selectedWorkIds}
+                  setSelectedWorkIds={props.setSelectedWorkIds}
+                  isInOtherAlbum={isInOtherAlbum}
+                />
+              )
+            })}
           </div>
         </SortableContext>
 
         <DragOverlay adjustScale={false} style={{ transformOrigin: "0 0 " }}>
           {activeDragItem && (
-            <div className="size-24 border border-gray-300">
+            <div className="flex w-[min(100vw-2rem,32rem)] items-center gap-3 rounded-xl border bg-background p-3 shadow-lg">
               <img
-                className="h-full w-full object-cover"
+                className="size-20 rounded-lg object-cover"
                 src={activeDragItem.smallThumbnailImageURL}
                 alt=""
               />
+              <p className="line-clamp-2 text-sm font-medium">
+                {activeDragItem.title}
+              </p>
             </div>
           )}
         </DragOverlay>
@@ -395,8 +435,8 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
               src={work.smallThumbnailImageURL}
               alt=""
             />
-            <div className="absolute bottom-0 bg-gray-800 bg-opacity-50 text-white text-xs">
-              {truncateTitle(work.title, 8)}
+            <div className="absolute inset-x-0 bottom-0 bg-gray-800/70 px-1 py-0.5 text-white text-xs">
+              <span className="line-clamp-1">{work.title}</span>
             </div>
             <div className="absolute top-1 left-1 rounded-full border-2 bg-black dark:bg-white">
               <CheckIcon className="p-1 text-white dark:text-black" />
@@ -453,23 +493,17 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             )}
             {tab === "SELECTED" && (
               <>
-                {/* 並び替えトグル */}
-                <div className="mb-4 flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsDragMode(!isDragMode)}
-                  >
-                    {isDragMode
-                      ? t("並び替え終了", "Stop Sorting")
-                      : t("並び替え", "Sort")}
-                  </Button>
+                <div className="mb-4 rounded-lg border bg-muted/30 p-3 text-sm text-muted-foreground">
+                  {t(
+                    "ドラッグ&ドロップで並び替えると、その順番がシリーズの設定順として保存されます。右上の×で選択解除できます。",
+                    "Drag and drop to save this order as the series order. Use the X button to remove works.",
+                  )}
                 </div>
-                {/* DnD表示 or クリック解除表示 */}
-                {isDragMode ? (
+                {sortedSelectedWorks.length > 0 ? (
                   renderSelectedWorksDnD()
                 ) : (
-                  <div className="flex flex-wrap">
-                    {renderWorks(sortedSelectedWorks)}
+                  <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                    {t("作品を選択してください。", "Select works to continue.")}
                   </div>
                 )}
               </>

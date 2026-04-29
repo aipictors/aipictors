@@ -31,6 +31,7 @@ import { cn } from "~/lib/utils"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { useBoolean } from "usehooks-ts"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 
 type Comment = {
   id: string
@@ -158,40 +159,52 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
         },
       })
 
+      if (!res.data?.createWorkComment) {
+        throw new Error(
+          t(
+            "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
+            "Failed to send the sticker. Please try again later.",
+          ),
+        )
+      }
+
       setComment("")
       setIsSensitive(false)
 
-      if (res.data?.createWorkComment) {
-        const newComment: Comment = {
-          id: res.data.createWorkComment.id,
-          text: text,
-          createdAt: Date.now() / 1000,
-          likesCount: 0,
-          isLiked: false,
-          isWorkOwnerLiked: false,
-          user: {
-            id: authContext.userId ?? "",
-            name: authContext.displayName ?? "",
-            iconUrl: userIcon,
-            avatarFrame: userAvatarFrame,
-          },
-          sticker: stickerId
-            ? {
-                id: stickerId,
-                title: "",
-                imageUrl: stickerImageURL,
-                accessType: "PUBLIC",
-                isDownloaded: true,
-              }
-            : undefined,
-          responses: [],
-        }
-
-        setNewComments([...newComments, newComment])
+      const newComment: Comment = {
+        id: res.data.createWorkComment.id,
+        text: text,
+        createdAt: Date.now() / 1000,
+        likesCount: 0,
+        isLiked: false,
+        isWorkOwnerLiked: false,
+        user: {
+          id: authContext.userId ?? "",
+          name: authContext.displayName ?? "",
+          iconUrl: userIcon,
+          avatarFrame: userAvatarFrame,
+        },
+        sticker: stickerId
+          ? {
+              id: stickerId,
+              title: "",
+              imageUrl: stickerImageURL,
+              accessType: "PUBLIC",
+              isDownloaded: true,
+            }
+          : undefined,
+        responses: [],
       }
+
+      setNewComments([...newComments, newComment])
     } catch (error) {
-      // エラーハンドリング
-      console.error("Failed to send comment:", error)
+      toast(
+        getApolloErrorMessage(error) ??
+          t(
+            "送信に失敗しました。しばらくしてから再度お試しください。",
+            "Failed to send. Please try again later.",
+          ),
+      )
     }
   }
 

@@ -28,6 +28,7 @@ import {
   recordRecentStickerId,
   sortStickersByRecent,
 } from "~/utils/sticker-recent"
+import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
@@ -213,12 +214,21 @@ export function WorkCommentList(props: Props) {
           },
         })
 
+        if (!res.data?.createWorkComment) {
+          throw new Error(
+            t(
+              "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
+              "Failed to send the sticker. Please try again later.",
+            ),
+          )
+        }
+
         setComment("")
         setIsSensitive(false)
 
         setNewComments([
           {
-            id: res.data?.createWorkComment?.id ?? "",
+            id: res.data.createWorkComment.id,
             text: text,
             createdAt: getJSTDate().getTime() / 1000,
             likesCount: 0,
@@ -243,12 +253,11 @@ export function WorkCommentList(props: Props) {
       }
     } catch (_e) {
       toast(
-        _e instanceof Error
-          ? _e.message
-          : t(
-              "送信に失敗しました。しばらくしてから再度お試しください。",
-              "Failed to send. Please try again later.",
-            ),
+        getApolloErrorMessage(_e) ??
+          t(
+            "送信に失敗しました。しばらくしてから再度お試しください。",
+            "Failed to send. Please try again later.",
+          ),
       )
     }
   }
@@ -366,7 +375,13 @@ export function WorkCommentList(props: Props) {
                       userIcon,
                     )
                   } catch (error) {
-                    console.error("Failed to send comment:", error)
+                    toast(
+                      getApolloErrorMessage(error) ??
+                        t(
+                          "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
+                          "Failed to send the sticker. Please try again later.",
+                        ),
+                    )
                   }
                 }}
                 size="2x-large"

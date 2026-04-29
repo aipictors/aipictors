@@ -90,7 +90,7 @@ export default function EventWakiaiai () {
           </Link>
           <XIntent
             text={t("和気あいAI ハロウィン企画", "Wakiaiai Halloween Event")}
-            url={"https://beta.aipictors.com/events/halloween-2024"}
+            url={"https://www.aipictors.com/events/halloween-2024"}
             hashtags={["和気あいAI", "ハロウィン企画"]}
             className="ml-auto flex w-32 items-center gap-2"
           >

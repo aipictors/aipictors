@@ -37,7 +37,7 @@ const getOrderLabel = (orderBy: AlbumWorkOrder) => {
     return "いいね順"
   }
 
-  return "デフォルト順"
+  return "設定順"
 }
 
 const toPage = (value: string | null) => {
@@ -135,7 +135,7 @@ export function AlbumWorkList(props: Props) {
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="MANUAL">デフォルト順</SelectItem>
+              <SelectItem value="MANUAL">設定順</SelectItem>
               <SelectItem value="DATE_CREATED">投稿日順</SelectItem>
               <SelectItem value="LIKES_COUNT">いいね順</SelectItem>
             </SelectContent>

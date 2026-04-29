@@ -13,6 +13,7 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 import { useTranslation } from "~/hooks/use-translation"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
+import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 
 type Props = {
   targetCommentId: string
@@ -69,15 +70,21 @@ export function ReplyCommentInput (props: Props) {
           stickerId ?? "",
           stickerImageURL ?? "",
         )
+      } else {
+        throw new Error(
+          t(
+            "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
+            "Failed to send the sticker. Please try again later.",
+          ),
+        )
       }
     } catch (_e) {
       toast(
-        _e instanceof Error
-          ? _e.message
-          : t(
-              "送信に失敗しました。しばらくしてから再度お試しください。",
-              "Failed to send. Please try again later.",
-            ),
+        getApolloErrorMessage(_e) ??
+          t(
+            "送信に失敗しました。しばらくしてから再度お試しください。",
+            "Failed to send. Please try again later.",
+          ),
       )
     }
   }
@@ -165,6 +172,14 @@ export function ReplyCommentInput (props: Props) {
             />
           </div>
         </div>
+        {props.isWorkOwnerBlocked && (
+          <p className="pl-14 text-amber-600 text-xs">
+            {t(
+              "このユーザーをブロック中のため、コメントとスタンプは送信できません。",
+              "You cannot send comments or stickers because this user is blocked.",
+            )}
+          </p>
+        )}
       </div>
       <StickerDialog
         isOpen={isOpen}

@@ -1,9 +1,7 @@
 import { useMutation, useQuery } from "@apollo/client/index"
-import { type FragmentOf, graphql } from "gql.tada"
-import { PlusIcon } from "lucide-react"
-import { Suspense, useContext, useState } from "react"
+import { graphql } from "gql.tada"
+import { useContext, useState } from "react"
 import { toast } from "sonner"
-import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
@@ -26,13 +24,12 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
-import {
-  type DialogWorkFragment,
-  SelectCreatedWorksDialog,
-} from "~/routes/($lang).my._index/components/select-created-works-dialog"
+import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toRatingText } from "~/utils/work/to-rating-text"
+
+const ALBUM_WORKS_MAX = 32
 
 type Props = {
   children: React.ReactNode
@@ -57,9 +54,7 @@ export function CreateAlbumDialog(props: Props) {
 
   const [rating, setRating] = useState<IntrospectionEnum<"AlbumRating">>("G")
 
-  const [selectedWorks, setSelectedWorks] = useState<
-    FragmentOf<typeof DialogWorkFragment>[]
-  >([])
+  const [selectedWorkIds, setSelectedWorkIds] = useState<string[]>([])
 
   const [isCreating, setIsCreating] = useState<boolean>(false)
 
@@ -115,7 +110,7 @@ export function CreateAlbumDialog(props: Props) {
     }
 
     // 作品が未選択の場合
-    if (selectedWorks.length === 0) {
+    if (selectedWorkIds.length === 0) {
       toast("作品を選択してください")
       return
     }
@@ -139,7 +134,7 @@ export function CreateAlbumDialog(props: Props) {
               slug: trimmedSlug,
               description: description,
               thumbnailUrl: thumbnailUrl,
-              workIds: selectedWorks.map((work) => work.id),
+              workIds: selectedWorkIds,
               rating,
             },
           },
@@ -157,7 +152,7 @@ export function CreateAlbumDialog(props: Props) {
             title: trimmedTitle,
             slug: trimmedSlug,
             description: description,
-            workIds: selectedWorks.map((work) => work.id),
+            workIds: selectedWorkIds,
             rating,
           },
         },
@@ -232,7 +227,7 @@ export function CreateAlbumDialog(props: Props) {
                   maxLength={32}
                 />
                 <p className="text-sm opacity-80">
-                  {`https://beta.aipictors.com/${appContext.userId}/series/${slug}`}
+                  {`https://www.aipictors.com/${appContext.userId}/series/${slug}`}
                 </p>
               </div>
 
@@ -276,22 +271,14 @@ export function CreateAlbumDialog(props: Props) {
                   <p className="font-bold text-sm">作品</p>
                   <p className="text-sm opacity-50">*必須</p>
                 </div>
-                <Suspense fallback={<AppLoadingPage />}>
-                  <SelectCreatedWorksDialog
-                    selectedWorks={selectedWorks}
-                    setSelectedWorks={setSelectedWorks}
-                  >
-                    <div className="border-2 border-transparent p-1">
-                      <Button
-                        className="size-16"
-                        size={"icon"}
-                        variant={"secondary"}
-                      >
-                        <PlusIcon />
-                      </Button>
-                    </div>
-                  </SelectCreatedWorksDialog>
-                </Suspense>
+                <p className="text-xs text-muted-foreground">
+                  選択中タブでドラッグ&ドロップすると、この順番がシリーズの設定順になります。
+                </p>
+                <SelectCreatedWorksDialogWithIds
+                  limit={ALBUM_WORKS_MAX}
+                  selectedWorkIds={selectedWorkIds}
+                  setSelectedWorkIds={setSelectedWorkIds}
+                />
               </div>
             </div>
           </ScrollArea>

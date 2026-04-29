@@ -14,6 +14,7 @@ import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { useBoolean } from "usehooks-ts"
 import { StickerDialog } from "~/components/work/sticker-dialog"
+import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 
 type Props = {
   targetCommentId: string
@@ -67,9 +68,22 @@ export function WorkCommentInput (props: Props): React.ReactNode {
           stickerId ?? "",
           stickerImageURL ?? "",
         )
+      } else {
+        throw new Error(
+          t(
+            "スタンプの送信に失敗しました。しばらくしてから再度お試しください。",
+            "Failed to send the sticker. Please try again later.",
+          ),
+        )
       }
     } catch (_e) {
-      // エラーハンドリング
+      toast(
+        getApolloErrorMessage(_e) ??
+          t(
+            "送信に失敗しました。しばらくしてから再度お試しください。",
+            "Failed to send. Please try again later.",
+          ),
+      )
     }
   }
 
@@ -154,6 +168,14 @@ export function WorkCommentInput (props: Props): React.ReactNode {
             />
           </div>
         </div>
+        {props.isWorkOwnerBlocked && (
+          <p className="pl-14 text-amber-600 text-xs">
+            {t(
+              "このユーザーをブロック中のため、コメントとスタンプは送信できません。",
+              "You cannot send comments or stickers because this user is blocked.",
+            )}
+          </p>
+        )}
       </div>
       <StickerDialog
         isOpen={isOpen}
