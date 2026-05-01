@@ -1,6 +1,7 @@
+import { gql, useMutation } from "@apollo/client/index"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { LoginDialogContent } from "~/components/login-dialog-content"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
@@ -14,8 +15,13 @@ export function LoginForm() {
   const ref = searchParams.get("result")
 
   const token = searchParams.get("token")
+  const emailToken = searchParams.get("emailToken")
 
   const isNew = searchParams.get("new")
+  const [emailTokenError, setEmailTokenError] = useState<string | null>(null)
+  const [loginWithEmailTokenMutation] = useMutation(
+    loginWithEmailTokenMutationDocument,
+  )
 
   const onClickHome = () => {
     window.location.href = "/home"
@@ -26,6 +32,66 @@ export function LoginForm() {
   const t = useTranslation()
 
   useEffect(() => {
+    if (emailToken) {
+      loginWithEmailTokenMutation({
+        variables: {
+          input: {
+            token: emailToken,
+          },
+        },
+      })
+        .then(async (result) => {
+          const loginResult = result.data?.loginWithEmailToken ?? null
+
+          if (loginResult === null) {
+            setEmailTokenError(
+              t(
+                "メール認証に失敗しました。",
+                "Email authentication failed.",
+              ),
+            )
+            return
+          }
+
+          await signInWithCustomToken(getAuth(), loginResult.token)
+
+          const nextParams = new URLSearchParams(searchParams)
+          nextParams.delete("emailToken")
+
+          if (loginResult.isNew) {
+            navigate("/new/profile", { replace: true })
+            return
+          }
+
+          navigate(
+            {
+              pathname: window.location.pathname,
+              search: nextParams.toString(),
+            },
+            { replace: true },
+          )
+        })
+        .catch((error) => {
+          console.error(
+            t(
+              "メール認証によるログインに失敗しました:",
+              "Login with email token failed:",
+            ),
+            error,
+          )
+          setEmailTokenError(
+            error instanceof Error
+              ? error.message
+              : t(
+                  "メール認証に失敗しました。",
+                  "Email authentication failed.",
+                ),
+          )
+        })
+
+      return
+    }
+
     if (token) {
       const auth = getAuth()
       signInWithCustomToken(auth, token)
@@ -56,7 +122,7 @@ export function LoginForm() {
           // 必要に応じてエラーハンドリングを追加
         })
     }
-  }, [token, isNew, navigate, searchParams, t])
+  }, [emailToken, isNew, loginWithEmailTokenMutation, navigate, searchParams, t, token])
 
   if (ref && ref === "verification") {
     return (
@@ -87,7 +153,19 @@ export function LoginForm() {
           )}
         </div>
       )}
+      {emailTokenError && (
+        <div className="mt-4 text-red-500 text-sm">{emailTokenError}</div>
+      )}
       <LoginDialogContent />
     </>
   )
 }
+
+const loginWithEmailTokenMutationDocument = gql`
+  mutation LoginWithEmailToken($input: LoginWithEmailTokenInput!) {
+    loginWithEmailToken(input: $input) {
+      token
+      isNew
+    }
+  }
+`

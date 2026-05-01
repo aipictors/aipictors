@@ -1,8 +1,9 @@
 import { PasswordLoginForm } from "~/components/password-login-form"
 import { SocialLoginButton } from "~/components/social-login-button"
+import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
 import type { FormLogin } from "~/types/form-login"
-import { useMutation } from "@apollo/client/index"
+import { gql, useMutation } from "@apollo/client/index"
 import {
   GoogleAuthProvider,
   TwitterAuthProvider,
@@ -12,7 +13,7 @@ import {
 import { RiGoogleFill, RiTwitterXFill } from "@remixicon/react"
 import { toast } from "sonner"
 import { graphql } from "gql.tada"
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { LineLoggedInWithUrlButton } from "~/components/line-logged-in-with-url-button"
 import { LineLoggedInButton } from "~/components/button/line-logged-in-button"
 import { useTranslation } from "~/hooks/use-translation"
@@ -22,10 +23,13 @@ import { useTranslation } from "~/hooks/use-translation"
  */
 export function LoginDialogContent (): React.ReactNode {
   const t = useTranslation()
+  const [email, setEmail] = useState("")
 
   const [mutation, { loading: isLoading }] = useMutation(
     loginWithPasswordMutation,
   )
+  const [sendEmailAuthLinkMutation, { loading: isSendingEmailLink }] =
+    useMutation(sendEmailAuthLinkMutationDocument)
 
   const onLogin = async (form: FormLogin) => {
     try {
@@ -44,6 +48,36 @@ export function LoginDialogContent (): React.ReactNode {
       }
       await signInWithCustomToken(getAuth(), token)
       toast(t("ログインしました。", "Login successful."))
+    } catch (error) {
+      if (error instanceof Error) {
+        toast(error.message)
+      }
+    }
+  }
+
+  const onSendEmailLink = async () => {
+    try {
+      const normalizedEmail = email.trim()
+
+      if (!normalizedEmail) {
+        toast(t("メールアドレスを入力してください", "Enter your email address"))
+        return
+      }
+
+      await sendEmailAuthLinkMutation({
+        variables: {
+          input: {
+            email: normalizedEmail,
+          },
+        },
+      })
+
+      toast(
+        t(
+          "確認メールを送信しました。メール内のリンクからログインしてください。",
+          "Verification email sent. Use the link in the email to sign in.",
+        ),
+      )
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -89,6 +123,32 @@ export function LoginDialogContent (): React.ReactNode {
       <div className="my-2 w-full space-y-2">
         <p className="text-sm">
           {t(
+            "メールアドレスでログインまたは新規登録",
+            "Log in or sign up with email",
+          )}
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Input
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder={t("メールアドレス", "Email address")}
+            disabled={isLoading || isSendingEmailLink}
+          />
+          <button
+            type="button"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90 disabled:pointer-events-none disabled:opacity-50"
+            onClick={onSendEmailLink}
+            disabled={isLoading || isSendingEmailLink}
+          >
+            {t("確認メールを送る", "Send verification email")}
+          </button>
+        </div>
+      </div>
+      <Separator />
+      <div className="my-2 w-full space-y-2">
+        <p className="text-sm">
+          {t(
             "またはアカウント情報でログイン",
             "Or log in with your account information",
           )}
@@ -106,3 +166,9 @@ const loginWithPasswordMutation = graphql(
     }
   }`,
 )
+
+const sendEmailAuthLinkMutationDocument = gql`
+  mutation SendEmailAuthLink($input: SendEmailAuthLinkInput!) {
+    sendEmailAuthLink(input: $input)
+  }
+`

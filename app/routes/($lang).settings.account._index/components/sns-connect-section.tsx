@@ -1,4 +1,4 @@
-import { useSuspenseQuery, useMutation } from "@apollo/client/index"
+import { gql, useMutation, useSuspenseQuery } from "@apollo/client/index"
 import { isApolloError } from "@apollo/client/errors"
 import { graphql } from "gql.tada"
 import {
@@ -8,9 +8,10 @@ import {
   signInWithPopup,
 } from "firebase/auth"
 import { RiGoogleFill, RiTwitterXFill } from "@remixicon/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
 import { Separator } from "~/components/ui/separator"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -20,6 +21,7 @@ const viewerUserProvidersQuery = graphql(`
       id
       user {
         id
+        mailAddress
         userProviders {
           providerId
           providerUserUid
@@ -62,10 +64,20 @@ export function SNSConnectSection() {
   const [unlinkMutation, { loading: unlinkLoading }] = useMutation(
     unlinkUserProviderMutation,
   )
+  const [sendEmailAuthLinkMutation, { loading: sendEmailLoading }] =
+    useMutation(sendEmailAuthLinkMutationDocument)
 
   const [isLinking, setIsLinking] = useState(false)
-
   const userProviders = data?.viewer?.user?.userProviders ?? []
+  const currentEmailProvider = userProviders.find((p) => p.providerId === "email")
+  const currentEmail =
+    currentEmailProvider?.providerUserUid ?? data?.viewer?.user?.mailAddress ?? ""
+  const [emailAddress, setEmailAddress] = useState(currentEmail)
+
+  useEffect(() => {
+    setEmailAddress(currentEmail)
+  }, [currentEmail])
+
   const linkedProviders = new Set(userProviders.map((p) => p.providerId))
 
   const providers: ProviderConfig[] = [
@@ -147,6 +159,38 @@ export function SNSConnectSection() {
     }
   }
 
+  const handleSendEmailLink = async () => {
+    try {
+      const normalizedEmail = emailAddress.trim()
+
+      if (!normalizedEmail) {
+        toast(t("メールアドレスを入力してください", "Enter your email address"))
+        return
+      }
+
+      await sendEmailAuthLinkMutation({
+        variables: {
+          input: {
+            email: normalizedEmail,
+          },
+        },
+      })
+
+      toast.success(
+        t(
+          "確認メールを送信しました。メール内のリンクを開くとメールログインが有効になります。",
+          "Verification email sent. Open the link in the email to enable email login.",
+        ),
+      )
+    } catch (error) {
+      if (error instanceof Error && isApolloError(error)) {
+        toast.error(error.message)
+      } else if (error instanceof Error) {
+        toast.error(error.message)
+      }
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div>
@@ -162,6 +206,35 @@ export function SNSConnectSection() {
       </div>
 
       <Separator />
+
+      <div className="rounded-lg border p-4 space-y-3">
+        <div>
+          <h3 className="font-medium">{t("メールアドレス連携", "Email Login")}</h3>
+          <p className="mt-1 text-sm text-gray-600">
+            {t(
+              "確認メールのリンクを開くと、そのメールアドレスでログインできるようになります",
+              "Open the verification email link to enable login with that email address",
+            )}
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Input
+            type="email"
+            value={emailAddress}
+            onChange={(event) => setEmailAddress(event.target.value)}
+            placeholder={t("メールアドレス", "Email address")}
+            disabled={sendEmailLoading}
+          />
+          <Button onClick={handleSendEmailLink} disabled={sendEmailLoading}>
+            {t("確認メールを送信", "Send verification email")}
+          </Button>
+        </div>
+        <p className="text-sm text-gray-500">
+          {currentEmail
+            ? t(`現在の連携先: ${currentEmail}`, `Currently linked: ${currentEmail}`)
+            : t("現在は未連携です", "Not linked yet")}
+        </p>
+      </div>
 
       <div className="space-y-4">
         {providers.map((provider) => {
@@ -221,3 +294,9 @@ export function SNSConnectSection() {
     </div>
   )
 }
+
+const sendEmailAuthLinkMutationDocument = gql`
+  mutation SendEmailAuthLinkForSettings($input: SendEmailAuthLinkInput!) {
+    sendEmailAuthLink(input: $input)
+  }
+`
