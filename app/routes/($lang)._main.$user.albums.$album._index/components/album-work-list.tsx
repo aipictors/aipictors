@@ -16,6 +16,7 @@ import {
 } from "~/components/ui/select"
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import type { SortType } from "~/types/sort-type"
 
 type Props = {
   albumId: string
@@ -28,9 +29,9 @@ type Props = {
 type ViewMode = "square" | "natural"
 type AlbumWorkOrder = IntrospectionEnum<"AlbumWorkOrderBy">
 
-const getOrderLabel = (orderBy: AlbumWorkOrder) => {
+const getOrderLabel = (orderBy: AlbumWorkOrder, sort: SortType) => {
   if (orderBy === "DATE_CREATED") {
-    return "投稿日順"
+    return sort === "ASC" ? "投稿の古い順" : "投稿日順"
   }
 
   if (orderBy === "LIKES_COUNT") {
@@ -62,16 +63,31 @@ const toOrderBy = (value: string | null): AlbumWorkOrder => {
   return "MANUAL"
 }
 
+const toSort = (value: string | null): SortType => {
+  return value === "ASC" ? "ASC" : "DESC"
+}
+
+const toSelectOrderValue = (orderBy: AlbumWorkOrder, sort: SortType) => {
+  if (orderBy === "DATE_CREATED" && sort === "ASC") {
+    return "DATE_CREATED_OLD"
+  }
+
+  return orderBy
+}
+
 export function AlbumWorkList(props: Props) {
   const [searchParams, setSearchParams] = useSearchParams()
   const page = toPage(searchParams.get("page"))
   const viewMode = toViewMode(searchParams.get("view"))
   const orderBy = toOrderBy(searchParams.get("orderBy"))
+  const sort = toSort(searchParams.get("sort"))
+  const selectOrderValue = toSelectOrderValue(orderBy, sort)
 
   const updateSearchParams = (updates: {
     page?: string | null
     view?: ViewMode | null
     orderBy?: AlbumWorkOrder | null
+    sort?: SortType | null
   }) => {
     const params = new URLSearchParams(searchParams)
 
@@ -100,6 +116,15 @@ export function AlbumWorkList(props: Props) {
       params.delete("page")
     }
 
+    if (updates.sort !== undefined) {
+      if (updates.sort === null || updates.sort === "DESC") {
+        params.delete("sort")
+      } else {
+        params.set("sort", updates.sort)
+      }
+      params.delete("page")
+    }
+
     setSearchParams(params)
   }
 
@@ -109,7 +134,7 @@ export function AlbumWorkList(props: Props) {
       offset: 32 * page,
       limit: 32,
       orderBy,
-      sort: "DESC",
+      sort,
     },
     fetchPolicy: props.refreshKey ? "network-only" : "cache-first",
     nextFetchPolicy: "cache-first",
@@ -122,21 +147,37 @@ export function AlbumWorkList(props: Props) {
       <div className="mb-4 flex items-center justify-end">
         <div className="flex flex-wrap items-center justify-end gap-2">
           <Select
-            value={orderBy}
+            value={selectOrderValue}
             onValueChange={(value) => {
-              if (value === "DATE_CREATED" || value === "LIKES_COUNT" || value === "MANUAL") {
-                updateSearchParams({ orderBy: value })
+              if (value === "MANUAL") {
+                updateSearchParams({ orderBy: value, sort: null })
+                return
+              }
+
+              if (value === "DATE_CREATED") {
+                updateSearchParams({ orderBy: value, sort: "DESC" })
+                return
+              }
+
+              if (value === "DATE_CREATED_OLD") {
+                updateSearchParams({ orderBy: "DATE_CREATED", sort: "ASC" })
+                return
+              }
+
+              if (value === "LIKES_COUNT") {
+                updateSearchParams({ orderBy: value, sort: null })
               }
             }}
           >
             <SelectTrigger className="w-40">
               <SelectValue placeholder="並び順">
-                {getOrderLabel(orderBy)}
+                {getOrderLabel(orderBy, sort)}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="MANUAL">設定順</SelectItem>
               <SelectItem value="DATE_CREATED">投稿日順</SelectItem>
+              <SelectItem value="DATE_CREATED_OLD">投稿の古い順</SelectItem>
               <SelectItem value="LIKES_COUNT">いいね順</SelectItem>
             </SelectContent>
           </Select>

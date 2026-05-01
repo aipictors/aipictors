@@ -41,9 +41,9 @@ export function WorkImageThumbnailCarousel ({
           {allImageURLs.map((imageURL, index) => {
             // 選択された画像かどうかを判定し、対応するスタイルを適用
             const isSelected = imageURL === selectedImage
-            const imageClassName = isSelected
-              ? "h-20 w-full cursor-pointer border-2 border-clear-bright-blue object-cover"
-              : "h-20 w-full cursor-pointer border-2 border-transparent object-cover"
+            const frameClassName = isSelected
+              ? "group relative flex h-20 w-full cursor-pointer items-center justify-center overflow-hidden rounded-md border-2 border-clear-bright-blue bg-zinc-100 transition-colors dark:bg-zinc-900"
+              : "group relative flex h-20 w-full cursor-pointer items-center justify-center overflow-hidden rounded-md border-2 border-transparent bg-zinc-100 transition-colors hover:border-zinc-300 dark:bg-zinc-900 dark:hover:border-zinc-700"
 
             return (
               <CarouselItem
@@ -51,17 +51,20 @@ export function WorkImageThumbnailCarousel ({
                 key={index}
                 className="basis-[6.5rem] pl-1 sm:basis-[7.5rem] md:basis-[8.5rem]"
               >
-                <img
-                  className={imageClassName}
-                  alt=""
-                  key={imageURL}
-                  src={imageURL}
-                  loading="lazy"
+                <button
+                  type="button"
+                  className={frameClassName}
                   onClick={() => onSelectImage(imageURL)}
                   onKeyUp={(event) => handleKeyPress(imageURL, event)}
-                  // biome-ignore lint/a11y/noNoninteractiveTabindex: Intentional
-                  tabIndex={0}
-                />
+                >
+                  <img
+                    className="h-full w-full object-contain"
+                    alt=""
+                    key={imageURL}
+                    src={imageURL}
+                    loading="lazy"
+                  />
+                </button>
               </CarouselItem>
             )
           })}

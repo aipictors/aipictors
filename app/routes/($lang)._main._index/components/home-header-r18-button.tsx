@@ -30,6 +30,64 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import { userBasicSettingQuery } from "~/routes/($lang)._main._index/components/user-navigation-queries"
 
+const getLocalePrefix = (pathname: string) => {
+  const localeMatch = pathname.match(/^\/(en)(?=\/|$)/)
+  return localeMatch ? `/${localeMatch[1]}` : ""
+}
+
+const buildSensitiveHomePath = (pathname: string, search: string) => {
+  const localePrefix = getLocalePrefix(pathname)
+  const pathWithoutLocale = pathname.slice(localePrefix.length) || "/"
+  const params = new URLSearchParams(search)
+
+  if (pathWithoutLocale === "/" || pathWithoutLocale === "/home") {
+    params.set("tab", pathWithoutLocale === "/home" ? "home" : "new")
+    return `${localePrefix}/r?${params.toString()}`
+  }
+
+  if (pathWithoutLocale === "/follow-user-works") {
+    params.set("tab", "follow-user")
+    return `${localePrefix}/r?${params.toString()}`
+  }
+
+  if (pathWithoutLocale === "/follow-tag-works") {
+    params.set("tab", "follow-tag")
+    return `${localePrefix}/r?${params.toString()}`
+  }
+
+  return `${localePrefix}/r${pathWithoutLocale}${search}`
+}
+
+const buildAllAgesPath = (pathname: string, search: string) => {
+  const localePrefix = getLocalePrefix(pathname)
+  const pathWithoutLocale = pathname.slice(localePrefix.length) || "/"
+
+  if (pathWithoutLocale !== "/r") {
+    const pathWithoutR = pathWithoutLocale.replace(/^\/r/, "")
+    return `${localePrefix}${pathWithoutR || "/"}${search}`
+  }
+
+  const params = new URLSearchParams(search)
+  const tab = params.get("tab")
+  params.delete("tab")
+  const restSearch = params.toString()
+  const searchSuffix = restSearch.length > 0 ? `?${restSearch}` : ""
+
+  if (tab === "home") {
+    return `${localePrefix}/home${searchSuffix}`
+  }
+
+  if (tab === "follow-user") {
+    return `${localePrefix}/follow-user-works${searchSuffix}`
+  }
+
+  if (tab === "follow-tag") {
+    return `${localePrefix}/follow-tag-works${searchSuffix}`
+  }
+
+  return `${localePrefix}/${searchSuffix}`
+}
+
 export function HomeHeaderR18Button() {
   const authContext = useContext(AuthContext)
   const navigate = useNavigate()
@@ -88,36 +146,23 @@ export function HomeHeaderR18Button() {
   }
 
   // 現在のURLがR18ページかどうかを判定
-  const isCurrentlyR18 = location.pathname.startsWith("/r")
+  const localePrefix = getLocalePrefix(location.pathname)
+  const pathWithoutLocale = location.pathname.slice(localePrefix.length) || "/"
+  const isCurrentlyR18 = pathWithoutLocale.startsWith("/r")
 
   // R18ボタンクリック処理
   const handleR18ButtonClick = () => {
     if (isCurrentlyR18) {
-      // 現在R18ページ → 全年齢ページに遷移（/rを削除）
-      // R18から全年齢への切り替えは年齢確認不要
-      const currentPath = location.pathname
-      if (currentPath === "/r") {
-        navigate("/")
-      } else {
-        const pathWithoutR = currentPath.replace(/^\/r/, "")
-        navigate(pathWithoutR || "/")
-      }
+      navigate(buildAllAgesPath(location.pathname, location.search))
     } else {
-      // 現在全年齢ページ → R18ページに遷移（/rを追加）
       if (authContext.isNotLoggedIn) {
-        // 年齢確認の記憶をチェック
         if (isAgeConfirmed) {
-          // 年齢確認済みの場合は直接R18ページに遷移
-          const currentPath = location.pathname
-          navigate(currentPath === "/" ? "/r" : `/r${currentPath}`)
+          navigate(buildSensitiveHomePath(location.pathname, location.search))
         } else {
-          // 未確認の場合は年齢確認ダイアログを表示
           setShowAgeConfirmDialog(true)
         }
       } else {
-        // ログイン済みの場合は直接R18ページに遷移
-        const currentPath = location.pathname
-        navigate(currentPath === "/" ? "/r" : `/r${currentPath}`)
+        navigate(buildSensitiveHomePath(location.pathname, location.search))
       }
     }
   }
@@ -133,9 +178,7 @@ export function HomeHeaderR18Button() {
     setShowAgeConfirmDialog(false)
     setRememberChoice(false)
 
-    // 年齢確認後は必ずR18ページに遷移（全年齢→R18のみ）
-    const currentPath = location.pathname
-    navigate(currentPath === "/" ? "/r" : `/r${currentPath}`)
+    navigate(buildSensitiveHomePath(location.pathname, location.search))
   }
 
   // 年齢確認ダイアログのキャンセル処理

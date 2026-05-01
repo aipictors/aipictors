@@ -781,7 +781,7 @@ export const sensitiveWorkArticleFragment = graphql(
       createdBookmarksCount
       isMuted
       isBlocked
-      works(offset: 0, limit: 16, where: { ratings: [G, R15] }) {
+      works(offset: 0, limit: 16, where: { ratings: [R18, R18G] }) {
         id
         userId
         largeThumbnailImageURL

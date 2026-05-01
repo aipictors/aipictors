@@ -13,6 +13,7 @@ import type { MetaFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { type FragmentOf, graphql } from "gql.tada"
 import { useEffect, useState } from "react"
+import type { SortType } from "~/types/sort-type"
 import { createMeta } from "~/utils/create-meta"
 import { config, META } from "~/config"
 
@@ -28,6 +29,10 @@ const toAlbumWorkOrder = (value: string | null): AlbumWorkOrderParam => {
   }
 
   return "MANUAL"
+}
+
+const toSort = (value: string | null): SortType => {
+  return value === "ASC" ? "ASC" : "DESC"
 }
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -49,6 +54,7 @@ export async function loader(props: LoaderFunctionArgs) {
       : Number.parseInt(url.searchParams.get("page") as string)
     : 0
   const orderBy = toAlbumWorkOrder(url.searchParams.get("orderBy"))
+  const sort = toSort(url.searchParams.get("sort"))
 
   const result = await loaderClient.query({
     query: LoaderQuery,
@@ -60,7 +66,7 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: 0,
       limit: 16,
       orderBy,
-      sort: "DESC",
+      sort,
     },
   })
 
