@@ -137,6 +137,8 @@ type GenerateUserEventContentMutationVars = {
   }
 }
 
+const MAX_USER_EVENT_DURATION_SECONDS = 31 * 24 * 60 * 60
+
 const toDateTimeLocalValue = (time: number) => {
   if (!time) {
     return ""
@@ -505,6 +507,19 @@ export function UserEventEditorPage(props: Props) {
       return
     }
 
+      const startAt = toUnixTime(state.startAt)
+      const endAt = toUnixTime(state.endAt)
+
+      if (endAt - startAt > MAX_USER_EVENT_DURATION_SECONDS) {
+        toast(
+          t(
+            "開催期間は1か月以内に設定してください",
+            "Set the event duration to one month or less",
+          ),
+        )
+        return
+      }
+
     setIsSaving(true)
 
     try {
@@ -522,8 +537,8 @@ export function UserEventEditorPage(props: Props) {
         rankingEnabled: state.rankingEnabled,
         rankingType: state.rankingEnabled ? state.rankingType : null,
         visibilityType: state.visibilityType,
-        startAt: toUnixTime(state.startAt),
-        endAt: toUnixTime(state.endAt),
+        startAt,
+        endAt,
         announcementText: state.announcementText,
         ratings: state.ratings,
       }
@@ -778,8 +793,8 @@ export function UserEventEditorPage(props: Props) {
                 />
                 <p className="text-muted-foreground text-xs">
                   {t(
-                    "日本時間で入力してください。開始日時より後の時刻を指定してください。",
-                    "Enter the time in JST. Choose a time after the start time.",
+                    "日本時間で入力してください。開始日時より後、かつ開催期間が1か月以内になるように指定してください。",
+                    "Enter the time in JST. Choose a time after the start time and keep the event duration within one month.",
                   )}
                 </p>
               </div>
