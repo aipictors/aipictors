@@ -20,9 +20,9 @@ import {
   SunIcon,
 } from "lucide-react"
 import { useContext } from "react"
-import { useTheme } from "next-themes"
 import { AuthContext } from "~/contexts/auth-context"
 import { LoginDialogButton } from "~/components/login-dialog-button"
+import { useTheme } from "~/components/theme-provider"
 import { useLocale } from "~/hooks/use-locale"
 import { useTranslation } from "~/hooks/use-translation"
 import { useLocation, useNavigate } from "@remix-run/react"

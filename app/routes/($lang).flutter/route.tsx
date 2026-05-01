@@ -1,6 +1,6 @@
 import { Outlet, useSearchParams } from "@remix-run/react"
-import { useTheme } from "next-themes"
 import { useEffect } from "react"
+import { useTheme } from "~/components/theme-provider"
 
 export default function FlutterLayout () {
   const { setTheme } = useTheme()

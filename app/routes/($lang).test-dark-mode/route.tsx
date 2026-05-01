@@ -1,5 +1,5 @@
-import { useTheme } from "next-themes"
 import { Button } from "~/components/ui/button"
+import { useTheme } from "~/components/theme-provider"
 
 export default function TestDarkMode () {
   const { theme, setTheme } = useTheme()
