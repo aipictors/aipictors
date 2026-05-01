@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client/index"
 import { useNavigate, useSearchParams } from "@remix-run/react"
 import { getAuth, signInWithCustomToken } from "firebase/auth"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { LoginDialogContent } from "~/components/login-dialog-content"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
@@ -19,6 +19,8 @@ export function LoginForm() {
 
   const isNew = searchParams.get("new")
   const [emailTokenError, setEmailTokenError] = useState<string | null>(null)
+  const handledEmailTokenRef = useRef<string | null>(null)
+  const handledCustomTokenRef = useRef<string | null>(null)
   const [loginWithEmailTokenMutation] = useMutation(
     loginWithEmailTokenMutationDocument,
   )
@@ -32,97 +34,133 @@ export function LoginForm() {
   const t = useTranslation()
 
   useEffect(() => {
-    if (emailToken) {
-      loginWithEmailTokenMutation({
-        variables: {
-          input: {
-            token: emailToken,
-          },
-        },
-      })
-        .then(async (result) => {
-          const loginResult = result.data?.loginWithEmailToken ?? null
-
-          if (loginResult === null) {
-            setEmailTokenError(
-              t(
-                "メール認証に失敗しました。",
-                "Email authentication failed.",
-              ),
-            )
-            return
-          }
-
-          await signInWithCustomToken(getAuth(), loginResult.token)
-
-          const nextParams = new URLSearchParams(searchParams)
-          nextParams.delete("emailToken")
-
-          if (loginResult.isNew) {
-            navigate("/new/profile", { replace: true })
-            return
-          }
-
-          navigate(
-            {
-              pathname: window.location.pathname,
-              search: nextParams.toString(),
-            },
-            { replace: true },
-          )
-        })
-        .catch((error) => {
-          console.error(
-            t(
-              "メール認証によるログインに失敗しました:",
-              "Login with email token failed:",
-            ),
-            error,
-          )
-          setEmailTokenError(
-            error instanceof Error
-              ? error.message
-              : t(
-                  "メール認証に失敗しました。",
-                  "Email authentication failed.",
-                ),
-          )
-        })
-
+    if (!emailToken || handledEmailTokenRef.current === emailToken) {
       return
     }
 
-    if (token) {
-      const auth = getAuth()
-      signInWithCustomToken(auth, token)
-        .then(() => {
-          // 認証が成功したらURLからトークンを削除してリダイレクト
-          searchParams.delete("token")
+    handledEmailTokenRef.current = emailToken
 
-          if (isNew === "1") {
-            navigate("/new/profile", { replace: true })
-          } else {
-            navigate(
-              {
-                pathname: window.location.pathname,
-                search: searchParams.toString(),
-              },
-              { replace: true },
-            )
-          }
-        })
-        .catch((error) => {
-          console.error(
+    let isCancelled = false
+
+    loginWithEmailTokenMutation({
+      variables: {
+        input: {
+          token: emailToken,
+        },
+      },
+    })
+      .then(async (result) => {
+        if (isCancelled) {
+          return
+        }
+
+        const loginResult = result.data?.loginWithEmailToken ?? null
+
+        if (loginResult === null) {
+          setEmailTokenError(
             t(
-              "カスタムトークンによるログインに失敗しました:",
-              "Login with custom token failed:",
+              "メール認証に失敗しました。",
+              "Email authentication failed.",
             ),
-            error,
           )
-          // 必要に応じてエラーハンドリングを追加
-        })
+          return
+        }
+
+        await signInWithCustomToken(getAuth(), loginResult.token)
+
+        const nextParams = new URLSearchParams(window.location.search)
+        nextParams.delete("emailToken")
+
+        if (loginResult.isNew) {
+          navigate("/new/profile", { replace: true })
+          return
+        }
+
+        navigate(
+          {
+            pathname: window.location.pathname,
+            search: nextParams.toString(),
+          },
+          { replace: true },
+        )
+      })
+      .catch((error) => {
+        if (isCancelled) {
+          return
+        }
+
+        console.error(
+          t(
+            "メール認証によるログインに失敗しました:",
+            "Login with email token failed:",
+          ),
+          error,
+        )
+        setEmailTokenError(
+          error instanceof Error
+            ? error.message
+            : t(
+                "メール認証に失敗しました。",
+                "Email authentication failed.",
+              ),
+        )
+      })
+
+    return () => {
+      isCancelled = true
     }
-  }, [emailToken, isNew, loginWithEmailTokenMutation, navigate, searchParams, t, token])
+  }, [emailToken, loginWithEmailTokenMutation, navigate, t])
+
+  useEffect(() => {
+    if (!token || handledCustomTokenRef.current === token) {
+      return
+    }
+
+    handledCustomTokenRef.current = token
+
+    let isCancelled = false
+
+    const auth = getAuth()
+    signInWithCustomToken(auth, token)
+      .then(() => {
+        if (isCancelled) {
+          return
+        }
+
+        const nextParams = new URLSearchParams(window.location.search)
+        nextParams.delete("token")
+
+        if (isNew === "1") {
+          navigate("/new/profile", { replace: true })
+          return
+        }
+
+        navigate(
+          {
+            pathname: window.location.pathname,
+            search: nextParams.toString(),
+          },
+          { replace: true },
+        )
+      })
+      .catch((error) => {
+        if (isCancelled) {
+          return
+        }
+
+        console.error(
+          t(
+            "カスタムトークンによるログインに失敗しました:",
+            "Login with custom token failed:",
+          ),
+          error,
+        )
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [isNew, navigate, t, token])
 
   if (ref && ref === "verification") {
     return (
