@@ -118,7 +118,8 @@ export function GenerationTaskList(props: Props) {
       task.status === "PENDING" ||
       task.status === "IN_PROGRESS" ||
       task.status === "DONE" ||
-      task.status === "RESERVED"
+      task.status === "RESERVED" ||
+      task.status === "ERROR"
     )
   })
 
@@ -128,7 +129,8 @@ export function GenerationTaskList(props: Props) {
       result.status === "PENDING" ||
       result.status === "IN_PROGRESS" ||
       result.status === "DONE" ||
-      result.status === "RESERVED"
+      result.status === "RESERVED" ||
+      result.status === "ERROR"
     )
   })
 

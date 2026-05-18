@@ -159,7 +159,10 @@ export function GenerationTaskEditableCard (props: Props) {
     )
   }
 
-  if (!props.task.imageUrl) {
+  if (
+    !props.task.imageUrl &&
+    (props.task.status === "PENDING" || props.task.status === "IN_PROGRESS")
+  ) {
     return (
       <InProgressGenerationCard
         onCancel={() => onCancelTask(props.taskNanoid)}

@@ -368,6 +368,8 @@ export function GenerationTaskSheetView (props: Props) {
       ? (cachedImage ?? cachedResultImage)
       : props.task
 
+  const displayStatus = imageGenerationTask?.status ?? props.task.status
+
   useEffect(() => {
     if (imageGenerationTask && imageGenerationTask.status !== "IN_PROGRESS") {
       setRating(imageGenerationTask?.rating ?? 0)
@@ -376,8 +378,8 @@ export function GenerationTaskSheetView (props: Props) {
   }, [imageGenerationTask])
 
   // Early returns after hooks
-  if (props.task.status === "IN_PROGRESS") {
-    return <InProgressImageGenerationTaskResult task={props.task} />
+  if (displayStatus === "PENDING" || displayStatus === "IN_PROGRESS") {
+    return <InProgressImageGenerationTaskResult task={imageGenerationTask} />
   }
 
   if (userNanoid === null) return null
