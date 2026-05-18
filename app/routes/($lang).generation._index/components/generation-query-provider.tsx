@@ -12,7 +12,7 @@ import {
   NegativePromptCategoryContextFragment,
   PromptCategoryContextFragment,
 } from "~/routes/($lang).generation._index/contexts/generation-query-context"
-import { useSuspenseQuery } from "@apollo/client/index"
+import { useQuery, useSuspenseQuery } from "@apollo/client/index"
 import { graphql, readFragment, type ResultOf } from "gql.tada"
 import { startTransition, useContext, useEffect, useRef } from "react"
 
@@ -32,7 +32,10 @@ export function GenerationQueryProvider (props: Props) {
     skip: authContext.isNotLoggedIn,
   })
 
-  const { data: statusQueryResult, refetch } = useSuspenseQuery(StatusQuery)
+  const { data: statusQueryResult, refetch } = useQuery(StatusQuery, {
+    errorPolicy: "all",
+    fetchPolicy: "cache-and-network",
+  })
 
   const currentPass = readFragment(
     CurrentPassContextFragment,
@@ -41,7 +44,7 @@ export function GenerationQueryProvider (props: Props) {
 
   const engineStatus = readFragment(
     ImageGenerationEngineStatusContextFragment,
-    statusQueryResult.imageGenerationEngineStatus,
+    statusQueryResult?.imageGenerationEngineStatus,
   )
 
   const user = readFragment(
@@ -51,7 +54,7 @@ export function GenerationQueryProvider (props: Props) {
 
   const userStatus = readFragment(
     ImageGenerationUserStatusContextFragment,
-    statusQueryResult.viewer,
+    statusQueryResult?.viewer,
   )
 
   const isTimeout = useFocusTimeout()

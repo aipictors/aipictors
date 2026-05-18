@@ -26,13 +26,16 @@ import { GenerationLinksView } from "~/routes/($lang).generation._index/componen
 import { GenerationFormFooter } from "~/routes/($lang).generation._index/components/generation-form-footer"
 import { SettingLanguageUsedForPromptView } from "~/routes/($lang).generation._index/components/setting-language-used-for-prompt-view/setting-language-used-for-prompt-view"
 import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import { GenerationLogsTab } from "~/routes/($lang).generation._index/components/generation-side-tabs-view/generation-logs-tab"
+import { useContext } from "react"
 
 /**
  * 画像生成
  */
 export default function GenerationPage () {
+  const authContext = useContext(AuthContext)
   const [rating, setRating] = useState(-1)
 
   const [protect, setProtect] = useState(-1)
@@ -41,7 +44,10 @@ export default function GenerationPage () {
 
   const [isPreviewMode, togglePreviewMode] = useState(false)
 
-  const { data: token } = useQuery(ViewerTokenQuery)
+  const { data: token } = useQuery(ViewerTokenQuery, {
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    fetchPolicy: "cache-and-network",
+  })
 
   const localStorageUserToken = getUserToken()
 

@@ -1,4 +1,5 @@
 import { config } from "~/config"
+import { AuthContext } from "~/contexts/auth-context"
 import { GenerationViewCard } from "~/routes/($lang).generation._index/components/generation-view-card"
 import {
   GenerationTaskList,
@@ -13,7 +14,7 @@ import type { TaskContentPositionType } from "~/routes/($lang).generation._index
 import type { TaskListThumbnailType } from "~/routes/($lang).generation._index/types/task-list-thumbnail-type"
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 
 type Props = {
   rating: number
@@ -32,6 +33,7 @@ type Props = {
  */
 export function GenerationTaskListView (props: Props) {
   const context = useGenerationContext()
+  const authContext = useContext(AuthContext)
 
   const state = GenerationConfigContext.useSelector((snap) => {
     return snap.value
@@ -53,6 +55,7 @@ export function GenerationTaskListView (props: Props) {
   const { data: tasks, refetch: taskRefetch } = useQuery(
     viewerImageGenerationTasksQuery,
     {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
       variables: {
         limit:
           props.protect !== 1 && (props.rating === 0 || props.rating === -1)
@@ -68,13 +71,14 @@ export function GenerationTaskListView (props: Props) {
           }),
         },
       },
-      fetchPolicy: "cache-first",
+      fetchPolicy: "cache-and-network",
     },
   )
 
   const { data: results, refetch: resultRefetch } = useQuery(
     viewerImageGenerationResultsQuery,
     {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
       variables: {
         limit:
           props.protect !== 1 && (props.rating === 0 || props.rating === -1)
@@ -93,6 +97,7 @@ export function GenerationTaskListView (props: Props) {
           }),
         },
       },
+      fetchPolicy: "cache-and-network",
     },
   )
 
@@ -112,9 +117,14 @@ export function GenerationTaskListView (props: Props) {
   const autoRefreshRequestedAtRef = useRef<number>(0)
 
   useEffect(() => {
+    if (authContext.isLoading || authContext.isNotLoggedIn) {
+      return
+    }
     taskRefetch()
     resultRefetch()
   }, [
+    authContext.isLoading,
+    authContext.isNotLoggedIn,
     queryData.userStatus?.inProgressImageGenerationTasksCount ||
       queryData.userStatus?.inProgressImageGenerationReservedTasksCount,
   ])

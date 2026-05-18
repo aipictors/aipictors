@@ -35,6 +35,7 @@ __generated__
 
 # production
 /build
+/build.generation.*
 
 # misc
 .DS_Store

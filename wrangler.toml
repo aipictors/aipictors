@@ -5,8 +5,8 @@ assets = { directory = "./build/client" }
 
 # Worker 実行時の ctx.env に渡す環境変数（ローカル起動を含む）
 [vars]
-VITE_GRAPHQL_ENDPOINT = "http://153.122.67.230/aipictors-system/"
-VITE_GRAPHQL_ENDPOINT_REMIX = "http://153.122.67.230/aipictors-system/"
+VITE_GRAPHQL_ENDPOINT = "https://api.aipictors.com/"
+VITE_GRAPHQL_ENDPOINT_REMIX = "https://api.aipictors.com/"
 AIPICTORS_API_BASE_URL = "https://backend.aipictors.com"
 
 # Server-side secrets/vars for points payment API.

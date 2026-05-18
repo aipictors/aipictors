@@ -9,6 +9,24 @@ import { config } from "~/config"
 
 const httpLink = createHttpLink({
   uri: config.graphql.endpoint,
+  fetch: async (uri, options) => {
+    const response = await fetch(uri, options)
+
+    if (!response.ok && typeof window === "undefined") {
+      const clonedResponse = response.clone()
+      const responseText = await clonedResponse.text().catch(() => "")
+
+      console.error("GraphQL request failed", {
+        endpoint: typeof uri === "string" ? uri : uri.toString(),
+        status: response.status,
+        server: response.headers.get("server"),
+        cfRay: response.headers.get("cf-ray"),
+        responseText: responseText.slice(0, 400),
+      })
+    }
+
+    return response
+  },
   // TODO: タイムアウトを設定する
   // fetchOptions: {
   //   signal: AbortSignal.timeout(2000),

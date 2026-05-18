@@ -30,14 +30,14 @@ const httpLink = createHttpLink({
 const contextSetter: ContextSetter = async (_, context) => {
   if (getApps().length === 0) {
     return {
-      headers: { ...context.headers, authorization: null, platform: "web" },
+      headers: { ...context.headers, platform: "web" },
     }
   }
 
   const currentUser = getAuth().currentUser
   if (!currentUser) {
     return {
-      headers: { ...context.headers, authorization: null, platform: "web" },
+      headers: { ...context.headers, platform: "web" },
     }
   }
 
