@@ -1,9 +1,9 @@
 この手順書にないパターンの実装があれば開発者に確認しなさい。
 
-# Aipictors（Remix + Cloudflare Pages）
+# Aipictors（Remix + Cloudflare Workers）
 
 ## Big Picture（重要な境界）
-- フロントはRemix（Vite）で、Cloudflare Pages Functionsで配信する（エントリは `functions/[[path]].ts`）。
+- フロントはRemix（Vite）で、`functions/[[path]].ts` を `wrangler pages functions build` して Cloudflare Workers に配信する。
 - ルーティングはファイルベースの `flatRoutes()`（定義: `app/routes.ts`、実体: `app/routes/**/route.tsx`）。
 - GraphQLは `gql.tada` + `@apollo/client` を使用（例: `app/routes/($lang)._main.posts.$post._index/route.tsx`）。
 - GraphQL endpointはSSR/ブラウザで切り替わる（`app/config.ts` の `graphql.endpoint`、envは `app/env.ts`）。
@@ -13,7 +13,7 @@
 ## 開発ワークフロー（bun）
 - 依存関係: `bun i`
 - 開発: `bun run dev`（Remix `vite:dev`。`vite.config.ts` で `cloudflareDevProxyVitePlugin()` を使用）
-- ビルド/ローカル起動: `bun run build` / `bun run start`（`wrangler pages dev`）
+- ビルド/ローカル起動: `bun run build` / `bun run start`（ローカル起動は `wrangler pages dev` を利用）
 - 型チェック: `bun run check`
 - フォーマット/リント: `bun run format`（Biome）/ `bun run lint`（app配下のみ）
 - テスト: `bun test`

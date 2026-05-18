@@ -3,14 +3,14 @@ compatibility_date = "2024-11-11"
 main = "./build/worker/index.js"
 assets = { directory = "./build/client" }
 
-# Pages Functions 実行時の ctx.env に渡す環境変数（ローカル: wrangler pages dev など）
+# Worker 実行時の ctx.env に渡す環境変数（ローカル起動を含む）
 [vars]
-VITE_GRAPHQL_ENDPOINT = "https://aipics.fly.dev"
-VITE_GRAPHQL_ENDPOINT_REMIX = "https://aipics.fly.dev"
+VITE_GRAPHQL_ENDPOINT = "http://153.122.67.230/aipictors-system/"
+VITE_GRAPHQL_ENDPOINT_REMIX = "http://153.122.67.230/aipictors-system/"
 AIPICTORS_API_BASE_URL = "https://backend.aipictors.com"
 
 # Server-side secrets/vars for points payment API.
-# Set these in Cloudflare dashboard (Pages project > Settings > Variables) for production.
+# Set these in the Cloudflare Worker settings for production.
 # STRIPE_SECRET_KEY = ""
 # AIPICTORS_API_INTERNAL_TOKEN = ""
 # AIPICTORS_API_CF_ACCESS_CLIENT_ID = ""

@@ -35,6 +35,7 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const result = await loaderClient.query({
     query: UserQuery,
+    errorPolicy: "all",
     variables: {
       userId: decodeURIComponent(props.params.user),
     },
@@ -99,6 +100,7 @@ export default function UserLayout() {
   const data = useLoaderData<typeof loader>()
 
   const { data: userRet } = useQuery(UserQuery, {
+    errorPolicy: "all",
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       userId: decodeURIComponent(params.user),
