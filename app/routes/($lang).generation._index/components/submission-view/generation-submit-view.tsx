@@ -80,9 +80,13 @@ export function GenerationSubmissionView (props: Props) {
   // IPアドレス取得
   const { ipInfo } = useIpAddress()
 
+  const authContext = useContext(AuthContext)
+
   const { data: pass, refetch: refetchPass } = useQuery(
     viewerCurrentPassQuery,
-    {},
+    {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+    },
   )
 
   const [createTask, { loading: isCreatingTask }] = useMutation(
@@ -198,8 +202,6 @@ export function GenerationSubmissionView (props: Props) {
       },
     },
   )
-
-  const authContext = useContext(AuthContext)
 
   const { data: lineUserId } = useQuery(viewerLineUserIdQuery, {
     skip: authContext.isNotLoggedIn,

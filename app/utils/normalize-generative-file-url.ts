@@ -3,6 +3,18 @@ const uuidRegex =
 
 const canonicalHost = "generative-files.aipictors.com"
 
+function sanitizeQuotedUrl(url: string): string {
+  const decodedQuotes = url
+    .trim()
+    .replace(/&(quot|#34|#x22);/gi, '"')
+    .replace(/^['"]+|['"]+$/g, "")
+
+  return decodedQuotes.replace(
+    /^(https?:\/\/[^\s"']+)["'](\/.*)$/i,
+    "$1$2",
+  )
+}
+
 function getBaseUrlForParsing() {
   if (typeof window !== "undefined") {
     return window.location.href
@@ -19,15 +31,17 @@ function getBaseUrlForParsing() {
 export function normalizeGenerativeFileUrl(url: string): string {
   if (!url) return url
 
-  if (url.startsWith("blob:") || url.startsWith("data:")) {
-    return url
+  const sanitizedUrl = sanitizeQuotedUrl(url)
+
+  if (sanitizedUrl.startsWith("blob:") || sanitizedUrl.startsWith("data:")) {
+    return sanitizedUrl
   }
 
   let parsed: URL
   try {
-    parsed = new URL(url, getBaseUrlForParsing())
+    parsed = new URL(sanitizedUrl, getBaseUrlForParsing())
   } catch {
-    return url
+    return sanitizedUrl
   }
 
   const hostname = parsed.hostname
@@ -35,14 +49,14 @@ export function normalizeGenerativeFileUrl(url: string): string {
     hostname !== "generative.files.aipictors.com" &&
     hostname !== canonicalHost
   ) {
-    return url
+    return sanitizedUrl
   }
 
   const pathSegments = parsed.pathname.split("/").filter(Boolean)
   const maybeId = pathSegments[0]
 
   if (!maybeId || !uuidRegex.test(maybeId)) {
-    return url
+    return sanitizedUrl
   }
 
   return `https://${canonicalHost}/${maybeId}`

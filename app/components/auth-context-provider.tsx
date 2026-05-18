@@ -130,21 +130,14 @@ export function AuthContextProvider (props: Props): React.ReactNode {
       // モバイル端末では更に短いタイムアウトで早期フォールバック
       const tokenTimeout = isMobileDevice ? 1000 : 1500
 
-      // UIブロックを防ぐため、ユーザー情報を先に設定
-      const basicUserInfo = {
-        userId: user.uid,
-        login: user.displayName || user.email?.split("@")[0] || user.uid,
-        name: user.displayName || "User",
-        picture: user.photoURL || null,
-      } as ParsedToken
-
-      // 即座にUIを更新（詳細トークンは後から更新）
+      // Firebase user だけでは API 認証に必要な ID token の有効性を保証できない。
+      // logged-in 状態は getIdTokenResult が成功した後にだけ公開する。
       setCurrentUser(user)
-      setClaims(basicUserInfo)
-      setLoadingState(false)
+      setClaims(null)
+      setLoadingState(true)
 
       // モバイル軽量ログ
-      debugLog.mobileLite(`Auth: UI updated with basic info for ${user.uid}`)
+      debugLog.mobileLite(`Auth: Verifying token for ${user.uid}`)
 
       // トークン詳細情報を非同期で取得（UIをブロックしない）
       Promise.race([
@@ -161,6 +154,7 @@ export function AuthContextProvider (props: Props): React.ReactNode {
 
           // 詳細トークン情報でクレームを更新
           setClaims({ ...tokenResult.claims })
+          setLoadingState(false)
           debugLog.auth("Token details updated successfully")
 
           // Analytics のユーザープロパティ設定も遅延実行（モバイル最適化）
@@ -202,7 +196,8 @@ export function AuthContextProvider (props: Props): React.ReactNode {
             error: error.message,
             isMobile: isMobileDevice,
           })
-          // トークン詳細取得に失敗した場合でも、基本情報はすでに設定済み
+          setClaims(null)
+          setLoadingState(false)
 
           // バックグラウンドで再試行（モバイル端末では少し遅延）
           const retryDelay = isMobileDevice ? 3000 : 2000
@@ -210,6 +205,7 @@ export function AuthContextProvider (props: Props): React.ReactNode {
             getIdTokenResult(user, true)
               .then((result) => {
                 setClaims({ ...result.claims })
+                setLoadingState(false)
                 debugLog.auth("Token retry succeeded")
               })
               .catch(() => {

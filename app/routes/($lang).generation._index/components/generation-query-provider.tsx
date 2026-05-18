@@ -29,7 +29,7 @@ export function GenerationQueryProvider (props: Props) {
   const authContext = useContext(AuthContext)
 
   const { data: currentPassQueryResult } = useSuspenseQuery(CurrentPassQuery, {
-    skip: authContext.isNotLoggedIn,
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
   const { data: statusQueryResult, refetch } = useQuery(StatusQuery, {
