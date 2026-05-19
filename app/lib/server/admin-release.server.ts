@@ -53,24 +53,6 @@ const resolveGraphqlEndpoint = (context: ActionFunctionArgs["context"]) => {
   return getServerEnvValue(context, "VITE_GRAPHQL_ENDPOINT_REMIX")
 }
 
-const resolveFallbackThumbnailUrl = async (props: {
-  microCmsClient: ReturnType<typeof createCmsClient>
-}) => {
-  const response = await props.microCmsClient.getList<{
-    thumbnail_url?: {
-      url: string
-    } | null
-  }>({
-    endpoint: "releases",
-    queries: {
-      limit: 1,
-      orders: "-createdAt",
-    },
-  })
-
-  return response.contents[0]?.thumbnail_url?.url ?? null
-}
-
 export async function createAdminReleaseAction({ request, context }: ActionFunctionArgs) {
   try {
     if (request.method !== "POST") {
@@ -161,19 +143,7 @@ export async function createAdminReleaseAction({ request, context }: ActionFunct
       apiKey,
     })
 
-    const fallbackThumbnailUrl = await resolveFallbackThumbnailUrl({ microCmsClient })
-
-    if (!fallbackThumbnailUrl) {
-      return toJsonResponse(
-        {
-          error: "既定のサムネイル画像を取得できませんでした。既存のお知らせ画像を確認してください。",
-          data: null,
-        },
-        500,
-      )
-    }
-
-    let thumbnailUrl = fallbackThumbnailUrl
+    let thumbnailUrl: string | null = null
     let warning: string | null = null
 
     const managementApiKey = resolveMicroCmsManagementApiKey(context)
@@ -194,32 +164,44 @@ export async function createAdminReleaseAction({ request, context }: ActionFunct
         } catch (error) {
           warning =
             error instanceof Error
-              ? `画像の microCMS 登録に失敗したため、既定画像を使用しました: ${error.message}`
-              : "画像の microCMS 登録に失敗したため、既定画像を使用しました。"
+              ? `画像の microCMS 登録に失敗したため、画像なしで登録しました: ${error.message}`
+              : "画像の microCMS 登録に失敗したため、画像なしで登録しました。"
         }
       } else {
         warning =
-          "Management API キーが未設定のため、microCMS の画像は既定画像を使用しました。Discord には指定画像を表示します。"
+          "Management API キーが未設定のため、microCMS には画像なしで登録しました。Discord には指定画像を表示します。"
       }
+    }
+
+    const createContent: {
+      title: string
+      description: string
+      thumbnail_url?: string
+      platform: string
+      tag: ReleaseTag
+      is_important: boolean
+    } = {
+      title,
+      description,
+      platform: DEFAULT_PLATFORM,
+      tag: selectedTag,
+      is_important: isImportant,
+    }
+
+    if (thumbnailUrl) {
+      createContent.thumbnail_url = thumbnailUrl
     }
 
     const created = await microCmsClient.create<{
       title: string
       description: string
-      thumbnail_url: string
+      thumbnail_url?: string
       platform: string
       tag: ReleaseTag
       is_important: boolean
     }>({
       endpoint: "releases",
-      content: {
-        title,
-        description,
-        thumbnail_url: thumbnailUrl,
-        platform: DEFAULT_PLATFORM,
-        tag: selectedTag,
-        is_important: isImportant,
-      },
+      content: createContent,
     })
 
     const releaseUrl = `https://www.aipictors.com/releases/${created.id}`
@@ -236,9 +218,13 @@ export async function createAdminReleaseAction({ request, context }: ActionFunct
             title,
             description: description.slice(0, 4000),
             url: releaseUrl,
-            image: {
-              url: discordImageUrl,
-            },
+            ...(discordImageUrl
+              ? {
+                  image: {
+                    url: discordImageUrl,
+                  },
+                }
+              : {}),
             fields: [
               {
                 name: "タグ",
