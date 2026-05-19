@@ -53,6 +53,11 @@ const quickActions = [
     subtitle: "非公開処理と通知を実行",
   },
   {
+    href: "/admin/releases/new",
+    title: "お知らせ追加",
+    subtitle: "microCMS と Discord に同時投稿",
+  },
+  {
     href: "/admin/reports",
     title: "作品通報一覧",
     subtitle: "通報理由と対象作品を確認",

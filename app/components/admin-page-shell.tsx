@@ -4,6 +4,7 @@ import {
   House,
   ImageIcon,
   LayoutGrid,
+  Megaphone,
   MessageSquareWarning,
   ShieldAlert,
   Search,
@@ -50,6 +51,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "作品管理",
     description: "非公開処理・理由通知",
     icon: ImageIcon,
+  },
+  {
+    href: "/admin/releases/new",
+    title: "お知らせ追加",
+    description: "microCMS と Discord に同時投稿",
+    icon: Megaphone,
   },
   {
     href: "/admin/reports",
