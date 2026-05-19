@@ -20,7 +20,7 @@ interface Release {
   thumbnail_url?: {
     url: string
   }
-  platform: string
+  platform: string[]
   tag?: string | null
   createdAt: number
 }
@@ -132,7 +132,7 @@ export default function Release () {
         title={release.title}
         description={release.description}
         thumbnailUrl={release.thumbnail_url ? release.thumbnail_url.url : null}
-        platform={release.platform}
+        platform={release.platform[0] ?? ""}
         tag={release.tag}
         createdAt={release.createdAt}
       />

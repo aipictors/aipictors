@@ -5,7 +5,7 @@ export interface MicroCmsApiRelease {
   thumbnail_url: {
     url: string
   }
-  platform: string
+  platform: string[]
   tag?: string
   is_important?: boolean | null
   createdAt: number

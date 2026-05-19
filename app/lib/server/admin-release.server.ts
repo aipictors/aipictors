@@ -177,13 +177,13 @@ export async function createAdminReleaseAction({ request, context }: ActionFunct
       title: string
       description: string
       thumbnail_url?: string
-      platform: string
+      platform: string[]
       tag: ReleaseTag
       is_important: boolean
     } = {
       title,
       description,
-      platform: DEFAULT_PLATFORM,
+      platform: [DEFAULT_PLATFORM],
       tag: selectedTag,
       is_important: isImportant,
     }
@@ -196,7 +196,7 @@ export async function createAdminReleaseAction({ request, context }: ActionFunct
       title: string
       description: string
       thumbnail_url?: string
-      platform: string
+      platform: string[]
       tag: ReleaseTag
       is_important: boolean
     }>({

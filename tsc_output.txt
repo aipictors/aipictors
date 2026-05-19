@@ -1,0 +1,1 @@
+app/graphql-env.d.ts(10,3): error TS1357: An enum member name must be followed by a ',', '=', or '}'.
