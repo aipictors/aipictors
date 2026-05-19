@@ -33,6 +33,7 @@ type ActionData = {
     id: string
     releaseUrl: string
     discordDelivered: boolean
+    warning: string | null
   } | null
 }
 
@@ -68,6 +69,31 @@ export async function loader(_props: LoaderFunctionArgs) {
   return json({})
 }
 
+async function parseActionResponse<T>(response: Response): Promise<{
+  ok: boolean
+  json: T | null
+  rawText: string
+}> {
+  const rawText = await response.text()
+  const json = (() => {
+    if (!rawText) {
+      return null
+    }
+
+    try {
+      return JSON.parse(rawText) as T
+    } catch {
+      return null
+    }
+  })()
+
+  return {
+    ok: response.ok,
+    json,
+    rawText,
+  }
+}
+
 const toJsonResponse = (body: ActionData, status: number) => {
   return new Response(JSON.stringify(body), {
     status,
@@ -90,6 +116,13 @@ const resolveMicroCmsApiKey = (context: ActionFunctionArgs["context"]) => {
   )
 }
 
+const resolveMicroCmsManagementApiKey = (context: ActionFunctionArgs["context"]) => {
+  return (
+    getServerEnvValue(context, "MICROCMS_MANAGEMENT_API_KEY") ??
+    getServerEnvValue(context, "MICROCMS_RELEASES_MANAGEMENT_API_KEY")
+  )
+}
+
 const resolveDiscordWebhookUrl = (context: ActionFunctionArgs["context"]) => {
   return (
     getServerEnvValue(context, "DISCORD_RELEASES_WEBHOOK_URL") ??
@@ -102,105 +135,153 @@ const resolveGraphqlEndpoint = (context: ActionFunctionArgs["context"]) => {
   return getServerEnvValue(context, "VITE_GRAPHQL_ENDPOINT_REMIX")
 }
 
-export async function action({ request, context }: ActionFunctionArgs) {
-  if (request.method !== "POST") {
-    return toJsonResponse({ error: "Method not allowed", data: null }, 405)
-  }
-
-  const authorization = request.headers.get("authorization")
-  if (!authorization?.startsWith("Bearer ")) {
-    return toJsonResponse({ error: "Unauthorized", data: null }, 401)
-  }
-
-  const graphqlEndpoint = resolveGraphqlEndpoint(context)
-  if (!graphqlEndpoint) {
-    return toJsonResponse(
-      { error: "VITE_GRAPHQL_ENDPOINT_REMIX is not configured", data: null },
-      500,
-    )
-  }
-
-  const viewer = await verifyViewerFromGraphQL({
-    graphqlEndpoint,
-    authorization,
+const resolveFallbackThumbnailUrl = async (props: { microCmsClient: ReturnType<typeof createCmsClient> }) => {
+  const response = await props.microCmsClient.getList<{
+    thumbnail_url?: {
+      url: string
+    } | null
+  }>({
+    endpoint: "releases",
+    queries: {
+      limit: 1,
+      orders: "-createdAt",
+    },
   })
 
-  if (!viewer) {
-    return toJsonResponse({ error: "Unauthorized", data: null }, 401)
-  }
+  return response.contents[0]?.thumbnail_url?.url ?? null
+}
 
-  if (viewer.userId !== "1") {
-    return toJsonResponse(
-      { error: "このページは UserID 1 の管理者のみ利用できます。", data: null },
-      403,
-    )
-  }
-
-  let payload: {
-    title?: string
-    description?: string
-    imageUrl?: string
-    tag?: string
-    isImportant?: boolean
-  }
-
+export async function action({ request, context }: ActionFunctionArgs) {
   try {
-    payload = (await request.json()) as typeof payload
-  } catch {
-    return toJsonResponse({ error: "リクエスト形式が不正です。", data: null }, 400)
-  }
-
-  const title = payload.title?.trim() ?? ""
-  const description = payload.description?.trim() ?? ""
-  const imageUrl = payload.imageUrl?.trim() ?? ""
-  const selectedTag = payload.tag?.trim() ?? DEFAULT_TAG
-  const isImportant = payload.isImportant === true
-
-  if (title.length === 0) {
-    return toJsonResponse({ error: "タイトルを入力してください。", data: null }, 400)
-  }
-
-  if (description.length === 0) {
-    return toJsonResponse({ error: "説明文を入力してください。", data: null }, 400)
-  }
-
-  if (!isReleaseTag(selectedTag)) {
-    return toJsonResponse({ error: "タグの値が不正です。", data: null }, 400)
-  }
-
-  if (imageUrl.length > 0) {
-    try {
-      new URL(imageUrl)
-    } catch {
-      return toJsonResponse({ error: "画像 URL の形式が不正です。", data: null }, 400)
+    if (request.method !== "POST") {
+      return toJsonResponse({ error: "Method not allowed", data: null }, 405)
     }
-  }
 
-  const apiKey = resolveMicroCmsApiKey(context)
-  if (!apiKey) {
-    return toJsonResponse({ error: "microCMS API キーが未設定です。", data: null }, 500)
-  }
+    const authorization = request.headers.get("authorization")
+    if (!authorization?.startsWith("Bearer ")) {
+      return toJsonResponse({ error: "Unauthorized", data: null }, 401)
+    }
 
-  const discordWebhookUrl = resolveDiscordWebhookUrl(context)
-  if (!discordWebhookUrl) {
-    return toJsonResponse({ error: "Discord webhook URL が未設定です。", data: null }, 500)
-  }
+    const graphqlEndpoint = resolveGraphqlEndpoint(context)
+    if (!graphqlEndpoint) {
+      return toJsonResponse(
+        { error: "VITE_GRAPHQL_ENDPOINT_REMIX is not configured", data: null },
+        500,
+      )
+    }
 
-  const thumbnailSourceUrl = imageUrl || config.defaultOgpImageUrl
-
-  try {
-    const managementClient = createManagementClient({
-      serviceDomain: "aipictors",
-      apiKey,
+    const viewer = await verifyViewerFromGraphQL({
+      graphqlEndpoint,
+      authorization,
     })
+
+    if (!viewer) {
+      return toJsonResponse({ error: "Unauthorized", data: null }, 401)
+    }
+
+    if (viewer.userId !== "1") {
+      return toJsonResponse(
+        { error: "このページは UserID 1 の管理者のみ利用できます。", data: null },
+        403,
+      )
+    }
+
+    let payload: {
+      title?: string
+      description?: string
+      imageUrl?: string
+      tag?: string
+      isImportant?: boolean
+    }
+
+    try {
+      payload = (await request.json()) as typeof payload
+    } catch {
+      return toJsonResponse({ error: "リクエスト形式が不正です。", data: null }, 400)
+    }
+
+    const title = payload.title?.trim() ?? ""
+    const description = payload.description?.trim() ?? ""
+    const imageUrl = payload.imageUrl?.trim() ?? ""
+    const selectedTag = payload.tag?.trim() ?? DEFAULT_TAG
+    const isImportant = payload.isImportant === true
+
+    if (title.length === 0) {
+      return toJsonResponse({ error: "タイトルを入力してください。", data: null }, 400)
+    }
+
+    if (description.length === 0) {
+      return toJsonResponse({ error: "説明文を入力してください。", data: null }, 400)
+    }
+
+    if (!isReleaseTag(selectedTag)) {
+      return toJsonResponse({ error: "タグの値が不正です。", data: null }, 400)
+    }
+
+    if (imageUrl.length > 0) {
+      try {
+        new URL(imageUrl)
+      } catch {
+        return toJsonResponse({ error: "画像 URL の形式が不正です。", data: null }, 400)
+      }
+    }
+
+    const apiKey = resolveMicroCmsApiKey(context)
+    if (!apiKey) {
+      return toJsonResponse({ error: "microCMS API キーが未設定です。", data: null }, 500)
+    }
+
+    const discordWebhookUrl = resolveDiscordWebhookUrl(context)
+    if (!discordWebhookUrl) {
+      return toJsonResponse({ error: "Discord webhook URL が未設定です。", data: null }, 500)
+    }
+
     const microCmsClient = createCmsClient({
       serviceDomain: "aipictors",
       apiKey,
     })
 
-    const uploadedMedia = await managementClient.uploadMedia({
-      data: thumbnailSourceUrl,
-    })
+    const fallbackThumbnailUrl = await resolveFallbackThumbnailUrl({ microCmsClient })
+
+    if (!fallbackThumbnailUrl) {
+      return toJsonResponse(
+        {
+          error: "既定のサムネイル画像を取得できませんでした。既存のお知らせ画像を確認してください。",
+          data: null,
+        },
+        500,
+      )
+    }
+
+    let thumbnailUrl = fallbackThumbnailUrl
+    let warning: string | null = null
+
+    const managementApiKey = resolveMicroCmsManagementApiKey(context)
+
+    if (imageUrl.length > 0) {
+      if (managementApiKey) {
+        try {
+          const managementClient = createManagementClient({
+            serviceDomain: "aipictors",
+            apiKey: managementApiKey,
+          })
+
+          const uploadedMedia = await managementClient.uploadMedia({
+            data: imageUrl,
+          })
+
+          thumbnailUrl = uploadedMedia.url
+        } catch (error) {
+          warning =
+            error instanceof Error
+              ? `画像の microCMS 登録に失敗したため、既定画像を使用しました: ${error.message}`
+              : "画像の microCMS 登録に失敗したため、既定画像を使用しました。"
+        }
+      } else {
+        warning =
+          "Management API キーが未設定のため、microCMS の画像は既定画像を使用しました。Discord には指定画像を表示します。"
+      }
+    }
 
     const created = await microCmsClient.create<{
       title: string
@@ -214,7 +295,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
       content: {
         title,
         description,
-        thumbnail_url: uploadedMedia.url,
+        thumbnail_url: thumbnailUrl,
         platform: DEFAULT_PLATFORM,
         tag: selectedTag,
         is_important: isImportant,
@@ -222,6 +303,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     })
 
     const releaseUrl = `https://www.aipictors.com/releases/${created.id}`
+    const discordImageUrl = imageUrl || thumbnailUrl
     const discordResponse = await fetch(discordWebhookUrl, {
       method: "POST",
       headers: {
@@ -235,7 +317,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
             description: description.slice(0, 4000),
             url: releaseUrl,
             image: {
-              url: uploadedMedia.url,
+              url: discordImageUrl,
             },
             fields: [
               {
@@ -271,6 +353,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
             id: created.id,
             releaseUrl,
             discordDelivered: false,
+            warning,
           },
         },
         502,
@@ -284,6 +367,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
           id: created.id,
           releaseUrl,
           discordDelivered: true,
+          warning,
         },
       },
       200,
@@ -364,7 +448,18 @@ export default function AdminReleaseCreatePage() {
         }),
       })
 
-      const json = (await response.json()) as ActionData
+      const { json, rawText } = await parseActionResponse<ActionData>(response)
+
+      if (!json) {
+        const message = rawText.trim().startsWith("<!DOCTYPE") || rawText.trim().startsWith("<html")
+          ? "サーバーで予期しないエラーが発生しました。"
+          : rawText.trim() || "お知らせの追加に失敗しました。"
+        setSubmitError(message)
+        setResult(null)
+        toast.error(message)
+        return
+      }
+
       setResult(json.data)
 
       if (!response.ok || json.error) {
@@ -372,6 +467,10 @@ export default function AdminReleaseCreatePage() {
         setSubmitError(message)
         toast.error(message)
         return
+      }
+
+      if (json.data?.warning) {
+        toast.warning(json.data.warning)
       }
 
       toast.success("microCMS と Discord へ送信しました。")
@@ -562,6 +661,9 @@ export default function AdminReleaseCreatePage() {
                 <div className="mt-2 text-xs">
                   Discord 通知: {result.discordDelivered ? "送信済み" : "未送信"}
                 </div>
+                {result.warning ? (
+                  <div className="mt-2 text-xs text-amber-100">注意: {result.warning}</div>
+                ) : null}
               </div>
             ) : null}
           </CardContent>
