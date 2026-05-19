@@ -13,4 +13,4 @@ export type ActionData = {
 }
 
 export const DEFAULT_TAG: ReleaseTag = "お知らせ"
-export const DEFAULT_PLATFORM = "Web"
+export const DEFAULT_PLATFORM = "web"
