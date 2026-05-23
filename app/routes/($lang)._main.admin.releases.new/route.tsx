@@ -89,8 +89,7 @@ export default function AdminReleaseCreatePage() {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
-  const isUserOne = authContext.isLoggedIn && authContext.userId === "1"
-  const hasPermission = Boolean(viewerData?.viewer?.isModerator) && isUserOne
+  const hasPermission = Boolean(viewerData?.viewer?.isModerator)
 
   const withAuthHeader = async () => {
     const currentUser = getAuth().currentUser
@@ -206,7 +205,7 @@ export default function AdminReleaseCreatePage() {
       <AdminPageShell title="お知らせ追加" description={pageDescription} icon={Megaphone}>
         <Alert className="rounded-[28px] border-white/10 bg-white/5 text-slate-100">
           <AlertDescription className="text-slate-300">
-            このページは UserID 1 の管理者のみ利用できます。
+            このページはモデレーターのみ利用できます。
           </AlertDescription>
         </Alert>
       </AdminPageShell>

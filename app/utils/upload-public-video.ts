@@ -1,5 +1,7 @@
+import { nullable, object, optional, safeParse, string } from "valibot"
 import { config } from "~/config"
-import { object, string, safeParse, nullable, optional } from "valibot"
+
+const VIDEO_UPLOAD_TIMEOUT_MS = 120_000
 
 export type UploadedStreamVideo = {
   uid: string | null
@@ -26,51 +28,69 @@ export const uploadPublicVideo = async (
   try {
     const endpoint = config.uploader.uploadVideo
     const contentType = file.type || "video/mp4"
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => {
+      controller.abort("video-upload-timeout")
+    }, VIDEO_UPLOAD_TIMEOUT_MS)
 
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": contentType,
-      },
-      body: file,
-    })
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": contentType,
+        },
+        body: file,
+        signal: controller.signal,
+      })
 
-    const responseText = await response.text()
-    const responseData = responseText ? JSON.parse(responseText) : null
+      const responseText = await response.text()
+      const responseData =
+        responseText.length > 0 ? JSON.parse(responseText) : null
 
-    const schema = object({
-      data: object({
-        uid: optional(string()),
-        url: string(),
-      }),
-      error: nullable(string()),
-    })
+      const schema = object({
+        data: object({
+          uid: optional(string()),
+          url: string(),
+        }),
+        error: nullable(string()),
+      })
 
-    if (response.ok) {
-      const validationResult = safeParse(schema, responseData)
-      if (!validationResult.success) {
-        throw new Error("動画のアップロードに失敗いたしました")
+      if (response.ok) {
+        const validationResult = safeParse(schema, responseData)
+        if (!validationResult.success) {
+          throw new Error("動画のアップロードに失敗いたしました")
+        }
+
+        return {
+          uid: validationResult.output.data.uid ?? null,
+          url: validationResult.output.data.url,
+        }
       }
 
-      return {
-        uid: validationResult.output.data.uid ?? null,
-        url: validationResult.output.data.url,
+      const responseError =
+        responseData &&
+        typeof responseData === "object" &&
+        "error" in responseData
+          ? responseData.error
+          : null
+
+      if (typeof responseError === "string" && responseError.length > 0) {
+        throw new Error(responseError)
       }
-    }
-
-    const responseError =
-      responseData && typeof responseData === "object" && "error" in responseData
-        ? responseData.error
-        : null
-
-    if (typeof responseError === "string" && responseError.length > 0) {
-      throw new Error(responseError)
+    } finally {
+      clearTimeout(timeoutId)
     }
   } catch (error) {
     console.error(error)
 
     if (error instanceof Error) {
+      if (error.name === "AbortError") {
+        throw new Error(
+          "動画のアップロードがタイムアウトしました。通信環境を確認して再度お試しください",
+        )
+      }
+
       throw error
     }
   }

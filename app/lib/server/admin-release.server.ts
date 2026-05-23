@@ -81,9 +81,9 @@ export async function createAdminReleaseAction({ request, context }: ActionFunct
       return toJsonResponse({ error: "Unauthorized", data: null }, 401)
     }
 
-    if (viewer.userId !== "1") {
+    if (!viewer.isModerator) {
       return toJsonResponse(
-        { error: "このページは UserID 1 の管理者のみ利用できます。", data: null },
+        { error: "このページはモデレーターのみ利用できます。", data: null },
         403,
       )
     }

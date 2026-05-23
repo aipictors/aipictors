@@ -10,15 +10,15 @@ export function runAnimation(canvas: HTMLCanvasElement) {
     preserveDrawingBuffer: true,
   })
 
-  if (context === null) return null
+  if (context === null) return () => {}
 
   const program = context.createProgram()
 
-  if (program === null) return null
+  if (program === null) return () => {}
 
   const vertexShader = context.createShader(context.VERTEX_SHADER)
 
-  if (vertexShader === null) return null
+  if (vertexShader === null) return () => {}
 
   context.shaderSource(vertexShader, vertexShaderCode)
 
@@ -30,7 +30,7 @@ export function runAnimation(canvas: HTMLCanvasElement) {
 
   const fragmentShader = context.createShader(context.FRAGMENT_SHADER)
 
-  if (fragmentShader === null) return null
+  if (fragmentShader === null) return () => {}
 
   context.shaderSource(fragmentShader, fragmentShaderCode)
 
@@ -40,7 +40,7 @@ export function runAnimation(canvas: HTMLCanvasElement) {
 
   const fragmentShaderLog = context.getShaderInfoLog(fragmentShader)
 
-  if (vertexShaderLog === null || fragmentShaderLog === null) return null
+  if (vertexShaderLog === null || fragmentShaderLog === null) return () => {}
 
   context.linkProgram(program)
 
@@ -73,6 +73,8 @@ export function runAnimation(canvas: HTMLCanvasElement) {
 
   const startTime = Date.now()
 
+  let animationFrameId = 0
+
   const render = () => {
     if (!isRunning) return
 
@@ -101,8 +103,14 @@ export function runAnimation(canvas: HTMLCanvasElement) {
 
     context.flush()
 
-    requestAnimationFrame(render)
+    animationFrameId = requestAnimationFrame(render)
   }
 
   render()
+
+  return () => {
+    if (animationFrameId !== 0) {
+      cancelAnimationFrame(animationFrameId)
+    }
+  }
 }
