@@ -1,16 +1,10 @@
 import { Link } from "@remix-run/react"
-import { useEffect, useRef } from "react"
 import { Images, MessageCircleIcon } from "lucide-react"
 import { OptimizedImage } from "~/components/optimized-image"
 import { SensitiveThumbnailOverlay } from "~/components/sensitive/sensitive-thumbnail-overlay"
-import { StreamPreviewVideo } from "~/components/stream-preview-video"
 import { Badge } from "~/components/ui/badge"
 import { WorkMediaBadge } from "~/components/work-media-badge"
 import { cn } from "~/lib/utils"
-import {
-  isCloudflareStreamUrl,
-  toCloudflareStreamHlsUrlFromUid,
-} from "~/utils/cloudflare-stream"
 
 type Props = {
   workId: string
@@ -109,26 +103,6 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
     imageHeight: props.imageHeight,
     thumbnailPosition: props.thumbnailImagePosition,
   })
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const streamHlsUrl = toCloudflareStreamHlsUrlFromUid(props.streamUid)
-  const isPreviewableVideo =
-    props.isAutoPlay === true &&
-    Boolean(props.videoUrl) &&
-    !isCloudflareStreamUrl(props.videoUrl)
-  const isPreviewableStream =
-    props.isAutoPlay === true && Boolean(streamHlsUrl)
-
-  useEffect(() => {
-    if (!isPreviewableVideo || !videoRef.current) {
-      return
-    }
-
-    void videoRef.current.play()
-
-    return () => {
-      videoRef.current?.pause()
-    }
-  }, [isPreviewableVideo])
 
   const backgroundColor = () => {
     if (props.ranking === 1) return "#d6ba49"
@@ -161,27 +135,6 @@ export function CroppedWorkSquare(props: Props): React.ReactNode {
         style={cropStyle}
         className="h-full w-full max-w-none rounded object-cover transition-transform duration-300 ease-in-out"
       />
-
-      {isPreviewableVideo && props.videoUrl && (
-        <video
-          ref={videoRef}
-          src={props.videoUrl}
-          className="absolute inset-0 h-full w-full object-cover"
-          muted
-          autoPlay
-          loop
-          playsInline
-          preload="metadata"
-        />
-      )}
-
-      {isPreviewableStream && streamHlsUrl && (
-        <StreamPreviewVideo
-          src={streamHlsUrl}
-          className="absolute inset-0 h-full w-full object-cover"
-          isActive={true}
-        />
-      )}
 
       <SensitiveThumbnailOverlay
         imageUrl={props.imageUrl}

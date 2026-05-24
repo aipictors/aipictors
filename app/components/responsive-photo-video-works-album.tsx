@@ -1,19 +1,13 @@
-import { graphql, type FragmentOf } from "gql.tada"
+import { type FragmentOf, graphql } from "gql.tada"
 import { RowsPhotoAlbum } from "react-photo-album"
 import SSR from "react-photo-album/ssr"
 import "react-photo-album/rows.css"
 import { Link } from "@remix-run/react"
-import { LikeButton } from "~/components/like-button"
-import { StreamPreviewVideo } from "~/components/stream-preview-video"
-import { useRef, useCallback, useEffect, useState } from "react"
-import { Badge } from "~/components/ui/badge"
 import { Heart } from "lucide-react"
+import { LikeButton } from "~/components/like-button"
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
+import { Badge } from "~/components/ui/badge"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar"
-import {
-  isCloudflareStreamUrl,
-  toCloudflareStreamHlsUrlFromUid,
-} from "~/utils/cloudflare-stream"
 
 type Props = {
   works: FragmentOf<typeof PhotoAlbumVideoWorkFragment>[]
@@ -25,98 +19,19 @@ type Props = {
  * レスポンシブ対応の作品一覧
  */
 export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
-  const [isMobile, setIsMobile] = useState(false)
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-
-  const isAutoPlay = props.isAutoPlay ?? true
-
-  // モバイルデバイス判定
-  useEffect(() => {
-    const checkMobile = () => {
-      if (typeof window === "undefined") return false
-      return (
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent,
-        ) || window.innerWidth < 768
-      )
-    }
-    setIsMobile(checkMobile())
-  }, [])
-
-  const handleMouseEnter = useCallback((index: number) => {
-    setHoveredIndex(index)
-    if (isAutoPlay) {
-      return
-    }
-    const video = videoRefs.current[index]
-    if (video) {
-      video.style.zIndex = "10" // 動画を前面に表示
-      video.play() // 動画を再生
-    }
-  }, [])
-
-  const handleMouseLeave = useCallback((index: number) => {
-    setHoveredIndex((current) => (current === index ? null : current))
-    if (isAutoPlay) {
-      return
-    }
-    const video = videoRefs.current[index]
-    if (video) {
-      video.pause() // 動画を停止
-      video.style.zIndex = "-1" // 動画を背面に戻す
-    }
-  }, [])
-
   if (props.works.length === 1) {
-    const singleStreamHlsUrl = toCloudflareStreamHlsUrlFromUid(
-      props.works[0].streamUid,
-    )
     return (
       <div className="relative transition-all" style={{ position: "relative" }}>
         <div className="relative inline-block h-full w-full">
           <Link
             to={`/posts/${props.works[0].id}`}
             className="max-h-32 overflow-hidden rounded"
-            onMouseEnter={() => handleMouseEnter(Number(props.works[0].id))}
-            onMouseLeave={() => handleMouseLeave(Number(props.works[0].id))}
           >
-            {!isCloudflareStreamUrl(props.works[0].url) && (
-              <video
-                src={props.works[0].url ?? ""}
-                // biome-ignore lint/suspicious/noAssignInExpressions: ref assignment
-                ref={(el) => (videoRefs.current[Number(props.works[0].id)] = el)}
-                className="absolute top-0 left-0 max-h-72 w-full overflow-hidden rounded object-contain"
-                style={
-                  isAutoPlay || isMobile ? { zIndex: "10" } : { zIndex: "-1" }
-                }
-                muted
-                autoPlay={isAutoPlay || isMobile}
-                loop
-                playsInline
-              >
-                <track
-                  kind="captions"
-                  src={props.works[0].url ?? ""}
-                  label="English"
-                />
-              </video>
-            )}
-
-            {singleStreamHlsUrl && (
-              <StreamPreviewVideo
-                src={singleStreamHlsUrl}
-                className="absolute top-0 left-0 max-h-72 w-full overflow-hidden rounded object-contain"
-                style={
-                  isAutoPlay || isMobile || hoveredIndex === Number(props.works[0].id)
-                    ? { zIndex: "10" }
-                    : { zIndex: "-1" }
-                }
-                isActive={
-                  isAutoPlay || isMobile || hoveredIndex === Number(props.works[0].id)
-                }
-              />
-            )}
+            <img
+              src={props.works[0].smallThumbnailImageURL}
+              alt={props.works[0].title}
+              className="max-h-72 w-full overflow-hidden rounded object-contain"
+            />
 
             <div className="absolute top-1 left-1 opacity-50">
               <Badge variant={"secondary"} className="text-xs">
@@ -222,52 +137,12 @@ export function ResponsivePhotoVideoWorksAlbum(props: Props): React.ReactNode {
                   <Link
                     to={`/posts/${context.photo.context.id}`}
                     className="overflow-hidden rounded"
-                    onMouseEnter={() => handleMouseEnter(context.index)}
-                    onMouseLeave={() => handleMouseLeave(context.index)}
                   >
                     <img
                       {...props}
                       alt={props.alt}
                       className="h-full w-full overflow-hidden rounded"
                     />
-                    {!isCloudflareStreamUrl(context.photo.url) && (
-                      <video
-                        src={context.photo.url ?? ""}
-                        // biome-ignore lint/suspicious/noAssignInExpressions: ref assignment
-                        ref={(el) => (videoRefs.current[context.index] = el)}
-                        className="absolute top-0 left-0 w-full overflow-hidden rounded object-contain"
-                        style={
-                          isAutoPlay || isMobile
-                            ? { zIndex: "10" }
-                            : { zIndex: "-1" }
-                        }
-                        muted
-                        autoPlay={isAutoPlay || isMobile}
-                        loop
-                        playsInline
-                      >
-                        <track
-                          kind="captions"
-                          src={context.photo.url ?? ""}
-                          label="English"
-                        />
-                      </video>
-                    )}
-
-                    {toCloudflareStreamHlsUrlFromUid(context.photo.context.streamUid) && (
-                      <StreamPreviewVideo
-                        src={toCloudflareStreamHlsUrlFromUid(context.photo.context.streamUid) ?? ""}
-                        className="absolute top-0 left-0 w-full overflow-hidden rounded object-contain"
-                        style={
-                          isAutoPlay || isMobile || hoveredIndex === context.index
-                            ? { zIndex: "10" }
-                            : { zIndex: "-1" }
-                        }
-                        isActive={
-                          isAutoPlay || isMobile || hoveredIndex === context.index
-                        }
-                      />
-                    )}
 
                     <div className="absolute top-1 left-1 opacity-50">
                       <Badge variant={"secondary"} className="text-xs">
