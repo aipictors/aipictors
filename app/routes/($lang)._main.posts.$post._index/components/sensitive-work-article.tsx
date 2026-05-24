@@ -6,11 +6,11 @@ import { Heart, ShieldAlert } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { CarouselWithGradation } from "~/components/carousel-with-gradation"
 import { ToggleContent } from "~/components/toggle-content"
-import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { AiEvaluationDisplay } from "~/routes/($lang)._main.posts.$post._index/components/ai-evaluation-display"
@@ -218,7 +218,11 @@ export function SensitiveWorkArticle(props: Props) {
         />
       )}
       {props.work.type === "VIDEO" && (
-        <WorkVideoView videoUrl={props.work.url ?? ""} />
+        <WorkVideoView
+          videoUrl={props.work.url ?? ""}
+          posterUrl={props.work.smallThumbnailImageURL}
+          title={props.work.title}
+        />
       )}
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView
@@ -289,20 +293,21 @@ export function SensitiveWorkArticle(props: Props) {
             >
               <div>
                 <Separator className="mt-2 mb-2" />
-                {props.work.likesCount > 0 && props.work.likedUsers.length === 0 && (
-                  <p className="mb-2 text-muted-foreground text-sm">
-                    {t(
-                      "匿名いいねのみのため表示できるユーザはいません",
-                      "No non-anonymous likes to display",
-                    )}
-                  </p>
-                )}
+                {props.work.likesCount > 0 &&
+                  props.work.likedUsers.length === 0 && (
+                    <p className="mb-2 text-muted-foreground text-sm">
+                      {t(
+                        "匿名いいねのみのため表示できるユーザはいません",
+                        "No non-anonymous likes to display",
+                      )}
+                    </p>
+                  )}
                 <CarouselWithGradation
                   items={props.work.likedUsers.map((user) => (
                     <WorkLikedUser
                       key={user.id}
                       name={user.name}
-                        avatarFrame={user.avatarFrame}
+                      avatarFrame={user.avatarFrame}
                       iconUrl={user.iconUrl}
                       login={user.login}
                     />
@@ -388,8 +393,8 @@ export function SensitiveWorkArticle(props: Props) {
                 variant="secondary"
                 className="flex items-center space-x-2"
               >
-                  {t("ウィークリー入賞", "Weekly Rank")} {props.work.weeklyRanking}{" "}
-                {t("位", "Rank")}
+                {t("ウィークリー入賞", "Weekly Rank")}{" "}
+                {props.work.weeklyRanking} {t("位", "Rank")}
               </Badge>
             )}
             {props.work.monthlyRanking && (

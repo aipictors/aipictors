@@ -1,31 +1,31 @@
-import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
-import { Button } from "~/components/ui/button"
-import { toDateTimeText } from "~/utils/to-date-time-text"
-import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-button"
-import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
-import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
-import { useContext, useEffect, useState } from "react"
-import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
-import { type FragmentOf, graphql } from "gql.tada"
-import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
-import { AuthContext } from "~/contexts/auth-context"
-import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
-import { CarouselWithGradation } from "~/components/carousel-with-gradation"
-import { ToggleContent } from "~/components/toggle-content"
-import { Heart, ShieldAlert } from "lucide-react"
-import { Separator } from "~/components/ui/separator"
 import { useQuery } from "@apollo/client/index"
 import { Link } from "@remix-run/react"
-import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
-import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
-import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
-import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
-import { toRatingText } from "~/utils/work/to-rating-text"
-import { Badge } from "~/components/ui/badge"
-import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
-import { toStyleText } from "~/utils/work/to-style-text"
 import { format } from "date-fns"
+import { type FragmentOf, graphql } from "gql.tada"
+import { Heart, ShieldAlert } from "lucide-react"
+import { useContext, useEffect, useState } from "react"
+import { CarouselWithGradation } from "~/components/carousel-with-gradation"
+import { ToggleContent } from "~/components/toggle-content"
+import { Badge } from "~/components/ui/badge"
+import { Button } from "~/components/ui/button"
+import { Separator } from "~/components/ui/separator"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
+import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-button"
+import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
+import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
+import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
+import { WorkArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-article-tags"
+import { WorkImageView } from "~/routes/($lang)._main.posts.$post._index/components/work-image-view"
+import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/components/work-liked-user"
+import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
+import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
+import { toDateTimeText } from "~/utils/to-date-time-text"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+import { toRatingText } from "~/utils/work/to-rating-text"
+import { toStyleText } from "~/utils/work/to-style-text"
 
 type Props = {
   work: FragmentOf<typeof workArticleFragment>
@@ -34,7 +34,7 @@ type Props = {
 /**
  * 作品詳細情報
  */
-export function DraftWorkArticle (props: Props) {
+export function DraftWorkArticle(props: Props) {
   const appContext = useContext(AuthContext)
 
   const { data } = useQuery(viewerBookmarkFolderIdQuery, {
@@ -114,7 +114,11 @@ export function DraftWorkArticle (props: Props) {
         />
       )}
       {props.work.type === "VIDEO" && (
-        <WorkVideoView videoUrl={props.work.url ?? ""} />
+        <WorkVideoView
+          videoUrl={props.work.url ?? ""}
+          posterUrl={props.work.smallThumbnailImageURL}
+          title={props.work.title}
+        />
       )}
       {props.work.type === "COLUMN" && (
         <WorkMarkdownView
@@ -275,8 +279,8 @@ export function DraftWorkArticle (props: Props) {
                 variant="secondary"
                 className="flex items-center space-x-2"
               >
-                  {t("ウィークリー入賞", "Weekly Rank")} {props.work.weeklyRanking}{" "}
-                {t("位", "Rank")}
+                {t("ウィークリー入賞", "Weekly Rank")}{" "}
+                {props.work.weeklyRanking} {t("位", "Rank")}
               </Badge>
             )}
             {props.work.monthlyRanking && (
