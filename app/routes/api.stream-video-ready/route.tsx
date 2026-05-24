@@ -22,6 +22,20 @@ function toJsonResponse(body: unknown, status: number): Response {
   })
 }
 
+function toCachedJsonResponse(
+  body: unknown,
+  status: number,
+  cacheControl: string,
+): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "content-type": "application/json",
+      "cache-control": cacheControl,
+    },
+  })
+}
+
 function getSecretFromContextOrBuild(
   context: LoaderFunctionArgs["context"],
   key: string,
@@ -45,7 +59,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     return toJsonResponse({ ready: false, error: "Invalid uid" }, 400)
   }
 
-  const accountId = getSecretFromContextOrBuild(context, "CLOUDFLARE_ACCOUNT_ID")
+  const accountId = getSecretFromContextOrBuild(
+    context,
+    "CLOUDFLARE_ACCOUNT_ID",
+  )
   const streamApiToken = getSecretFromContextOrBuild(
     context,
     "CLOUDFLARE_STREAM_API_TOKEN",
@@ -65,11 +82,21 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   )
 
   if (!resp.ok) {
-    return toJsonResponse({ ready: false }, 200)
+    return toCachedJsonResponse(
+      { ready: false },
+      200,
+      "public, max-age=30, s-maxage=30, stale-while-revalidate=120",
+    )
   }
 
   const data = (await resp.json()) as CloudflareStreamStatusResponse
   const ready = data.result?.readyToStream === true
 
-  return toJsonResponse({ ready }, 200)
+  return toCachedJsonResponse(
+    { ready },
+    200,
+    ready
+      ? "public, max-age=21600, s-maxage=21600, stale-while-revalidate=86400"
+      : "public, max-age=30, s-maxage=30, stale-while-revalidate=120",
+  )
 }

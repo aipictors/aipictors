@@ -13,6 +13,62 @@ type Props = {
   title?: string
 }
 
+const STREAM_READY_CACHE_TTL_MS = 1000 * 60 * 60 * 6
+
+type StreamReadyCacheValue = {
+  ready: boolean
+  expiresAt: number
+}
+
+function getStreamReadyCacheKey(uid: string) {
+  return `stream-ready:${uid}`
+}
+
+function readCachedStreamReady(uid: string): boolean {
+  if (typeof window === "undefined") {
+    return false
+  }
+
+  try {
+    const raw = window.localStorage.getItem(getStreamReadyCacheKey(uid))
+
+    if (!raw) {
+      return false
+    }
+
+    const parsed = JSON.parse(raw) as StreamReadyCacheValue
+
+    if (parsed.ready !== true || parsed.expiresAt <= Date.now()) {
+      window.localStorage.removeItem(getStreamReadyCacheKey(uid))
+      return false
+    }
+
+    return true
+  } catch {
+    return false
+  }
+}
+
+function writeCachedStreamReady(uid: string) {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  try {
+    const value: StreamReadyCacheValue = {
+      ready: true,
+      expiresAt: Date.now() + STREAM_READY_CACHE_TTL_MS,
+    }
+
+    window.localStorage.setItem(
+      getStreamReadyCacheKey(uid),
+      JSON.stringify(value),
+    )
+  } catch {
+    // localStorage が使えなくても再生自体は継続する
+  }
+}
+
 export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   const isStream = isCloudflareStreamUrl(videoUrl)
   const embedUrl = toCloudflareStreamEmbedUrl(videoUrl)
@@ -42,13 +98,9 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
       return
     }
 
-    if (typeof window !== "undefined") {
-      const cachedReady = window.sessionStorage.getItem(`stream-ready:${uid}`)
-
-      if (cachedReady === "true") {
-        setStreamReady(true)
-        return
-      }
+    if (readCachedStreamReady(uid)) {
+      setStreamReady(true)
+      return
     }
 
     setStreamReady(null)
@@ -67,9 +119,7 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
         const data = (await resp.json()) as { ready: boolean }
         if (cancelled) return
         if (data.ready) {
-          if (typeof window !== "undefined") {
-            window.sessionStorage.setItem(`stream-ready:${uid}`, "true")
-          }
+          writeCachedStreamReady(uid)
           setStreamReady(true)
         } else {
           setStreamReady(false)
