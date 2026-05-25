@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { PenLine } from "lucide-react"
 import { useContext } from "react"
@@ -29,6 +30,13 @@ type Props = {
 export function UserProfileNameIcon(props: Props) {
   const user = readFragment(UserProfileIconFragment, props.user)
 
+  const { data: featurePromptonRequestData } = useQuery(
+    userFeaturePromptonRequestQuery,
+    {
+      variables: { userId: user.id },
+    },
+  )
+
   const r18WorksCount = props.r18WorksCount ?? 0
   const r18WorksCountText = r18WorksCount >= 100 ? "99+" : String(r18WorksCount)
   const shouldShowR18Toggle = r18WorksCount > 0
@@ -47,6 +55,8 @@ export function UserProfileNameIcon(props: Props) {
   const isBlocked = Boolean(user.isBlocked)
 
   const promptonId = user.promptonUser?.id ?? null
+  const canReceiveSupport =
+    featurePromptonRequestData?.featurePromptonRequest === true
 
   const biographyText = t(
     user.biography ?? "",
@@ -95,6 +105,10 @@ export function UserProfileNameIcon(props: Props) {
   ].filter(isNotNull)
 
   const hasExternalLinks = externalLinks.length > 0
+
+  const openSupportManagement = () => {
+    window.open("https://prompton.io/viewer/requests", "_blank")
+  }
 
   return (
     <div className="relative">
@@ -207,13 +221,23 @@ export function UserProfileNameIcon(props: Props) {
               isMuted={isMuted}
               isBlocked={isBlocked}
             />
-            {typeof promptonId === "string" && (
-              <PromptonRequestColorfulButton
-                promptonId={promptonId}
-                targetUserId={user.id}
-                variant="icon"
-                rounded="rounded-full"
-              />
+            {typeof promptonId === "string" && canReceiveSupport && (
+              isMyPage ? (
+                <Button
+                  variant="secondary"
+                  className="rounded-full font-bold"
+                  onClick={openSupportManagement}
+                >
+                  {t("支援管理", "Support management")}
+                </Button>
+              ) : (
+                <PromptonRequestColorfulButton
+                  promptonId={promptonId}
+                  targetUserId={user.id}
+                  variant="icon"
+                  rounded="rounded-full"
+                />
+              )
             )}
           </div>
         </div>
@@ -281,12 +305,22 @@ export function UserProfileNameIcon(props: Props) {
                 }
               />
             )}
-            {typeof promptonId === "string" && (
-              <PromptonRequestColorfulButton
-                promptonId={promptonId}
-                targetUserId={user.id}
-                rounded="rounded-full"
-              />
+            {typeof promptonId === "string" && canReceiveSupport && (
+              isMyPage ? (
+                <Button
+                  className="w-full rounded-full font-bold"
+                  onClick={openSupportManagement}
+                  variant="secondary"
+                >
+                  {t("支援管理", "Support management")}
+                </Button>
+              ) : (
+                <PromptonRequestColorfulButton
+                  promptonId={promptonId}
+                  targetUserId={user.id}
+                  rounded="rounded-full"
+                />
+              )
             )}
           </div>
 
@@ -399,5 +433,11 @@ export const UserProfileIconFragment = graphql(
       id
       type
     }
+  }`,
+)
+
+const userFeaturePromptonRequestQuery = graphql(
+  `query UserFeaturePromptonRequest($userId: ID!) {
+    featurePromptonRequest(where: { userId: $userId })
   }`,
 )

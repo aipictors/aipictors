@@ -13,6 +13,7 @@ import { Checkbox } from "~/components/ui/checkbox"
 import { Input } from "~/components/ui/input"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 
 type Props = {
@@ -583,8 +584,11 @@ export function UserEventEditorPage(props: Props) {
           }),
         )
       }
-    } catch {
-      toast(t("保存に失敗しました", "Failed to save event"))
+    } catch (error) {
+      toast(
+        getApolloErrorMessage(error) ??
+          t("保存に失敗しました", "Failed to save event"),
+      )
     } finally {
       setIsSaving(false)
     }
