@@ -398,6 +398,13 @@ export default function NewThemeProposalPage() {
               </AlertDescription>
             </Alert>
 
+            <p className="text-muted-foreground text-xs dark:text-zinc-400">
+              {t(
+                "同じ対象月に提案できるお題は5件までです。",
+                "You can submit up to 5 theme proposals for the same target month.",
+              )}
+            </p>
+
             <div className="space-y-2">
               <label className="font-medium text-sm" htmlFor="proposal-date">
                 {t("対象日", "Target date")}
