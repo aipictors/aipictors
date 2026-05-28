@@ -99,12 +99,10 @@ const buildWorksWhere = (props: {
 
   if (props.prompt === "with") {
     where.hasPrompt = true
-    where.isPromptPublic = true
   }
 
   if (props.prompt === "without") {
     where.hasPrompt = false
-    where.isPromptPublic = false
   }
 
   return where
