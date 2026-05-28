@@ -139,6 +139,10 @@ type GenerateUserEventContentMutationVars = {
 }
 
 const MAX_USER_EVENT_DURATION_SECONDS = 31 * 24 * 60 * 60
+const USER_EVENT_HEADER_CROP_WIDTH = 1200
+const USER_EVENT_HEADER_CROP_HEIGHT = 630
+const USER_EVENT_THUMBNAIL_CROP_WIDTH = 1200
+const USER_EVENT_THUMBNAIL_CROP_HEIGHT = 675
 
 const toDateTimeLocalValue = (time: number) => {
   if (!time) {
@@ -625,8 +629,8 @@ export function UserEventEditorPage(props: Props) {
                 </div>
                 <CropImageField
                   isHidePreviewImage={false}
-                  cropWidth={1200}
-                  cropHeight={630}
+                  cropWidth={USER_EVENT_HEADER_CROP_WIDTH}
+                  cropHeight={USER_EVENT_HEADER_CROP_HEIGHT}
                   defaultCroppedImage={state.headerImageUrl}
                   fileExtension="webp"
                   onDeleteImage={() => updateField("headerImageUrl", "")}
@@ -634,6 +638,12 @@ export function UserEventEditorPage(props: Props) {
                     updateField("headerImageUrl", value)
                   }
                 />
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "イベント詳細ページ上部に横長で表示される画像です。推奨比率は 1200 x 630 です。",
+                    "This wide image appears at the top of the event detail page. Recommended ratio: 1200 x 630.",
+                  )}
+                </p>
               </div>
               <div className="space-y-2">
                 <div className="font-medium text-sm">
@@ -641,8 +651,8 @@ export function UserEventEditorPage(props: Props) {
                 </div>
                 <CropImageField
                   isHidePreviewImage={false}
-                  cropWidth={800}
-                  cropHeight={800}
+                  cropWidth={USER_EVENT_THUMBNAIL_CROP_WIDTH}
+                  cropHeight={USER_EVENT_THUMBNAIL_CROP_HEIGHT}
                   defaultCroppedImage={state.thumbnailImageUrl}
                   fileExtension="webp"
                   onDeleteImage={() => updateField("thumbnailImageUrl", "")}
@@ -650,6 +660,12 @@ export function UserEventEditorPage(props: Props) {
                     updateField("thumbnailImageUrl", value)
                   }
                 />
+                <p className="text-muted-foreground text-xs">
+                  {t(
+                    "イベント一覧カードやホームの横スライドで使う画像です。横長表示が中心なので、推奨比率は 1200 x 675 です。",
+                    "This image is used on event cards and the home carousel. It is mostly shown in a wide layout, so the recommended ratio is 1200 x 675.",
+                  )}
+                </p>
               </div>
             </div>
 
@@ -684,8 +700,8 @@ export function UserEventEditorPage(props: Props) {
                 />
                 <p className="text-muted-foreground text-xs">
                   {t(
-                    "URLに使う識別子です。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
-                    "Used in the event URL. A random suffix is appended on blur to avoid duplicates.",
+                    "URLに使う識別子です。入力欄の外をクリックするか、Tabキーで次の項目へ移動すると、末尾に重複防止用のランダムIDが自動で付きます。",
+                    "Used in the event URL. When you click outside the field or move with Tab, a random suffix is appended to avoid duplicates.",
                   )}
                 </p>
               </div>
@@ -739,8 +755,8 @@ export function UserEventEditorPage(props: Props) {
                         "Changing the main tag would invalidate existing event submissions, so it cannot be edited here.",
                       )
                     : t(
-                        "イベント投稿ボタンから参加すると自動入力される基準タグです。作品一覧の集計や検索導線にも使われます。#は不要です。フォーカスを外すと末尾に重複防止用のランダムIDが自動で付きます。",
-                        "This is the primary tag auto-filled for event submissions and used for listing and search. Do not include #. A random suffix is appended on blur to avoid duplicates.",
+                        "イベント投稿ボタンから参加すると自動入力される基準タグです。作品一覧の集計や検索導線にも使われます。#は不要です。入力欄の外をクリックするか、Tabキーで次の項目へ移動すると、末尾に重複防止用のランダムIDが自動で付きます。",
+                        "This is the primary tag auto-filled for event submissions and used for listing and search. Do not include #. When you click outside the field or move with Tab, a random suffix is appended to avoid duplicates.",
                       )}
                 </p>
               </div>

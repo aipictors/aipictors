@@ -46,9 +46,10 @@ const getStatusClassName = (status: string) => {
 
 const formatEventDate = (unixTime: number) => {
   const date = new Date(unixTime * 1000)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
+  const japanTime = new Date(date.getTime() - 9 * 60 * 60 * 1000)
+  const year = japanTime.getFullYear()
+  const month = String(japanTime.getMonth() + 1).padStart(2, "0")
+  const day = String(japanTime.getDate()).padStart(2, "0")
   return `${year}.${month}.${day}`
 }
 
@@ -103,7 +104,7 @@ export function HomeEventPreviewList({ events }: Props) {
               <img
                 src={event.thumbnailImageUrl}
                 alt=""
-                className="h-12 w-12 rounded-md object-cover sm:h-14 sm:w-14"
+                className="h-12 w-20 rounded-md object-cover sm:h-14 sm:w-24"
               />
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex flex-wrap items-center gap-1.5">
