@@ -61,6 +61,7 @@ type Props = {
     headerImageUrl?: string | null
     tag: string | null
     ratings?: IntrospectionEnum<"Rating">[] | null
+    startAt: number
     endAt: number
     slug: string | null
     source: "OFFICIAL" | "USER"
@@ -102,6 +103,20 @@ const intersectRatings = (
   current: IntrospectionEnum<"Rating">[],
   next: IntrospectionEnum<"Rating">[],
 ) => current.filter((rating) => next.includes(rating))
+
+const toReservationUnixSeconds = (date: string | null, time: string | null) => {
+  if (!date) {
+    return Math.floor(Date.now() / 1000)
+  }
+
+  const normalizedTime = time && time.length > 0 ? time : "00:00"
+  const reservation = new Date(`${date}T${normalizedTime}:00+09:00`)
+  if (Number.isNaN(reservation.getTime())) {
+    return Math.floor(Date.now() / 1000)
+  }
+
+  return Math.floor(reservation.getTime() / 1000)
+}
 
 export function PostImageFormInput(props: Props) {
   const t = useTranslation() // 翻訳対応
@@ -217,6 +232,13 @@ export function PostImageFormInput(props: Props) {
     (event) => event.source === "OFFICIAL",
   )
   const userEvents = props.events.filter((event) => event.source === "USER")
+  const reservationUnixSeconds = toReservationUnixSeconds(
+    props.state.reservationDate,
+    props.state.reservationTime,
+  )
+  const filteredUserEvents = userEvents.filter(
+    (event) => event.startAt <= reservationUnixSeconds && reservationUnixSeconds <= event.endAt,
+  )
   const selectedTagTexts = props.state.tags.map((tag) => tag.text)
   const matchedUserEvents = userEvents.filter(
     (event) => event.tag && selectedTagTexts.includes(event.tag),
@@ -446,7 +468,7 @@ export function PostImageFormInput(props: Props) {
           />
         </div>
       ))}
-      {userEvents.length > 0 && (
+      {filteredUserEvents.length > 0 && (
         <div className="space-y-3 rounded-lg border border-dashed p-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -469,15 +491,15 @@ export function PostImageFormInput(props: Props) {
               {isUserEventsVisible
                 ? t("閉じる", "Hide")
                 : t(
-                    `見る（${userEvents.length}件）`,
-                    `View (${userEvents.length})`,
+                    `見る（${filteredUserEvents.length}件）`,
+                    `View (${filteredUserEvents.length})`,
                   )}
             </Button>
           </div>
 
           {isUserEventsVisible && (
             <div className="space-y-3">
-              {userEvents.map((event) => (
+              {filteredUserEvents.map((event) => (
                 <div key={event.slug}>
                   <PostFormItemEvent
                     eventName={event.title ?? null}

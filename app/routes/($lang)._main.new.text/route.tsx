@@ -49,6 +49,7 @@ type EventOption = {
   headerImageUrl?: string | null
   tag: string | null
   ratings?: EventRating[] | null
+  startAt: number
   endAt: number
   slug: string | null
   source: "OFFICIAL" | "USER"
@@ -93,9 +94,12 @@ export default function NewText() {
 
   const { data: userEventsData } = useQuery(UserEventsQuery, {
     errorPolicy: "all",
+    fetchPolicy: "cache-first",
+    nextFetchPolicy: "cache-first",
     variables: {
-      limit: 8,
+      limit: 24,
       offset: 0,
+      endAt: now.toISOString().split("T")[0],
     },
   })
 
@@ -756,12 +760,12 @@ const viewerQuery = graphql(
 )
 
 const UserEventsQuery = graphql(
-  `query UserEventsQuery($limit: Int!, $offset: Int!) {
+  `query UserEventsQuery($limit: Int!, $offset: Int!, $endAt: String!) {
     userEvents(
       limit: $limit,
       offset: $offset,
       where: {
-        status: "ONGOING",
+        endAt: $endAt,
       }
     ) {
       id
@@ -772,6 +776,7 @@ const UserEventsQuery = graphql(
       ratings
       tag: mainTag
       slug
+      startAt
       endAt
     }
   }`,
@@ -788,6 +793,7 @@ const SelectedUserEventQuery = graphql(
       ratings
       tag: mainTag
       slug
+      startAt
       endAt
     }
   }`,
