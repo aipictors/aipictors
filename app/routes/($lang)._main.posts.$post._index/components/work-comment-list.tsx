@@ -482,7 +482,7 @@ export function WorkCommentList(props: Props) {
                   isLiked={
                     comment.isLiked && !canceledCommentIds.includes(comment.id)
                   }
-                  isMuted={comment.isLiked}
+                  isMuted={Boolean(comment.isMuted)}
                   isSensitive={comment.isSensitive}
                   moderationSummary={
                     moderationSummaryMap.get(comment.id) ?? null
