@@ -35,6 +35,8 @@ import {
 } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
+import { vPostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
+import { vPostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
@@ -69,6 +71,222 @@ type EventOption = {
 }
 
 type RawEventOption = Omit<EventOption, "source">
+
+const POST_IMAGE_FORM_DRAFT_STORAGE_KEY = "post-image-form-draft:v1"
+const POST_IMAGE_MEDIA_DRAFT_DB_NAME = "aipictors-post-drafts"
+const POST_IMAGE_MEDIA_DRAFT_STORE_NAME = "new-image"
+const POST_IMAGE_MEDIA_DRAFT_KEY = "media:v1"
+
+const openPostDraftDatabase = async () => {
+  if (typeof window === "undefined" || !("indexedDB" in window)) {
+    return null
+  }
+
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    const request = window.indexedDB.open(POST_IMAGE_MEDIA_DRAFT_DB_NAME, 1)
+
+    request.onupgradeneeded = () => {
+      const db = request.result
+      if (!db.objectStoreNames.contains(POST_IMAGE_MEDIA_DRAFT_STORE_NAME)) {
+        db.createObjectStore(POST_IMAGE_MEDIA_DRAFT_STORE_NAME)
+      }
+    }
+
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () => {
+      reject(request.error ?? new Error("Failed to open draft database"))
+    }
+  })
+}
+
+const loadPostFormDraft = () => {
+  if (typeof window === "undefined") {
+    return null
+  }
+
+  try {
+    const stored = window.localStorage.getItem(POST_IMAGE_FORM_DRAFT_STORAGE_KEY)
+    if (!stored) {
+      return null
+    }
+
+    const parsed = JSON.parse(stored)
+    if (typeof parsed !== "object" || parsed === null) {
+      window.localStorage.removeItem(POST_IMAGE_FORM_DRAFT_STORAGE_KEY)
+      return null
+    }
+
+    const draft = parsed as Record<string, unknown>
+    const result = safeParse(vPostImageFormInputAction, {
+      type: "INITIALIZE",
+      payload: {
+        ...draft,
+        date:
+          typeof draft.date === "string" || draft.date instanceof Date
+            ? new Date(draft.date)
+            : new Date(),
+      },
+    })
+
+    if (!result.success) {
+      window.localStorage.removeItem(POST_IMAGE_FORM_DRAFT_STORAGE_KEY)
+      return null
+    }
+
+    return result.output
+  } catch (error) {
+    console.warn("Failed to load post form draft:", error)
+    window.localStorage.removeItem(POST_IMAGE_FORM_DRAFT_STORAGE_KEY)
+    return null
+  }
+}
+
+const savePostFormDraft = (payload: Record<string, unknown>) => {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  try {
+    window.localStorage.setItem(
+      POST_IMAGE_FORM_DRAFT_STORAGE_KEY,
+      JSON.stringify(payload),
+    )
+  } catch (error) {
+    console.warn("Failed to save post form draft:", error)
+  }
+}
+
+const removePostFormDraft = () => {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  window.localStorage.removeItem(POST_IMAGE_FORM_DRAFT_STORAGE_KEY)
+}
+
+const loadPostMediaDraft = async () => {
+  try {
+    const db = await openPostDraftDatabase()
+    if (!db) {
+      return null
+    }
+
+    const draft = await new Promise<unknown>((resolve, reject) => {
+      const transaction = db.transaction(
+        POST_IMAGE_MEDIA_DRAFT_STORE_NAME,
+        "readonly",
+      )
+      const request = transaction
+        .objectStore(POST_IMAGE_MEDIA_DRAFT_STORE_NAME)
+        .get(POST_IMAGE_MEDIA_DRAFT_KEY)
+
+      request.onsuccess = () => resolve(request.result ?? null)
+      request.onerror = () => {
+        reject(request.error ?? new Error("Failed to read media draft"))
+      }
+      transaction.oncomplete = () => db.close()
+      transaction.onerror = () => {
+        db.close()
+        reject(transaction.error ?? new Error("Failed to read media draft"))
+      }
+    })
+
+    if (typeof draft !== "object" || draft === null) {
+      return null
+    }
+
+    const result = safeParse(vPostImageFormAction, {
+      type: "INITIALIZE",
+      payload: draft,
+    })
+
+    if (!result.success) {
+      const cleanupDb = await openPostDraftDatabase()
+      if (cleanupDb) {
+        const transaction = cleanupDb.transaction(
+          POST_IMAGE_MEDIA_DRAFT_STORE_NAME,
+          "readwrite",
+        )
+        transaction
+          .objectStore(POST_IMAGE_MEDIA_DRAFT_STORE_NAME)
+          .delete(POST_IMAGE_MEDIA_DRAFT_KEY)
+        transaction.oncomplete = () => cleanupDb.close()
+        transaction.onerror = () => cleanupDb.close()
+      }
+      return null
+    }
+
+    return result.output
+  } catch (error) {
+    console.warn("Failed to load post media draft:", error)
+    return null
+  }
+}
+
+const savePostMediaDraft = async (payload: Record<string, unknown>) => {
+  try {
+    const db = await openPostDraftDatabase()
+    if (!db) {
+      return
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(
+        POST_IMAGE_MEDIA_DRAFT_STORE_NAME,
+        "readwrite",
+      )
+      transaction
+        .objectStore(POST_IMAGE_MEDIA_DRAFT_STORE_NAME)
+        .put(payload, POST_IMAGE_MEDIA_DRAFT_KEY)
+
+      transaction.oncomplete = () => {
+        db.close()
+        resolve()
+      }
+      transaction.onerror = () => {
+        db.close()
+        reject(transaction.error ?? new Error("Failed to save media draft"))
+      }
+    })
+  } catch (error) {
+    console.warn("Failed to save post media draft:", error)
+  }
+}
+
+const removePostMediaDraft = async () => {
+  try {
+    const db = await openPostDraftDatabase()
+    if (!db) {
+      return
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      const transaction = db.transaction(
+        POST_IMAGE_MEDIA_DRAFT_STORE_NAME,
+        "readwrite",
+      )
+      transaction
+        .objectStore(POST_IMAGE_MEDIA_DRAFT_STORE_NAME)
+        .delete(POST_IMAGE_MEDIA_DRAFT_KEY)
+
+      transaction.oncomplete = () => {
+        db.close()
+        resolve()
+      }
+      transaction.onerror = () => {
+        db.close()
+        reject(transaction.error ?? new Error("Failed to remove media draft"))
+      }
+    })
+  } catch (error) {
+    console.warn("Failed to remove post media draft:", error)
+  }
+}
+
+const clearPersistedPostDrafts = async () => {
+  removePostFormDraft()
+  await removePostMediaDraft()
+}
 
 export default function NewImage() {
   const data = useLoaderData<typeof loader>()
@@ -265,8 +483,13 @@ export default function NewImage() {
 
   // コンポーネントマウント後にlocalStorageから設定を読み込み
   useEffect(() => {
+    let cancelled = false
     const timer = setTimeout(() => {
-      if (!isInitialized) {
+      if (isInitialized) {
+        return
+      }
+
+      void (async () => {
         const storedSettings = loadBotSettings()
         if (storedSettings) {
           dispatchInput({
@@ -290,12 +513,42 @@ export default function NewImage() {
             payload: storedSettings.botGradingType ?? "COMMENT_AND_SCORE",
           })
         }
-        setIsInitialized(true)
-      }
+
+        let restoredAnything = false
+
+        const inputDraft = loadPostFormDraft()
+        if (inputDraft && !cancelled) {
+          dispatchInput(inputDraft)
+          restoredAnything = true
+        }
+
+        const mediaDraft = await loadPostMediaDraft()
+        if (mediaDraft && !cancelled) {
+          dispatch(mediaDraft)
+          setMediaType("image")
+          restoredAnything = true
+        }
+
+        if (restoredAnything && !cancelled) {
+          toast(
+            t(
+              "前回の投稿入力を復元しました",
+              "Restored your previous post draft",
+            ),
+          )
+        }
+
+        if (!cancelled) {
+          setIsInitialized(true)
+        }
+      })()
     }, 100) // 100msの遅延
 
-    return () => clearTimeout(timer)
-  }, []) // 空の依存配列でマウント時のみ実行
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [isInitialized, t])
 
   // AI評価設定の変更をlocalStorageに保存
   useEffect(() => {
@@ -316,6 +569,112 @@ export default function NewImage() {
     inputState.botPersonality,
     inputState.botGradingType,
     isInitialized,
+  ])
+
+  useEffect(() => {
+    if (!isInitialized) {
+      return
+    }
+
+    if (state.uploadedWorkId !== null) {
+      removePostFormDraft()
+      return
+    }
+
+    const hasPersistableInput =
+      inputState.title.trim() !== "" ||
+      inputState.caption.trim() !== "" ||
+      inputState.enTitle.trim() !== "" ||
+      inputState.enCaption.trim() !== "" ||
+      inputState.tags.length > 0 ||
+      inputState.accessType !== "PUBLIC" ||
+      inputState.generationParamAccessType !== "PUBLIC" ||
+      inputState.ratingRestriction !== "G" ||
+      inputState.imageStyle !== "ILLUSTRATION" ||
+      inputState.aiModelId !== "1" ||
+      inputState.themeId !== null ||
+      inputState.albumId !== null ||
+      inputState.link.trim() !== "" ||
+      inputState.reservationDate !== null ||
+      inputState.reservationTime !== null ||
+      inputState.imageInformation !== null ||
+      inputState.useTagFeature === false ||
+      inputState.useCommentFeature === false ||
+      inputState.usePromotionFeature ||
+      inputState.useGenerationParams === false ||
+      (inputState.correctionMessage?.trim() ?? "") !== ""
+
+    if (!hasPersistableInput) {
+      removePostFormDraft()
+      return
+    }
+
+    savePostFormDraft({
+      ...inputState,
+      aiModelId: inputState.aiModelId ?? "1",
+      date: inputState.date.toISOString(),
+    })
+  }, [inputState, isInitialized, state.uploadedWorkId])
+
+  useEffect(() => {
+    if (!isInitialized) {
+      return
+    }
+
+    if (state.uploadedWorkId !== null) {
+      void removePostMediaDraft()
+      return
+    }
+
+    if (state.progress > 0) {
+      return
+    }
+
+    const hasPersistableMedia =
+      state.items.length > 0 ||
+      state.thumbnailBase64 !== null ||
+      state.ogpBase64 !== null ||
+      state.pngInfo !== null ||
+      state.indexList.length > 0 ||
+      state.thumbnailPosX !== 0 ||
+      state.thumbnailPosY !== 0 ||
+      state.isSelectedGenerationImage
+
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        if (!hasPersistableMedia) {
+          await removePostMediaDraft()
+          return
+        }
+
+        await savePostMediaDraft({
+          items: state.items,
+          indexList: state.indexList,
+          isThumbnailLandscape: state.isThumbnailLandscape,
+          thumbnailBase64: state.thumbnailBase64,
+          ogpBase64: state.ogpBase64,
+          pngInfo: state.pngInfo,
+          thumbnailPosX: state.thumbnailPosX,
+          thumbnailPosY: state.thumbnailPosY,
+          isSelectedGenerationImage: state.isSelectedGenerationImage,
+        })
+      })()
+    }, 300)
+
+    return () => window.clearTimeout(timer)
+  }, [
+    isInitialized,
+    state.items,
+    state.indexList,
+    state.isSelectedGenerationImage,
+    state.isThumbnailLandscape,
+    state.ogpBase64,
+    state.pngInfo,
+    state.progress,
+    state.thumbnailBase64,
+    state.thumbnailPosX,
+    state.thumbnailPosY,
+    state.uploadedWorkId,
   ])
 
   const onChangeImageInformation = (imageInformation: PNGInfo) => {
@@ -859,6 +1218,8 @@ export default function NewImage() {
           },
         })
 
+        await clearPersistedPostDrafts()
+
         toast(t("作品を投稿しました", "Work has been posted"))
       } catch (error) {
         if (error instanceof Error) {
@@ -1091,6 +1452,8 @@ export default function NewImage() {
             uploadedWorkUuid: work.data?.createWork.uuid,
           },
         })
+
+        await clearPersistedPostDrafts()
 
         toast(t("作品を投稿しました", "Work has been posted"))
         finishPosting()
