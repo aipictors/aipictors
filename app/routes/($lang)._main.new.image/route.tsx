@@ -115,7 +115,7 @@ const normalizeDate = (value: unknown) => {
   return new Date()
 }
 
-const normalizeEnum = <T>(
+const normalizeEnum = <T,>(
   validator: Parameters<typeof safeParse>[0],
   value: unknown,
   fallback: T,
