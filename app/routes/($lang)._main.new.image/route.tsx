@@ -35,11 +35,16 @@ import {
 } from "~/routes/($lang)._main.new.image/components/post-image-form-input"
 import { PostImageFormUploader } from "~/routes/($lang)._main.new.image/components/post-image-form-uploader"
 import { SuccessCreatedWorkDialog } from "~/routes/($lang)._main.new.image/components/success-created-work-dialog"
-import { vPostImageFormInputAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-input-action"
-import { vPostImageFormAction } from "~/routes/($lang)._main.new.image/reducers/actions/post-image-form-action"
 import { postImageFormInputReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-input-reducer"
 import { postImageFormReducer } from "~/routes/($lang)._main.new.image/reducers/post-image-form-reducer"
+import { vImageInformation } from "~/routes/($lang)._main.new.image/validations/image-information"
+import { vPostAccessType } from "~/routes/($lang)._main.new.image/validations/post-access-type"
 import { vPostImageForm } from "~/routes/($lang)._main.new.image/validations/post-image-form"
+import { vPostGenerationParamAccessType } from "~/routes/($lang)._main.new.image/validations/post-generation-params-access-type"
+import { vPostImageStyle } from "~/routes/($lang)._main.new.image/validations/post-image-style"
+import { vPostRating } from "~/routes/($lang)._main.new.image/validations/post-rating"
+import { vSortableItem } from "~/routes/($lang)._main.new.image/validations/sortable-item"
+import { vTag } from "~/routes/($lang)._main.new.image/validations/post-tag"
 import { createBase64FromImageURL } from "~/routes/($lang).generation._index/utils/create-base64-from-image-url"
 import { getDownloadProxyUrl } from "~/routes/($lang).generation._index/utils/get-download-proxy-url"
 import { createMeta } from "~/utils/create-meta"
@@ -76,6 +81,97 @@ const POST_IMAGE_FORM_DRAFT_STORAGE_KEY = "post-image-form-draft:v1"
 const POST_IMAGE_MEDIA_DRAFT_DB_NAME = "aipictors-post-drafts"
 const POST_IMAGE_MEDIA_DRAFT_STORE_NAME = "new-image"
 const POST_IMAGE_MEDIA_DRAFT_KEY = "media:v1"
+const BOT_PERSONALITIES = ["female", "male", "robot", "sage", "pictor_chan"]
+const BOT_GRADING_TYPES = ["COMMENT_ONLY", "SCORE_ONLY", "COMMENT_AND_SCORE"]
+
+const normalizeString = (value: unknown, fallback = "") => {
+  return typeof value === "string" ? value : fallback
+}
+
+const normalizeNullableString = (value: unknown) => {
+  return typeof value === "string" ? value : null
+}
+
+const normalizeBoolean = (value: unknown, fallback = false) => {
+  return typeof value === "boolean" ? value : fallback
+}
+
+const normalizeNumber = (value: unknown, fallback = 0) => {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback
+}
+
+const normalizeDate = (value: unknown) => {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value
+  }
+
+  if (typeof value === "string" || typeof value === "number") {
+    const date = new Date(value)
+    if (!Number.isNaN(date.getTime())) {
+      return date
+    }
+  }
+
+  return new Date()
+}
+
+const normalizeEnum = <T>(
+  validator: Parameters<typeof safeParse>[0],
+  value: unknown,
+  fallback: T,
+) => {
+  const result = safeParse(validator, value)
+  return result.success ? (result.output as T) : fallback
+}
+
+const normalizeTags = (value: unknown) => {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value.flatMap((tag) => {
+    const result = safeParse(vTag, tag)
+    return result.success ? [result.output] : []
+  })
+}
+
+const normalizeSortableItems = (value: unknown) => {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value.flatMap((item) => {
+    const result = safeParse(vSortableItem, item)
+    return result.success ? [result.output] : []
+  })
+}
+
+const normalizeNumberArray = (value: unknown) => {
+  if (!Array.isArray(value)) {
+    return []
+  }
+
+  return value.filter((item): item is number => {
+    return typeof item === "number" && Number.isFinite(item)
+  })
+}
+
+const normalizeImageInformation = (value: unknown) => {
+  const result = safeParse(vImageInformation, value)
+  return result.success ? result.output : null
+}
+
+const normalizeBotPersonality = (value: unknown) => {
+  return typeof value === "string" && BOT_PERSONALITIES.includes(value)
+    ? value as "female" | "male" | "robot" | "sage" | "pictor_chan"
+    : "pictor_chan"
+}
+
+const normalizeBotGradingType = (value: unknown) => {
+  return typeof value === "string" && BOT_GRADING_TYPES.includes(value)
+    ? value as "COMMENT_ONLY" | "SCORE_ONLY" | "COMMENT_AND_SCORE"
+    : "COMMENT_AND_SCORE"
+}
 
 const openPostDraftDatabase = async () => {
   if (typeof window === "undefined" || !("indexedDB" in window)) {
@@ -117,23 +213,50 @@ const loadPostFormDraft = () => {
     }
 
     const draft = parsed as Record<string, unknown>
-    const result = safeParse(vPostImageFormInputAction, {
-      type: "INITIALIZE",
+
+    return {
+      type: "INITIALIZE" as const,
       payload: {
-        ...draft,
-        date:
-          typeof draft.date === "string" || draft.date instanceof Date
-            ? new Date(draft.date)
-            : new Date(),
+        accessType: normalizeEnum(vPostAccessType, draft.accessType, "PUBLIC"),
+        generationParamAccessType: normalizeEnum(
+          vPostGenerationParamAccessType,
+          draft.generationParamAccessType,
+          "PUBLIC",
+        ),
+        aiModelId: normalizeString(draft.aiModelId, "1"),
+        albumId: normalizeNullableString(draft.albumId),
+        caption: normalizeString(draft.caption),
+        date: normalizeDate(draft.date),
+        enCaption: normalizeString(draft.enCaption),
+        enTitle: normalizeString(draft.enTitle),
+        imageInformation: normalizeImageInformation(draft.imageInformation),
+        imageStyle: normalizeEnum(
+          vPostImageStyle,
+          draft.imageStyle,
+          "ILLUSTRATION",
+        ),
+        link: normalizeString(draft.link),
+        ratingRestriction: normalizeEnum(vPostRating, draft.ratingRestriction, "G"),
+        reservationDate: normalizeNullableString(draft.reservationDate),
+        reservationTime: normalizeNullableString(draft.reservationTime),
+        tags: normalizeTags(draft.tags),
+        themeId: normalizeNullableString(draft.themeId),
+        title: normalizeString(draft.title),
+        useCommentFeature: normalizeBoolean(draft.useCommentFeature, true),
+        useGenerationParams: normalizeBoolean(draft.useGenerationParams, true),
+        usePromotionFeature: normalizeBoolean(draft.usePromotionFeature, false),
+        useTagFeature: normalizeBoolean(draft.useTagFeature, true),
+        correctionMessage: normalizeNullableString(draft.correctionMessage),
+        isBotGradingEnabled: normalizeBoolean(draft.isBotGradingEnabled, true),
+        isBotGradingPublic: normalizeBoolean(draft.isBotGradingPublic, true),
+        isBotGradingRankingEnabled: normalizeBoolean(
+          draft.isBotGradingRankingEnabled,
+          true,
+        ),
+        botPersonality: normalizeBotPersonality(draft.botPersonality),
+        botGradingType: normalizeBotGradingType(draft.botGradingType),
       },
-    })
-
-    if (!result.success) {
-      window.localStorage.removeItem(POST_IMAGE_FORM_DRAFT_STORAGE_KEY)
-      return null
     }
-
-    return result.output
   } catch (error) {
     console.warn("Failed to load post form draft:", error)
     window.localStorage.removeItem(POST_IMAGE_FORM_DRAFT_STORAGE_KEY)
@@ -195,28 +318,28 @@ const loadPostMediaDraft = async () => {
       return null
     }
 
-    const result = safeParse(vPostImageFormAction, {
-      type: "INITIALIZE",
-      payload: draft,
-    })
+    const parsedDraft = draft as Record<string, unknown>
 
-    if (!result.success) {
-      const cleanupDb = await openPostDraftDatabase()
-      if (cleanupDb) {
-        const transaction = cleanupDb.transaction(
-          POST_IMAGE_MEDIA_DRAFT_STORE_NAME,
-          "readwrite",
-        )
-        transaction
-          .objectStore(POST_IMAGE_MEDIA_DRAFT_STORE_NAME)
-          .delete(POST_IMAGE_MEDIA_DRAFT_KEY)
-        transaction.oncomplete = () => cleanupDb.close()
-        transaction.onerror = () => cleanupDb.close()
-      }
-      return null
+    return {
+      type: "INITIALIZE" as const,
+      payload: {
+        items: normalizeSortableItems(parsedDraft.items),
+        indexList: normalizeNumberArray(parsedDraft.indexList),
+        isThumbnailLandscape: normalizeBoolean(
+          parsedDraft.isThumbnailLandscape,
+          false,
+        ),
+        thumbnailBase64: normalizeNullableString(parsedDraft.thumbnailBase64),
+        ogpBase64: normalizeNullableString(parsedDraft.ogpBase64),
+        pngInfo: normalizeImageInformation(parsedDraft.pngInfo),
+        thumbnailPosX: normalizeNumber(parsedDraft.thumbnailPosX),
+        thumbnailPosY: normalizeNumber(parsedDraft.thumbnailPosY),
+        isSelectedGenerationImage: normalizeBoolean(
+          parsedDraft.isSelectedGenerationImage,
+          false,
+        ),
+      },
     }
-
-    return result.output
   } catch (error) {
     console.warn("Failed to load post media draft:", error)
     return null
@@ -640,28 +763,24 @@ export default function NewImage() {
       state.thumbnailPosY !== 0 ||
       state.isSelectedGenerationImage
 
-    const timer = window.setTimeout(() => {
-      void (async () => {
-        if (!hasPersistableMedia) {
-          await removePostMediaDraft()
-          return
-        }
+    void (async () => {
+      if (!hasPersistableMedia) {
+        await removePostMediaDraft()
+        return
+      }
 
-        await savePostMediaDraft({
-          items: state.items,
-          indexList: state.indexList,
-          isThumbnailLandscape: state.isThumbnailLandscape,
-          thumbnailBase64: state.thumbnailBase64,
-          ogpBase64: state.ogpBase64,
-          pngInfo: state.pngInfo,
-          thumbnailPosX: state.thumbnailPosX,
-          thumbnailPosY: state.thumbnailPosY,
-          isSelectedGenerationImage: state.isSelectedGenerationImage,
-        })
-      })()
-    }, 300)
-
-    return () => window.clearTimeout(timer)
+      await savePostMediaDraft({
+        items: state.items,
+        indexList: state.indexList,
+        isThumbnailLandscape: state.isThumbnailLandscape,
+        thumbnailBase64: state.thumbnailBase64,
+        ogpBase64: state.ogpBase64,
+        pngInfo: state.pngInfo,
+        thumbnailPosX: state.thumbnailPosX,
+        thumbnailPosY: state.thumbnailPosY,
+        isSelectedGenerationImage: state.isSelectedGenerationImage,
+      })
+    })()
   }, [
     isInitialized,
     state.items,
