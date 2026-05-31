@@ -16,6 +16,10 @@ type Props = {
 
 export function ConfigModelButton(props: Props) {
   const t = useTranslation()
+  const isNoQueueModel =
+    props.type === "FLUX" ||
+    props.type === "SD5" ||
+    props.name?.toLowerCase().includes("gemini")
 
   return (
     <div className="relative">
@@ -95,7 +99,20 @@ export function ConfigModelButton(props: Props) {
                       {props.type || "GEMINI"}
                     </Badge>
                   )}
+                  {isNoQueueModel && (
+                    <Badge className="text-xs" variant={"outline"}>
+                      {t("待ち人数なし", "No queue")}
+                    </Badge>
+                  )}
                 </div>
+                {isNoQueueModel && (
+                  <p className="text-left text-muted-foreground text-xs">
+                    {t(
+                      "Gemini/Fluxは待ち人数なしで開始されます",
+                      "Gemini/Flux starts without queue wait",
+                    )}
+                  </p>
+                )}
               </div>
             )}
           </div>

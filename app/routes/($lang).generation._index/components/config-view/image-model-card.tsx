@@ -49,6 +49,10 @@ export function ImageModelCard(props: Props) {
   }`
 
   const t = useTranslation()
+  const isNoQueueModel =
+    props.type === "FLUX" ||
+    props.type === "SD5" ||
+    props.displayName?.toLowerCase().includes("gemini")
 
   return (
     <div className={classes} onClick={props.onSelect} onKeyUp={() => {}}>
@@ -94,7 +98,18 @@ export function ImageModelCard(props: Props) {
           {props.type === "FLUX" && (
             <Badge>{t("STANDARD以上", "super fast generation")}</Badge>
           )}
+          {isNoQueueModel && (
+            <Badge variant={"outline"}>{t("待ち人数なし", "No queue")}</Badge>
+          )}
         </div>
+        {isNoQueueModel && (
+          <p className="text-muted-foreground text-xs">
+            {t(
+              "Gemini/Fluxは待ち人数なしで開始されます",
+              "Gemini/Flux starts without queue wait",
+            )}
+          </p>
+        )}
         {props.description && (
           <span className="whitespace-pre-wrap break-words text-sm">
             {props.description}
