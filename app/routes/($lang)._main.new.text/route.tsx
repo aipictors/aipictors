@@ -342,6 +342,62 @@ export default function NewText() {
       return
     }
 
+    const selectedEventTags = new Set(
+      inputState.tags.map((tag) => tag.text.trim()).filter(Boolean),
+    )
+
+    if (selectedEventTags.size > 0) {
+      const publishAtUnixSeconds =
+        inputState.reservationDate !== null &&
+        inputState.reservationTime !== null
+          ? Math.floor(
+              (new Date(
+                `${inputState.reservationDate}T${inputState.reservationTime}`,
+              ).getTime() +
+                3600000 * 9) / 1000,
+            )
+          : Math.floor(getJstDate(new Date()).getTime() / 1000)
+
+      const selectedEvents = events.filter(
+        (event) => event.tag && selectedEventTags.has(event.tag),
+      )
+
+      const outOfPeriodEvent = selectedEvents.find((event) => {
+        return (
+          publishAtUnixSeconds < event.startAt ||
+          publishAtUnixSeconds > event.endAt
+        )
+      })
+
+      if (outOfPeriodEvent) {
+        if (
+          inputState.reservationDate !== null &&
+          inputState.reservationTime !== null
+        ) {
+          toast(
+            t(
+              "予約公開日時がイベント開催期間外です。\n開催期間内の日付を指定してください。",
+              "Scheduled publish time is outside the event period. Please choose a date within the event period.",
+            ),
+          )
+          return
+        }
+
+        if (publishAtUnixSeconds < outOfPeriodEvent.startAt) {
+          toast(
+            t(
+              "このイベントはまだ開始されていません。\nイベント開始後に投稿してください。",
+              "This event has not started yet. Please post after the event starts.",
+            ),
+          )
+          return
+        }
+
+        toast(t("このイベントは終了しています。", "This event has ended."))
+        return
+      }
+    }
+
     const uploadedImageUrls = []
 
     try {
@@ -748,6 +804,7 @@ const viewerQuery = graphql(
       headerImageUrl
       tag
       slug
+      startAt
       endAt
     }
   }`,

@@ -41,6 +41,7 @@ type Props = {
     headerImageUrl?: string | null
     tag: string | null
     ratings?: IntrospectionEnum<"Rating">[] | null
+    startAt: number
     endAt: number
     slug: string | null
     source: "OFFICIAL" | "USER"
@@ -69,6 +70,20 @@ const intersectRatings = (
   current: IntrospectionEnum<"Rating">[],
   next: IntrospectionEnum<"Rating">[],
 ) => current.filter((rating) => next.includes(rating))
+
+const toReservationUnixSeconds = (date: string | null, time: string | null) => {
+  if (!date) {
+    return Math.floor(Date.now() / 1000)
+  }
+
+  const normalizedTime = time && time.length > 0 ? time : "00:00"
+  const reservation = new Date(`${date}T${normalizedTime}:00+09:00`)
+  if (Number.isNaN(reservation.getTime())) {
+    return Math.floor(Date.now() / 1000)
+  }
+
+  return Math.floor(reservation.getTime() / 1000)
+}
 
 export function PostAnimationFormInput(props: Props) {
   const t = useTranslation()
@@ -186,6 +201,10 @@ export function PostAnimationFormInput(props: Props) {
     (event) => event.source === "OFFICIAL",
   )
   const userEvents = props.events.filter((event) => event.source === "USER")
+  const publishAtUnixSeconds = toReservationUnixSeconds(
+    props.state.reservationDate,
+    props.state.reservationTime,
+  )
   const selectedTagTexts = props.state.tags.map((tag) => tag.text)
   const matchedUserEvents = userEvents.filter(
     (event) => event.tag && selectedTagTexts.includes(event.tag),
@@ -334,7 +353,9 @@ export function PostAnimationFormInput(props: Props) {
             }
             eventTag={event.tag ?? null}
             ratings={event.ratings ?? null}
+            startAt={event.startAt ?? 0}
             endAt={event.endAt ?? 0}
+            publishAtUnixSeconds={publishAtUnixSeconds}
             slug={event.slug ?? null}
             addTag={(tag) => {
               props.dispatch({ type: "ADD_TAG", payload: tag })
@@ -387,7 +408,9 @@ export function PostAnimationFormInput(props: Props) {
                     }
                     eventTag={event.tag ?? null}
                     ratings={event.ratings ?? null}
+                    startAt={event.startAt ?? 0}
                     endAt={event.endAt ?? 0}
+                    publishAtUnixSeconds={publishAtUnixSeconds}
                     slug={event.slug ?? null}
                     addTag={(tag) => {
                       props.dispatch({ type: "ADD_TAG", payload: tag })

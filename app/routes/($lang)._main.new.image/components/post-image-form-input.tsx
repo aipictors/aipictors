@@ -232,12 +232,9 @@ export function PostImageFormInput(props: Props) {
     (event) => event.source === "OFFICIAL",
   )
   const userEvents = props.events.filter((event) => event.source === "USER")
-  const reservationUnixSeconds = toReservationUnixSeconds(
+  const publishAtUnixSeconds = toReservationUnixSeconds(
     props.state.reservationDate,
     props.state.reservationTime,
-  )
-  const filteredUserEvents = userEvents.filter(
-    (event) => event.startAt <= reservationUnixSeconds && reservationUnixSeconds <= event.endAt,
   )
   const selectedTagTexts = props.state.tags.map((tag) => tag.text)
   const matchedUserEvents = userEvents.filter(
@@ -456,7 +453,9 @@ export function PostImageFormInput(props: Props) {
             thumbnailImageUrl={event.thumbnailImageUrl ?? event.headerImageUrl ?? null}
             eventTag={event.tag ?? null}
             ratings={event.ratings ?? null}
+            startAt={event.startAt ?? 0}
             endAt={event.endAt ?? 0}
+            publishAtUnixSeconds={publishAtUnixSeconds}
             slug={event.slug ?? null}
             addTag={(tag) => {
               props.dispatch({ type: "ADD_TAG", payload: tag })
@@ -468,7 +467,7 @@ export function PostImageFormInput(props: Props) {
           />
         </div>
       ))}
-      {filteredUserEvents.length > 0 && (
+      {userEvents.length > 0 && (
         <div className="space-y-3 rounded-lg border border-dashed p-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -491,15 +490,15 @@ export function PostImageFormInput(props: Props) {
               {isUserEventsVisible
                 ? t("閉じる", "Hide")
                 : t(
-                    `見る（${filteredUserEvents.length}件）`,
-                    `View (${filteredUserEvents.length})`,
+                    `見る（${userEvents.length}件）`,
+                    `View (${userEvents.length})`,
                   )}
             </Button>
           </div>
 
           {isUserEventsVisible && (
             <div className="space-y-3">
-              {filteredUserEvents.map((event) => (
+              {userEvents.map((event) => (
                 <div key={event.slug}>
                   <PostFormItemEvent
                     eventName={event.title ?? null}
@@ -507,7 +506,9 @@ export function PostImageFormInput(props: Props) {
                     thumbnailImageUrl={event.thumbnailImageUrl ?? event.headerImageUrl ?? null}
                     eventTag={event.tag ?? null}
                     ratings={event.ratings ?? null}
+                    startAt={event.startAt ?? 0}
                     endAt={event.endAt ?? 0}
+                    publishAtUnixSeconds={publishAtUnixSeconds}
                     slug={event.slug ?? null}
                     addTag={(tag) => {
                       props.dispatch({ type: "ADD_TAG", payload: tag })
