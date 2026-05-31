@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog"
+import { Input } from "~/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -58,6 +60,8 @@ export function AlbumArticleEditorDialog(props: Props) {
   const [updateAlbum, { loading: isUpdating }] =
     useMutation(updateAlbumMutation)
   const { data: token } = useQuery(viewerTokenQuery)
+  const selectedWorksCount = selectedWorks.length
+  const hasCoverImage = Boolean(thumbnailImageBase64 || props.thumbnail)
 
   useEffect(() => {
     if (!isOpen) {
@@ -126,111 +130,187 @@ export function AlbumArticleEditorDialog(props: Props) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{props.children}</DialogTrigger>
-      <DialogContent className="flex max-h-[90svh] w-[calc(100vw-1rem)] max-w-2xl flex-col overflow-hidden p-0">
+      <DialogContent className="flex max-h-[90svh] w-[calc(100vw-1rem)] max-w-5xl flex-col overflow-hidden p-0">
         <DialogHeader className="shrink-0 px-4 pt-4 pr-12 sm:px-6 sm:pt-6">
           <DialogTitle>{t("シリーズ更新", "Update Album")}</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-4 pb-4 sm:px-6 sm:pb-6">
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="album-cover"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("カバー", "Cover")}
-          </label>
-          <CropImageField
-            isHidePreviewImage={false}
-            cropWidth={1200}
-            cropHeight={627}
-            defaultCroppedImage={props.thumbnail}
-            fileExtension={"webp"}
-            onDeleteImage={() => {
-              setThumbnailImageBase64("")
-              setIsThumbnailCleared(true)
-            }}
-            onCropToBase64={(croppedImage) => {
-              setThumbnailImageBase64(croppedImage)
-              setIsThumbnailCleared(false)
-            }}
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="nickname"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("タイトル", "Title")}
-          </label>
-          <input
-            type="text"
-            id="title"
-            maxLength={32}
-            minLength={1}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="rounded-md border px-2 py-1"
-            defaultValue="Aipictors/AIイラスト投稿サイト・AI小説投稿サイト・AI絵"
-          />
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="album-rating"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("レーティング", "Rating")}
-          </label>
-          <Select
-            value={rating}
-            onValueChange={(value) => {
-              setRating(value as IntrospectionEnum<"AlbumRating">)
-            }}
-          >
-            <SelectTrigger id="album-rating">
-              <SelectValue placeholder={t("レーティング", "Rating")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="G">{toRatingText("G")}</SelectItem>
-              <SelectItem value="R15">{toRatingText("R15")}</SelectItem>
-              <SelectItem value="R18">{toRatingText("R18")}</SelectItem>
-              <SelectItem value="R18G">{toRatingText("R18G")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex flex-col justify-between space-y-2">
-          <label
-            htmlFor="enProfile"
-            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            {t("説明", "Description")}
-          </label>
-          <AutoResizeTextarea
-            id="enProfile"
-            className="rounded-md border px-2 py-1"
-            maxLength={640}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <p className="font-medium text-sm ">
-          {t("選択中の作品", "Selected works")}（{selectedWorks.length}）
-        </p>
-        <SelectCreatedWorksDialogWithIds
-          currentAlbumId={props.album.id}
-          limit={ALBUM_WORKS_MAX}
-          selectedWorkIds={selectedWorks}
-          setSelectedWorkIds={setSelectedWorks}
-        />
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("基本情報", "Basic details")}</CardTitle>
+                  <CardDescription>
+                    {t(
+                      "シリーズ名、説明、表示レーティングを更新します。",
+                      "Update the series title, description, and visible rating.",
+                    )}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="title"
+                      className="font-medium text-sm leading-none"
+                    >
+                      {t("タイトル", "Title")}
+                    </label>
+                    <Input
+                      id="title"
+                      maxLength={32}
+                      minLength={1}
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+                    <p className="text-muted-foreground text-xs">
+                      {t(
+                        "作品一覧や共有時に表示されるシリーズ名です。",
+                        "This name appears in the work list and when the series is shared.",
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="album-rating"
+                      className="font-medium text-sm leading-none"
+                    >
+                      {t("レーティング", "Rating")}
+                    </label>
+                    <Select
+                      value={rating}
+                      onValueChange={(value) => {
+                        setRating(value as IntrospectionEnum<"AlbumRating">)
+                      }}
+                    >
+                      <SelectTrigger id="album-rating">
+                        <SelectValue placeholder={t("レーティング", "Rating")} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="G">{toRatingText("G")}</SelectItem>
+                        <SelectItem value="R15">{toRatingText("R15")}</SelectItem>
+                        <SelectItem value="R18">{toRatingText("R18")}</SelectItem>
+                        <SelectItem value="R18G">{toRatingText("R18G")}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="album-description"
+                      className="font-medium text-sm leading-none"
+                    >
+                      {t("説明", "Description")}
+                    </label>
+                    <AutoResizeTextarea
+                      id="album-description"
+                      className="rounded-md border px-3 py-2"
+                      maxLength={640}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("作品の並びと選択", "Works and ordering")}</CardTitle>
+                  <CardDescription>
+                    {t(
+                      "作品の追加・削除と並び順の調整を行います。",
+                      "Add or remove works and adjust the order they appear in the series.",
+                    )}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2">
+                    <div>
+                      <p className="font-medium text-sm">
+                        {t("選択中の作品", "Selected works")}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {t(
+                          "ドラッグで順番を変えるとシリーズ表示順として保存されます。",
+                          "Drag to reorder works and save that order as the series layout.",
+                        )}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-lg">{selectedWorksCount}</p>
+                      <p className="text-muted-foreground text-xs">/ {ALBUM_WORKS_MAX}</p>
+                    </div>
+                  </div>
+
+                  <SelectCreatedWorksDialogWithIds
+                    currentAlbumId={props.album.id}
+                    limit={ALBUM_WORKS_MAX}
+                    selectedWorkIds={selectedWorks}
+                    setSelectedWorkIds={setSelectedWorks}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("カバー画像", "Cover image")}</CardTitle>
+                  <CardDescription>
+                    {t(
+                      "一覧や共有時に表示されるカバーです。R18 部分は含めないでください。",
+                      "This cover is shown in lists and shares. Do not include explicit R18 content.",
+                    )}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <CropImageField
+                    isHidePreviewImage={false}
+                    cropWidth={1200}
+                    cropHeight={627}
+                    defaultCroppedImage={props.thumbnail}
+                    fileExtension={"webp"}
+                    onDeleteImage={() => {
+                      setThumbnailImageBase64("")
+                      setIsThumbnailCleared(true)
+                    }}
+                    onCropToBase64={(croppedImage) => {
+                      setThumbnailImageBase64(croppedImage)
+                      setIsThumbnailCleared(false)
+                    }}
+                  />
+                  <div className="rounded-lg border bg-muted/30 px-3 py-2 text-sm">
+                    <div className="font-medium">
+                      {t("現在の状態", "Current status")}
+                    </div>
+                    <div className="mt-1 text-muted-foreground text-xs">
+                      {isThumbnailCleared
+                        ? t("保存時にカバー画像を削除します。", "The cover image will be removed when you save.")
+                        : hasCoverImage
+                          ? t("カバー画像が設定されています。", "A cover image is set.")
+                          : t("カバー画像は未設定です。", "No cover image is set.")}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
 
         <DialogFooter className="shrink-0 border-t px-4 py-4 sm:px-6">
-          <Button disabled={isUpdating} className="w-full" onClick={onSubmit}>
+          <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button variant="secondary" onClick={() => setIsOpen(false)}>
+              {t("閉じる", "Close")}
+            </Button>
+            <Button disabled={isUpdating} className="sm:min-w-40" onClick={onSubmit}>
             {isUpdating ? (
               <Loader2Icon className="m-auto size-4 animate-spin" />
             ) : (
               t("更新する", "Update")
             )}
-          </Button>
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
