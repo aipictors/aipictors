@@ -38,7 +38,7 @@ import { CSS } from "@dnd-kit/utilities"
 
 type Props = {
   selectedWorkIds: string[]
-  setSelectedWorkIds: (workIds: string[]) => void
+  setSelectedWorkIds: React.Dispatch<React.SetStateAction<string[]>>
   limit?: number
   currentAlbumId?: string
 }
@@ -46,7 +46,7 @@ type Props = {
 type SortableItemProps = {
   work: FragmentOf<typeof DialogWorkFragment>
   selectedWorkIds: string[]
-  setSelectedWorkIds: (workIds: string[]) => void
+  setSelectedWorkIds: React.Dispatch<React.SetStateAction<string[]>>
   isInOtherAlbum: boolean
 }
 
@@ -66,9 +66,9 @@ function SortableItem(props: SortableItemProps) {
   }
 
   const removeWork = () => {
-    props.setSelectedWorkIds(
-      props.selectedWorkIds.filter((id) => id !== props.work.id),
-    )
+    props.setSelectedWorkIds((currentIds) => {
+      return currentIds.filter((id) => id !== props.work.id)
+    })
   }
 
   return (
@@ -240,25 +240,24 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
 
   // ======== (未選択タブ) 作品クリック ========
   const handleWorkClick = (work: FragmentOf<typeof DialogWorkFragment>) => {
-    const isAlreadySelected = props.selectedWorkIds.includes(work.id)
-    if (isAlreadySelected) {
-      // 選択解除
-      const newIds = props.selectedWorkIds.filter((id) => id !== work.id)
-      props.setSelectedWorkIds(newIds)
-    } else {
-      // 新規選択
-      if (!props.limit || props.selectedWorkIds.length < props.limit) {
-        const newIds = [...props.selectedWorkIds, work.id]
-        props.setSelectedWorkIds(newIds)
-      } else {
-        toast(
-          t(
-            `選択できる作品数は${props.limit}つまでです。`,
-            `You can select up to ${props.limit} works.`,
-          ),
-        )
+    props.setSelectedWorkIds((currentIds) => {
+      if (currentIds.includes(work.id)) {
+        return currentIds.filter((id) => id !== work.id)
       }
-    }
+
+      if (!props.limit || currentIds.length < props.limit) {
+        return [...currentIds, work.id]
+      }
+
+      toast(
+        t(
+          `選択できる作品数は${props.limit}つまでです。`,
+          `You can select up to ${props.limit} works.`,
+        ),
+      )
+
+      return currentIds
+    })
   }
 
   // ======== 「選択中」タブで表示する作品を ID の順番に並び替えた配列を生成 ========
@@ -273,10 +272,18 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   ) => {
     return worksToRender.map((work) => (
       <div key={work.id}>
-        <button
-          type="button"
-          className="relative m-2 size-24 cursor-pointer bg-transparent p-0"
+        <div
+          role="button"
+          tabIndex={0}
+          className="relative m-2 size-24 cursor-pointer touch-manipulation rounded-md"
           onClick={() => handleWorkClick(work)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault()
+              handleWorkClick(work)
+            }
+          }}
+          aria-pressed={props.selectedWorkIds.includes(work.id)}
         >
           <img
             className="size-24 rounded-md object-cover"
@@ -297,7 +304,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
               <CheckIcon className="p-1 text-white dark:text-black" />
             </div>
           )}
-        </button>
+        </div>
       </div>
     ))
   }
