@@ -19,7 +19,7 @@ import {
   ArrowDownToLine,
   StampIcon,
 } from "lucide-react"
-import { useState, useContext, useRef } from "react"
+import { useState, useContext, useRef, useEffect } from "react"
 import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
@@ -113,12 +113,14 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
   const [showSensitiveIds, setShowSensitiveIds] = useState<string[]>([])
   const [showMutedIds, setShowMutedIds] = useState<string[]>([])
   const [openReplyIds, setOpenReplyIds] = useState<string[]>([])
+  const [latestOpenedReplyId, setLatestOpenedReplyId] = useState<string | null>(null)
   const [newComments, setNewComments] = useState<Comment[]>([])
   const [newReplies, setNewReplies] = useState<
     Array<NonNullable<Comment["responses"]>[number] & { parentId: string }>
   >([])
 
   const scrollAreaRef = useRef<HTMLDivElement>(null)
+  const replyInputRefs = useRef<Record<string, HTMLDivElement | null>>({})
 
   const [createWorkComment, { loading: isCreatingWorkComment }] = useMutation(
     createWorkCommentMutation,
@@ -257,10 +259,46 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
   const toggleReply = (commentId: string) => {
     if (openReplyIds.includes(commentId)) {
       setOpenReplyIds(openReplyIds.filter((id) => id !== commentId))
+      setLatestOpenedReplyId((currentId) => {
+        return currentId === commentId ? null : currentId
+      })
     } else {
       setOpenReplyIds([...openReplyIds, commentId])
+      setLatestOpenedReplyId(commentId)
     }
   }
+
+  useEffect(() => {
+    if (!latestOpenedReplyId || !openReplyIds.includes(latestOpenedReplyId)) {
+      return
+    }
+
+    const scrollToReplyInput = () => {
+      const replyElement = replyInputRefs.current[latestOpenedReplyId]
+      if (!replyElement) {
+        return
+      }
+
+      replyElement.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "nearest",
+      })
+
+      const textarea = replyElement.querySelector("textarea")
+      if (textarea instanceof HTMLTextAreaElement) {
+        textarea.focus({ preventScroll: true })
+      }
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      window.setTimeout(scrollToReplyInput, 80)
+    })
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+    }
+  }, [latestOpenedReplyId, openReplyIds])
 
   // センシティブコメント表示の切り替え
   const toggleSensitiveComment = (commentId: string) => {
@@ -515,7 +553,12 @@ export function WorkCommentSectionEnhanced (props: Props): React.ReactNode {
 
         {/* 返信入力欄 */}
         {openReplyIds.includes(comment.id) && (
-          <div className="mt-4">
+          <div
+            className="mt-4"
+            ref={(element) => {
+              replyInputRefs.current[comment.id] = element
+            }}
+          >
             <WorkCommentInput
               targetCommentId={comment.id}
               onReplyCompleted={(id, text, stickerId, stickerImageURL) =>
