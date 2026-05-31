@@ -559,6 +559,7 @@ export default function NewImage() {
   })
 
   const [isInitialized, setIsInitialized] = useState(false)
+  const hasStartedDraftRestoreRef = useRef(false)
   const [mediaType, setMediaType] = useState<"image" | "video">(
     requestedMediaType,
   )
@@ -606,12 +607,14 @@ export default function NewImage() {
 
   // コンポーネントマウント後にlocalStorageから設定を読み込み
   useEffect(() => {
+    if (isInitialized || hasStartedDraftRestoreRef.current) {
+      return
+    }
+
+    hasStartedDraftRestoreRef.current = true
+
     let cancelled = false
     const timer = setTimeout(() => {
-      if (isInitialized) {
-        return
-      }
-
       void (async () => {
         const storedSettings = loadBotSettings()
         if (storedSettings) {
@@ -671,7 +674,7 @@ export default function NewImage() {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [isInitialized, t])
+  }, [isInitialized])
 
   // AI評価設定の変更をlocalStorageに保存
   useEffect(() => {
