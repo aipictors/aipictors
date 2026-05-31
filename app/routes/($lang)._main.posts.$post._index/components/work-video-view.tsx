@@ -1,10 +1,11 @@
+import Hls from "hls.js"
 import { Loader2, Play } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button } from "~/components/ui/button"
 import {
   getCloudflareStreamUid,
   isCloudflareStreamUrl,
-  toCloudflareStreamEmbedUrl,
+  toCloudflareStreamHlsUrlFromUid,
 } from "~/utils/cloudflare-stream"
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 }
 
 const STREAM_READY_CACHE_TTL_MS = 1000 * 60 * 60 * 6
+const STREAM_READY_RETRY_MS = 60_000
 
 type StreamReadyCacheValue = {
   ready: boolean
@@ -71,11 +73,11 @@ function writeCachedStreamReady(uid: string) {
 
 export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
   const isStream = isCloudflareStreamUrl(videoUrl)
-  const embedUrl = toCloudflareStreamEmbedUrl(videoUrl)
   const uid = getCloudflareStreamUid(videoUrl)
-  const embedPlaybackUrl = embedUrl ? `${embedUrl}?autoplay=true` : null
+  const hlsUrl = toCloudflareStreamHlsUrlFromUid(uid)
   const [hasRequestedPlayback, setHasRequestedPlayback] = useState(false)
   const [streamCheckVersion, setStreamCheckVersion] = useState(0)
+  const streamVideoRef = useRef<HTMLVideoElement>(null)
 
   // null = checking, true = ready, false = not ready yet
   const [streamReady, setStreamReady] = useState<boolean | null>(
@@ -123,7 +125,7 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
           setStreamReady(true)
         } else {
           setStreamReady(false)
-          timerId = setTimeout(check, 30_000)
+          timerId = setTimeout(check, STREAM_READY_RETRY_MS)
         }
       } catch {
         if (!cancelled) setStreamReady(true)
@@ -137,6 +139,43 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
       if (timerId !== null) clearTimeout(timerId)
     }
   }, [hasRequestedPlayback, isStream, streamCheckVersion, uid])
+
+  useEffect(() => {
+    if (!hasRequestedPlayback || !isStream || !hlsUrl || !streamVideoRef.current) {
+      return
+    }
+
+    const video = streamVideoRef.current
+
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = hlsUrl
+      void video.play().catch(() => {})
+      return
+    }
+
+    if (!Hls.isSupported()) {
+      video.src = hlsUrl
+      void video.play().catch(() => {})
+      return
+    }
+
+    const hls = new Hls({
+      autoStartLoad: true,
+      enableWorker: true,
+    })
+
+    hls.loadSource(hlsUrl)
+    hls.attachMedia(video)
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      void video.play().catch(() => {})
+    })
+
+    return () => {
+      hls.destroy()
+      video.removeAttribute("src")
+      video.load()
+    }
+  }, [hasRequestedPlayback, hlsUrl, isStream, streamReady])
 
   const posterView = (
     <button
@@ -168,7 +207,7 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
     </button>
   )
 
-  if (isStream && embedUrl) {
+  if (isStream && hlsUrl) {
     if (!hasRequestedPlayback) {
       return (
         <div className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900">
@@ -196,7 +235,7 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
               動画の準備中です
             </p>
             <p className="text-xs text-zinc-500 dark:text-zinc-500">
-              再生準備ができるまで 30 秒ごとに確認しています
+              再生準備ができるまで 60 秒ごとに確認しています
             </p>
             <Button
               variant="secondary"
@@ -216,14 +255,17 @@ export function WorkVideoView({ videoUrl, posterUrl, title }: Props) {
     return (
       <div className="relative m-0 bg-zinc-100 object-contain dark:bg-zinc-900">
         <div className="mx-auto aspect-video w-full max-w-[1280px]">
-          <iframe
-            src={embedPlaybackUrl ?? embedUrl}
-            title="Cloudflare Stream Video"
+          <video
+            ref={streamVideoRef}
+            poster={posterUrl ?? undefined}
+            controls
             className="h-full w-full"
-            loading="lazy"
-            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
-            allowFullScreen
-          />
+            autoPlay
+            playsInline
+            preload="metadata"
+          >
+            <track kind="captions" srcLang="en" label="English" />
+          </video>
         </div>
       </div>
     )
