@@ -82,8 +82,11 @@ export function SensitiveToggle ({
 
   const performR18Toggle = () => {
     if (targetUrl) {
-      // targetUrlが指定されている場合はそのURLに直接ナビゲート
-      navigate(targetUrl, { replace: true })
+      // targetUrlが指定されている場合は絶対パスとしてナビゲートする
+      const normalizedTargetUrl = targetUrl.startsWith("/")
+        ? targetUrl
+        : `/${targetUrl}`
+      navigate(normalizedTargetUrl, { replace: true })
       return
     }
 
@@ -97,8 +100,8 @@ export function SensitiveToggle ({
     }
 
     if (isR18Mode) {
-      // R18モードをOFFにする（"/r"を削除）
-      newPathname = location.pathname.replace(/\/r/, "")
+      // R18モードをOFFにする（先頭の"/r"のみ削除）
+      newPathname = location.pathname.replace(/^\/r(?=\/|$)/, "")
       if (newPathname === "") newPathname = "/"
     } else {
       // R18モードをONにする

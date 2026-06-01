@@ -16,31 +16,49 @@ export async function loader(params: LoaderFunctionArgs) {
   const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
 
-  const year = params.params.year
-    ? Number.parseInt(params.params.year)
-    : yesterday.getFullYear()
-  const month = params.params.month
-    ? Number.parseInt(params.params.month)
-    : yesterday.getMonth() + 1
-  const day = params.params.day
-    ? Number.parseInt(params.params.day)
-    : yesterday.getDate()
+  const initialDate = new Date(
+    params.params.year && params.params.month && params.params.day
+      ? Number.parseInt(params.params.year)
+      : yesterday.getFullYear(),
+    params.params.year && params.params.month && params.params.day
+      ? Number.parseInt(params.params.month) - 1
+      : yesterday.getMonth(),
+    params.params.year && params.params.month && params.params.day
+      ? Number.parseInt(params.params.day)
+      : yesterday.getDate(),
+  )
 
-  const variables = {
-    offset: 0,
-    limit: 200,
-    where: {
-      year: year,
-      month: month,
-      ...(day !== null && { day: day }),
-      isSensitive: true,
-    },
+  let year = initialDate.getFullYear()
+  let month = initialDate.getMonth() + 1
+  let day = initialDate.getDate()
+  let workAwardsResp
+
+  for (let offset = 0; offset < 7; offset += 1) {
+    const targetDate = new Date(initialDate)
+    targetDate.setDate(initialDate.getDate() - offset)
+
+    year = targetDate.getFullYear()
+    month = targetDate.getMonth() + 1
+    day = targetDate.getDate()
+
+    workAwardsResp = await loaderClient.query({
+      query: workAwardsQuery,
+      variables: {
+        offset: 0,
+        limit: 200,
+        where: {
+          year,
+          month,
+          day,
+          isSensitive: true,
+        },
+      },
+    })
+
+    if (workAwardsResp.data.workAwards.length > 0) {
+      break
+    }
   }
-
-  const workAwardsResp = await loaderClient.query({
-    query: workAwardsQuery,
-    variables: variables,
-  })
 
   return {
     year,

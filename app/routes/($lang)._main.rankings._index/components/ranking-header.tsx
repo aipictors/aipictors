@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import type React from "react"
 import { useEffect, useState } from "react"
+import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
@@ -47,6 +48,7 @@ export function RankingHeader(props: Props) {
   const navigate = useNavigate()
   const location = useLocation()
   const isAiRankingPage = pathnamePrefix === aiPathnamePrefix
+  const isSensitiveRankingPage = pathnamePrefix.startsWith("/r/")
 
   const buildDateInputValue = (
     targetYear: number,
@@ -83,6 +85,27 @@ export function RankingHeader(props: Props) {
 
   const defaultRankingsPath = buildRankingModePath(defaultPathnamePrefix)
   const aiRankingsPath = buildRankingModePath(aiPathnamePrefix)
+
+  const toSensitivePrefix = (basePathname: string) =>
+    basePathname.startsWith("/r/") ? basePathname : `/r${basePathname}`
+
+  const toAllAgesPrefix = (basePathname: string) =>
+    basePathname.startsWith("/r/")
+      ? basePathname.replace(/^\/r/, "")
+      : basePathname
+
+  const rankingAgeToggleBasePath = isSensitiveRankingPage
+    ? isAiRankingPage
+      ? toAllAgesPrefix(aiPathnamePrefix)
+      : toAllAgesPrefix(defaultPathnamePrefix)
+    : isAiRankingPage
+      ? toSensitivePrefix(aiPathnamePrefix)
+      : toSensitivePrefix(defaultPathnamePrefix)
+
+  const rankingAgeTogglePath = (() => {
+    const basePath = buildRankingModePath(rankingAgeToggleBasePath)
+    return location.search ? `${basePath}${location.search}` : basePath
+  })()
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value)
@@ -496,47 +519,54 @@ export function RankingHeader(props: Props) {
 
           <div className="grid gap-2 lg:grid-cols-[auto_auto_minmax(0,1fr)] lg:items-center">
             <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePrevious}
-            className="h-9 rounded-full border-border/50 bg-background/80 px-3 text-xs backdrop-blur-sm hover:bg-muted/50 sm:px-4 sm:text-sm"
-          >
-            <ChevronLeftIcon className="h-5 w-5" />
-            {t("前へ", "Previous")}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleNext}
-            className="h-9 rounded-full border-border/50 bg-background/80 px-3 text-xs backdrop-blur-sm hover:bg-muted/50 sm:px-4 sm:text-sm"
-          >
-            {t("次へ", "Next")}
-            <ChevronRightIcon className="h-5 w-5" />
-          </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrevious}
+                className="h-9 rounded-full border-border/50 bg-background/80 px-3 text-xs backdrop-blur-sm hover:bg-muted/50 sm:px-4 sm:text-sm"
+              >
+                <ChevronLeftIcon className="h-5 w-5" />
+                {t("前へ", "Previous")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNext}
+                className="h-9 rounded-full border-border/50 bg-background/80 px-3 text-xs backdrop-blur-sm hover:bg-muted/50 sm:px-4 sm:text-sm"
+              >
+                {t("次へ", "Next")}
+                <ChevronRightIcon className="h-5 w-5" />
+              </Button>
             </div>
 
             <div className="flex h-9 items-center gap-2 rounded-full border border-border/50 bg-background/80 px-3 backdrop-blur-sm">
-            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-            <input
-              type="date"
-              value={date}
-              onChange={handleDateChange}
-              aria-label={t("ランキング日付", "Ranking date")}
-              className="w-full rounded-lg border-0 bg-transparent px-1 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              max={new Date().toISOString().split("T")[0]}
-            />
-          </div>
+              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+              <input
+                type="date"
+                value={date}
+                onChange={handleDateChange}
+                aria-label={t("ランキング日付", "Ranking date")}
+                className="w-full rounded-lg border-0 bg-transparent px-1 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                max={new Date().toISOString().split("T")[0]}
+              />
+            </div>
 
-          <Button
-            onClick={handleTodayClick}
-            variant="outline"
-            size="sm"
-            className="h-9 justify-self-start rounded-full border-border/50 bg-background/80 px-4 text-xs backdrop-blur-sm hover:bg-muted/50 sm:text-sm lg:justify-self-end"
-          >
-            {t("最新", "Latest")}
-          </Button>
-        </div>
+            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+              <SensitiveToggle
+                variant="compact"
+                targetUrl={rankingAgeTogglePath}
+                label={isSensitiveRankingPage ? t("全年齢", "All Ages") : "R18"}
+              />
+              <Button
+                onClick={handleTodayClick}
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-full border-border/50 bg-background/80 px-4 text-xs backdrop-blur-sm hover:bg-muted/50 sm:text-sm"
+              >
+                {t("最新", "Latest")}
+              </Button>
+            </div>
+          </div>
 
           <div className="rounded-2xl border border-border/40 bg-muted/20 p-3">
             <div className="flex items-center justify-between gap-3">
@@ -561,21 +591,21 @@ export function RankingHeader(props: Props) {
 
             {isDateRailOpen && (
               <div className="mt-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="flex min-w-max gap-2 pr-2 touch-pan-x snap-x snap-mandatory">
-            {carouselItems.map((item) => (
-              <Link
-                key={item.link}
-                to={item.link}
-                className={getQuickSelectChipClassName(item.border)}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
+                <div className="flex min-w-max gap-2 pr-2 touch-pan-x snap-x snap-mandatory">
+                  {carouselItems.map((item) => (
+                    <Link
+                      key={item.link}
+                      to={item.link}
+                      className={getQuickSelectChipClassName(item.border)}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </div>
-        </div>
+          </div>
       </div>
     </div>
   )

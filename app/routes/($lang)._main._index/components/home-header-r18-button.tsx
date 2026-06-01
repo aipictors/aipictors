@@ -148,7 +148,7 @@ export function HomeHeaderR18Button() {
   // 現在のURLがR18ページかどうかを判定
   const localePrefix = getLocalePrefix(location.pathname)
   const pathWithoutLocale = location.pathname.slice(localePrefix.length) || "/"
-  const isCurrentlyR18 = pathWithoutLocale.startsWith("/r")
+  const isCurrentlyR18 = /^\/r(?:\/|$)/.test(pathWithoutLocale)
 
   // R18ボタンクリック処理
   const handleR18ButtonClick = () => {
