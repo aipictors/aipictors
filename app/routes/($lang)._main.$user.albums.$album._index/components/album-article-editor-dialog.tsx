@@ -6,7 +6,13 @@ import { toast } from "sonner"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CropImageField } from "~/components/crop-image-field"
 import { Button } from "~/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -25,18 +31,26 @@ import {
 } from "~/components/ui/select"
 import { useTranslation } from "~/hooks/use-translation"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
+import { AlbumWorkLimitUpgradeDialog } from "~/routes/($lang).my._index/components/album-work-limit-upgrade-dialog"
 import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
+import {
+  FREE_ALBUM_WORKS_LIMIT,
+  getAlbumWorksLimit,
+  getAlbumWorksLimitUpgradeTarget,
+  LITE_ALBUM_WORKS_LIMIT,
+  STANDARD_ALBUM_WORKS_LIMIT,
+} from "~/utils/album-work-limit"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toRatingText } from "~/utils/work/to-rating-text"
-
-const ALBUM_WORKS_MAX = 32
 
 type Props = {
   album: FragmentOf<typeof AlbumArticleEditorDialogFragment>
   thumbnail?: string
   children: React.ReactNode
   userNanoid: string
-  onUpdated?: (album: FragmentOf<typeof AlbumArticleEditorDialogFragment>) => void
+  onUpdated?: (
+    album: FragmentOf<typeof AlbumArticleEditorDialogFragment>,
+  ) => void
 }
 
 export function AlbumArticleEditorDialog(props: Props) {
@@ -56,10 +70,15 @@ export function AlbumArticleEditorDialog(props: Props) {
   )
   const [thumbnailImageBase64, setThumbnailImageBase64] = useState("")
   const [isThumbnailCleared, setIsThumbnailCleared] = useState(false)
+  const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false)
 
   const [updateAlbum, { loading: isUpdating }] =
     useMutation(updateAlbumMutation)
   const { data: token } = useQuery(viewerTokenQuery)
+  const { data: currentPassData } = useQuery(viewerCurrentPassQuery)
+  const currentPassType = currentPassData?.viewer?.currentPass?.type ?? null
+  const albumWorksMax = getAlbumWorksLimit(currentPassType)
+  const nextUpgrade = getAlbumWorksLimitUpgradeTarget(currentPassType)
   const selectedWorksCount = selectedWorks.length
   const hasCoverImage = Boolean(thumbnailImageBase64 || props.thumbnail)
 
@@ -179,19 +198,27 @@ export function AlbumArticleEditorDialog(props: Props) {
                       {t("レーティング", "Rating")}
                     </label>
                     <Select
-                      value={rating}
+                      value={rating as string}
                       onValueChange={(value) => {
                         setRating(value as IntrospectionEnum<"AlbumRating">)
                       }}
                     >
                       <SelectTrigger id="album-rating">
-                        <SelectValue placeholder={t("レーティング", "Rating")} />
+                        <SelectValue
+                          placeholder={t("レーティング", "Rating")}
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="G">{toRatingText("G")}</SelectItem>
-                        <SelectItem value="R15">{toRatingText("R15")}</SelectItem>
-                        <SelectItem value="R18">{toRatingText("R18")}</SelectItem>
-                        <SelectItem value="R18G">{toRatingText("R18G")}</SelectItem>
+                        <SelectItem value="R15">
+                          {toRatingText("R15")}
+                        </SelectItem>
+                        <SelectItem value="R18">
+                          {toRatingText("R18")}
+                        </SelectItem>
+                        <SelectItem value="R18G">
+                          {toRatingText("R18G")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -216,7 +243,9 @@ export function AlbumArticleEditorDialog(props: Props) {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("作品の並びと選択", "Works and ordering")}</CardTitle>
+                  <CardTitle>
+                    {t("作品の並びと選択", "Works and ordering")}
+                  </CardTitle>
                   <CardDescription>
                     {t(
                       "作品の追加・削除と並び順の調整を行います。",
@@ -238,14 +267,39 @@ export function AlbumArticleEditorDialog(props: Props) {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-lg">{selectedWorksCount}</p>
-                      <p className="text-muted-foreground text-xs">/ {ALBUM_WORKS_MAX}</p>
+                      <p className="font-semibold text-lg">
+                        {selectedWorksCount}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        / {albumWorksMax}
+                      </p>
                     </div>
                   </div>
 
+                  <p className="text-muted-foreground text-xs">
+                    {t(
+                      `無料で${FREE_ALBUM_WORKS_LIMIT}作品、ライト以上で${LITE_ALBUM_WORKS_LIMIT}作品、スタンダード以上で${STANDARD_ALBUM_WORKS_LIMIT}作品まで追加できます。`,
+                      `Free users can add ${FREE_ALBUM_WORKS_LIMIT}, Lite or above ${LITE_ALBUM_WORKS_LIMIT}, and Standard or above ${STANDARD_ALBUM_WORKS_LIMIT} works.`,
+                    )}
+                  </p>
+
+                  {nextUpgrade && (
+                    <button
+                      type="button"
+                      className="w-fit font-medium text-primary text-xs underline-offset-4 hover:underline"
+                      onClick={() => setIsUpgradeDialogOpen(true)}
+                    >
+                      {t(
+                        `${nextUpgrade.passType === "LITE" ? "ライト" : "スタンダード"}で${nextUpgrade.limit}作品まで拡張`,
+                        `Upgrade to ${nextUpgrade.passType} for up to ${nextUpgrade.limit} works`,
+                      )}
+                    </button>
+                  )}
+
                   <SelectCreatedWorksDialogWithIds
                     currentAlbumId={props.album.id}
-                    limit={ALBUM_WORKS_MAX}
+                    currentPassType={currentPassType}
+                    limit={albumWorksMax}
                     selectedWorkIds={selectedWorks}
                     setSelectedWorkIds={setSelectedWorks}
                   />
@@ -286,10 +340,19 @@ export function AlbumArticleEditorDialog(props: Props) {
                     </div>
                     <div className="mt-1 text-muted-foreground text-xs">
                       {isThumbnailCleared
-                        ? t("保存時にカバー画像を削除します。", "The cover image will be removed when you save.")
+                        ? t(
+                            "保存時にカバー画像を削除します。",
+                            "The cover image will be removed when you save.",
+                          )
                         : hasCoverImage
-                          ? t("カバー画像が設定されています。", "A cover image is set.")
-                          : t("カバー画像は未設定です。", "No cover image is set.")}
+                          ? t(
+                              "カバー画像が設定されています。",
+                              "A cover image is set.",
+                            )
+                          : t(
+                              "カバー画像は未設定です。",
+                              "No cover image is set.",
+                            )}
                     </div>
                   </div>
                 </CardContent>
@@ -303,16 +366,25 @@ export function AlbumArticleEditorDialog(props: Props) {
             <Button variant="secondary" onClick={() => setIsOpen(false)}>
               {t("閉じる", "Close")}
             </Button>
-            <Button disabled={isUpdating} className="sm:min-w-40" onClick={onSubmit}>
-            {isUpdating ? (
-              <Loader2Icon className="m-auto size-4 animate-spin" />
-            ) : (
-              t("更新する", "Update")
-            )}
+            <Button
+              disabled={isUpdating}
+              className="sm:min-w-40"
+              onClick={onSubmit}
+            >
+              {isUpdating ? (
+                <Loader2Icon className="m-auto size-4 animate-spin" />
+              ) : (
+                t("更新する", "Update")
+              )}
             </Button>
           </div>
         </DialogFooter>
       </DialogContent>
+      <AlbumWorkLimitUpgradeDialog
+        currentPassType={currentPassType}
+        open={isUpgradeDialogOpen}
+        onOpenChange={setIsUpgradeDialogOpen}
+      />
     </Dialog>
   )
 }
@@ -353,6 +425,18 @@ const viewerTokenQuery = graphql(
     viewer {
       id
       token
+    }
+  }`,
+)
+
+const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      id
+      currentPass {
+        id
+        type
+      }
     }
   }`,
 )

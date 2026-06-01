@@ -24,12 +24,18 @@ import {
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
 import { createRandomString } from "~/routes/($lang).generation._index/utils/create-random-string"
+import { AlbumWorkLimitUpgradeDialog } from "~/routes/($lang).my._index/components/album-work-limit-upgrade-dialog"
 import { SelectCreatedWorksDialogWithIds } from "~/routes/($lang).my._index/components/select-created-works-dialog-with-ids"
+import {
+  FREE_ALBUM_WORKS_LIMIT,
+  getAlbumWorksLimit,
+  getAlbumWorksLimitUpgradeTarget,
+  LITE_ALBUM_WORKS_LIMIT,
+  STANDARD_ALBUM_WORKS_LIMIT,
+} from "~/utils/album-work-limit"
 import { getBase64FromImageUrl } from "~/utils/get-base64-from-image-url"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { toRatingText } from "~/utils/work/to-rating-text"
-
-const ALBUM_WORKS_MAX = 32
 
 type Props = {
   children: React.ReactNode
@@ -57,10 +63,15 @@ export function CreateAlbumDialog(props: Props) {
   const [selectedWorkIds, setSelectedWorkIds] = useState<string[]>([])
 
   const [isCreating, setIsCreating] = useState<boolean>(false)
+  const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false)
 
   const [createAlbum] = useMutation(createAlbumMutation)
 
   const { data: token, refetch: tokenRefetch } = useQuery(viewerTokenQuery)
+  const { data: currentPassData } = useQuery(viewerCurrentPassQuery)
+  const currentPassType = currentPassData?.viewer?.currentPass?.type ?? null
+  const albumWorksMax = getAlbumWorksLimit(currentPassType)
+  const nextUpgrade = getAlbumWorksLimitUpgradeTarget(currentPassType)
 
   const handleSlugChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -250,7 +261,7 @@ export function CreateAlbumDialog(props: Props) {
                   <p className="font-bold text-sm">レーティング</p>
                 </div>
                 <Select
-                  value={rating}
+                  value={rating as string}
                   onValueChange={(value) => {
                     setRating(value as IntrospectionEnum<"AlbumRating">)
                   }}
@@ -271,11 +282,39 @@ export function CreateAlbumDialog(props: Props) {
                   <p className="font-bold text-sm">作品</p>
                   <p className="text-sm opacity-50">*必須</p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  選択中タブでドラッグ&ドロップすると、この順番がシリーズの設定順になります。
-                </p>
+                <div className="rounded-xl border bg-muted/30 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-medium text-sm">シリーズ作品数</p>
+                      <p className="mt-1 text-muted-foreground text-xs">
+                        {`無料で${FREE_ALBUM_WORKS_LIMIT}作品、ライト以上で${LITE_ALBUM_WORKS_LIMIT}作品、スタンダード以上で${STANDARD_ALBUM_WORKS_LIMIT}作品まで追加できます。`}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-lg">
+                        {selectedWorkIds.length}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        / {albumWorksMax}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-2 text-muted-foreground text-xs">
+                    選択中タブでドラッグ&ドロップすると、この順番がシリーズの設定順になります。
+                  </p>
+                  {nextUpgrade && (
+                    <button
+                      type="button"
+                      className="mt-2 font-medium text-primary text-xs underline-offset-4 hover:underline"
+                      onClick={() => setIsUpgradeDialogOpen(true)}
+                    >
+                      {`${nextUpgrade.passType === "LITE" ? "ライト" : "スタンダード"}で${nextUpgrade.limit}作品まで拡張`}
+                    </button>
+                  )}
+                </div>
                 <SelectCreatedWorksDialogWithIds
-                  limit={ALBUM_WORKS_MAX}
+                  currentPassType={currentPassType}
+                  limit={albumWorksMax}
                   selectedWorkIds={selectedWorkIds}
                   setSelectedWorkIds={setSelectedWorkIds}
                 />
@@ -295,6 +334,12 @@ export function CreateAlbumDialog(props: Props) {
           </Button>
         </DialogContent>
       </Dialog>
+
+      <AlbumWorkLimitUpgradeDialog
+        currentPassType={currentPassType}
+        open={isUpgradeDialogOpen}
+        onOpenChange={setIsUpgradeDialogOpen}
+      />
     </>
   )
 }
@@ -304,6 +349,18 @@ const viewerTokenQuery = graphql(
     viewer {
       id
       token
+    }
+  }`,
+)
+
+const viewerCurrentPassQuery = graphql(
+  `query ViewerCurrentPass {
+    viewer {
+      id
+      currentPass {
+        id
+        type
+      }
     }
   }`,
 )

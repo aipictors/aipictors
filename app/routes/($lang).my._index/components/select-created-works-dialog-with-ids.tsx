@@ -1,46 +1,60 @@
+import { useQuery } from "@apollo/client/index"
+// ----- dnd-kit -----
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core"
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import { type FragmentOf, graphql } from "gql.tada"
+import {
+  CheckIcon,
+  GripVerticalIcon,
+  ImageIcon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react"
 import { useContext, useEffect, useState } from "react"
+import { toast } from "sonner"
+import { ResponsivePagination } from "~/components/responsive-pagination"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
-import { Button } from "~/components/ui/button"
-import { useQuery } from "@apollo/client/index"
-import { AuthContext } from "~/contexts/auth-context"
-import { CheckIcon, GripVerticalIcon, ImageIcon, PlusIcon, XIcon } from "lucide-react"
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { ResponsivePagination } from "~/components/responsive-pagination"
 import { ScrollArea } from "~/components/ui/scroll-area"
-import { type FragmentOf, graphql } from "gql.tada"
-import { toast } from "sonner"
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
-
-// ----- dnd-kit -----
+import { AlbumWorkLimitUpgradeDialog } from "~/routes/($lang).my._index/components/album-work-limit-upgrade-dialog"
 import {
-  DndContext,
-  DragOverlay,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  closestCenter,
-  type DragStartEvent,
-  type DragEndEvent,
-} from "@dnd-kit/core"
-import {
-  SortableContext,
-  useSortable,
-  arrayMove,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable"
-import { CSS } from "@dnd-kit/utilities"
+  type AlbumWorkLimitPassType,
+  FREE_ALBUM_WORKS_LIMIT,
+  getAlbumWorksLimitUpgradeTarget,
+  LITE_ALBUM_WORKS_LIMIT,
+  STANDARD_ALBUM_WORKS_LIMIT,
+} from "~/utils/album-work-limit"
 
 type Props = {
   selectedWorkIds: string[]
   setSelectedWorkIds: React.Dispatch<React.SetStateAction<string[]>>
   limit?: number
   currentAlbumId?: string
+  currentPassType?: AlbumWorkLimitPassType
 }
 
 type SortableItemProps = {
@@ -84,11 +98,11 @@ function SortableItem(props: SortableItemProps) {
       />
       <div className="min-w-0 flex-1">
         <p className="line-clamp-2 font-medium text-sm">{props.work.title}</p>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="mt-1 text-muted-foreground text-xs">
           長押しまたはドラッグで並び替え
         </p>
         {props.isInOtherAlbum && (
-          <p className="mt-1 text-xs text-amber-600">{`他シリーズにも登録済み`}</p>
+          <p className="mt-1 text-amber-600 text-xs">他シリーズにも登録済み</p>
         )}
       </div>
       <div className="flex items-center gap-1 self-stretch">
@@ -106,7 +120,7 @@ function SortableItem(props: SortableItemProps) {
           type="button"
           variant="ghost"
           size="icon"
-          className="size-10 shrink-0 touch-none cursor-grab"
+          className="size-10 shrink-0 cursor-grab touch-none"
           ref={setActivatorNodeRef}
           aria-label="作品を並び替え"
           {...attributes}
@@ -130,6 +144,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
   const [page, setPage] = useState(0) // "未選択"タブ用ページ
   const [selectedPage, setSelectedPage] = useState(0) // "選択中"タブ用ページ
   const [tab, setTab] = useState<"NO_SELECTED" | "SELECTED">("NO_SELECTED")
+  const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false)
   const [selectedWorksCache, setSelectedWorksCache] = useState<
     Record<string, FragmentOf<typeof DialogWorkFragment>>
   >({})
@@ -256,14 +271,24 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
         ),
       )
 
+      if (getAlbumWorksLimitUpgradeTarget(props.currentPassType)) {
+        setIsUpgradeDialogOpen(true)
+      }
+
       return currentIds
     })
   }
 
+  const nextUpgrade = getAlbumWorksLimitUpgradeTarget(props.currentPassType)
+
   // ======== 「選択中」タブで表示する作品を ID の順番に並び替えた配列を生成 ========
   // DnD などで並び順を変更するときは、props.selectedWorkIds こそが順序のソースになる想定。
   const sortedSelectedWorks = props.selectedWorkIds
-    .map((id) => selectedWorksCache[id] ?? selectedWorksQueryData.find((w) => w.id === id))
+    .map(
+      (id) =>
+        selectedWorksCache[id] ??
+        selectedWorksQueryData.find((w) => w.id === id),
+    )
     .filter(Boolean) as FragmentOf<typeof DialogWorkFragment>[]
 
   // ======== 未選択タブの描画 ========
@@ -395,7 +420,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                 src={activeDragItem.smallThumbnailImageURL}
                 alt=""
               />
-              <p className="line-clamp-2 text-sm font-medium">
+              <p className="line-clamp-2 font-medium text-sm">
                 {activeDragItem.title}
               </p>
             </div>
@@ -471,6 +496,35 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             <DialogTitle>{t("作品選択", "Select Works")}</DialogTitle>
           </DialogHeader>
 
+          {props.limit && (
+            <div className="mx-4 rounded-xl border bg-muted/30 px-4 py-3 text-sm sm:mx-6">
+              <p className="font-medium">
+                {t(
+                  `このシリーズには最大${props.limit}作品まで追加できます。`,
+                  `You can add up to ${props.limit} works to this series.`,
+                )}
+              </p>
+              <p className="mt-1 text-muted-foreground text-xs">
+                {t(
+                  `無料で${FREE_ALBUM_WORKS_LIMIT}作品、ライト以上で${LITE_ALBUM_WORKS_LIMIT}作品、スタンダード以上で${STANDARD_ALBUM_WORKS_LIMIT}作品まで追加できます。`,
+                  `Free users can add ${FREE_ALBUM_WORKS_LIMIT}, Lite or above ${LITE_ALBUM_WORKS_LIMIT}, and Standard or above ${STANDARD_ALBUM_WORKS_LIMIT} works.`,
+                )}
+              </p>
+              {nextUpgrade && (
+                <button
+                  type="button"
+                  className="mt-2 text-left font-medium text-primary text-xs underline-offset-4 hover:underline"
+                  onClick={() => setIsUpgradeDialogOpen(true)}
+                >
+                  {t(
+                    `${nextUpgrade.passType === "LITE" ? "ライト" : "スタンダード"}で${nextUpgrade.limit}作品まで拡張`,
+                    `Upgrade to ${nextUpgrade.passType} for up to ${nextUpgrade.limit} works`,
+                  )}
+                </button>
+              )}
+            </div>
+          )}
+
           <Tabs
             className="shrink-0 px-4 pt-2 sm:px-6"
             value={tab}
@@ -500,7 +554,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
             )}
             {tab === "SELECTED" && (
               <>
-                <div className="mb-4 rounded-lg border bg-muted/30 p-3 text-sm text-muted-foreground">
+                <div className="mb-4 rounded-lg border bg-muted/30 p-3 text-muted-foreground text-sm">
                   {t(
                     "ドラッグ&ドロップで並び替えると、その順番がシリーズの設定順として保存されます。右上の×で選択解除できます。",
                     "Drag and drop to save this order as the series order. Use the X button to remove works.",
@@ -509,7 +563,7 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
                 {sortedSelectedWorks.length > 0 ? (
                   renderSelectedWorksDnD()
                 ) : (
-                  <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+                  <div className="rounded-lg border border-dashed p-6 text-center text-muted-foreground text-sm">
                     {t("作品を選択してください。", "Select works to continue.")}
                   </div>
                 )}
@@ -536,17 +590,23 @@ export function SelectCreatedWorksDialogWithIds(props: Props) {
               />
             )}
 
-          <div className="mt-4 flex gap-2">
-            <Button onClick={() => setIsOpen(false)}>
-              {t("決定", "Confirm")}
-            </Button>
-            <Button variant="secondary" onClick={() => setIsOpen(false)}>
-              {t("キャンセル", "Cancel")}
-            </Button>
-          </div>
+            <div className="mt-4 flex gap-2">
+              <Button onClick={() => setIsOpen(false)}>
+                {t("決定", "Confirm")}
+              </Button>
+              <Button variant="secondary" onClick={() => setIsOpen(false)}>
+                {t("キャンセル", "Cancel")}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlbumWorkLimitUpgradeDialog
+        currentPassType={props.currentPassType}
+        open={isUpgradeDialogOpen}
+        onOpenChange={setIsUpgradeDialogOpen}
+      />
     </>
   )
 }
