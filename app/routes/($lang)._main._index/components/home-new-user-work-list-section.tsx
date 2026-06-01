@@ -40,7 +40,6 @@ export function HomeNewUsersWorkListSection(props: Props) {
       where: {
         ratings: ["G", "R15"],
         isNowCreatedAt: true,
-        ...(props.isOneWorkPerUser && { isOneWorkPerUser: true }),
       },
     },
   })

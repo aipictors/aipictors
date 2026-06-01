@@ -13,7 +13,7 @@ export function MutedUserList () {
     variables: { offset: 0, limit: 128 },
   })
 
-  const [mutation] = useMutation(muteUserMutation)
+  const [mutation] = useMutation(unmuteUserMutation)
 
   const handleUnmute = async (userID: string) => {
     await mutation({
@@ -75,9 +75,9 @@ const _userSettingQuery = graphql(
   }`,
 )
 
-const muteUserMutation = graphql(
-  `mutation MuteUser($input: MuteUserInput!) {
-    muteUser(input: $input) {
+const unmuteUserMutation = graphql(
+  `mutation UnmuteUser($input: UnmuteUserInput!) {
+    unmuteUser(input: $input) {
       id
       isMuted
     }
