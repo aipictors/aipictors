@@ -8,7 +8,6 @@ import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
-import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { createMeta } from "~/utils/create-meta"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
@@ -74,10 +73,6 @@ export default function AiEvaluationMonthlyRankings() {
   return (
     <>
       <div className="space-y-6 pb-8">
-        <FeaturedRankingsShowcase
-          standardRankings={[]}
-          aiRankings={data.rankings.data.aiEvaluationWorkRankings}
-        />
         <RankingHeader
           year={data.year}
           month={data.month}

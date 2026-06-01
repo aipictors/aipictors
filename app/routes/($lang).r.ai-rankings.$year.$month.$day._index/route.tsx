@@ -12,7 +12,6 @@ import {
   AiEvaluationRankingListItemFragment,
   AiEvaluationRankingWorkList,
 } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
-import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { createMeta } from "~/utils/create-meta"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
@@ -86,10 +85,6 @@ export default function SensitiveAiEvaluationDailyRankings() {
 
   return (
     <div className="space-y-6 pb-8">
-      <FeaturedRankingsShowcase
-        standardRankings={[]}
-        aiRankings={data.rankings.data.aiEvaluationWorkRankings}
-      />
       <RankingHeader
         year={data.year}
         month={data.month}

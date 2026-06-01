@@ -8,7 +8,6 @@ import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
-import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import {
   RankingSensitiveWorkList,
@@ -102,12 +101,6 @@ export default function SensitiveMonthAward() {
   return (
     <>
       <div className="space-y-6 pb-8">
-        <FeaturedRankingsShowcase
-          standardRankings={data.workAwards.data.workAwards}
-          aiRankings={[]}
-          standardSectionTitle="R18ランキング"
-          standardRankLabelPrefix="R18ランキング"
-        />
         <RankingHeader
           year={data.year}
           month={data.month}
