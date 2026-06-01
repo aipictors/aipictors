@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "@remix-run/react"
+import { Link, useLocation, useNavigate } from "@remix-run/react"
 import {
   CalendarIcon,
   ChevronLeftIcon,
@@ -8,18 +8,10 @@ import {
   UsersIcon,
 } from "lucide-react"
 import type React from "react"
-import { useState } from "react"
-import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
+import { useEffect, useState } from "react"
 import { Button } from "~/components/ui/button"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "~/components/ui/carousel"
 import { useTranslation } from "~/hooks/use-translation"
-import { TagButton } from "~/routes/($lang)._main._index/components/tag-button"
+import { cn } from "~/lib/utils"
 import { getWeekOfMonth, getWeeksInMonth } from "~/utils/get-weeks-in-month"
 
 type Props = {
@@ -45,10 +37,40 @@ export function RankingHeader(props: Props) {
     "マンスリー" | "デイリー" | "ウィークリー"
   >(props.day ? "デイリー" : props.weekIndex ? "ウィークリー" : "マンスリー")
 
-  const [date, setDate] = useState("")
-
   const navigate = useNavigate()
   const location = useLocation()
+  const isAiRankingPage = pathnamePrefix === "/ai-rankings"
+
+  const buildDateInputValue = (
+    targetYear: number,
+    targetMonth: number,
+    targetDay: number | null,
+  ) => {
+    return `${targetYear}-${targetMonth.toString().padStart(2, "0")}-${(targetDay ?? 1).toString().padStart(2, "0")}`
+  }
+
+  const [date, setDate] = useState(
+    buildDateInputValue(year, month, props.day ?? 1),
+  )
+
+  useEffect(() => {
+    setDate(buildDateInputValue(year, month, viewType === "デイリー" ? day : 1))
+  }, [year, month, day, viewType])
+
+  const buildRankingModePath = (basePathname: string) => {
+    if (viewType === "デイリー" && day) {
+      return `${basePathname}/${year}/${month}/${day}`
+    }
+
+    if (viewType === "ウィークリー") {
+      return `${basePathname}/${year}/${month}/weeks/${weekIndex}`
+    }
+
+    return `${basePathname}/${year}/${month}`
+  }
+
+  const defaultRankingsPath = buildRankingModePath("/rankings")
+  const aiRankingsPath = buildRankingModePath("/ai-rankings")
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value)
@@ -269,6 +291,14 @@ export function RankingHeader(props: Props) {
 
   const carouselItems = generateCarouselItems()
 
+  const getQuickSelectChipClassName = (isActive: boolean) =>
+    cn(
+      "snap-start whitespace-nowrap rounded-full border px-4 py-2.5 font-semibold text-sm transition-all duration-200",
+      isActive
+        ? `border-transparent bg-gradient-to-r ${getViewTypeGradient()} text-white shadow-md`
+        : "border-border/50 bg-background/85 text-muted-foreground hover:border-border hover:bg-muted/50 hover:text-foreground",
+    )
+
   const handleRankingTypeChange = (type: "works" | "users") => {
     if (props.onRankingTypeChange) {
       props.onRankingTypeChange(type)
@@ -298,16 +328,49 @@ export function RankingHeader(props: Props) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-8 rounded-3xl border border-border/30 bg-gradient-to-br from-background/80 to-muted/10 p-8 backdrop-blur-md">
+    <div className="mx-auto w-full max-w-6xl space-y-6 rounded-3xl border border-border/30 bg-gradient-to-br from-background/80 to-muted/10 p-4 backdrop-blur-md sm:p-6 lg:space-y-8 lg:p-8">
+      <div className="flex justify-center">
+        <div className="grid w-full max-w-xl grid-cols-2 gap-2 rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={() => navigate(defaultRankingsPath)}
+            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+              !isAiRankingPage
+                ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white ring-2 ring-slate-200 ring-offset-2 dark:from-slate-200 dark:to-slate-400 dark:text-slate-950"
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            }`}
+            disabled={!isAiRankingPage}
+          >
+            <ImageIcon className="h-5 w-5" />
+            {t("通常ランキング", "Standard Rankings")}
+          </Button>
+          <Button
+            variant="ghost"
+            size="lg"
+            onClick={() => navigate(aiRankingsPath)}
+            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+              isAiRankingPage
+                ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white ring-2 ring-amber-200 ring-offset-2"
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+            }`}
+            disabled={isAiRankingPage}
+          >
+            <TrendingUpIcon className="h-5 w-5" />
+            {t("AIランキング", "AI Rankings")}
+          </Button>
+        </div>
+      </div>
+
       {/* ランキングタイプ切り替え */}
       {props.day !== null && props.onRankingTypeChange && (
         <div className="flex justify-center">
-          <div className="inline-flex items-center rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
+          <div className="grid w-full max-w-xl grid-cols-2 gap-2 rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
             <Button
               variant="ghost"
               size="lg"
               onClick={() => handleRankingTypeChange("works")}
-              className={`flex items-center gap-3 rounded-xl px-6 py-3 transition-all duration-300 ${
+              className={`flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
                 props.rankingType === "works"
                   ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white ring-2 ring-blue-200 ring-offset-2"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -320,7 +383,7 @@ export function RankingHeader(props: Props) {
               variant="ghost"
               size="lg"
               onClick={() => handleRankingTypeChange("users")}
-              className={`flex items-center gap-3 rounded-xl px-6 py-3 transition-all duration-300 ${
+              className={`flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
                 props.rankingType === "users"
                   ? "bg-gradient-to-r from-purple-500 to-pink-600 text-white ring-2 ring-purple-200 ring-offset-2"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -335,7 +398,7 @@ export function RankingHeader(props: Props) {
 
       {/* ユーザーランキングの説明 */}
       {props.day !== null && props.rankingType === "users" && (
-        <div className="mx-auto w-full max-w-lg rounded-2xl border border-purple-200/50 bg-gradient-to-br from-purple-50/90 to-pink-50/90 p-6 text-center backdrop-blur-sm dark:border-purple-800/50 dark:from-purple-900/30 dark:to-pink-900/30">
+        <div className="mx-auto w-full max-w-lg rounded-2xl border border-purple-200/50 bg-gradient-to-br from-purple-50/90 to-pink-50/90 p-4 text-center backdrop-blur-sm sm:p-6 dark:border-purple-800/50 dark:from-purple-900/30 dark:to-pink-900/30">
           <div className="mb-2 text-2xl">🏆</div>
           <p className="font-semibold text-purple-700 dark:text-purple-300">
             {t("最高いいね数でランキング", "Ranked by Highest Likes")}
@@ -352,10 +415,10 @@ export function RankingHeader(props: Props) {
       {/* タイトルセクション */}
       <div className="text-center">
         <div
-          className={`mx-auto mb-4 inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r ${getViewTypeGradient()} p-4 text-white ring-4 ring-white/20`}
+          className={`mx-auto mb-4 inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r ${getViewTypeGradient()} px-4 py-3 text-white ring-4 ring-white/20`}
         >
           {getViewTypeIcon()}
-          <span className="font-bold text-lg">
+          <span className="font-bold text-base sm:text-lg">
             {viewType === "マンスリー" &&
               t("マンスリーランキング", "Monthly Rankings")}
             {viewType === "デイリー" &&
@@ -365,7 +428,7 @@ export function RankingHeader(props: Props) {
           </span>
         </div>
 
-        <h1 className="bg-gradient-to-r from-foreground via-foreground/80 to-muted-foreground bg-clip-text font-bold text-4xl text-transparent">
+        <h1 className="bg-gradient-to-r from-foreground via-foreground/80 to-muted-foreground bg-clip-text font-bold text-2xl text-transparent sm:text-3xl lg:text-4xl">
           {year}年{month.toString().padStart(2, "0")}月
           {day
             ? `${day.toString().padStart(2, "0")}日`
@@ -377,12 +440,12 @@ export function RankingHeader(props: Props) {
 
       {/* 期間選択ボタン */}
       <div className="flex justify-center">
-        <div className="inline-flex items-center rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
+        <div className="grid w-full max-w-xl grid-cols-3 gap-2 rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
           <Button
             variant="ghost"
             size="lg"
             onClick={() => handleViewChange("マンスリー")}
-            className={`flex items-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 ${
+            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
               viewType === "マンスリー"
                 ? "bg-gradient-to-r from-orange-500 to-red-500 text-white ring-2 ring-orange-200 ring-offset-2"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -396,7 +459,7 @@ export function RankingHeader(props: Props) {
             variant="ghost"
             size="lg"
             onClick={() => handleViewChange("デイリー")}
-            className={`flex items-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 ${
+            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
               viewType === "デイリー"
                 ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white ring-2 ring-emerald-200 ring-offset-2"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -410,7 +473,7 @@ export function RankingHeader(props: Props) {
             variant="ghost"
             size="lg"
             onClick={() => handleViewChange("ウィークリー")}
-            className={`flex items-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 ${
+            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
               viewType === "ウィークリー"
                 ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white ring-2 ring-blue-200 ring-offset-2"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -424,14 +487,13 @@ export function RankingHeader(props: Props) {
       </div>
 
       {/* ナビゲーションとコントロール */}
-      <div className="flex flex-col items-center gap-6 lg:flex-row lg:justify-between">
-        {/* 前へ・次へボタン */}
-        <div className="flex items-center gap-3">
+      <div className="grid gap-3 rounded-2xl border border-border/40 bg-background/65 p-3 backdrop-blur-sm lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
           <Button
             variant="outline"
             size="lg"
             onClick={handlePrevious}
-            className="flex items-center gap-2 rounded-xl border-border/50 bg-background/80 px-6 py-3 backdrop-blur-sm transition-all hover:bg-muted/50"
+            className="flex h-11 items-center gap-2 rounded-xl border-border/50 bg-background/80 px-4 backdrop-blur-sm transition-all hover:bg-muted/50"
           >
             <ChevronLeftIcon className="h-5 w-5" />
             {t("前へ", "Previous")}
@@ -450,53 +512,49 @@ export function RankingHeader(props: Props) {
         {/* 日付選択とコントロール */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-background/80 p-2 backdrop-blur-sm">
-            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+            className="flex h-11 items-center justify-center gap-2 rounded-xl border-border/50 bg-background/80 px-4 backdrop-blur-sm transition-all hover:bg-muted/50"
             <input
               type="date"
               value={date}
               onChange={handleDateChange}
               className="rounded-lg border-0 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               max={new Date().toISOString().split("T")[0]}
-            />
-          </div>
-
+        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:justify-self-end">
+          <div className="flex h-11 items-center gap-2 rounded-xl border border-border/50 bg-background/80 px-3 backdrop-blur-sm">
           <Button
             onClick={handleTodayClick}
             variant="outline"
             size="lg"
             className="rounded-xl border-border/50 bg-background/80 px-6 py-3 backdrop-blur-sm transition-all hover:bg-muted/50"
-          >
+              aria-label={t("ランキング日付", "Ranking date")}
+              className="w-full rounded-lg border-0 bg-transparent px-1 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             {t("最新", "Latest")}
           </Button>
 
           <div className="rounded-xl border border-border/50 bg-background/80 p-2 backdrop-blur-sm">
-            <SensitiveToggle variant="compact" />
-          </div>
-        </div>
-      </div>
-
-      {/* カルーセル */}
-      <div className="w-full">
-        <Carousel
+          <Button
+            onClick={handleTodayClick}
+            variant="outline"
+            size="lg"
+            className="h-11 rounded-xl border-border/50 bg-background/80 px-5 backdrop-blur-sm transition-all hover:bg-muted/50"
+          >
+            {t("最新", "Latest")}
+          </Button>
           className="relative overflow-hidden rounded-2xl"
           opts={{ dragFree: true, loop: false, align: "center" }}
         >
-          <CarouselContent className="gap-3 pl-6">
-            {carouselItems.map((item, index) => (
-              <CarouselItem key={item.link} className="basis-auto">
-                <TagButton
-                  key={index.toString()}
-                  link={item.link}
-                  name={item.name}
-                  border={item.border}
-                />
-              </CarouselItem>
+      <div className="overflow-hidden rounded-2xl border border-border/40 bg-background/60 px-3 py-3 backdrop-blur-sm">
+        <div className="overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="flex min-w-max gap-2 pr-2 touch-pan-x snap-x snap-mandatory">
+            {carouselItems.map((item) => (
+              <Link
+                key={item.link}
+                to={item.link}
+                className={getQuickSelectChipClassName(item.border)}
+              >
+                {item.name}
+              </Link>
             ))}
-          </CarouselContent>
-          <CarouselPrevious className="absolute top-1/2 left-3 bg-background/95 backdrop-blur-sm hover:bg-background" />
+          </div>
+        </div>
           <CarouselNext className="absolute top-1/2 right-3 bg-background/95 backdrop-blur-sm hover:bg-background" />
-        </Carousel>
-      </div>
-    </div>
-  )
-}

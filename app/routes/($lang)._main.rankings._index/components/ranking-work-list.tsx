@@ -16,6 +16,76 @@ type Props = {
   weekIndex: number | null
 }
 
+function RankingWorkCard(props: {
+  workItem: FragmentOf<typeof WorkAwardListItemFragment>
+  index: number
+}) {
+  const { workItem, index } = props
+
+  if (!workItem.work) {
+    return null
+  }
+
+  return (
+    <article className="group overflow-hidden rounded-[28px] border border-border/40 bg-background/90 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className="p-3 sm:p-4">
+        <div className="space-y-4">
+          <div className="relative overflow-hidden rounded-[24px] bg-muted/30">
+            <CroppedWorkSquare
+              workId={workItem.work.id}
+              subWorksCount={workItem.work.subWorksCount}
+              imageUrl={workItem.work.smallThumbnailImageURL}
+              thumbnailImagePosition={workItem.work.thumbnailImagePosition ?? 0}
+              size="auto"
+              imageWidth={workItem.work.smallThumbnailImageWidth}
+              imageHeight={workItem.work.smallThumbnailImageHeight}
+              ranking={index + 1}
+              commentsCount={workItem.work.commentsCount}
+            />
+            <div className="absolute right-2 bottom-2">
+              <LikeButton
+                size={52}
+                targetWorkId={workItem.work.id}
+                targetWorkOwnerUserId={workItem.work.user?.id ?? ""}
+                defaultLiked={workItem.work.isLiked}
+                defaultLikedCount={0}
+                isBackgroundNone={true}
+                strokeWidth={2}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="line-clamp-2 font-bold text-base text-foreground">
+              {workItem.work.title}
+            </p>
+
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600 dark:bg-zinc-800 dark:text-zinc-300">
+                #{index + 1}
+              </span>
+              <span className="rounded-full bg-pink-100 px-2.5 py-1 font-medium text-pink-700 dark:bg-pink-950/60 dark:text-pink-200">
+                {workItem.snapshotLikedCount} いいね
+              </span>
+            </div>
+          </div>
+
+          {workItem.work.user && (
+            <UserNameBadge
+              userId={workItem.work.user.id}
+              userIconImageURL={withIconUrlFallback(workItem.work.user.iconUrl)}
+              name={workItem.work.user.name}
+              width={"md"}
+              likesCount={workItem.work.likesCount}
+              snapshotLikedCount={workItem.snapshotLikedCount}
+            />
+          )}
+        </div>
+      </div>
+    </article>
+  )
+}
+
 export function RankingWorkList (props: Props) {
   const appContext = useContext(AuthContext)
 
@@ -38,121 +108,16 @@ export function RankingWorkList (props: Props) {
   const workAwards = awardWorks?.workAwards ?? works
 
   return (
-    <>
-      <div className="hidden flex-wrap justify-center gap-x-4 gap-y-4 md:flex">
-        {workAwards.map((workItem, index) => {
-          return (
-            <div
-              // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
-              key={index}
-              className="relative flex flex-col space-y-4"
-            >
-              {workItem.work && (
-                <div className="relative flex w-32 flex-col space-y-2">
-                  <div className="relative">
-                    <CroppedWorkSquare
-                      workId={workItem.work.id}
-                      subWorksCount={workItem.work.subWorksCount}
-                      imageUrl={workItem.work.smallThumbnailImageURL}
-                      thumbnailImagePosition={
-                        workItem.work.thumbnailImagePosition ?? 0
-                      }
-                      size="md"
-                      imageWidth={workItem.work.smallThumbnailImageWidth}
-                      imageHeight={workItem.work.smallThumbnailImageHeight}
-                      ranking={index + 1}
-                      commentsCount={workItem.work.commentsCount}
-                    />
-                    <div className="absolute right-0 bottom-0">
-                      <LikeButton
-                        size={56}
-                        targetWorkId={workItem.work.id}
-                        targetWorkOwnerUserId={workItem.work.user?.id ?? ""}
-                        defaultLiked={workItem.work.isLiked}
-                        defaultLikedCount={0}
-                        isBackgroundNone={true}
-                        strokeWidth={2}
-                      />
-                    </div>
-                  </div>
-                  <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
-                    {workItem.work.title}
-                  </p>
-                  {workItem.work.user && (
-                    <UserNameBadge
-                      userId={workItem.work.user.id}
-                      userIconImageURL={withIconUrlFallback(
-                        workItem.work.user.iconUrl,
-                      )}
-                      name={workItem.work.user.name}
-                      width={"md"}
-                      likesCount={workItem.work.likesCount}
-                      snapshotLikedCount={workItem.snapshotLikedCount}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-      <div className="flex flex-wrap justify-center gap-x-8 gap-y-8 md:hidden">
-        {workAwards.map((workItem, index) => {
-          return (
-            <div
-              // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
-              key={index}
-              className="relative flex flex-col space-y-2"
-            >
-              {workItem.work && (
-                <>
-                  <div className="relative">
-                    <CroppedWorkSquare
-                      workId={workItem.work.id}
-                      subWorksCount={workItem.work.subWorksCount}
-                      imageUrl={workItem.work.smallThumbnailImageURL}
-                      thumbnailImagePosition={
-                        workItem.work.thumbnailImagePosition ?? 0
-                      }
-                      size="md"
-                      imageWidth={workItem.work.smallThumbnailImageWidth}
-                      imageHeight={workItem.work.smallThumbnailImageHeight}
-                      ranking={index + 1}
-                      commentsCount={workItem.work.commentsCount}
-                    />
-                    <div className="absolute right-0 bottom-0">
-                      <LikeButton
-                        size={56}
-                        targetWorkId={workItem.work.id}
-                        targetWorkOwnerUserId={workItem.work.user?.id ?? ""}
-                        defaultLiked={workItem.work.isLiked}
-                        defaultLikedCount={0}
-                        isBackgroundNone={true}
-                        strokeWidth={2}
-                      />
-                    </div>
-                  </div>
-                  <p className="max-w-32 overflow-hidden text-ellipsis text-nowrap font-bold text-xs">
-                    {workItem.work.title}
-                  </p>
-                  {workItem.work.user && (
-                    <UserNameBadge
-                      userId={workItem.work.user.id}
-                      userIconImageURL={withIconUrlFallback(
-                        workItem.work.user.iconUrl,
-                      )}
-                      name={workItem.work.user.name}
-                      width={"sm"}
-                      likesCount={workItem.work.likesCount}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-          )
-        })}
-      </div>
-    </>
+    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-4 px-3 pb-8 sm:grid-cols-2 sm:px-4 lg:grid-cols-3 lg:px-0">
+      {workAwards.map((workItem, index) => (
+        <RankingWorkCard
+          // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
+          key={index}
+          workItem={workItem}
+          index={index}
+        />
+      ))}
+    </div>
   )
 }
 
