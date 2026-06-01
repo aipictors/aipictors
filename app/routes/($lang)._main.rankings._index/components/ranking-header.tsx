@@ -23,6 +23,9 @@ type Props = {
   rankingType?: "works" | "users"
   onRankingTypeChange?: (type: "works" | "users") => void
   pathnamePrefix?: string
+  showRankingFamilyToggle?: boolean
+  defaultPathnamePrefix?: string
+  aiPathnamePrefix?: string
 }
 
 export function RankingHeader(props: Props) {
@@ -33,6 +36,9 @@ export function RankingHeader(props: Props) {
   const day = props.day
   const weekIndex = props.weekIndex ?? 1
   const pathnamePrefix = props.pathnamePrefix ?? "/rankings"
+  const showRankingFamilyToggle = props.showRankingFamilyToggle ?? true
+  const defaultPathnamePrefix = props.defaultPathnamePrefix ?? "/rankings"
+  const aiPathnamePrefix = props.aiPathnamePrefix ?? "/ai-rankings"
 
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
@@ -40,7 +46,7 @@ export function RankingHeader(props: Props) {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const isAiRankingPage = pathnamePrefix === "/ai-rankings"
+  const isAiRankingPage = pathnamePrefix === aiPathnamePrefix
 
   const buildDateInputValue = (
     targetYear: number,
@@ -75,8 +81,8 @@ export function RankingHeader(props: Props) {
     return `${basePathname}/${year}/${month}`
   }
 
-  const defaultRankingsPath = buildRankingModePath("/rankings")
-  const aiRankingsPath = buildRankingModePath("/ai-rankings")
+  const defaultRankingsPath = buildRankingModePath(defaultPathnamePrefix)
+  const aiRankingsPath = buildRankingModePath(aiPathnamePrefix)
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value)
@@ -378,7 +384,8 @@ export function RankingHeader(props: Props) {
 
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2">
-            <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
+            {showRankingFamilyToggle && (
+              <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
           <Button
             variant="ghost"
             size="sm"
@@ -407,7 +414,8 @@ export function RankingHeader(props: Props) {
             <TrendingUpIcon className="h-4 w-4" />
             {t("AIランキング", "AI Rankings")}
           </Button>
-            </div>
+              </div>
+            )}
 
             {props.day !== null && props.onRankingTypeChange && (
               <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">

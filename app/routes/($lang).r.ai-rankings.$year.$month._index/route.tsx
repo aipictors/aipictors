@@ -8,34 +8,28 @@ import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
-import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
-import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import { createMeta } from "~/utils/create-meta"
-import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 import {
   AiEvaluationRankingListItemFragment,
   AiEvaluationRankingWorkList,
 } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
+import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
+import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
+import { createMeta } from "~/utils/create-meta"
+import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
-  if (
-    props.params.year === undefined ||
-    props.params.month === undefined ||
-    props.params.day === undefined
-  ) {
+  if (props.params.year === undefined || props.params.month === undefined) {
     throw new Response(null, { status: 404 })
   }
 
   const year = Number.parseInt(props.params.year)
   const month = Number.parseInt(props.params.month)
-  const day = Number.parseInt(props.params.day)
 
   const redirectPath = getFutureRankingRedirectPath(props.request.url, {
-    kind: "daily",
+    kind: "monthly",
     year,
     month,
-    day,
-    pathnamePrefix: "/ai-rankings",
+    pathnamePrefix: "/r/ai-rankings",
   })
 
   if (redirectPath) {
@@ -50,7 +44,7 @@ export async function loader(props: LoaderFunctionArgs) {
       where: {
         year,
         month,
-        day,
+        isSensitive: true,
       },
     },
   })
@@ -58,7 +52,6 @@ export async function loader(props: LoaderFunctionArgs) {
   return {
     year,
     month,
-    day,
     rankings: rankingsResp,
   }
 }
@@ -68,49 +61,45 @@ export const headers: HeadersFunction = () => ({
 })
 
 export const meta: MetaFunction = (props) => {
-  return createMeta(META.AI_RANKINGS_DAY, undefined, props.params.lang)
+  return createMeta(META.AI_RANKINGS_MONTHLY, undefined, props.params.lang)
 }
 
-export default function AiEvaluationDailyRankings() {
+export default function SensitiveAiEvaluationMonthlyRankings() {
   const params = useParams()
   const data = useLoaderData<typeof loader>()
 
-  if (
-    params.year === undefined ||
-    params.month === undefined ||
-    params.day === undefined
-  ) {
+  if (params.year === undefined || params.month === undefined) {
     return null
   }
 
   return (
-    <>
-      <div className="space-y-6 pb-8">
-        <FeaturedRankingsShowcase
-          standardRankings={[]}
-          aiRankings={data.rankings.data.aiEvaluationWorkRankings}
-        />
-        <RankingHeader
-          year={data.year}
-          month={data.month}
-          day={data.day}
-          weekIndex={null}
-          pathnamePrefix="/ai-rankings"
-        />
-        <AiEvaluationRankingWorkList
-          year={data.year}
-          month={data.month}
-          day={data.day}
-          weekIndex={null}
-          rankings={data.rankings.data.aiEvaluationWorkRankings}
-        />
-      </div>
-    </>
+    <div className="space-y-6 pb-8">
+      <FeaturedRankingsShowcase
+        standardRankings={[]}
+        aiRankings={data.rankings.data.aiEvaluationWorkRankings}
+      />
+      <RankingHeader
+        year={data.year}
+        month={data.month}
+        day={null}
+        weekIndex={null}
+        pathnamePrefix="/r/ai-rankings"
+        defaultPathnamePrefix="/r/rankings"
+        aiPathnamePrefix="/r/ai-rankings"
+      />
+      <AiEvaluationRankingWorkList
+        year={data.year}
+        month={data.month}
+        day={null}
+        weekIndex={null}
+        rankings={data.rankings.data.aiEvaluationWorkRankings}
+      />
+    </div>
   )
 }
 
 const aiEvaluationWorkRankingsQuery = graphql(
-  `query AiEvaluationWorkRankingsDay($offset: Int!, $limit: Int!, $where: AiEvaluationWorkRankingsWhereInput!) {
+  `query SensitiveAiEvaluationWorkRankingsMonth($offset: Int!, $limit: Int!, $where: AiEvaluationWorkRankingsWhereInput!) {
     aiEvaluationWorkRankings(offset: $offset, limit: $limit, where: $where) {
       ...AiEvaluationRankingListItem
     }

@@ -9,7 +9,8 @@ import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
-import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
+import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
+import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { RankingSensitiveUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list"
 import {
   RankingSensitiveWorkList,
@@ -70,6 +71,9 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   return {
+    year,
+    month,
+    day,
     workAwards: workAwardsResp.data.workAwards,
   }
 }
@@ -123,14 +127,24 @@ export default function SensitiveAwardsPage() {
 
   return (
     <>
-      <RankingSensitiveHeader
-        year={year}
-        month={month}
-        day={day}
-        weekIndex={null}
-        rankingType={rankingType}
-        onRankingTypeChange={handleRankingTypeChange}
-      />
+      <div className="space-y-6 pb-8">
+        <FeaturedRankingsShowcase
+          standardRankings={data.workAwards}
+          aiRankings={[]}
+          standardSectionTitle="R18ランキング"
+          standardRankLabelPrefix="R18ランキング"
+        />
+        <RankingHeader
+          year={year}
+          month={month}
+          day={day}
+          weekIndex={null}
+          rankingType={rankingType}
+          onRankingTypeChange={handleRankingTypeChange}
+          pathnamePrefix="/r/rankings"
+          defaultPathnamePrefix="/r/rankings"
+          aiPathnamePrefix="/r/ai-rankings"
+        />
       {rankingType === "users" ? (
         <RankingSensitiveUserList
           year={year}
@@ -148,6 +162,7 @@ export default function SensitiveAwardsPage() {
           weekIndex={null}
         />
       )}
+      </div>
     </>
   )
 }

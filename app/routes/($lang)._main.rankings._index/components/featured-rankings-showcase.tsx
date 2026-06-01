@@ -26,7 +26,7 @@ type RankingWork = {
 
 type StandardRankingItem = {
   index: number
-  snapshotLikedCount: number
+  snapshotLikedCount?: number
   work: RankingWork | null
 }
 
@@ -55,10 +55,16 @@ type FeaturedWorkCardData = {
 type Props = {
   standardRankings: StandardRankingItem[]
   aiRankings: AiRankingItem[]
+  standardSectionTitle?: string
+  standardRankLabelPrefix?: string
 }
 
 function createStandardCardData(
   item: StandardRankingItem,
+  options: {
+    sectionTitle: string
+    rankLabelPrefix: string
+  },
 ): FeaturedWorkCardData | null {
   if (!item.work) {
     return null
@@ -71,12 +77,12 @@ function createStandardCardData(
     imageUrl: item.work.largeThumbnailImageURL ?? item.work.smallThumbnailImageURL,
     userName: item.work.user?.name ?? "不明なユーザー",
     userIconUrl: withIconUrlFallback(item.work.user?.iconUrl ?? null),
-    likesCount: item.snapshotLikedCount,
+    likesCount: item.snapshotLikedCount ?? item.work.likesCount,
     commentsCount: item.work.commentsCount,
     viewsCount: item.work.viewsCount,
     rank: item.index,
-    rankLabel: `通常ランキング ${item.index}位`,
-    kindLabel: "通常ランキング",
+    rankLabel: `${options.rankLabelPrefix} ${item.index}位`,
+    kindLabel: options.sectionTitle,
     badgeClassName:
       "border-slate-200/80 bg-white/90 text-slate-700 dark:border-white/15 dark:bg-slate-900/80 dark:text-slate-100",
   }
@@ -264,8 +270,17 @@ function FeaturedRankingBlock(props: {
 }
 
 export function FeaturedRankingsShowcase(props: Props) {
+  const standardSectionTitle = props.standardSectionTitle ?? "通常ランキング"
+  const standardRankLabelPrefix =
+    props.standardRankLabelPrefix ?? standardSectionTitle
+
   const standardItems = props.standardRankings
-    .map(createStandardCardData)
+    .map((item) =>
+      createStandardCardData(item, {
+        sectionTitle: standardSectionTitle,
+        rankLabelPrefix: standardRankLabelPrefix,
+      }),
+    )
     .filter((item): item is FeaturedWorkCardData => item !== null)
   const aiItems = props.aiRankings
     .map(createAiCardData)
@@ -294,7 +309,7 @@ export function FeaturedRankingsShowcase(props: Props) {
 
         <div className="grid gap-4 xl:grid-cols-2">
           <FeaturedRankingBlock
-            title="通常ランキング"
+            title={standardSectionTitle}
             items={standardItems}
             accentClassName="from-slate-900 via-slate-700 to-slate-600 text-white dark:from-slate-100 dark:via-slate-200 dark:to-slate-400 dark:text-slate-950"
             icon={CrownIcon}

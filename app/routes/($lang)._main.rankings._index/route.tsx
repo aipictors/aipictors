@@ -29,40 +29,60 @@ export async function loader(props: LoaderFunctionArgs) {
 
   yesterday.setDate(yesterday.getDate() - 1)
 
-  const year = props.params.year
-    ? Number.parseInt(props.params.year)
-    : yesterday.getFullYear()
+  const initialDate = new Date(
+    props.params.year && props.params.month && props.params.day
+      ? Number.parseInt(props.params.year)
+      : yesterday.getFullYear(),
+    props.params.year && props.params.month && props.params.day
+      ? Number.parseInt(props.params.month) - 1
+      : yesterday.getMonth(),
+    props.params.year && props.params.month && props.params.day
+      ? Number.parseInt(props.params.day)
+      : yesterday.getDate(),
+  )
 
-  console.log(year)
+  let year = initialDate.getFullYear()
+  let month = initialDate.getMonth() + 1
+  let day = initialDate.getDate()
+  let workAwardsResp
+  let aiRankingsResp
 
-  const month = props.params.month
-    ? Number.parseInt(props.params.month)
-    : yesterday.getMonth() + 1
+  for (let offset = 0; offset < 7; offset += 1) {
+    const targetDate = new Date(initialDate)
+    targetDate.setDate(initialDate.getDate() - offset)
 
-  const day = props.params.day
-    ? Number.parseInt(props.params.day)
-    : yesterday.getDate()
+    year = targetDate.getFullYear()
+    month = targetDate.getMonth() + 1
+    day = targetDate.getDate()
 
-  const variables = {
-    offset: 0,
-    limit: 200,
-    where: {
-      year: year,
-      month: month,
-      day: day,
-    },
+    const variables = {
+      offset: 0,
+      limit: 200,
+      where: {
+        year,
+        month,
+        day,
+      },
+    }
+
+    ;[workAwardsResp, aiRankingsResp] = await Promise.all([
+      loaderClient.query({
+        query: workAwardsQuery,
+        variables,
+      }),
+      loaderClient.query({
+        query: aiEvaluationWorkRankingsQuery,
+        variables,
+      }),
+    ])
+
+    if (
+      workAwardsResp.data.workAwards.length > 0 ||
+      aiRankingsResp.data.aiEvaluationWorkRankings.length > 0
+    ) {
+      break
+    }
   }
-
-  const [workAwardsResp, aiRankingsResp] = await Promise.all([
-    loaderClient.query({
-      query: workAwardsQuery,
-      variables: variables,
-    }),
-    loaderClient.query({
-      query: aiEvaluationWorkRankingsQuery,
-      variables: variables,
-    }),
-  ])
 
   return {
     year,
@@ -110,8 +130,6 @@ export default function Rankings() {
 
   // デイリーランキングかどうかを判定
   const isDaily = data.day !== null && data.day !== undefined
-
-  console.log("isDaily:", isDaily, "data.day:", data.day)
 
   return (
     <>

@@ -8,14 +8,14 @@ import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
-import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
-import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
-import { createMeta } from "~/utils/create-meta"
-import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 import {
   AiEvaluationRankingListItemFragment,
   AiEvaluationRankingWorkList,
 } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
+import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
+import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
+import { createMeta } from "~/utils/create-meta"
+import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (
@@ -35,7 +35,7 @@ export async function loader(props: LoaderFunctionArgs) {
     year,
     month,
     day,
-    pathnamePrefix: "/ai-rankings",
+    pathnamePrefix: "/r/ai-rankings",
   })
 
   if (redirectPath) {
@@ -51,6 +51,7 @@ export async function loader(props: LoaderFunctionArgs) {
         year,
         month,
         day,
+        isSensitive: true,
       },
     },
   })
@@ -71,7 +72,7 @@ export const meta: MetaFunction = (props) => {
   return createMeta(META.AI_RANKINGS_DAY, undefined, props.params.lang)
 }
 
-export default function AiEvaluationDailyRankings() {
+export default function SensitiveAiEvaluationDailyRankings() {
   const params = useParams()
   const data = useLoaderData<typeof loader>()
 
@@ -84,33 +85,33 @@ export default function AiEvaluationDailyRankings() {
   }
 
   return (
-    <>
-      <div className="space-y-6 pb-8">
-        <FeaturedRankingsShowcase
-          standardRankings={[]}
-          aiRankings={data.rankings.data.aiEvaluationWorkRankings}
-        />
-        <RankingHeader
-          year={data.year}
-          month={data.month}
-          day={data.day}
-          weekIndex={null}
-          pathnamePrefix="/ai-rankings"
-        />
-        <AiEvaluationRankingWorkList
-          year={data.year}
-          month={data.month}
-          day={data.day}
-          weekIndex={null}
-          rankings={data.rankings.data.aiEvaluationWorkRankings}
-        />
-      </div>
-    </>
+    <div className="space-y-6 pb-8">
+      <FeaturedRankingsShowcase
+        standardRankings={[]}
+        aiRankings={data.rankings.data.aiEvaluationWorkRankings}
+      />
+      <RankingHeader
+        year={data.year}
+        month={data.month}
+        day={data.day}
+        weekIndex={null}
+        pathnamePrefix="/r/ai-rankings"
+        defaultPathnamePrefix="/r/rankings"
+        aiPathnamePrefix="/r/ai-rankings"
+      />
+      <AiEvaluationRankingWorkList
+        year={data.year}
+        month={data.month}
+        day={data.day}
+        weekIndex={null}
+        rankings={data.rankings.data.aiEvaluationWorkRankings}
+      />
+    </div>
   )
 }
 
 const aiEvaluationWorkRankingsQuery = graphql(
-  `query AiEvaluationWorkRankingsDay($offset: Int!, $limit: Int!, $where: AiEvaluationWorkRankingsWhereInput!) {
+  `query SensitiveAiEvaluationWorkRankingsDay($offset: Int!, $limit: Int!, $where: AiEvaluationWorkRankingsWhereInput!) {
     aiEvaluationWorkRankings(offset: $offset, limit: $limit, where: $where) {
       ...AiEvaluationRankingListItem
     }

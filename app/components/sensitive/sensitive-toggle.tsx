@@ -53,6 +53,33 @@ export function SensitiveToggle ({
     setShouldSkipDialog(hasCookie(cookieKey))
   }, [location.pathname, cookieKey])
 
+  const mapRankingPath = (pathname: string, enableR18: boolean) => {
+    const localePrefix = pathname.startsWith("/en/") ? "/en" : ""
+    const withoutLocale = localePrefix ? pathname.replace("/en", "") : pathname
+
+    if (enableR18) {
+      if (/^\/rankings(\/.*)?$/.test(withoutLocale)) {
+        return `${localePrefix}/r${withoutLocale}`
+      }
+
+      if (/^\/ai-rankings(\/.*)?$/.test(withoutLocale)) {
+        return `${localePrefix}/r${withoutLocale}`
+      }
+
+      return null
+    }
+
+    if (/^\/r\/rankings(\/.*)?$/.test(withoutLocale)) {
+      return `${localePrefix}${withoutLocale.replace(/^\/r/, "")}`
+    }
+
+    if (/^\/r\/ai-rankings(\/.*)?$/.test(withoutLocale)) {
+      return `${localePrefix}${withoutLocale.replace(/^\/r/, "")}`
+    }
+
+    return null
+  }
+
   const performR18Toggle = () => {
     if (targetUrl) {
       // targetUrlが指定されている場合はそのURLに直接ナビゲート
@@ -62,6 +89,12 @@ export function SensitiveToggle ({
 
     const isEnglish = locale === "en"
     let newPathname = location.pathname
+
+    const mappedRankingPath = mapRankingPath(location.pathname, !isR18Mode)
+    if (mappedRankingPath) {
+      navigate(mappedRankingPath, { replace: true })
+      return
+    }
 
     if (isR18Mode) {
       // R18モードをOFFにする（"/r"を削除）

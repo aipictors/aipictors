@@ -7,11 +7,12 @@ import type {
 import { useParams } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import { graphql } from "gql.tada"
+import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
+import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import {
   RankingSensitiveWorkList,
   SensitiveWorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
-import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
 
@@ -92,19 +93,30 @@ export default function MonthlyAwards () {
 
   return (
     <>
-      <RankingSensitiveHeader
-        year={data.year}
-        month={data.month}
-        day={null}
-        weekIndex={data.weekIndex}
-      />
-      <RankingSensitiveWorkList
-        year={data.year}
-        month={data.month}
-        day={null}
-        weekIndex={data.weekIndex}
-        awards={data.workAwards.data.workAwards}
-      />
+      <div className="space-y-6 pb-8">
+        <FeaturedRankingsShowcase
+          standardRankings={data.workAwards.data.workAwards}
+          aiRankings={[]}
+          standardSectionTitle="R18ランキング"
+          standardRankLabelPrefix="R18ランキング"
+        />
+        <RankingHeader
+          year={data.year}
+          month={data.month}
+          day={null}
+          weekIndex={data.weekIndex}
+          pathnamePrefix="/r/rankings"
+          defaultPathnamePrefix="/r/rankings"
+          aiPathnamePrefix="/r/ai-rankings"
+        />
+        <RankingSensitiveWorkList
+          year={data.year}
+          month={data.month}
+          day={null}
+          weekIndex={data.weekIndex}
+          awards={data.workAwards.data.workAwards}
+        />
+      </div>
     </>
   )
 }

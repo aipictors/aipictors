@@ -8,6 +8,7 @@ import { useLoaderData, useParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
+import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { createMeta } from "~/utils/create-meta"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
@@ -72,23 +73,26 @@ export default function AiEvaluationMonthlyRankings() {
 
   return (
     <>
-      <RankingHeader
-        year={data.year}
-        month={data.month}
-        day={null}
-        weekIndex={null}
-        pathnamePrefix="/ai-rankings"
-      />
-      <div className="mx-auto mb-6 max-w-6xl rounded-2xl border border-amber-200/60 bg-amber-50/80 p-4 text-amber-900 text-sm dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-100">
-        AI評価ランキングの入賞回数は通常の入賞数には含まれません。将来のアチーブメント集計用に別枠で記録されます。
+      <div className="space-y-6 pb-8">
+        <FeaturedRankingsShowcase
+          standardRankings={[]}
+          aiRankings={data.rankings.data.aiEvaluationWorkRankings}
+        />
+        <RankingHeader
+          year={data.year}
+          month={data.month}
+          day={null}
+          weekIndex={null}
+          pathnamePrefix="/ai-rankings"
+        />
+        <AiEvaluationRankingWorkList
+          year={data.year}
+          month={data.month}
+          day={null}
+          weekIndex={null}
+          rankings={data.rankings.data.aiEvaluationWorkRankings}
+        />
       </div>
-      <AiEvaluationRankingWorkList
-        year={data.year}
-        month={data.month}
-        day={null}
-        weekIndex={null}
-        rankings={data.rankings.data.aiEvaluationWorkRankings}
-      />
     </>
   )
 }

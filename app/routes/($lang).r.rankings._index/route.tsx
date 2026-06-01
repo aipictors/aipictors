@@ -3,7 +3,8 @@ import { useLoaderData, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
-import { RankingSensitiveHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-header"
+import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
+import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { RankingSensitiveUserListModern } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-user-list-modern"
 import {
   RankingSensitiveWorkList,
@@ -85,14 +86,24 @@ export default function Rankings() {
 
   return (
     <>
-      <RankingSensitiveHeader
-        year={data.year}
-        month={data.month}
-        day={data.day}
-        weekIndex={null}
-        rankingType={isDaily ? rankingType : undefined}
-        onRankingTypeChange={isDaily ? handleRankingTypeChange : undefined}
-      />
+      <div className="space-y-6 pb-8">
+        <FeaturedRankingsShowcase
+          standardRankings={data.workAwards.data.workAwards}
+          aiRankings={[]}
+          standardSectionTitle="R18ランキング"
+          standardRankLabelPrefix="R18ランキング"
+        />
+        <RankingHeader
+          year={data.year}
+          month={data.month}
+          day={data.day}
+          weekIndex={null}
+          rankingType={isDaily ? rankingType : undefined}
+          onRankingTypeChange={isDaily ? handleRankingTypeChange : undefined}
+          pathnamePrefix="/r/rankings"
+          defaultPathnamePrefix="/r/rankings"
+          aiPathnamePrefix="/r/ai-rankings"
+        />
       {rankingType === "users" && isDaily ? (
         <RankingSensitiveUserListModern
           year={data.year}
@@ -110,6 +121,7 @@ export default function Rankings() {
           weekIndex={null}
         />
       )}
+      </div>
     </>
   )
 }
