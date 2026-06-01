@@ -1,7 +1,10 @@
 import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
 import {
+  ActivityIcon,
   AwardIcon,
   BookImageIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   HeartIcon,
   HelpCircleIcon,
   HomeIcon,
@@ -19,7 +22,7 @@ import {
   TagIcon,
 } from "lucide-react"
 import { gql, useLazyQuery } from "@apollo/client/index"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
@@ -66,6 +69,7 @@ export function HomeMenuRouteList({
   const navigate = useNavigate()
 
   const t = useTranslation()
+  const [isExtraMenuOpen, setIsExtraMenuOpen] = useState(false)
 
   const sensitivePath =
     typeof window !== "undefined" ? /\/r($|\/)/.test(location.pathname) : false
@@ -247,6 +251,49 @@ export function HomeMenuRouteList({
       >
         {t("フォト", "Photo")}
       </HomeMenuNavigationButton>
+
+      <div className="px-3 pt-1">
+        <button
+          type="button"
+          onClick={() => setIsExtraMenuOpen((prev) => !prev)}
+          className="flex w-full items-center justify-between rounded-md py-1 text-left text-muted-foreground text-xs transition-colors hover:text-foreground"
+          aria-expanded={isExtraMenuOpen}
+        >
+          <span>
+            {isExtraMenuOpen
+              ? t("閉じる", "Show less")
+              : t("もっと見る", "Show menu more")}
+          </span>
+          {isExtraMenuOpen ? (
+            <ChevronUpIcon className="size-3.5" />
+          ) : (
+            <ChevronDownIcon className="size-3.5" />
+          )}
+        </button>
+      </div>
+
+      {isExtraMenuOpen && (
+        <div className="space-y-1">
+          <HomeMenuNavigationButton
+            href={createLink("/roadmap")}
+            icon={RocketIcon}
+            onClick={closeHeaderMenu}
+          >
+            {t("ロードマップ", "Roadmap")}
+          </HomeMenuNavigationButton>
+
+          <Link
+            className="flex items-center rounded-md px-3 py-2 font-medium text-muted-foreground text-sm transition-colors hover:bg-muted/20 hover:text-foreground"
+            to="https://status.aipictors.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeHeaderMenu}
+          >
+            <ActivityIcon className="size-5 shrink-0" />
+            <span className="ml-3">{t("稼働状況", "Status")}</span>
+          </Link>
+        </div>
+      )}
 
       {/* Separator (auth) ---------------------------------------- */}
       {authContext.isNotLoading && (
