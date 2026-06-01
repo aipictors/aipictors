@@ -1,5 +1,4 @@
 import { Link } from "@remix-run/react"
-import type { FragmentOf } from "gql.tada"
 import {
   CrownIcon,
   EyeIcon,
@@ -9,12 +8,33 @@ import {
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { cn } from "~/lib/utils"
-import type { AiEvaluationRankingListItemFragment } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
-import type { WorkAwardListItemFragment } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
-type StandardRankingItem = FragmentOf<typeof WorkAwardListItemFragment>
-type AiRankingItem = FragmentOf<typeof AiEvaluationRankingListItemFragment>
+type RankingWork = {
+  id: string
+  title: string
+  largeThumbnailImageURL: string | null
+  smallThumbnailImageURL: string | null
+  commentsCount: number
+  viewsCount: number
+  likesCount: number
+  user: {
+    name: string
+    iconUrl: string | null
+  } | null
+}
+
+type StandardRankingItem = {
+  index: number
+  snapshotLikedCount: number
+  work: RankingWork | null
+}
+
+type AiRankingItem = {
+  index: number
+  overallScore: number
+  work: RankingWork | null
+}
 
 type FeaturedWorkCardData = {
   id: string
@@ -29,9 +49,7 @@ type FeaturedWorkCardData = {
   rank: number
   rankLabel: string
   kindLabel: string
-  accentClassName: string
   badgeClassName: string
-  helperText: string
 }
 
 type Props = {
@@ -59,11 +77,8 @@ function createStandardCardData(
     rank: item.index,
     rankLabel: `通常ランキング ${item.index}位`,
     kindLabel: "通常ランキング",
-    accentClassName:
-      "from-slate-900 via-slate-700 to-slate-600 text-white dark:from-slate-100 dark:via-slate-200 dark:to-slate-400 dark:text-slate-950",
     badgeClassName:
       "border-slate-200/80 bg-white/90 text-slate-700 dark:border-white/15 dark:bg-slate-900/80 dark:text-slate-100",
-    helperText: "いま最も反応を集めている通常ランキング上位作品",
   }
 }
 
@@ -85,17 +100,13 @@ function createAiCardData(item: AiRankingItem): FeaturedWorkCardData | null {
     rank: item.index,
     rankLabel: `AIランキング ${item.index}位`,
     kindLabel: "AIランキング",
-    accentClassName:
-      "from-amber-500 via-orange-500 to-rose-500 text-white dark:from-amber-300 dark:via-orange-300 dark:to-rose-300 dark:text-amber-950",
     badgeClassName:
       "border-amber-200/80 bg-white/90 text-amber-700 dark:border-white/15 dark:bg-amber-950/70 dark:text-amber-100",
-    helperText: `AI評価 ${item.overallScore}点の注目作品`,
   }
 }
 
 function FeaturedRankingBlock(props: {
   title: string
-  description: string
   items: FeaturedWorkCardData[]
   accentClassName: string
   icon: React.ComponentType<{ className?: string }>
@@ -111,7 +122,7 @@ function FeaturedRankingBlock(props: {
   return (
     <section className="space-y-4 rounded-[28px] border border-border/40 bg-white/80 p-4 shadow-sm backdrop-blur-sm dark:bg-zinc-950/60 sm:p-5">
       <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
+        <div>
           <div
             className={cn(
               "inline-flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-1.5 font-semibold text-xs shadow-sm",
@@ -121,21 +132,15 @@ function FeaturedRankingBlock(props: {
             <Icon className="h-3.5 w-3.5" />
             <span>{props.title}</span>
           </div>
-          <p className="text-muted-foreground text-sm leading-6">
-            {props.description}
-          </p>
         </div>
-        <span className="hidden rounded-full border border-border/50 bg-background/80 px-3 py-1 text-[11px] text-muted-foreground md:inline-flex">
-          上位作品を先に表示
-        </span>
       </div>
 
       <Link
         to={primaryItem.href}
         className="group block overflow-hidden rounded-[28px] border border-border/50 bg-linear-to-br from-white via-slate-50 to-orange-50 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:from-zinc-950 dark:via-zinc-900 dark:to-orange-950/30"
       >
-        <div className="grid gap-4 p-4 sm:p-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
-          <div className="relative overflow-hidden rounded-[24px] bg-muted/30">
+        <div className="grid gap-4 p-4 sm:p-5 md:grid-cols-[minmax(0,220px)_minmax(0,1fr)] md:items-center">
+          <div className="relative mx-auto w-full max-w-[240px] overflow-hidden rounded-[24px] bg-muted/30 md:mx-0 md:max-w-[220px]">
             {primaryItem.imageUrl ? (
               <img
                 src={primaryItem.imageUrl}
@@ -152,9 +157,9 @@ function FeaturedRankingBlock(props: {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-2 text-xs">
+          <div className="space-y-3">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs">
                 <span
                   className={cn(
                     "rounded-full border px-2.5 py-1 font-semibold",
@@ -163,54 +168,39 @@ function FeaturedRankingBlock(props: {
                 >
                   {primaryItem.kindLabel}
                 </span>
-                <span className="rounded-full bg-foreground/5 px-2.5 py-1 text-muted-foreground dark:bg-white/5">
-                  {primaryItem.helperText}
-                </span>
               </div>
 
-              <h2 className="line-clamp-2 font-bold text-foreground text-xl leading-tight sm:text-2xl">
+              <h2 className="line-clamp-2 font-bold text-foreground text-lg leading-tight sm:text-xl">
                 {primaryItem.title}
               </h2>
             </div>
 
             <div className="flex items-center gap-3">
-              <Avatar className="size-11 border border-white shadow-sm dark:border-zinc-800">
+              <Avatar className="size-9 border border-white shadow-sm dark:border-zinc-800 sm:size-10">
                 <AvatarImage src={primaryItem.userIconUrl ?? undefined} />
                 <AvatarFallback>
                   {primaryItem.userName.slice(0, 1) || "?"}
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0">
-                <p className="truncate font-medium text-foreground text-sm sm:text-base">
+                <p className="truncate font-medium text-foreground text-sm">
                   {primaryItem.userName}
-                </p>
-                <p className="text-muted-foreground text-xs sm:text-sm">
-                  投稿者
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 text-xs sm:text-sm">
-              <div className="rounded-2xl bg-background/80 px-3 py-2.5 shadow-sm">
-                <div className="mb-1 flex items-center gap-1.5 text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 shadow-sm text-muted-foreground">
                   <HeartIcon className="h-3.5 w-3.5" />
-                  <span>いいね</span>
-                </div>
-                <p className="font-semibold text-foreground">{primaryItem.likesCount.toLocaleString()}</p>
+                  <span className="font-semibold text-foreground">{primaryItem.likesCount.toLocaleString()}</span>
               </div>
-              <div className="rounded-2xl bg-background/80 px-3 py-2.5 shadow-sm">
-                <div className="mb-1 flex items-center gap-1.5 text-muted-foreground">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 shadow-sm text-muted-foreground">
                   <MessageCircleIcon className="h-3.5 w-3.5" />
-                  <span>コメント</span>
-                </div>
-                <p className="font-semibold text-foreground">{primaryItem.commentsCount.toLocaleString()}</p>
+                  <span className="font-semibold text-foreground">{primaryItem.commentsCount.toLocaleString()}</span>
               </div>
-              <div className="rounded-2xl bg-background/80 px-3 py-2.5 shadow-sm">
-                <div className="mb-1 flex items-center gap-1.5 text-muted-foreground">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 shadow-sm text-muted-foreground">
                   <EyeIcon className="h-3.5 w-3.5" />
-                  <span>閲覧</span>
-                </div>
-                <p className="font-semibold text-foreground">{primaryItem.viewsCount.toLocaleString()}</p>
+                  <span className="font-semibold text-foreground">{primaryItem.viewsCount.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -220,7 +210,7 @@ function FeaturedRankingBlock(props: {
       {secondaryItems.length > 0 && (
         <div className="space-y-2">
           <p className="font-medium text-foreground text-sm">
-            2位以降もチェック
+            上位作品
           </p>
           <div className="overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none]">
             <div className="flex gap-3 pr-2">
@@ -299,9 +289,6 @@ export function FeaturedRankingsShowcase(props: Props) {
               <h1 className="font-bold text-foreground text-2xl sm:text-3xl">
                 いま見てほしい上位作品
               </h1>
-              <p className="max-w-3xl text-muted-foreground text-sm leading-6 sm:text-base">
-                操作UIより先に、通常ランキングとAIランキングの上位作品を並べて表示します。ファーストビューで主役になるのは作品です。
-              </p>
             </div>
           </div>
         </div>
@@ -309,14 +296,12 @@ export function FeaturedRankingsShowcase(props: Props) {
         <div className="grid gap-4 xl:grid-cols-2">
           <FeaturedRankingBlock
             title="通常ランキング"
-            description="通常ランキング 1位を大きく表示し、続く上位作品も横スクロールでたどれます。"
             items={standardItems}
             accentClassName="from-slate-900 via-slate-700 to-slate-600 text-white dark:from-slate-100 dark:via-slate-200 dark:to-slate-400 dark:text-slate-950"
             icon={CrownIcon}
           />
           <FeaturedRankingBlock
             title="AIランキング"
-            description="AI評価の上位作品も同じ導線で並べて、自然に比較できる構成にしています。"
             items={aiItems}
             accentClassName="from-amber-500 via-orange-500 to-rose-500 text-white dark:from-amber-300 dark:via-orange-300 dark:to-rose-300 dark:text-amber-950"
             icon={SparklesIcon}
