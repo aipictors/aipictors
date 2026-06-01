@@ -3,15 +3,6 @@ import { Link } from "@remix-run/react"
 import type { FragmentOf } from "gql.tada"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
-import { Button } from "~/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
@@ -50,58 +41,6 @@ function formatGeneratedAt(value: number | null | undefined) {
   }
 
   return new Date(value * 1000).toLocaleString("ja-JP")
-}
-
-function RankingCommentDialog(props: {
-  title: string
-  comment: string
-  score: number
-  awardTier: string
-  generatedAt: number | null | undefined
-}) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="h-8 rounded-full px-3 text-xs" variant="outline">
-          コメント全文を見る
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-xl overflow-hidden rounded-3xl border-0 bg-linear-to-br from-amber-50 via-white to-orange-50 p-0 shadow-2xl dark:from-stone-900 dark:via-stone-950 dark:to-orange-950">
-        <div className="space-y-6 p-6">
-          <DialogHeader className="text-left">
-            <DialogTitle className="font-bold text-xl text-stone-900 dark:text-stone-100">
-              ぴくたーちゃんの入賞コメント
-            </DialogTitle>
-            <DialogDescription className="text-stone-600 dark:text-stone-300">
-              {props.title}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex items-center gap-3 rounded-2xl bg-amber-100/70 p-3 dark:bg-amber-500/10">
-            <Avatar className="h-14 w-14 border border-white bg-white shadow-sm ring-4 ring-orange-100 dark:border-zinc-900 dark:bg-zinc-900 dark:ring-orange-950/40">
-              <AvatarImage src={PICTOR_CHAN_ICON_URL} alt="ぴくたーちゃん" />
-              <AvatarFallback>ぴ</AvatarFallback>
-            </Avatar>
-            <div className="space-y-1 text-sm">
-              <p className="font-bold text-stone-900 dark:text-stone-100">
-                {toAwardLabel(props.awardTier)} / {props.score}点
-              </p>
-              {formatGeneratedAt(props.generatedAt) && (
-                <p className="text-stone-500 dark:text-stone-400">
-                  生成日時: {formatGeneratedAt(props.generatedAt)}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="relative rounded-[24px] bg-white p-5 text-sm leading-7 shadow-sm ring-1 ring-amber-100 dark:bg-stone-900 dark:ring-stone-800">
-            <div className="absolute -left-2 top-6 h-4 w-4 rotate-45 bg-white ring-1 ring-amber-100 dark:bg-stone-900 dark:ring-stone-800" />
-            <p className="relative whitespace-pre-wrap text-stone-700 dark:text-stone-200">
-              {props.comment}
-            </p>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  )
 }
 
 function RankingCommentPreview(props: {
@@ -143,19 +82,9 @@ function RankingCommentPreview(props: {
             <p className="mb-2 font-semibold text-foreground text-sm dark:text-zinc-100">
               {props.title}
             </p>
-            <p className="line-clamp-5 whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-zinc-200">
+            <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700 dark:text-zinc-200">
               {props.comment}
             </p>
-          </div>
-
-          <div className="mt-3">
-            <RankingCommentDialog
-              title={props.title}
-              comment={props.comment}
-              score={props.score}
-              awardTier={props.awardTier}
-              generatedAt={props.generatedAt}
-            />
           </div>
         </div>
       </div>
