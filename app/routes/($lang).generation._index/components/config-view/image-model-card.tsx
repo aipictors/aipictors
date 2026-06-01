@@ -53,23 +53,21 @@ export function ImageModelCard(props: Props) {
     props.type === "FLUX" ||
     props.type === "SD5" ||
     props.displayName?.toLowerCase().includes("gemini")
+  const trimmedDisplayName = trimString(props.displayName ?? "")
 
   return (
     <div className={classes} onClick={props.onSelect} onKeyUp={() => {}}>
-      <img
-        className={
-          "relative w-full rounded-lg border-2 bg-center bg-cover focus:outline-hidden"
-        }
-        src={props.thumbnailImageURL ?? ""}
-        alt={props.displayName ?? ""}
-        style={{ transformOrigin: "center" }}
-      />
-      <div className="">
-        <span className="whitespace-pre-wrap break-words font-bold text-sm">
-          {trimString(props.displayName ?? "")}
-        </span>
+      <div className="relative">
+        <img
+          className={
+            "relative w-full rounded-lg border-2 bg-center bg-cover focus:outline-hidden"
+          }
+          src={props.thumbnailImageURL ?? ""}
+          alt={props.displayName ?? ""}
+          style={{ transformOrigin: "center" }}
+        />
         {props.type && (
-          <div className="absolute top-0 left-0">
+          <div className="absolute top-2 left-2 right-12 z-10 flex flex-wrap gap-1">
             {props.type === "FLUX" && (
               <Badge variant={"destructive"}>{props.type}</Badge>
             )}
@@ -94,7 +92,7 @@ export function ImageModelCard(props: Props) {
             {props.type !== "FLUX" && <Badge>{props.type}</Badge>}
           </div>
         )}
-        <div className="absolute bottom-8 left-0">
+        <div className="absolute right-2 bottom-2 left-2 z-10 flex flex-wrap gap-1">
           {props.type === "FLUX" && (
             <Badge>{t("STANDARD以上", "super fast generation")}</Badge>
           )}
@@ -102,6 +100,11 @@ export function ImageModelCard(props: Props) {
             <Badge variant={"outline"}>{t("待ち人数なし", "No queue")}</Badge>
           )}
         </div>
+      </div>
+      <div className="flex flex-1 flex-col gap-1 p-2">
+        <p className="min-h-10 break-words font-bold text-sm leading-5">
+          {trimmedDisplayName}
+        </p>
         {isNoQueueModel && (
           <p className="text-muted-foreground text-xs">
             {t(
