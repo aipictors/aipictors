@@ -502,36 +502,26 @@ export function RankingHeader(props: Props) {
             variant="outline"
             size="lg"
             onClick={handleNext}
-            className="flex items-center gap-2 rounded-xl border-border/50 bg-background/80 px-6 py-3 backdrop-blur-sm transition-all hover:bg-muted/50"
+            className="flex h-11 items-center justify-center gap-2 rounded-xl border-border/50 bg-background/80 px-4 backdrop-blur-sm transition-all hover:bg-muted/50"
           >
             {t("次へ", "Next")}
             <ChevronRightIcon className="h-5 w-5" />
           </Button>
         </div>
 
-        {/* 日付選択とコントロール */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 rounded-xl border border-border/50 bg-background/80 p-2 backdrop-blur-sm">
-            className="flex h-11 items-center justify-center gap-2 rounded-xl border-border/50 bg-background/80 px-4 backdrop-blur-sm transition-all hover:bg-muted/50"
+        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:justify-self-end">
+          <div className="flex h-11 items-center gap-2 rounded-xl border border-border/50 bg-background/80 px-3 backdrop-blur-sm">
+            <CalendarIcon className="h-4 w-4 text-muted-foreground" />
             <input
               type="date"
               value={date}
               onChange={handleDateChange}
-              className="rounded-lg border-0 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              max={new Date().toISOString().split("T")[0]}
-        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:justify-self-end">
-          <div className="flex h-11 items-center gap-2 rounded-xl border border-border/50 bg-background/80 px-3 backdrop-blur-sm">
-          <Button
-            onClick={handleTodayClick}
-            variant="outline"
-            size="lg"
-            className="rounded-xl border-border/50 bg-background/80 px-6 py-3 backdrop-blur-sm transition-all hover:bg-muted/50"
               aria-label={t("ランキング日付", "Ranking date")}
               className="w-full rounded-lg border-0 bg-transparent px-1 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            {t("最新", "Latest")}
-          </Button>
+              max={new Date().toISOString().split("T")[0]}
+            />
+          </div>
 
-          <div className="rounded-xl border border-border/50 bg-background/80 p-2 backdrop-blur-sm">
           <Button
             onClick={handleTodayClick}
             variant="outline"
@@ -540,9 +530,9 @@ export function RankingHeader(props: Props) {
           >
             {t("最新", "Latest")}
           </Button>
-          className="relative overflow-hidden rounded-2xl"
-          opts={{ dragFree: true, loop: false, align: "center" }}
-        >
+        </div>
+      </div>
+
       <div className="overflow-hidden rounded-2xl border border-border/40 bg-background/60 px-3 py-3 backdrop-blur-sm">
         <div className="overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="flex min-w-max gap-2 pr-2 touch-pan-x snap-x snap-mandatory">
@@ -557,4 +547,7 @@ export function RankingHeader(props: Props) {
             ))}
           </div>
         </div>
-          <CarouselNext className="absolute top-1/2 right-3 bg-background/95 backdrop-blur-sm hover:bg-background" />
+      </div>
+    </div>
+  )
+}
