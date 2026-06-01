@@ -9,10 +9,12 @@ import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { RankingUserList } from "~/routes/($lang)._main.rankings._index/components/ranking-user-list"
+import { FeaturedRankingsShowcase } from "~/routes/($lang)._main.rankings._index/components/featured-rankings-showcase"
 import {
   RankingWorkList,
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
+import { AiEvaluationRankingListItemFragment } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
 import { createMeta } from "~/utils/create-meta"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -51,16 +53,23 @@ export async function loader(props: LoaderFunctionArgs) {
     },
   }
 
-  const workAwardsResp = await loaderClient.query({
-    query: workAwardsQuery,
-    variables: variables,
-  })
+  const [workAwardsResp, aiRankingsResp] = await Promise.all([
+    loaderClient.query({
+      query: workAwardsQuery,
+      variables: variables,
+    }),
+    loaderClient.query({
+      query: aiEvaluationWorkRankingsQuery,
+      variables: variables,
+    }),
+  ])
 
   return {
     year,
     month,
     day,
     workAwards: workAwardsResp,
+    aiRankings: aiRankingsResp,
   }
 }
 
@@ -108,6 +117,10 @@ export default function Rankings() {
     <>
       {data && (
         <div className="space-y-6 pb-8">
+          <FeaturedRankingsShowcase
+            standardRankings={data.workAwards.data.workAwards}
+            aiRankings={data.aiRankings.data.aiEvaluationWorkRankings}
+          />
           <RankingHeader
             year={data.year}
             month={data.month}
@@ -170,4 +183,13 @@ const workAwardsQuery = graphql(
     }
   }`,
   [WorkAwardListItemFragment],
+)
+
+const aiEvaluationWorkRankingsQuery = graphql(
+  `query AiEvaluationWorkRankingsForShowcase($offset: Int!, $limit: Int!, $where: AiEvaluationWorkRankingsWhereInput!) {
+    aiEvaluationWorkRankings(offset: $offset, limit: $limit, where: $where) {
+      ...AiEvaluationRankingListItem
+    }
+  }`,
+  [AiEvaluationRankingListItemFragment],
 )

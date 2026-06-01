@@ -4,6 +4,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ImageIcon,
+  LayoutGridIcon,
   TrendingUpIcon,
   UsersIcon,
 } from "lucide-react"
@@ -52,10 +53,15 @@ export function RankingHeader(props: Props) {
   const [date, setDate] = useState(
     buildDateInputValue(year, month, props.day ?? 1),
   )
+  const [isDateRailOpen, setIsDateRailOpen] = useState(false)
 
   useEffect(() => {
     setDate(buildDateInputValue(year, month, viewType === "デイリー" ? day : 1))
   }, [year, month, day, viewType])
+
+  useEffect(() => {
+    setIsDateRailOpen(false)
+  }, [viewType, year, month, day, weekIndex])
 
   const buildRankingModePath = (basePathname: string) => {
     if (viewType === "デイリー" && day) {
@@ -328,127 +334,121 @@ export function RankingHeader(props: Props) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 rounded-3xl border border-border/30 bg-gradient-to-br from-background/80 to-muted/10 p-4 backdrop-blur-md sm:p-6 lg:space-y-8 lg:p-8">
-      <div className="flex justify-center">
-        <div className="flex w-full max-w-full items-center gap-2 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="mx-auto w-full max-w-6xl px-3 sm:px-4 lg:px-0">
+      <div className="space-y-4 rounded-[28px] border border-border/40 bg-background/85 p-4 shadow-sm backdrop-blur-sm sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 font-medium text-muted-foreground text-xs">
+              <LayoutGridIcon className="h-3.5 w-3.5" />
+              <span>ランキングを探す</span>
+            </div>
+            <div>
+              <h2 className="font-semibold text-foreground text-lg sm:text-xl">
+                {year}年{month.toString().padStart(2, "0")}月
+                {day
+                  ? `${day.toString().padStart(2, "0")}日`
+                  : weekIndex && viewType !== "マンスリー"
+                    ? ` 第${weekIndex}週`
+                    : ""}
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                通常 / AI、作品 / ユーザー、日間 / 週間 / 月間をコンパクトに切り替えられます。
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span
+              className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-1.5 font-semibold text-white ${getViewTypeGradient()}`}
+            >
+              {getViewTypeIcon()}
+              <span>
+                {viewType === "マンスリー" && t("月間", "Monthly")}
+                {viewType === "デイリー" && t("日間", "Daily")}
+                {viewType === "ウィークリー" && t("週間", "Weekly")}
+              </span>
+            </span>
+            {props.day !== null && props.rankingType === "users" && (
+              <span className="rounded-full bg-purple-100 px-3 py-1.5 font-medium text-purple-700 dark:bg-purple-950/60 dark:text-purple-200">
+                最高いいね数で順位付け
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex flex-wrap gap-2">
+            <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
           <Button
             variant="ghost"
-            size="lg"
+            size="sm"
             onClick={() => navigate(defaultRankingsPath)}
-            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
               !isAiRankingPage
-                ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white ring-2 ring-slate-200 ring-offset-2 dark:from-slate-200 dark:to-slate-400 dark:text-slate-950"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-sm dark:from-slate-200 dark:to-slate-400 dark:text-slate-950"
+                : "text-muted-foreground hover:bg-background hover:text-foreground"
             }`}
             disabled={!isAiRankingPage}
           >
-            <ImageIcon className="h-5 w-5" />
+            <ImageIcon className="h-4 w-4" />
             {t("通常ランキング", "Standard Rankings")}
           </Button>
           <Button
             variant="ghost"
-            size="lg"
+            size="sm"
             onClick={() => navigate(aiRankingsPath)}
-            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
               isAiRankingPage
-                ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white ring-2 ring-amber-200 ring-offset-2"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-sm"
+                : "text-muted-foreground hover:bg-background hover:text-foreground"
             }`}
             disabled={isAiRankingPage}
           >
-            <TrendingUpIcon className="h-5 w-5" />
+            <TrendingUpIcon className="h-4 w-4" />
             {t("AIランキング", "AI Rankings")}
           </Button>
-        </div>
-      </div>
+            </div>
 
-      {/* ランキングタイプ切り替え */}
-      {props.day !== null && props.onRankingTypeChange && (
-        <div className="flex justify-center">
-          <div className="flex w-full max-w-full items-center gap-2 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none]">
+            {props.day !== null && props.onRankingTypeChange && (
+              <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
             <Button
               variant="ghost"
-              size="lg"
+              size="sm"
               onClick={() => handleRankingTypeChange("works")}
-              className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+              className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
                 props.rankingType === "works"
-                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white ring-2 ring-blue-200 ring-offset-2"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm"
+                  : "text-muted-foreground hover:bg-background hover:text-foreground"
               }`}
             >
-              <ImageIcon className="h-5 w-5" />
+              <ImageIcon className="h-4 w-4" />
               {t("作品ランキング", "Work Rankings")}
             </Button>
             <Button
               variant="ghost"
-              size="lg"
+              size="sm"
               onClick={() => handleRankingTypeChange("users")}
-              className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+              className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
                 props.rankingType === "users"
-                  ? "bg-gradient-to-r from-purple-500 to-pink-600 text-white ring-2 ring-purple-200 ring-offset-2"
-                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                  ? "bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-sm"
+                  : "text-muted-foreground hover:bg-background hover:text-foreground"
               }`}
             >
-              <UsersIcon className="h-5 w-5" />
+              <UsersIcon className="h-4 w-4" />
               {t("ユーザランキング", "User Rankings")}
             </Button>
-          </div>
-        </div>
-      )}
-
-      {/* ユーザーランキングの説明 */}
-      {props.day !== null && props.rankingType === "users" && (
-        <div className="mx-auto w-full max-w-lg rounded-2xl border border-purple-200/50 bg-gradient-to-br from-purple-50/90 to-pink-50/90 p-4 text-center backdrop-blur-sm sm:p-6 dark:border-purple-800/50 dark:from-purple-900/30 dark:to-pink-900/30">
-          <div className="mb-2 text-2xl">🏆</div>
-          <p className="font-semibold text-purple-700 dark:text-purple-300">
-            {t("最高いいね数でランキング", "Ranked by Highest Likes")}
-          </p>
-          <p className="mt-2 text-purple-600 text-sm dark:text-purple-400">
-            {t(
-              "期間中の投稿作品で最もいいね数の多い作品で順位付けされています",
-              "Ranked by the work with the highest likes in the period",
+              </div>
             )}
-          </p>
-        </div>
-      )}
 
-      {/* タイトルセクション */}
-      <div className="text-center">
-        <div
-          className={`mx-auto mb-4 inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r ${getViewTypeGradient()} px-4 py-3 text-white ring-4 ring-white/20`}
-        >
-          {getViewTypeIcon()}
-          <span className="font-bold text-base sm:text-lg">
-            {viewType === "マンスリー" &&
-              t("マンスリーランキング", "Monthly Rankings")}
-            {viewType === "デイリー" &&
-              t("デイリーランキング", "Daily Rankings")}
-            {viewType === "ウィークリー" &&
-              t("ウィークリーランキング", "Weekly Rankings")}
-          </span>
-        </div>
-
-        <h1 className="bg-gradient-to-r from-foreground via-foreground/80 to-muted-foreground bg-clip-text font-bold text-2xl text-transparent sm:text-3xl lg:text-4xl">
-          {year}年{month.toString().padStart(2, "0")}月
-          {day
-            ? `${day.toString().padStart(2, "0")}日`
-            : weekIndex && viewType !== "マンスリー"
-              ? ` 第${weekIndex}週`
-              : ""}
-        </h1>
-      </div>
-
-      {/* 期間選択ボタン */}
-      <div className="flex justify-center">
-        <div className="flex w-full max-w-full items-center gap-2 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
           <Button
             variant="ghost"
-            size="lg"
+            size="sm"
             onClick={() => handleViewChange("マンスリー")}
-            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
+            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
               viewType === "マンスリー"
-                ? "bg-gradient-to-r from-orange-500 to-red-500 text-white ring-2 ring-orange-200 ring-offset-2"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                ? "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-sm"
+                : "text-muted-foreground hover:bg-background hover:text-foreground"
             }`}
             disabled={viewType === "マンスリー"}
           >
@@ -457,12 +457,12 @@ export function RankingHeader(props: Props) {
           </Button>
           <Button
             variant="ghost"
-            size="lg"
+            size="sm"
             onClick={() => handleViewChange("デイリー")}
-            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
+            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
               viewType === "デイリー"
-                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white ring-2 ring-emerald-200 ring-offset-2"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm"
+                : "text-muted-foreground hover:bg-background hover:text-foreground"
             }`}
             disabled={viewType === "デイリー"}
           >
@@ -471,53 +471,51 @@ export function RankingHeader(props: Props) {
           </Button>
           <Button
             variant="ghost"
-            size="lg"
+            size="sm"
             onClick={() => handleViewChange("ウィークリー")}
-            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
+            className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
               viewType === "ウィークリー"
-                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white ring-2 ring-blue-200 ring-offset-2"
-                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-sm"
+                : "text-muted-foreground hover:bg-background hover:text-foreground"
             }`}
             disabled={viewType === "ウィークリー"}
           >
             <ImageIcon className="h-4 w-4" />
             {t("週間", "Weekly")}
           </Button>
-        </div>
-      </div>
+            </div>
+          </div>
 
-      {/* ナビゲーションとコントロール */}
-      <div className="grid gap-3 rounded-2xl border border-border/40 bg-background/65 p-3 backdrop-blur-sm lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center">
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+          <div className="grid gap-2 lg:grid-cols-[auto_auto_minmax(0,1fr)] lg:items-center">
+            <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            size="lg"
+            size="sm"
             onClick={handlePrevious}
-            className="flex h-11 items-center gap-2 rounded-xl border-border/50 bg-background/80 px-4 backdrop-blur-sm transition-all hover:bg-muted/50"
+            className="h-9 rounded-full border-border/50 bg-background/80 px-3 text-xs backdrop-blur-sm hover:bg-muted/50 sm:px-4 sm:text-sm"
           >
             <ChevronLeftIcon className="h-5 w-5" />
             {t("前へ", "Previous")}
           </Button>
           <Button
             variant="outline"
-            size="lg"
+            size="sm"
             onClick={handleNext}
-            className="flex h-11 items-center justify-center gap-2 rounded-xl border-border/50 bg-background/80 px-4 backdrop-blur-sm transition-all hover:bg-muted/50"
+            className="h-9 rounded-full border-border/50 bg-background/80 px-3 text-xs backdrop-blur-sm hover:bg-muted/50 sm:px-4 sm:text-sm"
           >
             {t("次へ", "Next")}
             <ChevronRightIcon className="h-5 w-5" />
           </Button>
-        </div>
+            </div>
 
-        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:justify-self-end">
-          <div className="flex h-11 items-center gap-2 rounded-xl border border-border/50 bg-background/80 px-3 backdrop-blur-sm">
+            <div className="flex h-9 items-center gap-2 rounded-full border border-border/50 bg-background/80 px-3 backdrop-blur-sm">
             <CalendarIcon className="h-4 w-4 text-muted-foreground" />
             <input
               type="date"
               value={date}
               onChange={handleDateChange}
               aria-label={t("ランキング日付", "Ranking date")}
-              className="w-full rounded-lg border-0 bg-transparent px-1 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full rounded-lg border-0 bg-transparent px-1 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               max={new Date().toISOString().split("T")[0]}
             />
           </div>
@@ -525,16 +523,36 @@ export function RankingHeader(props: Props) {
           <Button
             onClick={handleTodayClick}
             variant="outline"
-            size="lg"
-            className="h-11 rounded-xl border-border/50 bg-background/80 px-5 backdrop-blur-sm transition-all hover:bg-muted/50"
+            size="sm"
+            className="h-9 justify-self-start rounded-full border-border/50 bg-background/80 px-4 text-xs backdrop-blur-sm hover:bg-muted/50 sm:text-sm lg:justify-self-end"
           >
             {t("最新", "Latest")}
           </Button>
         </div>
-      </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border/40 bg-background/60 px-3 py-3 backdrop-blur-sm">
-        <div className="overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="rounded-2xl border border-border/40 bg-muted/20 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="font-medium text-foreground text-sm">
+                  {t("日付候補", "Recent periods")}
+                </p>
+                <p className="text-muted-foreground text-xs">
+                  最近の候補一覧は必要なときだけ展開できます。
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDateRailOpen((value) => !value)}
+                className="h-8 rounded-full px-3 text-xs"
+              >
+                {isDateRailOpen ? "閉じる" : "表示"}
+              </Button>
+            </div>
+
+            {isDateRailOpen && (
+              <div className="mt-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="flex min-w-max gap-2 pr-2 touch-pan-x snap-x snap-mandatory">
             {carouselItems.map((item) => (
               <Link
@@ -545,6 +563,9 @@ export function RankingHeader(props: Props) {
                 {item.name}
               </Link>
             ))}
+          </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
