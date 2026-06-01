@@ -140,7 +140,7 @@ function FeaturedRankingBlock(props: {
         className="group block w-full max-w-full overflow-hidden rounded-[24px] border border-border/50 bg-linear-to-br from-white via-slate-50 to-orange-50 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:from-zinc-950 dark:via-zinc-900 dark:to-orange-950/30"
       >
         <div className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">
-          <div className="relative w-[104px] shrink-0 overflow-hidden rounded-[18px] bg-muted/30 sm:w-[132px] sm:rounded-[20px]">
+          <div className="relative w-24 shrink-0 overflow-hidden rounded-[18px] bg-muted/30 sm:w-28 sm:rounded-[20px] md:w-[120px]">
             {primaryItem.imageUrl ? (
               <img
                 src={primaryItem.imageUrl}
@@ -158,9 +158,9 @@ function FeaturedRankingBlock(props: {
             </div>
           </div>
 
-          <div className="flex-1 min-w-0 space-y-2 overflow-hidden">
+          <div className="min-w-0 w-[calc(100%-108px)] space-y-2 overflow-hidden sm:w-[calc(100%-128px)] md:flex-1 md:w-auto">
             <div className="min-w-0 space-y-1">
-              <div className="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs">
+              <div className="hidden flex-wrap items-center gap-2 text-[11px] md:flex md:text-xs">
                 <span
                   className={cn(
                     "rounded-full border px-2.5 py-1 font-semibold",
@@ -171,7 +171,7 @@ function FeaturedRankingBlock(props: {
                 </span>
               </div>
 
-              <h2 className="line-clamp-2 w-full max-w-full font-bold text-foreground text-sm leading-tight sm:text-base">
+              <h2 className="line-clamp-1 w-full max-w-full font-bold text-foreground text-sm leading-tight sm:line-clamp-2 sm:text-base">
                 {primaryItem.title}
               </h2>
             </div>
@@ -213,13 +213,12 @@ function FeaturedRankingBlock(props: {
           <p className="font-medium text-foreground text-sm">
             上位作品
           </p>
-          <div className="-mx-1 overflow-x-auto px-1 pb-2 touch-pan-x overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none]">
-            <div className="flex w-max min-w-full gap-3 pr-2">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
               {secondaryItems.map((item) => (
                 <Link
                   key={item.id}
                   to={item.href}
-                  className="group flex w-[220px] min-w-[220px] gap-3 rounded-[20px] border border-border/40 bg-background/90 p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md sm:w-[232px] sm:min-w-[232px]"
+                  className="group flex min-w-0 gap-3 rounded-[20px] border border-border/40 bg-background/90 p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
                 >
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-muted/30">
                     {item.imageUrl ? (
@@ -257,7 +256,6 @@ function FeaturedRankingBlock(props: {
                   </div>
                 </Link>
               ))}
-            </div>
           </div>
         </div>
       )}
