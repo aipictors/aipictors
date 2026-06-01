@@ -75,12 +75,18 @@ export function EditBotGradingSettings (props: Props) {
           >
             <span>
               {t(
-                "AI評価ランキングに参加する（未リリース、後日リリース予定です）",
+                "AI評価ランキングに参加する",
                 "Participate in AI grading ranking",
               )}
             </span>
           </Label>
         </div>
+        <p className="text-muted-foreground text-sm">
+          {t(
+            "AI評価ランキングの入賞回数は通常の入賞数には含まれません。",
+            "Placements in the AI evaluation ranking are not counted toward regular award totals.",
+          )}
+        </p>
       </CardContent>
     </Card>
   )

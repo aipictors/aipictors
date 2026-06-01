@@ -668,6 +668,27 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "View the AI illustration daily ranking information",
     isIndex: true,
   },
+  AI_RANKINGS_MONTHLY: {
+    title: "AI評価月間ランキング",
+    enTitle: "AI Evaluation Monthly Rankings",
+    description: "AI evaluation monthly ranking information",
+    enDescription: "View the AI evaluation monthly ranking information",
+    isIndex: true,
+  },
+  AI_RANKINGS_WEEK: {
+    title: "AI評価週間ランキング",
+    enTitle: "AI Evaluation Weekly Rankings",
+    description: "AI evaluation weekly ranking information",
+    enDescription: "View the AI evaluation weekly ranking information",
+    isIndex: true,
+  },
+  AI_RANKINGS_DAY: {
+    title: "AI評価デイリーランキング",
+    enTitle: "AI Evaluation Daily Rankings",
+    description: "AI evaluation daily ranking information",
+    enDescription: "View the AI evaluation daily ranking information",
+    isIndex: true,
+  },
   RELEASE: {
     title: "{{title}}",
     enTitle: "{{enTitle}}",

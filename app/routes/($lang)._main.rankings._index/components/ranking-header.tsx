@@ -29,6 +29,7 @@ type Props = {
   weekIndex: number | null
   rankingType?: "works" | "users"
   onRankingTypeChange?: (type: "works" | "users") => void
+  pathnamePrefix?: string
 }
 
 export function RankingHeader(props: Props) {
@@ -38,6 +39,7 @@ export function RankingHeader(props: Props) {
   const month = props.month
   const day = props.day
   const weekIndex = props.weekIndex ?? 1
+  const pathnamePrefix = props.pathnamePrefix ?? "/rankings"
 
   const [viewType, setViewType] = useState<
     "マンスリー" | "デイリー" | "ウィークリー"
@@ -57,7 +59,9 @@ export function RankingHeader(props: Props) {
 
     if (viewType === "ウィークリー") {
       const weekNumber = getWeekOfMonth(newYear, newMonth, newDay)
-      navigateWithParams(`/rankings/${newYear}/${newMonth}/weeks/${weekNumber}`)
+      navigateWithParams(
+        `${pathnamePrefix}/${newYear}/${newMonth}/weeks/${weekNumber}`,
+      )
     } else {
       handleNavigate(newYear, newMonth, newDay)
     }
@@ -87,16 +91,16 @@ export function RankingHeader(props: Props) {
   ) => {
     setViewType(view)
     if (view === "ウィークリー") {
-      navigateWithParams(`/rankings/${year}/${month}/weeks/1`)
+      navigateWithParams(`${pathnamePrefix}/${year}/${month}/weeks/1`)
     } else if (view === "デイリー") {
       const today = new Date()
       const previousDay = new Date(today)
       previousDay.setDate(today.getDate() - 1)
       navigateWithParams(
-        `/rankings/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+        `${pathnamePrefix}/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
       )
     } else {
-      navigateWithParams(`/rankings/${year}/${month}`)
+      navigateWithParams(`${pathnamePrefix}/${year}/${month}`)
     }
   }
 
@@ -108,10 +112,10 @@ export function RankingHeader(props: Props) {
     const actualDay = newDay === 0 || newDay == null ? 1 : newDay
     const newPath =
       viewType === "デイリー"
-        ? `/rankings/${newYear}/${newMonth}/${actualDay}`
+        ? `${pathnamePrefix}/${newYear}/${newMonth}/${actualDay}`
         : viewType === "ウィークリー"
-          ? `/rankings/${newYear}/${newMonth}/weeks/${weekIndex}`
-          : `/rankings/${newYear}/${newMonth}`
+          ? `${pathnamePrefix}/${newYear}/${newMonth}/weeks/${weekIndex}`
+          : `${pathnamePrefix}/${newYear}/${newMonth}`
 
     const currentSearchParams = new URLSearchParams(location.search)
     const searchString = currentSearchParams.toString()
@@ -126,26 +130,28 @@ export function RankingHeader(props: Props) {
     if (viewType === "デイリー" && day) {
       const newDate = new Date(year, month - 1, day - 1)
       navigateWithParams(
-        `/rankings/${newDate.getFullYear()}/${newDate.getMonth() + 1}/${newDate.getDate()}`,
+        `${pathnamePrefix}/${newDate.getFullYear()}/${newDate.getMonth() + 1}/${newDate.getDate()}`,
       )
     }
 
     if (viewType === "マンスリー") {
       const newMonth = month === 1 ? 12 : month - 1
       const newYear = month === 1 ? year - 1 : year
-      navigateWithParams(`/rankings/${newYear}/${newMonth}`)
+      navigateWithParams(`${pathnamePrefix}/${newYear}/${newMonth}`)
     }
 
     if (viewType === "ウィークリー") {
       if (weekIndex > 1) {
         const newWeekIndex = weekIndex - 1
-        navigateWithParams(`/rankings/${year}/${month}/weeks/${newWeekIndex}`)
+        navigateWithParams(
+          `${pathnamePrefix}/${year}/${month}/weeks/${newWeekIndex}`,
+        )
       } else {
         const prevMonth = month === 1 ? 12 : month - 1
         const prevYear = month === 1 ? year - 1 : year
         const prevMonthTotalWeeks = getWeeksInMonth(prevYear, prevMonth)
         navigateWithParams(
-          `/rankings/${prevYear}/${prevMonth}/weeks/${prevMonthTotalWeeks}`,
+          `${pathnamePrefix}/${prevYear}/${prevMonth}/weeks/${prevMonthTotalWeeks}`,
         )
       }
     }
@@ -155,14 +161,14 @@ export function RankingHeader(props: Props) {
     if (viewType === "デイリー" && day) {
       const newDate = new Date(year, month - 1, day + 1)
       navigateWithParams(
-        `/rankings/${newDate.getFullYear()}/${newDate.getMonth() + 1}/${newDate.getDate()}`,
+        `${pathnamePrefix}/${newDate.getFullYear()}/${newDate.getMonth() + 1}/${newDate.getDate()}`,
       )
     }
 
     if (viewType === "マンスリー") {
       const newMonth = month === 12 ? 1 : month + 1
       const newYear = month === 12 ? year + 1 : year
-      navigateWithParams(`/rankings/${newYear}/${newMonth}`)
+      navigateWithParams(`${pathnamePrefix}/${newYear}/${newMonth}`)
     }
 
     if (viewType === "ウィークリー") {
@@ -170,11 +176,13 @@ export function RankingHeader(props: Props) {
 
       if (weekIndex < totalWeeksInMonth) {
         const newWeekIndex = weekIndex + 1
-        navigateWithParams(`/rankings/${year}/${month}/weeks/${newWeekIndex}`)
+        navigateWithParams(
+          `${pathnamePrefix}/${year}/${month}/weeks/${newWeekIndex}`,
+        )
       } else {
         const nextMonth = month === 12 ? 1 : month + 1
         const nextYear = month === 12 ? year + 1 : year
-        navigateWithParams(`/rankings/${nextYear}/${nextMonth}/weeks/1`)
+        navigateWithParams(`${pathnamePrefix}/${nextYear}/${nextMonth}/weeks/1`)
       }
     }
   }
@@ -197,7 +205,7 @@ export function RankingHeader(props: Props) {
         const date = new Date(today)
         date.setDate(today.getDate() - (6 - index))
         const formattedDate = `${date.getMonth() + 1}/${date.getDate()}`
-        const basePath = `/rankings/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+        const basePath = `${pathnamePrefix}/${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
         const linkWithParams = searchString
           ? `${basePath}?${searchString}`
           : basePath
@@ -224,7 +232,7 @@ export function RankingHeader(props: Props) {
         const formattedMonth = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, "0")}`
         if (seenMonths.has(formattedMonth)) continue
         seenMonths.add(formattedMonth)
-        const basePath = `/rankings/${date.getFullYear()}/${date.getMonth() + 1}`
+        const basePath = `${pathnamePrefix}/${date.getFullYear()}/${date.getMonth() + 1}`
         const linkWithParams = searchString
           ? `${basePath}?${searchString}`
           : basePath
@@ -243,7 +251,7 @@ export function RankingHeader(props: Props) {
 
       for (let index = 0; index < totalWeeksInMonth; index++) {
         const weekNumber = index + 1
-        const basePath = `/rankings/${year}/${month}/weeks/${weekNumber}`
+        const basePath = `${pathnamePrefix}/${year}/${month}/weeks/${weekNumber}`
         const linkWithParams = searchString
           ? `${basePath}?${searchString}`
           : basePath
