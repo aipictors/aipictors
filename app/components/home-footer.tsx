@@ -34,7 +34,7 @@ export function HomeFooter(): React.ReactNode {
   }
 
   return (
-    <footer className={cn("border-t", "py-12")}>
+    <footer className={cn("border-t", "py-12 pb-28 md:pb-24")}>
       <div className="container max-w-none">
         <div className="grid grid-cols-2 gap-x-10 gap-y-10 md:grid-cols-6">
           <div className="col-span-2 md:col-span-1">

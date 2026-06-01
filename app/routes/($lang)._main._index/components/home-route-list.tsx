@@ -1,9 +1,12 @@
 import { gql, useLazyQuery } from "@apollo/client/index"
 import { Link, useLocation, useNavigate, useNavigation } from "@remix-run/react"
 import {
+  ActivityIcon,
   AwardIcon,
   BookImageIcon,
+  ChevronDownIcon,
   ChevronLeftIcon,
+  ChevronUpIcon,
   HelpCircleIcon,
   HomeIcon,
   Image,
@@ -19,11 +22,12 @@ import {
   StarIcon,
   TagIcon,
 } from "lucide-react"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { SidebarNavigationButton } from "~/components/sidebar-navigation-button"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
 import { Separator } from "~/components/ui/separator"
+import { cn } from "~/lib/utils"
 import { AuthContext } from "~/contexts/auth-context"
 import { useSidebar } from "~/contexts/sidebar-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -48,6 +52,7 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
   const navigate = useNavigate()
   const t = useTranslation()
   const { sidebarState, toggleSidebar, minimizeSidebar } = useSidebar()
+  const [isExtraMenuOpen, setIsExtraMenuOpen] = useState(false)
 
   useEffect(() => {
     if (authContext.isLoading || authContext.isNotLoggedIn) {
@@ -293,6 +298,56 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
         {t("フォト", "Photo")}
       </SidebarNavigationButton>
 
+      {sidebarState === "expanded" && (
+        <div className="px-3">
+          <button
+            type="button"
+            onClick={() => setIsExtraMenuOpen((prev) => !prev)}
+            className="flex w-full items-center justify-between rounded-md py-1 text-left text-muted-foreground text-xs transition-colors hover:text-foreground"
+            aria-expanded={isExtraMenuOpen}
+          >
+            <span>
+              {isExtraMenuOpen
+                ? t("閉じる", "Show less")
+                : t("もっと見る", "Show menu more")}
+            </span>
+            {isExtraMenuOpen ? (
+              <ChevronUpIcon className="size-3.5" />
+            ) : (
+              <ChevronDownIcon className="size-3.5" />
+            )}
+          </button>
+        </div>
+      )}
+
+      {isExtraMenuOpen && sidebarState === "expanded" && (
+        <div className="space-y-1">
+          <Link
+            className={cn(
+              "flex items-center rounded-md px-3 py-2 text-muted-foreground text-xs transition-colors hover:bg-muted/20 hover:text-foreground",
+            )}
+            to={createLink("/roadmap")}
+            onClick={closeHeaderMenu}
+          >
+            <RocketIcon className="size-5 shrink-0" />
+            <span className="ml-3">{t("ロードマップ", "Roadmap")}</span>
+          </Link>
+
+          <Link
+            className={cn(
+              "flex items-center rounded-md px-3 py-2 text-muted-foreground text-xs transition-colors hover:bg-muted/20 hover:text-foreground",
+            )}
+            to="https://status.aipictors.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeHeaderMenu}
+          >
+            <ActivityIcon className="size-5 shrink-0" />
+            <span className="ml-3">{t("稼働状況", "Status")}</span>
+          </Link>
+        </div>
+      )}
+
       {/* Separator (auth) */}
       {authContext.isNotLoading && sidebarState === "expanded" && (
         <div className="px-3 py-1">
@@ -338,9 +393,6 @@ export function HomeRouteList({ title: propTitle, onClickMenuItem }: Props) {
 
             <Link className="text-xs opacity-80" to="/about">
               {t("概要", "About")}
-            </Link>
-            <Link className="text-xs opacity-80" to="/help">
-              {t("使い方ガイド", "User Guide")}
             </Link>
             <Link className="text-xs opacity-80" to="/pictor-chan">
               {t("ぴくたーちゃん", "Contact")}
