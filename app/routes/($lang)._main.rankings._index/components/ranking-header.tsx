@@ -330,12 +330,12 @@ export function RankingHeader(props: Props) {
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 rounded-3xl border border-border/30 bg-gradient-to-br from-background/80 to-muted/10 p-4 backdrop-blur-md sm:p-6 lg:space-y-8 lg:p-8">
       <div className="flex justify-center">
-        <div className="grid w-full max-w-xl grid-cols-2 gap-2 rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
+        <div className="flex w-full max-w-full items-center gap-2 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none]">
           <Button
             variant="ghost"
             size="lg"
             onClick={() => navigate(defaultRankingsPath)}
-            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
               !isAiRankingPage
                 ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white ring-2 ring-slate-200 ring-offset-2 dark:from-slate-200 dark:to-slate-400 dark:text-slate-950"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -349,7 +349,7 @@ export function RankingHeader(props: Props) {
             variant="ghost"
             size="lg"
             onClick={() => navigate(aiRankingsPath)}
-            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
               isAiRankingPage
                 ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white ring-2 ring-amber-200 ring-offset-2"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -365,12 +365,12 @@ export function RankingHeader(props: Props) {
       {/* ランキングタイプ切り替え */}
       {props.day !== null && props.onRankingTypeChange && (
         <div className="flex justify-center">
-          <div className="grid w-full max-w-xl grid-cols-2 gap-2 rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
+          <div className="flex w-full max-w-full items-center gap-2 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none]">
             <Button
               variant="ghost"
               size="lg"
               onClick={() => handleRankingTypeChange("works")}
-              className={`flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+              className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
                 props.rankingType === "works"
                   ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white ring-2 ring-blue-200 ring-offset-2"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -383,7 +383,7 @@ export function RankingHeader(props: Props) {
               variant="ghost"
               size="lg"
               onClick={() => handleRankingTypeChange("users")}
-              className={`flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
+              className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm transition-all duration-300 sm:gap-3 sm:px-6 ${
                 props.rankingType === "users"
                   ? "bg-gradient-to-r from-purple-500 to-pink-600 text-white ring-2 ring-purple-200 ring-offset-2"
                   : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -440,12 +440,12 @@ export function RankingHeader(props: Props) {
 
       {/* 期間選択ボタン */}
       <div className="flex justify-center">
-        <div className="grid w-full max-w-xl grid-cols-3 gap-2 rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm">
+        <div className="flex w-full max-w-full items-center gap-2 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-2 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none]">
           <Button
             variant="ghost"
             size="lg"
             onClick={() => handleViewChange("マンスリー")}
-            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
+            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
               viewType === "マンスリー"
                 ? "bg-gradient-to-r from-orange-500 to-red-500 text-white ring-2 ring-orange-200 ring-offset-2"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -459,7 +459,7 @@ export function RankingHeader(props: Props) {
             variant="ghost"
             size="lg"
             onClick={() => handleViewChange("デイリー")}
-            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
+            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
               viewType === "デイリー"
                 ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white ring-2 ring-emerald-200 ring-offset-2"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -473,7 +473,7 @@ export function RankingHeader(props: Props) {
             variant="ghost"
             size="lg"
             onClick={() => handleViewChange("ウィークリー")}
-            className={`flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
+            className={`shrink-0 whitespace-nowrap flex h-auto items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm transition-all duration-300 sm:px-6 ${
               viewType === "ウィークリー"
                 ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white ring-2 ring-blue-200 ring-offset-2"
                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"

@@ -166,8 +166,9 @@ function RankingCommentPreview(props: {
 function RankingWorkCard(props: {
   workItem: FragmentOf<typeof AiEvaluationRankingListItemFragment>
   index: number
+  featured?: boolean
 }) {
-  const { workItem } = props
+  const { workItem, featured = false } = props
 
   if (!workItem.work) {
     return null
@@ -175,8 +176,8 @@ function RankingWorkCard(props: {
 
   return (
     <article className="group overflow-hidden rounded-[28px] border border-border/40 bg-background/90 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="p-3 sm:p-4">
-        <div className="grid gap-4 sm:gap-5 lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:items-start">
+      <div className={featured ? "p-4 sm:p-5" : "p-3 sm:p-4"}>
+        <div className={featured ? "grid gap-4 sm:gap-5 lg:grid-cols-[minmax(0,220px)_minmax(0,1fr)] lg:items-start" : "space-y-3"}>
           <div className="space-y-3">
             <div className="relative overflow-hidden rounded-[24px] bg-muted/30">
               <CroppedWorkSquare
@@ -195,7 +196,7 @@ function RankingWorkCard(props: {
               </div>
               <div className="absolute right-2 bottom-2">
                 <LikeButton
-                  size={52}
+                  size={featured ? 52 : 44}
                   targetWorkId={workItem.work.id}
                   targetWorkOwnerUserId={workItem.work.user?.id ?? ""}
                   defaultLiked={workItem.work.isLiked}
@@ -207,7 +208,7 @@ function RankingWorkCard(props: {
             </div>
 
             <div className="space-y-2">
-              <p className="line-clamp-2 font-bold text-base text-foreground">
+              <p className={featured ? "line-clamp-2 font-bold text-base text-foreground sm:text-lg" : "line-clamp-2 font-bold text-sm text-foreground sm:text-base"}>
                 {workItem.work.title}
               </p>
               <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -231,8 +232,8 @@ function RankingWorkCard(props: {
             )}
           </div>
 
-          <div className="min-w-0 space-y-4">
-            {workItem.pictorComment ? (
+          {featured && <div className="min-w-0 space-y-4">
+            {workItem.index <= 5 && workItem.pictorComment ? (
               <RankingCommentPreview
                 title={workItem.work.title}
                 comment={workItem.pictorComment}
@@ -245,7 +246,7 @@ function RankingWorkCard(props: {
                 コメントはまだ生成されていません。
               </div>
             )}
-          </div>
+          </div>}
         </div>
       </div>
     </article>
@@ -270,17 +271,37 @@ export function AiEvaluationRankingWorkList(props: Props) {
   })
 
   const rankings = data?.aiEvaluationWorkRankings ?? props.rankings
+  const featuredRankings = rankings.slice(0, 3)
+  const standardRankings = rankings.slice(3)
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-5 px-3 pb-8 sm:px-4 lg:px-0">
-      {rankings.map((workItem, index) => (
-        <RankingWorkCard
-          // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
-          key={index}
-          workItem={workItem}
-          index={index}
-        />
-      ))}
+    <div className="mx-auto max-w-6xl space-y-5 px-3 pb-8 sm:px-4 lg:px-0">
+      {featuredRankings.length > 0 && (
+        <div className="grid gap-5">
+          {featuredRankings.map((workItem, index) => (
+            <RankingWorkCard
+              // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
+              key={index}
+              workItem={workItem}
+              index={index}
+              featured={true}
+            />
+          ))}
+        </div>
+      )}
+
+      {standardRankings.length > 0 && (
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {standardRankings.map((workItem, index) => (
+            <RankingWorkCard
+              // biome-ignore lint/suspicious/noArrayIndexKey: Intentional
+              key={index + 3}
+              workItem={workItem}
+              index={index + 3}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
