@@ -27,6 +27,17 @@ export const headers: HeadersFunction = () => ({})
 
 const PER_PAGE = 20
 
+type WorkActionHistoryListItem = {
+  id: string
+  actionType: string
+  createdAt: number
+  summary: string
+  detail: string | null
+  title: string | null
+  ratingLabel: string | null
+  workId: string | null
+}
+
 export default function MyHistories () {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
@@ -39,13 +50,17 @@ export default function MyHistories () {
       offset: page * PER_PAGE,
       limit: PER_PAGE,
     },
+    errorPolicy: "all",
+    fetchPolicy: "cache-and-network",
+    notifyOnNetworkStatusChange: true,
   })
 
   if (authContext.isLoading || authContext.isNotLoggedIn) {
     return <AppLoadingPage />
   }
 
-  const histories = data?.viewer?.workActionHistories ?? []
+  const histories: WorkActionHistoryListItem[] =
+    data?.viewer?.workActionHistories ?? []
   const maxCount = data?.viewer?.workActionHistoryCount ?? 0
 
   return (
@@ -113,7 +128,6 @@ export default function MyHistories () {
 
 const workActionHistoriesQuery = graphql(`query ViewerWorkActionHistories($offset: Int!, $limit: Int!) {
   viewer {
-    id
     workActionHistoryCount
     workActionHistories(offset: $offset, limit: $limit) {
       id
