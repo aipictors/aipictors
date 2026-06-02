@@ -4,9 +4,11 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/cloudflare"
+import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useContext, useState } from "react"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
+import { Badge } from "~/components/ui/badge"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
@@ -36,6 +38,9 @@ type WorkActionHistoryListItem = {
   title: string | null
   ratingLabel: string | null
   workId: string | null
+  workUrl: string | null
+  thumbnailImageURL: string | null
+  isModeratorAction: boolean
 }
 
 export default function MyHistories () {
@@ -82,13 +87,53 @@ export default function MyHistories () {
               className="rounded-lg border border-border/60 bg-card p-4 shadow-xs"
             >
               <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                <div className="space-y-1">
+                <div className="flex flex-col gap-3 md:flex-row md:items-start md:gap-4">
+                  {history.thumbnailImageURL && history.workUrl && (
+                    <Link
+                      to={history.workUrl}
+                      className="block h-20 w-20 shrink-0 overflow-hidden rounded-md border border-border/50 bg-muted"
+                    >
+                      <img
+                        src={history.thumbnailImageURL}
+                        alt={history.title || "work thumbnail"}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    </Link>
+                  )}
+                  <div className="space-y-1">
                   <div className="text-xs text-muted-foreground">
                     {toDateTimeText(history.createdAt)}
                   </div>
+                  {history.isModeratorAction && (
+                    <div>
+                      <Badge variant="secondary">
+                        {t("モデレーター対応", "Moderator")}
+                      </Badge>
+                    </div>
+                  )}
+                  <div className="text-xs text-muted-foreground">
+                    {history.title ||
+                      t("作品タイトルなし", "Untitled work")}
+                    {history.workId
+                      ? ` / ${t("作品ID", "Work ID")}: ${history.workId}`
+                      : ""}
+                  </div>
+                  {history.workUrl && (
+                    <div className="text-xs text-muted-foreground break-all">
+                      {t("作品URL", "Work URL")}: {" "}
+                      <Link
+                        to={history.workUrl}
+                        className="text-primary underline underline-offset-2"
+                      >
+                        {history.workUrl}
+                      </Link>
+                    </div>
+                  )}
                   <div className="text-sm leading-6 text-foreground">
                     {history.summary}
                   </div>
+                </div>
                 </div>
                 <Button
                   type="button"
@@ -138,6 +183,9 @@ const workActionHistoriesQuery = graphql(`query ViewerWorkActionHistories($offse
       title
       ratingLabel
       workId
+      workUrl
+      thumbnailImageURL
+      isModeratorAction
     }
   }
 }`)
