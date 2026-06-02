@@ -6,13 +6,6 @@ import { useContext } from "react"
 import { CroppedWorkSquare } from "~/components/cropped-work-square"
 import { LikeButton } from "~/components/like-button"
 import { Button } from "~/components/ui/button"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-} from "~/components/ui/carousel"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { UserNameBadge } from "~/routes/($lang)._main._index/components/user-name-badge"
@@ -39,15 +32,31 @@ export function EventAwardWorkList (props: Props) {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
     variables: {
       slug: props.slug,
-      isSensitive: true,
     },
   })
 
-  const workDisplayed = props.eventSource === "OFFICIAL"
-    ? resp?.appEvent?.awardWorks ?? props.works
-    : resp?.userEvent?.awardWorks ?? props.works
+  const allAgesWorks = props.eventSource === "OFFICIAL"
+    ? resp?.appEvent?.allAgesAwardWorks ?? props.works.filter((work) => !isSensitiveWork(work))
+    : resp?.userEvent?.allAgesAwardWorks ?? props.works.filter((work) => !isSensitiveWork(work))
+
+  const sensitiveWorks = props.eventSource === "OFFICIAL"
+    ? resp?.appEvent?.sensitiveAwardWorks ?? props.works.filter((work) => isSensitiveWork(work))
+    : resp?.userEvent?.sensitiveAwardWorks ?? props.works.filter((work) => isSensitiveWork(work))
 
   const t = useTranslation()
+
+  const rankingSections = [
+    {
+      key: "all-ages",
+      title: t("全年齢", "All Ages"),
+      works: allAgesWorks,
+    },
+    {
+      key: "sensitive",
+      title: t("センシティブ", "Sensitive"),
+      works: sensitiveWorks,
+    },
+  ].filter((section) => section.works.length > 0)
 
   return (
     <section className="relative space-y-4">
@@ -62,69 +71,73 @@ export function EventAwardWorkList (props: Props) {
           </Button>
         </Link>
       </div>
-      <Carousel opts={{ dragFree: true, loop: false }}>
-        <CarouselContent>
-          {workDisplayed.map((work, index) => (
-            <CarouselItem
-              key={`carousel-${index.toString()}`}
-              className="relative basis-1/3.5 space-y-2"
-            >
-              <div key={index.toString()} className="flex flex-col space-y-2">
-                <div className="relative">
-                  <CroppedWorkSquare
-                    workId={work.id}
-                    imageUrl={work.smallThumbnailImageURL}
-                    subWorksCount={work.subWorksCount}
-                    thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
-                    size="lg"
-                    imageWidth={work.smallThumbnailImageWidth}
-                    imageHeight={work.smallThumbnailImageHeight}
-                    ranking={index + 1}
-                    shouldMaskSensitive={
-                      !props.revealSensitiveThumbnails && isSensitiveWork(work)
-                    }
-                  />
-                  <div className="absolute right-0 bottom-0">
-                    <LikeButton
-                      size={56}
-                      targetWorkId={work.id}
-                      targetWorkOwnerUserId={work.user?.id ?? ""}
-                      defaultLiked={work.isLiked}
-                      defaultLikedCount={0}
-                      isBackgroundNone={true}
-                      strokeWidth={2}
-                      isParticle={true}
-                    />
-                  </div>
-                </div>
-                <p className="max-w-40 overflow-hidden text-ellipsis text-nowrap font-bold text-md">
-                  {work.title}
-                </p>
-                <div className="flex max-w-40 items-center justify-between">
-                  <UserNameBadge
-                    userId={work.user?.id ?? ""}
-                    userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
-                    name={work.user?.name ?? ""}
-                    width={"lg"}
-                  />
-                  <div className="flex items-center space-x-1">
-                    <div className="flex items-center space-x-1">
-                      <Heart className="size-3 fill-gray-400 text-gray-400" />
-                      <span className="text-xs">{work.likesCount}</span>
+
+      <div className="space-y-5">
+        {rankingSections.map((section) => (
+          <div key={section.key} className="space-y-2">
+            <div className="flex items-center gap-2">
+              <h3 className="font-semibold text-sm text-foreground">
+                {section.title}
+              </h3>
+              <div className="h-px flex-1 bg-border/60" />
+            </div>
+
+            <div className="overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="flex min-w-max gap-3 pr-3">
+                {section.works.map((work, index) => (
+                  <div
+                    key={`${section.key}-${work.id}-${index.toString()}`}
+                    className="w-32 flex-none space-y-2 sm:w-40"
+                  >
+                    <div className="relative">
+                      <CroppedWorkSquare
+                        workId={work.id}
+                        imageUrl={work.smallThumbnailImageURL}
+                        subWorksCount={work.subWorksCount}
+                        thumbnailImagePosition={work.thumbnailImagePosition ?? 0}
+                        size="lg"
+                        imageWidth={work.smallThumbnailImageWidth}
+                        imageHeight={work.smallThumbnailImageHeight}
+                        ranking={index + 1}
+                        shouldMaskSensitive={
+                          !props.revealSensitiveThumbnails && isSensitiveWork(work)
+                        }
+                      />
+                      <div className="absolute right-0 bottom-0">
+                        <LikeButton
+                          size={56}
+                          targetWorkId={work.id}
+                          targetWorkOwnerUserId={work.user?.id ?? ""}
+                          defaultLiked={work.isLiked}
+                          defaultLikedCount={0}
+                          isBackgroundNone={true}
+                          strokeWidth={2}
+                          isParticle={true}
+                        />
+                      </div>
+                    </div>
+                    <p className="overflow-hidden text-ellipsis text-nowrap font-bold text-md">
+                      {work.title}
+                    </p>
+                    <div className="flex items-center justify-between gap-2">
+                      <UserNameBadge
+                        userId={work.user?.id ?? ""}
+                        userIconImageURL={withIconUrlFallback(work.user?.iconUrl)}
+                        name={work.user?.name ?? ""}
+                        width={"lg"}
+                      />
+                      <div className="flex items-center space-x-1">
+                        <Heart className="size-3 shrink-0 fill-gray-400 text-gray-400" />
+                        <span className="text-xs">{work.likesCount}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            </CarouselItem>
-          ))}
-          <CarouselItem className="relative w-16 basis-1/3.5 space-y-2" />
-          {/* <div className="relative basis-1/3.5 space-y-2" /> */}
-        </CarouselContent>
-        {/* <div className="absolute top-0 left-0 h-full w-16 bg-linear-to-r from-card to-transparent" /> */}
-        <CarouselPrevious className="absolute left-0" />
-        {/* <div className="absolute top-0 right-0 h-full w-16 bg-linear-to-r from-transparent to-card" /> */}
-        <CarouselNext className="absolute right-0" />
-      </Carousel>
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
   )
 }
@@ -170,14 +183,20 @@ export const EventAwardWorkListItemFragment = graphql(
 )
 
 const appAwardEventQuery = graphql(
-  `query EventAwardWorks($slug: String!, $isSensitive: Boolean!) {
+  `query EventAwardWorksSplit($slug: String!) {
     appEvent(slug: $slug) {
-      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+      allAgesAwardWorks: awardWorks(offset: 0, limit: 20, isSensitive: false) {
+        ...EventAwardWorkListItem
+      }
+      sensitiveAwardWorks: awardWorks(offset: 0, limit: 20, isSensitive: true) {
         ...EventAwardWorkListItem
       }
     }
     userEvent(slug: $slug) {
-      awardWorks(offset: 0, limit: 20, isSensitive: $isSensitive) {
+      allAgesAwardWorks: awardWorks(offset: 0, limit: 20, isSensitive: false) {
+        ...EventAwardWorkListItem
+      }
+      sensitiveAwardWorks: awardWorks(offset: 0, limit: 20, isSensitive: true) {
         ...EventAwardWorkListItem
       }
     }
