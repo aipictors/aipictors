@@ -99,6 +99,7 @@ export default function SensitiveAiEvaluationWeeklyRankings() {
         month={data.month}
         day={null}
         weekIndex={data.weekIndex}
+        isSensitive={true}
         rankings={data.rankings.data.aiEvaluationWorkRankings}
       />
     </div>

@@ -18,6 +18,7 @@ type Props = {
   month: number
   day: number | null
   weekIndex: number | null
+  isSensitive?: boolean
 }
 
 function toAwardLabel(awardTier: string) {
@@ -195,6 +196,7 @@ export function AiEvaluationRankingWorkList(props: Props) {
         month: props.month,
         ...(props.day && { day: props.day }),
         ...(props.weekIndex && { weekIndex: props.weekIndex }),
+        ...(props.isSensitive ? { isSensitive: true } : {}),
       },
     },
   })
