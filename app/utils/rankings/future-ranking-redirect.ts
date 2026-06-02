@@ -1,4 +1,4 @@
-import { getWeekOfMonth } from "~/utils/get-weeks-in-month"
+import { getWeeklyRankingPeriod } from "~/utils/get-weeks-in-month"
 import { getJstDate } from "~/utils/jst-date"
 
 type MonthlyInput = {
@@ -69,24 +69,24 @@ export const getFutureRankingRedirectPath = (
   }
 
   const requestedMonthValue = toMonthValue(input.year, input.month)
-  const latestMonthValue = toMonthValue(
-    yesterday.getFullYear(),
-    yesterday.getMonth() + 1,
-  )
-  const latestWeek = getWeekOfMonth(
+  const latestWeeklyPeriod = getWeeklyRankingPeriod(
     yesterday.getFullYear(),
     yesterday.getMonth() + 1,
     yesterday.getDate(),
   )
+  const latestMonthValue = toMonthValue(
+    latestWeeklyPeriod.year,
+    latestWeeklyPeriod.month,
+  )
 
   const isFutureWeek =
     requestedMonthValue > latestMonthValue ||
-    (requestedMonthValue === latestMonthValue && input.week > latestWeek)
+    (requestedMonthValue === latestMonthValue && input.week > latestWeeklyPeriod.weekIndex)
 
   if (!isFutureWeek) {
     return null
   }
 
-  url.pathname = `${input.pathnamePrefix}/${yesterday.getFullYear()}/${yesterday.getMonth() + 1}/weeks/${latestWeek}`
+  url.pathname = `${input.pathnamePrefix}/${latestWeeklyPeriod.year}/${latestWeeklyPeriod.month}/weeks/${latestWeeklyPeriod.weekIndex}`
   return `${url.pathname}${url.search}`
 }

@@ -14,7 +14,11 @@ import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
-import { getWeekOfMonth, getWeeksInMonth } from "~/utils/get-weeks-in-month"
+import {
+  getWeekOfMonth,
+  getWeeksInMonth,
+  getWeeklyRankingPeriod,
+} from "~/utils/get-weeks-in-month"
 
 type Props = {
   year: number
@@ -107,6 +111,31 @@ export function RankingHeader(props: Props) {
     return location.search ? `${basePath}${location.search}` : basePath
   })()
 
+  const getLatestPathForView = (
+    targetView: "マンスリー" | "デイリー" | "ウィークリー",
+  ) => {
+    const now = new Date()
+    const previousDay = new Date(now)
+    previousDay.setDate(now.getDate() - 1)
+
+    if (targetView === "デイリー") {
+      return `${pathnamePrefix}/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`
+    }
+
+    if (targetView === "マンスリー") {
+      const latestMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      return `${pathnamePrefix}/${latestMonthDate.getFullYear()}/${latestMonthDate.getMonth() + 1}`
+    }
+
+    const latestWeeklyPeriod = getWeeklyRankingPeriod(
+      previousDay.getFullYear(),
+      previousDay.getMonth() + 1,
+      previousDay.getDate(),
+    )
+
+    return `${pathnamePrefix}/${latestWeeklyPeriod.year}/${latestWeeklyPeriod.month}/weeks/${latestWeeklyPeriod.weekIndex}`
+  }
+
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value)
     const selectedDate = new Date(e.target.value)
@@ -115,9 +144,9 @@ export function RankingHeader(props: Props) {
     const newDay = selectedDate.getDate()
 
     if (viewType === "ウィークリー") {
-      const weekNumber = getWeekOfMonth(newYear, newMonth, newDay)
+      const weeklyPeriod = getWeeklyRankingPeriod(newYear, newMonth, newDay)
       navigateWithParams(
-        `${pathnamePrefix}/${newYear}/${newMonth}/weeks/${weekNumber}`,
+        `${pathnamePrefix}/${weeklyPeriod.year}/${weeklyPeriod.month}/weeks/${weeklyPeriod.weekIndex}`,
       )
     } else {
       handleNavigate(newYear, newMonth, newDay)
@@ -125,15 +154,8 @@ export function RankingHeader(props: Props) {
   }
 
   const handleTodayClick = () => {
-    const today = new Date()
-    const previousDay = new Date(today)
-    previousDay.setDate(today.getDate() - 1)
-    const newYear = previousDay.getFullYear()
-    const newMonth = previousDay.getMonth() + 1
-    const newDay = previousDay.getDate()
-    setDate(previousDay.toISOString().split("T")[0])
-    setViewType("デイリー")
-    handleNavigate(newYear, newMonth, newDay)
+    const latestPath = getLatestPathForView(viewType)
+    navigateWithParams(latestPath)
   }
 
   const navigateWithParams = (path: string) => {
@@ -148,14 +170,12 @@ export function RankingHeader(props: Props) {
   ) => {
     setViewType(view)
     if (view === "ウィークリー") {
-      navigateWithParams(`${pathnamePrefix}/${year}/${month}/weeks/1`)
-    } else if (view === "デイリー") {
-      const today = new Date()
-      const previousDay = new Date(today)
-      previousDay.setDate(today.getDate() - 1)
+      const weeklyPeriod = getWeeklyRankingPeriod(year, month, day ?? 1)
       navigateWithParams(
-        `${pathnamePrefix}/${previousDay.getFullYear()}/${previousDay.getMonth() + 1}/${previousDay.getDate()}`,
+        `${pathnamePrefix}/${weeklyPeriod.year}/${weeklyPeriod.month}/weeks/${weeklyPeriod.weekIndex}`,
       )
+    } else if (view === "デイリー") {
+      navigateWithParams(getLatestPathForView("デイリー"))
     } else {
       navigateWithParams(`${pathnamePrefix}/${year}/${month}`)
     }
