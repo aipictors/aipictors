@@ -14,6 +14,7 @@ import {
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
 import { createMeta } from "~/utils/create-meta"
+import { getPreviousWeeklyPeriod } from "~/utils/get-weeks-in-month"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -53,23 +54,49 @@ export async function loader(props: LoaderFunctionArgs) {
     return redirect(redirectPath, { status: 302 })
   }
 
-  const workAwardsResp = await loaderClient.query({
-    query: workAwardsQuery,
-    variables: {
-      offset: 0,
-      limit: 200,
-      where: {
-        year,
-        month,
-        weekIndex: week,
+  let targetYear = year
+  let targetMonth = month
+  let targetWeek = week
+  let workAwardsResp
+
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    workAwardsResp = await loaderClient.query({
+      query: workAwardsQuery,
+      variables: {
+        offset: 0,
+        limit: 200,
+        where: {
+          year: targetYear,
+          month: targetMonth,
+          weekIndex: targetWeek,
+        },
       },
-    },
-  })
+    })
+
+    if (workAwardsResp.data.workAwards.length > 0) {
+      if (targetYear !== year || targetMonth !== month || targetWeek !== week) {
+        const url = new URL(props.request.url)
+        url.pathname = `/rankings/${targetYear}/${targetMonth}/weeks/${targetWeek}`
+        return redirect(`${url.pathname}${url.search}`, { status: 302 })
+      }
+      break
+    }
+
+    const previousPeriod = getPreviousWeeklyPeriod(
+      targetYear,
+      targetMonth,
+      targetWeek,
+    )
+
+    targetYear = previousPeriod.year
+    targetMonth = previousPeriod.month
+    targetWeek = previousPeriod.weekIndex
+  }
 
   return {
-    year,
-    month,
-    weekIndex: week,
+    year: targetYear,
+    month: targetMonth,
+    weekIndex: targetWeek,
     workAwards: workAwardsResp,
   }
 }

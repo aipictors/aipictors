@@ -24,6 +24,7 @@ import { WorkLikedUser } from "~/routes/($lang)._main.posts.$post._index/compone
 import { WorkMarkdownView } from "~/routes/($lang)._main.posts.$post._index/components/work-markdown-view"
 import { WorkSensitiveArticleTags } from "~/routes/($lang)._main.posts.$post._index/components/work-sensitive-article-tags"
 import { WorkVideoView } from "~/routes/($lang)._main.posts.$post._index/components/work-video-view"
+import { getWeeklyRankingPeriod } from "~/utils/get-weeks-in-month"
 import type { userSensitiveSettingFragment } from "~/routes/($lang)._main.r.posts.$post._index/components/sensitive-work-container"
 import { toDateTimeText } from "~/utils/to-date-time-text"
 import { translateText } from "~/utils/translate-text"
@@ -53,6 +54,37 @@ export function SensitiveWorkArticle(props: Props) {
   const toDateTextUrl = (time: number, dateFormat: string) => {
     const date = new Date(time * 1000)
     return format(date, dateFormat)
+  }
+
+  const toAiRankingPath = (
+    ranking:
+      | FragmentOf<typeof workArticleFragment>["aiDailyRanking"]
+      | FragmentOf<typeof workArticleFragment>["aiWeeklyRanking"]
+      | FragmentOf<typeof workArticleFragment>["aiMonthlyRanking"],
+  ) => {
+    if (ranking === null || ranking === undefined) {
+      return null
+    }
+
+    const pathnamePrefix = ranking.isSensitive ? "/r/ai-rankings" : "/ai-rankings"
+
+    if (ranking.periodType === "daily") {
+      return `${pathnamePrefix}/${ranking.dateText.replace(/-/g, "/")}`
+    }
+
+    if (ranking.periodType === "monthly") {
+      const [year, month] = ranking.dateText.split("-")
+      return `${pathnamePrefix}/${year}/${month}`
+    }
+
+    const [yearText, monthText, dayText] = ranking.dateText.split("-")
+    const { year, month, weekIndex } = getWeeklyRankingPeriod(
+      Number(yearText),
+      Number(monthText),
+      Number(dayText),
+    )
+
+    return `${pathnamePrefix}/${year}/${month}/weeks/${weekIndex}`
   }
 
   useEffect(() => {
@@ -410,6 +442,39 @@ export function SensitiveWorkArticle(props: Props) {
                 </Badge>
               </Link>
             )}
+            {props.work.aiDailyRanking && (
+              <Link to={toAiRankingPath(props.work.aiDailyRanking) ?? "/r/ai-rankings"}>
+                <Badge
+                  variant="secondary"
+                  className="flex items-center space-x-2"
+                >
+                  {t("AIデイリー入賞", "AI Daily Rank")} {props.work.aiDailyRanking.rank}{" "}
+                  {t("位", "Rank")}
+                </Badge>
+              </Link>
+            )}
+            {props.work.aiWeeklyRanking && (
+              <Link to={toAiRankingPath(props.work.aiWeeklyRanking) ?? "/r/ai-rankings"}>
+                <Badge
+                  variant="secondary"
+                  className="flex items-center space-x-2"
+                >
+                  {t("AIウィークリー入賞", "AI Weekly Rank")} {props.work.aiWeeklyRanking.rank}{" "}
+                  {t("位", "Rank")}
+                </Badge>
+              </Link>
+            )}
+            {props.work.aiMonthlyRanking && (
+              <Link to={toAiRankingPath(props.work.aiMonthlyRanking) ?? "/r/ai-rankings"}>
+                <Badge
+                  variant="secondary"
+                  className="flex items-center space-x-2"
+                >
+                  {t("AIマンスリー入賞", "AI Monthly Rank")} {props.work.aiMonthlyRanking.rank}{" "}
+                  {t("位", "Rank")}
+                </Badge>
+              </Link>
+            )}
           </div>
           {props.work.dailyTheme && (
             <div className="flex items-center">
@@ -706,6 +771,24 @@ export const workArticleFragment = graphql(
     dailyRanking
     weeklyRanking
     monthlyRanking
+    aiDailyRanking {
+      rank
+      dateText
+      periodType
+      isSensitive
+    }
+    aiWeeklyRanking {
+      rank
+      dateText
+      periodType
+      isSensitive
+    }
+    aiMonthlyRanking {
+      rank
+      dateText
+      periodType
+      isSensitive
+    }
     relatedUrl
     nanoid
     isBotGradingEnabled

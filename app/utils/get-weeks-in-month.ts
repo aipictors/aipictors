@@ -61,6 +61,47 @@ export function getWeeklyRankingPeriod(
   }
 }
 
+export function getLatestPublishedWeeklyPeriod(referenceDate = new Date()): {
+  year: number
+  month: number
+  weekIndex: number
+} {
+  const currentDate = new Date(referenceDate)
+  const mondayOfCurrentWeek = new Date(currentDate)
+  mondayOfCurrentWeek.setDate(
+    currentDate.getDate() - ((currentDate.getDay() + 6) % 7),
+  )
+
+  const latestPublishedWeekStart = new Date(mondayOfCurrentWeek)
+  latestPublishedWeekStart.setDate(mondayOfCurrentWeek.getDate() - 7)
+
+  return getWeeklyRankingPeriod(
+    latestPublishedWeekStart.getFullYear(),
+    latestPublishedWeekStart.getMonth() + 1,
+    latestPublishedWeekStart.getDate(),
+  )
+}
+
+export function getPreviousWeeklyPeriod(
+  year: number,
+  month: number,
+  weekIndex: number,
+): {
+  year: number
+  month: number
+  weekIndex: number
+} {
+  const { startDate } = getWeekDateRange(year, month, weekIndex)
+  const previousWeekDate = new Date(startDate)
+  previousWeekDate.setDate(startDate.getDate() - 7)
+
+  return getWeeklyRankingPeriod(
+    previousWeekDate.getFullYear(),
+    previousWeekDate.getMonth() + 1,
+    previousWeekDate.getDate(),
+  )
+}
+
 /**
  * 指定された週番号の開始日と終了日を取得する
  * @param year 年

@@ -15,6 +15,7 @@ import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import {
+  getLatestPublishedWeeklyPeriod,
   getWeekOfMonth,
   getWeeksInMonth,
   getWeeklyRankingPeriod,
@@ -127,11 +128,7 @@ export function RankingHeader(props: Props) {
       return `${pathnamePrefix}/${latestMonthDate.getFullYear()}/${latestMonthDate.getMonth() + 1}`
     }
 
-    const latestWeeklyPeriod = getWeeklyRankingPeriod(
-      previousDay.getFullYear(),
-      previousDay.getMonth() + 1,
-      previousDay.getDate(),
-    )
+    const latestWeeklyPeriod = getLatestPublishedWeeklyPeriod(now)
 
     return `${pathnamePrefix}/${latestWeeklyPeriod.year}/${latestWeeklyPeriod.month}/weeks/${latestWeeklyPeriod.weekIndex}`
   }

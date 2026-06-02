@@ -14,6 +14,8 @@ import {
 } from "~/routes/($lang)._main.rankings._index/components/ranking-sensitive-work-list"
 import { config, META } from "~/config"
 import { createMeta } from "~/utils/create-meta"
+import { getPreviousWeeklyPeriod } from "~/utils/get-weeks-in-month"
+import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -40,24 +42,62 @@ export async function loader(props: LoaderFunctionArgs) {
 
   const week = Number.parseInt(props.params.week)
 
-  const workAwardsResp = await loaderClient.query({
-    query: workAwardsQuery,
-    variables: {
-      offset: 0,
-      limit: 200,
-      where: {
-        year: year,
-        month: month,
-        weekIndex: week,
-        isSensitive: true,
-      },
-    },
-  })
-
-  return {
+  const redirectPath = getFutureRankingRedirectPath(props.request.url, {
+    kind: "weekly",
     year,
     month,
-    weekIndex: week,
+    week,
+    pathnamePrefix: "/r/rankings",
+  })
+
+  if (redirectPath) {
+    return redirect(redirectPath, { status: 302 })
+  }
+
+  let targetYear = year
+  let targetMonth = month
+  let targetWeek = week
+  let workAwardsResp
+
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    workAwardsResp = await loaderClient.query({
+      query: workAwardsQuery,
+      variables: {
+        offset: 0,
+        limit: 200,
+        where: {
+          year: targetYear,
+          month: targetMonth,
+          weekIndex: targetWeek,
+          isSensitive: true,
+        },
+      },
+    })
+
+    if (workAwardsResp.data.workAwards.length > 0) {
+      if (targetYear !== year || targetMonth !== month || targetWeek !== week) {
+        const url = new URL(props.request.url)
+        url.pathname = `/r/rankings/${targetYear}/${targetMonth}/weeks/${targetWeek}`
+        return redirect(`${url.pathname}${url.search}`, { status: 302 })
+      }
+      break
+    }
+
+    const previousPeriod = getPreviousWeeklyPeriod(
+      targetYear,
+      targetMonth,
+      targetWeek,
+    )
+
+    targetYear = previousPeriod.year
+    targetMonth = previousPeriod.month
+    targetWeek = previousPeriod.weekIndex
+  }
+
+  return {
+    year: targetYear,
+    month: targetMonth,
+    weekIndex: targetWeek,
     workAwards: workAwardsResp,
   }
 }
@@ -73,7 +113,7 @@ export const headers: HeadersFunction = () => ({
 /**
  * ある月のランキングの履歴
  */
-export default function MonthlyAwards () {
+export default function MonthlyAwards() {
   const params = useParams()
 
   if (params.year === undefined) {

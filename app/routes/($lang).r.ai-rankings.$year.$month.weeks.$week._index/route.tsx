@@ -14,6 +14,7 @@ import {
 } from "~/routes/($lang)._main.ai-rankings._index/components/ai-evaluation-ranking-work-list"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import { createMeta } from "~/utils/create-meta"
+import { getPreviousWeeklyPeriod } from "~/utils/get-weeks-in-month"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -41,24 +42,50 @@ export async function loader(props: LoaderFunctionArgs) {
     return redirect(redirectPath, { status: 302 })
   }
 
-  const rankingsResp = await loaderClient.query({
-    query: aiEvaluationWorkRankingsQuery,
-    variables: {
-      offset: 0,
-      limit: 200,
-      where: {
-        year,
-        month,
-        weekIndex: week,
-        isSensitive: true,
+  let targetYear = year
+  let targetMonth = month
+  let targetWeek = week
+  let rankingsResp
+
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    rankingsResp = await loaderClient.query({
+      query: aiEvaluationWorkRankingsQuery,
+      variables: {
+        offset: 0,
+        limit: 200,
+        where: {
+          year: targetYear,
+          month: targetMonth,
+          weekIndex: targetWeek,
+          isSensitive: true,
+        },
       },
-    },
-  })
+    })
+
+    if (rankingsResp.data.aiEvaluationWorkRankings.length > 0) {
+      if (targetYear !== year || targetMonth !== month || targetWeek !== week) {
+        const url = new URL(props.request.url)
+        url.pathname = `/r/ai-rankings/${targetYear}/${targetMonth}/weeks/${targetWeek}`
+        return redirect(`${url.pathname}${url.search}`, { status: 302 })
+      }
+      break
+    }
+
+    const previousPeriod = getPreviousWeeklyPeriod(
+      targetYear,
+      targetMonth,
+      targetWeek,
+    )
+
+    targetYear = previousPeriod.year
+    targetMonth = previousPeriod.month
+    targetWeek = previousPeriod.weekIndex
+  }
 
   return {
-    year,
-    month,
-    weekIndex: week,
+    year: targetYear,
+    month: targetMonth,
+    weekIndex: targetWeek,
     rankings: rankingsResp,
   }
 }
