@@ -1057,6 +1057,13 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Manage your posted works on Aipictors",
     isIndex: false,
   },
+  MY_HISTORIES: {
+    title: "操作履歴",
+    enTitle: "Action History",
+    description: "You can check your posting and editing history",
+    enDescription: "View your posting, editing, and deletion history on Aipictors",
+    isIndex: false,
+  },
   MY_RECOMMENDED: {
     title: "推薦作品一覧",
     enTitle: "Recommended Works List",

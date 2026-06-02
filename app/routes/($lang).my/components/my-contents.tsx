@@ -28,6 +28,9 @@ export function MyContents (props: Props) {
     if (path.includes("posts")) {
       return "POSTS"
     }
+    if (path.includes("histories")) {
+      return "HISTORIES"
+    }
     if (path.includes("albums")) {
       return "ALBUMS"
     }
@@ -111,6 +114,16 @@ export function MyContents (props: Props) {
                 value="POSTS"
               >
                 {t("作品", "Posts")}
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setMyContentType("HISTORIES")
+                  navigate("/my/histories")
+                }}
+                className="w-full"
+                value="HISTORIES"
+              >
+                {t("操作履歴", "History")}
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
@@ -225,6 +238,20 @@ export function MyContents (props: Props) {
               )}
             >
               {t("作品", "Posts")}
+            </Button>
+            <Button
+              onClick={() => {
+                setMyContentType("HISTORIES")
+                navigate("/my/histories")
+              }}
+              value="HISTORIES"
+              variant={"secondary"}
+              className={cn(
+                myContentType === "HISTORIES" &&
+                  "bg-gray-200 dark:bg-zinc-900",
+              )}
+            >
+              {t("操作履歴", "History")}
             </Button>
             <Button
               onClick={() => {
