@@ -793,6 +793,10 @@ export const workArticleFragment = graphql(
     nanoid
     isBotGradingEnabled
     isBotGradingPublic
+    canRequestImageAnalysis
+    imageAnalysisRequestReason
+    imageAnalysisRequestAvailableAt
+    imageAnalysisRemainingRequestsToday
     botEvaluation {
       cutenessScore
       coolnessScore

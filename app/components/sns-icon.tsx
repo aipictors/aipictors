@@ -78,20 +78,25 @@ export function SnsIconLink(props: Props): React.ReactNode {
   }
 
   return (
-    <Link className="block" to={props.url} target="_blank" rel="noreferrer">
-      <Button
-        variant={variant === "compact" ? "ghost" : "outline"}
-        size={variant === "compact" ? "icon" : "sm"}
-        className={
-          variant === "compact"
-            ? "h-8 w-8 p-0 text-muted-foreground"
-            : "h-9 w-9 p-2 transition-colors hover:bg-accent hover:text-accent-foreground"
-        }
+    <Button
+      asChild
+      variant={variant === "compact" ? "ghost" : "outline"}
+      size={variant === "compact" ? "icon" : "sm"}
+      className={
+        variant === "compact"
+          ? "h-8 w-8 p-0 text-muted-foreground"
+          : "h-9 w-9 p-2 transition-colors hover:bg-accent hover:text-accent-foreground"
+      }
+    >
+      <Link
+        to={props.url}
+        target="_blank"
+        rel="noreferrer"
         aria-label={props.ariaLabel}
         title={props.ariaLabel}
       >
         {icon()}
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   )
 }

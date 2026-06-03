@@ -33,7 +33,6 @@ export function HomeSensitiveWorksUsersRecommendedSection (props: Props) {
         ...(props.style && {
           style: props.style,
         }),
-        isNowCreatedAt: true,
       },
     },
   })

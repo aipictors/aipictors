@@ -219,15 +219,15 @@ export function WorkArticle(props: Props) {
     return parts.map((part, index) => {
       if (urlRegex.test(part)) {
         return (
-          <Link
+          <a
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500"
             key={index.toString()}
-            to={part}
+            href={part}
           >
             {part}
-          </Link>
+          </a>
         )
       }
       return part
@@ -537,9 +537,14 @@ export function WorkArticle(props: Props) {
               <CardContent className="p-2">
                 <div className="flex flex-col">
                   <p>{t("関連リンク", "related url")}</p>
-                  <Link to={`${props.work.relatedUrl}`}>
+                  <a
+                    href={props.work.relatedUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500"
+                  >
                     {props.work.relatedUrl}
-                  </Link>
+                  </a>
                 </div>
               </CardContent>
             </Card>
