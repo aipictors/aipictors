@@ -74,7 +74,7 @@ export function RecommendButton (props: Props) {
       return
     }
 
-    if (isLitePlanUser && props.ownerUserId === authContext.userId) {
+    if (isLitePlanUser && props.ownerUserId !== authContext.userId) {
       toast("ライトプランユーザは自身の作品のみ推薦できます")
       return
     }

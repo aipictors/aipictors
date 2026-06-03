@@ -23,6 +23,7 @@ type Props = {
   title?: string
   tooltip?: string
   link?: string
+  linkLabel?: string
   isCropped?: boolean
   targetRowHeight?: number
   isShowProfile?: boolean
@@ -60,7 +61,7 @@ export function HomeRecommendedWorkList(props: Props) {
         {props.link && (
           <Link to={props.link}>
             <Button variant={"secondary"} size={"sm"}>
-              {t("すべて見る", "All")}
+              {props.linkLabel ?? t("すべて見る", "All")}
             </Button>
           </Link>
         )}

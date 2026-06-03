@@ -37,9 +37,9 @@ export function HomeWorkSection(props: Props) {
     <section className={cn(props.title ? "space-y-4" : "gap-y-4")}>
       <div className="flex items-center justify-between">
         <h2 className="items-center space-x-2 font-bold text-md">
-          <p className="text-left font-bold text-xl">
+          <span className="text-left font-bold text-xl">
             {props.title && props.title}
-          </p>
+          </span>
           {props.tooltip && (
             <TooltipProvider>
               <Tooltip>
@@ -54,11 +54,11 @@ export function HomeWorkSection(props: Props) {
           )}
         </h2>
         {props.link && (
-          <Link to={props.link}>
-            <Button variant={"secondary"} size={"sm"}>
+          <Button asChild variant={"secondary"} size={"sm"}>
+            <Link to={props.link}>
               {t("すべて見る", "All")}
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         )}
       </div>
       {props.isCropped ? (

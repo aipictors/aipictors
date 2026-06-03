@@ -31,6 +31,7 @@ export function HomeWorksUsersRecommendedSection (props: Props) {
       limit: config.query.homeWorkCount.promotion,
       where: {
         isRecommended: true,
+        sort: "DESC",
         ratings: ["G", "R15"],
         ...(props.style && {
           style: props.style,
@@ -53,6 +54,8 @@ export function HomeWorksUsersRecommendedSection (props: Props) {
         <HomeRecommendedWorkList
           title={t("ユーザからの推薦", "Recommended by users")}
           works={workDisplayed}
+          link="/home/recommended"
+          linkLabel={t("もっと見る", "More")}
           isCropped={false}
           isShowProfile={true}
           autoPlayVideoPreview={true}
