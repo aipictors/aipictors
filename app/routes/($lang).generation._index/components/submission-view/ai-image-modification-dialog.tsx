@@ -185,6 +185,12 @@ export function AiImageModificationDialog (props: Props) {
         </DialogHeader>
 
         <div className="space-y-4">
+          <p className="text-amber-600 text-sm dark:text-amber-400">
+            {t(
+              "Nano Banana の画像修正はFree / Liteプランでは1日3回まで、Standard / Premiumプランは回数制限なしです。",
+              "Nano Banana image modification is limited to 3 times/day for Free or Lite. Standard and Premium are unlimited.",
+            )}
+          </p>
           {/* 元画像プレビュー */}
           <div className="flex justify-center">
             <img

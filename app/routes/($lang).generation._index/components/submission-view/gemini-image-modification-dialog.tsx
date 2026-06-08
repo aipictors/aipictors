@@ -589,6 +589,12 @@ export function GeminiImageModificationDialog (props: Props) {
               <SheetTitle>
                 {t("AI画像修正", "AI Image Modification")}
               </SheetTitle>
+              <p className="pt-2 text-left text-amber-600 text-sm dark:text-amber-400">
+                {t(
+                  "画像修正はFree / Liteプランでは1日3回まで、Standard / Premiumプランは回数制限なしです。",
+                  "Image modification is limited to 3 times/day for Free or Lite. Standard and Premium are unlimited.",
+                )}
+              </p>
             </SheetHeader>
             <div
               ref={scrollRef}
@@ -666,6 +672,12 @@ export function GeminiImageModificationDialog (props: Props) {
         </DialogHeader>
 
         <div className="space-y-4">
+          <p className="text-amber-600 text-sm dark:text-amber-400">
+            {t(
+              "画像修正はFree / Liteプランでは1日3回まで、Standard / Premiumプランは回数制限なしです。",
+              "Image modification is limited to 3 times/day for Free or Lite. Standard and Premium are unlimited.",
+            )}
+          </p>
           {/* 元画像プレビュー */}
           <div className="flex justify-center">
             <img

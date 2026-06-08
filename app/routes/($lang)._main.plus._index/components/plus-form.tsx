@@ -68,6 +68,7 @@ async function parseActionResponse<T>(response: Response): Promise<{
 export function PlusForm () {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCancelScheduled, setIsCancelScheduled] = useState(false)
+  const [cancelCompletionMode, setCancelCompletionMode] = useState<null | "requested" | "already_canceled">(null)
   const [isPlanChangeDialogOpen, setIsPlanChangeDialogOpen] = useState(false)
   const [isPlanChangePreviewLoading, setIsPlanChangePreviewLoading] = useState(false)
   const [planChangeRequest, setPlanChangeRequest] = useState<{
@@ -136,7 +137,8 @@ export function PlusForm () {
         }
         // Remix が HTML を返したが action は成功済み
         setIsCancelScheduled(true)
-        toast("解約手続きを受け付けました。次回更新日まで利用できます。")
+        setCancelCompletionMode("requested")
+        toast("解約手続きが完了しました。メールが届かない場合でも、この画面に解約予定日が表示されていれば完了しています。")
         return
       }
 
@@ -146,7 +148,14 @@ export function PlusForm () {
       }
 
       setIsCancelScheduled(true)
-      toast("解約手続きを受け付けました。次回更新日まで利用できます。")
+      setCancelCompletionMode(
+        json.data.status === "already_canceled" ? "already_canceled" : "requested",
+      )
+      toast(
+        json.data.status === "already_canceled"
+          ? "すでに解約手続きは完了しています。キャンセルボタンが表示される場合でも、表示キャッシュの可能性があるためご安心ください。"
+          : "解約手続きが完了しました。メールが届かない場合でも、この画面に解約予定日が表示されていれば完了しています。",
+      )
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -180,6 +189,7 @@ export function PlusForm () {
           return
         }
         setIsCancelScheduled(false)
+        setCancelCompletionMode(null)
         toast("解約を取り消しました。引き続きご利用いただけます。")
         return
       }
@@ -190,6 +200,7 @@ export function PlusForm () {
       }
 
       setIsCancelScheduled(false)
+  setCancelCompletionMode(null)
       toast("解約を取り消しました。引き続きご利用いただけます。")
     } catch (error) {
       if (error instanceof Error) {
@@ -366,7 +377,8 @@ export function PlusForm () {
         if (isHtmlWrapped) {
           setIsCancelScheduled(
             statusHint === "cancellation_requested" ||
-              statusHint === "canceled",
+              statusHint === "canceled" ||
+              statusHint === "already_canceled",
           )
           return
         }
@@ -377,7 +389,8 @@ export function PlusForm () {
 
         setIsCancelScheduled(
           json.data.status === "cancellation_requested" ||
-            json.data.status === "canceled",
+            json.data.status === "canceled" ||
+            json.data.status === "already_canceled",
         )
       } catch {
         // no-op: fallback to optimistic local state
@@ -462,10 +475,18 @@ export function PlusForm () {
                 <span className="mt-0.5 text-xl">⚠️</span>
                 <div className="flex-1">
                   <p className="font-bold text-orange-800 text-sm dark:text-orange-300">
-                    {"解約予約中"}
+                    {cancelCompletionMode === "already_canceled"
+                      ? "すでに解約手続きは完了しています"
+                      : "解約予約中"}
                   </p>
                   <p className="mt-0.5 text-orange-700 text-sm dark:text-orange-400">
                     {`${nextDateText} に解約されます。それまでは引き続きご利用いただけます。`}
+                  </p>
+                  <p className="mt-1 text-orange-600 text-xs dark:text-orange-500">
+                    {"メールが届かない場合でも、この表示と解約予定日が見えていれば解約手続きは完了しています。"}
+                  </p>
+                  <p className="mt-1 text-orange-600 text-xs dark:text-orange-500">
+                    {"キャンセルボタンが表示される場合でも、画面表示のキャッシュが残っているだけのことがあります。時間をおいて再表示してください。"}
                   </p>
                   <p className="mt-1 text-orange-600 text-xs dark:text-orange-500">
                     {"解約を取り消したい場合は「解約を取り消す」ボタンを押してください。"}
@@ -503,6 +524,18 @@ export function PlusForm () {
                   "この画面からサブスクのキャンセルとプラン変更を行えます。"
                 }
               </p>
+              {!isCancelScheduled && (
+                <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900 text-sm dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-100">
+                  <p className="font-bold">
+                    {"解約後の確認について"}
+                  </p>
+                  <p className="mt-1 text-xs leading-5">
+                    {
+                      "解約完了メールが届かない場合でも、この画面に『解約予定日』と解約予約中の案内が表示されていれば手続きは完了しています。キャンセルボタンが一時的に見える場合でも、表示キャッシュの可能性があるためご安心ください。"
+                    }
+                  </p>
+                </div>
+              )}
               <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {isCancelScheduled ? (
                   /* 解約予約中 → 取り消しボタンを目立たせる */

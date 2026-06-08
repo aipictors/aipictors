@@ -1,9 +1,10 @@
-const viewerIdQuery = `query VerifyViewer { viewer { id isModerator user { id } } }`
+const viewerIdQuery = `query VerifyViewer { viewer { id isModerator user { id mailAddress } } }`
 
 export type VerifiedViewer = {
   viewerId: string
   userId: string
   isModerator: boolean
+  userEmail: string | null
 }
 
 export const verifyViewerFromGraphQL = async (props: {
@@ -31,6 +32,7 @@ export const verifyViewerFromGraphQL = async (props: {
         isModerator?: boolean | null
         user?: {
           id?: string | null
+          mailAddress?: string | null
         } | null
       } | null
     }
@@ -39,10 +41,11 @@ export const verifyViewerFromGraphQL = async (props: {
   const viewerId = json.data?.viewer?.id
   const userId = json.data?.viewer?.user?.id
   const isModerator = json.data?.viewer?.isModerator === true
+  const userEmail = json.data?.viewer?.user?.mailAddress ?? null
 
   if (!viewerId || !userId) {
     return null
   }
 
-  return { viewerId, userId, isModerator }
+  return { viewerId, userId, isModerator, userEmail }
 }

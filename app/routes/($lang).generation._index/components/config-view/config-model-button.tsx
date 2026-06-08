@@ -90,6 +90,14 @@ export function ConfigModelButton(props: Props) {
                       {t("8枚分消費", "cost of 8")}
                     </Badge>
                   )}
+                  {(props.name === "Gemini 2.5" ||
+                    props.name === "GeminiNanoBanana" ||
+                    props.name === "Gemini 3.1" ||
+                    props.name === "GeminiNanoBanana2") && (
+                    <Badge className="text-xs opacity-50" variant={"destructive"}>
+                      {t("STANDARD以上限定", "STANDARD or PREMIUM only")}
+                    </Badge>
+                  )}
                   {(props.name?.toLowerCase().includes("gemini") ||
                     props.type === "SD5") && (
                     <Badge
@@ -110,6 +118,17 @@ export function ConfigModelButton(props: Props) {
                     {t(
                       "Gemini/Fluxは待ち人数なしで開始されます",
                       "Gemini/Flux starts without queue wait",
+                    )}
+                  </p>
+                )}
+                {(props.name === "Gemini 2.5" ||
+                  props.name === "GeminiNanoBanana" ||
+                  props.name === "Gemini 3.1" ||
+                  props.name === "GeminiNanoBanana2") && (
+                  <p className="text-left text-amber-600 text-xs dark:text-amber-400">
+                    {t(
+                      "Nano Banana / Nano Banana 2 はStandardプラン限定です",
+                      "Nano Banana / Nano Banana 2 require Standard or Premium",
                     )}
                   </p>
                 )}

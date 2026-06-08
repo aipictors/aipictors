@@ -89,6 +89,12 @@ export function ImageModelCard(props: Props) {
             {props.displayName === "GeminiNanoBanana2" && (
               <Badge>{t("8枚分消費", "cost of 8")}</Badge>
             )}
+            {(props.displayName === "GeminiNanoBanana" ||
+              props.displayName === "GeminiNanoBanana2") && (
+              <Badge variant={"destructive"}>
+                {t("STANDARD以上限定", "STANDARD or PREMIUM only")}
+              </Badge>
+            )}
             {props.type !== "FLUX" && <Badge>{props.type}</Badge>}
           </div>
         )}
@@ -110,6 +116,15 @@ export function ImageModelCard(props: Props) {
             {t(
               "Gemini/Fluxは待ち人数なしで開始されます",
               "Gemini/Flux starts without queue wait",
+            )}
+          </p>
+        )}
+        {(props.displayName === "GeminiNanoBanana" ||
+          props.displayName === "GeminiNanoBanana2") && (
+          <p className="text-amber-600 text-xs dark:text-amber-400">
+            {t(
+              "Nano Banana / Nano Banana 2 はStandardプラン限定です",
+              "Nano Banana / Nano Banana 2 require Standard or Premium",
             )}
           </p>
         )}

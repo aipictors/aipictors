@@ -377,6 +377,30 @@ export function GenerationSubmissionView (props: Props) {
       details: { generationType },
     })
 
+    const isGeminiNanoBananaModel =
+      context.config.modelName === "Gemini 2.5" ||
+      context.config.modelName === "GeminiNanoBanana" ||
+      context.config.modelName === "Gemini 3.1" ||
+      context.config.modelName === "GeminiNanoBanana2" ||
+      context.config.modelId === "gemini-2.5-flash-image" ||
+      context.config.modelId === "gemini-3.1-flash-image-preview"
+
+    if (isGeminiNanoBananaModel && !isStandardOrPremium) {
+      logWarn({
+        source: "GenerationSubmit",
+        message: "Blocked: Gemini Nano Banana requires STANDARD+",
+        details: {
+          modelId: context.config.modelId,
+          modelName: context.config.modelName,
+          plan: context.currentPass?.type ?? null,
+        },
+      })
+      toast(
+        "Gemini Nano Banana / Gemini Nano Banana 2 はSTANDARD以上のプランでご利用いただけます。",
+      )
+      return
+    }
+
     // GEMINIの場合は画像から生成をプラン関係なく利用可能
     if (
       context.config.i2iImageBase64 &&

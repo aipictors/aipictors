@@ -76,6 +76,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
         },
         body: JSON.stringify({
           userId: viewer.userId,
+          userEmail: viewer.userEmail,
         }),
       },
     )
@@ -98,6 +99,18 @@ export async function action({ request, context }: ActionFunctionArgs) {
     })()
 
     if (!apiResponse.ok || apiJson?.error) {
+      if (apiJson?.error === "No active subscription found") {
+        return toJsonResponse(
+          {
+            error: null,
+            data: {
+              status: "already_canceled",
+            },
+          },
+          200,
+        )
+      }
+
       const fallbackError =
         responseText && !responseText.trim().startsWith("<")
           ? responseText
