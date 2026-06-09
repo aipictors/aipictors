@@ -385,10 +385,10 @@ export function GenerationSubmissionView (props: Props) {
       context.config.modelId === "gemini-2.5-flash-image" ||
       context.config.modelId === "gemini-3.1-flash-image-preview"
 
-    if (isGeminiNanoBananaModel && !isStandardOrPremium) {
+    if (isGeminiNanoBananaModel && !isLiteOrStandardOrPremium) {
       logWarn({
         source: "GenerationSubmit",
-        message: "Blocked: Gemini Nano Banana requires STANDARD+",
+        message: "Blocked: Gemini Nano Banana requires LITE+",
         details: {
           modelId: context.config.modelId,
           modelName: context.config.modelName,
@@ -396,7 +396,7 @@ export function GenerationSubmissionView (props: Props) {
         },
       })
       toast(
-        "Gemini Nano Banana / Gemini Nano Banana 2 はSTANDARD以上のプランでご利用いただけます。",
+        "Gemini Nano Banana / Gemini Nano Banana 2 はLite以上のプランでご利用いただけます（Liteは1日3回まで）。",
       )
       return
     }
