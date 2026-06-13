@@ -21,8 +21,15 @@ import type { BreadcrumbList, ItemList, WithContext } from "schema-dts"
 import { useContext } from "react"
 import { AuthContext } from "~/contexts/auth-context"
 
+const TEMPORARILY_PRIVATE_TAGS = new Set(["ロリ"])
+
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.tag === undefined) {
+    throw new Response(null, { status: 404 })
+  }
+
+  const decodedTag = decodeURIComponent(props.params.tag).normalize("NFKC")
+  if (TEMPORARILY_PRIVATE_TAGS.has(decodedTag)) {
     throw new Response(null, { status: 404 })
   }
 
@@ -57,7 +64,7 @@ export async function loader(props: LoaderFunctionArgs) {
       offset: page * 32,
       limit: 32,
       where: {
-        tagNames: [decodeURIComponent(props.params.tag)],
+        tagNames: [decodedTag],
         orderBy: orderBy,
         sort: sort,
         isSensitive: true,
@@ -70,14 +77,14 @@ export async function loader(props: LoaderFunctionArgs) {
     query: tagWorksCountQuery,
     variables: {
       where: {
-        tagName: decodeURIComponent(props.params.tag),
+        tagName: decodedTag,
         ratings: ["R18", "R18G"],
       },
     },
   })
 
   return {
-    tag: decodeURIComponent(props.params.tag),
+    tag: decodedTag,
     works: worksResp.data.tagWorks,
     worksCount: tagWorksCountResp.data.tagWorksCount,
     page: page,

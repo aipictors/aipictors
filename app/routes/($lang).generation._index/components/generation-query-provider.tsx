@@ -21,6 +21,15 @@ type Props = {
   generationQueryContext: ResultOf<typeof GenerationQueryContextQuery>
 }
 
+const getMsUntilNextJstMidnight = () => {
+  const now = new Date()
+  const jstNow = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" }))
+  const nextJstMidnight = new Date(jstNow)
+  nextJstMidnight.setDate(nextJstMidnight.getDate() + 1)
+  nextJstMidnight.setHours(0, 0, 5, 0)
+  return Math.max(0, nextJstMidnight.getTime() - jstNow.getTime())
+}
+
 /**
  * エディタに必要なデータを提供する
  * @param props
@@ -120,6 +129,7 @@ export function GenerationQueryProvider (props: Props) {
         refetch()
       })
     }, 5000)
+
     return () => {
       clearInterval(time)
     }
@@ -129,6 +139,22 @@ export function GenerationQueryProvider (props: Props) {
     inProgressImageGenerationReservedTasksCount,
     refetch,
   ])
+
+  useEffect(() => {
+    // 生成していない状態でも、JST日付切り替え時に1回更新して日次カウントを反映する
+    const timeout = setTimeout(() => {
+      if (isTimeout) {
+        return
+      }
+      startTransition(() => {
+        refetch()
+      })
+    }, getMsUntilNextJstMidnight())
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [isTimeout, refetch])
 
   useEffect(() => {
     startTransition(() => {

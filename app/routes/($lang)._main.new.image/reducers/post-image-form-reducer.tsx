@@ -184,10 +184,13 @@ export const postImageFormReducer = (
     // すべてリセット
     case "INITIALIZE":
       return {
-        ...state,
+        editTargetImageBase64: null,
+        isDrawing: false,
+        isHovered: false,
+        isOpenImageGenerationDialog: false,
         progress: 0,
         items: action.payload.items,
-        indexList: [],
+        indexList: action.payload.indexList,
         isThumbnailLandscape: action.payload.isThumbnailLandscape,
         thumbnailBase64: action.payload.thumbnailBase64,
         ogpBase64: action.payload.ogpBase64,
@@ -195,7 +198,12 @@ export const postImageFormReducer = (
         thumbnailPosX: action.payload.thumbnailPosX,
         thumbnailPosY: action.payload.thumbnailPosY,
         isSelectedGenerationImage: action.payload.isSelectedGenerationImage,
+        selectedImageGenerationIds: [],
+        uploadedWorkId: null,
+        uploadedWorkUuid: null,
+        videoFile: null,
         videoDurationSeconds: null,
+        isOpenLoadingAi: false,
       }
   }
 

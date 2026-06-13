@@ -13,7 +13,7 @@ import { useTranslation } from "~/hooks/use-translation"
 type Props = {
   album: string | null
   albums: Album[]
-  setAlbumId: (value: string) => void
+  setAlbumId: (value: string | null) => void
 }
 
 /**
@@ -29,9 +29,9 @@ export function PostFormItemAlbum (props: Props) {
         <p className="font-bold text-sm">{t("シリーズ", "Album")}</p>
         <Select
           disabled={!hasAlbums}
-          value={props.album ?? ""}
+          value={props.album ?? "__none__"}
           onValueChange={(value) => {
-            props.setAlbumId(value)
+            props.setAlbumId(value === "__none__" ? null : value)
           }}
         >
           <SelectTrigger className="w-full">
@@ -46,6 +46,9 @@ export function PostFormItemAlbum (props: Props) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
+              <SelectItem value="__none__">
+                {t("シリーズを選択しない", "No series")}
+              </SelectItem>
               {props.albums.map((album) => (
                 <SelectItem key={album.id} value={album.id}>
                   {album.name}

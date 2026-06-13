@@ -753,7 +753,7 @@ export function GenerationSubmissionView (props: Props) {
       context.config.controlNetImageBase64,
     )
 
-    const nowGeneratingCount = inProgressImageGenerationTasksCost // 生成中枚数
+    const nowGeneratingCount = inProgressImageGenerationTasksCount
     const promises = taskCounts.map((i) => {
       if (i2iFileUrl !== "" && i + 1 + nowGeneratingCount > maxTasksCount) {
         logWarn({

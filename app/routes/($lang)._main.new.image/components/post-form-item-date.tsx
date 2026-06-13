@@ -6,8 +6,8 @@ import { useTranslation } from "~/hooks/use-translation"
 type Props = {
   date: string | null
   time: string | null
-  setDate: (value: string) => void
-  setTime: (value: string) => void
+  setDate: (value: string | null) => void
+  setTime: (value: string | null) => void
 }
 
 /**
@@ -26,7 +26,7 @@ export function PostFormItemDate (props: Props) {
             type="date"
             value={props.date ?? ""}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              props.setDate(event.target.value)
+              props.setDate(event.target.value || null)
             }
             className="w-40"
           />
@@ -34,7 +34,7 @@ export function PostFormItemDate (props: Props) {
             type="time"
             value={props.time ?? ""}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              props.setTime(event.target.value)
+              props.setTime(event.target.value || null)
             }
             className="w-24"
           />
@@ -42,12 +42,12 @@ export function PostFormItemDate (props: Props) {
             <div className="flex justify-end">
               <Button
                 onClick={() => {
-                  props.setDate("")
-                  props.setTime("")
+                  props.setDate(null)
+                  props.setTime(null)
                 }}
                 variant={"secondary"}
               >
-                {t("クリア", "Clear")}
+                {t("予約入力削除", "Clear reservation")}
               </Button>
             </div>
           )}

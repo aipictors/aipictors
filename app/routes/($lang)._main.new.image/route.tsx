@@ -89,7 +89,7 @@ const normalizeString = (value: unknown, fallback = "") => {
 }
 
 const normalizeNullableString = (value: unknown) => {
-  return typeof value === "string" ? value : null
+  return typeof value === "string" && value.trim().length > 0 ? value : null
 }
 
 const normalizeBoolean = (value: unknown, fallback = false) => {
@@ -410,6 +410,48 @@ const clearPersistedPostDrafts = async () => {
   removePostFormDraft()
   await removePostMediaDraft()
 }
+
+const INITIAL_POST_IMAGE_FORM_MEDIA_STATE = {
+  items: [],
+  indexList: [],
+  isThumbnailLandscape: false,
+  thumbnailBase64: null,
+  ogpBase64: null,
+  pngInfo: null,
+  thumbnailPosX: 0,
+  thumbnailPosY: 0,
+  isSelectedGenerationImage: false,
+} as const
+
+const createInitialPostImageFormInputState = () => ({
+  accessType: "PUBLIC" as const,
+  generationParamAccessType: "PUBLIC" as const,
+  aiModelId: "1",
+  albumId: null,
+  caption: "",
+  date: new Date(),
+  enCaption: "",
+  enTitle: "",
+  imageInformation: null,
+  imageStyle: "ILLUSTRATION" as const,
+  link: "",
+  ratingRestriction: "G" as const,
+  reservationDate: null,
+  reservationTime: null,
+  tags: [],
+  themeId: null,
+  title: "",
+  useCommentFeature: true,
+  useGenerationParams: true,
+  usePromotionFeature: false,
+  useTagFeature: true,
+  correctionMessage: null,
+  isBotGradingEnabled: true,
+  isBotGradingPublic: true,
+  isBotGradingRankingEnabled: true,
+  botPersonality: "pictor_chan" as const,
+  botGradingType: "COMMENT_AND_SCORE" as const,
+})
 
 export default function NewImage() {
   const data = useLoaderData<typeof loader>()
@@ -1732,6 +1774,34 @@ export default function NewImage() {
     // dispatch({ type: "OPEN_LOADING_AI", payload: false })
   }
 
+  const onResetAllInputs = useCallback(async () => {
+    if (state.progress !== 0) {
+      return
+    }
+
+    dispatch({
+      type: "INITIALIZE",
+      payload: INITIAL_POST_IMAGE_FORM_MEDIA_STATE,
+    })
+
+    dispatchInput({
+      type: "INITIALIZE",
+      payload: createInitialPostImageFormInputState(),
+    })
+
+    setMediaType(requestedMediaType)
+    isPostingRef.current = false
+
+    await clearPersistedPostDrafts()
+
+    toast(
+      t(
+        "入力内容と一時保存データをリセットしました",
+        "Inputs and saved draft data were reset",
+      ),
+    )
+  }, [requestedMediaType, state.progress, t])
+
   // ユーザーが実際に作品投稿に関する入力をしているかチェックする関数
   const hasUserInput = useCallback(() => {
     return (
@@ -1903,6 +1973,18 @@ export default function NewImage() {
           token={currentViewer?.token}
           onContentGenerated={onContentGenerated}
         />
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            type="button"
+            disabled={state.progress !== 0}
+            onClick={() => {
+              void onResetAllInputs()
+            }}
+          >
+            {t("入力を全てリセット", "Reset all inputs")}
+          </Button>
+        </div>
         <div className="h-4" />
         <Button
           className="fixed bottom-0 left-0 z-30 ml-0 w-full rounded-none p-0 md:ml-[72px] md:pr-[72px] lg:ml-[224px] lg:pr-[224px] xl:left-auto xl:m-0 xl:max-w-[1200px] xl:pl-[8%]"
