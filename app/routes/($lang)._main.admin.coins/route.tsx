@@ -10,12 +10,13 @@ import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select"
 import { Separator } from "~/components/ui/separator"
+import { Textarea } from "~/components/ui/textarea"
 import { AdminPageShell } from "~/components/admin-page-shell"
 import { AuthContext } from "~/contexts/auth-context"
 import { createMeta } from "~/utils/create-meta"
 import { toast } from "sonner"
 
-const pageDescription = "全ユーザまたはプラン別ユーザに対してコインを一括で付与・減少します。"
+const pageDescription = "全ユーザ、プラン別ユーザ、または指定ユーザIDに対してコインを一括で付与・減少します。"
 
 const viewerQuery = gql`
   query AdminCoinsViewer {
@@ -30,6 +31,7 @@ const adminAdjustCoinsMutation = gql`
   mutation AdminAdjustCoins(
     $targetScope: String!
     $planType: String
+    $userIds: [ID!]
     $freeDelta: Int
     $premiumDelta: Int
     $expiresAt: Int
@@ -37,6 +39,7 @@ const adminAdjustCoinsMutation = gql`
     adminAdjustCoins(
       targetScope: $targetScope
       planType: $planType
+      userIds: $userIds
       freeDelta: $freeDelta
       premiumDelta: $premiumDelta
       expiresAt: $expiresAt
@@ -51,9 +54,50 @@ const adminAdjustCoinsMutation = gql`
   }
 `
 
+const adminCoinOperationHistoriesQuery = gql`
+  query AdminCoinOperationHistories($offset: Int!, $limit: Int!) {
+    adminCoinOperationHistories(offset: $offset, limit: $limit) {
+      id
+      createdAt
+      moderatorUserId
+      targetScope
+      planType
+      targetUserIds
+      targetCount
+      changedCount
+      freeDelta
+      premiumDelta
+      freeGrantedTotal
+      premiumGrantedTotal
+      freeReducedTotal
+      premiumReducedTotal
+      expiresAt
+    }
+    adminCoinOperationHistoriesCount
+  }
+`
+
 type OperationType = "GRANT" | "REDUCE"
-type TargetScope = "ALL" | "PLAN"
+type TargetScope = "ALL" | "PLAN" | "USER_IDS"
 type PlanType = "FREE" | "TWO_DAYS" | "LITE" | "STANDARD" | "PREMIUM"
+
+type AdminCoinOperationHistory = {
+  id: string
+  createdAt: number
+  moderatorUserId: string
+  targetScope: TargetScope
+  planType: string | null
+  targetUserIds: string[]
+  targetCount: number
+  changedCount: number
+  freeDelta: number
+  premiumDelta: number
+  freeGrantedTotal: number
+  premiumGrantedTotal: number
+  freeReducedTotal: number
+  premiumReducedTotal: number
+  expiresAt: number | null
+}
 
 const planOptions: Array<{ value: PlanType; label: string }> = [
   { value: "FREE", label: "無料ユーザ" },
@@ -69,7 +113,7 @@ export const meta: MetaFunction = (props) => {
       title: "コイン操作",
       enTitle: "Admin Coin Operation",
       description: pageDescription,
-      enDescription: "Bulk grant or reduce coins for all users or a plan segment.",
+      enDescription: "Bulk grant or reduce coins for all users, plan segments, or specific user IDs.",
       isIndex: false,
     },
     undefined,
@@ -81,11 +125,72 @@ export async function loader(_props: LoaderFunctionArgs) {
   return json({})
 }
 
+const jstDateTimeFormatter = new Intl.DateTimeFormat("ja-JP", {
+  timeZone: "Asia/Tokyo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+})
+
+const parseUserIdsText = (value: string) => {
+  return Array.from(
+    new Set(
+      value
+        .split(/[\s,、]+/)
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  )
+}
+
+const formatTargetScope = (scope: TargetScope, planType: string | null) => {
+  if (scope === "ALL") {
+    return "全ユーザ"
+  }
+
+  if (scope === "USER_IDS") {
+    return "ユーザID指定"
+  }
+
+  switch (planType) {
+    case "FREE":
+      return "無料ユーザ"
+    case "TWO_DAYS":
+      return "2日プラン"
+    case "LITE":
+      return "ライトプラン"
+    case "STANDARD":
+      return "スタンダードプラン"
+    case "PREMIUM":
+      return "プレミアムプラン"
+    default:
+      return "プラン別"
+  }
+}
+
+const formatDelta = (freeDelta: number, premiumDelta: number) => {
+  const parts: string[] = []
+
+  if (freeDelta !== 0) {
+    parts.push(`フリー ${freeDelta > 0 ? "+" : ""}${freeDelta}`)
+  }
+
+  if (premiumDelta !== 0) {
+    parts.push(`プレミアム ${premiumDelta > 0 ? "+" : ""}${premiumDelta}`)
+  }
+
+  return parts.length > 0 ? parts.join(" / ") : "0"
+}
+
 export default function AdminCoinsPage() {
   const authContext = useContext(AuthContext)
   const [operationType, setOperationType] = useState<OperationType>("GRANT")
   const [targetScope, setTargetScope] = useState<TargetScope>("ALL")
   const [planType, setPlanType] = useState<PlanType>("FREE")
+  const [userIdsText, setUserIdsText] = useState("")
   const [freeCoins, setFreeCoins] = useState("0")
   const [premiumCoins, setPremiumCoins] = useState("0")
   const [expiresAtInput, setExpiresAtInput] = useState("")
@@ -96,6 +201,19 @@ export default function AdminCoinsPage() {
     skip: authContext.isLoading || authContext.isNotLoggedIn,
   })
 
+  const {
+    data: historyData,
+    loading: historyLoading,
+    refetch: refetchHistory,
+  } = useQuery(adminCoinOperationHistoriesQuery, {
+    variables: {
+      offset: 0,
+      limit: 20,
+    },
+    skip: authContext.isLoading || authContext.isNotLoggedIn,
+    fetchPolicy: "network-only",
+  })
+
   const [mutate, { loading: isSubmitting }] = useMutation(adminAdjustCoinsMutation)
 
   const hasPermission = Boolean(viewerData?.viewer?.isModerator)
@@ -103,6 +221,9 @@ export default function AdminCoinsPage() {
   const parsedFreeCoins = Math.max(0, Number.parseInt(freeCoins || "0", 10) || 0)
   const parsedPremiumCoins = Math.max(0, Number.parseInt(premiumCoins || "0", 10) || 0)
   const requiresExpiry = operationType === "GRANT" && (parsedFreeCoins > 0 || parsedPremiumCoins > 0)
+  const parsedUserIds = parseUserIdsText(userIdsText)
+  const histories = (historyData?.adminCoinOperationHistories ?? []) as AdminCoinOperationHistory[]
+  const historyCount = historyData?.adminCoinOperationHistoriesCount ?? 0
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -116,6 +237,13 @@ export default function AdminCoinsPage() {
 
     if (requiresExpiry && !expiresAtInput) {
       const message = "付与コインの失効日時を指定してください。"
+      setSubmitError(message)
+      toast.error(message)
+      return
+    }
+
+    if (targetScope === "USER_IDS" && parsedUserIds.length === 0) {
+      const message = "対象ユーザIDを1件以上入力してください。"
       setSubmitError(message)
       toast.error(message)
       return
@@ -142,6 +270,7 @@ export default function AdminCoinsPage() {
         variables: {
           targetScope,
           planType: targetScope === "PLAN" ? planType : null,
+          userIds: targetScope === "USER_IDS" ? parsedUserIds : null,
           freeDelta,
           premiumDelta,
           expiresAt: requiresExpiry ? expiresAt : null,
@@ -155,7 +284,16 @@ export default function AdminCoinsPage() {
       }
 
       setLastResult(result)
-      toast.success("コイン操作を実行しました。")
+      setOperationType("GRANT")
+      setTargetScope("ALL")
+      setPlanType("FREE")
+      setUserIdsText("")
+      setFreeCoins("0")
+      setPremiumCoins("0")
+      setExpiresAtInput("")
+      setSubmitError(null)
+      await refetchHistory()
+      toast.success(`コイン操作が完了しました。対象 ${result.targetCount} 件中 ${result.changedCount} 件を更新しました。`)
     } catch (error) {
       const message = error instanceof Error ? error.message : "コイン操作の実行に失敗しました。"
       setSubmitError(message)
@@ -241,6 +379,7 @@ export default function AdminCoinsPage() {
                     <SelectContent>
                       <SelectItem value="ALL">全ユーザ</SelectItem>
                       <SelectItem value="PLAN">プラン別</SelectItem>
+                      <SelectItem value="USER_IDS">ユーザID指定</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -261,6 +400,22 @@ export default function AdminCoinsPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+              )}
+
+              {targetScope === "USER_IDS" && (
+                <div className="space-y-2">
+                  <Label htmlFor="admin-coins-user-ids">対象ユーザID</Label>
+                  <Textarea
+                    id="admin-coins-user-ids"
+                    value={userIdsText}
+                    onChange={(event) => setUserIdsText(event.target.value)}
+                    placeholder="例: 12345, 67890 または改行区切り"
+                    className="min-h-28 border-white/10 bg-white/5 text-slate-100"
+                  />
+                  <p className="text-sm text-slate-400">
+                    カンマ、空白、改行区切りで複数指定できます。現在 {parsedUserIds.length} 件です。
+                  </p>
                 </div>
               )}
 
@@ -337,9 +492,9 @@ export default function AdminCoinsPage() {
               <CardTitle className="text-lg">操作ガイド</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-300">
-              <p>対象範囲は全ユーザ、またはプラン別で選択できます。</p>
+              <p>対象範囲は全ユーザ、プラン別、またはユーザID指定で選択できます。</p>
               <p>減少時は各ユーザの保有量を上限に減算され、残高が負になることはありません。</p>
-              <p>付与・減少の結果はコイン履歴と通知に残ります。</p>
+              <p>付与・減少の結果はコイン履歴、通知、管理画面の操作履歴に残ります。</p>
             </CardContent>
           </Card>
 
@@ -378,6 +533,71 @@ export default function AdminCoinsPage() {
                 </div>
               ) : (
                 <p className="text-sm text-slate-400">まだ実行結果はありません。</p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-[28px] border-white/10 bg-white/5 text-slate-100 shadow-none">
+            <CardHeader>
+              <CardTitle className="text-lg">操作履歴</CardTitle>
+              <CardDescription className="text-slate-400">
+                最新20件を表示しています。全 {historyCount} 件
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {historyLoading ? (
+                <p className="text-sm text-slate-400">読み込み中...</p>
+              ) : histories.length === 0 ? (
+                <p className="text-sm text-slate-400">まだ履歴はありません。</p>
+              ) : (
+                <div className="space-y-4">
+                  {histories.map((history) => (
+                    <div key={history.id} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="font-semibold text-white">
+                            {formatTargetScope(history.targetScope, history.planType)}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-400">
+                            {jstDateTimeFormatter.format(new Date(history.createdAt * 1000))}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-white">
+                            {history.freeDelta > 0 || history.premiumDelta > 0 ? "付与" : "減少"}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-400">
+                            実行者 ID: {history.moderatorUserId}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-3 space-y-2 text-xs text-slate-300">
+                        <p>要求値: {formatDelta(history.freeDelta, history.premiumDelta)}</p>
+                        <p>対象 {history.targetCount} 件 / 変更 {history.changedCount} 件</p>
+                        {(history.freeGrantedTotal > 0 || history.premiumGrantedTotal > 0) && (
+                          <p>
+                            実付与: フリー {history.freeGrantedTotal} / プレミアム {history.premiumGrantedTotal}
+                          </p>
+                        )}
+                        {(history.freeReducedTotal > 0 || history.premiumReducedTotal > 0) && (
+                          <p>
+                            実減少: フリー {history.freeReducedTotal} / プレミアム {history.premiumReducedTotal}
+                          </p>
+                        )}
+                        {history.expiresAt && (
+                          <p>
+                            失効日時: {jstDateTimeFormatter.format(new Date(history.expiresAt * 1000))}
+                          </p>
+                        )}
+                        {history.targetScope === "USER_IDS" && history.targetUserIds.length > 0 && (
+                          <p className="break-all">
+                            対象ID: {history.targetUserIds.join(", ")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
             </CardContent>
           </Card>
