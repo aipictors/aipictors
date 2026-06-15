@@ -67,7 +67,6 @@ export function ConfigModelButton(props: Props) {
                     {props.type}
                   </Badge>
                   <Badge className="gap-1 text-xs opacity-80">
-                    <span>{t("消費:", "Cost:")}</span>
                     <CoinIcon className="h-4 w-4 shrink-0" />
                     <span>{coinCost}</span>
                     <span>{t("コイン", "coins")}</span>
@@ -121,7 +120,6 @@ export function ConfigModelButton(props: Props) {
                   </p>
                 )}
                 <p className="flex items-center gap-1 text-left font-semibold text-sky-600 text-xs dark:text-sky-400">
-                  <span>{t("消費:", "Cost:")}</span>
                   <CoinIcon className="h-4 w-4 shrink-0" />
                   <span>{coinCost}</span>
                   <span>{t("コイン", "coins")}</span>

@@ -764,25 +764,31 @@ export function GenerationSubmissionView (props: Props) {
       : "TEXT_TO_IMAGE"
 
   const selectedModelCoinCost = (() => {
-    const modelId = context.config.modelId ?? ""
-    const normalizedModelId = modelId.toLowerCase()
+    const selectedModel = context.imageModels.find((model) => {
+      return model.id === context.config.modelId
+    })
 
-    if (normalizedModelId === "flux.1 pro") {
+    const modelKey =
+      selectedModel?.name ?? selectedModel?.id ?? context.config.modelId ?? ""
+    const normalizedModelKey = modelKey.toLowerCase()
+
+    if (normalizedModelKey === "flux.1 pro") {
       return fluxProCoinCost
     }
 
-    if (normalizedModelId === "flux.1 schnell") {
+    if (normalizedModelKey === "flux.1 schnell") {
       return fluxSchnellCoinCost
     }
 
     const isGeminiModel =
       context.config.modelType === "GEMINI" ||
-      normalizedModelId.includes("gemini")
+      normalizedModelKey.includes("gemini")
 
     if (isGeminiModel) {
       const isGemini31 =
-        normalizedModelId === "gemini-3.1-flash-image-preview" ||
-        normalizedModelId.includes("gemini-3.1")
+        normalizedModelKey === "gemini-3.1-flash-image-preview" ||
+        normalizedModelKey.includes("gemini-3.1") ||
+        normalizedModelKey.includes("gemininanobanana2")
 
       return isGemini31
         ? geminiNanoBanana2CoinCost
