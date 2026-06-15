@@ -26,6 +26,9 @@ export function ReservedGenerationLinkCard (props: Props) {
     if (taskNanoid === null) return
     try {
       await cancelReservedTask({ variables: { input: { nanoid: taskNanoid } } })
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("generation:task-requested"))
+      }
       toast("予約タスクをキャンセルしました")
     } catch (error) {
       if (error instanceof Error) {

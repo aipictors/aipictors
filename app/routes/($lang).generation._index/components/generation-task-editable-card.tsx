@@ -106,6 +106,9 @@ export function GenerationTaskEditableCard (props: Props) {
       if (props.onCancel) {
         props.onCancel()
       }
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("generation:task-requested"))
+      }
       toast("タスクをキャンセルしました")
     } catch (error) {
       if (error instanceof Error) {
@@ -153,6 +156,9 @@ export function GenerationTaskEditableCard (props: Props) {
       await cancelReservedTask({ variables: { input: { nanoid: taskNanoid } } })
       if (props.onCancel) {
         props.onCancel()
+      }
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("generation:task-requested"))
       }
       toast("予約タスクをキャンセルしました")
     } catch (error) {
