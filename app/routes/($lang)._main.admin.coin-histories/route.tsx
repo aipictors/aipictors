@@ -167,6 +167,15 @@ const formatKind = (kind: string) => {
   }
 }
 
+const formatReason = (reason: string | null) => {
+  switch (reason) {
+    case "image-generation:cancel-refund":
+      return "生成キャンセル"
+    default:
+      return reason ?? "-"
+  }
+}
+
 const buildSearchParams = (filters: AppliedFilters) => {
   const params = new URLSearchParams()
 
@@ -588,7 +597,7 @@ export default function AdminCoinHistoriesPage() {
                             : "-"}
                         </td>
                         <td className="px-4 py-3">
-                          <div>{item.reason ?? "-"}</div>
+                          <div>{formatReason(item.reason)}</div>
                           {item.source ? (
                             <div className="mt-1 text-xs text-slate-500">{item.source}</div>
                           ) : null}
