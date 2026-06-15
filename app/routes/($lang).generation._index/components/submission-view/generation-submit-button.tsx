@@ -14,9 +14,6 @@ type Props = {
 export function GenerationSubmitButton (props: Props) {
   const [isClickDisabled, setIsClickDisabled] = useState(false)
 
-  const maxGeneratingCount =
-    props.maxGeneratingCount <= 0 ? 0 : props.maxGeneratingCount
-
   /**
    * ボタンクリック時の処理（連打防止機能付き）
    */
@@ -49,7 +46,7 @@ export function GenerationSubmitButton (props: Props) {
           ? "処理中.."
           : isClickDisabled
             ? "少々お待ちください..."
-            : `${props.buttonActionCaption}(${props.generatingCount}/${maxGeneratingCount})`}
+            : `${props.buttonActionCaption}(${props.generatingCount})`}
         {props.generatingCount > 0 && (
           <Loader2Icon
             className={

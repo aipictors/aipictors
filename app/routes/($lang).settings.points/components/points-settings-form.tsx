@@ -35,6 +35,31 @@ export function PointsSettingsForm() {
   const [summary, setSummary] = useState<SummaryResponse["data"]>(null)
 
   const hasLedger = (summary?.ledger.length ?? 0) > 0
+  const grantedCoins = (summary?.ledger ?? []).reduce((total, row) => {
+    if (row.coinType !== "FREE") {
+      return total
+    }
+
+    if (row.kind === "GRANT" || row.kind === "INITIAL_GRANT") {
+      return total + Math.max(row.delta, 0)
+    }
+
+    return total
+  }, 0)
+  const consumedCoins = (summary?.ledger ?? []).reduce((total, row) => {
+    if (row.coinType !== "FREE" || row.kind !== "CONSUME") {
+      return total
+    }
+
+    return total + Math.abs(row.delta)
+  }, 0)
+  const expiredCoins = (summary?.ledger ?? []).reduce((total, row) => {
+    if (row.coinType !== "FREE" || row.kind !== "EXPIRE") {
+      return total
+    }
+
+    return total + Math.abs(row.delta)
+  }, 0)
 
   const withAuthHeader = async () => {
     const currentUser = getAuth().currentUser
@@ -82,16 +107,20 @@ export function PointsSettingsForm() {
   return (
     <div className="space-y-4">
       <div className="rounded-xl border p-4">
-        <p className="font-semibold text-lg">{t("所持コイン", "Coin Balance")}</p>
-        <p className="mt-2 font-bold text-3xl">{isLoading ? "..." : (summary?.totalBalance ?? 0)}</p>
-        <div className="mt-3 grid gap-2 text-sm md:grid-cols-2">
+        <p className="font-semibold text-lg">{t("所持フリーコイン", "Free Coin Balance")}</p>
+        <p className="mt-2 font-bold text-3xl">{isLoading ? "..." : (summary?.freeBalance ?? 0)}</p>
+        <div className="mt-3 grid gap-2 text-sm md:grid-cols-3">
           <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-xs">{t("フリーコイン", "Free Coins")}</p>
-            <p className="font-semibold text-xl">{summary?.freeBalance ?? 0}</p>
+            <p className="text-muted-foreground text-xs">{t("付与", "Granted")}</p>
+            <p className="font-semibold text-xl">{grantedCoins}</p>
           </div>
           <div className="rounded-lg border p-3">
-            <p className="text-muted-foreground text-xs">{t("プレミアムコイン", "Premium Coins")}</p>
-            <p className="font-semibold text-xl">{summary?.premiumBalance ?? 0}</p>
+            <p className="text-muted-foreground text-xs">{t("消費", "Consumed")}</p>
+            <p className="font-semibold text-xl">{consumedCoins}</p>
+          </div>
+          <div className="rounded-lg border p-3">
+            <p className="text-muted-foreground text-xs">{t("失効", "Expired")}</p>
+            <p className="font-semibold text-xl">{expiredCoins}</p>
           </div>
         </div>
       </div>
@@ -107,8 +136,8 @@ export function PointsSettingsForm() {
         {summary?.granted && (
           <p className="text-emerald-600 text-sm">
             {t(
-              `初回アクセス特典として ${summary.grantedFreeCoins + summary.grantedPremiumCoins} コインを付与済みです。本日24:00まで有効です。`,
-              `Your initial access bonus of ${summary.grantedFreeCoins + summary.grantedPremiumCoins} coins has been granted and is valid until 24:00 today.`,
+              `本日の付与コインとして ${summary.grantedFreeCoins + summary.grantedPremiumCoins} コインを付与済みです。本日24:00まで有効です。`,
+              `Your daily coin grant of ${summary.grantedFreeCoins + summary.grantedPremiumCoins} coins has been granted and is valid until 24:00 today.`,
             )}
           </p>
         )}

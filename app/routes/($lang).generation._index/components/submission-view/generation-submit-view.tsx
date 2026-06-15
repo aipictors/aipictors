@@ -10,7 +10,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean, useMediaQuery } from "usehooks-ts"
 import { VerificationDialog } from "~/components/verification-dialog"
-import { useNavigate, useSearchParams } from "@remix-run/react"
+import { Link, useNavigate, useSearchParams } from "@remix-run/react"
 import { useQuery } from "@apollo/client/index"
 import { AuthContext } from "~/contexts/auth-context"
 import type { IntrospectionEnum } from "~/lib/introspection-enum"
@@ -118,7 +118,7 @@ export function GenerationSubmissionView (props: Props) {
     if (json.data.granted && !initialGrantToastShownRef.current) {
       initialGrantToastShownRef.current = true
       toast(
-        `初回アクセス特典として${json.data.grantedFreeCoins + json.data.grantedPremiumCoins}コインが付与されました。本日24:00まで有効です。`,
+        `本日の付与コインとして${json.data.grantedFreeCoins + json.data.grantedPremiumCoins}コインが付与されました。本日24:00まで有効です。`,
         { position: "top-center" },
       )
     }
@@ -1014,19 +1014,17 @@ export function GenerationSubmissionView (props: Props) {
     <>
       {authContext.isLoggedIn && coinSummary !== null && (
         <div className="mb-3 rounded-xl border bg-background/95 p-3 text-sm shadow-sm">
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <div>
-              <span className="text-muted-foreground">所持コイン </span>
-              <span className="font-semibold">{coinSummary.totalBalance}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">フリー </span>
+              <span className="text-muted-foreground">フリーコイン </span>
               <span className="font-semibold">{coinSummary.freeBalance}</span>
             </div>
-            <div>
-              <span className="text-muted-foreground">プレミアム </span>
-              <span className="font-semibold">{coinSummary.premiumBalance}</span>
-            </div>
+            <Link
+              to="/settings/points"
+              className="text-sm text-sky-600 underline underline-offset-2"
+            >
+              履歴
+            </Link>
           </div>
         </div>
       )}

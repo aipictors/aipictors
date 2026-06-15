@@ -25,7 +25,8 @@ import {
   UserIcon,
 } from "lucide-react"
 import { useQuery } from "@apollo/client/index"
-import { useContext, useEffect } from "react"
+import { getAuth, getIdToken } from "firebase/auth"
+import { useContext, useEffect, useState } from "react"
 import { MenuItemLink } from "~/routes/($lang)._main._index/components/menu-item-link"
 import { useTheme } from "~/components/theme-provider"
 import { useLocation, useNavigate, Link } from "@remix-run/react"
@@ -51,6 +52,7 @@ type Props = {
  */
 export function UserNavigationMenuContent (props: Props) {
   const authContext = useContext(AuthContext)
+  const [freeCoinBalance, setFreeCoinBalance] = useState<number | null>(null)
 
   const {
     data,
@@ -91,6 +93,45 @@ export function UserNavigationMenuContent (props: Props) {
       refetch()
     }
   }, [authContext.login, refetch])
+
+  useEffect(() => {
+    const loadCoinSummary = async () => {
+      if (authContext.isLoading || authContext.isNotLoggedIn) {
+        setFreeCoinBalance(null)
+        return
+      }
+
+      const currentUser = getAuth().currentUser
+      if (!currentUser) {
+        setFreeCoinBalance(null)
+        return
+      }
+
+      try {
+        const idToken = await getIdToken(currentUser)
+        const response = await fetch("/api/coins/summary", {
+          headers: {
+            authorization: `Bearer ${idToken}`,
+          },
+        })
+
+        const json = (await response.json()) as {
+          error: string | null
+          data?: { freeBalance?: number }
+        }
+
+        if (!response.ok || json.error) {
+          throw new Error(json.error ?? "Failed to load coins")
+        }
+
+        setFreeCoinBalance(json.data?.freeBalance ?? 0)
+      } catch {
+        setFreeCoinBalance(null)
+      }
+    }
+
+    loadCoinSummary()
+  }, [authContext.isLoading, authContext.isNotLoggedIn, authContext.login])
 
   const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
@@ -345,6 +386,16 @@ export function UserNavigationMenuContent (props: Props) {
                 {t("フォロワー", "Followers")}
               </div>
             </div>
+            <div className="text-center">
+              <div
+                className={getSkeletonClass(
+                  userNavigationStyles.skeleton.followCount,
+                )}
+              />
+              <div className={`mt-1 ${userNavigationStyles.followLabel}`}>
+                {t("フリーコイン", "Free Coins")}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -499,6 +550,17 @@ export function UserNavigationMenuContent (props: Props) {
               className={`cursor-pointer hover:underline ${userNavigationStyles.followLabel}`}
             >
               {t("フォロワー", "Followers")}
+            </Link>
+          </div>
+          <div className="text-center">
+            <div className={userNavigationStyles.followCount}>
+              {freeCoinBalance ?? "-"}
+            </div>
+            <Link
+              to={getSensitiveLink("/settings/points")}
+              className={`cursor-pointer hover:underline ${userNavigationStyles.followLabel}`}
+            >
+              {t("フリーコイン", "Free Coins")}
             </Link>
           </div>
         </div>
