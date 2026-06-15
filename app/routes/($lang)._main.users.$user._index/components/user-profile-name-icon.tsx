@@ -1,4 +1,3 @@
-import { useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql, readFragment } from "gql.tada"
 import { PenLine } from "lucide-react"
 import { useContext } from "react"
@@ -12,7 +11,6 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
 import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
-import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
 import { UserActionShare } from "~/routes/($lang)._main.users.$user._index/components/user-action-share"
@@ -33,13 +31,6 @@ type Props = {
 export function UserProfileNameIcon(props: Props) {
   const user = readFragment(UserProfileIconFragment, props.user)
 
-  const { data: featurePromptonRequestData } = useQuery(
-    userFeaturePromptonRequestQuery,
-    {
-      variables: { userId: user.id },
-    },
-  )
-
   const r18WorksCount = props.r18WorksCount ?? 0
   const r18WorksCountText = r18WorksCount >= 100 ? "99+" : String(r18WorksCount)
   const shouldShowR18Toggle = r18WorksCount > 0
@@ -58,10 +49,6 @@ export function UserProfileNameIcon(props: Props) {
   const isMuted = Boolean(user.isMuted)
 
   const isBlocked = Boolean(user.isBlocked)
-
-  const promptonId = user.promptonUser?.id ?? null
-  const canReceiveSupport =
-    featurePromptonRequestData?.featurePromptonRequest === true
   const canShowSupportButton =
     !isMyPage &&
     (!authContext.isLoading || hasViewerSession) &&
@@ -115,10 +102,6 @@ export function UserProfileNameIcon(props: Props) {
   ].filter(isNotNull)
 
   const hasExternalLinks = externalLinks.length > 0
-
-  const openSupportManagement = () => {
-    window.open("https://prompton.io/viewer/requests", "_blank")
-  }
 
   return (
     <div className="relative">
@@ -241,24 +224,6 @@ export function UserProfileNameIcon(props: Props) {
               isMuted={isMuted}
               isBlocked={isBlocked}
             />
-            {typeof promptonId === "string" && canReceiveSupport && (
-              isMyPage ? (
-                <Button
-                  variant="secondary"
-                  className="rounded-full font-bold"
-                  onClick={openSupportManagement}
-                >
-                  {t("支援管理", "Support management")}
-                </Button>
-              ) : (
-                <PromptonRequestColorfulButton
-                  promptonId={promptonId}
-                  targetUserId={user.id}
-                  variant="icon"
-                  rounded="rounded-full"
-                />
-              )
-            )}
           </div>
         </div>
 
@@ -334,23 +299,6 @@ export function UserProfileNameIcon(props: Props) {
                 premiumCoinBalance={balance.premiumCoinsBalance}
                 triggerClassName="w-full rounded-full font-bold"
               />
-            )}
-            {typeof promptonId === "string" && canReceiveSupport && (
-              isMyPage ? (
-                <Button
-                  className="w-full rounded-full font-bold"
-                  onClick={openSupportManagement}
-                  variant="secondary"
-                >
-                  {t("支援管理", "Support management")}
-                </Button>
-              ) : (
-                <PromptonRequestColorfulButton
-                  promptonId={promptonId}
-                  targetUserId={user.id}
-                  rounded="rounded-full"
-                />
-              )
             )}
           </div>
 
@@ -456,18 +404,9 @@ export const UserProfileIconFragment = graphql(
     instagramAccountId
     githubAccountId
     mailAddress
-    promptonUser {
-      id
-    }
     pass {
       id
       type
     }
-  }`,
-)
-
-const userFeaturePromptonRequestQuery = graphql(
-  `query UserFeaturePromptonRequest($userId: ID!) {
-    featurePromptonRequest(where: { userId: $userId })
   }`,
 )

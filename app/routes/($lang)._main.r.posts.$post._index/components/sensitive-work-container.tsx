@@ -198,7 +198,6 @@ export function SensitiveWorkContainer (props: Props) {
                   userFollowersCount={workForArticle.user.followersCount}
                   userBiography={workForArticle.user.biography ?? ""}
                   userEnBiography={workForArticle.user.enBiography ?? null}
-                  userPromptonId={workForArticle.user.promptonUser?.id}
                   userWorksCount={workForArticle.user.worksCount}
                 />
               </div>
@@ -218,7 +217,6 @@ export function SensitiveWorkContainer (props: Props) {
                 userFollowersCount={workForArticle.user.followersCount}
                 userBiography={workForArticle.user.biography ?? ""}
                 userEnBiography={workForArticle.user.enBiography ?? null}
-                userPromptonId={workForArticle.user.promptonUser?.id}
                 userWorksCount={workForArticle.user.worksCount}
               />
             </div>

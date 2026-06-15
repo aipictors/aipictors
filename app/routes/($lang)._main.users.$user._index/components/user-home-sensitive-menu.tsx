@@ -62,9 +62,6 @@ export const UserHomeMenuSensitiveFragment = graphql(
     followersCount
     receivedLikesCount
     receivedSensitiveLikesCount
-    promptonUser {
-      id
-    }
   }`,
   [],
 )

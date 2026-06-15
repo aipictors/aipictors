@@ -13,7 +13,6 @@ import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { PostAccessTypeBanner } from "~/routes/($lang)._main.posts.$post._index/components/post-acess-type-banner"
-import { PromptonRequestButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-button"
 import { WorkActionContainer } from "~/routes/($lang)._main.posts.$post._index/components/work-action-container"
 import { WorkAlbumCard } from "~/routes/($lang)._main.posts.$post._index/components/work-album-card"
 import { WorkArticleGenerationParameters } from "~/routes/($lang)._main.posts.$post._index/components/work-article-generation-parameters"
@@ -367,12 +366,6 @@ export function DraftWorkArticle(props: Props) {
                 />
                 <span>{props.work.user.name}</span>
               </Link>
-              {props.work.user.promptonUser?.id !== undefined &&
-                props.work.user.id !== appContext?.userId && (
-                  <PromptonRequestButton
-                    promptonId={props.work.user.promptonUser.id}
-                  />
-                )}
             </div>
           </div>
         )}

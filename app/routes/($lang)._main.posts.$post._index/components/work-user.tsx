@@ -10,7 +10,6 @@ import { AuthContext } from "~/contexts/auth-context"
 import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
 import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
-import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-text-button"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 
 type Props = {
@@ -22,7 +21,6 @@ type Props = {
   userFollowersCount: number
   userBiography: string | null
   userEnBiography: string | null
-  userPromptonId?: string
   userWorksCount: number
 }
 
@@ -80,9 +78,6 @@ export function WorkUser(props: Props) {
           </div>
         </div>
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />
-        {props.userPromptonId && props.userId !== appContext.userId && (
-          <PromptonRequestTextButton promptonId={props.userPromptonId} />
-        )}
         {canShowSupportButton && (
           <SupportButton
             targetUserId={props.userId}

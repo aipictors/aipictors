@@ -216,7 +216,6 @@ export function WorkContainer(props: Props) {
                   userFollowersCount={work.user.followersCount}
                   userBiography={work.user.biography ?? ""}
                   userEnBiography={work.user.enBiography ?? null}
-                  userPromptonId={work.user.promptonUser?.id}
                   userWorksCount={work.user.worksCount}
                 />
               </div>
@@ -235,7 +234,6 @@ export function WorkContainer(props: Props) {
                 userFollowersCount={work.user.followersCount}
                 userBiography={work.user.biography ?? ""}
                 userEnBiography={work.user.enBiography ?? null}
-                userPromptonId={work.user.promptonUser?.id}
                 userWorksCount={work.user.worksCount}
               />
             </div>
