@@ -3,7 +3,7 @@
  * - 指定コイン数に対する消費内訳と獲得ptのプレビュー表示
  * - ポイント不足時にコイン購入決済ができる
  */
-import { Loader2 } from "lucide-react"
+import { CircleHelp, Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
@@ -12,6 +12,7 @@ import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog"
@@ -19,6 +20,7 @@ import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { useTranslation } from "~/hooks/use-translation"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { cn } from "~/lib/utils"
 import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
 
 type Props = {
@@ -109,6 +111,7 @@ export function SupportButton({
 }: Props) {
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
+  const [isInfoOpen, setIsInfoOpen] = useState(false)
   const [coinAmount, setCoinAmount] = useState<string>("10")
   const [isLoading, setIsLoading] = useState(false)
   const [showCoinPurchase, setShowCoinPurchase] = useState(false)
@@ -264,18 +267,66 @@ export function SupportButton({
     }
   }
 
+  const supportButtonClassName = triggerClassName
+    ? triggerClassName.includes("w-full")
+      ? triggerClassName.replace("w-full", "flex-1").trim()
+      : triggerClassName
+    : "flex-1"
+
   return (
     <>
-      <Button
-        onClick={() => {
-          void reloadBalance()
-          setIsOpen(true)
-        }}
-        className={triggerClassName ?? "w-full"}
-        variant="default"
-      >
-        {t("推す", "Support")}
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="shrink-0 rounded-full"
+          aria-label={t("推すとは", "What is support?")}
+          title={t("推すとは", "What is support?")}
+          onClick={() => setIsInfoOpen(true)}
+        >
+          <CircleHelp className="h-4 w-4" />
+        </Button>
+
+        <Button
+          onClick={() => {
+            void reloadBalance()
+            setIsOpen(true)
+          }}
+          className={cn(supportButtonClassName, !triggerClassName && "w-full")}
+          variant="default"
+        >
+          {t("推す", "Support")}
+        </Button>
+      </div>
+
+      <Dialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("推すとは", "What is support?")}</DialogTitle>
+            <DialogDescription>
+              {t(
+                "お気に入りのクリエイターにコインを送って、支援や応援の気持ちを届ける機能です。",
+                "Support lets you send coins to your favorite creators and show your appreciation.",
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 text-sm leading-relaxed">
+            <p>
+              {t(
+                "自分のお気に入りのクリエイターを支援・応援でき、送ったコインに応じて推し pt が加算されます。",
+                "You can support your favorite creators, and sent coins are converted into support pt.",
+              )}
+            </p>
+            <p className="text-muted-foreground">
+              {t(
+                "フリーコインは 1 coin = 1pt、プレミアムコインは 1 coin = 10pt として反映されます。",
+                "Free coins count as 1pt each, and premium coins count as 10pt each.",
+              )}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-h-[90svh] w-[calc(100vw-1rem)] max-w-md overflow-y-auto">
