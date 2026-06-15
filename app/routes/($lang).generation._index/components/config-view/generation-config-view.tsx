@@ -176,17 +176,6 @@ export function GenerationConfigView () {
           <Separator />
           <GenerationConfigReferenceImage />
           <Separator />
-          {/* キャラクター表情生成へのリンク */}
-          <Link to="/characters" className="block">
-            <Button
-              variant="outline"
-              className="w-full justify-start border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5 text-primary hover:border-primary/30 hover:from-primary/10 hover:to-secondary/10"
-            >
-              <Sparkles className="mr-2 h-4 w-4" />
-              {t("キャラクター表情生成", "Character Expression Generation")}
-            </Button>
-          </Link>
-          <Separator />
           <GenerationConfigSeed
             value={context.config.seed}
             onChange={context.updateSeed}
