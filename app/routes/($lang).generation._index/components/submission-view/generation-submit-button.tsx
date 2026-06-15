@@ -4,6 +4,10 @@ import { Skeleton } from "~/components/ui/skeleton"
 import { Loader2Icon } from "lucide-react"
 import { useState, useCallback } from "react"
 
+const formatCoinAmount = (value: number) => {
+  return value.toLocaleString()
+}
+
 type Props = {
   isLoading: boolean
   isDisabled: boolean
@@ -55,11 +59,11 @@ export function GenerationSubmitButton (props: Props) {
             <span>（</span>
             <CoinIcon className="shrink-0" />
             <span className="flex items-center gap-2">
-              <span>{props.requestCoinCost} /</span>
+              <span>{formatCoinAmount(props.requestCoinCost)} /</span>
               {props.isCoinSummaryLoading ? (
                 <Skeleton className="h-5 w-12 rounded-md bg-white/40" />
               ) : (
-                <span>{props.ownedCoinCount}</span>
+                <span>{formatCoinAmount(props.ownedCoinCount)}</span>
               )}
               <span>）</span>
             </span>

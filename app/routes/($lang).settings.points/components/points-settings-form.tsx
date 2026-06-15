@@ -22,6 +22,10 @@ const jstDateTimeFormatter = new Intl.DateTimeFormat("ja-JP", {
   hour12: false,
 })
 
+const formatCoinAmount = (value: number) => {
+  return value.toLocaleString()
+}
+
 type LedgerItem = {
   id: number
   coinType: "FREE" | "PREMIUM"
@@ -259,7 +263,7 @@ export function PointsSettingsForm() {
           <span>{t("現在使えるフリーコイン", "Free coins available now")}</span>
         </p>
         <p className="mt-3 font-bold text-4xl">
-          {isLoading ? "..." : (summary?.freeBalance ?? 0)}
+          {isLoading ? "..." : formatCoinAmount(summary?.freeBalance ?? 0)}
           <span className="ml-2 font-semibold text-xl">{t("コイン", "coins")}</span>
         </p>
         <p className="mt-3 text-muted-foreground text-sm leading-6">
@@ -277,7 +281,7 @@ export function PointsSettingsForm() {
             <p className="text-muted-foreground text-xs">
               {t("今日もらったコイン", "Coins received today")}
             </p>
-            <p className="font-semibold text-xl">{grantedCoins}</p>
+            <p className="font-semibold text-xl">{formatCoinAmount(grantedCoins)}</p>
             <p className="mt-1 text-muted-foreground text-xs">
               {t("本日付与された無料コイン", "Free coins granted today")}
             </p>
@@ -286,7 +290,7 @@ export function PointsSettingsForm() {
             <p className="text-muted-foreground text-xs">
               {t("今日使ったコイン", "Coins used today")}
             </p>
-            <p className="font-semibold text-xl">{consumedCoins}</p>
+            <p className="font-semibold text-xl">{formatCoinAmount(consumedCoins)}</p>
             <p className="mt-1 text-muted-foreground text-xs">
               {t("画像生成などで使用済み", "Used for image generation and related features")}
             </p>
@@ -295,7 +299,7 @@ export function PointsSettingsForm() {
             <p className="text-muted-foreground text-xs">
               {t("今日失効したコイン", "Coins expired today")}
             </p>
-            <p className="font-semibold text-xl">{expiredCoins}</p>
+            <p className="font-semibold text-xl">{formatCoinAmount(expiredCoins)}</p>
             <p className="mt-1 text-muted-foreground text-xs">
               {t("24:00に期限切れになったコイン", "Coins that expired at 24:00")}
             </p>
@@ -322,8 +326,8 @@ export function PointsSettingsForm() {
         {summary?.granted && (
           <p className="text-emerald-600 text-sm">
             {t(
-              `本日の付与コインとして ${summary.grantedFreeCoins + summary.grantedPremiumCoins} コインを付与済みです。本日24:00まで有効です。`,
-              `Your daily coin grant of ${summary.grantedFreeCoins + summary.grantedPremiumCoins} coins has been granted and is valid until 24:00 today.`,
+              `本日の付与コインとして ${formatCoinAmount(summary.grantedFreeCoins + summary.grantedPremiumCoins)} コインを付与済みです。本日24:00まで有効です。`,
+              `Your daily coin grant of ${formatCoinAmount(summary.grantedFreeCoins + summary.grantedPremiumCoins)} coins has been granted and is valid until 24:00 today.`,
             )}
           </p>
         )}
@@ -344,7 +348,7 @@ export function PointsSettingsForm() {
                 key={`${row.coinType}-${row.expiresAt}-${index}`}
                 className="flex items-center justify-between rounded-lg border p-3 text-sm"
               >
-                <span className="font-semibold">{row.amount}{t("コイン", "coins")}</span>
+                <span className="font-semibold">{formatCoinAmount(row.amount)}{t("コイン", "coins")}</span>
                 <span className="text-muted-foreground">
                   {formatLedgerDateTime(row.expiresAt)}
                 </span>
@@ -357,8 +361,8 @@ export function PointsSettingsForm() {
                 className="w-full justify-center"
               >
                 {t(
-                  `もっと見る（${hiddenExpiringCoins}コイン）`,
-                  `Show more (${hiddenExpiringCoins} coins)`,
+                  `もっと見る（${formatCoinAmount(hiddenExpiringCoins)}コイン）`,
+                  `Show more (${formatCoinAmount(hiddenExpiringCoins)} coins)`,
                 )}
               </Button>
             )}
@@ -388,7 +392,7 @@ export function PointsSettingsForm() {
                     </p>
                   </div>
                   <span className={row.delta >= 0 ? "font-semibold text-emerald-600" : "font-semibold text-red-600"}>
-                    {row.delta > 0 ? `+${row.delta}` : row.delta} {t("コイン", "coins")}
+                    {row.delta > 0 ? `+${formatCoinAmount(row.delta)}` : `-${formatCoinAmount(Math.abs(row.delta))}`} {t("コイン", "coins")}
                   </span>
                 </div>
               </div>

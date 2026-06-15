@@ -31,6 +31,10 @@ const geminiNanoBanana2CoinCost = 100
 const fluxSchnellCoinCost = 30
 const fluxProCoinCost = 50
 
+const formatCoinAmount = (value: number) => {
+  return value.toLocaleString()
+}
+
 /**
  * UIサイズタイプをGeminiImageSizeに変換する
  */
@@ -1085,7 +1089,7 @@ export function GenerationSubmissionView (props: Props) {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <div>
               <span className="text-muted-foreground">フリーコイン </span>
-              <span className="font-semibold">{coinSummary.freeBalance}</span>
+              <span className="font-semibold">{formatCoinAmount(coinSummary.freeBalance)}</span>
             </div>
             <Link
               to="/settings/points"

@@ -59,6 +59,11 @@ const quickActions = [
     subtitle: "全体・プラン別に一括付与 / 減少",
   },
   {
+    href: "/admin/coin-histories",
+    title: "コイン履歴",
+    subtitle: "ユーザ別の消費・付与・失効を確認",
+  },
+  {
     href: "/admin/releases/new",
     title: "お知らせ追加",
     subtitle: "microCMS と Discord に同時投稿",
@@ -75,6 +80,12 @@ const operationCards = [
     title: "コイン一括操作",
     description:
       "全ユーザ、またはプラン別ユーザに対してフリーコインとプレミアムコインを一括で付与・減少できます。",
+    icon: Coins,
+  },
+  {
+    title: "コイン履歴確認",
+    description:
+      "指定ユーザのコイン台帳、累計残高、アクティブな失効予定 lot を期間指定つきで確認できます。",
     icon: Coins,
   },
   {

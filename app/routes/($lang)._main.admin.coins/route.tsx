@@ -2,6 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client/index"
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/cloudflare"
 import { json } from "@remix-run/cloudflare"
 import { Coins, Loader2Icon, Shield } from "lucide-react"
+import { Link } from "@remix-run/react"
 import { useContext, useState } from "react"
 import { Alert, AlertDescription } from "~/components/ui/alert"
 import { Button } from "~/components/ui/button"
@@ -347,6 +348,13 @@ export default function AdminCoinsPage() {
             <CardDescription className="text-slate-400">
               付与は指定日時に失効します。減少は保有 lot を古い順に消費します。
             </CardDescription>
+            <Button
+              asChild
+              variant="outline"
+              className="mt-3 w-fit border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
+            >
+              <Link to="/admin/coin-histories">コイン履歴ページを開く</Link>
+            </Button>
           </CardHeader>
           <CardContent>
             <form onSubmit={onSubmit} className="space-y-5">

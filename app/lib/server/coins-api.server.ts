@@ -24,6 +24,51 @@ type CoinSummary = {
   grantedPremiumCoins: number
 }
 
+export type AdminCoinHistoryItem = {
+  id: number
+  userId: string
+  coinType: "FREE" | "PREMIUM"
+  delta: number
+  kind: string
+  reason: string | null
+  source: string | null
+  createdAt: number
+  expiresAt: number | null
+  runningFreeBalance: number
+  runningPremiumBalance: number
+  runningTotalBalance: number
+}
+
+export type AdminCoinHistoryLot = {
+  id: number
+  coinType: "FREE" | "PREMIUM"
+  amount: number
+  expiresAt: number | null
+  createdAt: number
+}
+
+export type AdminCoinHistoryResult = {
+  items: AdminCoinHistoryItem[]
+  totalCount: number
+  offset: number
+  limit: number
+  summary: {
+    matchedUserCount: number
+    freeGrantedTotal: number
+    premiumGrantedTotal: number
+    freeConsumedTotal: number
+    premiumConsumedTotal: number
+    freeExpiredTotal: number
+    premiumExpiredTotal: number
+  }
+  currentBalance: {
+    freeBalance: number
+    premiumBalance: number
+    totalBalance: number
+  } | null
+  expiringLots: AdminCoinHistoryLot[]
+}
+
 const getApiBaseUrl = (context: unknown) => {
   return (
     getServerEnvValue(context, "AIPICTORS_API_BASE_URL") ??
@@ -99,4 +144,45 @@ export const getCoinSummaryFromApi = async (props: {
   )
 
   return parseApiResponse<CoinSummary>(response)
+}
+
+export const getAdminCoinHistoryFromApi = async (props: {
+  context: unknown
+  userId?: string | null
+  from?: number | null
+  to?: number | null
+  offset?: number
+  limit?: number
+}) => {
+  const searchParams = new URLSearchParams()
+
+  if (props.userId?.trim()) {
+    searchParams.set("userId", props.userId.trim())
+  }
+
+  if (typeof props.from === "number" && Number.isFinite(props.from)) {
+    searchParams.set("from", String(Math.floor(props.from)))
+  }
+
+  if (typeof props.to === "number" && Number.isFinite(props.to)) {
+    searchParams.set("to", String(Math.floor(props.to)))
+  }
+
+  if (typeof props.offset === "number" && Number.isFinite(props.offset)) {
+    searchParams.set("offset", String(Math.max(0, Math.floor(props.offset))))
+  }
+
+  if (typeof props.limit === "number" && Number.isFinite(props.limit)) {
+    searchParams.set("limit", String(Math.max(1, Math.floor(props.limit))))
+  }
+
+  const response = await fetch(
+    `${getApiBaseUrl(props.context)}/internal/coins/admin-history?${searchParams.toString()}`,
+    {
+      method: "GET",
+      headers: getInternalHeaders(props.context),
+    },
+  )
+
+  return parseApiResponse<AdminCoinHistoryResult>(response)
 }
