@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react"
 import { Minus, Plus } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -340,6 +341,28 @@ export function PurchasePremiumCoinsDialog(props: {
               "Free coins are consumed first during generation.",
             )}
           </p>
+          <div className="rounded-xl border border-dashed p-4 text-xs leading-6 text-muted-foreground">
+            <p>
+              {t(
+                "購入前に、プレミアムコインの有効期限、返金方針、前払式支払手段に関する表示をご確認ください。",
+                "Before purchasing, please review Premium Coin expiration, refund handling, and prepaid payment instrument disclosures.",
+              )}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-3">
+              <Link className="underline underline-offset-4" to="/premium-coins/policy">
+                {t("プレミアムコイン規約・ポリシー", "Premium Coin Policy")}
+              </Link>
+              <Link
+                className="underline underline-offset-4"
+                to="/specified-commercial-transaction-act"
+              >
+                {t(
+                  "特定商取引法に基づく表記",
+                  "Specified Commercial Transaction Act",
+                )}
+              </Link>
+            </div>
+          </div>
 
           <Button
             className="w-full"

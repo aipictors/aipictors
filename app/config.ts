@@ -803,6 +803,15 @@ export const META: { [key: string]: MetaData } = {
       "View information based on the Specified Commercial Transaction Law",
     isIndex: true,
   },
+  PREMIUM_COINS_POLICY: {
+    title: "プレミアムコイン規約・ポリシー",
+    enTitle: "Premium Coin Policy",
+    description:
+      "プレミアムコインの有効期限、利用条件、前払式支払手段に関する表示",
+    enDescription:
+      "Premium Coin expiration, usage terms, and prepaid payment instrument disclosures",
+    isIndex: true,
+  },
   STICKERS: {
     title: "スタンプ",
     enTitle: "Stickers",

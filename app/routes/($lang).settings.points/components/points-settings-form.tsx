@@ -318,6 +318,23 @@ export function PointsSettingsForm() {
                 "Purchased premium coins. Free coins are consumed first during generation. Coins expire 3 months after purchase.",
               )}
             </p>
+            <div className="mt-3 flex flex-wrap gap-3 text-sm">
+              <Link className="underline underline-offset-4" to="/premium-coins/policy">
+                {t(
+                  "プレミアムコイン規約・ポリシーを見る",
+                  "View Premium Coin Policy",
+                )}
+              </Link>
+              <Link
+                className="underline underline-offset-4"
+                to="/specified-commercial-transaction-act"
+              >
+                {t(
+                  "特定商取引法に基づく表記を見る",
+                  "View Specified Commercial Transaction Act",
+                )}
+              </Link>
+            </div>
             {premiumExpiringLots.length > 0 && (
               <div className="mt-3 space-y-1">
                 <p className="font-semibold text-muted-foreground text-xs">
