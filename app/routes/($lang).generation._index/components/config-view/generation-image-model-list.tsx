@@ -221,7 +221,7 @@ export function ImageModelsList (props: Props) {
               <p className="font-bold">{toCategoryName(item.category)}</p>
               <div className="hidden grid-cols-4 gap-2 md:grid md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
                 {item.models.map((model) => (
-                  <div className="relative" key={model.id}>
+                  <div className="relative h-full" key={model.id}>
                     <ImageModelCard
                       displayName={model.displayName}
                       thumbnailImageURL={model.thumbnailImageURL}

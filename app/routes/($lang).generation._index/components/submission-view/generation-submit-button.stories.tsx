@@ -15,8 +15,8 @@ export const 通常: Story = {
   args: {
     isLoading: false,
     isDisabled: false,
-    generatingCount: 0,
-    maxGeneratingCount: 10,
+    requestCoinCost: 50,
+    ownedCoinCount: 5000,
     buttonActionCaption: "生成",
   },
 }
@@ -25,8 +25,8 @@ export const ローディング: Story = {
   args: {
     isLoading: true,
     isDisabled: false,
-    generatingCount: 0,
-    maxGeneratingCount: 10,
+    requestCoinCost: 50,
+    ownedCoinCount: 5000,
     buttonActionCaption: "生成",
   },
 }
@@ -35,8 +35,8 @@ export const 無効: Story = {
   args: {
     isLoading: false,
     isDisabled: true,
-    generatingCount: 0,
-    maxGeneratingCount: 10,
+    requestCoinCost: 50,
+    ownedCoinCount: 5000,
     buttonActionCaption: "生成",
   },
 }

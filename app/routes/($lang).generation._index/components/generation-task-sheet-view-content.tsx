@@ -365,7 +365,7 @@ export function GenerationTaskSheetViewContent(props: Props) {
                 <div className="ml-auto">
                   <GenerationMenuButton
                     title={t(
-                      "AIで画像を修正(5枚消費)する",
+                      "AIで画像を修正(50コイン消費)する",
                       "Modify image with AI",
                     )}
                     onClick={props.onInPaint}

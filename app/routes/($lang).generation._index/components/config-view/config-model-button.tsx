@@ -1,5 +1,6 @@
 import { SearchIcon } from "lucide-react"
 import { Badge } from "~/components/ui/badge"
+import { CoinIcon } from "~/components/coin-icon"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
 
@@ -21,6 +22,20 @@ export function ConfigModelButton(props: Props) {
     props.type === "SD5" ||
     props.name?.toLowerCase().includes("gemini")
 
+  const getCoinCost = () => {
+    if (props.name === "Gemini 2.5" || props.name === "GeminiNanoBanana") {
+      return 50
+    }
+
+    if (props.name === "Gemini 3.1" || props.name === "GeminiNanoBanana2") {
+      return 100
+    }
+
+    return 10
+  }
+
+  const coinCost = getCoinCost()
+
   return (
     <div className="relative">
       <Button
@@ -34,14 +49,14 @@ export function ConfigModelButton(props: Props) {
         }
         onClick={props.onClick}
       >
-        <div className="flex w-full space-x-2">
+        <div className="flex w-full items-start space-x-2">
           <img
             src={props.imageURL ?? ""}
             alt={props.name}
             className="w-full max-w-16 rounded object-cover"
             draggable={false}
           />
-          <div>
+          <div className="flex min-w-0 flex-1 flex-col">
             <p className="whitespace-pre-wrap break-all text-left font-bold text-sm">
               {props.name}
             </p>
@@ -50,6 +65,12 @@ export function ConfigModelButton(props: Props) {
                 <div className="mt-4 flex items-center space-x-2">
                   <Badge className="grid w-16 text-xs opacity-50">
                     {props.type}
+                  </Badge>
+                  <Badge className="gap-1 text-xs opacity-80">
+                    <span>{t("消費:", "Cost:")}</span>
+                    <CoinIcon className="h-4 w-4 shrink-0" />
+                    <span>{coinCost}</span>
+                    <span>{t("コイン", "coins")}</span>
                   </Badge>
                   {props.type === "FLUX" && (
                     <Badge className="text-xs opacity-50">
@@ -60,34 +81,12 @@ export function ConfigModelButton(props: Props) {
                 <div className="flex space-x-2">
                   {props.name === "flux.1 schnell" && (
                     <Badge className="text-xs opacity-50">
-                      {t("10枚分消費", "cost of 10")}
-                    </Badge>
-                  )}
-                  {props.name === "flux.1 schnell" && (
-                    <Badge className="text-xs opacity-50">
                       {t("超高速生成", "super fast generation")}
                     </Badge>
                   )}
                   {props.name === "flux.1 pro" && (
                     <Badge className="text-xs opacity-50">
-                      {t("30枚分消費", "cost of 30")}
-                    </Badge>
-                  )}
-                  {props.name === "flux.1 pro" && (
-                    <Badge className="text-xs opacity-50">
                       {t("高速生成", "super fast generation")}
-                    </Badge>
-                  )}
-                  {(props.name === "Gemini 2.5" ||
-                    props.name === "GeminiNanoBanana") && (
-                    <Badge className="text-xs opacity-50">
-                      {t("5枚分消費", "cost of 5")}
-                    </Badge>
-                  )}
-                  {(props.name === "Gemini 3.1" ||
-                    props.name === "GeminiNanoBanana2") && (
-                    <Badge className="text-xs opacity-50">
-                      {t("8枚分消費", "cost of 8")}
                     </Badge>
                   )}
                   {(props.name === "Gemini 2.5" ||
@@ -121,6 +120,12 @@ export function ConfigModelButton(props: Props) {
                     )}
                   </p>
                 )}
+                <p className="flex items-center gap-1 text-left font-semibold text-sky-600 text-xs dark:text-sky-400">
+                  <span>{t("消費:", "Cost:")}</span>
+                  <CoinIcon className="h-4 w-4 shrink-0" />
+                  <span>{coinCost}</span>
+                  <span>{t("コイン", "coins")}</span>
+                </p>
                 {(props.name === "Gemini 2.5" ||
                   props.name === "GeminiNanoBanana" ||
                   props.name === "Gemini 3.1" ||

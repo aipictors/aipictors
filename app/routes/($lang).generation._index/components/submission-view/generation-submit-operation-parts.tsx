@@ -33,6 +33,8 @@ type Props = {
   inProgressImageGenerationReservedTasksCount: number
   maxTasksCount: number
   remainingImageGenerationTasksCount: number
+  requestCoinCost: number
+  ownedCoinCount: number
   termsText: string
   availableImageGenerationMaxTasksCount: number
   onCreateTask: () => void
@@ -243,8 +245,8 @@ export function GenerationSubmitOperationParts (props: Props) {
               }}
               isLoading={props.isCreatingTask}
               isDisabled={context.config.isDisabled}
-              generatingCount={generatingCount}
-              maxGeneratingCount={props.remainingImageGenerationTasksCount}
+              requestCoinCost={props.requestCoinCost}
+              ownedCoinCount={props.ownedCoinCount}
               buttonActionCaption={getSubmitButtonLabel(
                 !!context.config.i2iImageBase64,
                 context.config.promptText,
@@ -264,8 +266,8 @@ export function GenerationSubmitOperationParts (props: Props) {
               }}
               isLoading={props.isCreatingTask}
               isDisabled={context.config.isDisabled}
-              generatingCount={generatingCount}
-              maxGeneratingCount={props.remainingImageGenerationTasksCount}
+              requestCoinCost={props.requestCoinCost}
+              ownedCoinCount={props.ownedCoinCount}
               buttonActionCaption={getSubmitButtonLabel(
                 !!context.config.i2iImageBase64,
                 context.config.promptText,
@@ -313,8 +315,8 @@ export function GenerationSubmitOperationParts (props: Props) {
                     }}
                     isLoading={props.isCreatingTask}
                     isDisabled={context.config.isDisabled}
-                    generatingCount={generatingCount}
-                    maxGeneratingCount={props.remainingImageGenerationTasksCount}
+                    requestCoinCost={props.requestCoinCost}
+                    ownedCoinCount={props.ownedCoinCount}
                     buttonActionCaption={getSubmitButtonLabel(
                       !!context.config.i2iImageBase64,
                       context.config.promptText,

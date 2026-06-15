@@ -24,6 +24,7 @@ import {
   UserCircleIcon,
   UserIcon,
 } from "lucide-react"
+import { CoinIcon } from "~/components/coin-icon"
 import { useQuery } from "@apollo/client/index"
 import { getAuth, getIdToken } from "firebase/auth"
 import { useContext, useEffect, useState } from "react"
@@ -221,6 +222,13 @@ export function UserNavigationMenuContent (props: Props) {
     return path
   }
 
+  const coinLabel = (
+    <span className="inline-flex items-center gap-1">
+      <CoinIcon className="h-4 w-4 shrink-0" />
+      <span>{t("フリーコイン", "Free Coins")}</span>
+    </span>
+  )
+
   if (authContext.isNotLoggedIn) {
     return null
   }
@@ -393,7 +401,7 @@ export function UserNavigationMenuContent (props: Props) {
                 )}
               />
               <div className={`mt-1 ${userNavigationStyles.followLabel}`}>
-                {t("フリーコイン", "Free Coins")}
+                {coinLabel}
               </div>
             </div>
           </div>
@@ -560,7 +568,7 @@ export function UserNavigationMenuContent (props: Props) {
               to={getSensitiveLink("/settings/points")}
               className={`cursor-pointer hover:underline ${userNavigationStyles.followLabel}`}
             >
-              {t("フリーコイン", "Free Coins")}
+              {coinLabel}
             </Link>
           </div>
         </div>

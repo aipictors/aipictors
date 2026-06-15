@@ -1,12 +1,13 @@
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
+import { CoinIcon } from "~/components/coin-icon"
 import { Loader2Icon } from "lucide-react"
 import { useState, useCallback } from "react"
 
 type Props = {
   isLoading: boolean
   isDisabled: boolean
-  generatingCount: number
-  maxGeneratingCount: number
+  requestCoinCost: number
+  ownedCoinCount: number
   buttonActionCaption: string
   onClick(): void
 }
@@ -42,12 +43,19 @@ export function GenerationSubmitButton (props: Props) {
       isNoBackground={true}
     >
       <div className="flex items-center">
-        {props.isLoading
-          ? "処理中.."
-          : isClickDisabled
-            ? "少々お待ちください..."
-            : `${props.buttonActionCaption}(${props.generatingCount})`}
-        {props.generatingCount > 0 && (
+        {props.isLoading ? (
+          "処理中.."
+        ) : isClickDisabled ? (
+          "少々お待ちください..."
+        ) : (
+          <span className="flex items-center gap-2 text-lg md:text-xl">
+            <span>{props.buttonActionCaption}</span>
+            <span>（</span>
+            <CoinIcon className="shrink-0" />
+            <span>{props.requestCoinCost} / {props.ownedCoinCount}）</span>
+          </span>
+        )}
+        {props.isLoading && (
           <Loader2Icon
             className={
               "dark:black ml-2 w-4 animate-spin text-white dark:text-black"

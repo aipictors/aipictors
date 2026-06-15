@@ -24,6 +24,11 @@ import {
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import { useIpAddress } from "~/hooks/use-ip-address"
 
+const standardImageGenerationCoinCost = 10
+const imageEditGenerationCoinCost = 50
+const geminiNanoBananaCoinCost = 50
+const geminiNanoBanana2CoinCost = 100
+
 /**
  * UIサイズタイプをGeminiImageSizeに変換する
  */
@@ -745,6 +750,52 @@ export function GenerationSubmissionView (props: Props) {
 
   const isExistedPreviousPass = pass?.viewer?.isExistedPreviousPass
 
+  const isLiteOrStandardOrPremium =
+    context.currentPass?.type === "LITE" ||
+    context.currentPass?.type === "STANDARD" ||
+    context.currentPass?.type === "PREMIUM"
+
+  const selectedGenerationType =
+    context.config.i2iImageBase64 &&
+    (isLiteOrStandardOrPremium || context.config.modelType === "GEMINI")
+      ? "IMAGE_TO_IMAGE"
+      : "TEXT_TO_IMAGE"
+
+  const selectedModelCoinCost = (() => {
+    const modelId = context.config.modelId ?? ""
+    const normalizedModelId = modelId.toLowerCase()
+
+    const isGeminiModel =
+      context.config.modelType === "GEMINI" ||
+      normalizedModelId.includes("gemini")
+
+    if (isGeminiModel) {
+      const isGemini31 =
+        normalizedModelId === "gemini-3.1-flash-image-preview" ||
+        normalizedModelId.includes("gemini-3.1")
+
+      return isGemini31
+        ? geminiNanoBanana2CoinCost
+        : geminiNanoBananaCoinCost
+    }
+
+    if (selectedGenerationType === "IMAGE_TO_IMAGE") {
+      return imageEditGenerationCoinCost
+    }
+
+    const multiplier =
+      context.config.upscaleSize !== null && context.config.upscaleSize > 1
+        ? 2
+        : 1
+
+    return standardImageGenerationCoinCost * multiplier
+  })()
+
+  const requestCoinCost =
+    selectedModelCoinCost * Math.max(1, context.config.generationCount)
+
+  const ownedCoinCount = coinSummary?.totalBalance ?? 0
+
   useEffect(() => {
     loadCoinSummary().catch((error) => {
       if (error instanceof Error) {
@@ -1042,9 +1093,11 @@ export function GenerationSubmissionView (props: Props) {
             remainingImageGenerationTasksCount={
               remainingImageGenerationTasksCount
             }
+            requestCoinCost={requestCoinCost}
+            ownedCoinCount={ownedCoinCount}
             termsText={props.termsText}
             availableImageGenerationMaxTasksCount={
-              availableImageGenerationMaxTasksCount
+              remainingImageGenerationTasksCount
             }
             onCreateTask={onCreateTask}
             onSignTerms={onSignTerms}

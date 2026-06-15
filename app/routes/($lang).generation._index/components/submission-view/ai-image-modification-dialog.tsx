@@ -210,7 +210,7 @@ export function AiImageModificationDialog (props: Props) {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={t(
-                "どのように画像を修正(5枚消費)したいかを詳しく説明してください...",
+                "どのように画像を修正(50コイン消費)したいかを詳しく説明してください...",
                 "Please describe in detail how you want to modify the image...",
               )}
               className="min-h-32"
@@ -239,7 +239,7 @@ export function AiImageModificationDialog (props: Props) {
               )}
               {isCreatingTask
                 ? t("修正中...", "Modifying...")
-                : t("画像を修正(5枚消費)", "Modify Image")}
+                : t("画像を修正(50コイン消費)", "Modify Image")}
             </Button>
           </div>
         </div>
