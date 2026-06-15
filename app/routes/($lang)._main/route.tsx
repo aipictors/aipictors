@@ -3,7 +3,7 @@ import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { Outlet, useLocation } from "@remix-run/react"
 
 const ADMIN_ROUTE_PATTERN =
-  /^\/(?:ja|en)\/admin(?:\/(?:comments|reports|releases(?:\/new)?|users|works))?(?:\/)?$|^\/admin(?:\/(?:comments|reports|releases(?:\/new)?|users|works))?(?:\/)?$/
+  /^\/(?:ja|en)\/admin(?:\/(?:coins|comments|reports|releases(?:\/new)?|users|works))?(?:\/)?$|^\/admin(?:\/(?:coins|comments|reports|releases(?:\/new)?|users|works))?(?:\/)?$/
 
 export function HydrateFallback () {
   return <AppLoadingPage />

@@ -32,6 +32,12 @@ type LedgerItem = {
   createdAt: number
 }
 
+type ExpiringCoinLot = {
+  coinType: "FREE" | "PREMIUM"
+  amount: number
+  expiresAt: number
+}
+
 type SummaryResponse = {
   error: string | null
   data: {
@@ -43,6 +49,7 @@ type SummaryResponse = {
     grantedFreeCoins: number
     grantedPremiumCoins: number
     ledger: LedgerItem[]
+    expiringLots: ExpiringCoinLot[]
   } | null
 }
 
@@ -82,6 +89,17 @@ export function PointsSettingsForm() {
 
     return total + Math.abs(row.delta)
   }, 0)
+  const visibleExpiringLots = (summary?.expiringLots ?? []).filter(
+    (row) => row.coinType === "FREE",
+  )
+  const hasMoreExpiringLots = visibleExpiringLots.length > 3
+  const [isExpandedExpiringLots, setIsExpandedExpiringLots] = useState(false)
+  const displayedExpiringLots = isExpandedExpiringLots
+    ? visibleExpiringLots
+    : visibleExpiringLots.slice(0, 3)
+  const hiddenExpiringCoins = visibleExpiringLots
+    .slice(3)
+    .reduce((total, row) => total + row.amount, 0)
 
   const formatLedgerDateTime = (createdAt: number) => {
     return jstDateTimeFormatter
@@ -90,14 +108,22 @@ export function PointsSettingsForm() {
   }
 
   const getHistoryTitle = (row: LedgerItem) => {
+    const isAdminBulkAdjust = row.reason === "ADMIN_BULK_ADJUST"
+
     if (row.coinType === "PREMIUM") {
-      if (row.kind === "CONSUME") return t("プレミアムコインを使用", "Premium coins used")
+      if (row.kind === "CONSUME") {
+        return isAdminBulkAdjust
+          ? t("プレミアムコイン減少", "Premium coins reduced")
+          : t("プレミアムコインを使用", "Premium coins used")
+      }
       if (row.kind === "EXPIRE") return t("プレミアムコイン失効", "Premium coins expired")
       return t("プレミアムコイン付与", "Premium coins granted")
     }
 
     if (row.kind === "CONSUME") {
-      return t("フリーコインを使用", "Free coins used")
+      return isAdminBulkAdjust
+        ? t("フリーコイン減少", "Free coins reduced")
+        : t("フリーコインを使用", "Free coins used")
     }
 
     if (row.kind === "EXPIRE") {
@@ -172,6 +198,10 @@ export function PointsSettingsForm() {
       return t("当日24:00の期限切れ", "Expired at 24:00 on the grant day")
     }
 
+    if (reason === "ADMIN_BULK_ADJUST") {
+      return t("管理者による一括コイン操作", "Bulk coin operation by moderator")
+    }
+
     return reason || t("詳細なし", "No details")
   }
 
@@ -193,10 +223,13 @@ export function PointsSettingsForm() {
     try {
       setIsLoading(true)
       const headers = await withAuthHeader()
-      const response = await fetch("/api/coins/summary?includeLedger=1", {
+      const response = await fetch(
+        "/api/coins/summary?includeLedger=1&includeExpiringLots=1",
+        {
         method: "GET",
         headers,
-      })
+        },
+      )
 
       const json = (await response.json()) as SummaryResponse
 
@@ -293,6 +326,43 @@ export function PointsSettingsForm() {
               `Your daily coin grant of ${summary.grantedFreeCoins + summary.grantedPremiumCoins} coins has been granted and is valid until 24:00 today.`,
             )}
           </p>
+        )}
+      </div>
+
+      <div className="space-y-3 rounded-xl border p-4">
+        <p className="font-semibold text-lg">
+          {t("失効予定コイン", "Coins scheduled to expire")}
+        </p>
+        {displayedExpiringLots.length === 0 ? (
+          <p className="text-muted-foreground text-sm">
+            {t("現在、失効予定のフリーコインはありません", "No free coins are currently scheduled to expire")}
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {displayedExpiringLots.map((row, index) => (
+              <div
+                key={`${row.coinType}-${row.expiresAt}-${index}`}
+                className="flex items-center justify-between rounded-lg border p-3 text-sm"
+              >
+                <span className="font-semibold">{row.amount}{t("コイン", "coins")}</span>
+                <span className="text-muted-foreground">
+                  {formatLedgerDateTime(row.expiresAt)}
+                </span>
+              </div>
+            ))}
+            {hasMoreExpiringLots && !isExpandedExpiringLots && (
+              <Button
+                variant="outline"
+                onClick={() => setIsExpandedExpiringLots(true)}
+                className="w-full justify-center"
+              >
+                {t(
+                  `もっと見る（${hiddenExpiringCoins}コイン）`,
+                  `Show more (${hiddenExpiringCoins} coins)`,
+                )}
+              </Button>
+            )}
+          </div>
         )}
       </div>
 

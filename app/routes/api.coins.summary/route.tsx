@@ -43,11 +43,13 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 
   try {
     const includeLedger = new URL(request.url).searchParams.get("includeLedger") === "1"
+    const includeExpiringLots = new URL(request.url).searchParams.get("includeExpiringLots") === "1"
     const summary = await getCoinSummaryFromApi({
       context,
       userId: viewer.userId,
       currentPassType: viewer.currentPassType,
       includeLedger,
+      includeExpiringLots,
     })
 
     if (summary.events.length > 0) {

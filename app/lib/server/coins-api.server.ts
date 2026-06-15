@@ -13,6 +13,11 @@ type CoinSummary = {
     premiumCoins: number
   }>
   ledger: Array<Record<string, unknown>>
+  expiringLots: Array<{
+    coinType: "FREE" | "PREMIUM"
+    amount: number
+    expiresAt: number
+  }>
   granted: boolean
   grantedPlanType: string | null
   grantedFreeCoins: number
@@ -77,6 +82,7 @@ export const getCoinSummaryFromApi = async (props: {
   userId: string
   currentPassType: string | null
   includeLedger?: boolean
+  includeExpiringLots?: boolean
 }) => {
   const response = await fetch(
     `${getApiBaseUrl(props.context)}/internal/coins/ensure-initial-grant`,
@@ -87,6 +93,7 @@ export const getCoinSummaryFromApi = async (props: {
         userId: props.userId,
         planType: props.currentPassType ?? "FREE",
         includeLedger: props.includeLedger ?? false,
+        includeExpiringLots: props.includeExpiringLots ?? false,
       }),
     },
   )

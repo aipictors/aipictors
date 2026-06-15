@@ -6,6 +6,7 @@ import { useContext } from "react"
 import {
   ArrowUpRight,
   Bell,
+  Coins,
   FileWarning,
   MessageSquareWarning,
   Shield,
@@ -53,6 +54,11 @@ const quickActions = [
     subtitle: "非公開処理と通知を実行",
   },
   {
+    href: "/admin/coins",
+    title: "コイン操作",
+    subtitle: "全体・プラン別に一括付与 / 減少",
+  },
+  {
     href: "/admin/releases/new",
     title: "お知らせ追加",
     subtitle: "microCMS と Discord に同時投稿",
@@ -65,6 +71,12 @@ const quickActions = [
 ] as const
 
 const operationCards = [
+  {
+    title: "コイン一括操作",
+    description:
+      "全ユーザ、またはプラン別ユーザに対してフリーコインとプレミアムコインを一括で付与・減少できます。",
+    icon: Coins,
+  },
   {
     title: "作品モデレーション",
     description:

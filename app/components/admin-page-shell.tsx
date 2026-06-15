@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react"
 import {
+  Coins,
   GripVertical,
   House,
   ImageIcon,
@@ -51,6 +52,12 @@ const adminNavItems: readonly AdminNavItem[] = [
     title: "作品管理",
     description: "非公開処理・理由通知",
     icon: ImageIcon,
+  },
+  {
+    href: "/admin/coins",
+    title: "コイン操作",
+    description: "全体・プラン別の一括付与と減少",
+    icon: Coins,
   },
   {
     href: "/admin/releases/new",
