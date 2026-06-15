@@ -118,11 +118,6 @@ export function UserNavigationMenuContent (props: Props) {
           <span>{t("設定")}</span>
         </MenuItemLink>
 
-        <MenuItemLink to="/support/chat">
-          <CoffeeIcon className="mr-2 h-4 w-4" />
-          <span>{t("サポート")}</span>
-        </MenuItemLink>
-
         <MenuItemLink to="/plus">
           <GemIcon className="mr-2 h-4 w-4" />
           <span>{t("Aipictors+")} </span>

@@ -940,13 +940,6 @@ export const META: { [key: string]: MetaData } = {
     enDescription: "Manage your color preferences",
     isIndex: false,
   },
-  SETTINGS_SUPPORT: {
-    title: "サポート設定",
-    enTitle: "Support Settings",
-    description: "You can configure your support settings",
-    enDescription: "Manage your support settings",
-    isIndex: false,
-  },
   SETTINGS_STICKERS: {
     title: "スタンプ設定",
     enTitle: "Sticker Settings",
