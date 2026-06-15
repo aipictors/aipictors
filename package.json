@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build && wrangler pages functions build --outdir build/worker",
-    "dev": "remix vite:dev",
-    "dev:fresh": "rm -rf build .vite && remix vite:dev",
+    "dev": "if [[ -f ../aipictors-system/.env ]]; then set -a && source ../aipictors-system/.env && export VITE_DEV_WORDPRESS_API_KEY=${VITE_DEV_WORDPRESS_API_KEY:-$WORDPRESS_API_KEY} && set +a; fi && remix vite:dev",
+    "dev:fresh": "rm -rf build .vite && if [[ -f ../aipictors-system/.env ]]; then set -a && source ../aipictors-system/.env && export VITE_DEV_WORDPRESS_API_KEY=${VITE_DEV_WORDPRESS_API_KEY:-$WORDPRESS_API_KEY} && set +a; fi && remix vite:dev",
     "start": "wrangler pages dev ./build/client",
     "check": "tsc -p tsconfig.dts.json --noEmit --isolatedDeclarations",
     "check:tsc": "tsc --noEmit",

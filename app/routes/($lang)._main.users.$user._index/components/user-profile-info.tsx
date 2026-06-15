@@ -1,10 +1,16 @@
-import type React from "react"
-import { useState } from "react"
 import { RiEye2Line, RiHeartLine } from "@remixicon/react"
+import type React from "react"
+import { useContext, useState } from "react"
+import { SupportButton } from "~/components/support-button"
+import { AuthContext } from "~/contexts/auth-context"
+import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
+import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import { cn } from "~/lib/utils"
 
 type UserProfileInfoProps = {
+  userId: string
+  userIconUrl?: string | null
   name: string
   receivedLikesCount: number
   receivedViewsCount: number
@@ -14,6 +20,8 @@ type UserProfileInfoProps = {
 }
 
 const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
+  userId,
+  userIconUrl,
   name,
   receivedLikesCount,
   receivedViewsCount,
@@ -23,6 +31,9 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
 }) => {
   const [showFullBiography, setShowFullBiography] = useState(false)
   const t = useTranslation()
+  const authContext = useContext(AuthContext)
+  const { balance } = useCoinBalance()
+  const hasViewerSession = hasViewerRequestSession()
 
   const toggleBiography = () => {
     setShowFullBiography(!showFullBiography)
@@ -32,32 +43,51 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
     ? biography
     : biography.slice(0, 100)
 
+  const canShowSupportButton =
+    (!authContext.isLoading || hasViewerSession) &&
+    (!authContext.isNotLoggedIn || hasViewerSession) &&
+    authContext.userId !== userId &&
+    balance !== null
+
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="flex flex-col">
-        <h1 className="font-bold text-2xl">{name}</h1>
-        <div className="flex items-center gap-4">
-          <span className="flex items-center text-base">
-            <RiHeartLine className="mr-1 fill-red-500" />
-            {receivedLikesCount}
-          </span>
-          <span className="flex items-center text-base">
-            <RiEye2Line className="mr-1" />
-            {receivedViewsCount}
-          </span>
-          <span className="text-base">
-            {t("入賞回数", "Awards")} {awardsCount} {t("回", "times")}
-          </span>
+      <div className="flex flex-col gap-4">
+        <div>
+          <h1 className="font-bold text-2xl">{name}</h1>
+          <div className="flex items-center gap-4 mt-2">
+            <span className="flex items-center text-base">
+              <RiHeartLine className="mr-1 fill-red-500" />
+              {receivedLikesCount}
+            </span>
+            <span className="flex items-center text-base">
+              <RiEye2Line className="mr-1" />
+              {receivedViewsCount}
+            </span>
+            <span className="text-base">
+              {t("入賞回数", "Awards")} {awardsCount} {t("回", "times")}
+            </span>
+          </div>
+          <div className="text-base mt-2">
+            <span>
+              {followersCount} {t("フォロワー", "followers")}
+            </span>
+          </div>
         </div>
-        <div className="text-base">
-          <span>
-            {followersCount} {t("フォロワー", "followers")}
-          </span>
-        </div>
+
+        {canShowSupportButton && (
+          <SupportButton
+            targetUserId={userId}
+            targetUserName={name}
+            targetUserIconUrl={userIconUrl}
+            freeCoinBalance={balance.freeCoinsBalance}
+            premiumCoinBalance={balance.premiumCoinsBalance}
+          />
+        )}
+
         {biography && (
           <div>
             <p
-              className={cn("mt-4 text-gray", {
+              className={cn("text-gray", {
                 truncate: !showFullBiography,
               })}
             >

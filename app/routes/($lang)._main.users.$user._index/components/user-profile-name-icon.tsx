@@ -4,11 +4,14 @@ import { PenLine } from "lucide-react"
 import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
 import { OmissionNumber } from "~/components/omission-number"
+import { SupportButton } from "~/components/support-button"
 import { SensitiveToggle } from "~/components/sensitive/sensitive-toggle"
 import { SnsIconLink } from "~/components/sns-icon"
 import { Button } from "~/components/ui/button"
 import { AuthContext } from "~/contexts/auth-context"
+import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
+import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import { PromptonRequestColorfulButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-colorful-button"
 import { ProfileEditDialog } from "~/routes/($lang)._main.users.$user._index/components/profile-edit-dialog"
 import { UserActionOther } from "~/routes/($lang)._main.users.$user._index/components/user-action-other"
@@ -45,6 +48,8 @@ export function UserProfileNameIcon(props: Props) {
   const t = useTranslation()
 
   const authContext = useContext(AuthContext)
+  const { balance } = useCoinBalance()
+  const hasViewerSession = hasViewerRequestSession()
 
   const isMyPage = authContext.userId === user.id
 
@@ -57,6 +62,11 @@ export function UserProfileNameIcon(props: Props) {
   const promptonId = user.promptonUser?.id ?? null
   const canReceiveSupport =
     featurePromptonRequestData?.featurePromptonRequest === true
+  const canShowSupportButton =
+    !isMyPage &&
+    (!authContext.isLoading || hasViewerSession) &&
+    (!authContext.isNotLoggedIn || hasViewerSession) &&
+    balance !== null
 
   const biographyText = t(
     user.biography ?? "",
@@ -216,6 +226,16 @@ export function UserProfileNameIcon(props: Props) {
                 }
               />
             )}
+            {canShowSupportButton && balance && (
+              <SupportButton
+                targetUserId={user.id}
+                targetUserName={user.name}
+                targetUserIconUrl={user.iconUrl}
+                freeCoinBalance={balance.freeCoinsBalance}
+                premiumCoinBalance={balance.premiumCoinsBalance}
+                triggerClassName="rounded-full font-bold"
+              />
+            )}
             <UserActionOther
               id={user.id}
               isMuted={isMuted}
@@ -303,6 +323,16 @@ export function UserProfileNameIcon(props: Props) {
                     {t("フォロー中", "Following")}
                   </Button>
                 }
+              />
+            )}
+            {canShowSupportButton && balance && (
+              <SupportButton
+                targetUserId={user.id}
+                targetUserName={user.name}
+                targetUserIconUrl={user.iconUrl}
+                freeCoinBalance={balance.freeCoinsBalance}
+                premiumCoinBalance={balance.premiumCoinsBalance}
+                triggerClassName="w-full rounded-full font-bold"
               />
             )}
             {typeof promptonId === "string" && canReceiveSupport && (

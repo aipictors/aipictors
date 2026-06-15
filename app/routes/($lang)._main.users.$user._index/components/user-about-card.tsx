@@ -1,5 +1,10 @@
 import { type FragmentOf, graphql } from "gql.tada"
+import { useContext } from "react"
+import { SupportButton } from "~/components/support-button"
+import { AuthContext } from "~/contexts/auth-context"
+import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
+import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import { UserBiography } from "~/routes/($lang)._main.users.$user._index/components/user-biography"
 
 type Props = {
@@ -8,6 +13,9 @@ type Props = {
 
 export function UserAboutCard(props: Props) {
   const t = useTranslation()
+  const authContext = useContext(AuthContext)
+  const { balance } = useCoinBalance()
+  const hasViewerSession = hasViewerRequestSession()
 
   const startedAtText = new Date(
     props.user.createdAt * 1000,
@@ -26,6 +34,12 @@ export function UserAboutCard(props: Props) {
 
   const isBiographyEmpty = biographyText.length === 0
   const isBiographyShort = biographyText.length > 0 && biographyText.length < 24
+
+  const canShowSupportButton =
+    (!authContext.isLoading || hasViewerSession) &&
+    (!authContext.isNotLoggedIn || hasViewerSession) &&
+    authContext.userId !== props.user.id &&
+    balance !== null
 
   return (
     <section className="hidden space-y-3 md:block">
@@ -46,6 +60,18 @@ export function UserAboutCard(props: Props) {
           </p>
         )}
       </div>
+
+      {canShowSupportButton && balance && (
+        <div className="pt-2">
+          <SupportButton
+            targetUserId={props.user.id}
+            targetUserName={props.user.name}
+            targetUserIconUrl={props.user.iconUrl}
+            freeCoinBalance={balance.freeCoinsBalance}
+            premiumCoinBalance={balance.premiumCoinsBalance}
+          />
+        </div>
+      )}
     </section>
   )
 }
@@ -53,6 +79,8 @@ export function UserAboutCard(props: Props) {
 export const UserAboutCardFragment = graphql(
   `fragment UserAboutCard on UserNode @_unmask {
     id
+    name
+    iconUrl
     createdAt
     biography
     enBiography

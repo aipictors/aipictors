@@ -25,6 +25,11 @@ import {
   UserIcon,
 } from "lucide-react"
 import { CoinIcon } from "~/components/coin-icon"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import {
+  getViewerRequestHeaders,
+  hasViewerRequestSession,
+} from "~/lib/viewer-request-headers"
 import { useQuery } from "@apollo/client/index"
 import { getAuth, getIdToken } from "firebase/auth"
 import { useContext, useEffect, useState } from "react"
@@ -54,6 +59,7 @@ type Props = {
 export function UserNavigationMenuContent (props: Props) {
   const authContext = useContext(AuthContext)
   const [freeCoinBalance, setFreeCoinBalance] = useState<number | null>(null)
+  const [premiumCoinBalance, setPremiumCoinBalance] = useState<number | null>(null)
 
   const {
     data,
@@ -98,27 +104,29 @@ export function UserNavigationMenuContent (props: Props) {
   useEffect(() => {
     const loadCoinSummary = async () => {
       if (authContext.isLoading || authContext.isNotLoggedIn) {
-        setFreeCoinBalance(null)
-        return
+        if (!hasViewerRequestSession()) {
+          setFreeCoinBalance(null)
+          setPremiumCoinBalance(null)
+          return
+        }
       }
 
-      const currentUser = getAuth().currentUser
-      if (!currentUser) {
+      if (!hasViewerRequestSession()) {
         setFreeCoinBalance(null)
+        setPremiumCoinBalance(null)
         return
       }
 
       try {
-        const idToken = await getIdToken(currentUser)
         const response = await fetch("/api/coins/summary", {
           headers: {
-            authorization: `Bearer ${idToken}`,
+            ...(await getViewerRequestHeaders()),
           },
         })
 
         const json = (await response.json()) as {
           error: string | null
-          data?: { freeBalance?: number }
+          data?: { freeBalance?: number; premiumBalance?: number }
         }
 
         if (!response.ok || json.error) {
@@ -126,8 +134,10 @@ export function UserNavigationMenuContent (props: Props) {
         }
 
         setFreeCoinBalance(json.data?.freeBalance ?? 0)
+        setPremiumCoinBalance(json.data?.premiumBalance ?? 0)
       } catch {
         setFreeCoinBalance(null)
+        setPremiumCoinBalance(null)
       }
     }
 
@@ -566,15 +576,26 @@ export function UserNavigationMenuContent (props: Props) {
         </div>
         <Link
           to={getSensitiveLink("/settings/points")}
-          className="mt-5 flex items-center gap-2 hover:underline"
+          className="mt-5 flex flex-col items-start gap-2 hover:underline"
         >
-          <CoinIcon className="h-5 w-5 shrink-0" />
-          <span className={userNavigationStyles.followCount}>
-            {freeCoinBalance ?? "-"}
-          </span>
-          <span className={userNavigationStyles.followLabel}>
-            {t("フリーコイン", "Free Coins")}
-          </span>
+          <div className="flex items-center gap-2">
+            <CoinIcon className="h-5 w-5 shrink-0" />
+            <span className={userNavigationStyles.followCount}>
+              {freeCoinBalance ?? "-"}
+            </span>
+            <span className={userNavigationStyles.followLabel}>
+              {t("フリーコイン", "Free Coins")}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <PremiumCoinIcon className="h-5 w-5 shrink-0" />
+            <span className={userNavigationStyles.followCount}>
+              {premiumCoinBalance ?? "-"}
+            </span>
+            <span className={userNavigationStyles.followLabel}>
+              {t("プレミアムコイン", "Premium Coins")}
+            </span>
+          </div>
         </Link>
       </div>
 

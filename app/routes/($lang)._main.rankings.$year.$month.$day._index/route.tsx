@@ -8,11 +8,13 @@ import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
+import { fetchSupportPeriodRanking } from "~/lib/server/support-rankings.server"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import {
   RankingWorkList,
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
+import { SupportPeriodRankingList } from "~/routes/($lang)._main.rankings._index/components/support-period-ranking-list"
 import { createMeta } from "~/utils/create-meta"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
 import { RankingUserList } from "./components/ranking-user-list"
@@ -41,6 +43,10 @@ export async function loader(props: LoaderFunctionArgs) {
   const month = Number.parseInt(props.params.month)
 
   const day = Number.parseInt(props.params.day)
+  const rankingFamily =
+    new URL(props.request.url).searchParams.get("family") === "support"
+      ? "support"
+      : "standard"
 
   const redirectPath = getFutureRankingRedirectPath(props.request.url, {
     kind: "daily",
@@ -52,6 +58,36 @@ export async function loader(props: LoaderFunctionArgs) {
 
   if (redirectPath) {
     return redirect(redirectPath, { status: 302 })
+  }
+
+  if (rankingFamily === "support") {
+    const periodKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+    const [supportReceived, supportSent] = await Promise.all([
+      fetchSupportPeriodRanking({
+        context: props.context,
+        kind: "received",
+        period: "daily",
+        periodKey,
+        limit: 100,
+      }).catch(() => null),
+      fetchSupportPeriodRanking({
+        context: props.context,
+        kind: "sent",
+        period: "daily",
+        periodKey,
+        limit: 100,
+      }).catch(() => null),
+    ])
+
+    return {
+      rankingFamily,
+      year,
+      month,
+      day,
+      workAwards: null,
+      supportReceived,
+      supportSent,
+    }
   }
 
   const workAwardsResp = await loaderClient.query({
@@ -68,10 +104,13 @@ export async function loader(props: LoaderFunctionArgs) {
   })
 
   return {
+    rankingFamily,
     year,
     month,
     day,
     workAwards: workAwardsResp,
+    supportReceived: null,
+    supportSent: null,
   }
 }
 
@@ -90,6 +129,8 @@ export default function DayAwards() {
   const params = useParams()
   const data = useLoaderData<typeof loader>()
   const [searchParams, setSearchParams] = useSearchParams()
+  const rankingFamily: "standard" | "support" =
+    data.rankingFamily === "support" ? "support" : "standard"
 
   // URL パラメータから直接状態を取得（useState は使わない）
   const typeParam = searchParams.get("type")
@@ -109,6 +150,20 @@ export default function DayAwards() {
       replace: true,
       preventScrollReset: true,
     }) // replace: true で履歴を置き換え
+  }
+
+  const handleRankingFamilyChange = (family: "standard" | "support") => {
+    const newSearchParams = new URLSearchParams(searchParams)
+    if (family === "support") {
+      newSearchParams.set("family", "support")
+      newSearchParams.delete("type")
+    } else {
+      newSearchParams.delete("family")
+    }
+    setSearchParams(newSearchParams, {
+      replace: true,
+      preventScrollReset: true,
+    })
   }
 
   if (params.year === undefined) {
@@ -135,10 +190,18 @@ export default function DayAwards() {
           month={data.month}
           day={data.day}
           weekIndex={null}
-          rankingType={rankingType}
-          onRankingTypeChange={handleRankingTypeChange}
+          rankingType={rankingFamily === "standard" ? rankingType : undefined}
+          onRankingTypeChange={rankingFamily === "standard" ? handleRankingTypeChange : undefined}
+          rankingFamily={rankingFamily}
+          onRankingFamilyChange={handleRankingFamilyChange}
         />
-        {rankingType === "users" ? (
+        {rankingFamily === "support" ? (
+          <SupportPeriodRankingList
+            receivedRanking={data.supportReceived}
+            sentRanking={data.supportSent}
+            periodLabel="日間"
+          />
+        ) : rankingType === "users" ? (
           <RankingUserList year={data.year} month={data.month} day={data.day} />
         ) : (
           <RankingWorkList

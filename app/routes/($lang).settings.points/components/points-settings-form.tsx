@@ -1,9 +1,17 @@
-import { getAuth, getIdToken } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { Link } from "@remix-run/react"
 import { CoinIcon } from "~/components/coin-icon"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import {
+  getViewerRequestHeaders,
+  hasViewerRequestSession,
+} from "~/lib/viewer-request-headers"
 import { Button } from "~/components/ui/button"
 import { useTranslation } from "~/hooks/use-translation"
+import { AmazonExchangeSection } from "~/routes/($lang).settings.points/components/amazon-exchange-section"
+import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
+import { SupportRankingSection } from "~/routes/($lang).settings.points/components/support-ranking-section"
 
 const jstDateFormatter = new Intl.DateTimeFormat("ja-JP", {
   timeZone: "Asia/Tokyo",
@@ -48,6 +56,8 @@ type SummaryResponse = {
     freeBalance: number
     premiumBalance: number
     totalBalance: number
+    exchangeablePremiumBalance: number
+    lockedExchangePremiumBalance: number
     granted: boolean
     grantedPlanType: string | null
     grantedFreeCoins: number
@@ -63,12 +73,17 @@ export function PointsSettingsForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [summary, setSummary] = useState<SummaryResponse["data"]>(null)
 
-  const visibleLedger = (summary?.ledger ?? []).filter(
+  // Free coin ledger for "today's breakdown"
+  const freeLedger = (summary?.ledger ?? []).filter(
     (row) => row.coinType === "FREE",
   )
+  // All ledger for history display
+  const visibleLedger = (summary?.ledger ?? [])
+    .slice()
+    .sort((a, b) => b.createdAt - a.createdAt)
   const hasLedger = visibleLedger.length > 0
   const todayJstKey = jstDateFormatter.format(new Date())
-  const todayLedger = visibleLedger.filter(
+  const todayLedger = freeLedger.filter(
     (row) =>
       jstDateFormatter.format(new Date(row.createdAt * 1000)) === todayJstKey,
   )
@@ -96,6 +111,9 @@ export function PointsSettingsForm() {
   const visibleExpiringLots = (summary?.expiringLots ?? []).filter(
     (row) => row.coinType === "FREE",
   )
+  const premiumExpiringLots = (summary?.expiringLots ?? []).filter(
+    (row) => row.coinType === "PREMIUM",
+  )
   const hasMoreExpiringLots = visibleExpiringLots.length > 3
   const [isExpandedExpiringLots, setIsExpandedExpiringLots] = useState(false)
   const displayedExpiringLots = isExpandedExpiringLots
@@ -120,7 +138,8 @@ export function PointsSettingsForm() {
           ? t("プレミアムコイン減少", "Premium coins reduced")
           : t("プレミアムコインを使用", "Premium coins used")
       }
-      if (row.kind === "EXPIRE") return t("プレミアムコイン失効", "Premium coins expired")
+      if (row.kind === "EXPIRE")
+        return t("プレミアムコイン失効", "Premium coins expired")
       return t("プレミアムコイン付与", "Premium coins granted")
     }
 
@@ -210,28 +229,28 @@ export function PointsSettingsForm() {
   }
 
   const withAuthHeader = async () => {
-    const currentUser = getAuth().currentUser
-    if (!currentUser) {
+    try {
+      return await getViewerRequestHeaders({ includeJsonContentType: true })
+    } catch {
       throw new Error(t("ログインが必要です", "Login required"))
-    }
-
-    const idToken = await getIdToken(currentUser)
-
-    return {
-      authorization: `Bearer ${idToken}`,
-      "content-type": "application/json",
     }
   }
 
   const loadSummary = async () => {
+    if (!hasViewerRequestSession()) {
+      setSummary(null)
+      setIsLoading(false)
+      return
+    }
+
     try {
       setIsLoading(true)
       const headers = await withAuthHeader()
       const response = await fetch(
         "/api/coins/summary?includeLedger=1&includeExpiringLots=1",
         {
-        method: "GET",
-        headers,
+          method: "GET",
+          headers,
         },
       )
 
@@ -252,11 +271,12 @@ export function PointsSettingsForm() {
   }
 
   useEffect(() => {
-    loadSummary()
+    void loadSummary()
   }, [])
 
   return (
     <div className="space-y-4">
+      {/* Free coin balance */}
       <div className="rounded-xl border p-5">
         <p className="flex items-center gap-2 font-semibold text-lg">
           <CoinIcon className="h-5 w-5 shrink-0" />
@@ -264,7 +284,9 @@ export function PointsSettingsForm() {
         </p>
         <p className="mt-3 font-bold text-4xl">
           {isLoading ? "..." : formatCoinAmount(summary?.freeBalance ?? 0)}
-          <span className="ml-2 font-semibold text-xl">{t("コイン", "coins")}</span>
+          <span className="ml-2 font-semibold text-xl">
+            {t("コイン", "coins")}
+          </span>
         </p>
         <p className="mt-3 text-muted-foreground text-sm leading-6">
           {t(
@@ -274,14 +296,85 @@ export function PointsSettingsForm() {
         </p>
       </div>
 
+      {/* Premium coin balance */}
+      <div className="rounded-xl border p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="flex items-center gap-2 font-semibold text-lg">
+              <PremiumCoinIcon className="h-5 w-5 shrink-0" />
+              <span>{t("プレミアムコイン", "Premium Coins")}</span>
+            </p>
+            <p className="mt-3 font-bold text-4xl">
+              {isLoading
+                ? "..."
+                : formatCoinAmount(summary?.premiumBalance ?? 0)}
+              <span className="ml-2 font-semibold text-xl">
+                {t("コイン", "coins")}
+              </span>
+            </p>
+            <p className="mt-3 text-muted-foreground text-sm leading-6">
+              {t(
+                "購入したプレミアムコインです。生成時はフリーコインを優先して消費します。購入から3ヶ月で期限切れになります。",
+                "Purchased premium coins. Free coins are consumed first during generation. Coins expire 3 months after purchase.",
+              )}
+            </p>
+            {premiumExpiringLots.length > 0 && (
+              <div className="mt-3 space-y-1">
+                <p className="font-semibold text-muted-foreground text-xs">
+                  {t("失効予定（プレミアム）", "Scheduled to expire (Premium)")}
+                </p>
+                {premiumExpiringLots.slice(0, 3).map((lot, i) => (
+                  <p
+                    key={`${lot.coinType}-${lot.expiresAt}-${i}`}
+                    className="text-muted-foreground text-xs"
+                  >
+                    {formatCoinAmount(lot.amount)}
+                    {t("コイン", "coins")} —{" "}
+                    {formatLedgerDateTime(lot.expiresAt)}
+                    {t("に失効", " expires")}
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="shrink-0">
+            <PurchasePremiumCoinsDialog
+              currentBalance={summary?.premiumBalance ?? 0}
+            />
+          </div>
+        </div>
+      </div>
+
+      <SupportRankingSection />
+
+      <div className="flex justify-end">
+        <Button asChild variant="outline">
+          <Link to="/settings/support-received">
+            {t(
+              "推された累計とAmazon交換を見る",
+              "View received support totals & Amazon exchange",
+            )}
+          </Link>
+        </Button>
+      </div>
+
+      <AmazonExchangeSection
+        premiumBalance={summary?.premiumBalance ?? 0}
+        exchangeablePremiumBalance={summary?.exchangeablePremiumBalance ?? 0}
+      />
+
       <div className="space-y-3 rounded-xl border p-4">
-        <p className="font-semibold text-lg">{t("今日の内訳", "Today's breakdown")}</p>
+        <p className="font-semibold text-lg">
+          {t("今日の内訳", "Today's breakdown")}
+        </p>
         <div className="grid gap-2 text-sm md:grid-cols-3">
           <div className="rounded-lg border p-3">
             <p className="text-muted-foreground text-xs">
               {t("今日もらったコイン", "Coins received today")}
             </p>
-            <p className="font-semibold text-xl">{formatCoinAmount(grantedCoins)}</p>
+            <p className="font-semibold text-xl">
+              {formatCoinAmount(grantedCoins)}
+            </p>
             <p className="mt-1 text-muted-foreground text-xs">
               {t("本日付与された無料コイン", "Free coins granted today")}
             </p>
@@ -290,18 +383,28 @@ export function PointsSettingsForm() {
             <p className="text-muted-foreground text-xs">
               {t("今日使ったコイン", "Coins used today")}
             </p>
-            <p className="font-semibold text-xl">{formatCoinAmount(consumedCoins)}</p>
+            <p className="font-semibold text-xl">
+              {formatCoinAmount(consumedCoins)}
+            </p>
             <p className="mt-1 text-muted-foreground text-xs">
-              {t("画像生成などで使用済み", "Used for image generation and related features")}
+              {t(
+                "画像生成などで使用済み",
+                "Used for image generation and related features",
+              )}
             </p>
           </div>
           <div className="rounded-lg border p-3">
             <p className="text-muted-foreground text-xs">
               {t("今日失効したコイン", "Coins expired today")}
             </p>
-            <p className="font-semibold text-xl">{formatCoinAmount(expiredCoins)}</p>
+            <p className="font-semibold text-xl">
+              {formatCoinAmount(expiredCoins)}
+            </p>
             <p className="mt-1 text-muted-foreground text-xs">
-              {t("24:00に期限切れになったコイン", "Coins that expired at 24:00")}
+              {t(
+                "24:00に期限切れになったコイン",
+                "Coins that expired at 24:00",
+              )}
             </p>
           </div>
         </div>
@@ -339,7 +442,10 @@ export function PointsSettingsForm() {
         </p>
         {displayedExpiringLots.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            {t("現在、失効予定のフリーコインはありません", "No free coins are currently scheduled to expire")}
+            {t(
+              "現在、失効予定のフリーコインはありません",
+              "No free coins are currently scheduled to expire",
+            )}
           </p>
         ) : (
           <div className="space-y-2">
@@ -348,7 +454,10 @@ export function PointsSettingsForm() {
                 key={`${row.coinType}-${row.expiresAt}-${index}`}
                 className="flex items-center justify-between rounded-lg border p-3 text-sm"
               >
-                <span className="font-semibold">{formatCoinAmount(row.amount)}{t("コイン", "coins")}</span>
+                <span className="font-semibold">
+                  {formatCoinAmount(row.amount)}
+                  {t("コイン", "coins")}
+                </span>
                 <span className="text-muted-foreground">
                   {formatLedgerDateTime(row.expiresAt)}
                 </span>
@@ -372,27 +481,49 @@ export function PointsSettingsForm() {
 
       <div className="space-y-3 rounded-xl border p-4">
         <div className="flex items-center justify-between">
-          <p className="font-semibold text-lg">{t("利用履歴", "Usage history")}</p>
+          <p className="font-semibold text-lg">
+            {t("利用履歴", "Usage history")}
+          </p>
           <Button variant="outline" onClick={loadSummary} disabled={isLoading}>
             {t("履歴を更新", "Refresh history")}
           </Button>
         </div>
         {!hasLedger ? (
-          <p className="text-muted-foreground text-sm">{t("履歴はありません", "No history")}</p>
+          <p className="text-muted-foreground text-sm">
+            {t("履歴はありません", "No history")}
+          </p>
         ) : (
           <div className="space-y-2">
             {visibleLedger.map((row) => (
               <div key={row.id} className="rounded-lg border p-3 text-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
-                    <p className="font-semibold">{getHistoryTitle(row)}</p>
-                    <p className="text-muted-foreground text-xs">{getHistoryDetail(row)}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold">{getHistoryTitle(row)}</p>
+                      {row.coinType === "PREMIUM" && (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-700 text-xs dark:bg-amber-900/40 dark:text-amber-400">
+                          {t("プレミアム", "Premium")}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-muted-foreground text-xs">
+                      {getHistoryDetail(row)}
+                    </p>
                     <p className="text-muted-foreground text-xs">
                       {formatLedgerDateTime(row.createdAt)}
                     </p>
                   </div>
-                  <span className={row.delta >= 0 ? "font-semibold text-emerald-600" : "font-semibold text-red-600"}>
-                    {row.delta > 0 ? `+${formatCoinAmount(row.delta)}` : `-${formatCoinAmount(Math.abs(row.delta))}`} {t("コイン", "coins")}
+                  <span
+                    className={
+                      row.delta >= 0
+                        ? "font-semibold text-emerald-600"
+                        : "font-semibold text-red-600"
+                    }
+                  >
+                    {row.delta > 0
+                      ? `+${formatCoinAmount(row.delta)}`
+                      : `-${formatCoinAmount(Math.abs(row.delta))}`}{" "}
+                    {t("コイン", "coins")}
                   </span>
                 </div>
               </div>

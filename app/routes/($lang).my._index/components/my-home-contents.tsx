@@ -22,6 +22,7 @@ import {
   ResponsivePhotoWorksAlbum,
   PhotoAlbumWorkFragment,
 } from "~/components/responsive-photo-works-album"
+import { SupportRankingSection } from "~/routes/($lang).settings.points/components/support-ranking-section"
 
 type MyEventsPreviewQueryData = {
   userEvents: Array<{
@@ -289,6 +290,10 @@ export function DashboardHomeContents () {
               </DashboardHomeContentContainer>
             </div>
           )}
+        </div>
+
+        <div className="w-full">
+          <SupportRankingSection />
         </div>
 
         <div className="w-full">

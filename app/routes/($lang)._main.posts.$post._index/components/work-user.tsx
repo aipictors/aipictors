@@ -3,10 +3,13 @@ import { Link } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { useContext } from "react"
 import { FollowButton } from "~/components/button/follow-button"
+import { SupportButton } from "~/components/support-button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
+import { useCoinBalance } from "~/hooks/use-coin-balance"
 import { useTranslation } from "~/hooks/use-translation"
+import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import { PromptonRequestTextButton } from "~/routes/($lang)._main.posts.$post._index/components/prompton-request-text-button"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 
@@ -28,9 +31,10 @@ type Props = {
  */
 export function WorkUser(props: Props) {
   const appContext = useContext(AuthContext)
+  const hasViewerSession = hasViewerRequestSession()
 
   const t = useTranslation()
-
+  const { balance } = useCoinBalance()
   const { data = null } = useQuery(userQuery, {
     skip: appContext.isLoading || appContext.userId === null,
     variables: {
@@ -39,7 +43,11 @@ export function WorkUser(props: Props) {
   })
 
   const isFollow = data?.user?.isFollowee ?? false
-
+  const canShowSupportButton =
+    (!appContext.isLoading || hasViewerSession) &&
+    (!appContext.isNotLoggedIn || hasViewerSession) &&
+    appContext.userId !== props.userId &&
+    balance !== null
   return (
     <Card>
       <CardHeader>
@@ -74,6 +82,15 @@ export function WorkUser(props: Props) {
         <FollowButton targetUserId={props.userId} isFollow={isFollow} />
         {props.userPromptonId && props.userId !== appContext.userId && (
           <PromptonRequestTextButton promptonId={props.userPromptonId} />
+        )}
+        {canShowSupportButton && (
+          <SupportButton
+            targetUserId={props.userId}
+            targetUserName={props.userName}
+            targetUserIconUrl={props.userIconImageURL}
+            freeCoinBalance={balance.freeCoinsBalance}
+            premiumCoinBalance={balance.premiumCoinsBalance}
+          />
         )}
         <div>
           {t(

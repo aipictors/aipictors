@@ -4,18 +4,21 @@ import type {
   MetaFunction,
 } from "@remix-run/cloudflare"
 import { redirect } from "@remix-run/cloudflare"
-import { useLoaderData, useParams } from "@remix-run/react"
+import { useLoaderData, useParams, useSearchParams } from "@remix-run/react"
 import { graphql } from "gql.tada"
 import { config, META } from "~/config"
 import { loaderClient } from "~/lib/loader-client"
+import { fetchSupportPeriodRanking } from "~/lib/server/support-rankings.server"
 import { RankingHeader } from "~/routes/($lang)._main.rankings._index/components/ranking-header"
 import {
   RankingWorkList,
   WorkAwardListItemFragment,
 } from "~/routes/($lang)._main.rankings._index/components/ranking-work-list"
+import { SupportPeriodRankingList } from "~/routes/($lang)._main.rankings._index/components/support-period-ranking-list"
 import { createMeta } from "~/utils/create-meta"
 import { getPreviousWeeklyPeriod } from "~/utils/get-weeks-in-month"
 import { getFutureRankingRedirectPath } from "~/utils/rankings/future-ranking-redirect"
+import { getWeekDateRange } from "~/utils/get-weeks-in-month"
 
 export async function loader(props: LoaderFunctionArgs) {
   // const redirectResponse = checkLocaleRedirect(props.request)
@@ -41,6 +44,10 @@ export async function loader(props: LoaderFunctionArgs) {
   const month = Number.parseInt(props.params.month)
 
   const week = Number.parseInt(props.params.week)
+  const rankingFamily =
+    new URL(props.request.url).searchParams.get("family") === "support"
+      ? "support"
+      : "standard"
 
   const redirectPath = getFutureRankingRedirectPath(props.request.url, {
     kind: "weekly",
@@ -58,6 +65,37 @@ export async function loader(props: LoaderFunctionArgs) {
   let targetMonth = month
   let targetWeek = week
   let workAwardsResp
+
+  if (rankingFamily === "support") {
+    const { startDate } = getWeekDateRange(year, month, week)
+    const periodKey = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, "0")}-${String(startDate.getDate()).padStart(2, "0")}`
+    const [supportReceived, supportSent] = await Promise.all([
+      fetchSupportPeriodRanking({
+        context: props.context,
+        kind: "received",
+        period: "weekly",
+        periodKey,
+        limit: 100,
+      }).catch(() => null),
+      fetchSupportPeriodRanking({
+        context: props.context,
+        kind: "sent",
+        period: "weekly",
+        periodKey,
+        limit: 100,
+      }).catch(() => null),
+    ])
+
+    return {
+      rankingFamily,
+      year,
+      month,
+      weekIndex: week,
+      workAwards: null,
+      supportReceived,
+      supportSent,
+    }
+  }
 
   for (let attempt = 0; attempt < 8; attempt += 1) {
     workAwardsResp = await loaderClient.query({
@@ -94,10 +132,13 @@ export async function loader(props: LoaderFunctionArgs) {
   }
 
   return {
+    rankingFamily,
     year: targetYear,
     month: targetMonth,
     weekIndex: targetWeek,
     workAwards: workAwardsResp,
+    supportReceived: null,
+    supportSent: null,
   }
 }
 
@@ -114,6 +155,7 @@ export const headers: HeadersFunction = () => ({
  */
 export default function MonthlyAwards() {
   const params = useParams()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   if (params.year === undefined) {
     return null
@@ -124,6 +166,8 @@ export default function MonthlyAwards() {
   }
 
   const data = useLoaderData<typeof loader>()
+  const rankingFamily: "standard" | "support" =
+    data.rankingFamily === "support" ? "support" : "standard"
 
   if (data === null) {
     return null
@@ -137,14 +181,35 @@ export default function MonthlyAwards() {
           month={data.month}
           day={null}
           weekIndex={data.weekIndex}
+          rankingFamily={rankingFamily}
+          onRankingFamilyChange={(family) => {
+            const newSearchParams = new URLSearchParams(searchParams)
+            if (family === "support") {
+              newSearchParams.set("family", "support")
+            } else {
+              newSearchParams.delete("family")
+            }
+            setSearchParams(newSearchParams, {
+              replace: true,
+              preventScrollReset: true,
+            })
+          }}
         />
-        <RankingWorkList
-          year={data.year}
-          month={data.month}
-          day={null}
-          weekIndex={data.weekIndex}
-          awards={data.workAwards.data.workAwards}
-        />
+        {rankingFamily === "support" ? (
+          <SupportPeriodRankingList
+            receivedRanking={data.supportReceived}
+            sentRanking={data.supportSent}
+            periodLabel="週間"
+          />
+        ) : (
+          <RankingWorkList
+            year={data.year}
+            month={data.month}
+            day={null}
+            weekIndex={data.weekIndex}
+            awards={data.workAwards.data.workAwards}
+          />
+        )}
       </div>
     </>
   )

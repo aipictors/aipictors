@@ -27,6 +27,7 @@ import {
   UserPickupContents,
   UserPickupFragment,
 } from "~/routes/($lang)._main.users.$user._index/components/user-pickup-contents"
+import { UserSupportRankingSection } from "~/routes/($lang)._main.users.$user._index/components/user-support-ranking-section"
 
 export async function loader(props: LoaderFunctionArgs) {
   if (props.params.user === undefined) {
@@ -197,6 +198,10 @@ export default function UserLayout() {
     <div className="flex w-full flex-col justify-center">
       <div className="mx-auto w-full max-w-6xl space-y-6 px-4 md:px-8">
         <UserAboutCard user={data.user} />
+        <UserSupportRankingSection
+          targetUserId={data.user.id}
+          targetUserLogin={decodeURIComponent(params.user)}
+        />
         <UserPickupContents
           userPickupWorks={data.user.featuredWorks ?? []}
           userNewWorks={data.user.works ?? []}

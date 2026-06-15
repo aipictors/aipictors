@@ -33,3 +33,9 @@ For preview/dev, replace the domain with your deployed domain.
 
 Points balance, ledger, and Stripe webhook processing are handled by `aipictors-api` on Neon.
 The `/api/stripe/points-webhook` route now forwards the raw Stripe payload to `aipictors-api` for signature verification and persistence.
+
+---
+
+## Related
+
+プレミアムコイン（有償コイン）の購入・推し機能・ランキングについては [premium-coins-integration.md](./premium-coins-integration.md) を参照してください。

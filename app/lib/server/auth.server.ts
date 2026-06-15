@@ -11,14 +11,21 @@ export type VerifiedViewer = {
 export const verifyViewerFromGraphQL = async (props: {
   graphqlEndpoint: string
   authorization: string
+  wpUserId?: string | null
 }): Promise<VerifiedViewer | null> => {
+  const headers: Record<string, string> = {
+    "content-type": "application/json",
+    authorization: props.authorization,
+    platform: "web",
+  }
+
+  if (props.wpUserId) {
+    headers["wp-user-id"] = props.wpUserId
+  }
+
   const response = await fetch(props.graphqlEndpoint, {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: props.authorization,
-      platform: "web",
-    },
+    headers,
     body: JSON.stringify({ query: viewerIdQuery }),
   })
 

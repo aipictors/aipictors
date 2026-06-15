@@ -28,6 +28,8 @@ type Props = {
   weekIndex: number | null
   rankingType?: "works" | "users"
   onRankingTypeChange?: (type: "works" | "users") => void
+  rankingFamily?: "standard" | "support"
+  onRankingFamilyChange?: (family: "standard" | "support") => void
   pathnamePrefix?: string
   showRankingFamilyToggle?: boolean
   defaultPathnamePrefix?: string
@@ -42,6 +44,7 @@ export function RankingHeader(props: Props) {
   const day = props.day
   const weekIndex = props.weekIndex ?? 1
   const pathnamePrefix = props.pathnamePrefix ?? "/rankings"
+  const rankingFamily = props.rankingFamily ?? "standard"
   const showRankingFamilyToggle = props.showRankingFamilyToggle ?? true
   const defaultPathnamePrefix = props.defaultPathnamePrefix ?? "/rankings"
   const aiPathnamePrefix = props.aiPathnamePrefix ?? "/ai-rankings"
@@ -398,7 +401,7 @@ export function RankingHeader(props: Props) {
                     : ""}
               </h2>
               <p className="text-muted-foreground text-sm">
-                通常 / AI、作品 / ユーザー、日間 / 週間 / 月間をコンパクトに切り替えられます。
+                通常 / AI / 推し、作品 / ユーザー、日間 / 週間 / 月間をコンパクトに切り替えられます。
               </p>
             </div>
           </div>
@@ -429,17 +432,37 @@ export function RankingHeader(props: Props) {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(defaultRankingsPath)}
+            onClick={() =>
+              props.onRankingFamilyChange
+                ? props.onRankingFamilyChange("standard")
+                : navigate(defaultRankingsPath)
+            }
             className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
-              !isAiRankingPage
+              !isAiRankingPage && rankingFamily === "standard"
                 ? "bg-gradient-to-r from-slate-700 to-slate-900 text-white shadow-sm dark:from-slate-200 dark:to-slate-400 dark:text-slate-950"
                 : "text-muted-foreground hover:bg-background hover:text-foreground"
             }`}
-            disabled={!isAiRankingPage}
+            disabled={!isAiRankingPage && rankingFamily === "standard"}
           >
             <ImageIcon className="h-4 w-4" />
             {t("通常ランキング", "Standard Rankings")}
           </Button>
+          {!isAiRankingPage && props.onRankingFamilyChange && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => props.onRankingFamilyChange?.("support")}
+              className={`h-9 rounded-full px-3 text-xs transition-all duration-200 sm:px-4 sm:text-sm ${
+                rankingFamily === "support"
+                  ? "bg-gradient-to-r from-amber-500 to-sky-500 text-white shadow-sm"
+                  : "text-muted-foreground hover:bg-background hover:text-foreground"
+              }`}
+              disabled={rankingFamily === "support"}
+            >
+              <UsersIcon className="h-4 w-4" />
+              {t("推し・貢献度", "Support Rankings")}
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
@@ -457,7 +480,7 @@ export function RankingHeader(props: Props) {
               </div>
             )}
 
-            {props.day !== null && props.onRankingTypeChange && (
+            {props.day !== null && props.onRankingTypeChange && rankingFamily === "standard" && (
               <div className="flex min-w-0 items-center gap-1 rounded-full border border-border/50 bg-muted/30 p-1">
             <Button
               variant="ghost"

@@ -13,9 +13,13 @@ const getApiBaseUrl = (context: unknown) => {
 }
 
 const getRequiredInternalToken = (context: unknown) => {
-  const token = getServerEnvValue(context, "AIPICTORS_API_INTERNAL_TOKEN")
+  const token =
+    getServerEnvValue(context, "AIPICTORS_API_INTERNAL_TOKEN") ??
+    getServerEnvValue(context, "INTERNAL_API_TOKEN")
   if (!token) {
-    throw new Error("AIPICTORS_API_INTERNAL_TOKEN is not configured")
+    throw new Error(
+      "AIPICTORS_API_INTERNAL_TOKEN or INTERNAL_API_TOKEN is not configured",
+    )
   }
   return token
 }

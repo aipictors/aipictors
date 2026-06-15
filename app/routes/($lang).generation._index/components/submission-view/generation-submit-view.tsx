@@ -1,5 +1,6 @@
 import { AppFixedContent } from "~/components/app/app-fixed-content"
-import { getAuth, getIdToken } from "firebase/auth"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import { getAuth } from "firebase/auth"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
@@ -23,6 +24,10 @@ import {
   logError,
 } from "~/routes/($lang).generation._index/utils/client-diagnostics-logger"
 import { useIpAddress } from "~/hooks/use-ip-address"
+import {
+  getViewerRequestHeaders,
+  hasViewerRequestSession,
+} from "~/lib/viewer-request-headers"
 
 const standardImageGenerationCoinCost = 10
 const imageEditGenerationCoinCost = 50
@@ -102,21 +107,13 @@ export function GenerationSubmissionView (props: Props) {
   const initialGrantToastShownRef = useRef(false)
 
   const loadCoinSummary = async () => {
-    if (!authContext.isLoggedIn) {
+    if (!authContext.isLoggedIn && !hasViewerRequestSession()) {
       setCoinSummary(null)
       return
     }
 
-    const currentUser = getAuth().currentUser
-    if (!currentUser) {
-      return
-    }
-
-    const idToken = await getIdToken(currentUser)
     const response = await fetch("/api/coins/summary", {
-      headers: {
-        authorization: `Bearer ${idToken}`,
-      },
+      headers: await getViewerRequestHeaders(),
     })
 
     const json = (await response.json()) as CoinSummaryResponse
@@ -1090,6 +1087,13 @@ export function GenerationSubmissionView (props: Props) {
             <div>
               <span className="text-muted-foreground">フリーコイン </span>
               <span className="font-semibold">{formatCoinAmount(coinSummary.freeBalance)}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <PremiumCoinIcon className="h-4 w-4" />
+              <span className="text-muted-foreground">プレミアムコイン </span>
+              <span className="font-semibold">
+                {formatCoinAmount(coinSummary.premiumBalance)}
+              </span>
             </div>
             <Link
               to="/settings/points"

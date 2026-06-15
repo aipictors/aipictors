@@ -20,6 +20,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
 
   const authorization = request.headers.get("authorization")
+  const wpUserId = request.headers.get("wp-user-id")
   if (!authorization?.startsWith("Bearer ")) {
     return toJsonResponse({ error: "Unauthorized", data: null }, 401)
   }
@@ -35,6 +36,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const viewer = await verifyViewerFromGraphQL({
     graphqlEndpoint,
     authorization,
+    wpUserId,
   })
 
   if (!viewer) {

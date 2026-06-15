@@ -1,6 +1,7 @@
 import { AppCommonLayout } from "~/components/app/app-common-layout"
 import { AppLoadingPage } from "~/components/app/app-loading-page"
 import { AuthContext } from "~/contexts/auth-context"
+import { hasViewerRequestSession } from "~/lib/viewer-request-headers"
 import { Outlet } from "@remix-run/react"
 import { useContext } from "react"
 import { SettingsNavigation } from "~/routes/($lang).settings._index/components/settings-navigation"
@@ -11,12 +12,13 @@ export function HydrateFallback () {
 
 export default function SettingsLayout () {
   const authContext = useContext(AuthContext)
+  const hasViewerSession = hasViewerRequestSession()
 
-  if (authContext.isLoading) {
+  if (authContext.isLoading && !hasViewerSession) {
     return null
   }
 
-  if (authContext.isNotLoggedIn) {
+  if (authContext.isNotLoggedIn && !hasViewerSession) {
     return null
   }
 

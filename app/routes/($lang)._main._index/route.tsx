@@ -69,7 +69,6 @@ import {
   HomeDeferredSection,
   HomeWorkSectionPlaceholder,
 } from "~/routes/($lang)._main._index/components/home-deferred-section"
-import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import type { HomePreviewEvent } from "~/routes/($lang)._main._index/components/home-event-preview-list"
 import { HomeHotWorksSection } from "~/routes/($lang)._main._index/components/home-hot-works-section"
 import { HomeImportantReleaseBanner } from "~/routes/($lang)._main._index/components/home-important-release-banner"
@@ -85,8 +84,10 @@ import {
 } from "~/routes/($lang)._main._index/components/home-new-users-section"
 import { HomeNewUsersWorksSection } from "~/routes/($lang)._main._index/components/home-new-users-works-section"
 import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/home-new-works-skeleton"
+import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
+import { HomeSupportRankingSection } from "~/routes/($lang)._main._index/components/home-support-ranking-section"
 import {
   HomeTagList,
   HomeTagListItemFragment,
@@ -95,13 +96,14 @@ import {
   HomeTagFragment,
   HomeTagsSection,
 } from "~/routes/($lang)._main._index/components/home-tags-section"
-import type { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeVideosWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-video-works-section"
+import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
 import { HomeWorksGeneratedSection } from "~/routes/($lang)._main._index/components/home-works-generated-section"
 import { HomeWorksSection } from "~/routes/($lang)._main._index/components/home-works-section"
+import type { HomeTagWorkFragment } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksTagSection } from "~/routes/($lang)._main._index/components/home-works-tag-section"
 import { HomeWorksUsersRecommendedSection } from "~/routes/($lang)._main._index/components/home-works-users-recommended-section"
-import { HomeWorkFragment } from "~/routes/($lang)._main._index/components/home-work-section"
+import { PER_IMG } from "~/routes/($lang)._main._index/utils/works-utils"
 import type {
   MicroCmsApiRelease,
   MicroCmsApiReleaseResponse,
@@ -109,13 +111,12 @@ import type {
 import { createMeta } from "~/utils/create-meta"
 import { getJstDate } from "~/utils/jst-date"
 import {
-  fetchLatestImportantRelease,
   fetchFeaturedTaggedReleases,
+  fetchLatestImportantRelease,
   fetchReleaseList,
   isImportantReleaseVisible,
 } from "~/utils/micro-cms-release"
 import { toWorkTypeText } from "~/utils/work/to-work-type-text"
-import { PER_IMG } from "~/routes/($lang)._main._index/utils/works-utils"
 
 export const meta: MetaFunction = (props) => {
   return createMeta(META.HOME, undefined, props.params.lang)
@@ -286,18 +287,19 @@ export async function loader(props: LoaderFunctionArgs) {
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000)
   const awardDateText = getUtcDateString(yesterday)
 
-  const [releaseList, featuredReleaseList, latestImportantRelease] = await Promise.all([
-    fetchReleaseList({
-      limit: 4,
-    }).catch(() => ({
-      contents: [],
-      totalCount: 0,
-      offset: 0,
-      limit: 4,
-    })),
-    fetchFeaturedTaggedReleases().catch(() => []),
-    fetchLatestImportantRelease().catch(() => null),
-  ])
+  const [releaseList, featuredReleaseList, latestImportantRelease] =
+    await Promise.all([
+      fetchReleaseList({
+        limit: 4,
+      }).catch(() => ({
+        contents: [],
+        totalCount: 0,
+        offset: 0,
+        limit: 4,
+      })),
+      fetchFeaturedTaggedReleases().catch(() => []),
+      fetchLatestImportantRelease().catch(() => null),
+    ])
 
   const safeReleaseList =
     releaseList && Array.isArray(releaseList.contents)
@@ -312,7 +314,10 @@ export async function loader(props: LoaderFunctionArgs) {
     featuredReleaseList: Array.isArray(featuredReleaseList)
       ? featuredReleaseList
       : [],
-    importantRelease: isImportantReleaseVisible(latestImportantRelease, now.getTime())
+    importantRelease: isImportantReleaseVisible(
+      latestImportantRelease,
+      now.getTime(),
+    )
       ? latestImportantRelease
       : null,
   })
@@ -559,22 +564,19 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
   }
 
   // ホームタブ用の作品データを管理するstate
-  const homeWorks = useMemo(
-    () => {
-      const works = [
-        ...homeSectionWorks.recommended,
-        ...homeSectionWorks.generated,
-        ...homeSectionWorks.newUsers,
-        ...homeSectionWorks.tags,
-      ]
+  const homeWorks = useMemo(() => {
+    const works = [
+      ...homeSectionWorks.recommended,
+      ...homeSectionWorks.generated,
+      ...homeSectionWorks.newUsers,
+      ...homeSectionWorks.tags,
+    ]
 
-      return works.filter(
-        (work, index, self) =>
-          self.findIndex((target) => target.id === work.id) === index,
-      )
-    },
-    [homeSectionWorks],
-  )
+    return works.filter(
+      (work, index, self) =>
+        self.findIndex((target) => target.id === work.id) === index,
+    )
+  }, [homeSectionWorks])
 
   const updateHomeSectionWorks = (
     section: keyof typeof homeSectionWorks,
@@ -993,13 +995,18 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 <HomeWorksUsersRecommendedSection
                   works={[]}
                   onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                  onWorksLoaded={(works) => updateHomeSectionWorks("recommended", works)}
+                  onWorksLoaded={(works) =>
+                    updateHomeSectionWorks("recommended", works)
+                  }
                 />
               </HomeDeferredSection>
               <HomeDeferredSection
                 fallback={
                   <HomeWorkSectionPlaceholder
-                    title={t("作品を選んで無料生成", "Generate from featured works")}
+                    title={t(
+                      "作品を選んで無料生成",
+                      "Generate from featured works",
+                    )}
                   />
                 }
               >
@@ -1007,13 +1014,18 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   works={[]}
                   dateText={data.awardDateText}
                   onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                  onWorksLoaded={(works) => updateHomeSectionWorks("generated", works)}
+                  onWorksLoaded={(works) =>
+                    updateHomeSectionWorks("generated", works)
+                  }
                 />
               </HomeDeferredSection>
               <HomeDeferredSection
                 fallback={
                   <HomeWorkSectionPlaceholder
-                    title={t("新規クリエイターの初投稿作品", "New creators' first works")}
+                    title={t(
+                      "新規クリエイターの初投稿作品",
+                      "New creators' first works",
+                    )}
                     variant="cropped"
                   />
                 }
@@ -1021,7 +1033,9 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                 <HomeNewUsersWorksSection
                   works={[]}
                   onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                  onWorksLoaded={(works) => updateHomeSectionWorks("newUsers", works)}
+                  onWorksLoaded={(works) =>
+                    updateHomeSectionWorks("newUsers", works)
+                  }
                 />
               </HomeDeferredSection>
               <HomeDeferredSection
@@ -1039,6 +1053,7 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
                 />
               </HomeDeferredSection>
+              <HomeSupportRankingSection />
               <HomeDeferredSection
                 fallback={
                   <HomeWorkSectionPlaceholder
@@ -1054,7 +1069,9 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
                   secondWorks={[]}
                   isCropped={true}
                   onSelect={isDialogMode ? (idx) => openWork(idx) : undefined}
-                  onWorksLoaded={(works) => updateHomeSectionWorks("tags", works)}
+                  onWorksLoaded={(works) =>
+                    updateHomeSectionWorks("tags", works)
+                  }
                 />
               </HomeDeferredSection>
               <HomeTagsSection
@@ -1949,10 +1966,7 @@ const query = graphql(
       userName
     }
   }`,
-  [
-    HomeTagListItemFragment,
-    HomeTagFragment,
-  ],
+  [HomeTagListItemFragment, HomeTagFragment],
 )
 
 const homeSidebarQuery = graphql(
@@ -1992,11 +2006,7 @@ const homeSidebarQuery = graphql(
       ...HomeNewComments
     }
   }`,
-  [
-    HomeAwardWorksFragment,
-    HomeNewPostedUsersFragment,
-    HomeNewCommentsFragment,
-  ],
+  [HomeAwardWorksFragment, HomeNewPostedUsersFragment, HomeNewCommentsFragment],
 )
 
 const viewerCurrentPassQuery = graphql(`

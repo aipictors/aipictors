@@ -21,5 +21,14 @@ export const getServerEnvValue = (
     return fromBuild
   }
 
+  const fromProcess =
+    typeof process !== "undefined"
+      ? (process.env as Record<string, string | undefined>)[key]
+      : undefined
+
+  if (typeof fromProcess === "string" && fromProcess.length > 0) {
+    return fromProcess
+  }
+
   return null
 }
