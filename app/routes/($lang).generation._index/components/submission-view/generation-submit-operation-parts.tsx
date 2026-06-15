@@ -32,7 +32,7 @@ type Props = {
   inProgressImageGenerationTasksCount: number
   inProgressImageGenerationReservedTasksCount: number
   maxTasksCount: number
-  tasksCount: number
+  remainingImageGenerationTasksCount: number
   termsText: string
   availableImageGenerationMaxTasksCount: number
   onCreateTask: () => void
@@ -99,7 +99,7 @@ export function GenerationSubmitOperationParts (props: Props) {
   const onPlusButtonClick = () => {
     if (
       context.config.generationCount >=
-      props.availableImageGenerationMaxTasksCount
+      props.remainingImageGenerationTasksCount
     ) {
       return
     }
@@ -135,10 +135,7 @@ export function GenerationSubmitOperationParts (props: Props) {
                   <Minus className="m-auto" />
                 </Button>
                 <GenerationReserveCountInput
-                  maxCount={
-                    props.availableImageGenerationMaxTasksCount -
-                    props.tasksCount
-                  }
+                  maxCount={props.remainingImageGenerationTasksCount}
                   onChange={context.changeGenerationCount}
                   count={context.config.generationCount}
                 />
@@ -156,9 +153,7 @@ export function GenerationSubmitOperationParts (props: Props) {
           </DropdownMenu>
           <div className="hidden items-center md:flex">
             <GenerationReserveCountInput
-              maxCount={
-                props.availableImageGenerationMaxTasksCount - props.tasksCount
-              }
+              maxCount={props.remainingImageGenerationTasksCount}
               onChange={context.changeGenerationCount}
               count={context.config.generationCount}
             />
@@ -249,9 +244,7 @@ export function GenerationSubmitOperationParts (props: Props) {
               isLoading={props.isCreatingTask}
               isDisabled={context.config.isDisabled}
               generatingCount={generatingCount}
-              maxGeneratingCount={
-                props.availableImageGenerationMaxTasksCount - props.tasksCount
-              }
+              maxGeneratingCount={props.remainingImageGenerationTasksCount}
               buttonActionCaption={getSubmitButtonLabel(
                 !!context.config.i2iImageBase64,
                 context.config.promptText,
@@ -262,9 +255,8 @@ export function GenerationSubmitOperationParts (props: Props) {
           )}
         {/* サブスク案内ダイアログありver（最後の1枚の生成時に案内する） */}
         {!isCurrentPremiumPlan() &&
-          props.tasksCount <
-            props.availableImageGenerationMaxTasksCount -
-              (context.config.upscaleSize === 2 ? 2 : 1) &&
+          props.remainingImageGenerationTasksCount >
+            (context.config.upscaleSize === 2 ? 2 : 1) &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <GenerationSubmitButton
               onClick={async () => {
@@ -273,9 +265,7 @@ export function GenerationSubmitOperationParts (props: Props) {
               isLoading={props.isCreatingTask}
               isDisabled={context.config.isDisabled}
               generatingCount={generatingCount}
-              maxGeneratingCount={
-                props.availableImageGenerationMaxTasksCount - props.tasksCount
-              }
+              maxGeneratingCount={props.remainingImageGenerationTasksCount}
               buttonActionCaption={getSubmitButtonLabel(
                 !!context.config.i2iImageBase64,
                 context.config.promptText,
@@ -286,9 +276,8 @@ export function GenerationSubmitOperationParts (props: Props) {
           )}
         {/* 通常の生成ボタン */}
         {!isCurrentPremiumPlan() &&
-          props.tasksCount >=
-            props.availableImageGenerationMaxTasksCount -
-              (context.config.upscaleSize === 2 ? 2 : 1) &&
+          props.remainingImageGenerationTasksCount <=
+            (context.config.upscaleSize === 2 ? 2 : 1) &&
           context.user?.hasSignedImageGenerationTerms === true && (
             <Dialog>
               <DialogTrigger asChild>
@@ -325,10 +314,7 @@ export function GenerationSubmitOperationParts (props: Props) {
                     isLoading={props.isCreatingTask}
                     isDisabled={context.config.isDisabled}
                     generatingCount={generatingCount}
-                    maxGeneratingCount={
-                      props.availableImageGenerationMaxTasksCount -
-                      props.tasksCount
-                    }
+                    maxGeneratingCount={props.remainingImageGenerationTasksCount}
                     buttonActionCaption={getSubmitButtonLabel(
                       !!context.config.i2iImageBase64,
                       context.config.promptText,

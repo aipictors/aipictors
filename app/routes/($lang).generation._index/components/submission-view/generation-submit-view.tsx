@@ -665,13 +665,7 @@ export function GenerationSubmissionView (props: Props) {
     queryData.userStatus?.availableImageGenerationMaxTasksCount ?? 10
 
   /**
-   * 生成中コスト
-   */
-  const inProgressImageGenerationTasksCost =
-    queryData.userStatus?.inProgressImageGenerationTasksCost ?? 0
-
-  /**
-   * 生成済みコスト
+   * 残り生成可能枚数
    */
   const remainingImageGenerationTasksCount =
     queryData.userStatus?.remainingImageGenerationTasksCount ?? 0
@@ -959,8 +953,7 @@ export function GenerationSubmissionView (props: Props) {
               inProgressImageGenerationReservedTasksCount
             }
             maxTasksCount={maxTasksCount}
-            tasksCount={
-              inProgressImageGenerationTasksCost +
+            remainingImageGenerationTasksCount={
               remainingImageGenerationTasksCount
             }
             termsText={props.termsText}

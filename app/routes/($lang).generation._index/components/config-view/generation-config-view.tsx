@@ -101,9 +101,6 @@ export function GenerationConfigView () {
   const availableImageGenerationMaxTasksCount =
     queryData.userStatus?.availableImageGenerationMaxTasksCount ?? 10
 
-  const inProgressImageGenerationTasksCost =
-    queryData.userStatus?.inProgressImageGenerationTasksCost ?? 0
-
   const remainingImageGenerationTasksCount =
     queryData.userStatus?.remainingImageGenerationTasksCount ?? 0
 
@@ -164,11 +161,7 @@ export function GenerationConfigView () {
           <GenerationConfigLoraModels />
           <Separator />
           <GenerationConfigCount
-            availableImageGenerationMaxTasksCount={
-              availableImageGenerationMaxTasksCount
-            }
-            tasksCount={
-              inProgressImageGenerationTasksCost +
+            remainingImageGenerationTasksCount={
               remainingImageGenerationTasksCount
             }
             setGenerationCount={context.changeGenerationCount}

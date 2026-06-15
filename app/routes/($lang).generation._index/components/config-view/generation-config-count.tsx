@@ -7,8 +7,7 @@ import { useContext, useEffect } from "react"
 import { useTranslation } from "~/hooks/use-translation"
 
 type Props = {
-  availableImageGenerationMaxTasksCount: number
-  tasksCount: number
+  remainingImageGenerationTasksCount: number
   setGenerationCount: (count: number) => void
   generationCount: number
 }
@@ -60,10 +59,7 @@ export function GenerationConfigCount (props: Props) {
             aria-label="slider-ex-2"
             defaultValue={[context.config.generationCount]}
             min={1}
-            max={Math.min(
-              props.availableImageGenerationMaxTasksCount - props.tasksCount,
-              10,
-            )}
+            max={Math.min(props.remainingImageGenerationTasksCount, 10)}
             step={1}
             onValueChange={(value) => {
               context.changeGenerationCount(value[0])
@@ -71,9 +67,7 @@ export function GenerationConfigCount (props: Props) {
           />
           <GenerationReserveCountInput
             disabled={!isStandardOrPremium}
-            maxCount={
-              props.availableImageGenerationMaxTasksCount - props.tasksCount
-            }
+            maxCount={props.remainingImageGenerationTasksCount}
             onChange={props.setGenerationCount}
             count={context.config.generationCount}
           />
