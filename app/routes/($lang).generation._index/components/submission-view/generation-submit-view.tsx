@@ -93,6 +93,24 @@ type CoinSummaryResponse = {
   } | null
 }
 
+const normalizeCoinSummary = (
+  summary: CoinSummaryResponse["data"],
+): CoinSummaryResponse["data"] => {
+  if (summary === null) {
+    return null
+  }
+
+  const freeBalance = Math.max(0, summary.freeBalance ?? 0)
+  const premiumBalance = Math.max(0, summary.premiumBalance ?? 0)
+
+  return {
+    ...summary,
+    freeBalance,
+    premiumBalance,
+    totalBalance: Math.max(0, freeBalance + premiumBalance),
+  }
+}
+
 export function GenerationSubmissionView (props: Props) {
   const context = useGenerationContext()
 
@@ -121,7 +139,7 @@ export function GenerationSubmissionView (props: Props) {
       throw new Error(json.error ?? "Failed to load coins")
     }
 
-    setCoinSummary(json.data)
+    setCoinSummary(normalizeCoinSummary(json.data))
 
     if (json.data.granted && !initialGrantToastShownRef.current) {
       initialGrantToastShownRef.current = true
@@ -824,6 +842,29 @@ export function GenerationSubmissionView (props: Props) {
         })
       }
     })
+  }, [authContext.isLoggedIn])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    const onTaskRequested = () => {
+      loadCoinSummary().catch((error) => {
+        if (error instanceof Error) {
+          logWarn({
+            source: "GenerationSubmit",
+            message: "Failed to refresh coin summary after task update",
+            details: { message: error.message },
+          })
+        }
+      })
+    }
+
+    window.addEventListener("generation:task-requested", onTaskRequested)
+    return () => {
+      window.removeEventListener("generation:task-requested", onTaskRequested)
+    }
   }, [authContext.isLoggedIn])
 
   // 移動: createTaskCore をコンポーネント内に配置（スコープ修正）

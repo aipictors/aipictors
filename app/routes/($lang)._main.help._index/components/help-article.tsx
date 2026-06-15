@@ -1,12 +1,45 @@
+import { useSearchParams } from "@remix-run/react"
 import { useTranslation } from "~/hooks/use-translation"
+import { CoinHelpContent } from "~/components/coin-help-content"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { Badge } from "~/components/ui/badge"
 import { Separator } from "~/components/ui/separator"
 import { Link } from "@remix-run/react"
 
+const HELP_TABS = [
+  "quickstart",
+  "overview",
+  "registration",
+  "posting",
+  "features",
+  "generation",
+  "community",
+  "pictor-chan",
+  "coins",
+] as const
+
+type HelpTab = (typeof HELP_TABS)[number]
+
 export function HelpArticle () {
   const t = useTranslation()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedTab = searchParams.get("tab")
+  const activeTab = HELP_TABS.includes(requestedTab as HelpTab)
+    ? (requestedTab as HelpTab)
+    : "quickstart"
+
+  const handleTabChange = (value: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (value === "quickstart") {
+        next.delete("tab")
+      } else {
+        next.set("tab", value)
+      }
+      return next
+    }, { replace: true })
+  }
 
   return (
     <div className="container mx-auto max-w-4xl space-y-8 py-8">
@@ -23,8 +56,8 @@ export function HelpArticle () {
         </p>
       </div>
 
-      <Tabs defaultValue="quickstart" className="w-full">
-        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 p-1 text-xs sm:grid-cols-4 sm:text-sm lg:grid-cols-8">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 p-1 text-xs sm:grid-cols-4 sm:text-sm lg:grid-cols-9">
           <TabsTrigger value="quickstart" className="px-2 py-2 sm:px-4">
             {t("クイックスタート", "Quick Start")}
           </TabsTrigger>
@@ -48,6 +81,9 @@ export function HelpArticle () {
           </TabsTrigger>
           <TabsTrigger value="pictor-chan" className="px-2 py-2 sm:px-4">
             {t("ぴくたーちゃん", "Pictor-chan")}
+          </TabsTrigger>
+          <TabsTrigger value="coins" className="px-2 py-2 sm:px-4">
+            {t("コイン・推し", "Coins & Support")}
           </TabsTrigger>
         </TabsList>
 
@@ -285,6 +321,25 @@ export function HelpArticle () {
                   {t("プロフィール", "Profile")}
                 </Badge>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="coins" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {t("コイン・pt・推しのガイド", "Coins, pt and support guide")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground text-sm leading-6">
+                {t(
+                  "フリーコイン、プレミアムコイン、推し pt、累計、ランキングの見方をまとめています。コイン設定ページやランキングページからもこのガイドへ戻れます。",
+                  "This section explains free coins, premium coins, support pt, cumulative totals, and how to read the rankings. You can also come back here from the coin settings and ranking pages.",
+                )}
+              </p>
+              <CoinHelpContent />
             </CardContent>
           </Card>
         </TabsContent>

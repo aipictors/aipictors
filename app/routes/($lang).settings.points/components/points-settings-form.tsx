@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { Link, useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { CoinIcon } from "~/components/coin-icon"
+import { CoinHelpDialog } from "~/components/coin-help-dialog"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import {
   Dialog,
@@ -83,6 +84,66 @@ type PremiumConfirmResponse = {
     totalCoins?: number
     paymentStatus?: string | null
   } | null
+}
+
+const normalizeUnixTimestampSeconds = (value: unknown) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value > 1_000_000_000_000 ? Math.floor(value / 1000) : value
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim()
+    if (trimmed.length === 0) return null
+
+    if (/^\d+$/.test(trimmed)) {
+      const parsed = Number(trimmed)
+      if (!Number.isFinite(parsed)) return null
+      return parsed > 1_000_000_000_000 ? Math.floor(parsed / 1000) : parsed
+    }
+
+    const parsedDate = new Date(trimmed)
+    if (!Number.isNaN(parsedDate.getTime())) {
+      return Math.floor(parsedDate.getTime() / 1000)
+    }
+  }
+
+  return null
+}
+
+const normalizeSummaryData = (
+  data: SummaryResponse["data"],
+): SummaryResponse["data"] => {
+  if (!data) return null
+
+  return {
+    ...data,
+    ledger: Array.isArray(data.ledger)
+      ? data.ledger
+          .map((row) => {
+            const createdAt = normalizeUnixTimestampSeconds(row.createdAt)
+            if (createdAt === null) return null
+
+            return {
+              ...row,
+              createdAt,
+            }
+          })
+          .filter((row): row is LedgerItem => row !== null)
+      : [],
+    expiringLots: Array.isArray(data.expiringLots)
+      ? data.expiringLots
+          .map((row) => {
+            const expiresAt = normalizeUnixTimestampSeconds(row.expiresAt)
+            if (expiresAt === null) return null
+
+            return {
+              ...row,
+              expiresAt,
+            }
+          })
+          .filter((row): row is ExpiringCoinLot => row !== null)
+      : [],
+  }
 }
 
 export function PointsSettingsForm() {
@@ -293,7 +354,7 @@ export function PointsSettingsForm() {
         throw new Error(json.error ?? "Failed to load points")
       }
 
-      setSummary(json.data)
+      setSummary(normalizeSummaryData(json.data))
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message)
@@ -432,6 +493,28 @@ export function PointsSettingsForm() {
         </DialogContent>
       </Dialog>
 
+      <div className="flex flex-col gap-3 rounded-xl border p-5 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-2">
+          <p className="font-semibold text-lg">
+            {t("コイン・pt・推しのガイド", "Coins, pt and support guide")}
+          </p>
+          <p className="text-muted-foreground text-sm leading-6">
+            {t(
+              "フリーコインとプレミアムコインの違い、pt の計算、推しランキングと貢献度ランキングの仕組みを確認できます。",
+              "Review the difference between free and premium coins, how pt is calculated, and how the support and contribution rankings work.",
+            )}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <CoinHelpDialog />
+          <Button asChild variant="outline" size="sm">
+            <Link to="/help?tab=coins">
+              {t("/help のガイドを見る", "Open the guide on /help")}
+            </Link>
+          </Button>
+        </div>
+      </div>
+
       {/* Free coin balance */}
       <div className="rounded-xl border p-5">
         <p className="flex items-center gap-2 font-semibold text-lg">
@@ -476,8 +559,8 @@ export function PointsSettingsForm() {
             </p>
             <p className="mt-3 text-muted-foreground text-sm leading-6">
               {t(
-                "プレミアムコインはユーザーや作品を推すときにも使えます。フリーコインは 1コイン = 1pt、プレミアムコインは 1コイン = 10pt として、推しランキング・貢献度ランキングに反映されます。",
-                "Premium coins can also be used to support users and works. Free coins count as 1pt each and premium coins count as 10pt each in the support and contribution rankings.",
+                "プレミアムコインはユーザーを推すときにも使えます。フリーコインは 1コイン = 1pt、プレミアムコインは 1コイン = 10pt として、推しランキング・貢献度ランキングに反映されます。",
+                "Premium coins can also be used to support users. Free coins count as 1pt each and premium coins count as 10pt each in the support and contribution rankings.",
               )}
             </p>
             <div className="mt-3 flex flex-wrap gap-3 text-sm">

@@ -44,14 +44,33 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   }
 
   try {
-    const includeLedger = new URL(request.url).searchParams.get("includeLedger") === "1"
-    const includeExpiringLots = new URL(request.url).searchParams.get("includeExpiringLots") === "1"
+    const searchParams = new URL(request.url).searchParams
+    const includeLedger = searchParams.get("includeLedger") === "1"
+    const includeExpiringLots = searchParams.get("includeExpiringLots") === "1"
+    const includeLedgerLimitRaw = searchParams.get("includeLedgerLimit")
+    const includeLedgerOffsetRaw = searchParams.get("includeLedgerOffset")
+    const includeLedgerLimit = includeLedgerLimitRaw
+      ? Number.parseInt(includeLedgerLimitRaw, 10)
+      : undefined
+    const includeLedgerOffset = includeLedgerOffsetRaw
+      ? Number.parseInt(includeLedgerOffsetRaw, 10)
+      : undefined
+
+    if (
+      (includeLedgerLimitRaw && !Number.isFinite(includeLedgerLimit)) ||
+      (includeLedgerOffsetRaw && !Number.isFinite(includeLedgerOffset))
+    ) {
+      return toJsonResponse({ error: "Invalid ledger paging", data: null }, 400)
+    }
+
     const summary = await getCoinSummaryFromApi({
       context,
       userId: viewer.userId,
       currentPassType: viewer.currentPassType,
       includeLedger,
       includeExpiringLots,
+      includeLedgerLimit,
+      includeLedgerOffset,
     })
 
     if (summary.events.length > 0) {

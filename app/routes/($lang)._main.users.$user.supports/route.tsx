@@ -26,6 +26,33 @@ type SupportRankingItem = {
   userLogin?: string | null
 }
 
+function PtBreakdown(props: {
+  freePtAmount: number
+  premiumPtAmount: number
+  align?: "left" | "right"
+}) {
+  const t = useTranslation()
+
+  return (
+    <div
+      className={`flex flex-wrap gap-1 ${props.align === "right" ? "justify-end" : "justify-start"}`}
+    >
+      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+        {t(
+          `${props.freePtAmount.toLocaleString()} pt（フリー）`,
+          `${props.freePtAmount.toLocaleString()} pt (Free)`,
+        )}
+      </span>
+      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
+        {t(
+          `${props.premiumPtAmount.toLocaleString()} pt（プレミアム）`,
+          `${props.premiumPtAmount.toLocaleString()} pt (Premium)`,
+        )}
+      </span>
+    </div>
+  )
+}
+
 type RankingData = {
   kind: "sent"
   weekStartDate: string
@@ -116,37 +143,6 @@ export default function UserSupports () {
 
   const ranking = data.ranking
   const items = ranking?.items ?? []
-  const formatBreakdown = (row: SupportRankingItem) => {
-    const parts = []
-
-    if (row.freePtAmount > 0) {
-      parts.push(
-        t(
-          `${row.freePtAmount.toLocaleString()} pt（フリー）`,
-          `${row.freePtAmount.toLocaleString()} pt (Free)`,
-        ),
-      )
-    }
-
-    if (row.premiumPtAmount > 0) {
-      parts.push(
-        t(
-          `${row.premiumPtAmount.toLocaleString()} pt（プレミアム）`,
-          `${row.premiumPtAmount.toLocaleString()} pt (Premium)`,
-        ),
-      )
-    }
-
-    return parts.join(" + ")
-  }
-  const weekLabel = ranking?.weekStartDate
-    ? new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }).format(new Date(`${ranking.weekStartDate}T00:00:00+09:00`))
-    : null
 
   return (
     <div className="mx-auto w-full max-w-4xl">
@@ -165,8 +161,8 @@ export default function UserSupports () {
               </CardTitle>
               <p className="mt-1 text-muted-foreground text-sm">
                 {t(
-                  "フリーコイン 1pt / プレミアムコイン 10pt で換算した週間ランキングです。",
-                  "Weekly ranking calculated as 1pt per free coin and 10pt per premium coin.",
+                  "フリーコイン 1pt / プレミアムコイン 10pt で換算した累計ランキングです。",
+                  "Cumulative ranking calculated as 1pt per free coin and 10pt per premium coin.",
                 )}
               </p>
             </div>
@@ -176,7 +172,6 @@ export default function UserSupports () {
               </Button>
             </div>
           </div>
-          {weekLabel && <p className="text-muted-foreground text-xs">{weekLabel}〜</p>}
         </CardHeader>
         <CardContent className="space-y-3">
           {items.length === 0 ? (
@@ -213,11 +208,16 @@ export default function UserSupports () {
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-sky-500 text-lg">
+                    {t("累計pt", "Cumulative pt")}
+                  </p>
+                  <p className="font-bold text-lg">
                     {row.ptAmount.toLocaleString()} pt
                   </p>
-                  <p className="text-muted-foreground text-xs">
-                    {formatBreakdown(row)}
-                  </p>
+                  <PtBreakdown
+                    freePtAmount={row.freePtAmount}
+                    premiumPtAmount={row.premiumPtAmount}
+                    align="right"
+                  />
                 </div>
               </Link>
             ))

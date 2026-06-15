@@ -12,6 +12,9 @@ import { json } from "@remix-run/cloudflare"
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react"
 import { Trophy } from "lucide-react"
 import { useMemo, useState } from "react"
+import { CoinHelpDialog } from "~/components/coin-help-dialog"
+import { CoinIcon } from "~/components/coin-icon"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -23,6 +26,7 @@ import {
   SelectValue,
 } from "~/components/ui/select"
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
 import { createMeta } from "~/utils/create-meta"
 
 // ────────────────────────────────────────────────────────────────────
@@ -34,9 +38,12 @@ type SupportRankingItem = {
   userId: string
   coinAmount: number
   ptAmount: number
+  freePtAmount: number
+  premiumPtAmount: number
   transferCount: number
   iconUrl?: string | null
   userName?: string | null
+  userLogin?: string | null
 }
 
 type RankingData = {
@@ -63,10 +70,33 @@ const DATE_FMT = new Intl.DateTimeFormat("ja-JP", {
   day: "2-digit",
 })
 
+const isValidYearMonth = (value: string) => {
+  if (!/^\d{4}-\d{2}$/.test(value)) return false
+  return !Number.isNaN(new Date(`${value}-01T00:00:00+09:00`).getTime())
+}
+
+const isValidWeekStartDate = (value: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+  return !Number.isNaN(new Date(`${value}T00:00:00+09:00`).getTime())
+}
+
+const normalizeWeekStartDate = (value: string | null | undefined) => {
+  if (typeof value !== "string") return null
+
+  const normalized = value.trim().slice(0, 10)
+  return isValidWeekStartDate(normalized) ? normalized : null
+}
+
 const formatMonth = (ym: string) =>
-  MONTH_FMT.format(new Date(`${ym}-01T00:00:00+09:00`))
+  isValidYearMonth(ym)
+    ? MONTH_FMT.format(new Date(`${ym}-01T00:00:00+09:00`))
+    : ym
 
 const formatWeekRange = (weekStartDate: string) => {
+  if (!isValidWeekStartDate(weekStartDate)) {
+    return weekStartDate
+  }
+
   const start = new Date(`${weekStartDate}T00:00:00+09:00`)
   const end = new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000)
   return `${DATE_FMT.format(start)} 〜 ${DATE_FMT.format(end)}`
@@ -75,6 +105,10 @@ const formatWeekRange = (weekStartDate: string) => {
 const groupByMonth = (dates: string[]): Map<string, string[]> => {
   const map = new Map<string, string[]>()
   for (const d of dates) {
+    if (!isValidWeekStartDate(d)) {
+      continue
+    }
+
     const ym = d.slice(0, 7)
     const list = map.get(ym) ?? []
     list.push(d)
@@ -84,6 +118,33 @@ const groupByMonth = (dates: string[]): Map<string, string[]> => {
 }
 
 const formatNumber = (v: number) => v.toLocaleString()
+
+const toPremiumCoinCount = (premiumPtAmount: number) => {
+  return Math.max(0, Math.floor(premiumPtAmount / 10))
+}
+
+const CoinBreakdown = (props: {
+  freePtAmount: number
+  premiumPtAmount: number
+  className?: string
+}) => {
+  const freeCoinCount = Math.max(0, props.freePtAmount)
+  const premiumCoinCount = toPremiumCoinCount(props.premiumPtAmount)
+
+  return (
+    <div className={props.className}>
+      <span className="inline-flex items-center gap-1">
+        <CoinIcon className="h-3.5 w-3.5 shrink-0" />
+        <span>{formatNumber(freeCoinCount)}</span>
+      </span>
+      <span className="text-muted-foreground">+</span>
+      <span className="inline-flex items-center gap-1">
+        <PremiumCoinIcon className="h-3.5 w-3.5 shrink-0" />
+        <span>{formatNumber(premiumCoinCount)}</span>
+      </span>
+    </div>
+  )
+}
 
 // ────────────────────────────────────────────────────────────────────
 // Loader  (公開, 認証不要)
@@ -144,7 +205,17 @@ const fetchFromBackend = async (
     error: string | null
     data?: RankingData
   }
-  return json.data ?? null
+  if (!json.data) return null
+
+  const normalizedWeekStartDate = normalizeWeekStartDate(json.data.weekStartDate)
+
+  return {
+    ...json.data,
+    weekStartDate: normalizedWeekStartDate ?? "",
+    items: await enrichSupportRankingItems(
+      Array.isArray(json.data.items) ? json.data.items : [],
+    ),
+  }
 }
 
 const fetchWeeksFromBackend = async (context: unknown): Promise<string[]> => {
@@ -182,7 +253,11 @@ const fetchWeeksFromBackend = async (context: unknown): Promise<string[]> => {
     error: string | null
     data?: { weekStartDates: string[] }
   }
-  return json.data?.weekStartDates ?? []
+  return Array.isArray(json.data?.weekStartDates)
+    ? json.data.weekStartDates
+        .map(normalizeWeekStartDate)
+        .filter((value): value is string => value !== null)
+    : []
 }
 
 export async function loader({ request, context }: LoaderFunctionArgs) {
@@ -205,7 +280,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   ])
 
   const currentWeekStartDate =
-    weekStartDate ??
+    normalizeWeekStartDate(weekStartDate) ??
     receivedData?.weekStartDate ??
     sentData?.weekStartDate ??
     null
@@ -282,14 +357,23 @@ export default function CoinRankingsPage() {
   return (
     <div className="space-y-6 p-4 md:p-6">
       {/* ページヘッダー */}
-      <div className="space-y-1">
-        <h1 className="flex items-center gap-2 font-bold text-2xl">
-          <Trophy className="h-6 w-6 text-amber-500" />
-          推し・貢献度ランキング
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          フリーコイン 1pt / プレミアムコイン 10pt として週間集計しています。
-        </p>
+      <div className="flex flex-col gap-3 rounded-xl border p-5 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
+          <h1 className="flex items-center gap-2 font-bold text-2xl">
+            <Trophy className="h-6 w-6 text-amber-500" />
+            推し・貢献度ランキング
+          </h1>
+          <p className="text-muted-foreground text-sm leading-6">
+            フリーコイン 1pt / プレミアムコイン 10pt として週間集計しています。
+            累計とコインの違い、ランキングの見方はヘルプから確認できます。
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <CoinHelpDialog triggerLabel="推しランキングとは" />
+          <Button asChild variant="outline" size="sm">
+            <Link to="/help?tab=coins">/help のガイド</Link>
+          </Button>
+        </div>
       </div>
 
       {/* 種別タブ */}
@@ -359,55 +443,67 @@ export default function CoinRankingsPage() {
               {/* 1〜3位: 大きめアバター・横幅広めに */}
               <div className="mb-4 grid gap-3 sm:grid-cols-3">
                 {displayItems.slice(0, 3).map((row) => (
-                  <div
+                  <Link
                     key={row.rank}
+                    to={`/users/${row.userLogin ?? row.userId}`}
                     className="flex flex-col items-center gap-2 rounded-xl border bg-muted/30 p-4 text-center"
                   >
                     <SupportRankAvatar
                       rank={row.rank}
                       iconUrl={row.iconUrl}
-                      name={row.userName}
+                      name={row.userName ?? row.userLogin ?? row.userId}
                       size="lg"
                     />
                     <p className="mt-1 truncate font-semibold text-sm">
-                      {row.userName || row.userId.slice(0, 14)}…
+                      {row.userName || row.userLogin || row.userId}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      @{row.userLogin ?? row.userId}
                     </p>
                     <p className={`font-bold text-xl ${colorClass}`}>
                       {formatNumber(row.ptAmount)} pt
                     </p>
-                    <p className="text-muted-foreground text-xs">
-                      {formatNumber(row.coinAmount)} coins ·{" "}
-                      {formatNumber(row.transferCount)} transfers
-                    </p>
-                  </div>
+                    <CoinBreakdown
+                      freePtAmount={row.freePtAmount}
+                      premiumPtAmount={row.premiumPtAmount}
+                      className="flex items-center gap-2 text-muted-foreground text-xs"
+                    />
+                  </Link>
                 ))}
               </div>
 
               {/* 4位以降 */}
               {displayItems.slice(3).map((row) => (
-                <div
+                <Link
                   key={row.rank}
+                  to={`/users/${row.userLogin ?? row.userId}`}
                   className="flex items-center gap-3 rounded-lg border px-3 py-2"
                 >
                   <SupportRankAvatar
                     rank={row.rank}
                     iconUrl={row.iconUrl}
-                    name={row.userName}
+                    name={row.userName ?? row.userLogin ?? row.userId}
                     size="sm"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-sm">
-                      {row.userName || row.userId.slice(0, 14)}…
+                      {row.userName || row.userLogin || row.userId}
                     </p>
                     <p className="text-muted-foreground text-xs">
-                      {formatNumber(row.coinAmount)} coins ·{" "}
-                      {formatNumber(row.transferCount)} transfers
+                      @{row.userLogin ?? row.userId}
                     </p>
                   </div>
-                  <p className={`shrink-0 font-bold text-sm ${colorClass}`}>
-                    {formatNumber(row.ptAmount)} pt
-                  </p>
-                </div>
+                  <div className="text-right">
+                    <p className={`shrink-0 font-bold text-sm ${colorClass}`}>
+                      {formatNumber(row.ptAmount)} pt
+                    </p>
+                    <CoinBreakdown
+                      freePtAmount={row.freePtAmount}
+                      premiumPtAmount={row.premiumPtAmount}
+                      className="flex items-center justify-end gap-2 text-muted-foreground text-[11px]"
+                    />
+                  </div>
+                </Link>
               ))}
             </div>
           )}

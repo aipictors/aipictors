@@ -95,6 +95,15 @@ export function GenerationSideTabsView () {
               >
                 {t("ログ", "Logs")}
               </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  send({ type: "OPEN_COIN_HISTORY" })
+                }}
+                className="flex-none"
+                value="COIN_HISTORY"
+              >
+                {t("履歴", "History")}
+              </TabsTrigger>
             </TabsList>
           </div>
         </Tabs>

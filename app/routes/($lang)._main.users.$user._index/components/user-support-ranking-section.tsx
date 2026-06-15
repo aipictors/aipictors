@@ -11,6 +11,8 @@ type SupportRankingItem = {
   userId: string
   coinAmount: number
   ptAmount: number
+  freePtAmount: number
+  premiumPtAmount: number
   transferCount: number
   iconUrl?: string | null
   userName?: string | null
@@ -38,7 +40,6 @@ export function UserSupportRankingSection(props: {
   const t = useTranslation()
   const limit = props.limit ?? 5
   const [items, setItems] = useState<SupportRankingItem[]>([])
-  const [weekStartDate, setWeekStartDate] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -55,7 +56,6 @@ export function UserSupportRankingSection(props: {
           return
         }
         setItems(json.data.items)
-        setWeekStartDate(json.data.weekStartDate)
       } catch {
         setItems([])
       } finally {
@@ -65,15 +65,6 @@ export function UserSupportRankingSection(props: {
 
     void load()
   }, [limit, props.targetUserId])
-
-  const weekLabel = weekStartDate
-    ? new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }).format(new Date(`${weekStartDate}T00:00:00+09:00`))
-    : null
 
   return (
     <Card>
@@ -91,14 +82,11 @@ export function UserSupportRankingSection(props: {
             </CardTitle>
             <p className="mt-1 text-muted-foreground text-sm">
               {t(
-                "フリーコイン 1pt / プレミアムコイン 10pt で換算しています。",
-                "Calculated as 1pt per free coin and 10pt per premium coin.",
+                "フリーコイン 1pt / プレミアムコイン 10pt で換算した累計ランキングです。",
+                "Cumulative ranking calculated as 1pt per free coin and 10pt per premium coin.",
               )}
             </p>
           </div>
-          {weekLabel && (
-            <p className="text-muted-foreground text-xs">{weekLabel}〜</p>
-          )}
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -122,29 +110,41 @@ export function UserSupportRankingSection(props: {
           </p>
         ) : (
           items.map((row) => (
-            <div
+            <Link
               key={`${row.rank}-${row.userId}`}
-              className="flex items-center gap-3 rounded-lg border px-3 py-2"
+              to={`/users/${row.userLogin ?? row.userId}`}
+              className="flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/30"
             >
               <SupportRankAvatar
                 rank={row.rank}
                 iconUrl={row.iconUrl}
-                name={row.userName ?? row.userId}
+                name={row.userName ?? row.userLogin ?? row.userId}
                 size="sm"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold text-sm">
-                  {row.userName || row.userId}
+                  {row.userName || row.userLogin || row.userId}
                 </p>
                 <p className="text-muted-foreground text-xs">
                   {formatNumber(row.coinAmount)} coin / {row.transferCount}
                   {t(" 回", " transfers")}
                 </p>
+                <div className="mt-1 flex flex-wrap gap-1">
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+                    {formatNumber(row.freePtAmount)} pt
+                    {t("（フリー）", " (Free)")}
+                  </span>
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
+                    {formatNumber(row.premiumPtAmount)} pt
+                    {t("（プレミアム）", " (Premium)")}
+                  </span>
+                </div>
               </div>
-              <p className="shrink-0 font-bold text-sky-500 text-sm">
-                {formatNumber(row.ptAmount)} pt
-              </p>
-            </div>
+              <div className="shrink-0 text-right">
+                <p className="text-sky-500 text-xs">{t("累計pt", "Cumulative pt")}</p>
+                <p className="font-bold text-sm">{formatNumber(row.ptAmount)} pt</p>
+              </div>
+            </Link>
           ))
         )}
 

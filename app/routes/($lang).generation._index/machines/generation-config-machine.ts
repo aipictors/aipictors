@@ -52,6 +52,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
       },
     },
 
@@ -67,6 +68,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -86,6 +88,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -104,6 +107,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -123,6 +127,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -143,6 +148,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
 
         UPDATE_CONFIG: {
           actions: assign((props) => {
@@ -159,6 +165,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -178,6 +185,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -194,6 +202,7 @@ export const generationConfigMachine = createMachine({
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -214,6 +223,7 @@ export const generationConfigMachine = createMachine({
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_LINKS: "LINKS",
         OPEN_LOGS: "LOGS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -232,6 +242,7 @@ export const generationConfigMachine = createMachine({
         OPEN_COMMUNICATION: "COMMUNICATION",
         OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
         OPEN_LINKS: "LINKS",
+        OPEN_COIN_HISTORY: "COIN_HISTORY",
         UPDATE_CONFIG: {
           actions: assign((props) => {
             return props.event.value
@@ -253,6 +264,26 @@ export const generationConfigMachine = createMachine({
       on: {
         ADD_LORA_MODEL: "LORA_MODELS_VIEW",
         CLOSE: "PROMPT_VIEW",
+          OPEN_COIN_HISTORY: "COIN_HISTORY",
+          UPDATE_CONFIG: {
+            actions: assign((props) => {
+              return props.event.value
+            }),
+          },
+        },
+      },
+
+      COIN_HISTORY: {
+        description: "コイン履歴画面",
+        on: {
+          CLOSE: "PROMPT_VIEW",
+          CLOSE_PREVIEW: "PROMPT_VIEW",
+          OPEN_WORK_PREVIEW: "WORK_PREVIEW",
+          OPEN_FULL_WORK_LIST: "WORK_LIST_FULL",
+          OPEN_COMMUNICATION: "COMMUNICATION",
+          OPEN_WORKS_FROM_MODEL: "WORKS_FROM_MODEL",
+          OPEN_LINKS: "LINKS",
+          OPEN_LOGS: "LOGS",
       },
     },
   },

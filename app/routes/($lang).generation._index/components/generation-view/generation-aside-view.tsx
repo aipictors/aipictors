@@ -32,6 +32,10 @@ type Props = {
    * ログ
    */
   logs: React.ReactNode
+  /**
+   * コイン履歴
+   */
+  coinHistory: React.ReactNode
 }
 
 /**
@@ -87,6 +91,10 @@ export function GenerationAsideView (props: Props) {
 
   if (state === "LOGS") {
     return <>{props.logs}</>
+  }
+
+  if (state === "COIN_HISTORY") {
+    return <>{props.coinHistory}</>
   }
 
   if (state === "HISTORY_LIST_FULL") {

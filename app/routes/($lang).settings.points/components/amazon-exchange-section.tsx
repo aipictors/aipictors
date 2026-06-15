@@ -38,10 +38,43 @@ type ExchangeListData = {
   remainingSlots: number
 }
 
+const normalizeUnixTimestampSeconds = (value: unknown) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value > 1_000_000_000_000 ? Math.floor(value / 1000) : value
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim()
+    if (trimmed.length === 0) return null
+
+    if (/^\d+$/.test(trimmed)) {
+      const parsed = Number(trimmed)
+      if (!Number.isFinite(parsed)) return null
+      return parsed > 1_000_000_000_000 ? Math.floor(parsed / 1000) : parsed
+    }
+
+    const parsedDate = new Date(trimmed)
+    if (!Number.isNaN(parsedDate.getTime())) {
+      return Math.floor(parsedDate.getTime() / 1000)
+    }
+  }
+
+  return null
+}
+
 const normalizeExchangeListData = (
   data: Partial<ExchangeListData> | undefined,
 ): ExchangeListData => ({
-  requests: Array.isArray(data?.requests) ? data.requests : [],
+  requests: Array.isArray(data?.requests)
+    ? data.requests.map((request) => ({
+        ...request,
+        appliedAt: normalizeUnixTimestampSeconds(request.appliedAt) ?? 0,
+        approvedAt:
+          request.approvedAt === null
+            ? null
+            : (normalizeUnixTimestampSeconds(request.approvedAt) ?? null),
+      }))
+    : [],
   pendingCount: typeof data?.pendingCount === "number" ? data.pendingCount : 0,
   remainingSlots:
     typeof data?.remainingSlots === "number"

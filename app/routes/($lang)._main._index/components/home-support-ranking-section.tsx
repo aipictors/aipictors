@@ -17,9 +17,12 @@ type SupportRankingItem = {
   userId: string
   coinAmount: number
   ptAmount: number
+  freePtAmount: number
+  premiumPtAmount: number
   transferCount: number
   iconUrl?: string | null
   userName?: string | null
+  userLogin?: string | null
 }
 
 type ApiResponse = {
@@ -94,6 +97,19 @@ export function HomeSupportRankingSection() {
     return null
   }
 
+  const renderBreakdown = (row: SupportRankingItem) => (
+    <div className="mt-1 flex flex-wrap gap-1">
+      <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
+        {formatNumber(row.freePtAmount)} pt
+        {t("（フリー）", " (Free)")}
+      </span>
+      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
+        {formatNumber(row.premiumPtAmount)} pt
+        {t("（プレミアム）", " (Premium)")}
+      </span>
+    </div>
+  )
+
   return (
     <div className="space-y-3">
       {/* ヘッダー */}
@@ -150,28 +166,32 @@ export function HomeSupportRankingSection() {
                 </p>
               ) : (
                 receivedItems.map((row) => (
-                  <div
+                  <Link
                     key={row.rank}
-                    className="flex items-center gap-3 rounded-lg border px-3 py-2"
+                    to={`/users/${row.userLogin ?? row.userId}`}
+                    className="flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/30"
                   >
                     <SupportRankAvatar
                       rank={row.rank}
                       iconUrl={row.iconUrl}
-                      name={row.userName}
+                      name={row.userName ?? row.userLogin ?? row.userId}
                       size="sm"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold text-sm">
-                        {row.userName || row.userId.slice(0, 12)}…
+                        {row.userName || row.userLogin || row.userId}
                       </p>
                       <p className="text-muted-foreground text-xs">
                         {formatNumber(row.coinAmount)} coins
                       </p>
+                      {renderBreakdown(row)}
                     </div>
-                    <p className="shrink-0 font-bold text-amber-500 text-sm">
-                      {formatNumber(row.ptAmount)} pt
-                    </p>
-                  </div>
+                    <div className="shrink-0 text-right">
+                      <p className="font-bold text-amber-500 text-sm">
+                        {formatNumber(row.ptAmount)} pt
+                      </p>
+                    </div>
+                  </Link>
                 ))
               )}
               <Button
@@ -204,28 +224,32 @@ export function HomeSupportRankingSection() {
                 </p>
               ) : (
                 sentItems.map((row) => (
-                  <div
+                  <Link
                     key={row.rank}
-                    className="flex items-center gap-3 rounded-lg border px-3 py-2"
+                    to={`/users/${row.userLogin ?? row.userId}`}
+                    className="flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/30"
                   >
                     <SupportRankAvatar
                       rank={row.rank}
                       iconUrl={row.iconUrl}
-                      name={row.userName}
+                      name={row.userName ?? row.userLogin ?? row.userId}
                       size="sm"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold text-sm">
-                        {row.userName || row.userId.slice(0, 12)}…
+                        {row.userName || row.userLogin || row.userId}
                       </p>
                       <p className="text-muted-foreground text-xs">
                         {formatNumber(row.coinAmount)} coins
                       </p>
+                      {renderBreakdown(row)}
                     </div>
-                    <p className="shrink-0 font-bold text-sky-500 text-sm">
-                      {formatNumber(row.ptAmount)} pt
-                    </p>
-                  </div>
+                    <div className="shrink-0 text-right">
+                      <p className="font-bold text-sky-500 text-sm">
+                        {formatNumber(row.ptAmount)} pt
+                      </p>
+                    </div>
+                  </Link>
                 ))
               )}
               <Button

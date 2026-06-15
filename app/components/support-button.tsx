@@ -6,6 +6,7 @@
 import { Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { CoinIcon } from "~/components/coin-icon"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Button } from "~/components/ui/button"
 import {
@@ -35,6 +36,35 @@ type CoinBreakdown = {
   freeCoinsUsed: number
   premiumCoinsUsed: number
   totalPt: number
+}
+
+function CoinUsageIcon(props: {
+  breakdown: CoinBreakdown | null
+  freeCoinBalance: number
+  premiumCoinBalance: number
+}) {
+  if (props.breakdown?.freeCoinsUsed && props.breakdown.premiumCoinsUsed) {
+    return (
+      <span className="flex items-center gap-1">
+        <CoinIcon className="h-4 w-4 shrink-0" />
+        <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+      </span>
+    )
+  }
+
+  if (props.breakdown?.premiumCoinsUsed) {
+    return <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+  }
+
+  if (props.breakdown?.freeCoinsUsed || props.freeCoinBalance > 0) {
+    return <CoinIcon className="h-4 w-4 shrink-0" />
+  }
+
+  if (props.premiumCoinBalance > 0) {
+    return <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+  }
+
+  return <CoinIcon className="h-4 w-4 shrink-0" />
 }
 
 /**
@@ -299,6 +329,14 @@ export function SupportButton({
               <Label>{t("テンプレートから選択", "Choose a template")}</Label>
               <div className="grid grid-cols-2 gap-2">
                 {QUICK_COIN_OPTIONS.map((option) => (
+                  (() => {
+                    const optionBreakdown = calculateCoinBreakdown(
+                      option,
+                      currentFreeCoinBalance,
+                      currentPremiumCoinBalance,
+                    )
+
+                    return (
                   <Button
                     key={option}
                     type="button"
@@ -308,11 +346,17 @@ export function SupportButton({
                     disabled={isLoading}
                   >
                     <span className="flex items-center gap-2">
-                      <PremiumCoinIcon className="h-4 w-4" />
+                      <CoinUsageIcon
+                        breakdown={optionBreakdown}
+                        freeCoinBalance={currentFreeCoinBalance}
+                        premiumCoinBalance={currentPremiumCoinBalance}
+                      />
                       {option.toLocaleString()}
                     </span>
                     <span className="text-xs opacity-80">coin</span>
                   </Button>
+                    )
+                  })()
                 ))}
               </div>
             </div>

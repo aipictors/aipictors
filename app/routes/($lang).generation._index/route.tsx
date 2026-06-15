@@ -29,6 +29,7 @@ import { config } from "~/config"
 import { AuthContext } from "~/contexts/auth-context"
 import type { HeadersFunction } from "@remix-run/cloudflare"
 import { GenerationLogsTab } from "~/routes/($lang).generation._index/components/generation-side-tabs-view/generation-logs-tab"
+import { GenerationCoinHistoryTab } from "~/routes/($lang).generation._index/components/generation-side-tabs-view/generation-coin-history-tab"
 import { useContext } from "react"
 
 /**
@@ -122,6 +123,7 @@ export default function GenerationPage () {
           communication={<GenerationCommunicationView />}
           links={<GenerationLinksView />}
           logs={<GenerationLogsTab />}
+          coinHistory={<GenerationCoinHistoryTab />}
         />
       }
       menu={<GenerationConfigView />}

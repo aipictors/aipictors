@@ -3,6 +3,7 @@ import { ArrowLeftIcon, CoinsIcon, Gift, History, Inbox } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
+import { CoinHelpDialog } from "~/components/coin-help-dialog"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -163,6 +164,12 @@ export function SupportReceivedSummaryPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <CoinHelpDialog triggerLabel={t("推し・pt とは", "About support and pt")} />
+          <Button asChild variant="outline" size="sm">
+            <Link to="/help?tab=coins">
+              {t("/help のガイド", "Guide on /help")}
+            </Link>
+          </Button>
           <Button asChild variant="outline" size="sm">
             <Link to="/settings/points">
               <ArrowLeftIcon className="h-4 w-4" />
