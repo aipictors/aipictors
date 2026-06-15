@@ -1,11 +1,12 @@
 import { AppFixedContent } from "~/components/app/app-fixed-content"
+import { getAuth, getIdToken } from "firebase/auth"
 import { uploadPublicImage } from "~/utils/upload-public-image"
 import { config } from "~/config"
 import { GenerationSubmitOperationParts } from "~/routes/($lang).generation._index/components/submission-view/generation-submit-operation-parts"
 import { useGenerationContext } from "~/routes/($lang).generation._index/hooks/use-generation-context"
 import { useGenerationQuery } from "~/routes/($lang).generation._index/hooks/use-generation-query"
 import { useMutation, useSuspenseQuery } from "@apollo/client/index"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean, useMediaQuery } from "usehooks-ts"
 import { VerificationDialog } from "~/components/verification-dialog"
@@ -64,6 +65,18 @@ type Props = {
   termsText: string
 }
 
+type CoinSummaryResponse = {
+  error: string | null
+  data: {
+    freeBalance: number
+    premiumBalance: number
+    totalBalance: number
+    granted: boolean
+    grantedFreeCoins: number
+    grantedPremiumCoins: number
+  } | null
+}
+
 export function GenerationSubmissionView (props: Props) {
   const context = useGenerationContext()
 
@@ -74,6 +87,42 @@ export function GenerationSubmissionView (props: Props) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
 
   const [beforeGenerationParams, setBeforeGenerationParams] = useState("")
+  const [coinSummary, setCoinSummary] = useState<CoinSummaryResponse["data"]>(null)
+  const initialGrantToastShownRef = useRef(false)
+
+  const loadCoinSummary = async () => {
+    if (!authContext.isLoggedIn) {
+      setCoinSummary(null)
+      return
+    }
+
+    const currentUser = getAuth().currentUser
+    if (!currentUser) {
+      return
+    }
+
+    const idToken = await getIdToken(currentUser)
+    const response = await fetch("/api/coins/summary", {
+      headers: {
+        authorization: `Bearer ${idToken}`,
+      },
+    })
+
+    const json = (await response.json()) as CoinSummaryResponse
+    if (!response.ok || json.error || json.data === null) {
+      throw new Error(json.error ?? "Failed to load coins")
+    }
+
+    setCoinSummary(json.data)
+
+    if (json.data.granted && !initialGrantToastShownRef.current) {
+      initialGrantToastShownRef.current = true
+      toast(
+        `初回アクセス特典として${json.data.grantedFreeCoins + json.data.grantedPremiumCoins}コインが付与されました。本日24:00まで有効です。`,
+        { position: "top-center" },
+      )
+    }
+  }
 
   const { data: tokenData } = useQuery(ViewerTokenQuery)
 
@@ -696,6 +745,18 @@ export function GenerationSubmissionView (props: Props) {
 
   const isExistedPreviousPass = pass?.viewer?.isExistedPreviousPass
 
+  useEffect(() => {
+    loadCoinSummary().catch((error) => {
+      if (error instanceof Error) {
+        logWarn({
+          source: "GenerationSubmit",
+          message: "Failed to load coin summary",
+          details: { message: error.message },
+        })
+      }
+    })
+  }, [authContext.isLoggedIn])
+
   // 移動: createTaskCore をコンポーネント内に配置（スコープ修正）
   const createTaskCore = async (
     taskCount: number,
@@ -930,6 +991,15 @@ export function GenerationSubmissionView (props: Props) {
     }
     logInfo({ source: "GenerationSubmit", message: "Requested task creations" })
     await Promise.all(promises)
+    await loadCoinSummary().catch((error) => {
+      if (error instanceof Error) {
+        logWarn({
+          source: "GenerationSubmit",
+          message: "Failed to refresh coin summary",
+          details: { message: error.message },
+        })
+      }
+    })
     if (typeof context.user?.nanoid !== "string") {
       logWarn({
         source: "GenerationSubmit",
@@ -942,6 +1012,24 @@ export function GenerationSubmissionView (props: Props) {
 
   return (
     <>
+      {authContext.isLoggedIn && coinSummary !== null && (
+        <div className="mb-3 rounded-xl border bg-background/95 p-3 text-sm shadow-sm">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <div>
+              <span className="text-muted-foreground">所持コイン </span>
+              <span className="font-semibold">{coinSummary.totalBalance}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">フリー </span>
+              <span className="font-semibold">{coinSummary.freeBalance}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground">プレミアム </span>
+              <span className="font-semibold">{coinSummary.premiumBalance}</span>
+            </div>
+          </div>
+        </div>
+      )}
       <AppFixedContent position="bottom">
         <div className="space-y-2">
           <GenerationSubmitOperationParts

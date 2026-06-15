@@ -27,7 +27,7 @@ export default function SettingsPointsPage() {
   return (
     <div className="w-full space-y-4">
       <div className="block md:hidden">
-        <SettingsHeader title={t("ポイント", "Points")} />
+        <SettingsHeader title={t("コイン", "Coins")} />
       </div>
       <PointsSettingsForm />
     </div>

@@ -334,8 +334,8 @@ export function GenerationSubmitOperationParts (props: Props) {
                   </DialogTitle>
                   <DialogDescription>
                     {t(
-                      "Aipictors+に加入することで生成枚数などの特典を受けることができます。",
-                      "By subscribing to Aipictors+, you can enjoy additional benefits like increased generation count.",
+                      "Aipictors+に加入すると初回付与コインや同時生成数などの特典を受けることができます。",
+                      "By subscribing to Aipictors+, you can get more initial coins and higher concurrent generation limits.",
                     )}
                   </DialogDescription>
                 </DialogHeader>
