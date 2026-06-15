@@ -1,7 +1,11 @@
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import type { ActionFunctionArgs } from "@remix-run/cloudflare"
+import { object, safeParse, string } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
-import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
+
+const bodySchema = object({
+  sessionId: string(),
+})
 
 function toJsonResponse(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
@@ -13,8 +17,8 @@ function toJsonResponse(body: unknown, status: number): Response {
   })
 }
 
-export async function loader({ request, context }: LoaderFunctionArgs) {
-  if (request.method !== "GET") {
+export async function action({ request, context }: ActionFunctionArgs) {
+  if (request.method !== "POST") {
     return toJsonResponse({ error: "Method not allowed", data: null }, 405)
   }
 
@@ -45,12 +49,25 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     return toJsonResponse({ error: "Unauthorized", data: null }, 401)
   }
 
+  const parsedBody = safeParse(bodySchema, await request.json())
+  if (!parsedBody.success) {
+    return toJsonResponse({ error: "Invalid request body", data: null }, 400)
+  }
+
   const apiBaseUrl =
     getServerEnvValue(context, "AIPICTORS_API_BASE_URL") ??
     "https://backend.aipictors.com"
   const internalToken =
     getServerEnvValue(context, "AIPICTORS_API_INTERNAL_TOKEN") ??
     getServerEnvValue(context, "INTERNAL_API_TOKEN")
+  const cfAccessClientId = getServerEnvValue(
+    context,
+    "AIPICTORS_API_CF_ACCESS_CLIENT_ID",
+  )
+  const cfAccessClientSecret = getServerEnvValue(
+    context,
+    "AIPICTORS_API_CF_ACCESS_CLIENT_SECRET",
+  )
 
   if (!internalToken) {
     return toJsonResponse(
@@ -59,49 +76,37 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     )
   }
 
-  const url = new URL(request.url)
-  const query = url.search ? url.search : ""
-
-  const apiResponse = await fetch(
-    `${apiBaseUrl}/internal/coins/support/rankings${query}`,
+  const response = await fetch(
+    `${apiBaseUrl}/stripe/checkout/premium-coins/confirm`,
     {
-      method: "GET",
+      method: "POST",
       headers: {
         Authorization: `Bearer ${internalToken}`,
         "Content-Type": "application/json",
+        ...(cfAccessClientId && cfAccessClientSecret
+          ? {
+              "CF-Access-Client-Id": cfAccessClientId,
+              "CF-Access-Client-Secret": cfAccessClientSecret,
+            }
+          : {}),
       },
+      body: JSON.stringify({
+        userId: viewer.userId,
+        sessionId: parsedBody.output.sessionId,
+      }),
     },
   )
 
-  const apiJson = (await apiResponse.json()) as {
+  const json = (await response.json()) as {
     error: string | null
-    data?: unknown
-  }
-
-  if (!apiResponse.ok || apiJson.error || !apiJson.data) {
-    return toJsonResponse(
-      {
-        error: apiJson.error ?? "Failed to fetch support rankings",
-        data: null,
-      },
-      502,
-    )
-  }
-
-  const data = apiJson.data as {
-    items?: unknown[]
+    data?: Record<string, unknown>
   }
 
   return toJsonResponse(
     {
-      error: null,
-      data: {
-        ...data,
-        items: await enrichSupportRankingItems(
-          Array.isArray(data.items) ? (data.items as never[]) : [],
-        ),
-      },
+      error: json.error,
+      data: json.data ?? null,
     },
-    200,
+    response.status,
   )
 }

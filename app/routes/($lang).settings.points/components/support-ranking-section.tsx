@@ -24,9 +24,12 @@ export type SupportRankingItem = {
   userId: string
   coinAmount: number
   ptAmount: number
+  freePtAmount: number
+  premiumPtAmount: number
   transferCount: number
   iconUrl?: string | null
   userName?: string | null
+  userLogin?: string | null
 }
 
 type SupportRankingData = {
@@ -68,6 +71,7 @@ const normalizeRankingData = (
   data: SupportRankingData,
 ): SupportRankingData => ({
   ...data,
+  weekStartDate: normalizeWeekStartDate(data.weekStartDate) ?? "",
   items: Array.isArray(data.items) ? data.items : [],
 })
 
@@ -76,10 +80,15 @@ const normalizeSummaryData = (
 ): SupportSummaryResponse["data"] => {
   if (!data) return null
 
+  const normalizedWeekStartDate = normalizeWeekStartDate(data.weekStartDate)
+
   return {
     ...data,
+    weekStartDate: normalizedWeekStartDate ?? "",
     availableWeekStartDates: Array.isArray(data.availableWeekStartDates)
       ? data.availableWeekStartDates
+          .map(normalizeWeekStartDate)
+          .filter((value): value is string => value !== null)
       : [],
   }
 }
@@ -95,10 +104,33 @@ const DATE_FMT = new Intl.DateTimeFormat("ja-JP", {
   day: "2-digit",
 })
 
+const isValidYearMonth = (value: string) => {
+  if (!/^\d{4}-\d{2}$/.test(value)) return false
+  return !Number.isNaN(new Date(`${value}-01T00:00:00+09:00`).getTime())
+}
+
+const isValidWeekStartDate = (value: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+  return !Number.isNaN(new Date(`${value}T00:00:00+09:00`).getTime())
+}
+
+const normalizeWeekStartDate = (value: string | null | undefined) => {
+  if (typeof value !== "string") return null
+
+  const normalized = value.trim().slice(0, 10)
+  return isValidWeekStartDate(normalized) ? normalized : null
+}
+
 const formatMonth = (yearMonth: string) =>
-  MONTH_FMT.format(new Date(`${yearMonth}-01T00:00:00+09:00`))
+  isValidYearMonth(yearMonth)
+    ? MONTH_FMT.format(new Date(`${yearMonth}-01T00:00:00+09:00`))
+    : yearMonth
 
 const formatWeekRange = (weekStartDate: string) => {
+  if (!isValidWeekStartDate(weekStartDate)) {
+    return weekStartDate
+  }
+
   const start = new Date(`${weekStartDate}T00:00:00+09:00`)
   const end = new Date(start.getTime() + 6 * 24 * 60 * 60 * 1000)
   return `${DATE_FMT.format(start)} - ${DATE_FMT.format(end)}`
@@ -107,6 +139,8 @@ const formatWeekRange = (weekStartDate: string) => {
 const groupByMonth = (dates: string[]): Map<string, string[]> => {
   const map = new Map<string, string[]>()
   for (const d of dates) {
+    if (!isValidWeekStartDate(d)) continue
+
     const ym = d.slice(0, 7)
     const list = map.get(ym) ?? []
     list.push(d)
@@ -200,7 +234,10 @@ export function SupportRankingSection() {
       }
       const normalizedSummary = normalizeSummaryData(json.data)
       setSummary(normalizedSummary)
-      const next = selectedWeekStartDate ?? normalizedSummary?.weekStartDate
+      const nextCandidate = selectedWeekStartDate ?? normalizedSummary?.weekStartDate
+      const next = nextCandidate && isValidWeekStartDate(nextCandidate)
+        ? nextCandidate
+        : (normalizedSummary?.availableWeekStartDates[0] ?? null)
       if (!next) {
         setReceivedRanking({
           kind: "received",
@@ -437,6 +474,19 @@ export function RankingCard({
   limit,
 }: RankingCardProps) {
   const displayItems = limit ? items.slice(0, limit) : items
+  const formatBreakdown = (row: SupportRankingItem) => {
+    const parts = []
+
+    if (row.freePtAmount > 0) {
+      parts.push(`${formatNumber(row.freePtAmount)} pt（フリー）`)
+    }
+
+    if (row.premiumPtAmount > 0) {
+      parts.push(`${formatNumber(row.premiumPtAmount)} pt（プレミアム）`)
+    }
+
+    return parts.join(" + ")
+  }
 
   return (
     <Card>
@@ -448,29 +498,34 @@ export function RankingCard({
           <p className="text-muted-foreground text-sm">{emptyText}</p>
         ) : (
           displayItems.map((row) => (
-            <div
+            <Link
               key={row.rank}
-              className="flex items-center gap-3 rounded-lg border px-3 py-2"
+              to={`/users/${row.userLogin ?? row.userId}`}
+              className="flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/30"
             >
               <SupportRankAvatar
                 rank={row.rank}
                 iconUrl={row.iconUrl}
-                name={row.userName}
+                name={row.userName ?? row.userLogin ?? row.userId}
                 size="sm"
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold text-sm">
-                  {row.userName || row.userId.slice(0, 12)}…
+                  {row.userName || row.userLogin || row.userId}
                 </p>
                 <p className="text-muted-foreground text-xs">
-                  {formatNumber(row.coinAmount)} コイン ·{" "}
-                  {formatNumber(row.transferCount)} 回
+                  @{row.userLogin ?? row.userId}
                 </p>
               </div>
-              <p className="shrink-0 font-bold text-sm">
-                {formatNumber(row.ptAmount)} pt
-              </p>
-            </div>
+              <div className="text-right">
+                <p className="shrink-0 font-bold text-sm">
+                  {formatNumber(row.ptAmount)} pt
+                </p>
+                <p className="text-muted-foreground text-[11px]">
+                  {formatBreakdown(row)}
+                </p>
+              </div>
+            </Link>
           ))
         )}
         {moreHref && items.length > 0 && (

@@ -6,6 +6,7 @@
  * バックエンドへの接続にはサーバー内部トークンのみ使用。
  */
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
+import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 
 function toJsonResponse(body: unknown, status: number): Response {
@@ -75,5 +76,20 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     )
   }
 
-  return toJsonResponse({ error: null, data: apiJson.data }, 200)
+  const data = apiJson.data as {
+    items?: unknown[]
+  }
+
+  return toJsonResponse(
+    {
+      error: null,
+      data: {
+        ...data,
+        items: await enrichSupportRankingItems(
+          Array.isArray(data.items) ? (data.items as never[]) : [],
+        ),
+      },
+    },
+    200,
+  )
 }

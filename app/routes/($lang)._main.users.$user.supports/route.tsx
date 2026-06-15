@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { getServerEnvValue } from "~/lib/server/env.server"
 import { ParamsError } from "~/errors/params-error"
 import { loaderClient } from "~/lib/loader-client"
+import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import { config } from "~/config"
@@ -17,9 +18,12 @@ type SupportRankingItem = {
   userId: string
   coinAmount: number
   ptAmount: number
+  freePtAmount: number
+  premiumPtAmount: number
   transferCount: number
   iconUrl?: string | null
   userName?: string | null
+  userLogin?: string | null
 }
 
 type RankingData = {
@@ -59,7 +63,14 @@ const fetchUserSupportRanking = async (context: unknown, userId: string) => {
     data?: RankingData
   }
 
-  return json.data ?? null
+  if (!json.data) {
+    return null
+  }
+
+  return {
+    ...json.data,
+    items: await enrichSupportRankingItems(json.data.items ?? []),
+  }
 }
 
 export async function loader(props: LoaderFunctionArgs) {
@@ -105,6 +116,29 @@ export default function UserSupports () {
 
   const ranking = data.ranking
   const items = ranking?.items ?? []
+  const formatBreakdown = (row: SupportRankingItem) => {
+    const parts = []
+
+    if (row.freePtAmount > 0) {
+      parts.push(
+        t(
+          `${row.freePtAmount.toLocaleString()} pt（フリー）`,
+          `${row.freePtAmount.toLocaleString()} pt (Free)`,
+        ),
+      )
+    }
+
+    if (row.premiumPtAmount > 0) {
+      parts.push(
+        t(
+          `${row.premiumPtAmount.toLocaleString()} pt（プレミアム）`,
+          `${row.premiumPtAmount.toLocaleString()} pt (Premium)`,
+        ),
+      )
+    }
+
+    return parts.join(" + ")
+  }
   const weekLabel = ranking?.weekStartDate
     ? new Intl.DateTimeFormat("ja-JP", {
         timeZone: "Asia/Tokyo",
@@ -154,19 +188,23 @@ export default function UserSupports () {
             </p>
           ) : (
             items.map((row) => (
-              <div
+              <Link
                 key={`${row.rank}-${row.userId}`}
-                className="flex items-center gap-3 rounded-xl border px-4 py-3"
+                to={`/users/${row.userLogin ?? row.userId}`}
+                className="flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors hover:bg-muted/30"
               >
                 <SupportRankAvatar
                   rank={row.rank}
                   iconUrl={row.iconUrl}
-                  name={row.userName ?? row.userId}
+                  name={row.userName ?? row.userLogin ?? row.userId}
                   size="md"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">
-                    {row.userName || row.userId}
+                    {row.userName || row.userLogin || row.userId}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    @{row.userLogin ?? row.userId}
                   </p>
                   <p className="text-muted-foreground text-sm">
                     {row.coinAmount.toLocaleString()} coin / {row.transferCount}
@@ -177,8 +215,11 @@ export default function UserSupports () {
                   <p className="font-bold text-sky-500 text-lg">
                     {row.ptAmount.toLocaleString()} pt
                   </p>
+                  <p className="text-muted-foreground text-xs">
+                    {formatBreakdown(row)}
+                  </p>
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </CardContent>

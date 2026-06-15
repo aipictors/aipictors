@@ -4,6 +4,8 @@
  * - 4位以降: グレー丸バッジ（白数字）をアバター左下に表示
  */
 
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
+
 const RANK_FRAME_URLS: Record<1 | 2 | 3, string> = {
   1: "https://assets.aipictors.com/1st-frame.png",
   2: "https://assets.aipictors.com/2st-frame.png",
@@ -37,8 +39,6 @@ const BADGE_SIZE_CLASS: Record<Size, string> = {
   lg: "h-6 w-6 text-xs",
 }
 
-const NO_PROFILE_URL = "https://assets.aipictors.com/no-profile.webp"
-
 export function SupportRankAvatar({
   rank,
   iconUrl,
@@ -54,7 +54,7 @@ export function SupportRankAvatar({
       {/* アバター本体 */}
       <div className={`${SIZE_CLASS[size]} relative shrink-0`}>
         <img
-          src={iconUrl ?? NO_PROFILE_URL}
+          src={withIconUrlFallback(iconUrl)}
           alt={name || `rank-${rank}`}
           width={px}
           height={px}

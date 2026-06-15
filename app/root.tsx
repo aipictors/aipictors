@@ -63,6 +63,8 @@ const defaultRootLoaderData: RootLoaderData = {
   maintenanceMessage: null,
 }
 
+let hasInitializedBrowserSentry = false
+
 let maintenanceStatusCache:
   | (RootLoaderData & {
       cachedAt: number
@@ -74,6 +76,29 @@ const getTimeoutSignal = (ms: number): AbortSignal | undefined => {
     timeout?: (timeoutMs: number) => AbortSignal
   }
   return typeof maybe.timeout === "function" ? maybe.timeout(ms) : undefined
+}
+
+const initializeBrowserSentry = () => {
+  if (hasInitializedBrowserSentry) {
+    return
+  }
+
+  if (
+    typeof document === "undefined" ||
+    typeof import.meta.env.VITE_SENTRY_DSN !== "string" ||
+    import.meta.env.VITE_SENTRY_DSN.length === 0
+  ) {
+    return
+  }
+
+  init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    environment: import.meta.env.VITE_SENTRY_ENVIRONMENT,
+    tracesSampleRate: 0.001,
+    enabled: import.meta.env.PROD,
+  })
+
+  hasInitializedBrowserSentry = true
 }
 
 const getMaintenanceStatus = async (): Promise<RootLoaderData> => {
@@ -429,17 +454,9 @@ export function Layout(props: Props): React.ReactNode {
     }
   }, [location.pathname, navigate])
 
-  if (
-    typeof document !== "undefined" &&
-    typeof import.meta.env.VITE_SENTRY_DSN === "string"
-  ) {
-    init({
-      dsn: import.meta.env.VITE_SENTRY_DSN,
-      environment: import.meta.env.VITE_SENTRY_ENVIRONMENT,
-      tracesSampleRate: 0.001,
-      enabled: import.meta.env.PROD,
-    })
-  }
+  useEffect(() => {
+    initializeBrowserSentry()
+  }, [])
 
   return (
     <html lang={htmlLang} suppressHydrationWarning>

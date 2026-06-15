@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react"
 import { Trophy } from "lucide-react"
 import { SupportRankAvatar } from "~/components/support-rank-avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -14,6 +15,19 @@ type ColumnProps = {
 
 function RankingColumn(props: ColumnProps) {
   const items = props.data?.items ?? []
+  const formatBreakdown = (row: (typeof items)[number]) => {
+    const parts = []
+
+    if (row.freePtAmount > 0) {
+      parts.push(`${formatNumber(row.freePtAmount)} pt（フリー）`)
+    }
+
+    if (row.premiumPtAmount > 0) {
+      parts.push(`${formatNumber(row.premiumPtAmount)} pt（プレミアム）`)
+    }
+
+    return parts.join(" + ")
+  }
 
   return (
     <Card>
@@ -31,52 +45,62 @@ function RankingColumn(props: ColumnProps) {
           <div className="space-y-2">
             <div className="mb-4 grid gap-3 sm:grid-cols-3">
               {items.slice(0, 3).map((row) => (
-                <div
+                <Link
                   key={`${props.title}-${row.rank}-${row.userId}`}
-                  className="flex flex-col items-center gap-2 rounded-xl border bg-muted/30 p-4 text-center"
+                  to={`/users/${row.userLogin ?? row.userId}`}
+                  className="flex flex-col items-center gap-2 rounded-xl border bg-muted/30 p-4 text-center transition-colors hover:bg-muted/50"
                 >
                   <SupportRankAvatar
                     rank={row.rank}
                     iconUrl={row.iconUrl}
-                    name={row.userName}
+                    name={row.userName ?? row.userLogin ?? row.userId}
                     size="lg"
                   />
                   <p className="mt-1 truncate font-semibold text-sm">
-                    {row.userName || row.userId}
+                    {row.userName || row.userLogin || row.userId}
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    @{row.userLogin ?? row.userId}
                   </p>
                   <p className={`font-bold text-xl ${props.colorClass}`}>
                     {formatNumber(row.ptAmount)} pt
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    {formatNumber(row.coinAmount)} coins · {formatNumber(row.transferCount)} transfers
+                    {formatBreakdown(row)}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
 
             {items.slice(3).map((row) => (
-              <div
+              <Link
                 key={`${props.title}-${row.rank}-${row.userId}`}
-                className="flex items-center gap-3 rounded-lg border px-3 py-2"
+                to={`/users/${row.userLogin ?? row.userId}`}
+                className="flex items-center gap-3 rounded-lg border px-3 py-2 transition-colors hover:bg-muted/30"
               >
                 <SupportRankAvatar
                   rank={row.rank}
                   iconUrl={row.iconUrl}
-                  name={row.userName}
+                  name={row.userName ?? row.userLogin ?? row.userId}
                   size="sm"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-sm">
-                    {row.userName || row.userId}
+                    {row.userName || row.userLogin || row.userId}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    {formatNumber(row.coinAmount)} coins · {formatNumber(row.transferCount)} transfers
+                    @{row.userLogin ?? row.userId}
                   </p>
                 </div>
-                <p className={`shrink-0 font-bold text-sm ${props.colorClass}`}>
-                  {formatNumber(row.ptAmount)} pt
-                </p>
-              </div>
+                <div className="text-right">
+                  <p className={`shrink-0 font-bold text-sm ${props.colorClass}`}>
+                    {formatNumber(row.ptAmount)} pt
+                  </p>
+                  <p className="text-muted-foreground text-[11px]">
+                    {formatBreakdown(row)}
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         )}

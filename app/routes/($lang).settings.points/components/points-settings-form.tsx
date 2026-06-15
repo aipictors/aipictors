@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { Link } from "@remix-run/react"
+import { Link, useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { CoinIcon } from "~/components/coin-icon"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import {
   getViewerRequestHeaders,
   hasViewerRequestSession,
@@ -67,11 +75,36 @@ type SummaryResponse = {
   } | null
 }
 
+type PremiumConfirmResponse = {
+  error: string | null
+  data: {
+    reflected: boolean
+    created: boolean
+    totalCoins?: number
+    paymentStatus?: string | null
+  } | null
+}
+
 export function PointsSettingsForm() {
   const t = useTranslation()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const checkoutState = searchParams.get("checkout")
+  const checkoutSessionId = searchParams.get("session_id")
 
   const [isLoading, setIsLoading] = useState(false)
   const [summary, setSummary] = useState<SummaryResponse["data"]>(null)
+  const [isPremiumPurchaseDialogOpen, setIsPremiumPurchaseDialogOpen] =
+    useState(false)
+  const [isConfirmingPremiumPurchase, setIsConfirmingPremiumPurchase] =
+    useState(false)
+  const [premiumPurchaseError, setPremiumPurchaseError] = useState<string | null>(
+    null,
+  )
+  const [confirmedPremiumCoins, setConfirmedPremiumCoins] = useState<number | null>(
+    null,
+  )
 
   // Free coin ledger for "today's breakdown"
   const freeLedger = (summary?.ledger ?? []).filter(
@@ -274,8 +307,131 @@ export function PointsSettingsForm() {
     void loadSummary()
   }, [])
 
+  useEffect(() => {
+    if (checkoutState === "premium-cancel") {
+      toast.message(
+        t(
+          "プレミアムコインの購入をキャンセルしました",
+          "Premium coin purchase was canceled",
+        ),
+      )
+      void navigate(location.pathname, { replace: true })
+      return
+    }
+
+    if (checkoutState !== "premium-success") {
+      return
+    }
+
+    setIsPremiumPurchaseDialogOpen(true)
+    setPremiumPurchaseError(null)
+
+    if (!checkoutSessionId) {
+      setConfirmedPremiumCoins(null)
+      setPremiumPurchaseError(
+        t(
+          "購入情報の確認に必要なセッションIDが見つかりませんでした",
+          "Missing checkout session ID for premium coin confirmation",
+        ),
+      )
+      return
+    }
+
+    const confirmPremiumPurchase = async () => {
+      try {
+        setIsConfirmingPremiumPurchase(true)
+
+        const headers = await withAuthHeader()
+        const response = await fetch("/api/stripe/premium-coins-confirm", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ sessionId: checkoutSessionId }),
+        })
+
+        const json = (await response.json()) as PremiumConfirmResponse
+
+        if (!response.ok || json.error || !json.data?.reflected) {
+          throw new Error(
+            json.error ??
+              (json.data?.paymentStatus === "paid"
+                ? t(
+                    "購入内容の反映に失敗しました。履歴を更新しても反映されない場合はお問い合わせください",
+                    "Failed to reflect the purchase. If it still does not appear after refreshing history, please contact support.",
+                  )
+                : t(
+                    "購入完了を確認できませんでした",
+                    "Could not confirm the completed purchase",
+                  )),
+          )
+        }
+
+        setConfirmedPremiumCoins(json.data.totalCoins ?? null)
+        await loadSummary()
+        await navigate(location.pathname, { replace: true })
+      } catch (error) {
+        setConfirmedPremiumCoins(null)
+        setPremiumPurchaseError(
+          error instanceof Error
+            ? error.message
+            : t("エラーが発生しました", "An error occurred"),
+        )
+      } finally {
+        setIsConfirmingPremiumPurchase(false)
+      }
+    }
+
+    void confirmPremiumPurchase()
+  }, [checkoutSessionId, checkoutState, location.pathname, navigate, t])
+
   return (
     <div className="space-y-4">
+      <Dialog
+        open={isPremiumPurchaseDialogOpen}
+        onOpenChange={setIsPremiumPurchaseDialogOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t("プレミアムコイン購入完了", "Premium coin purchase complete")}
+            </DialogTitle>
+            <DialogDescription>
+              {isConfirmingPremiumPurchase
+                ? t(
+                    "購入内容を反映しています。残高と履歴を更新中です。",
+                    "Applying your purchase. Updating balance and history.",
+                  )
+                : premiumPurchaseError
+                  ? premiumPurchaseError
+                  : confirmedPremiumCoins !== null
+                    ? t(
+                        `${formatCoinAmount(confirmedPremiumCoins)}枚のプレミアムコインを反映しました。残高と履歴を更新済みです。`,
+                        `${formatCoinAmount(confirmedPremiumCoins)} premium coins were added. Your balance and history have been refreshed.`,
+                      )
+                    : t(
+                        "購入完了を確認しました。",
+                        "Your purchase has been confirmed.",
+                      )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            {premiumPurchaseError ? (
+              <Button
+                variant="outline"
+                onClick={() => window.location.reload()}
+              >
+                {t("再読み込み", "Reload")}
+              </Button>
+            ) : null}
+            <Button
+              onClick={() => setIsPremiumPurchaseDialogOpen(false)}
+              disabled={isConfirmingPremiumPurchase}
+            >
+              {t("閉じる", "Close")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Free coin balance */}
       <div className="rounded-xl border p-5">
         <p className="flex items-center gap-2 font-semibold text-lg">
@@ -316,6 +472,12 @@ export function PointsSettingsForm() {
               {t(
                 "購入したプレミアムコインです。生成時はフリーコインを優先して消費します。購入から3ヶ月で期限切れになります。",
                 "Purchased premium coins. Free coins are consumed first during generation. Coins expire 3 months after purchase.",
+              )}
+            </p>
+            <p className="mt-3 text-muted-foreground text-sm leading-6">
+              {t(
+                "プレミアムコインはユーザーや作品を推すときにも使えます。フリーコインは 1コイン = 1pt、プレミアムコインは 1コイン = 10pt として、推しランキング・貢献度ランキングに反映されます。",
+                "Premium coins can also be used to support users and works. Free coins count as 1pt each and premium coins count as 10pt each in the support and contribution rankings.",
               )}
             </p>
             <div className="mt-3 flex flex-wrap gap-3 text-sm">

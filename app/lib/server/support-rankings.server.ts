@@ -1,4 +1,5 @@
 import { getServerEnvValue } from "~/lib/server/env.server"
+import { enrichSupportRankingItems } from "~/lib/server/support-ranking-enrichment.server"
 
 export type SupportRankingKind = "received" | "sent"
 export type SupportRankingPeriod = "daily" | "weekly" | "monthly"
@@ -8,9 +9,12 @@ export type SupportRankingItem = {
   userId: string
   coinAmount: number
   ptAmount: number
+  freePtAmount: number
+  premiumPtAmount: number
   transferCount: number
   iconUrl?: string | null
   userName?: string | null
+  userLogin?: string | null
 }
 
 export type SupportPeriodRankingData = {
@@ -70,6 +74,8 @@ export const fetchSupportPeriodRanking = async (props: {
 
   return {
     ...json.data,
-    items: Array.isArray(json.data.items) ? json.data.items : [],
+    items: await enrichSupportRankingItems(
+      Array.isArray(json.data.items) ? json.data.items : [],
+    ),
   }
 }

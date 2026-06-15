@@ -40,7 +40,7 @@ const createPremiumCoinCheckoutDirect = async (props: {
   params.set("mode", "payment")
   params.set(
     "success_url",
-    `${props.origin}/settings/points?checkout=premium-success`,
+    `${props.origin}/settings/points?checkout=premium-success&session_id={CHECKOUT_SESSION_ID}`,
   )
   params.set(
     "cancel_url",

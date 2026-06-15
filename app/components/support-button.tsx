@@ -4,7 +4,7 @@
  * - ポイント不足時にコイン購入決済ができる
  */
 import { Loader2 } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Button } from "~/components/ui/button"
@@ -82,15 +82,58 @@ export function SupportButton({
   const [coinAmount, setCoinAmount] = useState<string>("10")
   const [isLoading, setIsLoading] = useState(false)
   const [showCoinPurchase, setShowCoinPurchase] = useState(false)
+  const [currentFreeCoinBalance, setCurrentFreeCoinBalance] = useState(
+    freeCoinBalance,
+  )
+  const [currentPremiumCoinBalance, setCurrentPremiumCoinBalance] = useState(
+    premiumCoinBalance,
+  )
+
+  useEffect(() => {
+    setCurrentFreeCoinBalance(freeCoinBalance)
+  }, [freeCoinBalance])
+
+  useEffect(() => {
+    setCurrentPremiumCoinBalance(premiumCoinBalance)
+  }, [premiumCoinBalance])
+
+  const reloadBalance = async () => {
+    try {
+      const headers = await getViewerRequestHeaders({
+        includeJsonContentType: true,
+      })
+      const res = await fetch("/api/coins/summary", {
+        method: "GET",
+        headers,
+      })
+
+      const json = (await res.json()) as {
+        error?: string
+        data?: {
+          freeBalance?: number
+          premiumBalance?: number
+        }
+      }
+
+      if (!res.ok || json.error || !json.data) {
+        return
+      }
+
+      setCurrentFreeCoinBalance(json.data.freeBalance ?? 0)
+      setCurrentPremiumCoinBalance(json.data.premiumBalance ?? 0)
+    } catch {
+      return
+    }
+  }
 
   const breakdown = calculateCoinBreakdown(
     Number(coinAmount) || 0,
-    freeCoinBalance,
-    premiumCoinBalance,
+    currentFreeCoinBalance,
+    currentPremiumCoinBalance,
   )
   const canSupport = breakdown !== null
 
-  const totalAvailableCoins = freeCoinBalance + premiumCoinBalance
+  const totalAvailableCoins = currentFreeCoinBalance + currentPremiumCoinBalance
 
   const handleCoinAmountChange = (value: string) => {
     const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
@@ -159,9 +202,19 @@ export function SupportButton({
 
       if (hasError) {
         const errorMsg = jsonResponses.find((j) => j.error)?.error
+        if (errorMsg === "Insufficient coins") {
+          setShowCoinPurchase(true)
+        }
         toast.error(errorMsg ?? t("推しに失敗しました", "Support failed"))
         return
       }
+
+      setCurrentFreeCoinBalance((current) =>
+        Math.max(0, current - breakdown.freeCoinsUsed),
+      )
+      setCurrentPremiumCoinBalance((current) =>
+        Math.max(0, current - breakdown.premiumCoinsUsed),
+      )
 
       toast.success(
         t(
@@ -184,7 +237,10 @@ export function SupportButton({
   return (
     <>
       <Button
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          void reloadBalance()
+          setIsOpen(true)
+        }}
         className={triggerClassName ?? "w-full"}
         variant="default"
       >
@@ -227,14 +283,14 @@ export function SupportButton({
               <div className="mt-2 rounded-xl border bg-muted/40 p-3 space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span>{t("フリーコイン", "Free coins")}</span>
-                  <span className="font-semibold">{freeCoinBalance}</span>
+                  <span className="font-semibold">{currentFreeCoinBalance}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-1">
                     <PremiumCoinIcon className="h-4 w-4" />
                     {t("プレミアムコイン", "Premium coins")}
                   </span>
-                  <span className="font-semibold">{premiumCoinBalance}</span>
+                  <span className="font-semibold">{currentPremiumCoinBalance}</span>
                 </div>
               </div>
             </div>
@@ -351,19 +407,23 @@ export function SupportButton({
             {/* 残高不足時の警告 */}
             {!canSupport && Number(coinAmount) > 0 && (
               <div className="rounded-lg border border-destructive bg-destructive/5 p-3">
-                <p className="text-destructive text-xs">
+                <p className="text-destructive text-xs leading-5">
                   {t(
                     `コインが不足しています。現在 ${totalAvailableCoins} coin まで利用できます。`,
                     `Insufficient coins. You can use up to ${totalAvailableCoins} coins.`,
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setShowCoinPurchase(true)}
-                    className="ml-1 underline hover:opacity-70"
-                  >
-                    {t("購入", "Buy")}
-                  </button>
                 </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-3 w-full"
+                  onClick={() => setShowCoinPurchase(true)}
+                >
+                  {t(
+                    "プレミアムコインを購入して続ける",
+                    "Buy premium coins to continue",
+                  )}
+                </Button>
               </div>
             )}
 
@@ -399,9 +459,14 @@ export function SupportButton({
       </Dialog>
 
       <PurchasePremiumCoinsDialog
-        currentBalance={premiumCoinBalance}
+        currentBalance={currentPremiumCoinBalance}
         open={showCoinPurchase}
-        onOpenChange={setShowCoinPurchase}
+        onOpenChange={(open) => {
+          setShowCoinPurchase(open)
+          if (!open) {
+            void reloadBalance()
+          }
+        }}
         hideTrigger
       />
     </>
