@@ -8,6 +8,7 @@ type Props = {
   type?: string | null
   thumbnailImageURL: string | null
   isActive: boolean
+  showCoinCost?: boolean
   onSelect(): void
 }
 
@@ -51,6 +52,8 @@ export function ImageModelCard(props: Props) {
     props.isActive ? "border-2 border-blue-500" : ""
   }`
 
+  const showCoinCost = props.showCoinCost ?? true
+
   const isNoQueueModel =
     props.type === "FLUX" ||
     props.type === "SD5" ||
@@ -58,6 +61,14 @@ export function ImageModelCard(props: Props) {
   const trimmedDisplayName = trimString(props.displayName ?? "")
 
   const getCoinCost = () => {
+    if (props.displayName === "flux.1 schnell") {
+      return 30
+    }
+
+    if (props.displayName === "flux.1 pro") {
+      return 50
+    }
+
     if (props.displayName === "GeminiNanoBanana" || props.displayName === "Gemini 2.5") {
       return 50
     }
@@ -87,12 +98,14 @@ export function ImageModelCard(props: Props) {
             {props.type === "FLUX" && (
               <Badge variant={"destructive"}>{props.type}</Badge>
             )}
-            <Badge className="gap-1">
-              <span>{t("消費:", "Cost:")}</span>
-              <CoinIcon className="h-4 w-4 shrink-0" />
-              <span>{coinCost}</span>
-              <span>{t("コイン", "coins")}</span>
-            </Badge>
+            {showCoinCost && (
+              <Badge className="gap-1">
+                <span>{t("消費:", "Cost:")}</span>
+                <CoinIcon className="h-4 w-4 shrink-0" />
+                <span>{coinCost}</span>
+                <span>{t("コイン", "coins")}</span>
+              </Badge>
+            )}
             {props.displayName === "flux.1 schnell" && (
               <Badge>{t("超高速生成", "super fast generation")}</Badge>
             )}
@@ -121,12 +134,14 @@ export function ImageModelCard(props: Props) {
         <p className="min-h-10 break-words font-bold text-sm leading-5">
           {trimmedDisplayName}
         </p>
-        <p className="flex items-center gap-1 font-semibold text-sky-600 text-xs dark:text-sky-400">
-          <span>{t("消費:", "Cost:")}</span>
-          <CoinIcon className="h-4 w-4 shrink-0" />
-          <span>{coinCost}</span>
-          <span>{t("コイン", "coins")}</span>
-        </p>
+        {showCoinCost && (
+          <p className="flex items-center gap-1 font-semibold text-sky-600 text-xs dark:text-sky-400">
+            <span>{t("消費:", "Cost:")}</span>
+            <CoinIcon className="h-4 w-4 shrink-0" />
+            <span>{coinCost}</span>
+            <span>{t("コイン", "coins")}</span>
+          </p>
+        )}
         <div className="mt-auto space-y-1">
           {isNoQueueModel && (
             <p className="text-muted-foreground text-xs">

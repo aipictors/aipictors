@@ -28,6 +28,8 @@ const standardImageGenerationCoinCost = 10
 const imageEditGenerationCoinCost = 50
 const geminiNanoBananaCoinCost = 50
 const geminiNanoBanana2CoinCost = 100
+const fluxSchnellCoinCost = 30
+const fluxProCoinCost = 50
 
 /**
  * UIサイズタイプをGeminiImageSizeに変換する
@@ -764,6 +766,14 @@ export function GenerationSubmissionView (props: Props) {
   const selectedModelCoinCost = (() => {
     const modelId = context.config.modelId ?? ""
     const normalizedModelId = modelId.toLowerCase()
+
+    if (normalizedModelId === "flux.1 pro") {
+      return fluxProCoinCost
+    }
+
+    if (normalizedModelId === "flux.1 schnell") {
+      return fluxSchnellCoinCost
+    }
 
     const isGeminiModel =
       context.config.modelType === "GEMINI" ||

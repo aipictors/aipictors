@@ -63,6 +63,7 @@ export function LoraImageModelList (props: Props) {
                 isActive={props.selectedModelNames.includes(model.name)}
                 thumbnailImageURL={model.thumbnailImageURL}
                 description={model.description}
+                showCoinCost={false}
                 onSelect={() => {
                   props.onSelect(model.name, model.triggerWord ?? undefined)
                 }}
