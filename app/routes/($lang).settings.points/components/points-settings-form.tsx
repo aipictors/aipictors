@@ -193,7 +193,7 @@ export function PointsSettingsForm() {
     try {
       setIsLoading(true)
       const headers = await withAuthHeader()
-      const response = await fetch("/api/coins/summary", {
+      const response = await fetch("/api/coins/summary?includeLedger=1", {
         method: "GET",
         headers,
       })

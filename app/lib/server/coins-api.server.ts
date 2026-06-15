@@ -76,6 +76,7 @@ export const getCoinSummaryFromApi = async (props: {
   context: unknown
   userId: string
   currentPassType: string | null
+  includeLedger?: boolean
 }) => {
   const response = await fetch(
     `${getApiBaseUrl(props.context)}/internal/coins/ensure-initial-grant`,
@@ -85,6 +86,7 @@ export const getCoinSummaryFromApi = async (props: {
       body: JSON.stringify({
         userId: props.userId,
         planType: props.currentPassType ?? "FREE",
+        includeLedger: props.includeLedger ?? false,
       }),
     },
   )

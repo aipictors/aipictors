@@ -394,14 +394,17 @@ export function UserNavigationMenuContent (props: Props) {
                 {t("フォロワー", "Followers")}
               </div>
             </div>
-            <div className="text-center">
+          </div>
+          <div className="mt-5">
+            <div className="flex items-center gap-2">
+              <CoinIcon className="h-5 w-5 shrink-0" />
               <div
                 className={getSkeletonClass(
                   userNavigationStyles.skeleton.followCount,
                 )}
               />
-              <div className={`mt-1 ${userNavigationStyles.followLabel}`}>
-                {coinLabel}
+              <div className={userNavigationStyles.followLabel}>
+                {t("フリーコイン", "Free Coins")}
               </div>
             </div>
           </div>
@@ -560,18 +563,19 @@ export function UserNavigationMenuContent (props: Props) {
               {t("フォロワー", "Followers")}
             </Link>
           </div>
-          <div className="text-center">
-            <div className={userNavigationStyles.followCount}>
-              {freeCoinBalance ?? "-"}
-            </div>
-            <Link
-              to={getSensitiveLink("/settings/points")}
-              className={`cursor-pointer hover:underline ${userNavigationStyles.followLabel}`}
-            >
-              {coinLabel}
-            </Link>
-          </div>
         </div>
+        <Link
+          to={getSensitiveLink("/settings/points")}
+          className="mt-5 flex items-center gap-2 hover:underline"
+        >
+          <CoinIcon className="h-5 w-5 shrink-0" />
+          <span className={userNavigationStyles.followCount}>
+            {freeCoinBalance ?? "-"}
+          </span>
+          <span className={userNavigationStyles.followLabel}>
+            {t("フリーコイン", "Free Coins")}
+          </span>
+        </Link>
       </div>
 
       <ScrollArea className="max-h-[40vh] overflow-y-auto p-1 sm:max-h-[50vh] md:max-h-none">
