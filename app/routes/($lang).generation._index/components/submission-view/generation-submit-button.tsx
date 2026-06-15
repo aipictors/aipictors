@@ -1,11 +1,13 @@
 import { GradientBlueButton } from "~/components/button/gradient-blue-button"
 import { CoinIcon } from "~/components/coin-icon"
+import { Skeleton } from "~/components/ui/skeleton"
 import { Loader2Icon } from "lucide-react"
 import { useState, useCallback } from "react"
 
 type Props = {
   isLoading: boolean
   isDisabled: boolean
+  isCoinSummaryLoading?: boolean
   requestCoinCost: number
   ownedCoinCount: number
   buttonActionCaption: string
@@ -52,7 +54,15 @@ export function GenerationSubmitButton (props: Props) {
             <span>{props.buttonActionCaption}</span>
             <span>（</span>
             <CoinIcon className="shrink-0" />
-            <span>{props.requestCoinCost} / {props.ownedCoinCount}）</span>
+            <span className="flex items-center gap-2">
+              <span>{props.requestCoinCost} /</span>
+              {props.isCoinSummaryLoading ? (
+                <Skeleton className="h-5 w-12 rounded-md bg-white/40" />
+              ) : (
+                <span>{props.ownedCoinCount}</span>
+              )}
+              <span>）</span>
+            </span>
           </span>
         )}
         {props.isLoading && (

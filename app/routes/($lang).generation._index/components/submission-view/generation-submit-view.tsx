@@ -810,6 +810,7 @@ export function GenerationSubmissionView (props: Props) {
   const requestCoinCost =
     selectedModelCoinCost * Math.max(1, context.config.generationCount)
 
+  const isCoinSummaryLoading = authContext.isLoggedIn && coinSummary === null
   const ownedCoinCount = coinSummary?.totalBalance ?? 0
 
   useEffect(() => {
@@ -1109,6 +1110,7 @@ export function GenerationSubmissionView (props: Props) {
             remainingImageGenerationTasksCount={
               remainingImageGenerationTasksCount
             }
+            isCoinSummaryLoading={isCoinSummaryLoading}
             requestCoinCost={requestCoinCost}
             ownedCoinCount={ownedCoinCount}
             termsText={props.termsText}

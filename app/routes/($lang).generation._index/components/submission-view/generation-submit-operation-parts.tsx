@@ -33,6 +33,7 @@ type Props = {
   inProgressImageGenerationReservedTasksCount: number
   maxTasksCount: number
   remainingImageGenerationTasksCount: number
+  isCoinSummaryLoading: boolean
   requestCoinCost: number
   ownedCoinCount: number
   termsText: string
@@ -245,6 +246,7 @@ export function GenerationSubmitOperationParts (props: Props) {
               }}
               isLoading={props.isCreatingTask}
               isDisabled={context.config.isDisabled}
+              isCoinSummaryLoading={props.isCoinSummaryLoading}
               requestCoinCost={props.requestCoinCost}
               ownedCoinCount={props.ownedCoinCount}
               buttonActionCaption={getSubmitButtonLabel(
@@ -266,6 +268,7 @@ export function GenerationSubmitOperationParts (props: Props) {
               }}
               isLoading={props.isCreatingTask}
               isDisabled={context.config.isDisabled}
+                  isCoinSummaryLoading={props.isCoinSummaryLoading}
               requestCoinCost={props.requestCoinCost}
               ownedCoinCount={props.ownedCoinCount}
               buttonActionCaption={getSubmitButtonLabel(
@@ -315,6 +318,7 @@ export function GenerationSubmitOperationParts (props: Props) {
                     }}
                     isLoading={props.isCreatingTask}
                     isDisabled={context.config.isDisabled}
+                    isCoinSummaryLoading={props.isCoinSummaryLoading}
                     requestCoinCost={props.requestCoinCost}
                     ownedCoinCount={props.ownedCoinCount}
                     buttonActionCaption={getSubmitButtonLabel(
