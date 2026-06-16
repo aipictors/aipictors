@@ -3,6 +3,7 @@ import { forwardRef, useState, useEffect, useCallback, useRef } from "react"
 
 type Props = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   minHeight?: string
+  autoResize?: boolean
 }
 
 /**
@@ -10,7 +11,7 @@ type Props = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
  */
 export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
   (props, ref) => {
-    const { minHeight = "auto", value, ...rest } = props
+    const { minHeight = "auto", autoResize = true, value, ...rest } = props
 
     // テキストエリアの高さを状態として保持
     const [textAreaHeight, setTextAreaHeight] = useState("auto")
@@ -35,13 +36,17 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
 
     // 高さを調整する関数
     const adjustHeight = useCallback((element: HTMLTextAreaElement | null) => {
+      if (!autoResize) {
+        return
+      }
+
       if (element) {
         element.style.height = "auto"
         const updatedHeight = `${element.scrollHeight}px`
         setTextAreaHeight(updatedHeight)
         element.style.height = updatedHeight
       }
-    }, [])
+    }, [autoResize])
 
     // テキストエリアの内容が変わった際に高さを調整する処理
     const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -50,11 +55,15 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
 
     // refが設定されたときやvalueが変わったときに高さを調整
     useEffect(() => {
+      if (!autoResize) {
+        return
+      }
+
       if (textAreaRef.current && prevValueRef.current !== String(value)) {
         adjustHeight(textAreaRef.current)
         prevValueRef.current = String(value)
       }
-    }, [value, adjustHeight, textAreaHeight])
+    }, [value, adjustHeight, autoResize, textAreaHeight])
 
     return (
       <Textarea
@@ -66,14 +75,16 @@ export const AutoResizeTextarea = forwardRef<HTMLTextAreaElement, Props>(
           minHeight: minHeight,
           resize: "none",
           cursor: "text",
-          height: textAreaHeight,
+          ...(autoResize ? { height: textAreaHeight } : {}),
           overflowAnchor: "none",
         }}
         onChange={(e) => {
           props.onChange?.(e)
-          handleInput(e)
+          if (autoResize) {
+            handleInput(e)
+          }
         }}
-        onInput={handleInput}
+        onInput={autoResize ? handleInput : undefined}
       />
     )
   },

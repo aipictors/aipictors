@@ -36,13 +36,16 @@ import {
   recordRecentStickerId,
   sortStickersByRecent,
 } from "~/utils/sticker-recent"
+import { consumeSupportSuccessDialogOpportunity } from "~/utils/support-success-dialog"
 import { getApolloErrorMessage } from "~/utils/get-apollo-error-message"
 import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
 import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type Props = {
   workId: string
+  workOwnerId?: string | null
   workOwnerIconImageURL?: string | null
+  workOwnerName?: string | null
   comments: FragmentOf<typeof CommentListItemFragment>[]
   defaultShowCommentCount?: number
   isWorkOwnerBlocked?: boolean
@@ -354,10 +357,12 @@ export function WorkCommentList(props: Props) {
             ),
           }))
 
-          setSupportSuccessState({
-            message: res.data.createWorkComment.supportThankYouMessage,
-            totalPt: supportDraft.totalPt,
-          })
+          if (consumeSupportSuccessDialogOpportunity(props.workOwnerId)) {
+            setSupportSuccessState({
+              message: res.data.createWorkComment.supportThankYouMessage,
+              totalPt: supportDraft.totalPt,
+            })
+          }
         }
 
         setNewComments([
@@ -550,19 +555,21 @@ export function WorkCommentList(props: Props) {
               <div className="flex items-stretch gap-3">
                 <div className="min-w-0 flex-1">
                   <AutoResizeTextarea
+                    autoResize={false}
                     onChange={(event) => {
                       setComment(event.target.value)
                     }}
+                    rows={1}
                     value={comment}
                     placeholder={t("コメントする", "Add a comment")}
                     disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-                    className="min-h-[68px] w-full rounded-2xl border-border/70 bg-background px-4 py-3"
+                    className="h-[46px] min-h-[46px] w-full overflow-hidden rounded-2xl border-border/70 bg-background px-4 py-3"
                   />
                 </div>
                 {isCreatingWorkComment ? (
                   <Button
                     disabled
-                    className="h-auto min-h-[68px] rounded-2xl px-5 text-sm"
+                    className="h-[46px] min-h-[46px] rounded-2xl px-5 text-sm"
                   >
                     <Loader2Icon className="size-4 animate-spin" />
                   </Button>
@@ -571,7 +578,7 @@ export function WorkCommentList(props: Props) {
                     disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
                     variant="secondary"
                     onClick={onWorkComment}
-                    className="h-auto min-h-[68px] rounded-2xl px-5 text-sm"
+                    className="h-[46px] min-h-[46px] rounded-2xl px-5 text-sm"
                   >
                     {t("送信", "Send")}
                   </Button>
@@ -1256,7 +1263,7 @@ export function WorkCommentList(props: Props) {
           }
         }}
         targetUserIconUrl={props.workOwnerIconImageURL}
-        targetUserName={t("クリエイター", "Creator")}
+        targetUserName={props.workOwnerName ?? t("クリエイター", "Creator")}
         thankYouMessage={supportSuccessState?.message ?? ""}
         totalPt={supportSuccessState?.totalPt}
       />

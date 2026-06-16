@@ -29,6 +29,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { cn } from "~/lib/utils"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
+import { consumeSupportSuccessDialogOpportunity } from "~/utils/support-success-dialog"
 
 type Props = {
   targetUserId: string
@@ -368,9 +369,11 @@ export function SupportButton({
         Math.max(0, current - breakdown.premiumCoinsUsed),
       )
 
-      setSuccessThankYouMessage(resolvedThankYouMessage)
-      setSuccessTotalPt(breakdown.totalPt)
-      setIsSuccessOpen(true)
+      if (consumeSupportSuccessDialogOpportunity(targetUserId)) {
+        setSuccessThankYouMessage(resolvedThankYouMessage)
+        setSuccessTotalPt(breakdown.totalPt)
+        setIsSuccessOpen(true)
+      }
       setIsOpen(false)
       setSupportMode("default")
       setCoinAmount("10")

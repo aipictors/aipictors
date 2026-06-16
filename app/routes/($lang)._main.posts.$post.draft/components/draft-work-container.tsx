@@ -161,7 +161,9 @@ export function DraftWorkContainer (props: Props) {
               <WorkCommentList
                 workId={workForArticle.id}
                 comments={comments}
+                workOwnerId={workForArticle.user?.id}
                 workOwnerIconImageURL={workForArticle.user?.iconUrl}
+                workOwnerName={workForArticle.user?.name}
                 isWorkOwnerBlocked={workForArticle.user?.isBlocked ?? false}
               />
             )}
