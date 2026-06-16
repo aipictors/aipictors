@@ -944,10 +944,8 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
       {data.importantRelease && (
         <HomeImportantReleaseBanner release={data.importantRelease} />
       )}
-      {loginNoticeReleases.length > 0 && (
-        <HomeLoginNoticeMarquee releases={loginNoticeReleases} />
-      )}
-      {currentTab === "home" && <HomeRecentSupportHistory />}
+
+      <HomeRecentSupportHistory />
 
       <Tabs
         value={currentTab}

@@ -1,11 +1,11 @@
 import type { LoaderFunctionArgs } from "@remix-run/cloudflare"
 import { graphql } from "gql.tada"
 import { loaderClient } from "~/lib/loader-client"
-import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 
 type RecentReceivedTransfer = {
-  senderUserId: string
+  senderUser: UserSummary
+  recipientUser: UserSummary
   coinType: "FREE" | "PREMIUM"
   coinAmount: number
   ptAmount: number
@@ -19,14 +19,63 @@ type UserSummary = {
   iconUrl: string | null
 }
 
-type RecentSupportHistoryItem = {
-  senderUser: UserSummary
-  recipientUser: UserSummary
-  coinType: "FREE" | "PREMIUM"
-  coinAmount: number
-  ptAmount: number
-  createdAt: number
+async function enrichRecentTransfers(
+  items: RecentReceivedTransfer[],
+): Promise<RecentReceivedTransfer[]> {
+  const uniqueUserIds = Array.from(
+    new Set(
+      items.flatMap((item) => [item.senderUser.id, item.recipientUser.id]),
+    ),
+  )
+
+  const users = await Promise.all(
+    uniqueUserIds.map(async (userId) => {
+      try {
+        const response = await loaderClient.query({
+          query: recentSupportUserQuery,
+          variables: { userId },
+          fetchPolicy: "no-cache",
+        })
+
+        return [userId, response.data.user] as const
+      } catch {
+        return [userId, null] as const
+      }
+    }),
+  )
+
+  const userMap = new Map(users)
+
+  return items.map((item) => ({
+    ...item,
+    senderUser: {
+      ...item.senderUser,
+      login: userMap.get(item.senderUser.id)?.login ?? item.senderUser.login,
+      name: userMap.get(item.senderUser.id)?.name ?? item.senderUser.name,
+      iconUrl:
+        userMap.get(item.senderUser.id)?.iconUrl ?? item.senderUser.iconUrl,
+    },
+    recipientUser: {
+      ...item.recipientUser,
+      login:
+        userMap.get(item.recipientUser.id)?.login ?? item.recipientUser.login,
+      name: userMap.get(item.recipientUser.id)?.name ?? item.recipientUser.name,
+      iconUrl:
+        userMap.get(item.recipientUser.id)?.iconUrl ?? item.recipientUser.iconUrl,
+    },
+  }))
 }
+
+const recentSupportUserQuery = graphql(
+  `query RecentSupportUser($userId: ID!) {
+    user(id: $userId) {
+      id
+      login
+      name
+      iconUrl
+    }
+  }`,
+)
 
 function toJsonResponse(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
@@ -38,75 +87,9 @@ function toJsonResponse(body: unknown, status: number): Response {
   })
 }
 
-const fallbackUser = (userId: string): UserSummary => ({
-  id: userId,
-  login: null,
-  name: null,
-  iconUrl: null,
-})
-
-async function fetchUsersByIds(userIds: string[]) {
-  const uniqueUserIds = Array.from(new Set(userIds.filter(Boolean)))
-
-  const users = await Promise.all(
-    uniqueUserIds.map(async (userId) => {
-      try {
-        const response = await loaderClient.query({
-          query: userSummaryQuery,
-          variables: { userId },
-          fetchPolicy: "no-cache",
-        })
-
-        const user = response.data.user
-        return [
-          userId,
-          user
-            ? {
-                id: user.id,
-                login: user.login,
-                name: user.name,
-                iconUrl: user.iconUrl,
-              }
-            : fallbackUser(userId),
-        ] as const
-      } catch {
-        return [userId, fallbackUser(userId)] as const
-      }
-    }),
-  )
-
-  return new Map(users)
-}
-
 export async function loader({ request, context }: LoaderFunctionArgs) {
   if (request.method !== "GET") {
     return toJsonResponse({ error: "Method not allowed", data: null }, 405)
-  }
-
-  const authorization = request.headers.get("authorization")
-  if (!authorization?.startsWith("Bearer ")) {
-    return toJsonResponse({ error: "Unauthorized", data: null }, 401)
-  }
-
-  const graphqlEndpoint = getServerEnvValue(
-    context,
-    "VITE_GRAPHQL_ENDPOINT_REMIX",
-  )
-
-  if (!graphqlEndpoint) {
-    return toJsonResponse(
-      { error: "VITE_GRAPHQL_ENDPOINT_REMIX is not configured", data: null },
-      500,
-    )
-  }
-
-  const viewer = await verifyViewerFromGraphQL({
-    graphqlEndpoint,
-    authorization,
-  })
-
-  if (!viewer) {
-    return toJsonResponse({ error: "Unauthorized", data: null }, 401)
   }
 
   const apiBaseUrl =
@@ -133,7 +116,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     : Math.min(10, Math.max(1, requestedLimit))
 
   const apiResponse = await fetch(
-    `${apiBaseUrl}/internal/coins/support/summary/${encodeURIComponent(viewer.userId)}`,
+    `${apiBaseUrl}/internal/coins/support/recent?limit=${encodeURIComponent(limit.toString())}`,
     {
       method: "GET",
       headers: {
@@ -146,7 +129,7 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
   const apiJson = (await apiResponse.json()) as {
     error: string | null
     data?: {
-      recentReceivedTransfers?: RecentReceivedTransfer[]
+      items?: RecentReceivedTransfer[]
     }
   }
 
@@ -160,47 +143,15 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
     )
   }
 
-  const rawItems = Array.isArray(apiJson.data.recentReceivedTransfers)
-    ? apiJson.data.recentReceivedTransfers
-    : []
-
-  const items = rawItems.slice(0, limit)
-  const userMap = await fetchUsersByIds([
-    viewer.userId,
-    ...items.map((item) => item.senderUserId),
-  ])
-
-  const recipientUser =
-    userMap.get(viewer.userId) ?? fallbackUser(viewer.userId)
-
-  const normalizedItems: RecentSupportHistoryItem[] = items.map((item) => ({
-    senderUser:
-      userMap.get(item.senderUserId) ?? fallbackUser(item.senderUserId),
-    recipientUser,
-    coinType: item.coinType,
-    coinAmount: item.coinAmount,
-    ptAmount: item.ptAmount,
-    createdAt: item.createdAt,
-  }))
+  const items = Array.isArray(apiJson.data.items) ? apiJson.data.items : []
 
   return toJsonResponse(
     {
       error: null,
       data: {
-        items: normalizedItems,
+        items: await enrichRecentTransfers(items),
       },
     },
     200,
   )
 }
-
-const userSummaryQuery = graphql(
-  `query RecentSupportHistoryUserSummary($userId: ID!) {
-    user(id: $userId) {
-      id
-      login
-      name
-      iconUrl
-    }
-  }`,
-)

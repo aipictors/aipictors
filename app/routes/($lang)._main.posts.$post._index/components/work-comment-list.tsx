@@ -1,17 +1,21 @@
 import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
-import { Loader2Icon, StampIcon } from "lucide-react"
+import { Heart, Loader2Icon, StampIcon } from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
+import { CoinIcon } from "~/components/coin-icon"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { ExpansionTransition } from "~/components/expansion-transition"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
+import { Input } from "~/components/ui/input"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
+import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import {
   StickerButton,
@@ -62,6 +66,11 @@ type Comment = {
       downloadURL: string
     }
   }
+  support?: {
+    freeCoinAmount: number
+    premiumCoinAmount: number
+    totalPt: number
+  } | null
 }
 
 // 返信コメント
@@ -86,6 +95,37 @@ type ReplyComment = {
       downloadURL: string
     }
   }
+}
+
+type CommentSupportDraft = {
+  freeCoinAmount: number
+  premiumCoinAmount: number
+  totalPt: number
+}
+
+const calculateCommentSupportDraft = (
+  freeCoinAmount: number,
+  premiumCoinAmount: number,
+  freeCoinBalance: number,
+  premiumCoinBalance: number,
+) => {
+  if (!Number.isInteger(freeCoinAmount) || freeCoinAmount < 0) return null
+  if (!Number.isInteger(premiumCoinAmount) || premiumCoinAmount < 0) return null
+  if (freeCoinAmount > freeCoinBalance || premiumCoinAmount > premiumCoinBalance) {
+    return null
+  }
+
+  const totalCoins = freeCoinAmount + premiumCoinAmount
+
+  if (totalCoins <= 0) {
+    return null
+  }
+
+  return {
+    freeCoinAmount,
+    premiumCoinAmount,
+    totalPt: freeCoinAmount + premiumCoinAmount * 10,
+  } satisfies CommentSupportDraft
 }
 
 // 日本時間の日付を計算する関数
@@ -120,6 +160,14 @@ export function WorkCommentList(props: Props) {
   )
 
   const [comment, setComment] = useState("")
+  const [isSupportOpen, setIsSupportOpen] = useState(false)
+  const [supportFreeCoinAmount, setSupportFreeCoinAmount] = useState("0")
+  const [supportPremiumCoinAmount, setSupportPremiumCoinAmount] = useState("0")
+  const [coinBalances, setCoinBalances] = useState({
+    freeBalance: 0,
+    premiumBalance: 0,
+  })
+  const [isLoadingCoinSummary, setIsLoadingCoinSummary] = useState(false)
 
   const [isSensitive, setIsSensitive] = useState(false)
 
@@ -190,8 +238,65 @@ export function WorkCommentList(props: Props) {
   }, [props.workId])
 
   useEffect(() => {
+    if (!isSupportOpen || !authContext.isLoggedIn) {
+      return
+    }
+
+    void reloadCoinSummary()
+  }, [authContext.isLoggedIn, isSupportOpen])
+
+  useEffect(() => {
     setRecentStickerIds(readRecentStickerIds())
   }, [])
+
+  const reloadCoinSummary = async () => {
+    if (!authContext.isLoggedIn) {
+      return
+    }
+
+    try {
+      setIsLoadingCoinSummary(true)
+      const headers = await getViewerRequestHeaders({
+        includeJsonContentType: true,
+      })
+      const res = await fetch("/api/coins/summary", {
+        method: "GET",
+        headers,
+      })
+
+      const json = (await res.json()) as {
+        error?: string
+        data?: {
+          freeBalance?: number
+          premiumBalance?: number
+        }
+      }
+
+      if (!res.ok || json.error || !json.data) {
+        return
+      }
+
+      setCoinBalances({
+        freeBalance: json.data.freeBalance ?? 0,
+        premiumBalance: json.data.premiumBalance ?? 0,
+      })
+    } catch {
+      return
+    } finally {
+      setIsLoadingCoinSummary(false)
+    }
+  }
+
+  const currentSupportDraft = calculateCommentSupportDraft(
+    Number(supportFreeCoinAmount) || 0,
+    Number(supportPremiumCoinAmount) || 0,
+    coinBalances.freeBalance,
+    coinBalances.premiumBalance,
+  )
+
+  const hasSupportInput =
+    (Number(supportFreeCoinAmount) || 0) > 0 ||
+    (Number(supportPremiumCoinAmount) || 0) > 0
 
   const sendComment = async (
     text: string,
@@ -199,6 +304,7 @@ export function WorkCommentList(props: Props) {
     stickerImageURL: string,
     targetWorkId: string,
     iconUrl: string | null | undefined = null,
+    supportDraft: CommentSupportDraft | null = null,
   ) => {
     try {
       if (targetWorkId !== undefined) {
@@ -208,6 +314,8 @@ export function WorkCommentList(props: Props) {
               workId: targetWorkId,
               text: text,
               stickerId: stickerId,
+              supportFreeCoinAmount: supportDraft?.freeCoinAmount ?? 0,
+              supportPremiumCoinAmount: supportDraft?.premiumCoinAmount ?? 0,
               // TODO: Add isSensitive to GraphQL schema
               // isSensitive: isSensitive ?? false,
             },
@@ -225,6 +333,19 @@ export function WorkCommentList(props: Props) {
 
         setComment("")
         setIsSensitive(false)
+        setIsSupportOpen(false)
+        setSupportFreeCoinAmount("0")
+        setSupportPremiumCoinAmount("0")
+
+        if (supportDraft) {
+          setCoinBalances((current) => ({
+            freeBalance: Math.max(0, current.freeBalance - supportDraft.freeCoinAmount),
+            premiumBalance: Math.max(
+              0,
+              current.premiumBalance - supportDraft.premiumCoinAmount,
+            ),
+          }))
+        }
 
         setNewComments([
           {
@@ -245,6 +366,7 @@ export function WorkCommentList(props: Props) {
                 downloadURL: stickerImageURL,
               },
             },
+            support: res.data.createWorkComment.support ?? null,
             isMuted: false,
             isSensitive: isSensitive,
             ...newComments,
@@ -311,12 +433,22 @@ export function WorkCommentList(props: Props) {
   const onWorkComment = async () => {
     const inputComment = comment.trim()
 
-    if (inputComment === "") {
+    if (hasSupportInput && currentSupportDraft === null) {
+      toast(
+        t(
+          "推しコイン数が不正です。保有コイン数を確認してください。",
+          "Support coin amounts are invalid.",
+        ),
+      )
+      return
+    }
+
+    if (inputComment === "" && currentSupportDraft === null) {
       toast(t("コメントを入力してください", "Please enter a comment"))
       return
     }
 
-    sendComment(inputComment, "-1", "", props.workId, userIcon)
+    sendComment(inputComment, "-1", "", props.workId, userIcon, currentSupportDraft)
   }
 
   const showCommentsBeforeMore = showComments.slice(
@@ -373,6 +505,7 @@ export function WorkCommentList(props: Props) {
                       sticker.imageUrl ?? "",
                       props.workId,
                       userIcon,
+                      currentSupportDraft,
                     )
                   } catch (error) {
                     toast(
@@ -412,6 +545,19 @@ export function WorkCommentList(props: Props) {
               disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
               variant={"secondary"}
               size={"icon"}
+              onClick={() => {
+                if (!isSupportOpen) {
+                  void reloadCoinSummary()
+                }
+                setIsSupportOpen((value) => !value)
+              }}
+            >
+              <Heart className="w-16" />
+            </Button>
+            <Button
+              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+              variant={"secondary"}
+              size={"icon"}
               onClick={onOpen}
             >
               <StampIcon className="w-16" />
@@ -430,6 +576,90 @@ export function WorkCommentList(props: Props) {
               </Button>
             )}
           </div>
+          {isSupportOpen && !props.isWorkOwnerBlocked && (
+            <div className="rounded-xl border border-rose-200/80 bg-rose-50/80 p-3 dark:border-rose-900/60 dark:bg-rose-950/20">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-sm font-medium text-rose-700 dark:text-rose-200">
+                  <Heart className="size-4 fill-rose-500 text-rose-500" />
+                  <span>{t("推し付きコメント", "Support comment")}</span>
+                </div>
+                <div className="text-xs text-rose-700/80 dark:text-rose-200/80">
+                  {isLoadingCoinSummary
+                    ? t("読込中...", "Loading...")
+                    : `${t("保有", "Balance")} F ${coinBalances.freeBalance} / P ${coinBalances.premiumBalance}`}
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <CoinIcon className="size-3.5" />
+                    {t("フリー", "Free")}
+                  </label>
+                  <Input
+                    inputMode="numeric"
+                    min={0}
+                    type="number"
+                    value={supportFreeCoinAmount}
+                    onChange={(event) =>
+                      setSupportFreeCoinAmount(event.target.value)
+                    }
+                    disabled={!authContext.isLoggedIn}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <PremiumCoinIcon className="size-3.5" />
+                    {t("プレミアム", "Premium")}
+                  </label>
+                  <Input
+                    inputMode="numeric"
+                    min={0}
+                    type="number"
+                    value={supportPremiumCoinAmount}
+                    onChange={(event) =>
+                      setSupportPremiumCoinAmount(event.target.value)
+                    }
+                    disabled={!authContext.isLoggedIn}
+                  />
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                {currentSupportDraft ? (
+                  <>
+                    <span className="rounded-full bg-white/80 px-2.5 py-1 font-semibold text-rose-700 dark:bg-black/20 dark:text-rose-100">
+                      {currentSupportDraft.totalPt}pt
+                    </span>
+                    {currentSupportDraft.freeCoinAmount > 0 && (
+                      <span className="flex items-center gap-1 rounded-full border border-rose-200 bg-white/80 px-2 py-1 dark:border-rose-900/60 dark:bg-black/20">
+                        <CoinIcon className="size-3.5" />
+                        {currentSupportDraft.freeCoinAmount}
+                      </span>
+                    )}
+                    {currentSupportDraft.premiumCoinAmount > 0 && (
+                      <span className="flex items-center gap-1 rounded-full border border-rose-200 bg-white/80 px-2 py-1 dark:border-rose-900/60 dark:bg-black/20">
+                        <PremiumCoinIcon className="size-3.5" />
+                        {currentSupportDraft.premiumCoinAmount}
+                      </span>
+                    )}
+                  </>
+                ) : hasSupportInput ? (
+                  <span className="text-destructive">
+                    {t(
+                      "保有コイン数を超えています。",
+                      "The amount exceeds your balance.",
+                    )}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">
+                    {t(
+                      "0 のままなら通常コメントとして送信されます。",
+                      "Zero values send a normal comment.",
+                    )}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
           <div className="flex items-center space-x-2 pl-14 opacity-30">
             <Checkbox
               id="sensitive-checkbox"
@@ -470,6 +700,7 @@ export function WorkCommentList(props: Props) {
                   userId={comment.user?.id ?? ""}
                   isMine={comment.user?.id === appContext.userId}
                   createdAt={comment.createdAt}
+                  support={comment.support ?? null}
                   stickerImageURL={comment.sticker?.image?.downloadURL}
                   text={comment.text}
                   workOwnerIconImageURL={withIconUrlFallback(
@@ -541,6 +772,7 @@ export function WorkCommentList(props: Props) {
               userId={comment.user?.id ?? ""}
               isMine={comment.user?.id === appContext.userId}
               createdAt={comment.createdAt}
+              support={comment.support ?? null}
               stickerImageURL={comment.sticker?.imageUrl ?? ""}
               stickerTitle={comment.sticker?.title}
               stickerId={comment.sticker?.id}
@@ -745,6 +977,7 @@ export function WorkCommentList(props: Props) {
                   userId={comment.user?.id ?? ""}
                   isMine={comment.user?.id === appContext.userId}
                   createdAt={comment.createdAt}
+                  support={comment.support ?? null}
                   stickerImageURL={comment.sticker?.imageUrl ?? ""}
                   stickerTitle={comment.sticker?.title}
                   stickerId={comment.sticker?.id}
@@ -961,7 +1194,14 @@ export function WorkCommentList(props: Props) {
         onClose={onClose}
         onSend={async (stickerId: string, url: string) => {
           setRecentStickerIds(recordRecentStickerId(stickerId))
-          await sendComment(comment, stickerId, url, props.workId, userIcon)
+          await sendComment(
+            comment,
+            stickerId,
+            url,
+            props.workId,
+            userIcon,
+            currentSupportDraft,
+          )
         }}
         isTargetUserBlocked={props.isWorkOwnerBlocked}
       />

@@ -12,6 +12,8 @@ import {
 } from "lucide-react"
 import React from "react"
 import { toast } from "sonner"
+import { CoinIcon } from "~/components/coin-icon"
+import { PremiumCoinIcon } from "~/components/premium-coin-icon"
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { Button } from "~/components/ui/button"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
@@ -52,6 +54,11 @@ type Props = {
   isStickerDownloadable?: boolean
   isMuted: boolean
   isSensitive?: boolean
+  support?: {
+    freeCoinAmount: number
+    premiumCoinAmount: number
+    totalPt: number
+  } | null
   moderationSummary?: CommentModerationSummaryState | null
   onDeleteComment: () => void
   onReplyCompleted: (
@@ -178,6 +185,8 @@ export function WorkComment(props: Props) {
     }
   }
 
+  const hasSupport = Boolean(props.support && props.support.totalPt > 0)
+
   // ミュートされたコメントの表示
   if (props.isMuted && !showMutedComment) {
     return (
@@ -265,6 +274,26 @@ export function WorkComment(props: Props) {
               </div>
             )}
           </div>
+          {hasSupport && props.support && (
+            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 dark:bg-rose-950/40 dark:text-rose-200">
+              <span className="flex size-5 items-center justify-center rounded-full bg-white/80 dark:bg-black/20">
+                <Heart className="size-3.5 fill-rose-500 text-rose-500" />
+              </span>
+              <span>{props.support.totalPt}pt</span>
+              {props.support.freeCoinAmount > 0 && (
+                <span className="flex items-center gap-1 opacity-90">
+                  <CoinIcon className="size-3.5" />
+                  {props.support.freeCoinAmount}
+                </span>
+              )}
+              {props.support.premiumCoinAmount > 0 && (
+                <span className="flex items-center gap-1 opacity-90">
+                  <PremiumCoinIcon className="size-3.5" />
+                  {props.support.premiumCoinAmount}
+                </span>
+              )}
+            </div>
+          )}
           {props.text && (
             <div className="space-y-2">
               <p className="overflow-hidden whitespace-pre-wrap break-words text-sm">
@@ -468,6 +497,11 @@ export const WorkCommentFragment = graphql(
     id
     createdAt
     text
+    support {
+      freeCoinAmount
+      premiumCoinAmount
+      totalPt
+    }
     likesCount
     isWorkOwnerLiked
     isLiked

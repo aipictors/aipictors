@@ -247,25 +247,29 @@ export function SupportButton({
     setCustomPremiumCoinAmount(String(nextValue))
   }
 
-  // モーダルが開かれた時に初期化（isOpenのみ監視）
+  // モーダルが開かれた時に初期化
   useEffect(() => {
     if (!isOpen) return
 
+    setSupportMode("default")
+    setCoinAmount("10")
     const free = Math.min(10, currentFreeCoinBalance)
     const premium = free === 0 && currentPremiumCoinBalance > 0 ? 1 : 0
     setCustomFreeCoinAmount(String(free))
     setCustomPremiumCoinAmount(String(premium))
-  }, [isOpen])
+  }, [isOpen, currentFreeCoinBalance, currentPremiumCoinBalance])
 
-  // タブが custom に切り替わった時に、デフォルトタブの値を反映
+  // タブが custom に切り替わった時に、デフォルトタブの現在値を反映
   useEffect(() => {
-    if (supportMode !== "custom" || !isOpen) return
+    if (supportMode !== "custom") return
 
+    // defaultBreakdownを依存配列に入れないことで、
+    // デフォルトタブの数字変更の影響を受けない
     if (defaultBreakdown) {
       setCustomFreeCoinAmount(String(defaultBreakdown.freeCoinsUsed))
       setCustomPremiumCoinAmount(String(defaultBreakdown.premiumCoinsUsed))
     }
-  }, [supportMode, isOpen, defaultBreakdown])
+  }, [supportMode, defaultBreakdown])
 
   const handleSupport = async () => {
     if (!canSupport || !breakdown) return
