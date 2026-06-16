@@ -8,7 +8,11 @@ import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
 import { CoinIcon } from "~/components/coin-icon"
 import { CrossPlatformTooltip } from "~/components/cross-platform-tooltip"
 import { ExpansionTransition } from "~/components/expansion-transition"
-import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import {
+  FreeSupportCoinIcon,
+  PremiumSupportCoinIcon,
+} from "~/components/support-coin-icons"
+import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
 import { Input } from "~/components/ui/input"
@@ -168,6 +172,10 @@ export function WorkCommentList(props: Props) {
     premiumBalance: 0,
   })
   const [isLoadingCoinSummary, setIsLoadingCoinSummary] = useState(false)
+  const [supportSuccessState, setSupportSuccessState] = useState<{
+    message: string
+    totalPt: number
+  } | null>(null)
 
   const [isSensitive, setIsSensitive] = useState(false)
 
@@ -345,6 +353,11 @@ export function WorkCommentList(props: Props) {
               current.premiumBalance - supportDraft.premiumCoinAmount,
             ),
           }))
+
+          setSupportSuccessState({
+            message: res.data.createWorkComment.supportThankYouMessage,
+            totalPt: supportDraft.totalPt,
+          })
         }
 
         setNewComments([
@@ -524,57 +537,47 @@ export function WorkCommentList(props: Props) {
           </div>
         )}
 
-        <div className="space-y-2">
-          <div className="flex w-full items-center space-x-4">
+        <div className="space-y-3">
+          <div className="flex w-full items-start gap-3">
             <UserAvatarWithFrame
               alt={appContext.displayName ?? ""}
               frame={userAvatarFrame}
               isAnimated={false}
-              sizeClassName="size-10"
+              sizeClassName="size-10 shrink-0"
               src={withIconUrlFallback(userIcon)}
             />
-            <AutoResizeTextarea
-              onChange={(event) => {
-                setComment(event.target.value)
-              }}
-              value={comment}
-              placeholder={t("コメントする", "Add a comment")}
-              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-            />
-            <Button
-              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-              variant={"secondary"}
-              size={"icon"}
-              onClick={() => {
-                if (!isSupportOpen) {
-                  void reloadCoinSummary()
-                }
-                setIsSupportOpen((value) => !value)
-              }}
-            >
-              <Heart className="w-16" />
-            </Button>
-            <Button
-              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-              variant={"secondary"}
-              size={"icon"}
-              onClick={onOpen}
-            >
-              <StampIcon className="w-16" />
-            </Button>
-            {isCreatingWorkComment ? (
-              <Button onClick={() => {}}>
-                <Loader2Icon className={"w-16 animate-spin"} />
-              </Button>
-            ) : (
-              <Button
-                disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-                variant={"secondary"}
-                onClick={onWorkComment}
-              >
-                {t("送信", "Send")}
-              </Button>
-            )}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-stretch gap-3">
+                <div className="min-w-0 flex-1">
+                  <AutoResizeTextarea
+                    onChange={(event) => {
+                      setComment(event.target.value)
+                    }}
+                    value={comment}
+                    placeholder={t("コメントする", "Add a comment")}
+                    disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+                    className="min-h-[68px] w-full rounded-2xl border-border/70 bg-background px-4 py-3"
+                  />
+                </div>
+                {isCreatingWorkComment ? (
+                  <Button
+                    disabled
+                    className="h-auto min-h-[68px] rounded-2xl px-5 text-sm"
+                  >
+                    <Loader2Icon className="size-4 animate-spin" />
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+                    variant="secondary"
+                    onClick={onWorkComment}
+                    className="h-auto min-h-[68px] rounded-2xl px-5 text-sm"
+                  >
+                    {t("送信", "Send")}
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
           {isSupportOpen && !props.isWorkOwnerBlocked && (
             <div className="rounded-xl border border-rose-200/80 bg-rose-50/80 p-3 dark:border-rose-900/60 dark:bg-rose-950/20">
@@ -586,9 +589,24 @@ export function WorkCommentList(props: Props) {
                 <div className="text-xs text-rose-700/80 dark:text-rose-200/80">
                   {isLoadingCoinSummary
                     ? t("読込中...", "Loading...")
-                    : `${t("保有", "Balance")} F ${coinBalances.freeBalance} / P ${coinBalances.premiumBalance}`}
+                    : ""}
                 </div>
               </div>
+              {!isLoadingCoinSummary && (
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-white/70 px-3 py-2 text-sm dark:bg-black/20">
+                  <span className="font-medium text-rose-700/80 dark:text-rose-100/80">
+                    {t("保有", "Balance")}
+                  </span>
+                  <span className="flex items-center gap-1.5 font-semibold text-foreground">
+                    <FreeSupportCoinIcon className="h-4 w-4" />
+                    <span>F {coinBalances.freeBalance}</span>
+                  </span>
+                  <span className="flex items-center gap-1.5 font-semibold text-foreground">
+                    <PremiumSupportCoinIcon className="h-4 w-4" />
+                    <span>P {coinBalances.premiumBalance}</span>
+                  </span>
+                </div>
+              )}
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <div className="space-y-1">
                   <label className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -608,7 +626,7 @@ export function WorkCommentList(props: Props) {
                 </div>
                 <div className="space-y-1">
                   <label className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <PremiumCoinIcon className="size-3.5" />
+                    <PremiumSupportCoinIcon className="size-3.5" />
                     {t("プレミアム", "Premium")}
                   </label>
                   <Input
@@ -637,7 +655,7 @@ export function WorkCommentList(props: Props) {
                     )}
                     {currentSupportDraft.premiumCoinAmount > 0 && (
                       <span className="flex items-center gap-1 rounded-full border border-rose-200 bg-white/80 px-2 py-1 dark:border-rose-900/60 dark:bg-black/20">
-                        <PremiumCoinIcon className="size-3.5" />
+                        <PremiumSupportCoinIcon className="size-3.5" />
                         {currentSupportDraft.premiumCoinAmount}
                       </span>
                     )}
@@ -660,17 +678,17 @@ export function WorkCommentList(props: Props) {
               </div>
             </div>
           )}
-          <div className="flex items-center space-x-2 pl-14 opacity-30">
-            <Checkbox
-              id="sensitive-checkbox"
-              checked={isSensitive}
-              onCheckedChange={(checked: boolean) =>
-                setIsSensitive(checked === true)
-              }
-              disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-            />
-            <div className="flex items-center space-x-2">
-              <label htmlFor="sensitive-checkbox" className="text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 pl-13 md:pl-14">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Checkbox
+                id="sensitive-checkbox"
+                checked={isSensitive}
+                onCheckedChange={(checked: boolean) =>
+                  setIsSensitive(checked === true)
+                }
+                disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+              />
+              <label htmlFor="sensitive-checkbox">
                 {t("隠し付き", "Sensitive comment")}
               </label>
               <CrossPlatformTooltip
@@ -679,6 +697,31 @@ export function WorkCommentList(props: Props) {
                   "You can check new works with this tag in your timeline",
                 )}
               />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+                variant="secondary"
+                size="icon"
+                className="h-11 w-11 rounded-2xl"
+                onClick={() => {
+                  if (!isSupportOpen) {
+                    void reloadCoinSummary()
+                  }
+                  setIsSupportOpen((value) => !value)
+                }}
+              >
+                <Heart className="size-5" />
+              </Button>
+              <Button
+                disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+                variant="secondary"
+                size="icon"
+                className="h-11 w-11 rounded-2xl"
+                onClick={onOpen}
+              >
+                <StampIcon className="size-5" />
+              </Button>
             </div>
           </div>
         </div>
@@ -1204,6 +1247,18 @@ export function WorkCommentList(props: Props) {
           )
         }}
         isTargetUserBlocked={props.isWorkOwnerBlocked}
+      />
+      <SupportSuccessDialog
+        open={supportSuccessState !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSupportSuccessState(null)
+          }
+        }}
+        targetUserIconUrl={props.workOwnerIconImageURL}
+        targetUserName={t("クリエイター", "Creator")}
+        thankYouMessage={supportSuccessState?.message ?? ""}
+        totalPt={supportSuccessState?.totalPt}
       />
     </>
   )

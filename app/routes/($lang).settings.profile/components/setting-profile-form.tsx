@@ -55,6 +55,7 @@ export function SettingProfileForm() {
   const [mail, setMail] = useState("")
   const [profileImage, setProfileImage] = useState("")
   const [headerImage, setHeaderImage] = useState("")
+  const [supportThankYouMessage, setSupportThankYouMessage] = useState("")
   const [selectedUserAvatarFrameId, setSelectedUserAvatarFrameId] = useState<
     string | null
   >(null)
@@ -124,6 +125,9 @@ export function SettingProfileForm() {
     setSelectedUserAvatarFrameId(
       avatarFrameSettingsData?.userSetting?.selectedUserAvatarFrame?.id ?? null,
     )
+    setSupportThankYouMessage(
+      avatarFrameSettingsData?.userSetting?.supportThankYouMessage ?? "",
+    )
   }, [avatarFrameSettingsData])
 
   // ローディング状態をフック呼び出し後に確認
@@ -186,6 +190,7 @@ export function SettingProfileForm() {
       variables: {
         input: {
           selectedUserAvatarFrameId,
+          supportThankYouMessage,
         },
       },
       refetchQueries: [{ query: profileAvatarFrameSettingsQuery }],
@@ -430,6 +435,31 @@ export function SettingProfileForm() {
               })}
             </div>
           </div>
+        </div>
+        <div className="flex flex-col justify-between space-y-2">
+          <label
+            htmlFor="supportThankYouMessage"
+            className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {t("推されたときの感謝コメント", "Support thank-you message")}
+          </label>
+          <AutoResizeTextarea
+            id="supportThankYouMessage"
+            className="rounded-md border px-2 py-1"
+            maxLength={120}
+            placeholder={t(
+              "未設定時はデフォルトの感謝コメントが表示されます。",
+              "If left empty, the default thank-you message will be shown.",
+            )}
+            value={supportThankYouMessage}
+            onChange={(e) => setSupportThankYouMessage(e.target.value)}
+          />
+          <p className="text-muted-foreground text-xs leading-5">
+            {t(
+              "通常の推し完了モーダルと、推し付きコメント送信後の表示に使われます。",
+              "Used in the regular support success modal and after sending a support comment.",
+            )}
+          </p>
         </div>
         <div className="flex flex-col justify-between space-y-2">
           <label
@@ -680,6 +710,7 @@ const profileAvatarFrameSettingsQuery = graphql(
     }
     userSetting {
       id
+      supportThankYouMessage
       selectedUserAvatarFrame {
         id
         name
@@ -708,6 +739,7 @@ const updateUserSettingMutation = graphql(
   `mutation UpdateUserSetting($input: UpdateUserSettingInput!) {
     updateUserSetting(input: $input) {
       id
+      supportThankYouMessage
       selectedUserAvatarFrame {
         id
       }

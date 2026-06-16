@@ -497,6 +497,7 @@ export const WorkCommentFragment = graphql(
     id
     createdAt
     text
+    supportThankYouMessage
     support {
       freeCoinAmount
       premiumCoinAmount

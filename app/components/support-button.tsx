@@ -3,11 +3,17 @@
  * - 指定コイン数に対する消費内訳と獲得ptのプレビュー表示
  * - ポイント不足時にコイン購入決済ができる
  */
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { CircleHelp, Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
-import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import {
+  FreeSupportCoinIcon,
+  PremiumSupportCoinIcon,
+} from "~/components/support-coin-icons"
+import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import { Button } from "~/components/ui/button"
 import {
   Dialog,
@@ -52,13 +58,13 @@ function CoinUsageIcon(props: {
     return (
       <span className="flex items-center gap-1">
         <CoinIcon className="h-4 w-4 shrink-0" />
-        <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+        <PremiumSupportCoinIcon className="h-4 w-4 shrink-0" />
       </span>
     )
   }
 
   if (props.breakdown?.premiumCoinsUsed) {
-    return <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+    return <PremiumSupportCoinIcon className="h-4 w-4 shrink-0" />
   }
 
   if (props.breakdown?.freeCoinsUsed || props.freeCoinBalance > 0) {
@@ -66,7 +72,7 @@ function CoinUsageIcon(props: {
   }
 
   if (props.premiumCoinBalance > 0) {
-    return <PremiumCoinIcon className="h-4 w-4 shrink-0" />
+    return <PremiumSupportCoinIcon className="h-4 w-4 shrink-0" />
   }
 
   return <CoinIcon className="h-4 w-4 shrink-0" />
@@ -149,10 +155,30 @@ export function SupportButton({
     useState<string>("0")
   const [isLoading, setIsLoading] = useState(false)
   const [showCoinPurchase, setShowCoinPurchase] = useState(false)
+  const [isSuccessOpen, setIsSuccessOpen] = useState(false)
+  const [successThankYouMessage, setSuccessThankYouMessage] = useState("")
+  const [successTotalPt, setSuccessTotalPt] = useState<number | null>(null)
   const [currentFreeCoinBalance, setCurrentFreeCoinBalance] =
     useState(freeCoinBalance)
   const [currentPremiumCoinBalance, setCurrentPremiumCoinBalance] =
     useState(premiumCoinBalance)
+
+  const { data: targetUserData } = useQuery(targetSupportUserQuery, {
+    variables: {
+      userId: targetUserId,
+    },
+  })
+
+  const resolvedTargetUser = targetUserData?.user
+  const resolvedTargetUserName = resolvedTargetUser?.name ?? targetUserName
+  const resolvedTargetUserIconUrl =
+    resolvedTargetUser?.iconUrl ?? targetUserIconUrl
+  const resolvedThankYouMessage =
+    resolvedTargetUser?.supportThankYouMessage ??
+    t(
+      "応援してくれてありがとう！みんなのためにこれからも頑張るね！",
+      "Thank you for your support! I will keep doing my best for everyone!",
+    )
 
   useEffect(() => {
     setCurrentFreeCoinBalance(freeCoinBalance)
@@ -342,12 +368,9 @@ export function SupportButton({
         Math.max(0, current - breakdown.premiumCoinsUsed),
       )
 
-      toast.success(
-        t(
-          `${targetUserName ?? "ユーザー"}を推しました（${breakdown.totalPt}pt）`,
-          "Supported successfully!",
-        ),
-      )
+      setSuccessThankYouMessage(resolvedThankYouMessage)
+      setSuccessTotalPt(breakdown.totalPt)
+      setIsSuccessOpen(true)
       setIsOpen(false)
       setSupportMode("default")
       setCoinAmount("10")
@@ -437,15 +460,15 @@ export function SupportButton({
                 {t("付与先", "Target")}
               </Label>
               <div className="mt-1 flex items-center gap-2">
-                {targetUserIconUrl && (
+                {resolvedTargetUserIconUrl && (
                   <img
-                    src={targetUserIconUrl}
-                    alt={targetUserName || "user"}
+                    src={resolvedTargetUserIconUrl}
+                    alt={resolvedTargetUserName || "user"}
                     className="h-8 w-8 rounded-full object-cover"
                   />
                 )}
                 <p className="font-semibold text-sm">
-                  {targetUserName || targetUserId}
+                  {resolvedTargetUserName || targetUserId}
                 </p>
               </div>
             </div>
@@ -455,20 +478,18 @@ export function SupportButton({
               <Label className="text-muted-foreground text-xs">
                 {t("現在の保有コイン", "Current coins")}
               </Label>
-              <div className="mt-2 space-y-2 rounded-xl border bg-muted/40 p-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span>{t("フリーコイン", "Free coins")}</span>
-                  <span className="font-semibold">
-                    {currentFreeCoinBalance}
+              <div className="mt-2 rounded-xl border bg-muted/40 px-3 py-2.5">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+                  <span className="font-medium text-muted-foreground">
+                    {t("保有", "Balance")}
                   </span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-1">
-                    <PremiumCoinIcon className="h-4 w-4" />
-                    {t("プレミアムコイン", "Premium coins")}
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    <FreeSupportCoinIcon className="h-4 w-4" />
+                    <span>F {currentFreeCoinBalance}</span>
                   </span>
-                  <span className="font-semibold">
-                    {currentPremiumCoinBalance}
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    <PremiumSupportCoinIcon className="h-4 w-4" />
+                    <span>P {currentPremiumCoinBalance}</span>
                   </span>
                 </div>
               </div>
@@ -789,6 +810,26 @@ export function SupportButton({
         }}
         hideTrigger
       />
+
+      <SupportSuccessDialog
+        open={isSuccessOpen}
+        onOpenChange={setIsSuccessOpen}
+        targetUserIconUrl={resolvedTargetUserIconUrl}
+        targetUserName={resolvedTargetUserName}
+        thankYouMessage={successThankYouMessage}
+        totalPt={successTotalPt ?? undefined}
+      />
     </>
   )
 }
+
+const targetSupportUserQuery = graphql(
+  `query TargetSupportUser($userId: ID!) {
+    user(id: $userId) {
+      id
+      name
+      iconUrl
+      supportThankYouMessage
+    }
+  }`,
+)

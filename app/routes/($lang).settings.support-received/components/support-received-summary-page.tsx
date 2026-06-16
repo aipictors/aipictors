@@ -1,12 +1,24 @@
+import { useQuery } from "@apollo/client/index"
+import { graphql } from "gql.tada"
 import { Link } from "@remix-run/react"
-import { ArrowLeftIcon, CoinsIcon, Gift, History, Inbox } from "lucide-react"
+import {
+  ArrowLeftIcon,
+  CoinsIcon,
+  Gift,
+  History,
+  Inbox,
+  MessageCircle,
+} from "lucide-react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
 import { CoinHelpDialog } from "~/components/coin-help-dialog"
 import { PremiumCoinIcon } from "~/components/premium-coin-icon"
+import { PremiumSupportCoinIcon } from "~/components/support-coin-icons"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import {
@@ -15,6 +27,8 @@ import {
   hasViewerRequestSession,
 } from "~/lib/viewer-request-headers"
 import { AmazonExchangeSection } from "~/routes/($lang).settings.points/components/amazon-exchange-section"
+import type { UserAvatarFramePresentation } from "~/utils/user-avatar-frame"
+import { withIconUrlFallback } from "~/utils/with-icon-url-fallback"
 
 type ReceivedTransferHistoryItem = {
   senderUserId: string
@@ -67,11 +81,28 @@ export function SupportReceivedSummaryPage() {
   const t = useTranslation()
   const authContext = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState("transfers")
+  const [commentFilter, setCommentFilter] = useState<"all" | "supported">(
+    "all",
+  )
   const [supportSummary, setSupportSummary] =
     useState<SupportSummaryResponse["data"]>(null)
   const [coinSummary, setCoinSummary] = useState<CoinSummaryResponse["data"]>(
     null,
   )
+
+  const { data: receivedCommentsData, loading: isLoadingReceivedComments } =
+    useQuery(receivedWorkCommentsQuery, {
+      skip: authContext.isLoading || authContext.isNotLoggedIn,
+      variables: {
+        offset: 0,
+        limit: 50,
+        onlySupportAttached: commentFilter === "supported",
+      },
+      fetchPolicy: "cache-and-network",
+    })
+
+  const receivedComments = receivedCommentsData?.receivedWorkComments ?? []
 
   const loadData = async () => {
     if (!hasViewerRequestSession()) {
@@ -226,51 +257,174 @@ export function SupportReceivedSummaryPage() {
         exchangeablePremiumBalance={coinSummary?.exchangeablePremiumBalance ?? 0}
       />
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <History className="h-4 w-4 text-muted-foreground" />
-            {t("直近の受け取り履歴", "Recent received support")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {(supportSummary?.recentReceivedTransfers ?? []).length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              {t(
-                "まだ応援コインの受け取り履歴はありません。",
-                "No received support history yet.",
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="transfers">
+            {t("受け取り履歴", "Received history")}
+          </TabsTrigger>
+          <TabsTrigger value="comments">
+            {t("受け取ったコメント", "Received comments")}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="transfers">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <History className="h-4 w-4 text-muted-foreground" />
+                {t("直近の受け取り履歴", "Recent received support")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {(supportSummary?.recentReceivedTransfers ?? []).length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  {t(
+                    "まだ応援コインの受け取り履歴はありません。",
+                    "No received support history yet.",
+                  )}
+                </p>
+              ) : (
+                (supportSummary?.recentReceivedTransfers ?? []).map((item, index) => (
+                  <div
+                    key={`${item.createdAt}-${item.senderUserId}-${index}`}
+                    className="flex flex-col gap-1 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm">
+                        {item.coinType === "PREMIUM"
+                          ? t("プレミアム応援を受け取り", "Received premium support")
+                          : t("フリー応援を受け取り", "Received free support")}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {formatDateTime(item.createdAt)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm">
+                      <p>
+                        {formatNumber(item.coinAmount)}
+                        {t("コイン", " coins")}
+                      </p>
+                      <p className="font-semibold text-emerald-600 dark:text-emerald-400">
+                        {formatNumber(item.ptAmount)} pt
+                      </p>
+                    </div>
+                  </div>
+                ))
               )}
-            </p>
-          ) : (
-            (supportSummary?.recentReceivedTransfers ?? []).map((item, index) => (
-              <div
-                key={`${item.createdAt}-${item.senderUserId}-${index}`}
-                className="flex flex-col gap-1 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="min-w-0">
-                  <p className="font-medium text-sm">
-                    {item.coinType === "PREMIUM"
-                      ? t("プレミアム応援を受け取り", "Received premium support")
-                      : t("フリー応援を受け取り", "Received free support")}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {formatDateTime(item.createdAt)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 text-sm">
-                  <p>
-                    {formatNumber(item.coinAmount)}
-                    {t("コイン", " coins")}
-                  </p>
-                  <p className="font-semibold text-emerald-600 dark:text-emerald-400">
-                    {formatNumber(item.ptAmount)} pt
-                  </p>
-                </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="comments">
+          <Card>
+            <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <MessageCircle className="h-4 w-4 text-muted-foreground" />
+                {t("受け取ったコメント一覧", "Received comments")}
+              </CardTitle>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={commentFilter === "all" ? "default" : "outline"}
+                  onClick={() => setCommentFilter("all")}
+                >
+                  {t("すべて", "All")}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={
+                    commentFilter === "supported" ? "default" : "outline"
+                  }
+                  onClick={() => setCommentFilter("supported")}
+                >
+                  {t("ポイント付与あり", "With support")}
+                </Button>
               </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {isLoadingReceivedComments ? (
+                <p className="text-muted-foreground text-sm">
+                  {t("コメントを読み込み中...", "Loading comments...")}
+                </p>
+              ) : receivedComments.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  {commentFilter === "supported"
+                    ? t(
+                        "ポイント付きで受け取ったコメントはまだありません。",
+                        "No support-attached comments yet.",
+                      )
+                    : t(
+                        "まだ受け取ったコメントはありません。",
+                        "No received comments yet.",
+                      )}
+                </p>
+              ) : (
+                receivedComments.map((comment) => (
+                  <div key={comment.id} className="rounded-xl border p-3">
+                    <div className="flex items-start gap-3">
+                      <UserAvatarWithFrame
+                        alt={comment.user.name}
+                        frame={comment.user.avatarFrame as UserAvatarFramePresentation | null}
+                        isAnimated={false}
+                        sizeClassName="size-10"
+                        src={withIconUrlFallback(comment.user.iconUrl)}
+                      />
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-semibold text-sm">{comment.user.name}</span>
+                          <span className="text-muted-foreground text-xs">
+                            {formatDateTime(comment.createdAt)}
+                          </span>
+                          {comment.work && (
+                            <Link
+                              to={`/posts/${comment.work.id}`}
+                              className="text-xs text-primary hover:underline"
+                            >
+                              {comment.work.title}
+                            </Link>
+                          )}
+                        </div>
+
+                        {comment.text.length > 0 ? (
+                          <p className="whitespace-pre-wrap text-sm leading-6">
+                            {comment.text}
+                          </p>
+                        ) : (
+                          <p className="text-muted-foreground text-sm">
+                            {t("スタンプコメント", "Sticker comment")}
+                          </p>
+                        )}
+
+                        {comment.support && (
+                          <div className="flex flex-wrap items-center gap-2 text-xs">
+                            <span className="rounded-full bg-rose-100 px-2.5 py-1 font-semibold text-rose-700 dark:bg-rose-950/40 dark:text-rose-100">
+                              +{comment.support.totalPt}pt
+                            </span>
+                            {comment.support.freeCoinAmount > 0 && (
+                              <span className="flex items-center gap-1 rounded-full border px-2 py-1">
+                                <CoinIcon className="size-3.5" />
+                                {comment.support.freeCoinAmount}
+                              </span>
+                            )}
+                            {comment.support.premiumCoinAmount > 0 && (
+                              <span className="flex items-center gap-1 rounded-full border px-2 py-1">
+                                <PremiumSupportCoinIcon className="size-3.5" />
+                                {comment.support.premiumCoinAmount}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
@@ -296,3 +450,42 @@ function SummaryCard(props: {
     </Card>
   )
 }
+
+const receivedWorkCommentsQuery = graphql(
+  `query ReceivedWorkComments(
+    $offset: Int!
+    $limit: Int!
+    $onlySupportAttached: Boolean
+  ) {
+    receivedWorkComments(
+      offset: $offset
+      limit: $limit
+      onlySupportAttached: $onlySupportAttached
+    ) {
+      id
+      createdAt
+      text
+      user {
+        id
+        name
+        iconUrl
+        avatarFrame {
+          id
+          frameType
+          backgroundStyle
+          overlayImageUrl
+          borderPadding
+        }
+      }
+      work {
+        id
+        title
+      }
+      support {
+        freeCoinAmount
+        premiumCoinAmount
+        totalPt
+      }
+    }
+  }`,
+)
