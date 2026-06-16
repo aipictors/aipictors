@@ -18,9 +18,10 @@ import {
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { useTranslation } from "~/hooks/use-translation"
-import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { cn } from "~/lib/utils"
+import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
 import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
 
 type Props = {
@@ -39,6 +40,8 @@ type CoinBreakdown = {
   premiumCoinsUsed: number
   totalPt: number
 }
+
+type SupportMode = "default" | "custom"
 
 function CoinUsageIcon(props: {
   breakdown: CoinBreakdown | null
@@ -97,6 +100,33 @@ const calculateCoinBreakdown = (
   }
 }
 
+const calculateCustomCoinBreakdown = (
+  freeCoinAmount: number,
+  premiumCoinAmount: number,
+  freeCoinBalance: number,
+  premiumCoinBalance: number,
+): CoinBreakdown | null => {
+  if (!Number.isInteger(freeCoinAmount) || freeCoinAmount < 0) return null
+  if (!Number.isInteger(premiumCoinAmount) || premiumCoinAmount < 0) return null
+
+  const totalCoinsUsed = freeCoinAmount + premiumCoinAmount
+  if (totalCoinsUsed <= 0) return null
+
+  if (
+    freeCoinAmount > freeCoinBalance ||
+    premiumCoinAmount > premiumCoinBalance
+  ) {
+    return null
+  }
+
+  return {
+    totalCoinsUsed,
+    freeCoinsUsed: freeCoinAmount,
+    premiumCoinsUsed: premiumCoinAmount,
+    totalPt: freeCoinAmount + premiumCoinAmount * 10,
+  }
+}
+
 const QUICK_COIN_OPTIONS = [10, 30, 100, 300] as const
 const ADJUSTMENT_STEPS = [1, 10, 100] as const
 
@@ -112,15 +142,17 @@ export function SupportButton({
   const t = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [isInfoOpen, setIsInfoOpen] = useState(false)
+  const [supportMode, setSupportMode] = useState<SupportMode>("default")
   const [coinAmount, setCoinAmount] = useState<string>("10")
+  const [customFreeCoinAmount, setCustomFreeCoinAmount] = useState<string>("0")
+  const [customPremiumCoinAmount, setCustomPremiumCoinAmount] =
+    useState<string>("0")
   const [isLoading, setIsLoading] = useState(false)
   const [showCoinPurchase, setShowCoinPurchase] = useState(false)
-  const [currentFreeCoinBalance, setCurrentFreeCoinBalance] = useState(
-    freeCoinBalance,
-  )
-  const [currentPremiumCoinBalance, setCurrentPremiumCoinBalance] = useState(
-    premiumCoinBalance,
-  )
+  const [currentFreeCoinBalance, setCurrentFreeCoinBalance] =
+    useState(freeCoinBalance)
+  const [currentPremiumCoinBalance, setCurrentPremiumCoinBalance] =
+    useState(premiumCoinBalance)
 
   useEffect(() => {
     setCurrentFreeCoinBalance(freeCoinBalance)
@@ -159,11 +191,21 @@ export function SupportButton({
     }
   }
 
-  const breakdown = calculateCoinBreakdown(
+  const defaultBreakdown = calculateCoinBreakdown(
     Number(coinAmount) || 0,
     currentFreeCoinBalance,
     currentPremiumCoinBalance,
   )
+
+  const customBreakdown = calculateCustomCoinBreakdown(
+    Number(customFreeCoinAmount) || 0,
+    Number(customPremiumCoinAmount) || 0,
+    currentFreeCoinBalance,
+    currentPremiumCoinBalance,
+  )
+
+  const breakdown =
+    supportMode === "default" ? defaultBreakdown : customBreakdown
   const canSupport = breakdown !== null
 
   const totalAvailableCoins = currentFreeCoinBalance + currentPremiumCoinBalance
@@ -173,13 +215,60 @@ export function SupportButton({
     setCoinAmount(Number.isNaN(numeric) ? "" : String(numeric))
   }
 
+  const handleCustomFreeCoinAmountChange = (value: string) => {
+    const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
+    setCustomFreeCoinAmount(Number.isNaN(numeric) ? "" : String(numeric))
+  }
+
+  const handleCustomPremiumCoinAmountChange = (value: string) => {
+    const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
+    setCustomPremiumCoinAmount(Number.isNaN(numeric) ? "" : String(numeric))
+  }
+
   const handleAdjustment = (delta: number) => {
     const nextValue = Math.max(1, (Number(coinAmount) || 0) + delta)
     setCoinAmount(String(nextValue))
   }
 
+  const handleCustomAdjustment = (
+    target: "free" | "premium",
+    delta: number,
+  ) => {
+    if (target === "free") {
+      const nextValue = Math.max(0, (Number(customFreeCoinAmount) || 0) + delta)
+      setCustomFreeCoinAmount(String(nextValue))
+      return
+    }
+
+    const nextValue = Math.max(
+      0,
+      (Number(customPremiumCoinAmount) || 0) + delta,
+    )
+    setCustomPremiumCoinAmount(String(nextValue))
+  }
+
+  // モーダルが開かれた時に初期化（isOpenのみ監視）
+  useEffect(() => {
+    if (!isOpen) return
+
+    const free = Math.min(10, currentFreeCoinBalance)
+    const premium = free === 0 && currentPremiumCoinBalance > 0 ? 1 : 0
+    setCustomFreeCoinAmount(String(free))
+    setCustomPremiumCoinAmount(String(premium))
+  }, [isOpen])
+
+  // タブが custom に切り替わった時に、デフォルトタブの値を反映
+  useEffect(() => {
+    if (supportMode !== "custom" || !isOpen) return
+
+    if (defaultBreakdown) {
+      setCustomFreeCoinAmount(String(defaultBreakdown.freeCoinsUsed))
+      setCustomPremiumCoinAmount(String(defaultBreakdown.premiumCoinsUsed))
+    }
+  }, [supportMode, isOpen, defaultBreakdown])
+
   const handleSupport = async () => {
-    if (!canSupport) return
+    if (!canSupport || !breakdown) return
 
     try {
       setIsLoading(true)
@@ -190,7 +279,7 @@ export function SupportButton({
       // フリーコインとプレミアムコインに分割して送信
       const requests = []
 
-      if (breakdown!.freeCoinsUsed > 0) {
+      if (breakdown.freeCoinsUsed > 0) {
         requests.push(
           fetch("/api/coins/support", {
             method: "POST",
@@ -256,6 +345,7 @@ export function SupportButton({
         ),
       )
       setIsOpen(false)
+      setSupportMode("default")
       setCoinAmount("10")
       onSuccess?.()
     } catch (e) {
@@ -339,7 +429,7 @@ export function SupportButton({
           <div className="space-y-4">
             {/* 対象ユーザー情報 */}
             <div>
-              <Label className="text-xs text-muted-foreground">
+              <Label className="text-muted-foreground text-xs">
                 {t("付与先", "Target")}
               </Label>
               <div className="mt-1 flex items-center gap-2">
@@ -358,116 +448,232 @@ export function SupportButton({
 
             {/* 現在の保有コイン */}
             <div>
-              <Label className="text-xs text-muted-foreground">
+              <Label className="text-muted-foreground text-xs">
                 {t("現在の保有コイン", "Current coins")}
               </Label>
-              <div className="mt-2 rounded-xl border bg-muted/40 p-3 space-y-2">
+              <div className="mt-2 space-y-2 rounded-xl border bg-muted/40 p-3">
                 <div className="flex items-center justify-between text-sm">
                   <span>{t("フリーコイン", "Free coins")}</span>
-                  <span className="font-semibold">{currentFreeCoinBalance}</span>
+                  <span className="font-semibold">
+                    {currentFreeCoinBalance}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-1">
                     <PremiumCoinIcon className="h-4 w-4" />
                     {t("プレミアムコイン", "Premium coins")}
                   </span>
-                  <span className="font-semibold">{currentPremiumCoinBalance}</span>
+                  <span className="font-semibold">
+                    {currentPremiumCoinBalance}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Label>{t("テンプレートから選択", "Choose a template")}</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {QUICK_COIN_OPTIONS.map((option) => (
-                  (() => {
-                    const optionBreakdown = calculateCoinBreakdown(
-                      option,
-                      currentFreeCoinBalance,
-                      currentPremiumCoinBalance,
-                    )
+            <Tabs
+              value={supportMode}
+              onValueChange={(value) => setSupportMode(value as SupportMode)}
+              className="space-y-3"
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="default">
+                  {t("デフォルト", "Default")}
+                </TabsTrigger>
+                <TabsTrigger value="custom">
+                  {t("カスタム", "Custom")}
+                </TabsTrigger>
+              </TabsList>
 
-                    return (
-                  <Button
-                    key={option}
-                    type="button"
-                    variant={Number(coinAmount) === option ? "default" : "outline"}
-                    className="h-14 justify-between rounded-xl px-4"
-                    onClick={() => setCoinAmount(String(option))}
-                    disabled={isLoading}
-                  >
-                    <span className="flex items-center gap-2">
-                      <CoinUsageIcon
-                        breakdown={optionBreakdown}
-                        freeCoinBalance={currentFreeCoinBalance}
-                        premiumCoinBalance={currentPremiumCoinBalance}
-                      />
-                      {option.toLocaleString()}
-                    </span>
-                    <span className="text-xs opacity-80">coin</span>
-                  </Button>
-                    )
-                  })()
-                ))}
-              </div>
-            </div>
+              <TabsContent value="default" className="space-y-3">
+                <div className="space-y-3">
+                  <Label>
+                    {t("テンプレートから選択", "Choose a template")}
+                  </Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {QUICK_COIN_OPTIONS.map((option) =>
+                      (() => {
+                        const optionBreakdown = calculateCoinBreakdown(
+                          option,
+                          currentFreeCoinBalance,
+                          currentPremiumCoinBalance,
+                        )
 
-            <div>
-              <Label htmlFor="amount" className="text-xs">
-                {t("使用コイン数", "Coins to use")}
-              </Label>
-              <div className="mt-2 flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handleAdjustment(-1)}
-                  disabled={isLoading}
-                >
-                  -
-                </Button>
-                <Input
-                  id="amount"
-                  type="text"
-                  inputMode="numeric"
-                  min="1"
-                  max="999999"
-                  value={coinAmount}
-                  onChange={(e) => handleCoinAmountChange(e.target.value)}
-                  className="text-center font-bold text-lg"
-                  disabled={isLoading}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handleAdjustment(1)}
-                  disabled={isLoading}
-                >
-                  +
-                </Button>
-                <span className="text-muted-foreground text-xs">coin</span>
-              </div>
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {ADJUSTMENT_STEPS.map((step) => (
-                  <Button
-                    key={step}
-                    type="button"
-                    variant="outline"
-                    className="text-xs"
-                    onClick={() => handleAdjustment(step)}
-                    disabled={isLoading}
-                  >
-                    +{step}
-                  </Button>
-                ))}
-              </div>
-            </div>
+                        return (
+                          <Button
+                            key={option}
+                            type="button"
+                            variant={
+                              Number(coinAmount) === option
+                                ? "default"
+                                : "outline"
+                            }
+                            className="h-14 justify-between rounded-xl px-4"
+                            onClick={() => setCoinAmount(String(option))}
+                            disabled={isLoading}
+                          >
+                            <span className="flex items-center gap-2">
+                              <CoinUsageIcon
+                                breakdown={optionBreakdown}
+                                freeCoinBalance={currentFreeCoinBalance}
+                                premiumCoinBalance={currentPremiumCoinBalance}
+                              />
+                              {option.toLocaleString()}
+                            </span>
+                            <span className="text-xs opacity-80">coin</span>
+                          </Button>
+                        )
+                      })(),
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="amount" className="text-xs">
+                    {t("使用コイン数", "Coins to use")}
+                  </Label>
+                  <div className="mt-2 flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleAdjustment(-1)}
+                      disabled={isLoading}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="amount"
+                      type="text"
+                      inputMode="numeric"
+                      min="1"
+                      max="999999"
+                      value={coinAmount}
+                      onChange={(e) => handleCoinAmountChange(e.target.value)}
+                      className="text-center font-bold text-lg"
+                      disabled={isLoading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleAdjustment(1)}
+                      disabled={isLoading}
+                    >
+                      +
+                    </Button>
+                    <span className="text-muted-foreground text-xs">coin</span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-3 gap-2">
+                    {ADJUSTMENT_STEPS.map((step) => (
+                      <Button
+                        key={step}
+                        type="button"
+                        variant="outline"
+                        className="text-xs"
+                        onClick={() => handleAdjustment(step)}
+                        disabled={isLoading}
+                      >
+                        +{step}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="custom" className="space-y-3">
+                <p className="text-muted-foreground text-xs leading-5">
+                  {t(
+                    "フリーコインとプレミアムコインの使用量を個別に指定できます。",
+                    "You can set free and premium coin usage individually.",
+                  )}
+                </p>
+
+                <div>
+                  <Label htmlFor="custom-free-amount" className="text-xs">
+                    {t("フリーコイン使用数", "Free coins to use")}
+                  </Label>
+                  <div className="mt-2 flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleCustomAdjustment("free", -1)}
+                      disabled={isLoading}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="custom-free-amount"
+                      type="text"
+                      inputMode="numeric"
+                      min="0"
+                      max="999999"
+                      value={customFreeCoinAmount}
+                      onChange={(e) =>
+                        handleCustomFreeCoinAmountChange(e.target.value)
+                      }
+                      className="text-center font-bold"
+                      disabled={isLoading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleCustomAdjustment("free", 1)}
+                      disabled={isLoading}
+                    >
+                      +
+                    </Button>
+                    <span className="text-muted-foreground text-xs">coin</span>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="custom-premium-amount" className="text-xs">
+                    {t("プレミアムコイン使用数", "Premium coins to use")}
+                  </Label>
+                  <div className="mt-2 flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleCustomAdjustment("premium", -1)}
+                      disabled={isLoading}
+                    >
+                      -
+                    </Button>
+                    <Input
+                      id="custom-premium-amount"
+                      type="text"
+                      inputMode="numeric"
+                      min="0"
+                      max="999999"
+                      value={customPremiumCoinAmount}
+                      onChange={(e) =>
+                        handleCustomPremiumCoinAmountChange(e.target.value)
+                      }
+                      className="text-center font-bold"
+                      disabled={isLoading}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleCustomAdjustment("premium", 1)}
+                      disabled={isLoading}
+                    >
+                      +
+                    </Button>
+                    <span className="text-muted-foreground text-xs">coin</span>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
 
             {/* 消費コイン内訳 */}
             {breakdown && (
               <div className="rounded-lg border bg-muted/50 p-3">
-                <p className="mb-2 text-xs text-muted-foreground">
+                <p className="mb-2 text-muted-foreground text-xs">
                   {t("コイン消費内訳", "Coin breakdown")}
                 </p>
                 <div className="space-y-1 text-sm">
@@ -500,27 +706,37 @@ export function SupportButton({
             )}
 
             {/* 残高不足時の警告 */}
-            {!canSupport && Number(coinAmount) > 0 && (
-              <div className="rounded-lg border border-destructive bg-destructive/5 p-3">
-                <p className="text-destructive text-xs leading-5">
-                  {t(
-                    `コインが不足しています。現在 ${totalAvailableCoins} coin まで利用できます。`,
-                    `Insufficient coins. You can use up to ${totalAvailableCoins} coins.`,
-                  )}
-                </p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="mt-3 w-full"
-                  onClick={() => setShowCoinPurchase(true)}
-                >
-                  {t(
-                    "プレミアムコインを購入して続ける",
-                    "Buy premium coins to continue",
-                  )}
-                </Button>
-              </div>
-            )}
+            {!canSupport &&
+              (supportMode === "default"
+                ? Number(coinAmount) > 0
+                : Number(customFreeCoinAmount) +
+                    Number(customPremiumCoinAmount) >
+                  0) && (
+                <div className="rounded-lg border border-destructive bg-destructive/5 p-3">
+                  <p className="text-destructive text-xs leading-5">
+                    {supportMode === "default"
+                      ? t(
+                          `コインが不足しています。現在 ${totalAvailableCoins} coin まで利用できます。`,
+                          `Insufficient coins. You can use up to ${totalAvailableCoins} coins.`,
+                        )
+                      : t(
+                          "コイン配分が残高を超えています。配分を調整してください。",
+                          "The selected allocation exceeds your balance. Please adjust it.",
+                        )}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-3 w-full"
+                    onClick={() => setShowCoinPurchase(true)}
+                  >
+                    {t(
+                      "プレミアムコインを購入して続ける",
+                      "Buy premium coins to continue",
+                    )}
+                  </Button>
+                </div>
+              )}
 
             {/* ボタン */}
             <div className="flex gap-2 pt-2">
@@ -544,10 +760,15 @@ export function SupportButton({
 
             {/* 利用規約 */}
             <p className="text-center text-muted-foreground text-xs">
-              {t(
-                "フリーコインから優先して消費され、プレミアムコインは 1 枚 = 10pt で換算されます。",
-                "Free coins are used first, and premium coins are worth 10 points each.",
-              )}
+              {supportMode === "default"
+                ? t(
+                    "デフォルトではフリーコインから優先して消費され、プレミアムコインは 1 枚 = 10pt で換算されます。",
+                    "In default mode, free coins are used first, and premium coins are worth 10 points each.",
+                  )
+                : t(
+                    "カスタムではフリー/プレミアムの配分を指定して付与できます。プレミアムコインは 1 枚 = 10pt です。",
+                    "In custom mode, you can choose free/premium allocation. Premium coins are worth 10 points each.",
+                  )}
             </p>
           </div>
         </DialogContent>

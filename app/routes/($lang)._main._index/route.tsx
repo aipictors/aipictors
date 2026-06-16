@@ -87,6 +87,7 @@ import { HomeNewWorksSkeleton } from "~/routes/($lang)._main._index/components/h
 import { HomeNovelsWorkListItemFragment } from "~/routes/($lang)._main._index/components/home-novels-works-section"
 import { HomePaginationWorksSection } from "~/routes/($lang)._main._index/components/home-pagination-works-section"
 import { HomeQuickPreviewBar } from "~/routes/($lang)._main._index/components/home-quick-preview-bar"
+import { HomeRecentSupportHistory } from "~/routes/($lang)._main._index/components/home-recent-support-history"
 import { HomeSupportRankingSection } from "~/routes/($lang)._main._index/components/home-support-ranking-section"
 import {
   HomeTagList,
@@ -940,15 +941,20 @@ export function HomeIndexPage(props: HomeIndexPageProps = {}) {
 
   return (
     <>
+      {data.importantRelease && (
+        <HomeImportantReleaseBanner release={data.importantRelease} />
+      )}
+      {loginNoticeReleases.length > 0 && (
+        <HomeLoginNoticeMarquee releases={loginNoticeReleases} />
+      )}
+      {currentTab === "home" && <HomeRecentSupportHistory />}
+
       <Tabs
         value={currentTab}
         defaultValue={currentTab}
         onValueChange={handleTabChange}
         className="space-y-6"
       >
-        {data.importantRelease && (
-          <HomeImportantReleaseBanner release={data.importantRelease} />
-        )}
         {/* ヘッダー部分: タブ */}
         <div className="-mx-4 bg-background/98 px-4 py-2">
           <div className="flex items-center justify-between gap-x-3 md:gap-x-6">
