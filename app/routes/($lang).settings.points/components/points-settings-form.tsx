@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Link, useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { CoinIcon } from "~/components/coin-icon"
@@ -21,6 +21,7 @@ import { useTranslation } from "~/hooks/use-translation"
 import { AmazonExchangeSection } from "~/routes/($lang).settings.points/components/amazon-exchange-section"
 import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
 import { SupportRankingSection } from "~/routes/($lang).settings.points/components/support-ranking-section"
+import { AuthContext } from "~/contexts/auth-context"
 
 const jstDateFormatter = new Intl.DateTimeFormat("ja-JP", {
   timeZone: "Asia/Tokyo",
@@ -148,6 +149,7 @@ const normalizeSummaryData = (
 
 export function PointsSettingsForm() {
   const t = useTranslation()
+  const authContext = useContext(AuthContext)
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -499,7 +501,7 @@ export function PointsSettingsForm() {
           return
         }
 
-        setConfirmedPremiumCoins(json.data.totalCoins ?? null)
+        setConfirmedPremiumCoins(json.data?.totalCoins ?? null)
         await loadSummary()
         await navigate(location.pathname, { replace: true })
       } catch (error) {
