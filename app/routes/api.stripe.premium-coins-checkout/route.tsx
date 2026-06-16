@@ -111,7 +111,21 @@ const getStripeSecretKey = async (context: ActionFunctionArgs["context"]) => {
 const bodySchema = object({
   packageId: string(),
   customCoins: optional(number()),
+  successPath: optional(string()),
+  cancelPath: optional(string()),
 })
+
+const toSafeRelativePath = (value: string | undefined) => {
+  if (!value) {
+    return null
+  }
+
+  if (!value.startsWith("/") || value.startsWith("//")) {
+    return null
+  }
+
+  return value
+}
 
 function toJsonResponse(body: unknown, status: number): Response {
   return new Response(JSON.stringify(body), {
@@ -164,6 +178,9 @@ export async function action({ request, context }: ActionFunctionArgs) {
   if (!packageId) {
     return toJsonResponse({ error: "Invalid packageId", data: null }, 400)
   }
+
+  const successPath = toSafeRelativePath(parsedBody.output.successPath)
+  const cancelPath = toSafeRelativePath(parsedBody.output.cancelPath)
 
   let coins: number
   let bonusCoins: number
@@ -228,6 +245,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
       coins,
       bonusCoins,
       priceYen,
+      successPath: successPath ?? undefined,
+      cancelPath: cancelPath ?? undefined,
     })) as {
       url?: string
       error?: { message?: string }
@@ -280,6 +299,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
         bonusCoins,
         priceYen,
         origin: appOrigin,
+        successPath: successPath ?? undefined,
+        cancelPath: cancelPath ?? undefined,
       }),
     },
   )
@@ -306,6 +327,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
         coins,
         bonusCoins,
         priceYen,
+        successPath: successPath ?? undefined,
+        cancelPath: cancelPath ?? undefined,
       })) as {
         url?: string
         error?: { message?: string }

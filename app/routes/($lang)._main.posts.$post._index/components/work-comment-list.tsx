@@ -1,6 +1,7 @@
 import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, Loader2Icon, StampIcon } from "lucide-react"
+import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { useContext, useEffect, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
@@ -15,11 +16,20 @@ import {
 import { SupportSuccessDialog } from "~/components/support-success-dialog"
 import { Button } from "~/components/ui/button"
 import { Checkbox } from "~/components/ui/checkbox"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
 import { UserAvatarWithFrame } from "~/components/user/user-avatar-with-frame"
 import { AuthContext } from "~/contexts/auth-context"
 import { useTranslation } from "~/hooks/use-translation"
 import { getViewerRequestHeaders } from "~/lib/viewer-request-headers"
+import { PurchasePremiumCoinsDialog } from "~/routes/($lang).settings.points/components/purchase-premium-coins-dialog"
 import type { CommentModerationSummaryState } from "~/routes/($lang)._main.posts.$post._index/components/comment-moderation-types"
 import {
   StickerButton,
@@ -110,6 +120,16 @@ type CommentSupportDraft = {
   totalPt: number
 }
 
+type PremiumConfirmResponse = {
+  error: string | null
+  data: {
+    reflected: boolean
+    created: boolean
+    totalCoins?: number
+    paymentStatus?: string | null
+  } | null
+}
+
 const SUPPORT_COIN_STEP_AMOUNTS = [100, 500, 1000] as const
 
 const calculateCommentSupportDraft = (
@@ -151,6 +171,11 @@ const getJSTDate = () => {
  */
 export function WorkCommentList(props: Props) {
   const { value: isOpen, setTrue: onOpen, setFalse: onClose } = useBoolean()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const checkoutState = searchParams.get("checkout")
+  const checkoutSessionId = searchParams.get("session_id")
 
   const t = useTranslation()
 
@@ -181,6 +206,16 @@ export function WorkCommentList(props: Props) {
     message: string
     totalPt: number
   } | null>(null)
+  const [isPremiumPurchaseDialogOpen, setIsPremiumPurchaseDialogOpen] =
+    useState(false)
+  const [isConfirmingPremiumPurchase, setIsConfirmingPremiumPurchase] =
+    useState(false)
+  const [premiumPurchaseError, setPremiumPurchaseError] = useState<string | null>(
+    null,
+  )
+  const [confirmedPremiumCoins, setConfirmedPremiumCoins] = useState<number | null>(
+    null,
+  )
 
   const [isSensitive, setIsSensitive] = useState(false)
 
@@ -266,6 +301,84 @@ export function WorkCommentList(props: Props) {
   useEffect(() => {
     setRecentStickerIds(readRecentStickerIds())
   }, [])
+
+  useEffect(() => {
+    if (checkoutState === "premium-cancel") {
+      toast.message(
+        t(
+          "プレミアムコインの購入をキャンセルしました",
+          "Premium coin purchase was canceled",
+        ),
+      )
+      void navigate(location.pathname, { replace: true })
+      return
+    }
+
+    if (checkoutState !== "premium-success") {
+      return
+    }
+
+    setIsPremiumPurchaseDialogOpen(false)
+    setPremiumPurchaseError(null)
+
+    if (!checkoutSessionId) {
+      setConfirmedPremiumCoins(null)
+      setPremiumPurchaseError(
+        t(
+          "購入情報の確認に必要なセッションIDが見つかりませんでした",
+          "Missing checkout session ID for premium coin confirmation",
+        ),
+      )
+      return
+    }
+
+    const confirmPremiumPurchase = async () => {
+      try {
+        setIsConfirmingPremiumPurchase(true)
+
+        const headers = await getViewerRequestHeaders({
+          includeJsonContentType: true,
+        })
+        const response = await fetch("/api/stripe/premium-coins-confirm", {
+          method: "POST",
+          headers,
+          body: JSON.stringify({ sessionId: checkoutSessionId }),
+        })
+
+        const json = (await response.json()) as PremiumConfirmResponse
+
+        if (!response.ok || json.error || !json.data?.reflected) {
+          throw new Error(
+            json.error ??
+              (json.data?.paymentStatus === "paid"
+                ? t(
+                    "購入内容の反映に失敗しました。再読み込み後も反映されない場合はお問い合わせください。",
+                    "Failed to reflect the purchase. If it still does not appear after reloading, please contact support.",
+                  )
+                : t(
+                    "購入完了を確認できませんでした",
+                    "Could not confirm the completed purchase",
+                  )),
+          )
+        }
+
+        setConfirmedPremiumCoins(json.data.totalCoins ?? null)
+        await reloadCoinSummary()
+        await navigate(location.pathname, { replace: true })
+      } catch (error) {
+        setConfirmedPremiumCoins(null)
+        setPremiumPurchaseError(
+          error instanceof Error
+            ? error.message
+            : t("エラーが発生しました", "An error occurred"),
+        )
+      } finally {
+        setIsConfirmingPremiumPurchase(false)
+      }
+    }
+
+    void confirmPremiumPurchase()
+  }, [checkoutSessionId, checkoutState, location.pathname, navigate, t])
 
   const fetchCoinSummary = async () => {
     const headers = await getViewerRequestHeaders({
@@ -764,9 +877,19 @@ export function WorkCommentList(props: Props) {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <PremiumSupportCoinIcon className="size-3.5" />
-                    {t("プレミアム", "Premium")}
+                  <label className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <PremiumSupportCoinIcon className="size-3.5" />
+                      {t("プレミアム", "Premium")}
+                    </span>
+                    <button
+                      type="button"
+                      className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                      onClick={() => setIsPremiumPurchaseDialogOpen(true)}
+                      disabled={!authContext.isLoggedIn}
+                    >
+                      + {t("購入", "Buy")}
+                    </button>
                   </label>
                   <Input
                     inputMode="numeric"
@@ -1441,6 +1564,63 @@ export function WorkCommentList(props: Props) {
         thankYouMessage={supportSuccessState?.message ?? ""}
         totalPt={supportSuccessState?.totalPt}
       />
+
+      <PurchasePremiumCoinsDialog
+        currentBalance={coinBalances.premiumBalance}
+        open={isPremiumPurchaseDialogOpen && checkoutState !== "premium-success"}
+        onOpenChange={setIsPremiumPurchaseDialogOpen}
+        hideTrigger
+        successPath={location.pathname}
+        cancelPath={location.pathname}
+      />
+
+      <Dialog
+        open={checkoutState === "premium-success"}
+        onOpenChange={() => {
+          void navigate(location.pathname, { replace: true })
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {t("プレミアムコイン購入完了", "Premium coin purchase complete")}
+            </DialogTitle>
+            <DialogDescription>
+              {isConfirmingPremiumPurchase
+                ? t(
+                    "購入内容を反映しています。残高を更新中です。",
+                    "Applying your purchase and refreshing balance.",
+                  )
+                : premiumPurchaseError
+                  ? premiumPurchaseError
+                  : confirmedPremiumCoins !== null
+                    ? t(
+                        `${confirmedPremiumCoins.toLocaleString()}枚のプレミアムコインを反映しました。`,
+                        `${confirmedPremiumCoins.toLocaleString()} premium coins were added.`,
+                      )
+                    : t(
+                        "購入完了を確認しました。",
+                        "Your purchase has been confirmed.",
+                      )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            {premiumPurchaseError ? (
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                {t("再読み込み", "Reload")}
+              </Button>
+            ) : null}
+            <Button
+              onClick={() => {
+                void navigate(location.pathname, { replace: true })
+              }}
+              disabled={isConfirmingPremiumPurchase}
+            >
+              {t("作品に戻る", "Back to work")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

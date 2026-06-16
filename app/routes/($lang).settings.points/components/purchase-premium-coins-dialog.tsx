@@ -29,21 +29,25 @@ type PackageKey = keyof typeof PREMIUM_COIN_PACKAGES
 const PACKAGE_OPTIONS: {
   id: PackageKey
   coins: number
+  bonusCoins: number
   priceYen: number
 }[] = [
   {
     id: "PREMIUM_COINS_100",
     coins: 100,
+    bonusCoins: 0,
     priceYen: 80,
   },
   {
     id: "PREMIUM_COINS_1000",
     coins: 1000,
+    bonusCoins: 100,
     priceYen: 800,
   },
   {
     id: "PREMIUM_COINS_10000",
     coins: 10000,
+    bonusCoins: 1000,
     priceYen: 8000,
   },
 ]
@@ -67,6 +71,8 @@ export function PurchasePremiumCoinsDialog(props: {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   hideTrigger?: boolean
+  successPath?: string
+  cancelPath?: string
 }) {
   const t = useTranslation()
   const [internalOpen, setInternalOpen] = useState(false)
@@ -130,6 +136,12 @@ export function PurchasePremiumCoinsDialog(props: {
       const body: Record<string, unknown> = { packageId: activePackageId }
       if (activePackageId === "PREMIUM_COINS_CUSTOM") {
         body.customCoins = coinAmount
+      }
+      if (props.successPath) {
+        body.successPath = props.successPath
+      }
+      if (props.cancelPath) {
+        body.cancelPath = props.cancelPath
       }
 
       const response = await fetch("/api/stripe/premium-coins-checkout", {
@@ -215,6 +227,11 @@ export function PurchasePremiumCoinsDialog(props: {
                     <PremiumCoinIcon className="h-5 w-5 shrink-0" />
                     <span>{opt.coins.toLocaleString()}</span>
                   </div>
+                  {opt.bonusCoins > 0 && (
+                    <p className="mt-2 font-semibold text-emerald-600 text-sm dark:text-emerald-400">
+                      +{opt.bonusCoins.toLocaleString()} {t("ボーナス", "Bonus")}
+                    </p>
+                  )}
                   <p className="mt-2 font-semibold text-xl">
                     ¥{opt.priceYen.toLocaleString()}
                   </p>
