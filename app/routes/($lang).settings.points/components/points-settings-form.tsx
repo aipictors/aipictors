@@ -529,7 +529,7 @@ export function PointsSettingsForm() {
         </p>
         <p className="mt-3 text-muted-foreground text-sm leading-6">
           {t(
-            "画像生成に使える無料コインです。付与されたコインは当日の24:00に失効します。",
+            "ユーザーへの応援もしくは、画像生成に使える無料コインです。付与されたコインは当日の24:00に失効します。",
             "These free coins can be used for image generation. Granted coins expire at 24:00 on the same day.",
           )}
         </p>

@@ -110,6 +110,8 @@ type CommentSupportDraft = {
   totalPt: number
 }
 
+const SUPPORT_COIN_STEP_AMOUNTS = [100, 500, 1000] as const
+
 const calculateCommentSupportDraft = (
   freeCoinAmount: number,
   premiumCoinAmount: number,
@@ -320,9 +322,33 @@ export function WorkCommentList(props: Props) {
     coinBalances.premiumBalance,
   )
 
+  const currentFreeSupportCoinAmount = Number(supportFreeCoinAmount) || 0
+  const currentPremiumSupportCoinAmount = Number(supportPremiumCoinAmount) || 0
+
   const hasSupportInput =
-    (Number(supportFreeCoinAmount) || 0) > 0 ||
-    (Number(supportPremiumCoinAmount) || 0) > 0
+    currentFreeSupportCoinAmount > 0 || currentPremiumSupportCoinAmount > 0
+
+  const adjustSupportCoinAmount = (
+    coinType: "FREE" | "PREMIUM",
+    delta: number,
+  ) => {
+    const currentValue =
+      coinType === "FREE"
+        ? currentFreeSupportCoinAmount
+        : currentPremiumSupportCoinAmount
+    const maxValue =
+      coinType === "FREE"
+        ? coinBalances.freeBalance
+        : coinBalances.premiumBalance
+    const nextValue = Math.min(maxValue, Math.max(0, currentValue + delta))
+
+    if (coinType === "FREE") {
+      setSupportFreeCoinAmount(String(nextValue))
+      return
+    }
+
+    setSupportPremiumCoinAmount(String(nextValue))
+  }
 
   const sendComment = async (
     text: string,
@@ -704,6 +730,38 @@ export function WorkCommentList(props: Props) {
                     }
                     disabled={!authContext.isLoggedIn}
                   />
+                  <div className="space-y-1 pt-1">
+                    {SUPPORT_COIN_STEP_AMOUNTS.map((amount) => (
+                      <div key={`free-${amount}`} className="grid grid-cols-2 gap-1.5">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8"
+                          disabled={
+                            !authContext.isLoggedIn ||
+                            currentFreeSupportCoinAmount <= 0
+                          }
+                          onClick={() => adjustSupportCoinAmount("FREE", -amount)}
+                        >
+                          -{amount}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8"
+                          disabled={
+                            !authContext.isLoggedIn ||
+                            currentFreeSupportCoinAmount >= coinBalances.freeBalance
+                          }
+                          onClick={() => adjustSupportCoinAmount("FREE", amount)}
+                        >
+                          +{amount}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <label className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -720,6 +778,46 @@ export function WorkCommentList(props: Props) {
                     }
                     disabled={!authContext.isLoggedIn}
                   />
+                  <div className="space-y-1 pt-1">
+                    {SUPPORT_COIN_STEP_AMOUNTS.map((amount) => (
+                      <div
+                        key={`premium-${amount}`}
+                        className="grid grid-cols-2 gap-1.5"
+                      >
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8"
+                          disabled={
+                            !authContext.isLoggedIn ||
+                            currentPremiumSupportCoinAmount <= 0
+                          }
+                          onClick={() =>
+                            adjustSupportCoinAmount("PREMIUM", -amount)
+                          }
+                        >
+                          -{amount}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8"
+                          disabled={
+                            !authContext.isLoggedIn ||
+                            currentPremiumSupportCoinAmount >=
+                              coinBalances.premiumBalance
+                          }
+                          onClick={() =>
+                            adjustSupportCoinAmount("PREMIUM", amount)
+                          }
+                        >
+                          +{amount}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
