@@ -2,7 +2,7 @@ import { gql, useMutation, useQuery } from "@apollo/client/index"
 import { type FragmentOf, graphql } from "gql.tada"
 import { Heart, Loader2Icon, StampIcon } from "lucide-react"
 import { useLocation, useNavigate, useSearchParams } from "@remix-run/react"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useBoolean } from "usehooks-ts"
 import { AutoResizeTextarea } from "~/components/auto-resize-textarea"
@@ -210,12 +210,15 @@ export function WorkCommentList(props: Props) {
     useState(false)
   const [isConfirmingPremiumPurchase, setIsConfirmingPremiumPurchase] =
     useState(false)
+  const [isPremiumPurchaseResultDialogOpen, setIsPremiumPurchaseResultDialogOpen] =
+    useState(false)
   const [premiumPurchaseError, setPremiumPurchaseError] = useState<string | null>(
     null,
   )
   const [confirmedPremiumCoins, setConfirmedPremiumCoins] = useState<number | null>(
     null,
   )
+  const handledPremiumCheckoutSessionRef = useRef<string | null>(null)
 
   const [isSensitive, setIsSensitive] = useState(false)
 
@@ -304,6 +307,10 @@ export function WorkCommentList(props: Props) {
 
   useEffect(() => {
     if (checkoutState === "premium-cancel") {
+      if (handledPremiumCheckoutSessionRef.current === "premium-cancel") {
+        return
+      }
+      handledPremiumCheckoutSessionRef.current = "premium-cancel"
       toast.message(
         t(
           "プレミアムコインの購入をキャンセルしました",
@@ -318,17 +325,27 @@ export function WorkCommentList(props: Props) {
       return
     }
 
+    const checkoutKey = checkoutSessionId ?? "missing-session"
+    if (handledPremiumCheckoutSessionRef.current === checkoutKey) {
+      return
+    }
+    handledPremiumCheckoutSessionRef.current = checkoutKey
+
     setIsPremiumPurchaseDialogOpen(false)
+    setIsPremiumPurchaseResultDialogOpen(true)
     setPremiumPurchaseError(null)
+    setConfirmedPremiumCoins(null)
 
     if (!checkoutSessionId) {
       setConfirmedPremiumCoins(null)
+      setIsConfirmingPremiumPurchase(false)
       setPremiumPurchaseError(
         t(
           "購入情報の確認に必要なセッションIDが見つかりませんでした",
           "Missing checkout session ID for premium coin confirmation",
         ),
       )
+      setIsPremiumPurchaseResultDialogOpen(false)
       return
     }
 
@@ -347,7 +364,15 @@ export function WorkCommentList(props: Props) {
 
         const json = (await response.json()) as PremiumConfirmResponse
 
-        if (!response.ok || json.error || !json.data?.reflected) {
+        const paymentStatus = json.data?.paymentStatus ?? null
+
+        if (
+          !response.ok ||
+          json.error ||
+          (!json.data?.reflected &&
+            paymentStatus !== "rate_limited" &&
+            paymentStatus !== "pending")
+        ) {
           throw new Error(
             json.error ??
               (json.data?.paymentStatus === "paid"
@@ -362,16 +387,42 @@ export function WorkCommentList(props: Props) {
           )
         }
 
-        setConfirmedPremiumCoins(json.data.totalCoins ?? null)
+        if (!json.data?.reflected && paymentStatus === "rate_limited") {
+          toast.message(
+            t(
+              "決済は完了しています。現在反映処理が混み合っているため、しばらくしてから残高をご確認ください。",
+              "Your payment is complete. Reflection is temporarily delayed due to high load. Please check your balance again shortly.",
+            ),
+          )
+          setIsPremiumPurchaseResultDialogOpen(false)
+          await navigate(location.pathname, { replace: true })
+          return
+        }
+
+        if (!json.data?.reflected && paymentStatus === "pending") {
+          toast.message(
+            t(
+              "決済確認中です。しばらくしてから残高をご確認ください。",
+              "Payment confirmation is in progress. Please check your balance again shortly.",
+            ),
+          )
+          setIsPremiumPurchaseResultDialogOpen(false)
+          await navigate(location.pathname, { replace: true })
+          return
+        }
+
+        setConfirmedPremiumCoins(json.data?.totalCoins ?? null)
         await reloadCoinSummary()
         await navigate(location.pathname, { replace: true })
       } catch (error) {
         setConfirmedPremiumCoins(null)
-        setPremiumPurchaseError(
+        const message =
           error instanceof Error
             ? error.message
-            : t("エラーが発生しました", "An error occurred"),
-        )
+            : t("エラーが発生しました", "An error occurred")
+        setPremiumPurchaseError(message)
+        toast.error(message)
+        setIsPremiumPurchaseResultDialogOpen(false)
       } finally {
         setIsConfirmingPremiumPurchase(false)
       }
@@ -1575,9 +1626,12 @@ export function WorkCommentList(props: Props) {
       />
 
       <Dialog
-        open={checkoutState === "premium-success"}
-        onOpenChange={() => {
-          void navigate(location.pathname, { replace: true })
+        open={isPremiumPurchaseResultDialogOpen}
+        onOpenChange={(open) => {
+          setIsPremiumPurchaseResultDialogOpen(open)
+          if (!open) {
+            void navigate(location.pathname, { replace: true })
+          }
         }}
       >
         <DialogContent>

@@ -411,7 +411,15 @@ export function PointsSettingsForm() {
 
         const json = (await response.json()) as PremiumConfirmResponse
 
-        if (!response.ok || json.error || !json.data?.reflected) {
+        const paymentStatus = json.data?.paymentStatus ?? null
+
+        if (
+          !response.ok ||
+          json.error ||
+          (!json.data?.reflected &&
+            paymentStatus !== "rate_limited" &&
+            paymentStatus !== "pending")
+        ) {
           throw new Error(
             json.error ??
               (json.data?.paymentStatus === "paid"
@@ -424,6 +432,30 @@ export function PointsSettingsForm() {
                     "Could not confirm the completed purchase",
                   )),
           )
+        }
+
+        if (!json.data?.reflected && paymentStatus === "rate_limited") {
+          toast.message(
+            t(
+              "決済は完了しています。現在反映処理が混み合っているため、しばらくしてから残高をご確認ください。",
+              "Your payment is complete. Reflection is temporarily delayed due to high load. Please check your balance again shortly.",
+            ),
+          )
+          setIsPremiumPurchaseDialogOpen(false)
+          await navigate(location.pathname, { replace: true })
+          return
+        }
+
+        if (!json.data?.reflected && paymentStatus === "pending") {
+          toast.message(
+            t(
+              "決済確認中です。しばらくしてから残高をご確認ください。",
+              "Payment confirmation is in progress. Please check your balance again shortly.",
+            ),
+          )
+          setIsPremiumPurchaseDialogOpen(false)
+          await navigate(location.pathname, { replace: true })
+          return
         }
 
         setConfirmedPremiumCoins(json.data.totalCoins ?? null)
