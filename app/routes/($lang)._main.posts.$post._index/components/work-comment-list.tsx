@@ -606,11 +606,11 @@ export function WorkCommentList(props: Props) {
                   </span>
                   <span className="flex items-center gap-1.5 font-semibold text-foreground">
                     <FreeSupportCoinIcon className="h-4 w-4" />
-                    <span>F {coinBalances.freeBalance}</span>
+                    <span>{coinBalances.freeBalance}</span>
                   </span>
                   <span className="flex items-center gap-1.5 font-semibold text-foreground">
                     <PremiumSupportCoinIcon className="h-4 w-4" />
-                    <span>P {coinBalances.premiumBalance}</span>
+                    <span>{coinBalances.premiumBalance}</span>
                   </span>
                 </div>
               )}
