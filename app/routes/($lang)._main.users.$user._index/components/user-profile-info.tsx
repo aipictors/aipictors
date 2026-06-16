@@ -46,8 +46,7 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
   const canShowSupportButton =
     (!authContext.isLoading || hasViewerSession) &&
     (!authContext.isNotLoggedIn || hasViewerSession) &&
-    authContext.userId !== userId &&
-    balance !== null
+    authContext.userId !== userId
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -79,8 +78,8 @@ const UserProfileInfo: React.FC<UserProfileInfoProps> = ({
             targetUserId={userId}
             targetUserName={name}
             targetUserIconUrl={userIconUrl}
-            freeCoinBalance={balance.freeCoinsBalance}
-            premiumCoinBalance={balance.premiumCoinsBalance}
+            freeCoinBalance={balance?.freeCoinsBalance ?? 0}
+            premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
           />
         )}
 

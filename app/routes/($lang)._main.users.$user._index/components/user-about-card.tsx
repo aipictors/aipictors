@@ -38,8 +38,7 @@ export function UserAboutCard(props: Props) {
   const canShowSupportButton =
     (!authContext.isLoading || hasViewerSession) &&
     (!authContext.isNotLoggedIn || hasViewerSession) &&
-    authContext.userId !== props.user.id &&
-    balance !== null
+    authContext.userId !== props.user.id
 
   return (
     <section className="hidden space-y-3 md:block">
@@ -61,14 +60,14 @@ export function UserAboutCard(props: Props) {
         )}
       </div>
 
-      {canShowSupportButton && balance && (
+      {canShowSupportButton && (
         <div className="pt-2">
           <SupportButton
             targetUserId={props.user.id}
             targetUserName={props.user.name}
             targetUserIconUrl={props.user.iconUrl}
-            freeCoinBalance={balance.freeCoinsBalance}
-            premiumCoinBalance={balance.premiumCoinsBalance}
+            freeCoinBalance={balance?.freeCoinsBalance ?? 0}
+            premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
           />
         </div>
       )}

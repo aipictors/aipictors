@@ -52,8 +52,7 @@ export function UserProfileNameIcon(props: Props) {
   const canShowSupportButton =
     !isMyPage &&
     (!authContext.isLoading || hasViewerSession) &&
-    (!authContext.isNotLoggedIn || hasViewerSession) &&
-    balance !== null
+    (!authContext.isNotLoggedIn || hasViewerSession)
 
   const biographyText = t(
     user.biography ?? "",
@@ -209,13 +208,13 @@ export function UserProfileNameIcon(props: Props) {
                 }
               />
             )}
-            {canShowSupportButton && balance && (
+            {canShowSupportButton && (
               <SupportButton
                 targetUserId={user.id}
                 targetUserName={user.name}
                 targetUserIconUrl={user.iconUrl}
-                freeCoinBalance={balance.freeCoinsBalance}
-                premiumCoinBalance={balance.premiumCoinsBalance}
+                freeCoinBalance={balance?.freeCoinsBalance ?? 0}
+                premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
                 triggerClassName="rounded-full font-bold"
               />
             )}
@@ -290,13 +289,13 @@ export function UserProfileNameIcon(props: Props) {
                 }
               />
             )}
-            {canShowSupportButton && balance && (
+            {canShowSupportButton && (
               <SupportButton
                 targetUserId={user.id}
                 targetUserName={user.name}
                 targetUserIconUrl={user.iconUrl}
-                freeCoinBalance={balance.freeCoinsBalance}
-                premiumCoinBalance={balance.premiumCoinsBalance}
+                freeCoinBalance={balance?.freeCoinsBalance ?? 0}
+                premiumCoinBalance={balance?.premiumCoinsBalance ?? 0}
                 triggerClassName="w-full rounded-full font-bold"
               />
             )}

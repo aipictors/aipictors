@@ -193,6 +193,11 @@ export function WorkCommentList(props: Props) {
   )
 
   const authContext = useContext(AuthContext)
+  const isOwnWork =
+    authContext.userId !== null &&
+    props.workOwnerId !== null &&
+    props.workOwnerId !== undefined &&
+    authContext.userId === props.workOwnerId
 
   const moderationCommentIds = Array.from(
     new Set(
@@ -260,6 +265,33 @@ export function WorkCommentList(props: Props) {
     setRecentStickerIds(readRecentStickerIds())
   }, [])
 
+  const fetchCoinSummary = async () => {
+    const headers = await getViewerRequestHeaders({
+      includeJsonContentType: true,
+    })
+    const res = await fetch("/api/coins/summary", {
+      method: "GET",
+      headers,
+    })
+
+    const json = (await res.json()) as {
+      error?: string
+      data?: {
+        freeBalance?: number
+        premiumBalance?: number
+      }
+    }
+
+    if (!res.ok || json.error || !json.data) {
+      return null
+    }
+
+    return {
+      freeBalance: json.data.freeBalance ?? 0,
+      premiumBalance: json.data.premiumBalance ?? 0,
+    }
+  }
+
   const reloadCoinSummary = async () => {
     if (!authContext.isLoggedIn) {
       return
@@ -267,30 +299,13 @@ export function WorkCommentList(props: Props) {
 
     try {
       setIsLoadingCoinSummary(true)
-      const headers = await getViewerRequestHeaders({
-        includeJsonContentType: true,
-      })
-      const res = await fetch("/api/coins/summary", {
-        method: "GET",
-        headers,
-      })
+      const summary = await fetchCoinSummary()
 
-      const json = (await res.json()) as {
-        error?: string
-        data?: {
-          freeBalance?: number
-          premiumBalance?: number
-        }
-      }
-
-      if (!res.ok || json.error || !json.data) {
+      if (summary === null) {
         return
       }
 
-      setCoinBalances({
-        freeBalance: json.data.freeBalance ?? 0,
-        premiumBalance: json.data.premiumBalance ?? 0,
-      })
+      setCoinBalances(summary)
     } catch {
       return
     } finally {
@@ -318,6 +333,61 @@ export function WorkCommentList(props: Props) {
     supportDraft: CommentSupportDraft | null = null,
   ) => {
     try {
+      if (hasSupportInput && supportDraft === null) {
+        toast(
+          t(
+            "推しコイン数が不正です。保有コイン数を確認してください。",
+            "Support coin amounts are invalid.",
+          ),
+        )
+        return
+      }
+
+      if (supportDraft !== null && isOwnWork) {
+        toast(
+          t(
+            "自分の作品には推しコインを付与できません。",
+            "You cannot attach support coins to your own work.",
+          ),
+        )
+        return
+      }
+
+      if (supportDraft !== null && authContext.isLoggedIn) {
+        setIsLoadingCoinSummary(true)
+
+        try {
+          const latestSummary = await fetchCoinSummary()
+
+          if (latestSummary !== null) {
+            setCoinBalances(latestSummary)
+
+            const latestSupportDraft = calculateCommentSupportDraft(
+              supportDraft.freeCoinAmount,
+              supportDraft.premiumCoinAmount,
+              latestSummary.freeBalance,
+              latestSummary.premiumBalance,
+            )
+
+            if (latestSupportDraft === null) {
+              toast(
+                t(
+                  "コイン残高が足りません。残高を更新しました。",
+                  "You do not have enough coins. The balance has been refreshed.",
+                ),
+              )
+              return
+            }
+
+            supportDraft = latestSupportDraft
+          }
+        } finally {
+          setIsLoadingCoinSummary(false)
+        }
+      }
+
+      const confirmedSupportDraft = supportDraft
+
       if (targetWorkId !== undefined) {
         const res = await createWorkComment({
           variables: {
@@ -325,8 +395,9 @@ export function WorkCommentList(props: Props) {
               workId: targetWorkId,
               text: text,
               stickerId: stickerId,
-              supportFreeCoinAmount: supportDraft?.freeCoinAmount ?? 0,
-              supportPremiumCoinAmount: supportDraft?.premiumCoinAmount ?? 0,
+              supportFreeCoinAmount: confirmedSupportDraft?.freeCoinAmount ?? 0,
+              supportPremiumCoinAmount:
+                confirmedSupportDraft?.premiumCoinAmount ?? 0,
               // TODO: Add isSensitive to GraphQL schema
               // isSensitive: isSensitive ?? false,
             },
@@ -348,19 +419,22 @@ export function WorkCommentList(props: Props) {
         setSupportFreeCoinAmount("0")
         setSupportPremiumCoinAmount("0")
 
-        if (supportDraft) {
+        if (confirmedSupportDraft) {
           setCoinBalances((current) => ({
-            freeBalance: Math.max(0, current.freeBalance - supportDraft.freeCoinAmount),
+            freeBalance: Math.max(
+              0,
+              current.freeBalance - confirmedSupportDraft.freeCoinAmount,
+            ),
             premiumBalance: Math.max(
               0,
-              current.premiumBalance - supportDraft.premiumCoinAmount,
+              current.premiumBalance - confirmedSupportDraft.premiumCoinAmount,
             ),
           }))
 
           if (consumeSupportSuccessDialogOpportunity(props.workOwnerId)) {
             setSupportSuccessState({
               message: res.data.createWorkComment.supportThankYouMessage,
-              totalPt: supportDraft.totalPt,
+              totalPt: confirmedSupportDraft.totalPt,
             })
           }
         }
@@ -586,7 +660,7 @@ export function WorkCommentList(props: Props) {
               </div>
             </div>
           </div>
-          {isSupportOpen && !props.isWorkOwnerBlocked && (
+          {isSupportOpen && !props.isWorkOwnerBlocked && !isOwnWork && (
             <div className="rounded-xl border border-rose-200/80 bg-rose-50/80 p-3 dark:border-rose-900/60 dark:bg-rose-950/20">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 text-sm font-medium text-rose-700 dark:text-rose-200">
@@ -706,20 +780,22 @@ export function WorkCommentList(props: Props) {
               />
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-                variant="secondary"
-                size="icon"
-                className="h-11 w-11 rounded-2xl"
-                onClick={() => {
-                  if (!isSupportOpen) {
-                    void reloadCoinSummary()
-                  }
-                  setIsSupportOpen((value) => !value)
-                }}
-              >
-                <Heart className="size-5" />
-              </Button>
+              {!isOwnWork && (
+                <Button
+                  disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
+                  variant="secondary"
+                  size="icon"
+                  className="h-11 w-11 rounded-2xl"
+                  onClick={() => {
+                    if (!isSupportOpen) {
+                      void reloadCoinSummary()
+                    }
+                    setIsSupportOpen((value) => !value)
+                  }}
+                >
+                  <Heart className="size-5" />
+                </Button>
+              )}
               <Button
                 disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
                 variant="secondary"

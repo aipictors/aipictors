@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from "@remix-run/cloudflare"
-import { number, object, safeParse, string } from "valibot"
+import { nullable, number, object, optional, safeParse, string } from "valibot"
 import { verifyViewerFromGraphQL } from "~/lib/server/auth.server"
 import { getServerEnvValue } from "~/lib/server/env.server"
 
@@ -20,6 +20,7 @@ const bodySchema = object({
   recipientUserId: string(),
   coinType: string(),
   amount: number(),
+  source: optional(nullable(string())),
 })
 
 function toJsonResponse(body: unknown, status: number): Response {
@@ -69,7 +70,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
     return toJsonResponse({ error: "Invalid request body", data: null }, 400)
   }
 
-  const { recipientUserId, coinType, amount } = parsedBody.output
+  const { recipientUserId, coinType, amount, source } = parsedBody.output
 
   if (coinType !== "FREE" && coinType !== "PREMIUM") {
     return toJsonResponse(
@@ -114,6 +115,8 @@ export async function action({ request, context }: ActionFunctionArgs) {
       recipientUserId,
       coinType,
       amount,
+      planType: viewer.currentPassType ?? "FREE",
+      source: source ?? null,
     }),
   })
 

@@ -6,7 +6,7 @@
 import { useQuery } from "@apollo/client/index"
 import { graphql } from "gql.tada"
 import { CircleHelp, Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { CoinIcon } from "~/components/coin-icon"
 import {
@@ -159,6 +159,7 @@ export function SupportButton({
   const [isSuccessOpen, setIsSuccessOpen] = useState(false)
   const [successThankYouMessage, setSuccessThankYouMessage] = useState("")
   const [successTotalPt, setSuccessTotalPt] = useState<number | null>(null)
+  const isSubmittingRef = useRef(false)
   const [currentFreeCoinBalance, setCurrentFreeCoinBalance] =
     useState(freeCoinBalance)
   const [currentPremiumCoinBalance, setCurrentPremiumCoinBalance] =
@@ -300,12 +301,15 @@ export function SupportButton({
 
   const handleSupport = async () => {
     if (!canSupport || !breakdown) return
+    if (isSubmittingRef.current) return
 
     try {
+      isSubmittingRef.current = true
       setIsLoading(true)
       const headers = await getViewerRequestHeaders({
         includeJsonContentType: true,
       })
+      const requestId = crypto.randomUUID()
 
       // フリーコインとプレミアムコインに分割して送信
       const requests = []
@@ -319,6 +323,7 @@ export function SupportButton({
               recipientUserId: targetUserId,
               coinType: "FREE",
               amount: breakdown.freeCoinsUsed,
+              source: `profile-support:${requestId}:FREE`,
             }),
           }),
         )
@@ -333,6 +338,7 @@ export function SupportButton({
               recipientUserId: targetUserId,
               coinType: "PREMIUM",
               amount: breakdown.premiumCoinsUsed,
+              source: `profile-support:${requestId}:PREMIUM`,
             }),
           }),
         )
@@ -383,6 +389,7 @@ export function SupportButton({
         toast.error(e.message)
       }
     } finally {
+      isSubmittingRef.current = false
       setIsLoading(false)
     }
   }
