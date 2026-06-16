@@ -30,6 +30,8 @@ const createPremiumCoinCheckoutDirect = async (props: {
   coins: number
   bonusCoins: number
   priceYen: number
+  successPath?: string
+  cancelPath?: string
 }) => {
   const coins = Math.max(0, Math.floor(props.coins))
   const bonusCoins = Math.max(0, Math.floor(props.bonusCoins))
@@ -38,14 +40,16 @@ const createPremiumCoinCheckoutDirect = async (props: {
 
   const params = new URLSearchParams()
   params.set("mode", "payment")
-  params.set(
-    "success_url",
-    `${props.origin}/settings/points?checkout=premium-success&session_id={CHECKOUT_SESSION_ID}`,
-  )
-  params.set(
-    "cancel_url",
-    `${props.origin}/settings/points?checkout=premium-cancel`,
-  )
+  const successUrl = new URL(props.successPath ?? "/settings/points", props.origin)
+  successUrl.searchParams.set("checkout", "premium-success")
+  // Keep Stripe placeholder unescaped so Stripe can substitute the real session id.
+  const successUrlWithSessionId = `${successUrl.toString()}&session_id={CHECKOUT_SESSION_ID}`
+
+  const cancelUrl = new URL(props.cancelPath ?? "/settings/points", props.origin)
+  cancelUrl.searchParams.set("checkout", "premium-cancel")
+
+  params.set("success_url", successUrlWithSessionId)
+  params.set("cancel_url", cancelUrl.toString())
   params.set("client_reference_id", props.userId)
   params.set("line_items[0][quantity]", "1")
   params.set("line_items[0][price_data][currency]", "jpy")

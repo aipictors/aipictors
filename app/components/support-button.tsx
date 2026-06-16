@@ -137,6 +137,12 @@ const calculateCustomCoinBreakdown = (
 const QUICK_COIN_OPTIONS = [10, 30, 100, 300] as const
 const ADJUSTMENT_STEPS = [1, 10, 100] as const
 
+const parseClampedNonNegativeInt = (value: string, max: number) => {
+  const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
+  if (Number.isNaN(numeric)) return ""
+  return String(Math.min(Math.max(0, numeric), Math.max(0, max)))
+}
+
 export function SupportButton({
   targetUserId,
   targetUserName,
@@ -239,22 +245,26 @@ export function SupportButton({
   const totalAvailableCoins = currentFreeCoinBalance + currentPremiumCoinBalance
 
   const handleCoinAmountChange = (value: string) => {
-    const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
-    setCoinAmount(Number.isNaN(numeric) ? "" : String(numeric))
+    setCoinAmount(parseClampedNonNegativeInt(value, totalAvailableCoins))
   }
 
   const handleCustomFreeCoinAmountChange = (value: string) => {
-    const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
-    setCustomFreeCoinAmount(Number.isNaN(numeric) ? "" : String(numeric))
+    setCustomFreeCoinAmount(
+      parseClampedNonNegativeInt(value, currentFreeCoinBalance),
+    )
   }
 
   const handleCustomPremiumCoinAmountChange = (value: string) => {
-    const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
-    setCustomPremiumCoinAmount(Number.isNaN(numeric) ? "" : String(numeric))
+    setCustomPremiumCoinAmount(
+      parseClampedNonNegativeInt(value, currentPremiumCoinBalance),
+    )
   }
 
   const handleAdjustment = (delta: number) => {
-    const nextValue = Math.max(1, (Number(coinAmount) || 0) + delta)
+    const nextValue = Math.min(
+      totalAvailableCoins,
+      Math.max(1, (Number(coinAmount) || 0) + delta),
+    )
     setCoinAmount(String(nextValue))
   }
 
@@ -280,12 +290,18 @@ export function SupportButton({
     if (!isOpen) return
 
     setSupportMode("default")
-    setCoinAmount("10")
+    const initialDefault = Math.min(10, totalAvailableCoins)
+    setCoinAmount(initialDefault > 0 ? String(initialDefault) : "0")
     const free = Math.min(10, currentFreeCoinBalance)
     const premium = free === 0 && currentPremiumCoinBalance > 0 ? 1 : 0
     setCustomFreeCoinAmount(String(free))
     setCustomPremiumCoinAmount(String(premium))
-  }, [isOpen, currentFreeCoinBalance, currentPremiumCoinBalance])
+  }, [
+    isOpen,
+    currentFreeCoinBalance,
+    currentPremiumCoinBalance,
+    totalAvailableCoins,
+  ])
 
   // タブが custom に切り替わった時に、デフォルトタブの現在値を反映
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Link, useLocation, useNavigate, useSearchParams } from "@remix-run/react"
 import { CoinIcon } from "~/components/coin-icon"
@@ -160,6 +160,7 @@ export function PointsSettingsForm() {
     useState(false)
   const [isConfirmingPremiumPurchase, setIsConfirmingPremiumPurchase] =
     useState(false)
+  const handledPremiumCheckoutSessionRef = useRef<string | null>(null)
   const [premiumPurchaseError, setPremiumPurchaseError] = useState<string | null>(
     null,
   )
@@ -370,6 +371,10 @@ export function PointsSettingsForm() {
 
   useEffect(() => {
     if (checkoutState === "premium-cancel") {
+      if (handledPremiumCheckoutSessionRef.current === "premium-cancel") {
+        return
+      }
+      handledPremiumCheckoutSessionRef.current = "premium-cancel"
       toast.message(
         t(
           "プレミアムコインの購入をキャンセルしました",
@@ -387,7 +392,37 @@ export function PointsSettingsForm() {
     setIsPremiumPurchaseDialogOpen(true)
     setPremiumPurchaseError(null)
 
+    if (authContext.isLoading) {
+      setIsConfirmingPremiumPurchase(true)
+      return
+    }
+
+    if (!authContext.isLoggedIn) {
+      setIsConfirmingPremiumPurchase(false)
+      setPremiumPurchaseError(
+        t(
+          "ログイン状態の確認中に購入完了処理を開始できませんでした。再読み込み後にもう一度ご確認ください。",
+          "Could not start purchase confirmation because login state was not ready. Please reload and check again.",
+        ),
+      )
+      return
+    }
+
+    if (checkoutSessionId && !checkoutSessionId.startsWith("cs_")) {
+      handledPremiumCheckoutSessionRef.current = checkoutSessionId
+      setConfirmedPremiumCoins(null)
+      setPremiumPurchaseError(
+        t(
+          "購入情報が不正です。もう一度購入画面からお試しください。",
+          "Invalid checkout session. Please retry from the purchase dialog.",
+        ),
+      )
+      void navigate(location.pathname, { replace: true })
+      return
+    }
+
     if (!checkoutSessionId) {
+      handledPremiumCheckoutSessionRef.current = "missing-session"
       setConfirmedPremiumCoins(null)
       setPremiumPurchaseError(
         t(
@@ -397,6 +432,12 @@ export function PointsSettingsForm() {
       )
       return
     }
+
+    const checkoutKey = checkoutSessionId
+    if (handledPremiumCheckoutSessionRef.current === checkoutKey) {
+      return
+    }
+    handledPremiumCheckoutSessionRef.current = checkoutKey
 
     const confirmPremiumPurchase = async () => {
       try {
@@ -474,7 +515,15 @@ export function PointsSettingsForm() {
     }
 
     void confirmPremiumPurchase()
-  }, [checkoutSessionId, checkoutState, location.pathname, navigate, t])
+  }, [
+    authContext.isLoading,
+    authContext.isLoggedIn,
+    checkoutSessionId,
+    checkoutState,
+    location.pathname,
+    navigate,
+    t,
+  ])
 
   return (
     <div className="space-y-4">

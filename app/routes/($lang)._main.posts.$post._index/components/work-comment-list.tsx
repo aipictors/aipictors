@@ -132,6 +132,12 @@ type PremiumConfirmResponse = {
 
 const SUPPORT_COIN_STEP_AMOUNTS = [100, 500, 1000] as const
 
+const parseClampedNonNegativeInt = (value: string, max: number) => {
+  const numeric = Number.parseInt(value.replaceAll(/[^0-9]/g, ""), 10)
+  if (Number.isNaN(numeric)) return ""
+  return String(Math.min(Math.max(0, numeric), Math.max(0, max)))
+}
+
 const calculateCommentSupportDraft = (
   freeCoinAmount: number,
   premiumCoinAmount: number,
@@ -287,6 +293,21 @@ export function WorkCommentList(props: Props) {
   const [canceledCommentIds, setCanceledCommentIds] = useState<string[]>([])
   const [recentStickerIds, setRecentStickerIds] = useState<string[]>([])
 
+  const clearPremiumCheckoutSearchParams = () => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    const nextUrl = new URL(window.location.href)
+    nextUrl.searchParams.delete("checkout")
+    nextUrl.searchParams.delete("session_id")
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`,
+    )
+  }
+
   useEffect(() => {
     if (newComments !== null) {
       setNewComments([])
@@ -317,7 +338,7 @@ export function WorkCommentList(props: Props) {
           "Premium coin purchase was canceled",
         ),
       )
-      void navigate(location.pathname, { replace: true })
+      clearPremiumCheckoutSearchParams()
       return
     }
 
@@ -325,18 +346,41 @@ export function WorkCommentList(props: Props) {
       return
     }
 
-    const checkoutKey = checkoutSessionId ?? "missing-session"
-    if (handledPremiumCheckoutSessionRef.current === checkoutKey) {
-      return
-    }
-    handledPremiumCheckoutSessionRef.current = checkoutKey
-
     setIsPremiumPurchaseDialogOpen(false)
     setIsPremiumPurchaseResultDialogOpen(true)
     setPremiumPurchaseError(null)
     setConfirmedPremiumCoins(null)
 
+    if (appContext.isLoading) {
+      setIsConfirmingPremiumPurchase(true)
+      return
+    }
+
+    if (!appContext.isLoggedIn) {
+      setIsConfirmingPremiumPurchase(false)
+      setPremiumPurchaseError(
+        t(
+          "ログイン状態の確認中に購入完了処理を開始できませんでした。再読み込み後にもう一度ご確認ください。",
+          "Could not start purchase confirmation because login state was not ready. Please reload and check again.",
+        ),
+      )
+      return
+    }
+
+    if (checkoutSessionId && !checkoutSessionId.startsWith("cs_")) {
+      handledPremiumCheckoutSessionRef.current = checkoutSessionId
+      setPremiumPurchaseError(
+        t(
+          "購入情報が不正です。もう一度購入画面からお試しください。",
+          "Invalid checkout session. Please retry from the purchase dialog.",
+        ),
+      )
+      clearPremiumCheckoutSearchParams()
+      return
+    }
+
     if (!checkoutSessionId) {
+      handledPremiumCheckoutSessionRef.current = "missing-session"
       setConfirmedPremiumCoins(null)
       setIsConfirmingPremiumPurchase(false)
       setPremiumPurchaseError(
@@ -345,9 +389,14 @@ export function WorkCommentList(props: Props) {
           "Missing checkout session ID for premium coin confirmation",
         ),
       )
-      setIsPremiumPurchaseResultDialogOpen(false)
       return
     }
+
+    const checkoutKey = checkoutSessionId
+    if (handledPremiumCheckoutSessionRef.current === checkoutKey) {
+      return
+    }
+    handledPremiumCheckoutSessionRef.current = checkoutKey
 
     const confirmPremiumPurchase = async () => {
       try {
@@ -388,32 +437,30 @@ export function WorkCommentList(props: Props) {
         }
 
         if (!json.data?.reflected && paymentStatus === "rate_limited") {
-          toast.message(
+          setPremiumPurchaseError(
             t(
               "決済は完了しています。現在反映処理が混み合っているため、しばらくしてから残高をご確認ください。",
               "Your payment is complete. Reflection is temporarily delayed due to high load. Please check your balance again shortly.",
             ),
           )
-          setIsPremiumPurchaseResultDialogOpen(false)
-          await navigate(location.pathname, { replace: true })
+          clearPremiumCheckoutSearchParams()
           return
         }
 
         if (!json.data?.reflected && paymentStatus === "pending") {
-          toast.message(
+          setPremiumPurchaseError(
             t(
               "決済確認中です。しばらくしてから残高をご確認ください。",
               "Payment confirmation is in progress. Please check your balance again shortly.",
             ),
           )
-          setIsPremiumPurchaseResultDialogOpen(false)
-          await navigate(location.pathname, { replace: true })
+          clearPremiumCheckoutSearchParams()
           return
         }
 
         setConfirmedPremiumCoins(json.data?.totalCoins ?? null)
         await reloadCoinSummary()
-        await navigate(location.pathname, { replace: true })
+        clearPremiumCheckoutSearchParams()
       } catch (error) {
         setConfirmedPremiumCoins(null)
         const message =
@@ -422,14 +469,21 @@ export function WorkCommentList(props: Props) {
             : t("エラーが発生しました", "An error occurred")
         setPremiumPurchaseError(message)
         toast.error(message)
-        setIsPremiumPurchaseResultDialogOpen(false)
       } finally {
         setIsConfirmingPremiumPurchase(false)
       }
     }
 
     void confirmPremiumPurchase()
-  }, [checkoutSessionId, checkoutState, location.pathname, navigate, t])
+  }, [
+    appContext.isLoading,
+    appContext.isLoggedIn,
+    checkoutSessionId,
+    checkoutState,
+    location.pathname,
+    navigate,
+    t,
+  ])
 
   const fetchCoinSummary = async () => {
     const headers = await getViewerRequestHeaders({
@@ -887,10 +941,16 @@ export function WorkCommentList(props: Props) {
                   <Input
                     inputMode="numeric"
                     min={0}
+                    max={coinBalances.freeBalance}
                     type="number"
                     value={supportFreeCoinAmount}
                     onChange={(event) =>
-                      setSupportFreeCoinAmount(event.target.value)
+                      setSupportFreeCoinAmount(
+                        parseClampedNonNegativeInt(
+                          event.target.value,
+                          coinBalances.freeBalance,
+                        ),
+                      )
                     }
                     disabled={!authContext.isLoggedIn}
                   />
@@ -928,27 +988,31 @@ export function WorkCommentList(props: Props) {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <PremiumSupportCoinIcon className="size-3.5" />
                       {t("プレミアム", "Premium")}
                     </span>
-                    <button
-                      type="button"
+                    <a
+                      href="/settings/points"
                       className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
-                      onClick={() => setIsPremiumPurchaseDialogOpen(true)}
-                      disabled={!authContext.isLoggedIn}
                     >
                       + {t("購入", "Buy")}
-                    </button>
-                  </label>
+                    </a>
+                  </div>
                   <Input
                     inputMode="numeric"
                     min={0}
+                    max={coinBalances.premiumBalance}
                     type="number"
                     value={supportPremiumCoinAmount}
                     onChange={(event) =>
-                      setSupportPremiumCoinAmount(event.target.value)
+                      setSupportPremiumCoinAmount(
+                        parseClampedNonNegativeInt(
+                          event.target.value,
+                          coinBalances.premiumBalance,
+                        ),
+                      )
                     }
                     disabled={!authContext.isLoggedIn}
                   />
@@ -1618,7 +1682,7 @@ export function WorkCommentList(props: Props) {
 
       <PurchasePremiumCoinsDialog
         currentBalance={coinBalances.premiumBalance}
-        open={isPremiumPurchaseDialogOpen && checkoutState !== "premium-success"}
+        open={isPremiumPurchaseDialogOpen}
         onOpenChange={setIsPremiumPurchaseDialogOpen}
         hideTrigger
         successPath={location.pathname}
@@ -1630,7 +1694,7 @@ export function WorkCommentList(props: Props) {
         onOpenChange={(open) => {
           setIsPremiumPurchaseResultDialogOpen(open)
           if (!open) {
-            void navigate(location.pathname, { replace: true })
+            clearPremiumCheckoutSearchParams()
           }
         }}
       >
@@ -1666,7 +1730,8 @@ export function WorkCommentList(props: Props) {
             ) : null}
             <Button
               onClick={() => {
-                void navigate(location.pathname, { replace: true })
+                clearPremiumCheckoutSearchParams()
+                setIsPremiumPurchaseResultDialogOpen(false)
               }}
               disabled={isConfirmingPremiumPurchase}
             >
