@@ -292,6 +292,20 @@ export function WorkCommentList(props: Props) {
 
   const [canceledCommentIds, setCanceledCommentIds] = useState<string[]>([])
   const [recentStickerIds, setRecentStickerIds] = useState<string[]>([])
+  const commentDraftStorageKey = `aipictors:work-comment-draft:${props.workId}`
+  const skipNextDraftPersistRef = useRef(true)
+
+  const clearCommentDraft = () => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    try {
+      window.localStorage.removeItem(commentDraftStorageKey)
+    } catch {
+      // localStorage が使えなくてもコメント送信自体は継続する。
+    }
+  }
 
   const clearPremiumCheckoutSearchParams = () => {
     if (typeof window === "undefined") {
@@ -313,6 +327,43 @@ export function WorkCommentList(props: Props) {
       setNewComments([])
     }
   }, [props.workId])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    skipNextDraftPersistRef.current = true
+
+    try {
+      const stored = window.localStorage.getItem(commentDraftStorageKey)
+      setComment(stored ?? "")
+    } catch {
+      setComment("")
+    }
+  }, [commentDraftStorageKey])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    if (skipNextDraftPersistRef.current) {
+      skipNextDraftPersistRef.current = false
+      return
+    }
+
+    try {
+      if (comment.trim().length === 0) {
+        window.localStorage.removeItem(commentDraftStorageKey)
+        return
+      }
+
+      window.localStorage.setItem(commentDraftStorageKey, comment)
+    } catch {
+      // localStorage が使えなくても入力・送信自体は継続する。
+    }
+  }, [comment, commentDraftStorageKey])
 
   useEffect(() => {
     if (!isSupportOpen || !authContext.isLoggedIn) {
@@ -658,6 +709,7 @@ export function WorkCommentList(props: Props) {
           )
         }
 
+        clearCommentDraft()
         setComment("")
         setIsSensitive(false)
         setIsSupportOpen(false)
@@ -873,7 +925,7 @@ export function WorkCommentList(props: Props) {
               <div className="flex items-stretch gap-3">
                 <div className="min-w-0 flex-1">
                   <AutoResizeTextarea
-                    autoResize={false}
+                    autoResize
                     onChange={(event) => {
                       setComment(event.target.value)
                     }}
@@ -881,7 +933,7 @@ export function WorkCommentList(props: Props) {
                     value={comment}
                     placeholder={t("コメントする", "Add a comment")}
                     disabled={!authContext.isLoggedIn || props.isWorkOwnerBlocked}
-                    className="h-[46px] min-h-[46px] w-full overflow-hidden rounded-2xl border-border/70 bg-background px-4 py-3"
+                    className="min-h-[46px] w-full rounded-2xl border-border/70 bg-background px-4 py-3"
                   />
                 </div>
                 {isCreatingWorkComment ? (
